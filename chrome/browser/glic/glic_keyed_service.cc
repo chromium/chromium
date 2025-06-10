@@ -25,9 +25,8 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
-#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
-#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/host/host.h"
@@ -96,7 +95,11 @@ GlicKeyedService::GlicKeyedService(
                                                      identity_manager,
                                                      this,
                                                      enabling_.get())),
-      focused_tab_manager_(profile, *window_controller_),
+      sharing_manager_(
+          std::make_unique<GlicSharingManagerImpl>(profile,
+                                                   *window_controller_,
+                                                   host_.get(),
+                                                   metrics_.get())),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
@@ -104,7 +107,7 @@ GlicKeyedService::GlicKeyedService(
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   host_->Initialize(window_controller_.get());
-  metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
+  metrics_->SetControllers(window_controller_.get(), sharing_manager_.get());
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
@@ -187,9 +190,10 @@ void GlicKeyedService::CloseUI() {
 void GlicKeyedService::PrepareForOpen() {
   window_controller_->fre_controller()->MaybePreconnect();
 
-  auto* active_web_contents = GetFocusedTabData().focus()
-                                  ? GetFocusedTabData().focus()->GetContents()
-                                  : nullptr;
+  auto* active_web_contents =
+      sharing_manager_->GetFocusedTabData().focus()
+          ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
+          : nullptr;
   if (contextual_cueing_service_ && active_web_contents) {
     contextual_cueing_service_
         ->PrepareToFetchContextualGlicZeroStateSuggestions(active_web_contents);
@@ -217,9 +221,10 @@ void GlicKeyedService::FetchZeroStateSuggestions(
     bool is_first_run,
     mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
         callback) {
-  auto* active_web_contents = GetFocusedTabData().focus()
-                                  ? GetFocusedTabData().focus()->GetContents()
-                                  : nullptr;
+  auto* active_web_contents =
+      sharing_manager_->GetFocusedTabData().focus()
+          ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
+          : nullptr;
 
   if (contextual_cueing_service_ && active_web_contents && IsWindowShowing()) {
     auto suggestions = mojom::ZeroStateSuggestions::New();
@@ -243,6 +248,10 @@ GlicWindowController& GlicKeyedService::window_controller() {
   return *window_controller_.get();
 }
 
+GlicSharingManager& GlicKeyedService::sharing_manager() {
+  return *sharing_manager_.get();
+}
+
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
   host().GuestAdded(guest_contents);
 }
@@ -255,29 +264,6 @@ bool GlicKeyedService::IsWindowDetached() const {
   return window_controller_->IsDetached();
 }
 
-base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
-    FocusedTabChangedCallback callback) {
-  return focused_tab_manager_.AddFocusedTabChangedCallback(callback);
-}
-
-base::CallbackListSubscription
-GlicKeyedService::AddFocusedTabInstanceChangedCallback(
-    FocusedTabInstanceChangedCallback callback) {
-  return focused_tab_manager_.AddFocusedTabInstanceChangedCallback(callback);
-}
-
-base::CallbackListSubscription
-GlicKeyedService::AddFocusedTabOrCandidateInstanceChangedCallback(
-    FocusedTabOrCandidateInstanceChangedCallback callback) {
-  return focused_tab_manager_.AddFocusedTabOrCandidateInstanceChangedCallback(
-      callback);
-}
-
-base::CallbackListSubscription
-GlicKeyedService::AddFocusedTabDataChangedCallback(
-    FocusedTabDataChangedCallback callback) {
-  return focused_tab_manager_.AddFocusedTabDataChangedCallback(callback);
-}
 
 base::CallbackListSubscription
 GlicKeyedService::AddContextAccessIndicatorStatusChangedCallback(
@@ -351,27 +337,6 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
   context_access_indicator_callback_list_.Notify(show);
 }
 
-void GlicKeyedService::GetContextFromFocusedTab(
-    const mojom::GetTabContextOptions& options,
-    mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled) ||
-      !window_controller_->IsShowing()) {
-    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-        std::string("permission denied")));
-    return;
-  }
-  FocusedTabData data = GetFocusedTabData();
-  if (!data.focus()) {
-    std::move(callback).Run(
-        mojom::GetContextResult::NewErrorReason(data.GetFocus().error()));
-    return;
-  }
-  metrics_->DidRequestContextFromFocusedTab();
-
-  FetchPageContext(data.focus(), options,
-                   /*include_actionable_data=*/false, std::move(callback));
-}
-
 void GlicKeyedService::ActInFocusedTab(
     const std::vector<uint8_t>& action_proto,
     const mojom::GetTabContextOptions& options,
@@ -390,7 +355,7 @@ void GlicKeyedService::ActInFocusedTab(
   }
 
   CHECK(actor_controller_);
-  actor_controller_->Act(GetFocusedTabData(), action, options,
+  actor_controller_->Act(sharing_manager_->GetFocusedTabData(), action, options,
                          std::move(callback));
 }
 
@@ -461,14 +426,12 @@ void GlicKeyedService::CaptureScreenshot(
       std::move(callback));
 }
 
-FocusedTabData GlicKeyedService::GetFocusedTabData() {
-  return focused_tab_manager_.GetFocusedTabData();
-}
-
 bool GlicKeyedService::IsContextAccessIndicatorShown(
     const content::WebContents* contents) {
-  return is_context_access_indicator_enabled_ && GetFocusedTabData().focus() &&
-         GetFocusedTabData().focus()->GetContents() == contents;
+  return is_context_access_indicator_enabled_ &&
+         sharing_manager_->GetFocusedTabData().focus() &&
+         sharing_manager_->GetFocusedTabData().focus()->GetContents() ==
+             contents;
 }
 
 void GlicKeyedService::AddPreloadCallback(base::OnceCallback<void()> callback) {

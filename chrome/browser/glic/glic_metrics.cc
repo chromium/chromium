@@ -12,7 +12,7 @@
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -41,9 +41,9 @@ bool CheckFreStatus(Profile* profile, prefs::FreStatus status) {
 class DelegateImpl : public GlicMetrics::Delegate {
  public:
   explicit DelegateImpl(GlicWindowController* window_controller,
-                        GlicFocusedTabManager* focus_tab_manager)
+                        GlicSharingManager* sharing_manager)
       : window_controller_(window_controller),
-        focus_tab_manager_(focus_tab_manager) {}
+        sharing_manager_(sharing_manager) {}
   gfx::Size GetWindowSize() const override {
     return window_controller_->GetSize();
   }
@@ -54,14 +54,14 @@ class DelegateImpl : public GlicMetrics::Delegate {
     return window_controller_->IsAttached();
   }
   content::WebContents* GetContents() override {
-    return focus_tab_manager_->GetFocusedTabData().is_focus()
-               ? focus_tab_manager_->GetFocusedTabData().focus()->GetContents()
+    return sharing_manager_->GetFocusedTabData().is_focus()
+               ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
                : nullptr;
   }
 
  private:
   raw_ptr<GlicWindowController> window_controller_;
-  raw_ptr<GlicFocusedTabManager> focus_tab_manager_;
+  raw_ptr<GlicSharingManager> sharing_manager_;
 };
 
 constexpr char kHistogramGlicPanelPresentationTime[] =
@@ -505,8 +505,9 @@ void GlicMetrics::OnGlicScrollComplete(bool success) {
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,
-                                 GlicFocusedTabManager* tab_manager) {
-  delegate_ = std::make_unique<DelegateImpl>(window_controller, tab_manager);
+                                 GlicSharingManager* sharing_manager) {
+  delegate_ =
+      std::make_unique<DelegateImpl>(window_controller, sharing_manager);
 }
 
 void GlicMetrics::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {

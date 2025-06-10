@@ -7,6 +7,9 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,9 +60,12 @@ bool IsWeakWebContentsEqual(base::WeakPtr<content::WebContents> a,
 
 GlicFocusedTabManager::GlicFocusedTabManager(
     Profile* profile,
-    GlicWindowController& window_controller)
+    GlicWindowController& window_controller,
+    Host* host,
+    GlicMetrics* metrics)
     : profile_(profile),
       window_controller_(window_controller),
+      metrics_(metrics),
       focused_tab_data_(NoFocusedTabData()) {
   BrowserList::GetInstance()->AddObserver(this);
   window_activation_subscription_ =
@@ -246,7 +252,6 @@ void GlicFocusedTabManager::PerformMaybeUpdateFocusedTab(bool force_notify) {
   // Similarly set up or turn off tab data observation for the focused tab.
   focused_tab_data_observer_ = std::make_unique<TabDataObserver>(
       focused_tab_state_.focused_tab.get(),
-      /*disconnect_on_primary_page_changed=*/false,
       base::BindRepeating(&GlicFocusedTabManager::FocusedTabDataChanged,
                           base::Unretained(this)));
 
@@ -358,6 +363,26 @@ void GlicFocusedTabManager::NotifyFocusedTabOrCandidateInstanceChanged(
 void GlicFocusedTabManager::NotifyFocusedTabDataChanged(
     glic::mojom::TabDataPtr tab_data) {
   focused_data_callback_list_.Notify(tab_data ? tab_data.get() : nullptr);
+}
+
+void GlicFocusedTabManager::GetContextFromFocusedTab(
+    const mojom::GetTabContextOptions& options,
+    base::OnceCallback<void(glic::mojom::GetContextResultPtr)> callback) {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled) ||
+      !window_controller_->IsShowing()) {
+    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
+        std::string("permission denied")));
+    return;
+  }
+  FocusedTabData data = GetFocusedTabData();
+  if (!data.focus()) {
+    std::move(callback).Run(
+        mojom::GetContextResult::NewErrorReason(data.GetFocus().error()));
+    return;
+  }
+  metrics_->DidRequestContextFromFocusedTab();
+  FetchPageContext(data.focus(), options,
+                   /*include_actionable_data=*/false, std::move(callback));
 }
 
 bool GlicFocusedTabManager::IsBrowserValid(

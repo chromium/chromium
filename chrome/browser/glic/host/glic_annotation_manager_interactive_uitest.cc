@@ -153,7 +153,7 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
       auto options = mojom::GetTabContextOptions::New();
       options->include_annotated_page_content = true;
 
-      FocusedTabData data = glic_service->GetFocusedTabData();
+      FocusedTabData data = glic_service->sharing_manager().GetFocusedTabData();
       if (data.focus()) {
         FetchPageContext(
             data.focus(), *options,
@@ -357,25 +357,32 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
                 ->web_contents();
       }
       content::WebContents* focused_web_contents =
-          glic_service->GetFocusedTabData().focus()
-              ? glic_service->GetFocusedTabData().focus()->GetContents()
+          glic_service->sharing_manager().GetFocusedTabData().focus()
+              ? glic_service->sharing_manager()
+                    .GetFocusedTabData()
+                    .focus()
+                    ->GetContents()
               : nullptr;
       if (focused_web_contents == web_contents) {
         return true;
       }
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-      auto subscription = glic_service->AddFocusedTabChangedCallback(
-          base::BindLambdaForTesting([&run_loop, glic_service,
-                                      web_contents](const FocusedTabData&) {
-            content::WebContents* focused_web_contents =
-                glic_service->GetFocusedTabData().focus()
-                    ? glic_service->GetFocusedTabData().focus()->GetContents()
-                    : nullptr;
-            if (focused_web_contents == web_contents) {
-              run_loop.Quit();
-              return;
-            }
-          }));
+      auto subscription =
+          glic_service->sharing_manager().AddFocusedTabChangedCallback(
+              base::BindLambdaForTesting([&run_loop, glic_service,
+                                          web_contents](const FocusedTabData&) {
+                content::WebContents* focused_web_contents =
+                    glic_service->sharing_manager().GetFocusedTabData().focus()
+                        ? glic_service->sharing_manager()
+                              .GetFocusedTabData()
+                              .focus()
+                              ->GetContents()
+                        : nullptr;
+                if (focused_web_contents == web_contents) {
+                  run_loop.Quit();
+                  return;
+                }
+              }));
       run_loop.Run();
       return true;
     });

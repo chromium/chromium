@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
@@ -20,11 +21,13 @@ namespace glic {
 
 GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
     : tab_(tab) {
-  auto* const service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+  auto* const service = GlicKeyedServiceFactory::GetGlicKeyedService(
       tab_->GetBrowserWindowInterface()->GetProfile());
-  focus_change_subscription_ = service->AddFocusedTabChangedCallback(
-      base::BindRepeating(&GlicTabIndicatorHelper::OnFocusedTabChanged,
-                          base::Unretained(this)));
+
+  focus_change_subscription_ =
+      service->sharing_manager().AddFocusedTabChangedCallback(
+          base::BindRepeating(&GlicTabIndicatorHelper::OnFocusedTabChanged,
+                              base::Unretained(this)));
   indicator_change_subscription_ =
       service->AddContextAccessIndicatorStatusChangedCallback(
           base::BindRepeating(&GlicTabIndicatorHelper::OnIndicatorStatusChanged,

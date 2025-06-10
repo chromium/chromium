@@ -10,6 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/glic/browser_ui/theme_util.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -104,9 +105,10 @@ class GlicBorderView::BorderViewUpdater {
 
     // Subscribe to changes in the focus tab.
     focus_change_subscription_ =
-        glic_service->AddFocusedTabChangedCallback(base::BindRepeating(
-            &GlicBorderView::BorderViewUpdater::OnFocusedTabChanged,
-            base::Unretained(this)));
+        glic_service->sharing_manager().AddFocusedTabChangedCallback(
+            base::BindRepeating(
+                &GlicBorderView::BorderViewUpdater::OnFocusedTabChanged,
+                base::Unretained(this)));
 
     // Subscribe to changes in the context access indicator status.
     indicator_change_subscription_ =

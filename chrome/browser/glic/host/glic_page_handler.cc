@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
@@ -247,6 +248,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         page_handler_(page_handler),
         glic_service_(
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
+        glic_sharing_manager_(static_cast<GlicSharingManagerImpl&>(
+            glic_service_->sharing_manager())),
         pref_service_(profile_->GetPrefs()),
         active_state_calculator_(&glic_service_->window_controller()),
         browser_is_open_calculator_(profile_, this),
@@ -291,12 +294,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                             base::Unretained(this)));
     glic_service_->window_controller().AddStateObserver(this);
 
-    focus_changed_subscription_ = glic_service_->AddFocusedTabChangedCallback(
-        base::BindRepeating(&GlicWebClientHandler::OnFocusedTabChanged,
-                            base::Unretained(this)));
+    focus_changed_subscription_ =
+        glic_sharing_manager_->AddFocusedTabChangedCallback(
+            base::BindRepeating(&GlicWebClientHandler::OnFocusedTabChanged,
+                                base::Unretained(this)));
 
     focus_data_changed_subscription_ =
-        glic_service_->AddFocusedTabDataChangedCallback(
+        glic_sharing_manager_->AddFocusedTabDataChangedCallback(
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
                                 base::Unretained(this)));
 
@@ -322,7 +326,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         glic_service_->window_controller().GetPanelState().Clone();
 
     state->focused_tab_data =
-        CreateFocusedTabData(glic_service_->GetFocusedTabData());
+        CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
     state->can_attach = browser_attach_observation_->CanAttachToBrowser();
     state->panel_is_active = active_state_calculator_.IsActive();
 
@@ -330,12 +334,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       // We will force a notification to be sent later when the panel
       // is activated, so skip here.
       cached_focused_tab_data_ =
-          CreateFocusedTabData(glic_service_->GetFocusedTabData());
+          CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
       state->focused_tab_data = CreateFocusedTabData(FocusedTabData(
           std::string("glic not active"), /*unfocused_tab=*/nullptr));
     } else {
       state->focused_tab_data =
-          CreateFocusedTabData(glic_service_->GetFocusedTabData());
+          CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
     }
 
     state->sizing_mode = GetWebClientSizingMode();
@@ -457,7 +461,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void GetContextFromFocusedTab(
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
-    glic_service_->GetContextFromFocusedTab(*options, std::move(callback));
+    glic_sharing_manager_->GetContextFromFocusedTab(*options,
+                                                    std::move(callback));
   }
 
   void ActInFocusedTab(const std::vector<uint8_t>& action_proto,
@@ -918,12 +923,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   raw_ptr<Profile> profile_;
   raw_ptr<GlicPageHandler> page_handler_;
   raw_ptr<GlicKeyedService> glic_service_;
+  raw_ref<GlicSharingManagerImpl> glic_sharing_manager_;
   raw_ptr<PrefService> pref_service_;
   ActiveStateCalculator active_state_calculator_;
   BrowserIsOpenCalculator browser_is_open_calculator_;
   base::CallbackListSubscription focus_changed_subscription_;
   base::CallbackListSubscription focus_data_changed_subscription_;
-  std::unique_ptr<TabDataObserver> focused_tab_data_observer_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;
