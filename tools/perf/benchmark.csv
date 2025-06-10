@@ -46,6 +46,7 @@ dummy_benchmark.noisy_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com
 dummy_benchmark.stable_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 jetstream2,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
 jetstream2-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/JetStream2.0/in-depth.html,all
+jetstream2-no-field-trials,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
 load_library_perf_tests,"xhwang@chromium.org, jrummell@chromium.org",Internals>Media>Encrypted,,
 media.desktop,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,av1,background,beginning_to_end,busyjs,cns,h264,is_2min,is_4k,is_50fps,mp3,mse,opus,seek,src,video_only,vorbis,vp8,vp9"
 media.mobile,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,background,beginning_to_end,busyjs,cns,h264,is_2min,mp3,mse,opus,seek,src,video_only,vorbis,vp9"
@@ -70,9 +71,10 @@ speedometer2-predictable,"rasikan@google.com, wnwen@google.com",Blink>JavaScript
 speedometer3,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
 speedometer3-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
 speedometer3-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://github.com/WebKit/Speedometer,all
-speedometer3-predictable,"rasikan@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer3.0,all
-speedometer3.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer3.0,all
-speedometer3.1,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer3.1,all
+speedometer3-no-field-trials,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
+speedometer3-predictable,"rasikan@google.com, wnwen@google.com",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
+speedometer3.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
+speedometer3.1,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
 system_health.common_desktop,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2025,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
 system_health.common_mobile,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2023,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
