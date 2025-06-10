@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 
 #include "components/autofill/core/common/aliases.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -90,11 +89,6 @@ int StubPasswordManagerDriver::GetFrameId() const {
 
 const GURL& StubPasswordManagerDriver::GetLastCommittedURL() const {
   return GURL::EmptyGURL();
-}
-
-gfx::RectF StubPasswordManagerDriver::TransformToRootCoordinates(
-    const gfx::RectF& bounds_in_frame_coordinates) {
-  return gfx::RectF();
 }
 
 base::WeakPtr<PasswordManagerDriver> StubPasswordManagerDriver::AsWeakPtr() {
