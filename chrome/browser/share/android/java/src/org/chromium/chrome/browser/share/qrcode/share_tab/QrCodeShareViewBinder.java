@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.share.qrcode.share_tab;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
+@NullMarked
 class QrCodeShareViewBinder implements ViewBinder<PropertyModel, QrCodeShareView, PropertyKey> {
     @Override
     public void bind(PropertyModel model, QrCodeShareView view, PropertyKey propertyKey) {

@@ -6,14 +6,16 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 
 /**
- * Listener that tracks which tab the user is currently viewing. This is used to turn
- * the camera on and off.
+ * Listener that tracks which tab the user is currently viewing. This is used to turn the camera on
+ * and off.
  */
+@NullMarked
 public class TabLayoutPageListener extends TabLayout.TabLayoutOnPageChangeListener {
     private final ArrayList<QrCodeDialogTab> mTabs;
     private int mVisibleTab;

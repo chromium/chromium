@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
@@ -19,6 +20,8 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,6 +41,7 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -49,6 +53,7 @@ import java.util.Map;
 import java.util.Random;
 
 /** Class that controls and manages when and if surveys should be shown. */
+@NullMarked
 public class PrivacySandboxSurveyController {
     // LINT.IfChange(PrivacySandboxSurveyTypes)
     /** List of all the survey types that this controller manages. */
@@ -140,9 +145,9 @@ public class PrivacySandboxSurveyController {
                             "privacy-sandbox-sentiment-survey")
                     .build();
 
-    private ActivityTabTabObserver mActivityTabTabObserver;
+    private @Nullable ActivityTabTabObserver mActivityTabTabObserver;
     private final Activity mActivity;
-    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private PropertyModel mMessage;
     private final TabModelSelector mTabModelSelector;
     private final MessageDispatcher mMessageDispatcher;
@@ -178,7 +183,7 @@ public class PrivacySandboxSurveyController {
         }
     }
 
-    public static PrivacySandboxSurveyController initialize(
+    public static @Nullable PrivacySandboxSurveyController initialize(
             TabModelSelector tabModelSelector,
             @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
             Activity activity,
@@ -320,8 +325,10 @@ public class PrivacySandboxSurveyController {
         }
     }
 
-    private SurveyClient constructSurveyClient(@PrivacySandboxSurveyType int survey) {
-        SurveyConfig surveyConfig = SurveyConfig.get(mProfile, sSurveyTriggers.get(survey));
+    private @Nullable SurveyClient constructSurveyClient(@PrivacySandboxSurveyType int survey) {
+        String triggerId = sSurveyTriggers.get(survey);
+        assert triggerId != null;
+        SurveyConfig surveyConfig = SurveyConfig.get(mProfile, triggerId);
         if (surveyConfig == null) {
             emitInvalidSurveyConfigHistogram(survey);
             return null;
@@ -366,7 +373,7 @@ public class PrivacySandboxSurveyController {
         mActivityTabTabObserver =
                 new ActivityTabTabObserver(activityTabProvider) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         if (tab == null) {
                             return;
                         }
@@ -405,11 +412,9 @@ public class PrivacySandboxSurveyController {
         psb.put(
                 "Measurement enabled",
                 prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED));
-        psb.put(
-                "Signed in",
-                IdentityServicesProvider.get()
-                        .getIdentityManager(mProfile)
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN));
+        IdentityManager identityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
+        psb.put("Signed in", identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
         return psb;
     }
 

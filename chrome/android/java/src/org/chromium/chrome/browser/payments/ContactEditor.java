@@ -211,7 +211,6 @@ public class ContactEditor extends EditorBase<AutofillContact> {
             @Nullable final AutofillContact toEdit,
             final Callback<AutofillContact> doneCallback,
             final Callback<AutofillContact> cancelCallback) {
-        super.showEditPrompt(toEdit, doneCallback, cancelCallback);
         mDoneCallback = doneCallback;
         mCancelCallback = cancelCallback;
 

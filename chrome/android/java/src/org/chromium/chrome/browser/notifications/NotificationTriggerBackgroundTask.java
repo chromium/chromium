@@ -9,15 +9,17 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
 /**
- * Handles notification triggers scheduled via {@link NotificationTriggerScheduler}.
- * This task calls NotificationTriggerScheduler::triggerNotifications after loading native code.
+ * Handles notification triggers scheduled via {@link NotificationTriggerScheduler}. This task calls
+ * NotificationTriggerScheduler::triggerNotifications after loading native code.
  */
+@NullMarked
 public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
     @VisibleForTesting protected static final String KEY_TIMESTAMP = "Timestamp";
 

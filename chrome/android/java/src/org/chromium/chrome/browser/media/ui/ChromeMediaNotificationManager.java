@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
 
 /** Thin wrapper for {@link MediaNotificationManager}. */
+@NullMarked
 public class ChromeMediaNotificationManager {
     /**
      * Shows a media notification. Passes through to {@link MediaNotificationManager}, utilizing a

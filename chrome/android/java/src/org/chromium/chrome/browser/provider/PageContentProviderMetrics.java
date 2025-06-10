@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.provider;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.ukm.UkmRecorder;
 
+@NullMarked
 public class PageContentProviderMetrics {
 
     @IntDef({

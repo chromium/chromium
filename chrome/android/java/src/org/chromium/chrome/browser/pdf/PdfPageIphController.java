@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -27,6 +29,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** Controller to manage PDF page in-product-help messages to users. */
+@NullMarked
 public class PdfPageIphController {
     private final UserEducationHelper mUserEducationHelper;
     private final WindowAndroid mWindowAndroid;
@@ -49,7 +52,7 @@ public class PdfPageIphController {
      * @param appMenuHandler The app menu handler.
      * @param isBrowserApp Whether the current activity is ChromeTabbedActivity.
      */
-    public static PdfPageIphController create(
+    public static @Nullable PdfPageIphController create(
             Activity activity,
             WindowAndroid windowAndroid,
             ActivityTabProvider activityTabProvider,

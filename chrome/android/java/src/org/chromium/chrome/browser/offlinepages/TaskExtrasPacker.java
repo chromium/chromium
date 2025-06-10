@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.offlinepages;
 
 import android.os.PersistableBundle;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Class to put our custom task information into the task bundle. */
+@NullMarked
 public class TaskExtrasPacker {
     /** Bundle key for the timestamp in milliseconds when the request started. */
     public static final String SCHEDULED_TIME_TAG = "ScheduleTime";

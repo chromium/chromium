@@ -12,6 +12,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -25,9 +27,10 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * A controller that triggers an auto sign-in snackbar. Auto sign-in snackbar is
- * triggered on a request credentials call of a Credential Management API.
+ * A controller that triggers an auto sign-in snackbar. Auto sign-in snackbar is triggered on a
+ * request credentials call of a Credential Management API.
  */
+@NullMarked
 public class AutoSigninSnackbarController implements SnackbarManager.SnackbarController {
     private final SnackbarManager mSnackbarManager;
     private final TabObserver mTabObserver;
@@ -44,6 +47,7 @@ public class AutoSigninSnackbarController implements SnackbarManager.SnackbarCon
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null) return;
         SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
+        assert snackbarManager != null;
         AutoSigninSnackbarController snackbarController =
                 new AutoSigninSnackbarController(snackbarManager, tab);
         Snackbar snackbar =
@@ -96,10 +100,10 @@ public class AutoSigninSnackbarController implements SnackbarManager.SnackbarCon
     }
 
     @Override
-    public void onAction(Object actionData) {}
+    public void onAction(@Nullable Object actionData) {}
 
     @Override
-    public void onDismissNoAction(Object actionData) {
+    public void onDismissNoAction(@Nullable Object actionData) {
         mTab.removeObserver(mTabObserver);
     }
 }

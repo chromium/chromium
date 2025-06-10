@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -33,6 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * into {@link ActivityType}. If the provided {@link ActivityType} does not identify the caller as
  * WebApk, the logic won't be executed.
  */
+@NullMarked
 public class TrackingProtectionSnackbarController implements CookieControlsObserver {
 
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
@@ -43,10 +44,10 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
     private final SnackbarController mSnackbarController =
             new SnackbarController() {
                 @Override
-                public void onDismissNoAction(Object actionData) {}
+                public void onDismissNoAction(@Nullable Object actionData) {}
 
                 @Override
-                public void onAction(Object actionData) {
+                public void onAction(@Nullable Object actionData) {
                     mSnakcbarOnAction.run();
                 }
             };

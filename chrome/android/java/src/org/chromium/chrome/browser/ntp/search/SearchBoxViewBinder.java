@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.ViewUtils;
@@ -22,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Responsible for building and setting properties on the search box on new tab page. */
+@NullMarked
 class SearchBoxViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> {
     @Override

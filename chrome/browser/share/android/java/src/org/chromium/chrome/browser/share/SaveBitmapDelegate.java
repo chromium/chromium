@@ -18,6 +18,8 @@ import android.provider.Settings;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.ui.base.WindowAndroid;
@@ -26,13 +28,14 @@ import java.text.DateFormat;
 import java.util.Date;
 
 /** SaveBitmapDelegate is in charge of download the current bitmap. */
+@NullMarked
 public class SaveBitmapDelegate {
     private final Context mContext;
     private final Bitmap mBitmap;
     private final int mFileNameResource;
     private final WindowAndroid mWindowAndroid;
     private final Runnable mCallback;
-    private Dialog mDialog;
+    private @Nullable Dialog mDialog;
 
     /**
      * The SaveBitmapDelegate constructor.
@@ -74,7 +77,7 @@ public class SaveBitmapDelegate {
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    mDialog.cancel();
+                                    dialog.cancel();
                                 }
                             })
                     .setPositiveButton(
@@ -119,7 +122,7 @@ public class SaveBitmapDelegate {
     }
 
     // Used in tests.
-    Dialog getDialog() {
+    @Nullable Dialog getDialog() {
         return mDialog;
     }
 }

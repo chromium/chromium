@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -18,6 +20,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.DefaultBrowserInfoUmaRecorder;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -37,9 +41,10 @@ import org.chromium.url.GURL;
 
 /**
  * Mainly sets up session stats for chrome. A session is defined as the duration when the
- * application is in the foreground.  Also used to communicate information between Chrome
- * and the framework's MetricService.
+ * application is in the foreground. Also used to communicate information between Chrome and the
+ * framework's MetricService.
  */
+@NullMarked
 public class UmaSessionStats {
     private static final String TAG = "UmaSessionStats";
 
@@ -47,11 +52,11 @@ public class UmaSessionStats {
 
     // TabModelSelector is needed to get the count of open tabs. We want to log the number of open
     // tabs on every page load.
-    private TabModelSelector mTabModelSelector;
-    private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
+    private @Nullable TabModelSelector mTabModelSelector;
+    private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     private final Context mContext;
-    private ComponentCallbacks mComponentCallbacks;
+    private @Nullable ComponentCallbacks mComponentCallbacks;
 
     private boolean mKeyboardConnected;
 
@@ -171,6 +176,7 @@ public class UmaSessionStats {
     public void logAndEndSession() {
         if (mTabModelSelector != null) {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
+            assumeNonNull(mTabModelSelectorTabObserver);
             mTabModelSelectorTabObserver.destroy();
             mTabModelSelector = null;
         }

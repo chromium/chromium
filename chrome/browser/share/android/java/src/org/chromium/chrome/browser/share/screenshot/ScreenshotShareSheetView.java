@@ -13,11 +13,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetViewProperties.NoArgOperation;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** Manages the Android View representing the Screenshot share panel. */
+@NullMarked
 class ScreenshotShareSheetView extends FrameLayout {
     /** Constructor for use from XML. */
     public ScreenshotShareSheetView(Context context, AttributeSet attrs) {

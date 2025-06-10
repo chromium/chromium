@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Resources;
 import android.net.Uri;
 import android.view.View;
@@ -11,12 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabObserver;
@@ -39,6 +41,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
 /** Class for controlling the page info 'About This Site' section. */
+@NullMarked
 public class PageInfoAboutThisSiteController {
     public static final int ROW_ID = View.generateViewId();
     private static final String TAG = "PageInfo";
@@ -49,8 +52,8 @@ public class PageInfoAboutThisSiteController {
     private final PageInfoControllerDelegate mDelegate;
     private final WebContents mWebContents;
     private @Nullable SiteInfo mSiteInfo;
-    private EphemeralTabCoordinator mEphemeralTabCoordinator;
-    private EphemeralTabObserver mEphemeralTabObserver;
+    private @Nullable EphemeralTabCoordinator mEphemeralTabCoordinator;
+    private @Nullable EphemeralTabObserver mEphemeralTabObserver;
     private final TabCreator mTabCreator;
 
     static boolean isFeatureEnabled() {
@@ -82,6 +85,7 @@ public class PageInfoAboutThisSiteController {
         if (mEphemeralTabCoordinator != null) {
             // Append parameter to open the page with reduced UI elements in the bottomsheet.
             Uri.Builder builder = Uri.parse(url).buildUpon();
+            assumeNonNull(mSiteInfo);
             if (mSiteInfo.hasMoreAbout() && url.equals(mSiteInfo.getMoreAbout().getUrl())) {
                 builder.appendQueryParameter("ilrm", "minimal,nohead");
             }
@@ -89,10 +93,14 @@ public class PageInfoAboutThisSiteController {
             GURL fullPageUrl = new GURL(url);
 
             createEphemeralTabObserver(bottomSheetUrl);
-            mEphemeralTabCoordinator.addObserver(mEphemeralTabObserver);
+            // mEphemeralTabCoordinator is checked for non-null before this block.
+            // mEphemeralTabObserver is initialized in createEphemeralTabObserver.
+            mEphemeralTabCoordinator.addObserver(assumeNonNull(mEphemeralTabObserver));
 
+            Profile profile = Profile.fromWebContents(mWebContents);
+            assert profile != null;
             mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
-                    bottomSheetUrl, fullPageUrl, getTitle(), Profile.fromWebContents(mWebContents));
+                    bottomSheetUrl, fullPageUrl, getTitle(), profile);
 
             mMainController.dismiss();
         } else {
@@ -122,6 +130,7 @@ public class PageInfoAboutThisSiteController {
                     @Override
                     public void onNavigationStarted(GURL clickedUrl) {
                         if (!clickedUrl.equals(originUrl)) {
+                            assumeNonNull(mEphemeralTabCoordinator);
                             mEphemeralTabCoordinator.close();
                             mEphemeralTabCoordinator.removeObserver(this);
                             openInNewTab(clickedUrl.getSpec());
@@ -196,6 +205,7 @@ public class PageInfoAboutThisSiteController {
     }
 
     private void onAboutThisSiteRowClicked() {
+        assumeNonNull(mSiteInfo);
         openUrl(
                 mSiteInfo.getMoreAbout().getUrl(),
                 PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);

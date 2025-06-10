@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.xmlpull.v1.XmlSerializer;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -22,6 +23,7 @@ import java.io.StringWriter;
 import java.util.Locale;
 
 /** Generates XML requests to send to the Omaha server. */
+@NullMarked
 public abstract class RequestGenerator {
     // The Omaha specs say that new installs should use "-1".
     public static final int INSTALL_AGE_IMMEDIATELY_AFTER_INSTALLING = -1;

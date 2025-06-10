@@ -16,6 +16,8 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.BrowserRestartActivity;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 
@@ -29,13 +31,14 @@ import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
  * AlarmManager. https://crbug.com/545453 details why the BrowserRestartActivity handles the process
  * killing.
  */
+@NullMarked
 class ChromeLifetimeController
         implements ApplicationLifetime.Observer, ApplicationStatus.ActivityStateListener {
     /** Amount of time to wait for Chrome to destroy all the activities of the main process. */
     private static final long WATCHDOG_DELAY_MS = 1000;
 
     /** Singleton instance of the class. */
-    private static ChromeLifetimeController sInstance;
+    private static @MonotonicNonNull ChromeLifetimeController sInstance;
 
     /** Handler to post tasks to. */
     private final Handler mHandler;

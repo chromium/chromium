@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.autofill.editors;
 import android.content.Context;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.EditableOption;
@@ -22,8 +22,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @NullMarked
 public abstract class EditorBase<T extends EditableOption> {
-    protected @Nullable EditorDialogView mEditorDialog;
-    protected @Nullable Context mContext;
+    protected EditorDialogView mEditorDialog;
+    protected Context mContext;
     protected @Nullable PropertyModel mEditorModel;
     protected @Nullable PropertyModelChangeProcessor<PropertyModel, EditorDialogView, PropertyKey>
             mEditorMCP;
@@ -33,8 +33,8 @@ public abstract class EditorBase<T extends EditableOption> {
      *
      * @param editorDialog The user interface to be used.
      */
+    @Initializer
     public void setEditorDialog(EditorDialogView editorDialog) {
-        assert editorDialog != null;
         mEditorDialog = editorDialog;
         mContext = mEditorDialog.getContext();
     }
@@ -51,17 +51,10 @@ public abstract class EditorBase<T extends EditableOption> {
      *     information (`toEdit` was invalid), or even with complete and valid information (`toEdit`
      *     was both complete and valid to begin with).
      */
-    @EnsuresNonNull({"mEditorDialog", "mContext"})
-    protected void showEditPrompt(
-            @Nullable T toEdit, Callback<T> doneCallback, Callback<@Nullable T> cancelCallback) {
-        assert doneCallback != null;
-        assert cancelCallback != null;
-        assert mEditorDialog != null;
-        assert mContext != null;
-    }
+    protected abstract void showEditPrompt(
+            @Nullable T toEdit, Callback<T> doneCallback, Callback<@Nullable T> cancelCallback);
 
-    @Nullable
-    public PropertyModel getEditorModelForTesting() {
+    public @Nullable PropertyModel getEditorModelForTesting() {
         return mEditorModel;
     }
 

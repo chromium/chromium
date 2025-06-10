@@ -12,6 +12,8 @@ import android.view.View;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -31,6 +33,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * Handles displaying share button on toolbar depending on several conditions (e.g.,device width,
  * whether NTP is shown).
  */
+@NullMarked
 public class ShareButtonController extends BaseButtonDataProvider {
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final Supplier<Tracker> mTrackerSupplier;
@@ -99,7 +102,7 @@ public class ShareButtonController extends BaseButtonDataProvider {
     }
 
     @Override
-    protected boolean shouldShowButton(Tab tab) {
+    protected boolean shouldShowButton(@Nullable Tab tab) {
         if (!super.shouldShowButton(tab) || mShareDelegateSupplier.get() == null) return false;
 
         return ShareUtils.shouldEnableShare(tab);

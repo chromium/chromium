@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.init;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Empty implementation of the browser parts for easy extension. */
+@NullMarked
 public class EmptyBrowserParts implements BrowserParts {
 
     @Override
@@ -31,7 +35,7 @@ public class EmptyBrowserParts implements BrowserParts {
     public void finishNativeInitialization() {}
 
     @Override
-    public void onStartupFailure(Exception failureCause) {}
+    public void onStartupFailure(@Nullable Exception failureCause) {}
 
     @Override
     public boolean isActivityFinishingOrDestroyed() {
