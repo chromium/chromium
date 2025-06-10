@@ -24,15 +24,15 @@ namespace webnn::coreml {
 namespace {
 
 uint32_t GetDataTypeByteSize(MLMultiArrayDataType data_type) {
-  switch (data_type) {
-    case MLMultiArrayDataTypeDouble:
-      return 8;
-    case MLMultiArrayDataTypeFloat32:
-    case MLMultiArrayDataTypeInt32:
-      return 4;
-    case MLMultiArrayDataTypeFloat16:
-      return 2;
-  }
+  // MLMultiArrayDataType values encode a format in the high bits (float =
+  // 0x10000, int = 0x20000) and the size (in bits) in the lower 16 bits.
+  //
+  // To determine the byte size of the type, mask off the format and divide. For
+  // example:
+  //
+  // MLMultiArrayDataTypeFloat64 (0x10040) -> 0x40 (64 bits) / 8 = 8 bytes.
+  // MLMultiArrayDataTypeInt32 (0x20020) -> 0x20 (32 bits) / 8 = 4 bytes.
+  return (data_type & 0xFFFF) / 8;
 }
 
 std::vector<uint32_t> ToStdVector(NSArray<NSNumber*>* ns_array) {
