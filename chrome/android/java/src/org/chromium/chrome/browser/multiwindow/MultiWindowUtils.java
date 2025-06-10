@@ -178,6 +178,9 @@ public class MultiWindowUtils implements ActivityStateListener {
         }
     }
 
+    /**
+     * @return The maximum number of instances that a user is allowed to create.
+     */
     public static int getMaxInstances() {
         return sMaxInstancesForTesting != null
                 ? sMaxInstancesForTesting
@@ -899,7 +902,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     private static void recordDesktopWindowCountHistograms(
             @InstanceAllocationType int instanceAllocationType, String histogramName, int count) {
         // Emit generic histogram, irrespective of instance allocation type.
-        RecordHistogram.recordExactLinearHistogram(histogramName, count, getMaxInstances() + 1);
+        RecordHistogram.recordExactLinearHistogram(
+                histogramName, count, TabWindowManager.MAX_SELECTORS + 1);
 
         // Emit histogram variant based on instance allocation type.
         String histogramSuffix = HISTOGRAM_DESKTOP_WINDOW_COUNT_NEW_INSTANCE_SUFFIX;
@@ -909,7 +913,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         }
 
         RecordHistogram.recordExactLinearHistogram(
-                histogramName + histogramSuffix, count, getMaxInstances() + 1);
+                histogramName + histogramSuffix, count, TabWindowManager.MAX_SELECTORS + 1);
     }
 
     /**

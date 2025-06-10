@@ -776,7 +776,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         RecordHistogram.recordExactLinearHistogram(
                 "Android.MultiInstance.NumActivities",
                 getRunningTabbedActivityCount(),
-                mMaxInstances + 1);
+                TabWindowManager.MAX_SELECTORS + 1);
     }
 
     static int getRunningTabbedActivityCount() {
@@ -795,7 +795,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         RecordHistogram.recordExactLinearHistogram(
                 "Android.MultiInstance.NumInstances",
                 MultiWindowUtils.getInstanceCount(),
-                mMaxInstances + 1);
+                TabWindowManager.MAX_SELECTORS + 1);
     }
 
     @VisibleForTesting
@@ -1146,7 +1146,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         if (current - timestamp > DateUtils.DAY_IN_MILLIS) {
             if (timestamp != 0) {
                 RecordHistogram.recordExactLinearHistogram(
-                        "Android.MultiInstance.MaxInstanceCount", maxCount, mMaxInstances + 1);
+                        "Android.MultiInstance.MaxInstanceCount",
+                        maxCount,
+                        TabWindowManager.MAX_SELECTORS + 1);
             }
             prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_MAX_COUNT_TIME, current);
             // Reset the count to 0 to be ready to obtain the max count for the next 24-hour period.
