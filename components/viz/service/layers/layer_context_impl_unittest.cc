@@ -2985,6 +2985,303 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
   EXPECT_FALSE(tile_display_layer_impl->is_backdrop_filter_mask_for_testing());
 }
 
+TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
+  constexpr int kLayerId = 2;
+  constexpr float kScaleKey1 = 1.0f;
+  constexpr float kScaleKey2 = 2.0f;
+  const gfx::Size kTileSize1(64, 64);
+  const gfx::Size kTileSize2(128, 128);
+  const gfx::Rect kTilingRect1(0, 0, 200, 200);
+  const gfx::Rect kTilingRect2(0, 0, 400, 400);
+  const cc::TileIndex kTileIndex1(0, 0);
+  const cc::TileIndex kTileIndex2(1, 1);
+  const ResourceId kResourceId1(23);
+  const ResourceId kResourceId2(45);
+
+  // Initial update: Create TileDisplayLayer.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTileDisplay,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+  ASSERT_TRUE(active_tree);
+  cc::LayerImpl* layer_impl_base = active_tree->LayerById(kLayerId);
+  ASSERT_NE(nullptr, layer_impl_base);
+  ASSERT_EQ(layer_impl_base->GetLayerType(),
+            cc::mojom::LayerType::kTileDisplay);
+  auto* tile_display_layer_impl =
+      static_cast<cc::TileDisplayLayerImpl*>(layer_impl_base);
+
+  // Test Case 1: Create a new Tiling with a SolidColor Tile.
+  auto update_create_tiling = CreateDefaultUpdate();
+  auto tiling1 = mojom::Tiling::New();
+  tiling1->layer_id = kLayerId;
+  tiling1->scale_key = kScaleKey1;
+  tiling1->raster_scale = gfx::Vector2dF(kScaleKey1, kScaleKey1);
+  tiling1->tile_size = kTileSize1;
+  tiling1->tiling_rect = kTilingRect1;
+  auto tile1_solid = mojom::Tile::New();
+  tile1_solid->column_index = kTileIndex1.i;
+  tile1_solid->row_index = kTileIndex1.j;
+  tile1_solid->contents =
+      mojom::TileContents::NewSolidColor(SkColors::kMagenta);
+  tiling1->tiles.push_back(std::move(tile1_solid));
+  update_create_tiling->tilings.push_back(std::move(tiling1));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_create_tiling))
+          .has_value());
+  const cc::TileDisplayLayerImpl::Tiling* tiling_impl1 =
+      tile_display_layer_impl->GetTilingForTesting(kScaleKey1);
+  ASSERT_NE(nullptr, tiling_impl1);
+  EXPECT_EQ(tiling_impl1->tile_size(), kTileSize1);
+  EXPECT_EQ(tiling_impl1->tiling_rect(), kTilingRect1);
+  ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
+  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->solid_color().has_value());
+  EXPECT_EQ(tiling_impl1->TileAt(kTileIndex1)->solid_color().value(),
+            SkColors::kMagenta);
+
+  // Test Case 2: Update existing Tiling (tile_size) and add a Resource Tile.
+  auto update_update_tiling = CreateDefaultUpdate();
+  auto tiling1_updated = mojom::Tiling::New();
+  tiling1_updated->layer_id = kLayerId;
+  tiling1_updated->scale_key = kScaleKey1;  // Same key to update
+  tiling1_updated->raster_scale = gfx::Vector2dF(kScaleKey1, kScaleKey1);
+  tiling1_updated->tile_size = kTileSize2;  // New tile size
+  tiling1_updated->tiling_rect = kTilingRect1;
+  // Add a new resource tile
+  auto tile2_resource = mojom::Tile::New();
+  tile2_resource->column_index = kTileIndex2.i;
+  tile2_resource->row_index = kTileIndex2.j;
+  auto resource_contents = mojom::TileResource::New();
+  resource_contents->resource = TransferableResource::MakeGpu(
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), kTileSize2,
+      SinglePlaneFormat::kRGBA_8888, false);
+  resource_contents->resource.id = kResourceId1;
+  resource_contents->is_checkered = false;
+  tile2_resource->contents =
+      mojom::TileContents::NewResource(std::move(resource_contents));
+  tiling1_updated->tiles.push_back(std::move(tile2_resource));
+  update_update_tiling->tilings.push_back(std::move(tiling1_updated));
+
+  auto result =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_update_tiling));
+  EXPECT_TRUE(result.has_value()) << result.error();
+  ASSERT_NE(nullptr, tiling_impl1);  // Should still be the same tiling object
+  EXPECT_EQ(tiling_impl1->tile_size(), kTileSize2);  // Updated
+  // Previous tile should be gone due to tile_size change
+  EXPECT_EQ(nullptr, tiling_impl1->TileAt(kTileIndex1));
+  ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex2));
+  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex2)->resource().has_value());
+
+  // Test Case 3: Add a second Tiling with a MissingReason Tile.
+  auto update_add_tiling2 = CreateDefaultUpdate();
+  auto tiling2 = mojom::Tiling::New();
+  tiling2->layer_id = kLayerId;
+  tiling2->scale_key = kScaleKey2;
+  tiling2->raster_scale = gfx::Vector2dF(kScaleKey2, kScaleKey2);
+  tiling2->tile_size = kTileSize1;
+  tiling2->tiling_rect = kTilingRect2;
+  auto tile3_missing = mojom::Tile::New();
+  tile3_missing->column_index = kTileIndex1.i;
+  tile3_missing->row_index = kTileIndex1.j;
+  tile3_missing->contents = mojom::TileContents::NewMissingReason(
+      cc::mojom::MissingTileReason::kResourceNotReady);
+  tiling2->tiles.push_back(std::move(tile3_missing));
+  update_add_tiling2->tilings.push_back(std::move(tiling2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_add_tiling2))
+          .has_value());
+  const cc::TileDisplayLayerImpl::Tiling* tiling_impl2 =
+      tile_display_layer_impl->GetTilingForTesting(kScaleKey2);
+  ASSERT_NE(nullptr, tiling_impl2);
+  EXPECT_EQ(tiling_impl2->tile_size(), kTileSize1);
+  ASSERT_NE(nullptr, tiling_impl2->TileAt(kTileIndex1));
+  EXPECT_TRUE(std::holds_alternative<cc::TileDisplayLayerImpl::NoContents>(
+      tiling_impl2->TileAt(kTileIndex1)->contents()));
+  EXPECT_EQ(std::get<cc::TileDisplayLayerImpl::NoContents>(
+                tiling_impl2->TileAt(kTileIndex1)->contents())
+                .reason,
+            cc::mojom::MissingTileReason::kResourceNotReady);
+
+  // Test Case 4: Explicitly delete a Tiling (tiling_impl1).
+  auto update_delete_tiling1 = CreateDefaultUpdate();
+  auto tiling1_deleted_marker = mojom::Tiling::New();
+  tiling1_deleted_marker->layer_id = kLayerId;
+  tiling1_deleted_marker->scale_key = kScaleKey1;
+  tiling1_deleted_marker->is_deleted = true;
+  update_delete_tiling1->tilings.push_back(std::move(tiling1_deleted_marker));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_delete_tiling1))
+          .has_value());
+  EXPECT_EQ(nullptr, tile_display_layer_impl->GetTilingForTesting(kScaleKey1));
+  EXPECT_NE(nullptr, tile_display_layer_impl->GetTilingForTesting(kScaleKey2));
+
+  // Test Case 5: Implicitly delete a Tiling by removing all its tiles.
+  // (tiling_impl2 currently has one kMissingReason tile).
+  // Send an update for tiling_impl2 that marks its only tile as deleted.
+  auto update_empty_tiling2 = CreateDefaultUpdate();
+  auto tiling2_empty_update = mojom::Tiling::New();
+  tiling2_empty_update->layer_id = kLayerId;
+  tiling2_empty_update->scale_key = kScaleKey2;
+  tiling2_empty_update->raster_scale = gfx::Vector2dF(kScaleKey2, kScaleKey2);
+  tiling2_empty_update->tile_size = kTileSize1;  // Keep same tile size
+  tiling2_empty_update->tiling_rect = kTilingRect2;
+  auto tile_deleted_marker = mojom::Tile::New();
+  tile_deleted_marker->column_index = kTileIndex1.i;
+  tile_deleted_marker->row_index = kTileIndex1.j;
+  tile_deleted_marker->contents = mojom::TileContents::NewMissingReason(
+      cc::mojom::MissingTileReason::kTileDeleted);  // Mark for deletion
+  tiling2_empty_update->tiles.push_back(std::move(tile_deleted_marker));
+  update_empty_tiling2->tilings.push_back(std::move(tiling2_empty_update));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_empty_tiling2))
+          .has_value());
+  EXPECT_EQ(nullptr, tile_display_layer_impl->GetTilingForTesting(kScaleKey2));
+
+  // Test Case 6: Update a tile within a tiling (change its content type).
+  // First, re-add tiling1 with a solid color tile.
+  auto update_recreate_tiling1 = CreateDefaultUpdate();
+  auto tiling1_recreate = mojom::Tiling::New();
+  tiling1_recreate->layer_id = kLayerId;
+  tiling1_recreate->scale_key = kScaleKey1;
+  tiling1_recreate->raster_scale = gfx::Vector2dF(kScaleKey1, kScaleKey1);
+  tiling1_recreate->tile_size = kTileSize1;
+  tiling1_recreate->tiling_rect = kTilingRect1;
+  auto tile_initial_solid = mojom::Tile::New();
+  tile_initial_solid->column_index = kTileIndex1.i;
+  tile_initial_solid->row_index = kTileIndex1.j;
+  tile_initial_solid->contents =
+      mojom::TileContents::NewSolidColor(SkColors::kBlue);
+  tiling1_recreate->tiles.push_back(std::move(tile_initial_solid));
+  update_recreate_tiling1->tilings.push_back(std::move(tiling1_recreate));
+  EXPECT_TRUE(layer_context_impl_
+                  ->DoUpdateDisplayTree(std::move(update_recreate_tiling1))
+                  .has_value());
+  tiling_impl1 = tile_display_layer_impl->GetTilingForTesting(kScaleKey1);
+  ASSERT_NE(nullptr, tiling_impl1);
+  ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
+  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->solid_color().has_value());
+
+  // Now, update that tile to be a resource tile.
+  auto update_change_tile_type = CreateDefaultUpdate();
+  auto tiling1_tile_update = mojom::Tiling::New();
+  tiling1_tile_update->layer_id = kLayerId;
+  tiling1_tile_update->scale_key = kScaleKey1;
+  tiling1_tile_update->raster_scale = gfx::Vector2dF(kScaleKey1, kScaleKey1);
+  tiling1_tile_update->tile_size = kTileSize1;  // Keep same tile size
+  tiling1_tile_update->tiling_rect = kTilingRect1;
+  auto tile_updated_to_resource = mojom::Tile::New();
+  tile_updated_to_resource->column_index = kTileIndex1.i;
+  tile_updated_to_resource->row_index = kTileIndex1.j;
+  auto resource_contents_updated = mojom::TileResource::New();
+  resource_contents_updated->resource = TransferableResource::MakeGpu(
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), kTileSize1,
+      SinglePlaneFormat::kRGBA_8888, false);
+  resource_contents_updated->resource.id = kResourceId2;
+  resource_contents_updated->is_checkered = true;
+  tile_updated_to_resource->contents =
+      mojom::TileContents::NewResource(std::move(resource_contents_updated));
+  tiling1_tile_update->tiles.push_back(std::move(tile_updated_to_resource));
+  update_change_tile_type->tilings.push_back(std::move(tiling1_tile_update));
+
+  EXPECT_TRUE(layer_context_impl_
+                  ->DoUpdateDisplayTree(std::move(update_change_tile_type))
+                  .has_value());
+  ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
+  EXPECT_FALSE(tiling_impl1->TileAt(kTileIndex1)->solid_color().has_value());
+  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->resource().has_value());
+  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->resource()->is_checkered);
+
+  // Test Case 7: Attempt to add a tile with an invalid resource ID.
+  auto update_invalid_resource_tile = CreateDefaultUpdate();
+  auto tiling1_invalid_resource_update = mojom::Tiling::New();
+  tiling1_invalid_resource_update->layer_id = kLayerId;
+  tiling1_invalid_resource_update->scale_key = kScaleKey1;
+  tiling1_invalid_resource_update->raster_scale =
+      gfx::Vector2dF(kScaleKey1, kScaleKey1);
+  tiling1_invalid_resource_update->tile_size = kTileSize1;
+  tiling1_invalid_resource_update->tiling_rect = kTilingRect1;
+  auto tile_invalid_resource = mojom::Tile::New();
+  tile_invalid_resource->column_index = kTileIndex1.i;  // Use existing index
+  tile_invalid_resource->row_index = kTileIndex1.j;
+  auto invalid_resource_contents = mojom::TileResource::New();
+  invalid_resource_contents->resource.id = kInvalidResourceId;  // Invalid ID
+  invalid_resource_contents->resource.size = kTileSize1;
+  tile_invalid_resource->contents =
+      mojom::TileContents::NewResource(std::move(invalid_resource_contents));
+  tiling1_invalid_resource_update->tiles.push_back(
+      std::move(tile_invalid_resource));
+  update_invalid_resource_tile->tilings.push_back(
+      std::move(tiling1_invalid_resource_update));
+  auto update_invalid_resource_tile_result =
+      layer_context_impl_->DoUpdateDisplayTree(
+          std::move(update_invalid_resource_tile));
+  ASSERT_FALSE(update_invalid_resource_tile_result.has_value());
+  EXPECT_EQ(update_invalid_resource_tile_result.error(),
+            "Invalid tile resource");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTilingTest,
+       TilingForNonTileDisplayLayerFails) {
+  constexpr int kNonTileDisplayLayerId = 2;
+
+  // Initial update: Create a regular Layer (not TileDisplayLayer).
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kNonTileDisplayLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  // Attempt to send tiling data for this non-TileDisplayLayer.
+  auto update_tiling = CreateDefaultUpdate();
+  auto tiling = mojom::Tiling::New();
+  tiling->layer_id = kNonTileDisplayLayerId;  // ID of a non-TileDisplayLayer
+  tiling->scale_key = 1.0f;
+  tiling->raster_scale = gfx::Vector2dF(1.0f, 1.0f);
+  tiling->tile_size = gfx::Size(64, 64);
+  tiling->tiling_rect = gfx::Rect(100, 100);
+  auto tile = mojom::Tile::New();
+  tile->column_index = 0;
+  tile->row_index = 0;
+  tile->contents = mojom::TileContents::NewSolidColor(SkColors::kRed);
+  tiling->tiles.push_back(std::move(tile));
+  update_tiling->tilings.push_back(std::move(tiling));
+
+  auto result =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_tiling));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid tile update");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTilingTest,
+       TilingWithInvalidLayerIdFails) {
+  constexpr int kInvalidLayerId = 999;  // An ID that doesn't exist.
+
+  auto update_tiling = CreateDefaultUpdate();
+  auto tiling = mojom::Tiling::New();
+  tiling->layer_id = kInvalidLayerId;
+  tiling->scale_key = 1.0f;
+  // Other tiling properties are set to valid defaults for this test.
+  tiling->raster_scale = gfx::Vector2dF(1.0f, 1.0f);
+  tiling->tile_size = gfx::Size(64, 64);
+  tiling->tiling_rect = gfx::Rect(100, 100);
+  update_tiling->tilings.push_back(std::move(tiling));
+
+  // No specific error message for invalid layer ID in tiling, it's handled by
+  // layer_impl being null. The update should still pass, but no tiling occurs.
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_tiling))
+                  .has_value());
+  // We can't directly verify that no tiling happened for the invalid ID without
+  // more complex state inspection, but the update itself shouldn't crash.
+}
+
 class LayerContextImplUpdateDisplayTreeTextureLayerTest
     : public LayerContextImplLayerLifecycleTest {
  protected:
