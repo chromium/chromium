@@ -23,7 +23,7 @@ export function createAutocompleteMatch(): AutocompleteMatch {
     inlineAutocompletion: {data: []},
     fillIntoEdit: {data: []},
     iconPath: '',
-    iconUrl: '',
+    iconUrl: {url: ''},
     imageDominantColor: '',
     imageUrl: '',
     removeButtonA11yLabel: {data: []},

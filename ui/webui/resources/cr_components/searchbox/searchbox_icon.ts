@@ -129,7 +129,7 @@ export class SearchboxIconElement extends PolymerElement {
 
       iconSrc_: {
         type: String,
-        computed: `computeIconSrc_(match.iconUrl, match)`,
+        computed: `computeIconSrc_(match.iconUrl.url, match)`,
         observer: 'onIconSrcChanged_',
       },
 
@@ -148,7 +148,7 @@ export class SearchboxIconElement extends PolymerElement {
        */
       showIconImg_: {
         type: Boolean,
-        computed: `computeShowIconImg_(isLensSearchbox_, match.iconUrl,
+        computed: `computeShowIconImg_(isLensSearchbox_, match.iconUrl.url,
             match, iconLoading_)`,
       },
 
@@ -238,7 +238,7 @@ export class SearchboxIconElement extends PolymerElement {
 
   private computeShowIconImg_(): boolean {
     // Lens searchbox should not use icon URL.
-    return !this.isLensSearchbox_ && this.match && !!this.match.iconUrl &&
+    return !this.isLensSearchbox_ && this.match && !!this.match.iconUrl.url &&
         !this.iconLoading_;
   }
 
@@ -316,7 +316,7 @@ export class SearchboxIconElement extends PolymerElement {
   }
 
   private computeIconSrc_(): string {
-    return this.computeSrc_(this.match?.iconUrl);
+    return this.computeSrc_(this.match?.iconUrl?.url);
   }
 
   private computeImageSrc_(): string {

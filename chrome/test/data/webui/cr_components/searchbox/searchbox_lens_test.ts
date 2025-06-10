@@ -36,7 +36,7 @@ function createAutocompleteMatch(): AutocompleteMatch {
     inlineAutocompletion: stringToMojoString16(''),
     fillIntoEdit: stringToMojoString16(''),
     iconPath: '',
-    iconUrl: '',
+    iconUrl: {url: ''},
     imageDominantColor: '',
     imageUrl: '',
     removeButtonA11yLabel: stringToMojoString16(''),

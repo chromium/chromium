@@ -51,8 +51,7 @@ struct AutocompleteMatch {
   string icon_path;
   // The url for the suggestion icon. |icon_url| is an external url or
   // a data URI.
-  //TODO(crbug.com/422559532): Use url.mojom.Url instead.
-  string icon_url;
+  url.mojom.Url icon_url;
   // Used to paint a placeholder while fetching |image_url|. These two fields
   // are valid for entity suggestions only. Entity suggestions have a |type| of
   // 'search-suggest-entity'.
