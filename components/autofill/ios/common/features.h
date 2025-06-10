@@ -41,6 +41,10 @@ BASE_DECLARE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput);
 // enabled.
 BASE_DECLARE_FEATURE(kAutofillFixXhrForXframe);
 
+// Listen to form submission events in capture mode before the events are
+// propagated.
+BASE_DECLARE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode);
+
 // Controls whether to use the isolated content world instead of the page
 // content world for the Autofill JS feature scripts.
 // TODO(crbug.com/40747550) Remove once the isolated content world is launched

@@ -4,6 +4,7 @@
 
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 
+#import "base/feature_list.h"
 #import "base/no_destructor.h"
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -14,6 +15,7 @@
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
@@ -29,10 +31,23 @@ constexpr char kScriptMessageName[] = "FormHandlersMessage";
 std::vector<web::JavaScriptFeature::FeatureScript> GetFeatureScripts() {
   std::vector<FeatureScript> feature_scripts;
 
+  auto placeholder_replacements_callback = base::BindRepeating(
+      []() -> web::JavaScriptFeature::FeatureScript::PlaceholderReplacements {
+        // Override the placeholder for setting the capture mode of the form
+        // submission listener.
+        bool use_capture = base::FeatureList::IsEnabled(
+            kAutofillFormSubmissionEventsInCaptureMode);
+        return @{
+          @"{{PlaceholderFormSubmissionListenerCapture}}" :
+                  use_capture ? @"true" : @"false"
+        };
+      });
+
   feature_scripts.push_back(FeatureScript::CreateWithFilename(
       kFormHandlerScriptName, FeatureScript::InjectionTime::kDocumentStart,
       FeatureScript::TargetFrames::kAllFrames,
-      FeatureScript::ReinjectionBehavior::kReinjectOnDocumentRecreation));
+      FeatureScript::ReinjectionBehavior::kReinjectOnDocumentRecreation,
+      placeholder_replacements_callback));
 
   if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
     feature_scripts.push_back(FeatureScript::CreateWithFilename(

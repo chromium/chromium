@@ -11,8 +11,10 @@ The page can be adapted to different scenarios based on the following URL query
 parameters:
  * preventDefault: When set, will use the form submission variant that prevents
      default for form submission. You only need to put the key, no value needed.
- * redirectWhenDefaultPrevented: When set, will redirect to another page when
-     the form submission is preventDefault()ed.
+ * redirectWhenSubmissionPrevented: When set, will redirect to another page when
+     the form submission is prevented via the available methods.
+ * stopImmediatePropagation: When set, will stop the propagation of the form
+     submit event in any direction.
 -->
 
 <!DOCTYPE html>
@@ -48,17 +50,29 @@ parameters:
     const queryParams = Object.fromEntries(
       new URLSearchParams(window.location.search));
 
+    const preventDefault = queryParams.hasOwnProperty('preventDefault');
+    const stopImmediatePropagation = queryParams.hasOwnProperty('stopImmediatePropagation');
+    const redirectWhenSubmissionPrevented = queryParams.hasOwnProperty('redirectWhenSubmissionPrevented')
+
     // Use the variant that prevents default submission if specified in the
     // URL query.
-    if (queryParams.hasOwnProperty('preventDefault')) {
-      // Add a "submit" event listener that takes over submission and prevents
-      // the browser from handling submission through the regular flow.
+    if (preventDefault || stopImmediatePropagation) {
+      // Add a "submit" event listener that takes over submission and could
+      // prevent the browser from handling submission through the regular flow.
       const form = document.forms[0];
       form.addEventListener('submit', (e) => {
-        // Prevent default for other listeners so the the Autofill listener will
-        // read the event with the defaultPrevented bit set to true.
-        e.preventDefault();
-        if (queryParams.hasOwnProperty('redirectWhenDefaultPrevented')) {
+        if (preventDefault) {
+          // Prevent default for other listeners so the the Autofill listener
+          // will read the event with the defaultPrevented bit set to true.
+          e.preventDefault();
+        }
+        if (stopImmediatePropagation) {
+          // Stop propagation for any other listener that follows up this one,
+          // regardless of how they are situated in the DOM which defacto
+          // includes the Autofill listener if it is not set in capture mode.
+          e.stopImmediatePropagation();
+        }
+        if (redirectWhenSubmissionPrevented) {
           // Emulate a post-submit navigation that happens slightly after
           // propagating the "submit" event, when enabled.
           setTimeout(() => window.location = '/destination.html', 10);
