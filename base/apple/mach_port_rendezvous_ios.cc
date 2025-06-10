@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/apple/scoped_mach_port.h"
+#include "base/check_op.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/numerics/byte_conversions.h"
