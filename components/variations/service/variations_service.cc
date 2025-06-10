@@ -955,6 +955,10 @@ bool VariationsService::CallMaybeRetryOverHTTPForTesting() {
   return MaybeRetryOverHTTP();
 }
 
+void VariationsService::RecordSuccessfulFetchNewSeed() {
+  safe_seed_manager_.RecordSuccessfulFetch(field_trial_creator_.seed_store());
+}
+
 void VariationsService::RecordSuccessfulFetchSeedNotModified(
     base::Time response_date) {
   // Update the client-side fetch time to the current time.
@@ -968,10 +972,6 @@ void VariationsService::RecordSuccessfulFetchSeedNotModified(
   // modify the latest seed's date.
   field_trial_creator_.seed_store()->UpdateSeedDateAndLogDayChange(
       response_date);
-}
-
-void VariationsService::RecordSuccessfulFetchNewSeed() {
-  safe_seed_manager_.RecordSuccessfulFetch(field_trial_creator_.seed_store());
 }
 
 VariationsSeedStore* VariationsService::GetSeedStoreForTesting() {

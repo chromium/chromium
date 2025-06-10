@@ -183,7 +183,8 @@ StoredSeed SeedReaderWriter::GetSeedData() const {
         .signature = local_state_->GetString(fields_prefs_->signature),
         .milestone = local_state_->GetInteger(fields_prefs_->milestone),
         .seed_date = local_state_->GetTime(fields_prefs_->seed_date),
-        .client_fetch_time = local_state_->GetTime(fields_prefs_->client_fetch_time),
+        .client_fetch_time =
+            local_state_->GetTime(fields_prefs_->client_fetch_time),
     };
   }
 }
@@ -195,8 +196,7 @@ void SeedReaderWriter::SetTimerForTesting(base::OneShotTimer* timer_override) {
   }
 }
 
-void SeedReaderWriter::SetSeedDate(
-    base::Time server_date_fetched) {
+void SeedReaderWriter::SetSeedDate(base::Time server_date_fetched) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Both groups write the seed date to local state.
   // TODO(crbug.com/380465790): Update seed date in seed files instead of local
@@ -264,7 +264,8 @@ void SeedReaderWriter::ScheduleSeedFileWrite(ValidatedSeedInfo seed_info) {
   local_state_->SetString(fields_prefs_->signature, seed_info_.signature);
   local_state_->SetInteger(fields_prefs_->milestone, seed_info_.milestone);
   local_state_->SetTime(fields_prefs_->seed_date, seed_info_.seed_date);
-  local_state_->SetTime(fields_prefs_->client_fetch_time, seed_info_.client_fetch_time);
+  local_state_->SetTime(fields_prefs_->client_fetch_time,
+                        seed_info_.client_fetch_time);
 }
 
 void SeedReaderWriter::ScheduleSeedFileClear() {
@@ -321,7 +322,8 @@ void SeedReaderWriter::ReadSeedFile() {
     seed_info_.signature = local_state_->GetString(fields_prefs_->signature);
     seed_info_.milestone = local_state_->GetInteger(fields_prefs_->milestone);
     seed_info_.seed_date = local_state_->GetTime(fields_prefs_->seed_date);
-    seed_info_.client_fetch_time = local_state_->GetTime(fields_prefs_->client_fetch_time);
+    seed_info_.client_fetch_time =
+        local_state_->GetTime(fields_prefs_->client_fetch_time);
   } else {
     // Export seed data from Local State to a seed file in the following cases.
     // 1. Seed file does not exist because this is the first run. For Windows,
@@ -338,7 +340,8 @@ void SeedReaderWriter::ReadSeedFile() {
           .signature = local_state_->GetString(fields_prefs_->signature),
           .milestone = local_state_->GetInteger(fields_prefs_->milestone),
           .seed_date = local_state_->GetTime(fields_prefs_->seed_date),
-          .client_fetch_time = local_state_->GetTime(fields_prefs_->client_fetch_time),
+          .client_fetch_time =
+              local_state_->GetTime(fields_prefs_->client_fetch_time),
       });
 
       // Record whether empty data is written to the seed file. This can happen
@@ -373,7 +376,8 @@ void SeedReaderWriter::ScheduleLocalStateWrite(ValidatedSeedInfo seed_info) {
   local_state_->SetString(fields_prefs_->signature, seed_info.signature);
   local_state_->SetInteger(fields_prefs_->milestone, seed_info.milestone);
   local_state_->SetTime(fields_prefs_->seed_date, seed_info.seed_date);
-  local_state_->SetTime(fields_prefs_->client_fetch_time, seed_info.client_fetch_time);
+  local_state_->SetTime(fields_prefs_->client_fetch_time,
+                        seed_info.client_fetch_time);
 }
 
 bool SeedReaderWriter::ShouldUseSeedFile() const {
