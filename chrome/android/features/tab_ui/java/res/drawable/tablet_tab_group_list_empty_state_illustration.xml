@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:autoMirrored="true"
+    android:width="130dp"
+    android:height="130dp"
+    android:viewportWidth="130"
+    android:viewportHeight="130">
+  <path
+      android:pathData="M21,96L21,34A8,8 0,0 1,29 26L101,26A8,8 0,0 1,109 34L109,96A8,8 0,0 1,101 104L29,104A8,8 0,0 1,21 96z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_group"/>
+  <path
+      android:pathData="M103,94L103,42A4,4 47.27,0 0,99 38L31,38A4,4 47.27,0 0,27 42L27,94A4,4 134.6,0 0,31 98L99,98A4,4 134.6,0 0,103 94z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_container"/>
+  <path
+      android:pathData="M99,90L99,74A4,4 134.6,0 0,95 70L71,70A4,4 134.6,0 0,67 74L67,90A4,4 134.6,0 0,71 94L95,94A4,4 134.6,0 0,99 90z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_outline"/>
+  <path
+      android:pathData="M63,90L63,74A4,4 47.27,0 0,59 70L35,70A4,4 47.27,0 0,31 74L31,90A4,4 47.27,0 0,35 94L59,94A4,4 47.27,0 0,63 90z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_outline"/>
+  <path
+      android:pathData="M63,62L63,46A4,4 131.96,0 0,59 42L35,42A4,4 131.96,0 0,31 46L31,62A4,4 131.96,0 0,35 66L59,66A4,4 131.96,0 0,63 62z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_outline"/>
+  <path
+      android:pathData="M99,62L99,46A4,4 47.27,0 0,95 42L71,42A4,4 47.27,0 0,67 46L67,62A4,4 47.27,0 0,71 66L95,66A4,4 47.27,0 0,99 62z"
+      android:fillColor="@color/empty_state_asset_bg_color_empty_tab_fill"/>
+  <path
+      android:pathData="M95,89L95,75A1,1 134.61,0 0,94 74L72,74A1,1 134.61,0 0,71 75L71,89A1,1 134.8,0 0,72 90L94,90A1,1 134.61,0 0,95 89z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_group"/>
+  <path
+      android:pathData="M105,56L105,40A4,4 47.27,0 0,101 36L77,36A4,4 47.27,0 0,73 40L73,56A4,4 47.27,0 0,77 60L101,60A4,4 47.27,0 0,105 56z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_outline"/>
+  <path
+      android:pathData="M101,55L101,41A1,1 0,0 0,100 40L78,40A1,1 0,0 0,77 41L77,55A1,1 134.48,0 0,78 56L100,56A1,1 0,0 0,101 55z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_group"/>
+  <path
+      android:pathData="M59,89L59,75A1,1 0,0 0,58 74L36,74A1,1 134.48,0 0,35 75L35,89A1,1 134.8,0 0,36 90L58,90A1,1 0,0 0,59 89z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_group"/>
+  <path
+      android:pathData="M59,61L59,47A1,1 0,0 0,58 46L36,46A1,1 134.6,0 0,35 47L35,61A1,1 134.48,0 0,36 62L58,62A1,1 134.61,0 0,59 61z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_group"/>
+  <path
+      android:pathData="M31,32m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_outline"/>
+  <path
+      android:pathData="M36,31L55,31A1,1 0,0 1,56 32L56,32A1,1 0,0 1,55 33L36,33A1,1 0,0 1,35 32L35,32A1,1 0,0 1,36 31z"
+      android:fillColor="@color/empty_state_asset_bg_color_tab_outline"/>
+</vector>
