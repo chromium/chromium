@@ -23,6 +23,7 @@ source_set("test_support") {
     "//components/enterprise/common/proto:connectors_proto",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
+    "//components/policy/test_support",
     "//testing/gmock",
   ]
 

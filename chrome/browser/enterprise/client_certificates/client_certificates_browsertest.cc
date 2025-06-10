@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
+#include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,6 +25,7 @@
 #include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/x509_certificate.h"
@@ -75,6 +77,12 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
 
   void SetUpInProcessBrowserTestFixture() override {
     test_dm_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
+
+    if (!is_profile_scenario()) {
+      test_dm_server_->client_storage()->RegisterClient(
+          enterprise::test::CreateBrowserClientInfo());
+    }
+
     ASSERT_TRUE(test_dm_server_->Start());
 
     policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();

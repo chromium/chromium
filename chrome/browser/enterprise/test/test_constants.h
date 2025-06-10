@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_TEST_TEST_CONSTANTS_H_
 #define CHROME_BROWSER_ENTERPRISE_TEST_TEST_CONSTANTS_H_
 
+#include "components/policy/test_support/client_storage.h"
+
 namespace enterprise::test {
 
 extern const char kFakeCustomerId[];
@@ -23,6 +25,8 @@ extern const char kDeviceDmToken[];
 extern const char kDeviceClientId[];
 
 extern const char kEnrollmentToken[];
+
+policy::ClientStorage::ClientInfo CreateBrowserClientInfo();
 
 }  // namespace enterprise::test
 
