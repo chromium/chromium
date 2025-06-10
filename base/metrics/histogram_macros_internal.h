@@ -28,16 +28,16 @@ namespace base::internal {
 template <typename Enum>
   requires(std::is_enum_v<Enum>)
 struct EnumSizeTraits {
-  static constexpr Enum Count() {
+  static constexpr uintmax_t Count() {
     if constexpr (requires { Enum::kMaxValue; }) {
       // Since the UMA histogram macros expect a value one larger than the max
       // defined enumerator value, add one.
-      return static_cast<Enum>(base::to_underlying(Enum::kMaxValue) + 1);
+      return static_cast<uintmax_t>(base::to_underlying(Enum::kMaxValue) + 1);
     } else {
       static_assert(
           sizeof(Enum) == 0,
           "enumerator must define kMaxValue enumerator to use this macro!");
-      return Enum();
+      return 0;
     }
   }
 };
