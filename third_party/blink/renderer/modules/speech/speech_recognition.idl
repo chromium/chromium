@@ -49,7 +49,7 @@ dictionary SpeechRecognitionOptions {
     LegacyWindowAlias=webkitSpeechRecognition,
     LegacyWindowAlias_Measure,
     LegacyWindowAlias_RuntimeEnabled=ScriptedSpeechRecognition,
-    LegacyNoInterfaceObject
+    Exposed=Window, RuntimeEnabled=UnprefixedSpeechRecognition
 ] interface SpeechRecognition : EventTarget {
     [CallWith=ExecutionContext, Measure] constructor();
     // recognition parameters

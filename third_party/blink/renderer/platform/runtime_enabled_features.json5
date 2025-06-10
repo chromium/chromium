@@ -5098,6 +5098,11 @@
     {
       name: "UnexposedTaskIds",
     },
+    // This is a kill switch for the unprefixed Web Speech API.
+    {
+      name: "UnprefixedSpeechRecognition",
+      status: "stable",
+    },
     {
       name: "UnrestrictedMeasureUserAgentSpecificMemory",
     },
@@ -5645,6 +5650,7 @@
     },
     {
       name: "WebSpeechRecognitionContext",
+      status: "experimental",
     },
     {
       name: "WebTransportCustomCertificates",

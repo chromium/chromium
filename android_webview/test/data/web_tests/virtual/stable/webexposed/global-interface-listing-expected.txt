@@ -8537,6 +8537,69 @@ interface SourceBufferList : EventTarget
     method constructor
     setter onaddsourcebuffer
     setter onremovesourcebuffer
+interface SpeechGrammar
+    attribute @@toStringTag
+    getter src
+    getter weight
+    method constructor
+    setter src
+    setter weight
+interface SpeechGrammarList
+    attribute @@toStringTag
+    getter length
+    method @@iterator
+    method addFromString
+    method addFromUri
+    method constructor
+    method item
+interface SpeechRecognition : EventTarget
+    attribute @@toStringTag
+    getter continuous
+    getter grammars
+    getter interimResults
+    getter lang
+    getter maxAlternatives
+    getter onaudioend
+    getter onaudiostart
+    getter onend
+    getter onerror
+    getter onnomatch
+    getter onresult
+    getter onsoundend
+    getter onsoundstart
+    getter onspeechend
+    getter onspeechstart
+    getter onstart
+    method abort
+    method constructor
+    method start
+    method stop
+    setter continuous
+    setter grammars
+    setter interimResults
+    setter lang
+    setter maxAlternatives
+    setter onaudioend
+    setter onaudiostart
+    setter onend
+    setter onerror
+    setter onnomatch
+    setter onresult
+    setter onsoundend
+    setter onsoundstart
+    setter onspeechend
+    setter onspeechstart
+    setter onstart
+interface SpeechRecognitionErrorEvent : Event
+    attribute @@toStringTag
+    getter error
+    getter message
+    method constructor
+interface SpeechRecognitionEvent : Event
+    attribute @@toStringTag
+    getter resultIndex
+    getter results
+    method constructor
 interface StaticRange : AbstractRange
     attribute @@toStringTag
     method constructor
@@ -10853,6 +10916,7 @@ interface webkitSpeechGrammar
     attribute @@toStringTag
     getter src
     getter weight
+    method constructor
     setter src
     setter weight
 interface webkitSpeechGrammarList
@@ -10861,6 +10925,7 @@ interface webkitSpeechGrammarList
     method @@iterator
     method addFromString
     method addFromUri
+    method constructor
     method item
 interface webkitSpeechRecognition : EventTarget
     attribute @@toStringTag
@@ -10881,6 +10946,7 @@ interface webkitSpeechRecognition : EventTarget
     getter onspeechstart
     getter onstart
     method abort
+    method constructor
     method start
     method stop
     setter continuous
@@ -10903,10 +10969,12 @@ interface webkitSpeechRecognitionError : Event
     attribute @@toStringTag
     getter error
     getter message
+    method constructor
 interface webkitSpeechRecognitionEvent : Event
     attribute @@toStringTag
     getter resultIndex
     getter results
+    method constructor
 interface webkitURL
     static method canParse
     static method createObjectURL
