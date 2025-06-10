@@ -198,7 +198,7 @@ bool CanvasRenderingContext2D::IsComposited() const {
   if (settings && !settings->GetAcceleratedCompositingEnabled()) {
     return false;
   }
-  return element->IsComposited();
+  return element->IsCompositedForCanvas2D();
 }
 
 void CanvasRenderingContext2D::Stop() {
@@ -828,7 +828,7 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
       constexpr unsigned kMaxCanvasAnimationBacklog = 2;
       if (host->IncrementFramesSinceLastCommit() >=
           static_cast<int>(kMaxCanvasAnimationBacklog)) {
-        if (host->IsComposited() && !host->RateLimiter()) {
+        if (host->IsCompositedForCanvas2D() && !host->RateLimiter()) {
           host->CreateRateLimiter();
         }
       }

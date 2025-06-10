@@ -955,7 +955,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
     if (dirty_rect_.IsEmpty())
       return;
 
-    if (cc_layer_ && IsComposited()) {
+    if (cc_layer_ && IsCompositedForCanvas2D()) {
       cc_layer_->SetNeedsDisplayRect(gfx::ToEnclosingRect(invalidation_rect));
     }
   }
@@ -1550,16 +1550,18 @@ void HTMLCanvasElement::CollectStyleForPresentationAttribute(
   }
 }
 
-bool HTMLCanvasElement::IsComposited() const {
+bool HTMLCanvasElement::IsCompositedForCanvas2D() const {
+  CHECK(IsRenderingContext2D());
+
   if (IsHibernating()) {
     return false;
   }
 
-  if (!ResourceProvider()) [[unlikely]] {
+  if (!GetResourceProviderForCanvas2D()) [[unlikely]] {
     return false;
   }
 
-  return ResourceProvider()->SupportsDirectCompositing() &&
+  return GetResourceProviderForCanvas2D()->SupportsDirectCompositing() &&
          !LowLatencyEnabled();
 }
 
@@ -1755,7 +1757,7 @@ void HTMLCanvasElement::SetIsDisplayed(bool displayed) {
 cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerForCanvas2DIfNeeded() {
   CHECK(IsRenderingContext2D());
 
-  if (!IsComposited()) {
+  if (!IsCompositedForCanvas2D()) {
     return nullptr;
   }
   if (!cc_layer_) [[unlikely]] {

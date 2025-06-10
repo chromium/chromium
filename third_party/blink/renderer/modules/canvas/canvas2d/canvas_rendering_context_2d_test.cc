@@ -1753,7 +1753,7 @@ TEST_P(CanvasRenderingContext2DTest,
 
   // Draw to the canvas and verify that the canvas is composited.
   Context2D()->fillRect(0, 0, 1, 1);
-  EXPECT_TRUE(CanvasElement().IsComposited());
+  EXPECT_TRUE(CanvasElement().IsCompositedForCanvas2D());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
@@ -1775,7 +1775,7 @@ TEST_P(CanvasRenderingContext2DTest,
 
   // Draw to the canvas and verify that the canvas is not composited.
   Context2D()->fillRect(0, 0, 1, 1);
-  EXPECT_FALSE(CanvasElement().IsComposited());
+  EXPECT_FALSE(CanvasElement().IsCompositedForCanvas2D());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
