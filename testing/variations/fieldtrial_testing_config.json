@@ -13277,6 +13277,25 @@
             ]
         }
     ],
+    "KeepDefaultSearchEngineAlive": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledDSEKeepAlive",
+                    "enable_features": [
+                        "KeepDefaultSearchEngineRendererAlive",
+                        "TrackEmptyRendererProcessesForReuse"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyboardAccessoryAddressIPH": [
         {
             "platforms": [
