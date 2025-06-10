@@ -225,6 +225,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     protected abstract void openTabProgrammatically(GURL url, int index);
 
+    @CalledByNative
+    protected abstract Tab[] getAllTabs();
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

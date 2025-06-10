@@ -32,6 +32,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.Journeys;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.url.GURL;
 
@@ -186,8 +187,8 @@ public class TabModelImplTest {
     public void testOpenTabProgrammatically() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModelImpl tabModel =
-                            (TabModelImpl)
+                    TabModelJniBridge tabModel =
+                            (TabModelJniBridge)
                                     mActivityTestRule
                                             .getActivity()
                                             .getTabModelSelector()
@@ -201,6 +202,27 @@ public class TabModelImplTest {
                     Tab tab = tabModel.getTabAt(0);
                     assertNotNull(tab);
                     assertEquals(url, tab.getUrl());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAllTabs() {
+        RegularNewTabPageStation secondTab = mPage.openNewTabFast();
+        secondTab.openNewTabFast();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelJniBridge tabModel =
+                            (TabModelJniBridge)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelSelector()
+                                            .getModel(false);
+
+                    assertEquals(3, tabModel.getCount());
+                    Tab[] tabs = tabModel.getAllTabs();
+                    assertEquals(3, tabs.length);
                 });
     }
 }

@@ -1144,6 +1144,12 @@ public class TabModelImpl extends TabModelJniBridge {
                         index);
     }
 
+    @Override
+    public Tab[] getAllTabs() {
+        Tab[] tabs = new Tab[mTabs.size()];
+        return mTabs.toArray(tabs);
+    }
+
     @VisibleForTesting
     List<Tab> getTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
         List<Tab> tabList = new ArrayList<>();
