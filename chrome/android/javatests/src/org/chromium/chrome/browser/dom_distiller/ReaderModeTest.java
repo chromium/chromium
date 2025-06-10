@@ -263,6 +263,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/423827873")
     public void testPreferenceInCct() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
