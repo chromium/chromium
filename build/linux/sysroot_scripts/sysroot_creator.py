@@ -415,6 +415,12 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     replace_in_file(features_h, r"(#\s?define\s+__GLIBC_USE_C23_STRTOL)",
                     r"\1 0 //")
 
+    # riscv_hwprobe requires glibc >= 2.40
+    if arch == "riscv64":
+        os.remove(
+            os.path.join(install_root, "usr", "include", "riscv64-linux-gnu",
+                         "sys", "hwprobe.h"))
+
     # fcntl64() was introduced in glibc 2.28. Make sure to use fcntl() instead.
     fcntl_h = os.path.join(install_root, "usr", "include", "fcntl.h")
     replace_in_file(
