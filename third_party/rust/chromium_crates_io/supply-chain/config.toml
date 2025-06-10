@@ -380,16 +380,16 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."synstructure:0.13.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."temporal_capi:0.0.9"]
+[policy."temporal_capi:0.0.8"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."temporal_rs:0.0.9"]
+[policy."temporal_rs:0.0.8"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."termcolor:1.4.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."timezone_provider:0.0.9"]
+[policy."timezone_provider:0.0.8"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."tinystr:0.8.1"]
