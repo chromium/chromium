@@ -28,7 +28,10 @@ static_library("test_support") {
     "//testing/gtest",
   ]
   if (is_android) {
-    sources += [ "android/supervised_user_settings_test_bridge.cc" ]
+    sources += [
+      "android/supervised_user_preferences_test_bridge.cc",
+      "android/supervised_user_settings_test_bridge.cc",
+    ]
     deps += [
       ":test_support_jni_headers",
       "//components/signin/public/identity_manager:test_support",
@@ -131,13 +134,19 @@ if (is_android) {
 
   generate_jni("test_support_jni_headers") {
     testonly = true
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestBridge.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserPreferencesTestBridge.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestBridge.java",
+    ]
   }
 
   android_library("test_support_java") {
     testonly = true
     srcjar_deps = [ ":test_support_jni_headers" ]
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestBridge.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserPreferencesTestBridge.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestBridge.java",
+    ]
     deps = [
       ":test_support_jni_headers",
       "//build/android:build_java",
@@ -153,7 +162,7 @@ if (is_android) {
     testonly = true
     resources_package = "org.chromium.chrome.browser.supervised_user"
     sources = [
-      "android/javatests/src/org/chromium/chrome/browser/supervised_user/IncognitoSignInInteractionTest.java",
+      "android/javatests/src/org/chromium/chrome/browser/supervised_user/IncognitoInteractionTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/SupervisedUserCriticalJourneysIntegrationTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestUtils.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalNativesTest.java",
