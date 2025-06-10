@@ -42,6 +42,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
@@ -62,7 +63,6 @@
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -120,22 +120,6 @@
 using syncer::SyncServiceImpl;
 
 namespace {
-
-void SetURLLoaderFactoryForTest(
-    Profile* profile,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  ChromeSigninClient* signin_client = static_cast<ChromeSigninClient*>(
-      ChromeSigninClientFactory::GetForProfile(profile));
-  signin_client->SetURLLoaderFactoryForTest(url_loader_factory);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ash::AccountManagerFactory* factory =
-      g_browser_process->platform_part()->GetAccountManagerFactory();
-  account_manager::AccountManager* account_manager =
-      factory->GetAccountManager(profile->GetPath().value());
-  account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
 
 // A small ChromeBrowserMainExtraParts that invokes a callback when threads are
 // ready.
@@ -306,6 +290,10 @@ base::FilePath SyncTest::GetProfileBaseName(int index) {
 }
 
 void SyncTest::PostCreateThreads() {
+  CHECK(g_browser_process);
+  CHECK(g_browser_process->profile_manager());
+  profile_manager_observation_.Observe(g_browser_process->profile_manager());
+
   switch (server_type_) {
     case EXTERNAL_LIVE_SERVER: {
       // Allows google.com as well as country-specific TLDs.
@@ -369,10 +357,6 @@ bool SyncTest::CreateProfile(int index) {
 #else   // BUILDFLAG(IS_ANDROID)
   Profile* profile =
       g_browser_process->profile_manager()->GetProfile(profile_path);
-
-  if (server_type_ != EXTERNAL_LIVE_SERVER) {
-    SetupMockGaiaResponsesForProfile(profile);
-  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   InitializeProfile(index, profile);
@@ -607,11 +591,6 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
 }
 
-void SyncTest::SetupMockGaiaResponsesForProfile(Profile* profile) {
-  SetURLLoaderFactoryForTest(profile,
-                             test_url_loader_factory_.GetSafeWeakWrapper());
-}
-
 bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
                                  SyncTestAccount account) {
   // Create sync profiles and clients if they haven't already been created.
@@ -817,14 +796,6 @@ void SyncTest::TearDownOnMainThread() {
   PlatformBrowserTest::TearDownOnMainThread();
 }
 
-void SyncTest::SetUpInProcessBrowserTestFixture() {
-  create_services_subscription_ =
-      BrowserContextDependencyManager::GetInstance()
-          ->RegisterCreateServicesCallbackForTesting(
-              base::BindRepeating(&SyncTest::OnWillCreateBrowserContextServices,
-                                  base::Unretained(this)));
-}
-
 void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
   profile->RemoveObserver(this);
 
@@ -849,8 +820,27 @@ void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
   }
 }
 
-void SyncTest::OnWillCreateBrowserContextServices(
-    content::BrowserContext* context) {
+void SyncTest::OnProfileAdded(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // This cannot run in OnProfileCreationStarted() because it would be too
+  // early, and ProfileImpl's constructor would override it once again when
+  // invoking ash::InitializeAccountManager().
+  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
+    ash::AccountManagerFactory* factory =
+        g_browser_process->platform_part()->GetAccountManagerFactory();
+    account_manager::AccountManager* account_manager =
+        factory->GetAccountManager(profile->GetPath().value());
+    account_manager->SetUrlLoaderFactoryForTests(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+void SyncTest::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
+}
+
+void SyncTest::OnProfileCreationStarted(Profile* profile) {
   if (server_type_ == EXTERNAL_LIVE_SERVER) {
     // DO NOTHING. External live sync servers use real factories without quirks
     // or overrides.
@@ -860,12 +850,15 @@ void SyncTest::OnWillCreateBrowserContextServices(
   CHECK(GetFakeServer());
 
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
-      context, base::BindRepeating(&SyncTest::CreateGCMProfileService,
+      profile, base::BindRepeating(&SyncTest::CreateGCMProfileService,
                                    base::Unretained(this)));
   SyncServiceFactory::GetInstance()->SetTestingFactory(
-      context, SyncServiceFactory::GetDefaultFactory(
+      profile, SyncServiceFactory::GetDefaultFactory(
                    fake_server::CreateFakeServerHttpPostProviderFactory(
                        GetFakeServer()->AsWeakPtr())));
+  ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+      profile, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                   &test_url_loader_factory_));
 }
 
 std::unique_ptr<KeyedService> SyncTest::CreateGCMProfileService(
@@ -932,13 +925,6 @@ bool SyncTest::ResetSyncForPrimaryAccount() {
   LOG(WARNING) << "Finished reset account. Warning logs before "
                << "this log may be safe to ignore.";
   return true;
-}
-
-void SyncTest::SetUpOnMainThread() {
-  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    SetupMockGaiaResponsesForProfile(
-        ProfileManager::GetLastUsedProfileIfLoaded());
-  }
 }
 
 void SyncTest::WaitForDataModels(Profile* profile) {

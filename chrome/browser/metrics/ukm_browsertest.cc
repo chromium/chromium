@@ -248,7 +248,6 @@ class UkmBrowserTestBase : public SyncTest {
         profile_manager->GenerateNextProfileDirectoryPath();
     Profile& profile =
         profiles::testing::CreateProfileSync(profile_manager, new_path);
-    SetupMockGaiaResponsesForProfile(&profile);
     return &profile;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

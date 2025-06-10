@@ -10,14 +10,15 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 #include "chrome/browser/sync/test/integration/sync_test_account.h"
@@ -58,6 +59,7 @@
 
 class FakeSyncGCMDriver;
 class KeyedService;
+class ProfileManager;
 class SyncServiceImplHarness;
 
 namespace arc {
@@ -85,7 +87,9 @@ class SyncServiceImpl;
 // To run tests against an external server instead, use command-line flag
 // --sync-url along with other required arguments. In this case the ServerType
 // of the test becomes EXTERNAL_LIVE_SERVER.
-class SyncTest : public PlatformBrowserTest, public ProfileObserver {
+class SyncTest : public PlatformBrowserTest,
+                 public ProfileObserver,
+                 public ProfileManagerObserver {
  public:
   // The different types of live sync tests that can be implemented.
   enum TestType {
@@ -246,14 +250,15 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
  protected:
   // BrowserTestBase implementation:
-  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
-  void SetUpInProcessBrowserTestFixture() override;
 
   // ProfileObserver implementation.
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context);
+  // ProfileManagerObserver implementation.
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
+  void OnProfileCreationStarted(Profile* profile) override;
 
   // Invoked immediately before creating profile |index| under |profile_path|.
   virtual void BeforeSetupClient(int index, const base::FilePath& profile_path);
@@ -265,11 +270,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // functions defined above.
   void DisableNotificationsImpl();
   void EnableNotificationsImpl();
-
-  // Sets up fake responses for kClientLoginUrl, kIssueAuthTokenUrl,
-  // kGetUserInfoUrl and kSearchDomainCheckUrl in order to mock out calls to
-  // GAIA servers.
-  void SetupMockGaiaResponsesForProfile(Profile* profile);
 
   // Exclude data types from end of test checks in CheckForDataTypeFailures().
   // Note that this replaces the list of excluded types (if set earlier).
@@ -389,8 +389,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
            raw_ptr<FakeSyncGCMDriver, AcrossTasksDanglingUntriaged>>
       profile_to_fake_gcm_driver_;
 
-  base::CallbackListSubscription create_services_subscription_;
-
   // Sync profile against which changes to individual profiles are verified.
   // We don't need a corresponding verifier sync client because the contents
   // of the verifier profile are strictly local, and are not meant to be
@@ -418,6 +416,8 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
       fake_server_sync_invalidation_sender_;
 
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
   base::WeakPtrFactory<SyncTest> weak_ptr_factory_{this};
 };
 
