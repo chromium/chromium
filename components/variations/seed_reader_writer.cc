@@ -129,7 +129,7 @@ SeedReaderWriter::SeedReaderWriter(
 
 SeedReaderWriter::~SeedReaderWriter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (seed_writer_ && seed_writer_->HasPendingWrite()) {
+  if (HasPendingWrite()) {
     seed_writer_->DoScheduledWrite();
   }
 }
@@ -219,6 +219,7 @@ void SeedReaderWriter::SetFetchTime(base::Time fetch_time) {
 }
 
 bool SeedReaderWriter::HasPendingWrite() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return seed_writer_ && seed_writer_->HasPendingWrite();
 }
 
