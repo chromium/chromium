@@ -8,7 +8,7 @@
     --cr-searchbox-voice-icon-offset: 16px;
     --cr-searchbox-voice-search-button-width: 0px;
     --cr-searchbox-match-padding-inline-start: 12px;
-    --cr-compose-button-width: 104px;
+    --cr-compose-button-width: 110px;
     --cr-searchbox-icon-spacing: 11px;
     border-radius: var(--cr-searchbox-border-radius);
     box-shadow: var(--cr-searchbox-shadow);
@@ -257,7 +257,6 @@
    font-weight: 400;
    border: none;
    position: absolute;
-   padding: 8px 20px;
  }
 
   :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton,
@@ -372,6 +371,11 @@
     top: 50%;
     transform: translateY(-50%);
     z-index: 100;
+  }
+
+.compose-icon {
+  filter:invert(1);
+  vertical-align: text-bottom;
 }
 
 </style>
@@ -435,9 +439,10 @@
       </button>
     </template>
     <template is="dom-if" if="[[composeButtonEnabled]]">
-      <cr-button on-click="onComposeButtonClick_"  id="composeButton" class="compose-container">
-         Compose
-       </cr-button>
+      <cr-button on-click="onComposeButtonClick_"  id="composeButton" class="compose-container" title="[[i18n('searchboxComposeButtonText')]]">
+        <img slot="prefix-icon" src="[[composeIcon]]" class="compose-icon"></img>
+        $i18n{searchboxComposeButtonText}
+      </cr-button>
     </template>
   </template>
   <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
