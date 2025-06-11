@@ -8,11 +8,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -79,26 +81,38 @@ void RewriteDiyIconsCommand::OnGetShortcutInfo(
                             RewriteIconResult::kShortcutInfoFetchFailed);
     return;
   }
+  internals::PostShortcutIOTask(
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             bool use_ad_hoc_signing_for_web_app_shims,
+             const ShortcutInfo& info) {
+            WebAppShortcutCreator shortcut_creator(
+                internals::GetShortcutDataDir(info), GetChromeAppsFolder(),
+                &info, use_ad_hoc_signing_for_web_app_shims);
+            std::vector<base::FilePath> updated_app_paths;
+            std::move(callback).Run(shortcut_creator.UpdateShortcuts(
+                /*create_if_needed=*/false, &updated_app_paths));
+          },
+          base::BindPostTaskToCurrentDefault(
+              base::BindOnce(&RewriteDiyIconsCommand::OnUpdatedShortcuts,
+                             weak_factory_.GetWeakPtr())),
+          web_app::UseAdHocSigningForWebAppShims()),
+      std::move(info));
+}
 
-  WebAppShortcutCreator shortcut_creator(internals::GetShortcutDataDir(*info),
-                                         GetChromeAppsFolder(), info.get(),
-                                         /*use_ad_hoc_signing=*/false);
-  std::vector<base::FilePath> updated_app_paths;
-
-  if (shortcut_creator.UpdateShortcuts(
-          /*create_if_needed=*/false, &updated_app_paths)) {
-    auto update = lock_->sync_bridge().BeginUpdate();
-    WebApp* web_app = update->UpdateApp(app_id_);
-    CHECK(web_app);
-    web_app->SetDiyAppIconsMaskedOnMac(true);
-
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            RewriteIconResult::kUpdateSucceeded);
+void RewriteDiyIconsCommand::OnUpdatedShortcuts(bool success) {
+  if (!success) {
+    CompleteAndSelfDestruct(CommandResult::kFailure,
+                            RewriteIconResult::kUpdateShortcutFailed);
     return;
   }
+  auto update = lock_->sync_bridge().BeginUpdate();
+  WebApp* web_app = update->UpdateApp(app_id_);
+  CHECK(web_app);
+  web_app->SetDiyAppIconsMaskedOnMac(true);
 
-  CompleteAndSelfDestruct(CommandResult::kFailure,
-                          RewriteIconResult::kUpdateShortcutFailed);
+  CompleteAndSelfDestruct(CommandResult::kSuccess,
+                          RewriteIconResult::kUpdateSucceeded);
 }
 
 }  // namespace web_app
