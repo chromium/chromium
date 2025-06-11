@@ -514,11 +514,13 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     std::optional<LayoutUnit> opt_fixed_inline_size) const {
   LogicalSize containing_size = ChildAvailableSize();
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
+  const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
 
-  // This method is only used for passing a constraint space into
-  // `ComputeMinAndMaxContentContributionForSelf`, and the inline size should
-  // always be indefinite in that case to allow for text flow.
-  containing_size.inline_size = kIndefiniteSize;
+  if (grid_axis_direction == kForColumns) {
+    containing_size.inline_size = kIndefiniteSize;
+  } else {
+    containing_size.block_size = kIndefiniteSize;
+  }
 
   // TODO(almaher): Do we need to do something special here for subgrid like
   // GridLayoutAlgorithm::CreateConstraintSpaceForMeasure()?
