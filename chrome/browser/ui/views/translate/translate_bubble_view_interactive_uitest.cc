@@ -325,6 +325,10 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickOpenLanguageSettings) {
         // V1. Verify that the “Open language settings” option is not shown in
         // incognito mode.
         EnsureNotPresent(TranslateBubbleView::kOpenLanguageSettings));
+
+    // Close bubble at the end of test to avoid unexpected bubble cleanup in
+    // test fixture while the menu is open.
+    GetCurrentTranslateBubble()->CloseBubble();
   } else {
     RunTestSequence(
         views::InteractionSequenceViews::WithInitialView(
