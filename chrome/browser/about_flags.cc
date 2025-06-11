@@ -1285,7 +1285,7 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"lens_overlay", "true"},       {"translate", "true"},
     {"memory_saver", "true"},       {"price_insights", "true"},
     {"offer_notification", "true"}, {"intent_picker", "true"},
-    {"file_system_access", "true"},
+    {"file_system_access", "true"}, {"zoom", "true"},
 };
 const FeatureEntry::FeatureVariation kPageActionsMigrationVariations[] = {
     {"with all migrated page actions enabled", kPageActionsMigrationParams,
