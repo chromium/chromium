@@ -135,6 +135,13 @@ int main(int argc, char** argv) {
     }
   }
 
+  // This tool currently supports Speedometer and MotionMark.
+  if (samples.empty()) {
+    LOG(WARNING)
+        << "No samples collected from CSV. Is this an unsupported benchmark?";
+    return 1;
+  }
+
   // Estimate the ratios for all of our data.
   vector<vector<RatioBootstrapEstimator::Sample>> data;
   for (const auto& [key, story_samples] : samples) {
