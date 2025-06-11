@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
@@ -208,8 +209,9 @@ DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
     Profile* profile,
     content::NavigationHandle* navigation_handle,
     Callback callback) {
-  if (navigation_handle->IsSameDocument() ||
-      !navigation_handle->IsInPrimaryMainFrame()) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      (!base::FeatureList::IsEnabled(kEnableSinglePageAppDataProtection) &&
+       navigation_handle->IsSameDocument())) {
     return nullptr;
   }
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -552,61 +553,6 @@ TEST_F(DataProtectionNavigationObserverTest,
   }
 }
 
-class SameDocumentNavigationWebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  explicit SameDocumentNavigationWebContentsObserver(
-      content::WebContents* web_contents,
-      FakeRealTimeUrlLookupService* lookup_service,
-      content::BrowserContext* browser_context)
-      : content::WebContentsObserver(web_contents),
-        lookup_service_(lookup_service),
-        browser_context_(browser_context) {}
-
-  MOCK_METHOD(void,
-              DidFinishNavigation,
-              (content::NavigationHandle*),
-              (override));
-
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    base::test::TestFuture<const UrlSettings&> future;
-
-    FakeDataProtectionNavigationController controller(
-        web_contents(), lookup_service_, future.GetCallback());
-
-    auto navigation_observer =
-        DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
-            &controller, Profile::FromBrowserContext(browser_context_),
-            navigation_handle, future.GetCallback());
-
-    ASSERT_EQ(navigation_observer, nullptr);
-  }
-
- private:
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<FakeRealTimeUrlLookupService> lookup_service_;
-  raw_ptr<content::BrowserContext> browser_context_;
-};
-
-TEST_F(DataProtectionNavigationObserverTest,
-       SkipSameDocumentNavigation_CreateForNavigationIfNeeded) {
-  SetContents(CreateTestWebContents());
-  NavigateAndCommit(GURL("https://example.com"));
-  SameDocumentNavigationWebContentsObserver observer(
-      web_contents(), &lookup_service_, browser_context());
-
-  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("https://example.com#fragment"), main_rfh());
-
-  // Ensure that the navigation callbacks are invoked, since the assertion is
-  // outside the test body. If DidFinishNavigation() was called, then it is
-  // guaranteed that DidStartNavigation() was called prior, thereby checking the
-  // same document assertion.
-  EXPECT_CALL(observer, DidFinishNavigation);
-  simulator->CommitSameDocument();
-}
-
 TEST_F(DataProtectionNavigationObserverTest,
        SkipSpecialURLs_ApplyDataProtectionSettings) {
   SetContents(CreateTestWebContents());
@@ -959,5 +905,80 @@ TEST_P(DataProtectionWatermarkStringTest,
           GetParam().identifier, threat_info.matched_url_navigation_rule()),
       GetParam().expected);
 }
+
+class SinglePageAppWatermarkTest : public DataProtectionNavigationObserverTest,
+                                   public testing::WithParamInterface<bool> {};
+
+class SameDocumentNavigationWebContentsObserver
+    : public content::WebContentsObserver {
+ public:
+  explicit SameDocumentNavigationWebContentsObserver(
+      bool is_single_page_app_enabled,
+      content::WebContents* web_contents,
+      FakeRealTimeUrlLookupService* lookup_service,
+      content::BrowserContext* browser_context)
+      : content::WebContentsObserver(web_contents),
+        is_single_page_app_enabled_(is_single_page_app_enabled),
+        lookup_service_(lookup_service),
+        browser_context_(browser_context) {}
+
+  MOCK_METHOD(void,
+              DidFinishNavigation,
+              (content::NavigationHandle*),
+              (override));
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    base::test::TestFuture<const UrlSettings&> future;
+
+    FakeDataProtectionNavigationController controller(
+        web_contents(), lookup_service_, future.GetCallback());
+
+    auto navigation_observer =
+        DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
+            &controller, Profile::FromBrowserContext(browser_context_),
+            navigation_handle, future.GetCallback());
+
+    ASSERT_EQ(navigation_observer != nullptr, is_single_page_app_enabled_);
+  }
+
+ private:
+  bool is_single_page_app_enabled_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<FakeRealTimeUrlLookupService> lookup_service_;
+  raw_ptr<content::BrowserContext> browser_context_;
+};
+
+TEST_P(SinglePageAppWatermarkTest,
+       CheckSameDocumentNavigation_CreateForNavigationIfNeeded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  bool is_single_page_app_enabled = GetParam();
+  if (is_single_page_app_enabled) {
+    scoped_feature_list.InitAndEnableFeature(
+        enterprise_data_protection::kEnableSinglePageAppDataProtection);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        enterprise_data_protection::kEnableSinglePageAppDataProtection);
+  }
+  SetContents(CreateTestWebContents());
+  NavigateAndCommit(GURL("https://example.com"));
+  SameDocumentNavigationWebContentsObserver observer(
+      is_single_page_app_enabled, web_contents(), &lookup_service_,
+      browser_context());
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com#fragment"), main_rfh());
+
+  // Ensure that the navigation callbacks are invoked, since the assertion is
+  // outside the test body. If DidFinishNavigation() was called, then it is
+  // guaranteed that DidStartNavigation() was called prior, thereby checking the
+  // same document assertion.
+  EXPECT_CALL(observer, DidFinishNavigation);
+  simulator->CommitSameDocument();
+}
+
+INSTANTIATE_TEST_SUITE_P(SinglePageAppWatermarkTest,
+                         SinglePageAppWatermarkTest,
+                         testing::Bool());
 
 }  // namespace enterprise_data_protection
