@@ -1593,7 +1593,6 @@ fyi_ios_builder(
             config = "chromium_tvos",
             apply_configs = [
                 "mb",
-                "mac_toolchain",
             ],
             # Release for now due to binary size being too large (crbug.com/1464415)
             build_config = builder_config.build_config.RELEASE,

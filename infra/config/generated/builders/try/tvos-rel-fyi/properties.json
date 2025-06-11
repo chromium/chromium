@@ -18,8 +18,7 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "mac_toolchain"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium_tvos",
