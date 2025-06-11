@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import static org.chromium.base.test.transit.ViewElement.unscopedOption;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
@@ -24,8 +25,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.HubToolbarView;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.hub.R;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
 import org.chromium.chrome.test.transit.page.PageStation;
@@ -35,7 +36,6 @@ public abstract class HubBaseStation
         extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity> {
     public final ViewElement<HubToolbarView> toolbarElement;
     public final ViewElement<View> paneHostElement;
-    public ViewElement<View> viewHolderElement;
     public final ViewElement<View> menuButtonElement;
     public final ViewElement<TabLayout> paneSwitcherElement;
     public final @Nullable ViewElement<View> regularTabsButtonElement;
@@ -52,9 +52,8 @@ public abstract class HubBaseStation
         mRegularTabsExist = regularTabsExist;
         mIncognitoTabsExist = incognitoTabsExist;
 
-        toolbarElement = declareView(HubToolbarView.class, withId(R.id.hub_toolbar));
+        toolbarElement = declareView(viewSpec(HubToolbarView.class, withId(R.id.hub_toolbar)));
         paneHostElement = declareView(withId(R.id.hub_pane_host));
-        viewHolderElement = declareView(withId(R.id.tab_switcher_view_holder));
         menuButtonElement =
                 hasMenuButton
                         ? declareView(toolbarElement.descendant(withId(R.id.menu_button)))
