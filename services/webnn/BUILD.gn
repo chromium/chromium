@@ -194,6 +194,8 @@ component("webnn_service") {
       "ort/tensor_impl_ort.h",
     ]
     deps += [ "//third_party/onnxruntime_headers" ]
+
+    libs += [ "runtimeobject.lib" ]
   }
 
   if (is_mac || webnn_use_tflite) {
