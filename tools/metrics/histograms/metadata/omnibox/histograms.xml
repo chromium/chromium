@@ -1648,6 +1648,23 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.LoadingPredictor.MatchType.{PreconnectableType}"
+    enum="OmniboxResultType" expires_after="2025-12-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The type of autocomplete match with a recommended action of
+    &quot;preconnect&quot; that {PreconnectableType} in a preconnect by the
+    loading predictor. Emitted when an autocomplete match has a recommended
+    action of &quot;preconnect&quot; as a result of the text entered into the
+    omnibox changing.
+  </summary>
+  <token key="PreconnectableType">
+    <variant name="NonPreconnectable" summary="did not result"/>
+    <variant name="Preconnectable" summary="resulted"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractionTimeV2"
     units="ms" expires_after="2025-07-13">
   <owner>mahmadi@chromium.org</owner>

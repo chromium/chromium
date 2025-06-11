@@ -21,11 +21,6 @@ struct AutocompleteMatchType {
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: OmniboxSuggestionType
   // clang-format off
   //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. The values should remain
-  // synchronized with the enum AutocompleteMatchType in
-  // //tools/metrics/histograms/enums.xml.
-  //
   // Any changes to this enum also requires an update to:
   //  - `AutocompleteMatch::GetOmniboxEventResultType()`
   //  - `AutocompleteMatch::GetVectorIcon()`
