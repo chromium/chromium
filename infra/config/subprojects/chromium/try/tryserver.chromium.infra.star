@@ -13,7 +13,6 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.infra",
     pool = try_.DEFAULT_POOL,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_enabled = False,
     service_account = "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_enabled = True,
 )

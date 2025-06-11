@@ -22,7 +22,6 @@ ci.defaults.set(
     execution_timeout = 10 * time.hour,
     health_spec = health_spec.DEFAULT,
     notifies = ["cr-fuchsia"],
-    reclient_enabled = False,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,

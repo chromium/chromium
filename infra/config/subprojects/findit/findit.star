@@ -65,7 +65,6 @@ defaults.set(
     auto_builder_dimension = False,
     build_numbers = True,
     execution_timeout = 8 * time.hour,
-    reclient_enabled = False,
     service_account = "findit-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_enabled = True,
 )

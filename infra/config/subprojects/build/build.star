@@ -108,12 +108,20 @@ def cq_build_perf_builder(description_html, **kwargs):
     # Use CQ RBE instance and high remote_jobs/cores to simulate CQ builds.
     if not "siso_configs" in kwargs:
         kwargs["siso_configs"] = ["builder", "remote-link"]
+    props = {}
+    if not kwargs.get("siso_enabled", True):
+        props["$build/reclient"] = {
+            "instance": siso.project.DEFAULT_UNTRUSTED,
+            "jobs": 500,
+            "metrics_project": "chromium-reclient-metrics",
+            "scandeps_server": True,
+        }
     return ci.builder(
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
-        reclient_jobs = 500,
         siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         use_clang_coverage = True,
+        properties = props,
         **kwargs
     )
 
@@ -199,7 +207,6 @@ cq_build_perf_builder(
         category = "android",
         short_name = "siso",
     ),
-    reclient_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -260,7 +267,6 @@ cq_build_perf_builder(
         category = "linux",
         short_name = "siso",
     ),
-    reclient_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -320,7 +326,6 @@ cq_build_perf_builder(
         category = "windows",
         short_name = "siso",
     ),
-    reclient_enabled = False,
 )
 
 ci_build_perf_builder(
@@ -351,7 +356,6 @@ ci_build_perf_builder(
         category = "windows",
         short_name = "sisoci",
     ),
-    reclient_enabled = False,
     siso_configs = ["builder"],
     # TODO(333491525): enable no-fallback once OOM fallback mitigated.
     siso_experiments = [],
@@ -417,7 +421,6 @@ cq_build_perf_builder(
         category = "cros",
         short_name = "siso",
     ),
-    reclient_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -484,7 +487,6 @@ cq_build_perf_builder(
         category = "mac",
         short_name = "siso",
     ),
-    reclient_enabled = False,
     siso_configs = ["builder"],
 )
 
@@ -555,15 +557,22 @@ cq_build_perf_builder(
         category = "ios",
         short_name = "siso",
     ),
-    reclient_enabled = False,
     siso_configs = ["builder"],
     xcode = xcode.xcode_default,
 )
 
-def developer_build_perf_builder(description_html, **kwargs):
+def developer_build_perf_builder(description_html, reclient_jobs = None, **kwargs):
     # Use CQ siso.project and high siso_remote_jobs/cores to simulate CQ builds.
     if not "siso_configs" in kwargs:
         kwargs["siso_configs"] = ["remote-link"]
+    props = {
+        "$build/reclient": {
+            "instance": siso.project.DEFAULT_UNTRUSTED,
+            "jobs": reclient_jobs,
+            "metrics_project": "chromium-reclient-metrics",
+            "scandeps_server": True,
+        },
+    }
     return ci.builder(
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         executable = "recipe:chrome_build/build_perf_developer",
@@ -571,6 +580,7 @@ def developer_build_perf_builder(description_html, **kwargs):
         siso_disable_batch_mode = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         shadow_siso_project = None,
+        properties = props,
         **kwargs
     )
 
@@ -790,7 +800,6 @@ ci.builder(
     ),
     contact_team_email = "chrome-build-team@google.com",
     notifies = ["Chromium Build Time Watcher"],
-    reclient_enabled = False,
     siso_fail_if_reapi_used = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
