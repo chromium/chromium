@@ -136,6 +136,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
+#include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/events/interest_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -1641,7 +1642,8 @@ void Element::DefaultEventHandler(Event& event) {
           GetDocument().GetExecutionContext())) {
     if (InterestTargetElement() || GetInterestInvoker() ||
         GetInterestState() != InterestState::kNoInterest) [[unlikely]] {
-      // Handle new `interesttarget` activation via mouse or keyboard.
+      // Handle new `interesttarget` activation via mouse, keyboard, or long-
+      // press.
       String type = event.type();
       if (auto* mouse_event = DynamicTo<MouseEvent>(event)) {
         if (!mouse_event->FromTouch()) {
@@ -1663,6 +1665,16 @@ void Element::DefaultEventHandler(Event& event) {
             HandleInterestTargetHoverOrFocus(InterestTargetSource::kBlur);
           }
         }
+      }
+      if (IsA<GestureEvent>(event) &&
+          type == event_type_names::kGesturelongpress) {
+        // Delays don't apply to long-press, since the "long press" has a
+        // built-in delay. Just show interest immediately in this case. This
+        // follows the same path used by context-menu activations on link
+        // elements.
+        // TODO(crbug.com/364669918): Touchscreen / long-press still needs a
+        // unit test.
+        ShowInterestNow();
       }
     }
     if (GetInterestState() != InterestState::kNoInterest) [[unlikely]] {
