@@ -78,6 +78,7 @@ public class InstanceSwitcherCoordinator {
     private final Callback<InstanceInfo> mCloseCallback;
     private final Runnable mNewWindowAction;
     private final ModalDialogManager mModalDialogManager;
+    private final int mMaxInstanceCount;
 
     private final ModelList mModelList = new ModelList();
     private final ModelList mActiveModelList = new ModelList();
@@ -93,13 +94,14 @@ public class InstanceSwitcherCoordinator {
 
     /**
      * Show instance switcher modal dialog UI.
+     *
      * @param context Context to use to build the dialog.
      * @param modalDialogManager {@link ModalDialogManager} object.
      * @param iconBridge An object that fetches favicons from local DB.
      * @param openCallback Callback to invoke to open a chosen instance.
      * @param closeCallback Callback to invoke to close a chosen instance.
      * @param newWindowAction Runnable to invoke to open a new window.
-     * @param newWindowEnabled True if the "New window" command needs to be enabled.
+     * @param maxInstanceCount The maximum number of instances whose state can be persisted.
      * @param instanceInfo List of {@link InstanceInfo} for available Chrome instances.
      */
     public static void showDialog(
@@ -109,7 +111,7 @@ public class InstanceSwitcherCoordinator {
             Callback<InstanceInfo> openCallback,
             Callback<InstanceInfo> closeCallback,
             Runnable newWindowAction,
-            boolean newWindowEnabled,
+            int maxInstanceCount,
             List<InstanceInfo> instanceInfo) {
         new InstanceSwitcherCoordinator(
                         context,
@@ -117,8 +119,9 @@ public class InstanceSwitcherCoordinator {
                         iconBridge,
                         openCallback,
                         closeCallback,
-                        newWindowAction)
-                .show(instanceInfo, newWindowEnabled);
+                        newWindowAction,
+                        maxInstanceCount)
+                .show(instanceInfo);
     }
 
     private InstanceSwitcherCoordinator(
@@ -127,13 +130,15 @@ public class InstanceSwitcherCoordinator {
             LargeIconBridge iconBridge,
             Callback<InstanceInfo> openCallback,
             Callback<InstanceInfo> closeCallback,
-            Runnable newWindowAction) {
+            Runnable newWindowAction,
+            int maxInstanceCount) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOpenCallback = openCallback;
         mCloseCallback = closeCallback;
         mUiUtils = new UiUtils(mContext, iconBridge);
         mNewWindowAction = newWindowAction;
+        mMaxInstanceCount = maxInstanceCount;
 
         if (isInstanceSwitcherV2Enabled()) {
             var activeListAdapter = getInstanceListAdapter(/* active= */ true);
@@ -220,7 +225,7 @@ public class InstanceSwitcherCoordinator {
         return adapter;
     }
 
-    private void show(List<InstanceInfo> items, boolean newWindowEnabled) {
+    private void show(List<InstanceInfo> items) {
         UiUtils.closeOpenDialogs();
         sPrevInstance = this;
         for (int i = 0; i < items.size(); ++i) {
@@ -240,7 +245,7 @@ public class InstanceSwitcherCoordinator {
             }
         }
         mNewWindowModel = new PropertyModel(InstanceSwitcherItemProperties.ALL_KEYS);
-        enableNewWindowCommand(newWindowEnabled);
+        enableNewWindowCommand(items.size() < mMaxInstanceCount);
         mModelList.add(new ModelListAdapter.ListItem(EntryType.COMMAND, mNewWindowModel));
         if (isInstanceSwitcherV2Enabled()) {
             // "+New window" should only be added to the active instances list.
@@ -375,15 +380,21 @@ public class InstanceSwitcherCoordinator {
 
         mCloseCallback.onResult(item);
         RecordUserAction.record("Android.WindowManager.CloseWindow");
-        // Removing an instance enables the new window item.
-        enableNewWindowCommand(true);
 
+        int instanceCount;
         if (isInstanceSwitcherV2Enabled()) {
-            // Exclude COMMAND item from active instance count.
+            // Exclude COMMAND item from list size.
             int numActiveInstances = mActiveModelList.size() - 1;
             int numInactiveInstances = mInactiveModelList.size();
+            instanceCount = numActiveInstances + numInactiveInstances;
             updateTabTitle(numActiveInstances, numInactiveInstances);
+        } else {
+            // Exclude COMMAND item from list size.
+            instanceCount = mModelList.size() - 1;
         }
+
+        // Update new window item based on instance count after instance removal.
+        enableNewWindowCommand(instanceCount < mMaxInstanceCount);
     }
 
     private void removeItemFromModelList(int instanceId, ModelList list) {

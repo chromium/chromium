@@ -157,7 +157,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                         cleanupSyncedTabGroupsIfLastInstance();
                     },
                     () -> openNewWindow("Android.WindowManager.NewWindow"),
-                    info.size() < MultiWindowUtils.getMaxInstances(),
+                    MultiWindowUtils.getMaxInstances(),
                     info);
 
             if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get())) {
