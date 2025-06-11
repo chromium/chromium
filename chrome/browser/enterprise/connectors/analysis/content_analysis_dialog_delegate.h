@@ -84,7 +84,13 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
   inline bool is_warning() const { return dialog_state_ == State::WARNING; }
   inline bool is_pending() const { return dialog_state_ == State::PENDING; }
 
+  // Updates `final_result_` and `dialog_state_`.
   void UpdateStateFromFinalResult(FinalContentAnalysisResult final_result);
+
+  // Update the appearance of the dialog. This will not do anything unless the
+  // dialog's state was changed by `UpdateStateFromFinalResult()` since the last
+  // `UpdateDialogAppearance()` call.
+  void UpdateDialogAppearance();
 
   bool has_learn_more_url() const;
   bool bypass_requires_justification() const;

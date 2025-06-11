@@ -174,6 +174,27 @@ void ContentAnalysisDialogDelegate::UpdateStateFromFinalResult(
   }
 }
 
+void ContentAnalysisDialogDelegate::UpdateDialogAppearance() {
+  DCHECK(is_result());
+
+  int height_before = contents_view_->GetPreferredSize().height();
+
+  UpdateViews();
+
+  // Resize the dialog's height. This is needed since the text might take more
+  // lines after changing.
+  int height_after = contents_view_->GetHeightForWidth(contents_view_->width());
+
+  int height_to_add = std::max(height_after - height_before, 0);
+  if (height_to_add > 0 && GetWidget()) {
+    Resize(height_to_add);
+  }
+
+  // Update the dialog.
+  DialogDelegate::DialogModelChanged();
+  contents_view_->InvalidateLayout();
+}
+
 void ContentAnalysisDialogDelegate::SetupButtons() {
   if (is_warning()) {
     // Include the Ok and Cancel buttons if there is a bypassable warning.
