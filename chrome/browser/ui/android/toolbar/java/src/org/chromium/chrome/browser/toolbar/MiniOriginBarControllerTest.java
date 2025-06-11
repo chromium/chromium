@@ -298,6 +298,7 @@ public class MiniOriginBarControllerTest {
                                 - mImeAnimation.getFraction()
                                         / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
         verify(mLocationBarView).setPivotY(urlBarHeight / 2);
+        verify(mLocationBarView).setPivotX(0.0f);
 
         currentKeyboardHeight = 40;
         insets =
