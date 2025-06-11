@@ -29,7 +29,6 @@ import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 
@@ -167,7 +166,7 @@ public class EdgeToEdgeControllerFactory {
 
         // Not supported on tablet unless the flag is on.
         if (!EdgeToEdgeUtils.isEdgeToEdgeTabletEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
+                && EdgeToEdgeUtils.isSupportedTablet(activity)) {
             return false;
         }
 

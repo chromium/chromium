@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.Window;
@@ -34,6 +35,7 @@ import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -74,10 +76,7 @@ public class EdgeToEdgeUtils {
         int NUM_TYPES = 4;
     }
 
-
-    /**
-     * The reason of why the navigation bar insets are missing.
-     */
+    /** The reason of why the navigation bar insets are missing. */
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
@@ -127,6 +126,15 @@ public class EdgeToEdgeUtils {
     /** Whether the edge-to-edge feature is enabled on tablet. */
     public static boolean isEdgeToEdgeTabletEnabled() {
         return ChromeFeatureList.sEdgeToEdgeTablet.isEnabled();
+    }
+
+    /** Whether the device is a tablet and supports edge-to-edge. */
+    public static boolean isSupportedTablet(Context context) {
+        int widthThreshold = ChromeFeatureList.sEdgeToEdgeTabletMinWidthThreshold.getValue();
+        if (widthThreshold == -1) {
+            return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+        }
+        return DisplayUtil.getCurrentSmallestScreenWidth(context) >= widthThreshold;
     }
 
     /**
@@ -208,7 +216,7 @@ public class EdgeToEdgeUtils {
         }
 
         if (!EdgeToEdgeUtils.isEdgeToEdgeTabletEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
+                && EdgeToEdgeUtils.isSupportedTablet(activity)) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
                     INELIGIBLE_REASON_HISTOGRAM,
@@ -243,8 +251,7 @@ public class EdgeToEdgeUtils {
      */
     public static void recordIfMissingNavigationBar(@MissingNavbarInsetsReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
-                    MISSING_NAVBAR_INSETS_HISTOGRAM, reason,
-                    MissingNavbarInsetsReason.NUM_ENTRIES);
+                MISSING_NAVBAR_INSETS_HISTOGRAM, reason, MissingNavbarInsetsReason.NUM_ENTRIES);
     }
 
     /**
