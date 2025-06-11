@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -92,6 +93,7 @@ public class BookmarkBarCoordinatorTest {
     @Mock private Profile mProfile;
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
+    @Mock private TopControlsStacker mTopControlsStacker;
 
     private BookmarkBarCoordinator mCoordinator;
     private BookmarkId mDesktopFolderId;
@@ -160,7 +162,8 @@ public class BookmarkBarCoordinatorTest {
                         mProfileSupplier,
                         viewStub,
                         mBookmarkOpener,
-                        new ObservableSupplierImpl<>(mBookmarkManagerOpener));
+                        new ObservableSupplierImpl<>(mBookmarkManagerOpener),
+                        mTopControlsStacker);
         assertNotNull("Verify view stub inflation during construction.", mView);
 
         mItemsContainer = mView.findViewById(R.id.bookmark_bar_items_container);

@@ -1750,7 +1750,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mProfileSupplier,
                             /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub),
                             mBookmarkOpener,
-                            mBookmarkManagerOpenerSupplier);
+                            mBookmarkManagerOpenerSupplier,
+                            mTopControlsStacker);
         }
 
         if (mToolbarManager != null) {
