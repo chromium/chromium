@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_DISCOUNTS_BUBBLE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_DISCOUNTS_BUBBLE_DIALOG_VIEW_H_
 
+#include <memory>
+#include <string>
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/commerce/discounts_coupon_code_label_view.h"
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
