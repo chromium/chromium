@@ -86,7 +86,7 @@ public class SplitCompatEngineTest {
         // Arrange.
         String installedModule = "m1";
         String uninstalledModule = "m2";
-        Set<String> installedModules = new HashSet<String>();
+        Set<String> installedModules = new HashSet<>();
         installedModules.add(installedModule);
         doReturn(installedModules).when(mManager).getInstalledModules();
 

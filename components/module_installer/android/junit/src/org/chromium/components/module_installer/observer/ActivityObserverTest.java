@@ -128,7 +128,7 @@ public class ActivityObserverTest {
     @Test
     public void whenOnModuleInstalled_verifyOnlyResumedActivitiesAreSplitCompatted() {
         // Arrange.
-        List<Activity> activitiesList = new ArrayList<Activity>();
+        List<Activity> activitiesList = new ArrayList<>();
         Activity activityMock1 = mock(Activity.class);
         Activity activityMock2 = mock(Activity.class);
         Activity activityMock3 = mock(Activity.class);

@@ -43,7 +43,7 @@ public class ModuleTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mModule = new Module<ModuleTestStub>(MODULE_NAME, INTERFACE, mImplName);
+        mModule = new Module<>(MODULE_NAME, INTERFACE, mImplName);
         mModule.setInstallEngine(mInstallEngineMock);
     }
 
@@ -104,8 +104,7 @@ public class ModuleTest {
     public void whenGettingUnknownImpl_VerifyError() {
         // Arrange.
         String impl = "some unknown type";
-        Module<ModuleTestStub> module =
-                new Module<ModuleTestStub>(MODULE_NAME, INTERFACE, impl);
+        Module<ModuleTestStub> module = new Module<>(MODULE_NAME, INTERFACE, impl);
         doReturn(true).when(mInstallEngineMock).isInstalled(MODULE_NAME);
         module.setInstallEngine(mInstallEngineMock);
 
