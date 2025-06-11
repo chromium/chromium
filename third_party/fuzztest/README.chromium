@@ -1,7 +1,7 @@
 Name: Fuzztest
 URL: https://github.com/google/fuzztest
 Version: N/A
-Revision: DEPS
+Revision: 890b53c3485bf7e31ac8b6b637f9850e4d596ced
 License: BSD-3-Clause, Apache-2.0
 Security Critical: no
 Shipped: no
