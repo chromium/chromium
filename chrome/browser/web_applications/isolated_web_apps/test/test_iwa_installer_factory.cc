@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/mock_isolated_web_app_install_command_wrapper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/mock_iwa_install_command_wrapper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -33,13 +33,13 @@ void TestIwaInstallerFactory::SetUp(Profile* profile) {
 
 void TestIwaInstallerFactory::SetCommandBehavior(
     const webapps::AppId& app_id,
-    MockIsolatedWebAppInstallCommandWrapper::ExecutionMode execution_mode,
+    MockIwaInstallCommandWrapper::ExecutionMode execution_mode,
     bool execute_immediately) {
   command_behaviors_[app_id] = {execution_mode, execute_immediately};
 }
 
-MockIsolatedWebAppInstallCommandWrapper*
-TestIwaInstallerFactory::GetLatestCommandWrapper(const webapps::AppId& app_id) {
+MockIwaInstallCommandWrapper* TestIwaInstallerFactory::GetLatestCommandWrapper(
+    const webapps::AppId& app_id) {
   if (latest_install_wrappers_.contains(app_id)) {
     return latest_install_wrappers_[app_id];
   }
@@ -63,9 +63,8 @@ std::unique_ptr<IwaInstaller> TestIwaInstallerFactory::CreateIwaInstaller(
   const webapps::AppId& app_id = install_options.web_bundle_id().id();
   auto& command_behavior = command_behaviors_[app_id];
   ++number_of_install_tasks_created_;
-  auto install_command_wrapper =
-      std::make_unique<MockIsolatedWebAppInstallCommandWrapper>(
-          profile, provider, command_behavior.first, command_behavior.second);
+  auto install_command_wrapper = std::make_unique<MockIwaInstallCommandWrapper>(
+      profile, provider, command_behavior.first, command_behavior.second);
   latest_install_wrappers_[app_id] = install_command_wrapper.get();
   return std::make_unique<IwaInstaller>(
       std::move(install_options), install_source_type,

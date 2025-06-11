@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO: rename this file?
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_MOCK_ISOLATED_WEB_APP_INSTALL_COMMAND_WRAPPER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_MOCK_ISOLATED_WEB_APP_INSTALL_COMMAND_WRAPPER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_MOCK_IWA_INSTALL_COMMAND_WRAPPER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_MOCK_IWA_INSTALL_COMMAND_WRAPPER_H_
 
 #include <optional>
 
@@ -29,20 +28,19 @@ class WebAppProvider;
 // the execution mode (run the production install command; simulate success;
 // simulate a failure) and the schedule (schedule command immediately; use the
 // `ScheduleCommand` function to explicitly trigger scheduling of the command).
-class MockIsolatedWebAppInstallCommandWrapper
+class MockIwaInstallCommandWrapper
     : public IwaInstaller::IwaInstallCommandWrapper {
  public:
   enum class ExecutionMode { kRunCommand, kSimulateSuccess, kSimulateFailure };
 
-  MockIsolatedWebAppInstallCommandWrapper(Profile* profile,
-                                          WebAppProvider* provider,
-                                          ExecutionMode execution_mode,
-                                          bool schedule_command_immediately);
-  MockIsolatedWebAppInstallCommandWrapper(
-      const MockIsolatedWebAppInstallCommandWrapper&) = delete;
-  MockIsolatedWebAppInstallCommandWrapper& operator=(
-      const MockIsolatedWebAppInstallCommandWrapper&) = delete;
-  ~MockIsolatedWebAppInstallCommandWrapper() override;
+  MockIwaInstallCommandWrapper(Profile* profile,
+                               WebAppProvider* provider,
+                               ExecutionMode execution_mode,
+                               bool schedule_command_immediately);
+  MockIwaInstallCommandWrapper(const MockIwaInstallCommandWrapper&) = delete;
+  MockIwaInstallCommandWrapper& operator=(const MockIwaInstallCommandWrapper&) =
+      delete;
+  ~MockIwaInstallCommandWrapper() override;
 
   void Install(
       const IsolatedWebAppInstallSource& install_source,
@@ -70,4 +68,4 @@ class MockIsolatedWebAppInstallCommandWrapper
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_MOCK_ISOLATED_WEB_APP_INSTALL_COMMAND_WRAPPER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_MOCK_IWA_INSTALL_COMMAND_WRAPPER_H_

@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
   // a cleanup.
   iwa_installer_factory_.SetCommandBehavior(
       kWebBundleId1.id(), /*execution_mode=*/
-      MockIsolatedWebAppInstallCommandWrapper::ExecutionMode::kSimulateFailure,
+      MockIwaInstallCommandWrapper::ExecutionMode::kSimulateFailure,
       /*execute_immediately=*/true);
   SetPolicyWithOneApp();
   ASSERT_TRUE(future.Wait());

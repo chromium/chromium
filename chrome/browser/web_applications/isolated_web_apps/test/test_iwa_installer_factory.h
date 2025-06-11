@@ -12,14 +12,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/mock_isolated_web_app_install_command_wrapper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/mock_iwa_install_command_wrapper.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
 namespace web_app {
 
-class MockIsolatedWebAppInstallCommandWrapper;
+class MockIwaInstallCommandWrapper;
 
 class TestIwaInstallerFactory {
  public:
@@ -32,10 +32,10 @@ class TestIwaInstallerFactory {
 
   void SetCommandBehavior(
       const webapps::AppId& app_id,
-      MockIsolatedWebAppInstallCommandWrapper::ExecutionMode execution_mode,
+      MockIwaInstallCommandWrapper::ExecutionMode execution_mode,
       bool execute_immediately);
 
-  MockIsolatedWebAppInstallCommandWrapper* GetLatestCommandWrapper(
+  MockIwaInstallCommandWrapper* GetLatestCommandWrapper(
       const webapps::AppId& app_id);
 
   void SetInstallCompletedClosure(base::RepeatingClosure closure);
@@ -58,11 +58,10 @@ class TestIwaInstallerFactory {
   // * succeed (true) or fail (false).
   // * be executed immediately (true) or requires a manual trigger from the
   // test (false).
-  std::map<
-      webapps::AppId,
-      std::pair<MockIsolatedWebAppInstallCommandWrapper::ExecutionMode, bool>>
+  std::map<webapps::AppId,
+           std::pair<MockIwaInstallCommandWrapper::ExecutionMode, bool>>
       command_behaviors_;
-  std::map<webapps::AppId, raw_ptr<MockIsolatedWebAppInstallCommandWrapper>>
+  std::map<webapps::AppId, raw_ptr<MockIwaInstallCommandWrapper>>
       latest_install_wrappers_;
   size_t number_of_install_tasks_created_ = 0U;
   base::RepeatingClosure closure_ = base::DoNothing();

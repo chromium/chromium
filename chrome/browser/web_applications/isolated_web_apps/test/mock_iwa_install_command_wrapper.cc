@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/test/mock_isolated_web_app_install_command_wrapper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/mock_iwa_install_command_wrapper.h"
 
 #include <optional>
 
@@ -34,7 +34,7 @@ class MockInstallIsolatedWebApp : public InstallIsolatedWebAppCommand {
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback,
       std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper,
-      MockIsolatedWebAppInstallCommandWrapper::ExecutionMode execution_mode)
+      MockIwaInstallCommandWrapper::ExecutionMode execution_mode)
       : InstallIsolatedWebAppCommand(url_info,
                                      install_source,
                                      expected_version,
@@ -50,11 +50,10 @@ class MockInstallIsolatedWebApp : public InstallIsolatedWebAppCommand {
   // `InstallIsolatedWebAppCommand`:
   void StartWithLock(std::unique_ptr<AppLock> lock) override {
     switch (execution_mode_) {
-      case MockIsolatedWebAppInstallCommandWrapper::ExecutionMode::kRunCommand:
+      case MockIwaInstallCommandWrapper::ExecutionMode::kRunCommand:
         InstallIsolatedWebAppCommand::StartWithLock(std::move(lock));
         break;
-      case MockIsolatedWebAppInstallCommandWrapper::ExecutionMode::
-          kSimulateSuccess:
+      case MockIwaInstallCommandWrapper::ExecutionMode::kSimulateSuccess:
         CompleteAndSelfDestruct(
             CommandResult::kSuccess,
             InstallIsolatedWebAppCommandSuccess(
@@ -62,8 +61,7 @@ class MockInstallIsolatedWebApp : public InstallIsolatedWebAppCommand {
                 IsolatedWebAppStorageLocation::OwnedBundle(
                     /*dir_name_ascii=*/"some_dir", /*dev_mode=*/false)));
         break;
-      case MockIsolatedWebAppInstallCommandWrapper::ExecutionMode::
-          kSimulateFailure:
+      case MockIwaInstallCommandWrapper::ExecutionMode::kSimulateFailure:
         CompleteAndSelfDestruct(
             CommandResult::kFailure,
             base::unexpected(InstallIsolatedWebAppCommandError{
@@ -74,25 +72,24 @@ class MockInstallIsolatedWebApp : public InstallIsolatedWebAppCommand {
 
  private:
   const IsolatedWebAppUrlInfo url_info_;
-  const MockIsolatedWebAppInstallCommandWrapper::ExecutionMode execution_mode_;
+  const MockIwaInstallCommandWrapper::ExecutionMode execution_mode_;
 };
 
 }  // namespace
 
-MockIsolatedWebAppInstallCommandWrapper::
-    MockIsolatedWebAppInstallCommandWrapper(Profile* profile,
-                                            web_app::WebAppProvider* provider,
-                                            ExecutionMode execution_mode,
-                                            bool schedule_command_immediately)
+MockIwaInstallCommandWrapper::MockIwaInstallCommandWrapper(
+    Profile* profile,
+    web_app::WebAppProvider* provider,
+    ExecutionMode execution_mode,
+    bool schedule_command_immediately)
     : provider_(provider),
       profile_(profile),
       execution_mode_(execution_mode),
       schedule_command_immediately_(schedule_command_immediately) {}
 
-MockIsolatedWebAppInstallCommandWrapper::
-    ~MockIsolatedWebAppInstallCommandWrapper() = default;
+MockIwaInstallCommandWrapper::~MockIwaInstallCommandWrapper() = default;
 
-void MockIsolatedWebAppInstallCommandWrapper::Install(
+void MockIwaInstallCommandWrapper::Install(
     const IsolatedWebAppInstallSource& install_source,
     const IsolatedWebAppUrlInfo& url_info,
     const base::Version& expected_version,
@@ -106,7 +103,7 @@ void MockIsolatedWebAppInstallCommandWrapper::Install(
   }
 }
 
-void MockIsolatedWebAppInstallCommandWrapper::ScheduleCommand() {
+void MockIwaInstallCommandWrapper::ScheduleCommand() {
   CHECK(!command_was_scheduled_);
   CHECK(install_source_.has_value());
   CHECK(url_info_.has_value());
