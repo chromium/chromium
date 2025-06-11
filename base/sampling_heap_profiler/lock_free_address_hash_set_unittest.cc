@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include <algorithm>
 #include <atomic>
 #include <cinttypes>
 #include <memory>
@@ -23,6 +24,11 @@ namespace base {
 // Param is `multi_key`.
 class LockFreeAddressHashSetTest : public ::testing::TestWithParam<bool> {
  public:
+  // Returns the number of keys per node used in this test.
+  size_t GetKeysPerNode() {
+    return GetParam() ? LockFreeAddressHashSet::kKeysPerNode : 1;
+  }
+
   static bool IsSubset(const LockFreeAddressHashSet& superset,
                        const LockFreeAddressHashSet& subset) {
     for (const std::atomic<LockFreeAddressHashSet::Node*>& bucket :
@@ -33,7 +39,8 @@ class LockFreeAddressHashSetTest : public ::testing::TestWithParam<bool> {
         for (const LockFreeAddressHashSet::KeySlot& key_slot :
              subset.GetKeySlots(node)) {
           void* key = key_slot.load(std::memory_order_relaxed);
-          if (key && !superset.Contains(key)) {
+          if (key != nullptr && key != LockFreeAddressHashSet::kDeletedKey &&
+              !superset.Contains(key)) {
             return false;
           }
         }
@@ -47,6 +54,7 @@ class LockFreeAddressHashSetTest : public ::testing::TestWithParam<bool> {
     return IsSubset(set1, set2) && IsSubset(set2, set1);
   }
 
+  // Returns the number of keys in `bucket`.
   static size_t BucketSize(const LockFreeAddressHashSet& set, size_t bucket) {
     size_t count = 0;
     for (const LockFreeAddressHashSet::Node* node =
@@ -54,12 +62,59 @@ class LockFreeAddressHashSetTest : public ::testing::TestWithParam<bool> {
          node; node = node->next) {
       for (const LockFreeAddressHashSet::KeySlot& key_slot :
            set.GetKeySlots(node)) {
-        if (key_slot.load(std::memory_order_relaxed) != nullptr) {
+        void* key = key_slot.load(std::memory_order_relaxed);
+        if (key != nullptr && key != LockFreeAddressHashSet::kDeletedKey) {
           ++count;
         }
       }
     }
     return count;
+  }
+
+  // Returns the number of available slots in `bucket`, whether or not they
+  // contain keys.
+  static size_t BucketCapacity(const LockFreeAddressHashSet& set,
+                               size_t bucket) {
+    size_t capacity = 0;
+    for (const LockFreeAddressHashSet::Node* node =
+             set.buckets_[bucket].load(std::memory_order_acquire);
+         node; node = node->next) {
+      capacity += set.GetKeySlots(node).size();
+    }
+    return capacity;
+  }
+
+  static ::testing::AssertionResult ValidateNullAndDeletedKeys(
+      const LockFreeAddressHashSet& set,
+      size_t expected_deleted_keys) {
+    size_t deleted_keys = 0;
+    for (const std::atomic<LockFreeAddressHashSet::Node*>& bucket :
+         set.buckets_) {
+      for (const LockFreeAddressHashSet::Node* node =
+               bucket.load(std::memory_order_acquire);
+           node; node = node->next) {
+        bool found_null_key = false;
+        for (const LockFreeAddressHashSet::KeySlot& key_slot :
+             set.GetKeySlots(node)) {
+          void* key = key_slot.load(std::memory_order_relaxed);
+          if (found_null_key && key != nullptr) {
+            return ::testing::AssertionFailure()
+                   << "null keys must be at end of list";
+          }
+          if (key == nullptr) {
+            found_null_key = true;
+          } else if (key == LockFreeAddressHashSet::kDeletedKey) {
+            ++deleted_keys;
+          }
+        }
+      }
+    }
+    if (deleted_keys != expected_deleted_keys) {
+      return ::testing::AssertionFailure()
+             << "found " << deleted_keys << " deleted keys, expected "
+             << expected_deleted_keys;
+    }
+    return ::testing::AssertionSuccess();
   }
 };
 
@@ -79,6 +134,7 @@ TEST_P(LockFreeAddressHashSetTest, EmptySet) {
   EXPECT_EQ(size_t(8), set.buckets_count());
   EXPECT_EQ(0., set.load_factor());
   EXPECT_FALSE(set.Contains(&set));
+  EXPECT_TRUE(ValidateNullAndDeletedKeys(set, 0));
 }
 
 TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
@@ -91,6 +147,7 @@ TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
     set.Insert(ptr);
     EXPECT_EQ(i, set.size());
     EXPECT_TRUE(set.Contains(ptr));
+    EXPECT_TRUE(ValidateNullAndDeletedKeys(set, 0));
   }
 
   size_t size = 100;
@@ -98,14 +155,17 @@ TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
   EXPECT_EQ(size_t(8), set.buckets_count());
   EXPECT_EQ(size / 8., set.load_factor());
 
+  size_t deleted_keys = 0;
   for (size_t i = 99; i >= 3; i -= 3) {
     void* ptr = reinterpret_cast<void*>(i);
     set.Remove(ptr);
     EXPECT_EQ(--size, set.size());
     EXPECT_FALSE(set.Contains(ptr));
+    EXPECT_TRUE(ValidateNullAndDeletedKeys(set, ++deleted_keys));
   }
   // Removed every 3rd value (33 total) from the set, 67 have left.
-  EXPECT_EQ(size_t(67), set.size());
+  EXPECT_EQ(deleted_keys, 33u);
+  EXPECT_EQ(set.size(), 67u);
 
   for (size_t i = 1; i <= 100; ++i) {
     void* ptr = reinterpret_cast<void*>(i);
@@ -122,6 +182,10 @@ TEST_P(LockFreeAddressHashSetTest, Copy) {
     void* ptr = reinterpret_cast<void*>(i);
     set.Insert(ptr);
   }
+  // Remove a key from the set. Copying should not include the kDeletedKey
+  // sentinel.
+  set.Remove(reinterpret_cast<void*>(2000));
+  EXPECT_TRUE(ValidateNullAndDeletedKeys(set, 1));
 
   LockFreeAddressHashSet set2(4, lock, GetParam());
   LockFreeAddressHashSet set3(64, lock, GetParam());
@@ -131,6 +195,8 @@ TEST_P(LockFreeAddressHashSetTest, Copy) {
   EXPECT_TRUE(Equals(set, set2));
   EXPECT_TRUE(Equals(set, set3));
   EXPECT_TRUE(Equals(set2, set3));
+  EXPECT_TRUE(ValidateNullAndDeletedKeys(set2, 0));
+  EXPECT_TRUE(ValidateNullAndDeletedKeys(set3, 0));
 
   set.Insert(reinterpret_cast<void*>(42));
 
@@ -140,6 +206,51 @@ TEST_P(LockFreeAddressHashSetTest, Copy) {
 
   EXPECT_TRUE(IsSubset(set, set2));
   EXPECT_FALSE(IsSubset(set2, set));
+}
+
+TEST_P(LockFreeAddressHashSetTest, DeletedSlotIsReused) {
+  Lock lock;
+
+  // Put all keys in one bucket.
+  LockFreeAddressHashSet set(1, lock, GetParam());
+
+  // Start with at least 3 keys, filling at least one node.
+  const size_t initial_keys = std::max(size_t{3}, GetKeysPerNode());
+
+  AutoLock auto_lock(lock);
+  for (uintptr_t i = 1; i <= initial_keys; ++i) {
+    set.Insert(reinterpret_cast<void*>(i));
+    EXPECT_TRUE(ValidateNullAndDeletedKeys(set, 0));
+    EXPECT_EQ(BucketSize(set, 0), i);
+  }
+  size_t capacity = BucketCapacity(set, 0);
+
+  // Keys will have been added in order. Delete keys at the beginning, middle
+  // and end of the list.
+  set.Remove(reinterpret_cast<void*>(1));
+  set.Remove(reinterpret_cast<void*>(2));
+  set.Remove(reinterpret_cast<void*>(initial_keys));
+  EXPECT_TRUE(ValidateNullAndDeletedKeys(set, 3));
+  EXPECT_EQ(BucketSize(set, 0), initial_keys - 3);
+  EXPECT_EQ(BucketCapacity(set, 0), capacity);
+
+  // Add more keys. The first 3 should reuse the deleted slots.
+  for (uintptr_t i = 1; i <= 3; ++i) {
+    void* ptr = reinterpret_cast<void*>(initial_keys + i);
+    set.Insert(ptr);
+    EXPECT_TRUE(set.Contains(ptr));
+    EXPECT_TRUE(ValidateNullAndDeletedKeys(set, 3 - i));
+    EXPECT_EQ(BucketSize(set, 0), initial_keys - 3 + i);
+    EXPECT_EQ(BucketCapacity(set, 0), capacity);
+  }
+
+  // Out of deleted slots so adding another key should grow the bucket.
+  void* ptr = reinterpret_cast<void*>(initial_keys + 4);
+  set.Insert(ptr);
+  EXPECT_TRUE(set.Contains(ptr));
+  EXPECT_TRUE(ValidateNullAndDeletedKeys(set, 0));
+  EXPECT_EQ(BucketSize(set, 0), initial_keys + 1);
+  EXPECT_EQ(BucketCapacity(set, 0), capacity + GetKeysPerNode());
 }
 
 class WriterThread : public SimpleThread {

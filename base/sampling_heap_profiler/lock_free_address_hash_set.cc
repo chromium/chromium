@@ -4,6 +4,7 @@
 
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 
+#include <atomic>
 #include <bit>
 #include <limits>
 
@@ -11,6 +12,9 @@
 #include "base/synchronization/lock.h"
 
 namespace base {
+
+void* const LockFreeAddressHashSet::kDeletedKey =
+    reinterpret_cast<void*>(intptr_t{-1});
 
 LockFreeAddressHashSet::LockFreeAddressHashSet(size_t buckets_count,
                                                Lock& lock,
@@ -41,16 +45,18 @@ LockFreeAddressHashSet::~LockFreeAddressHashSet() {
 void LockFreeAddressHashSet::Insert(void* key) {
   lock_->AssertAcquired();
   DCHECK_NE(key, nullptr);
+  DCHECK_NE(key, kDeletedKey);
   CHECK(!Contains(key));
   ++size_;
   // Note: There's no need to use std::atomic_compare_exchange here,
   // as we do not support concurrent inserts, so values cannot change midair.
   std::atomic<Node*>& bucket = buckets_[Hash(key) & bucket_mask_];
   Node* node = bucket.load(std::memory_order_relaxed);
-  // First iterate over the bucket nodes and try to reuse an empty key slot.
+  // First iterate over the bucket nodes and try to use an empty key slot.
   for (; node != nullptr; node = node->next) {
     for (KeySlot& key_slot : GetKeySlots(node)) {
-      if (key_slot.load(std::memory_order_relaxed) == nullptr) {
+      void* existing_key = key_slot.load(std::memory_order_relaxed);
+      if (existing_key == nullptr || existing_key == kDeletedKey) {
         key_slot.store(key, std::memory_order_relaxed);
         return;
       }
@@ -75,7 +81,8 @@ void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
     for (const Node* node = bucket.load(std::memory_order_relaxed); node;
          node = node->next) {
       for (const KeySlot& key_slot : other.GetKeySlots(node)) {
-        if (void* key = key_slot.load(std::memory_order_relaxed)) {
+        void* key = key_slot.load(std::memory_order_relaxed);
+        if (key != nullptr && key != kDeletedKey) {
           Insert(key);
         }
       }
@@ -91,7 +98,14 @@ std::vector<size_t> LockFreeAddressHashSet::GetBucketLengths() const {
     size_t length = 0;
     for (const Node* node = bucket.load(std::memory_order_relaxed);
          node != nullptr; node = node->next) {
-      length += GetKeySlots(node).size();
+      // Count all non-null keys, including kDeletedKey, since they will need to
+      // be searched when iterating.
+      for (const KeySlot& key_slot : GetKeySlots(node)) {
+        if (key_slot.load(std::memory_order_relaxed) == nullptr) {
+          break;
+        }
+        ++length;
+      }
     }
     lengths.push_back(length);
   }

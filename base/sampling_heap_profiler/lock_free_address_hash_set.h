@@ -45,7 +45,7 @@ namespace base {
 //
 // It is not possible to really delete nodes from the list as there might
 // be concurrent reads being executed over the node. The |Remove| operation
-// just marks the node as empty by placing nullptr into its key field.
+// just marks the node as empty by placing a sentinel into its key field.
 // Consequent |Insert| operations may reuse empty nodes when possible.
 //
 // The structure of the hashset for N buckets is the following (assuming 2 keys
@@ -53,13 +53,13 @@ namespace base {
 //
 // 0: {*}--> {[key1,key2],*}--> NULL
 // 1: {*}--> NULL
-// 2: {*}--> {[NULL,key3],*}--> {[key4,NULL],*}--> NULL
+// 2: {*}--> {[kDeletedKey,key3],*}--> {[key4,NULL],*}--> NULL
 // ...
 // N-1: {*}--> {[keyM,NULL],*}--> NULL
 //
 // In bucket 2, three keys were inserted. The third required a second node,
-// containing the array [key4,NULL]. Then a key was removed, leaving a NULL
-// in the first node that can be reused if needed.
+// containing the array [key4,NULL]. Then a key was removed, leaving a
+// kDeletedKey in the first node that can be reused if needed.
 class BASE_EXPORT LockFreeAddressHashSet {
  public:
   // Creates a hash set with `buckets_count` buckets. `lock` is a lock that
@@ -71,17 +71,19 @@ class BASE_EXPORT LockFreeAddressHashSet {
 
   ~LockFreeAddressHashSet();
 
-  // Checks if the |key| is in the set. Can be executed concurrently with
-  // |Insert|, |Remove|, and |Contains| operations.
+  // Checks if the |key|, which must not be nullptr or kDeletedKey, is in the
+  // set.
+  // Can be executed concurrently with |Insert|, |Remove|, and |Contains|
+  // operations.
   ALWAYS_INLINE bool Contains(void* key) const;
 
-  // Removes the |key| from the set. The key must be present in the set before
-  // the invocation.
+  // Removes the |key|, which must not be nullptr or kDeletedKey, from the set.
+  // The key must be present in the set before the invocation.
   // Concurrent execution of |Insert|, |Remove|, or |Copy| is not supported.
   ALWAYS_INLINE void Remove(void* key);
 
-  // Inserts the |key| into the set. The key must not be present in the set
-  // before the invocation.
+  // Inserts the |key|, which must not be nullptr or kDeletedKey, into the set.
+  // The key must not be present in the set before the invocation.
   // Concurrent execution of |Insert|, |Remove|, or |Copy| is not supported.
   void Insert(void* key);
 
@@ -113,6 +115,8 @@ class BASE_EXPORT LockFreeAddressHashSet {
 
  private:
   friend class LockFreeAddressHashSetTest;
+
+  static void* const kDeletedKey;
 
   using KeySlot = std::atomic<void*>;
 
@@ -189,7 +193,7 @@ ALWAYS_INLINE void LockFreeAddressHashSet::Remove(void* key) {
   KeySlot* key_slot = FindKey(key);
   DCHECK_NE(key_slot, nullptr);
   // Mark the key slot as empty, so |Insert| can reuse it later.
-  key_slot->store(nullptr, std::memory_order_relaxed);
+  key_slot->store(kDeletedKey, std::memory_order_relaxed);
   // The node may now be empty, but we can never delete it, nor detach it from
   // the current bucket as there may always be another thread currently
   // iterating over it.
@@ -199,6 +203,7 @@ ALWAYS_INLINE void LockFreeAddressHashSet::Remove(void* key) {
 ALWAYS_INLINE LockFreeAddressHashSet::KeySlot* LockFreeAddressHashSet::FindKey(
     void* key) {
   DCHECK_NE(key, nullptr);
+  DCHECK_NE(key, kDeletedKey);
   const std::atomic<Node*>& bucket = buckets_[Hash(key) & bucket_mask_];
   // It's enough to use std::memory_order_consume ordering here, as the
   // node->next->...->next loads form a dependency chain.
@@ -216,8 +221,12 @@ ALWAYS_INLINE LockFreeAddressHashSet::KeySlot* LockFreeAddressHashSet::FindKey(
   for (Node* node = bucket.load(std::memory_order_acquire); node != nullptr;
        node = node->next) {
     for (KeySlot& key_slot : GetKeySlots(node)) {
-      if (key_slot.load(std::memory_order_relaxed) == key) {
+      void* key_in_slot = key_slot.load(std::memory_order_relaxed);
+      if (key_in_slot == key) {
         return &key_slot;
+      } else if (key_in_slot == nullptr) {
+        // Remaining slots in this node are empty.
+        break;
       }
     }
   }
