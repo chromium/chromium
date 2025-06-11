@@ -1867,6 +1867,36 @@ TEST_F(IntegrationTest, InstallUpdaterAndTwoApps) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTest, ReferralId) {
+  ScopedServer test_server(test_commands_);
+  const std::string kAppId("test");
+  const base::Version v1("1");
+  ExpectInstallEvent(test_server, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
+
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/true, "referral=foobar&usagestats=1"));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+
+#if BUILDFLAG(IS_WIN)
+  std::wstring referral_id;
+  EXPECT_EQ(
+      ERROR_SUCCESS,
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(base::UTF8ToWide(kAppId)).c_str(),
+                        Wow6432(KEY_READ))
+          .ReadValue(kRegValueReferralId, &referral_id));
+  EXPECT_EQ(referral_id, L"foobar");
+#endif  // BUILDFLAG(IS_WIN)
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTest, ChangeTag) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");

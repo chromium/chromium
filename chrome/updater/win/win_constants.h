@@ -49,6 +49,7 @@ inline constexpr wchar_t kGlobalPrefix[] = L"Global\\G";
 
 inline constexpr wchar_t kRegValuePV[] = L"pv";
 inline constexpr wchar_t kRegValueBrandCode[] = L"brand";
+inline constexpr wchar_t kRegValueReferralId[] = L"referral";
 inline constexpr wchar_t kRegValueAP[] = L"ap";
 inline constexpr wchar_t kRegValueLang[] = L"lang";
 inline constexpr wchar_t kRegValueDateOfLastActivity[] = L"DayOfLastActivity";
