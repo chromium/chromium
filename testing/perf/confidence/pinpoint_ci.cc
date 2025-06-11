@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
 #include "testing/perf/confidence/ratio_bootstrap_estimator.h"
@@ -55,7 +56,7 @@ vector<unordered_map<string, string>> ReadCSV(const char* filename) {
       contents, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   vector<string_view> headers = SplitCSVLine(lines[0]);
   if (headers.empty()) {
-    fprintf(stderr, "%s: Empty header line!\n", filename);
+    LOG(WARNING) << filename << ": Empty header line!";
     exit(1);
   }
 
@@ -63,8 +64,8 @@ vector<unordered_map<string, string>> ReadCSV(const char* filename) {
   for (unsigned i = 1; i < lines.size(); ++i) {
     vector<string_view> line = SplitCSVLine(lines[i]);
     if (line.size() != headers.size()) {
-      fprintf(stderr, "%s: Line had %zu columns, expected %zu\n", filename,
-              line.size(), headers.size());
+      LOG(WARNING) << filename << ": Line had " << line.size()
+                   << " columns, expected " << headers.size();
       break;
     }
 
@@ -82,7 +83,7 @@ vector<unordered_map<string, string>> ReadCSV(const char* filename) {
 
 int main(int argc, char** argv) {
   if (argc < 2 || argc > 3) {
-    fprintf(stderr, "USAGE: pinpoint_ci CSV_FILE [CONFIDENCE_LEVEL]\n");
+    LOG(WARNING) << "USAGE: pinpoint_ci CSV_FILE [CONFIDENCE_LEVEL]";
     exit(1);
   }
 
@@ -117,7 +118,7 @@ int main(int argc, char** argv) {
     string story;
     if (name == "motionmark") {
       if (line.count("stories") == 0) {
-        fprintf(stderr, "WARNING: Could not find MotionMark story\n");
+        LOG(WARNING) << "Could not find MotionMark story";
         continue;
       }
       story = line["stories"];
@@ -130,8 +131,7 @@ int main(int argc, char** argv) {
     } else if (display_label.find("exp:") != string::npos) {
       samples[story].second.push_back(avg);
     } else {
-      fprintf(stderr, "WARNING: Unknown display_label %s\n",
-              display_label.c_str());
+      LOG(WARNING) << "Unknown display_label " << display_label;
     }
   }
 
