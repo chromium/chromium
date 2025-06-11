@@ -391,7 +391,7 @@ public class InfoBarContainerTest {
                                         fullDisplayFrameMinusContainer);
                                 fullDisplayFrameMinusContainer.bottom -=
                                         infoBarContainerView.getHeight();
-                                int windowLocation[] = new int[2];
+                                int[] windowLocation = new int[2];
                                 infoBarContainerView.getLocationInWindow(windowLocation);
                                 containerDisplayFrame.set(
                                         windowLocation[0],

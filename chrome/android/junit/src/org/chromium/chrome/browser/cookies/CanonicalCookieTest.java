@@ -24,7 +24,7 @@ public class CanonicalCookieTest {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(outByteStream);
         try {
-            CanonicalCookie cookiesArray[] = new CanonicalCookie[cookies.size()];
+            CanonicalCookie[] cookiesArray = new CanonicalCookie[cookies.size()];
             cookies.toArray(cookiesArray);
             CanonicalCookie.saveListToStream(out, cookiesArray);
         } finally {

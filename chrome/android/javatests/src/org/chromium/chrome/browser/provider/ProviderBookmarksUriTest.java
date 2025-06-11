@@ -102,11 +102,11 @@ public class ProviderBookmarksUriTest {
     @Feature({"Android-ContentProvider"})
     public void testUpdateBookmark() {
         final long now = System.currentTimeMillis();
-        final long lastUpdateTime[] = {now, now - 1000 * 60};
-        final String url[] = {"http://www.google.com/", "http://mail.google.com/"};
-        final int visits[] = {2, 20};
-        final String title[] = {"Google", "Mail"};
-        final int isBookmark[] = {1, 0};
+        final long[] lastUpdateTime = {now, now - 1000 * 60};
+        final String[] url = {"http://www.google.com/", "http://mail.google.com/"};
+        final int[] visits = {2, 20};
+        final String[] title = {"Google", "Mail"};
+        final int[] isBookmark = {1, 0};
 
         ContentValues values = new ContentValues();
         values.put(BookmarkColumns.BOOKMARK, isBookmark[1]);
@@ -137,8 +137,8 @@ public class ProviderBookmarksUriTest {
     @Feature({"Android-ContentProvider"})
     public void testDeleteBookmark() {
         final long now = System.currentTimeMillis();
-        final long lastUpdateTime[] = {now, now - 1000 * 60};
-        final int isBookmark[] = {1, 0};
+        final long[] lastUpdateTime = {now, now - 1000 * 60};
+        final int[] isBookmark = {1, 0};
 
         String[] selectionArgs = {String.valueOf(lastUpdateTime[0]), String.valueOf(isBookmark[0])};
         Assert.assertEquals(
