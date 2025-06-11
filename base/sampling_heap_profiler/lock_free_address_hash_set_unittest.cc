@@ -20,22 +20,18 @@
 
 namespace base {
 
-// Param is `multi_key`.
-class LockFreeAddressHashSetTest : public ::testing::TestWithParam<bool> {
+class LockFreeAddressHashSetTest : public ::testing::Test {
  public:
   static bool IsSubset(const LockFreeAddressHashSet& superset,
                        const LockFreeAddressHashSet& subset) {
     for (const std::atomic<LockFreeAddressHashSet::Node*>& bucket :
          subset.buckets_) {
-      for (const LockFreeAddressHashSet::Node* node =
+      for (LockFreeAddressHashSet::Node* node =
                bucket.load(std::memory_order_acquire);
            node; node = node->next) {
-        for (const LockFreeAddressHashSet::KeySlot& key_slot :
-             subset.GetKeySlots(node)) {
-          void* key = key_slot.load(std::memory_order_relaxed);
-          if (key && !superset.Contains(key)) {
-            return false;
-          }
+        void* key = node->key.load(std::memory_order_relaxed);
+        if (key && !superset.Contains(key)) {
+          return false;
         }
       }
     }
@@ -49,30 +45,22 @@ class LockFreeAddressHashSetTest : public ::testing::TestWithParam<bool> {
 
   static size_t BucketSize(const LockFreeAddressHashSet& set, size_t bucket) {
     size_t count = 0;
-    for (const LockFreeAddressHashSet::Node* node =
-             set.buckets_[bucket].load(std::memory_order_acquire);
-         node; node = node->next) {
-      for (const LockFreeAddressHashSet::KeySlot& key_slot :
-           set.GetKeySlots(node)) {
-        if (key_slot.load(std::memory_order_relaxed) != nullptr) {
-          ++count;
-        }
-      }
+    LockFreeAddressHashSet::Node* node =
+        set.buckets_[bucket].load(std::memory_order_acquire);
+    for (; node; node = node->next) {
+      ++count;
     }
     return count;
   }
 };
 
+namespace {
+
 using LockFreeAddressHashSetDeathTest = LockFreeAddressHashSetTest;
 
-INSTANTIATE_TEST_SUITE_P(All, LockFreeAddressHashSetTest, ::testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All,
-                         LockFreeAddressHashSetDeathTest,
-                         ::testing::Bool());
-
-TEST_P(LockFreeAddressHashSetTest, EmptySet) {
+TEST_F(LockFreeAddressHashSetTest, EmptySet) {
   Lock lock;
-  LockFreeAddressHashSet set(8, lock, GetParam());
+  LockFreeAddressHashSet set(8, lock);
 
   AutoLock auto_lock(lock);
   EXPECT_EQ(size_t(0), set.size());
@@ -81,9 +69,9 @@ TEST_P(LockFreeAddressHashSetTest, EmptySet) {
   EXPECT_FALSE(set.Contains(&set));
 }
 
-TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
+TEST_F(LockFreeAddressHashSetTest, BasicOperations) {
   Lock lock;
-  LockFreeAddressHashSet set(8, lock, GetParam());
+  LockFreeAddressHashSet set(8, lock);
 
   AutoLock auto_lock(lock);
   for (size_t i = 1; i <= 100; ++i) {
@@ -113,9 +101,9 @@ TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
   }
 }
 
-TEST_P(LockFreeAddressHashSetTest, Copy) {
+TEST_F(LockFreeAddressHashSetTest, Copy) {
   Lock lock;
-  LockFreeAddressHashSet set(16, lock, GetParam());
+  LockFreeAddressHashSet set(16, lock);
 
   AutoLock auto_lock(lock);
   for (size_t i = 1000; i <= 16000; i += 1000) {
@@ -123,8 +111,8 @@ TEST_P(LockFreeAddressHashSetTest, Copy) {
     set.Insert(ptr);
   }
 
-  LockFreeAddressHashSet set2(4, lock, GetParam());
-  LockFreeAddressHashSet set3(64, lock, GetParam());
+  LockFreeAddressHashSet set2(4, lock);
+  LockFreeAddressHashSet set3(64, lock);
   set2.Copy(set);
   set3.Copy(set);
 
@@ -175,11 +163,11 @@ class WriterThread : public SimpleThread {
   raw_ref<std::atomic_bool> cancel_;
 };
 
-TEST_P(LockFreeAddressHashSetTest, ConcurrentAccess) {
+TEST_F(LockFreeAddressHashSetTest, ConcurrentAccess) {
   // The purpose of this test is to make sure adding/removing keys concurrently
   // does not disrupt the state of other keys.
   Lock lock;
-  LockFreeAddressHashSet set(16, lock, GetParam());
+  LockFreeAddressHashSet set(16, lock);
 
   {
     AutoLock auto_lock(lock);
@@ -208,11 +196,11 @@ TEST_P(LockFreeAddressHashSetTest, ConcurrentAccess) {
   EXPECT_FALSE(set.Contains(reinterpret_cast<void*>(0xbadf00d)));
 }
 
-TEST_P(LockFreeAddressHashSetTest, BucketsUsage) {
+TEST_F(LockFreeAddressHashSetTest, BucketsUsage) {
   // Test the uniformity of buckets usage.
   size_t count = 10000;
   Lock lock;
-  LockFreeAddressHashSet set(16, lock, GetParam());
+  LockFreeAddressHashSet set(16, lock);
   AutoLock auto_lock(lock);
   for (size_t i = 0; i < count; ++i) {
     set.Insert(reinterpret_cast<void*>(0x10000 + 0x10 * i));
@@ -225,10 +213,10 @@ TEST_P(LockFreeAddressHashSetTest, BucketsUsage) {
   }
 }
 
-TEST_P(LockFreeAddressHashSetDeathTest, LockAsserts) {
+TEST_F(LockFreeAddressHashSetDeathTest, LockAsserts) {
   Lock lock;
-  LockFreeAddressHashSet set(8, lock, GetParam());
-  LockFreeAddressHashSet set2(8, lock, GetParam());
+  LockFreeAddressHashSet set(8, lock);
+  LockFreeAddressHashSet set2(8, lock);
 
   // Should not require lock.
   EXPECT_FALSE(set.Contains(&lock));
@@ -252,4 +240,5 @@ TEST_P(LockFreeAddressHashSetDeathTest, LockAsserts) {
   EXPECT_DCHECK_DEATH(set.GetBucketLengths());
 }
 
+}  // namespace
 }  // namespace base
