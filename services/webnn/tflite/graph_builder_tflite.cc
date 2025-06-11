@@ -3236,10 +3236,8 @@ auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
   }
 
   const TensorIndex output_tensor_index =
-      base::checked_cast<TensorIndex>(tensors_.size());
-  tensors_.emplace_back(::tflite::CreateTensor(
-      builder_, builder_.CreateVector<int32_t>(output_shape),
-      input_tensor_info.data_type));
+      SerializeTemporaryTensor(output_shape, input_tensor_info.data_type,
+                               input_tensor_info.quantize_params);
 
   // TfLite padding is a signed integer tensor array filled with pre and post
   // padding. For NHWC input layout, the sequence will be [[0, 0],
