@@ -148,6 +148,7 @@ const LayoutResult* LayoutMasonryItemForMeasure(
 
 }  // namespace
 
+// TODO(almaher): Item margins aren't being taken into account for placement.
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const GridLayoutTrackCollection& track_collection,
     GridItems& masonry_items,
@@ -272,16 +273,25 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
           MakeGarbageCollected<GridItemData>(item_node, style);
       const auto space = CreateConstraintSpaceForMeasure(*item_data);
 
-      // TODO(almaher): Add margins to contribution sizes.
+      // TODO(almaher): Subgrids have extra margin to handle unique gap sizes.
+      // This requires access to the subgrid track collection, where that extra
+      // margin is accumulated.
+      const BoxStrut margins =
+          ComputeMarginsFor(space, item_node.Style(), GetConstraintSpace());
+      const LayoutUnit margin_sum =
+          (is_for_columns ? margins.InlineSum() : margins.BlockSum());
+
       // TODO(almaher): Update to whether this is parallel, instead of
       // `is_for_columns`, and add tests for orthogonal items.
       if (is_for_columns) {
         virtual_item->EncompassContributionSize(
-            ComputeMinAndMaxContentContributionForSelf(item_node, space).sizes);
+            ComputeMinAndMaxContentContributionForSelf(item_node, space).sizes,
+            margin_sum);
       } else {
         virtual_item->EncompassContributionSize(
             ComputeMasonryItemBlockContribution(
-                grid_axis_direction, sizing_constraint, space, item_data));
+                grid_axis_direction, sizing_constraint, space, item_data) +
+            margin_sum);
       }
     }
 
