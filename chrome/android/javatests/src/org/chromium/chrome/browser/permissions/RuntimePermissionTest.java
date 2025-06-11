@@ -135,7 +135,7 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486136
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136
     public void testAllowRuntimeMicrophoneOneTime() throws Exception {
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};
         mTestAndroidPermissionDelegate =
@@ -194,7 +194,7 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486136
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136
     public void testDenyRuntimeCamera() throws Exception {
         String[] requestablePermission = new String[] {Manifest.permission.CAMERA};
         mTestAndroidPermissionDelegate =
@@ -216,7 +216,7 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486136
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136
     public void testDenyRuntimeMicrophone() throws Exception {
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};
         mTestAndroidPermissionDelegate =
@@ -316,7 +316,7 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486136
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136
     public void testDenyAndNeverAskMicrophone() throws Exception {
         // First ask for mic and reply with "deny and never ask again";
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};
@@ -354,7 +354,7 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486136
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136
     public void testDenyAndNeverAskCamera() throws Exception {
         // First ask for camera and reply with "deny and never ask again";
         String[] requestablePermission = new String[] {Manifest.permission.CAMERA};

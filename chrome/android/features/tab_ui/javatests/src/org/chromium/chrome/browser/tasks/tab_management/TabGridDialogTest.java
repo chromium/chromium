@@ -1183,7 +1183,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/40263769
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/40263769
     public void testSelectionEditorPosition() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
@@ -1768,7 +1768,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void testStripDialog_TabListEditorCloseAll_NoCustomHomepage() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create a tab group with 2 tabs.
@@ -1815,7 +1815,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void testStripDialog_TabListEditorCloseAll_CustomHomepage() {
         GURL url =
                 new GURL(
@@ -1871,7 +1871,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     @RequiresRestart
     public void testDialogSetup_WithStartSurface() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(

@@ -241,7 +241,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-notice-row-for-testing/true/notice-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForRowTreatmentAcceptSurvey() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         acknowledgeRowNotice();
@@ -268,7 +268,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-notice-row-for-testing/true/notice-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForRowTreatmentDismissSurvey() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         acknowledgeRowNotice();
@@ -299,7 +299,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-notice-row-for-testing/true/notice-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForRowTreatmentNotShownWhenTriggerIdNotSet() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         acknowledgeRowNotice();
@@ -317,7 +317,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     })
     @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY})
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForRowNoticeNotShownWithSurveyFeatureDisabled() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         acknowledgeRowNotice();
@@ -338,7 +338,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-consent-for-testing/true/consent-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForEeaAcceptedConsentAcceptSurvey() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
@@ -366,7 +366,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-consent-for-testing/true/consent-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForEeaAcceptedConsentDismissSurvey() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
@@ -400,7 +400,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-consent-for-testing/true/consent-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForEeaAcceptedNotShownWhenTriggerIdNotSet() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
@@ -423,7 +423,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-consent-for-testing/true/consent-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForEeaAcceptedNotShownSurveyDueToAcceptedTriggerRate() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
@@ -446,7 +446,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-consent-for-testing/true/consent-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForEeaDeclinedConsentAcceptSurvey() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ false);
@@ -474,7 +474,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-consent-for-testing/true/consent-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForEeaDeclinedConsentDismissSurvey() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ false);
@@ -502,7 +502,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-consent-for-testing/true/consent-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForEeaDeclinedNotShownSurveyDueToDeclinedTriggerRate() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ false);
@@ -531,7 +531,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
                 + ":force-show-consent-for-testing/true/consent-required/true",
     })
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForEeaDeclinedNotShownWhenTriggerIdNotSet() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ false);
@@ -564,7 +564,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     })
     @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT})
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForTreatmentNotShownWhenAdsNoticeCctFeatureDisabled() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
@@ -582,7 +582,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     })
     @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY})
     // TODO(crbug.com/391968140): Re-enable tests when supporting tablets
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void adsCctSurveyForEeaConsentNotShownWithSurveyFeatureDisabled() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);

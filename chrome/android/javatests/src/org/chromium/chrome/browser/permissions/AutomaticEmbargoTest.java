@@ -129,7 +129,7 @@ public class AutomaticEmbargoTest {
     @LargeTest
     @Feature({"MediaPermissions"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/387226499
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/387226499
     public void testCameraEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getMicrophone()", "deny", /* withGesture= */ true);
     }

@@ -202,7 +202,7 @@ public class PaymentRequestEmailAndPhoneTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/383399707
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/383399707
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         int expectedSample =
                 Event2.SHOWN

@@ -149,7 +149,7 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/1111770
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/1111770
     public void testFillsPasswordOnTap() throws TimeoutException {
         preparePasswordBridge();
         ThreadUtils.runOnUiThreadBlocking(

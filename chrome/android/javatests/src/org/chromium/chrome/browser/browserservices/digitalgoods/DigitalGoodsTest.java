@@ -93,7 +93,7 @@ public class DigitalGoodsTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void javaImplConnected() throws TimeoutException {
         FakeDigitalGoods fake = new FakeDigitalGoods();
         DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(fake);

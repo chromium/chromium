@@ -47,7 +47,7 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/385204714
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/385204714
     public void testTapWithLanguage() throws Exception {
         // Resolving a German word should trigger translation.
         mFakeServer.setExpectations(

@@ -514,7 +514,7 @@ public class ExpandablePaymentHandlerTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/1135547
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/1135547
     @ParameterAnnotations.UseMethodParameter(GoodCertParams.class)
     public void testSecureConnectionShowUi(int goodCertificate) throws Throwable {
         startServer(goodCertificate);

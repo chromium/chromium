@@ -26,7 +26,7 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
     protected boolean deviceTypeApplies(String type) {
         final boolean desktopOnly = TextUtils.equals(type, DeviceFormFactor.DESKTOP);
         final boolean phoneOnly = TextUtils.equals(type, DeviceFormFactor.PHONE);
-        final boolean tabletOnly = TextUtils.equals(type, DeviceFormFactor.TABLET);
+        final boolean tabletOnly = TextUtils.equals(type, DeviceFormFactor.ONLY_TABLET);
         if (!desktopOnly && !phoneOnly && !tabletOnly) {
             return false;
         }
@@ -38,7 +38,7 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
                     switch (type) {
                         case DeviceFormFactor.PHONE:
                             return !isDesktopBuild && !isTablet;
-                        case DeviceFormFactor.TABLET:
+                        case DeviceFormFactor.ONLY_TABLET:
                             return !isDesktopBuild && isTablet;
                         case DeviceFormFactor.DESKTOP:
                             return isDesktopBuild;

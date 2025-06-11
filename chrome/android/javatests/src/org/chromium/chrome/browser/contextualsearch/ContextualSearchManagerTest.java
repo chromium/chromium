@@ -325,7 +325,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41485867
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41485867
     public void testRedirectedExternalNavigationWithUserGesture() throws Exception {
         ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
         simulateResolveSearch("intelligence");

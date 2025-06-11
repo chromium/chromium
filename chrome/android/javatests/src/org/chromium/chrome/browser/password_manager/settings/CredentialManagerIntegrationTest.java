@@ -121,7 +121,7 @@ public class CredentialManagerIntegrationTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15
     })
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/339278945
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/339278945
     @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testUseCredentialManagerFromSafetyCheckForLocal() {
         mSettingsActivityTestRule.startSettingsActivity();
@@ -141,7 +141,7 @@ public class CredentialManagerIntegrationTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15
     })
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/339278945
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/339278945
     @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testUseCredentialManagerFromSafetyCheckForAccount() {
         mSettingsActivityTestRule.startSettingsActivity();

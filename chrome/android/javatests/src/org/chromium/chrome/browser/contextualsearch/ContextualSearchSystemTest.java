@@ -119,7 +119,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // See https://crbug.com/382637778
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // See https://crbug.com/382637778
     // Revived 6/2022 based on reviver: https://crbug.com/1333277
     // Previously disabled: https://crbug.com/1192285, https://crbug.com/1192561
     public void testContextualSearchNotDismissedOnBackgroundTabCrash() throws Exception {

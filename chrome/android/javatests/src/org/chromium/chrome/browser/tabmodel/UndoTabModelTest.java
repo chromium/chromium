@@ -283,7 +283,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338997949
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338997949
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/1297370
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testOpenRecentlyClosedTabMultiWindow() throws TimeoutException {
@@ -365,7 +365,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338997949
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338997949
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/1297370
     @MinAndroidSdkLevel(24)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)

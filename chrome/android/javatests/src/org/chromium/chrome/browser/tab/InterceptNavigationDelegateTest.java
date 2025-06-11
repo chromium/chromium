@@ -51,7 +51,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486139
+@DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486139
 public class InterceptNavigationDelegateTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =

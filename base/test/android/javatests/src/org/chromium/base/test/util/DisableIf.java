@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * \@DisableIf.Build(sdk_is_greater_than = 22)
  * </code> In the following either baz or tablet will cause the test case to be disabled. <code>
  * \@DisableIf.Build(supported_abis_includes = "baz")
- * \@DisableIf.Device(DeviceFormFactor.TABLET)
+ * \@DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
  * </code> When multiple arguments are specified for a single annotation, each condition is 'and'ed
  * together. In the following both baz and sdk > 22 will need to be true for this test case to be
  * disabled. <code>

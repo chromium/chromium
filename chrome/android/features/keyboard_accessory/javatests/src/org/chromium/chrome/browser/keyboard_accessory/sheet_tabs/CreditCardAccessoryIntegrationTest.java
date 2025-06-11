@@ -98,7 +98,7 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/1182626
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/1182626
     public void testDisplaysEmptyStateMessageWithoutSavedCards() throws TimeoutException {
         mHelper.loadTestPage(false);
 

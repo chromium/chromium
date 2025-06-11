@@ -190,7 +190,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338976917
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338976917
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
     @DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
     public void testManagePasswordsNoUpmFlow() throws InterruptedException {

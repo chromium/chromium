@@ -45,7 +45,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
 @Batch(Batch.PER_CLASS)
-@ImportantFormFactors(DeviceFormFactor.TABLET)
+@ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
 public class TabSwitcherActionMenuBatchedPTTest {
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =

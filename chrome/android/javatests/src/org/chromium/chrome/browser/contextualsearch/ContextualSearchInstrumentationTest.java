@@ -76,7 +76,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/378735617
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/378735617
     public void testPrivacyNeutralPeekExpandMaximize() throws Exception {
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         mPolicy.overrideDecidedStateForTesting(false);

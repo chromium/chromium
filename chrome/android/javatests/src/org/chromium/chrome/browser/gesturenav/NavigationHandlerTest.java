@@ -211,7 +211,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void testIncorrectEdgeSwipes() {
         // Swipe incorrectly 3 times and correctly once.
         HistogramWatcher histogramWatcher =

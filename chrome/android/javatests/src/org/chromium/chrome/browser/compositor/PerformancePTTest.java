@@ -52,8 +52,10 @@ public class PerformancePTTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // Disable on tablet (crbug.com/420861061)
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // Disable on automotive (crbug.com/420881807)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // Disable on tablet (crbug.com/420861061)
+    @Restriction(
+            DeviceRestriction
+                    .RESTRICTION_TYPE_NON_AUTO) // Disable on automotive (crbug.com/420881807)
     public void zeroCompositorFramesWhileScrollingBrowserControls() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

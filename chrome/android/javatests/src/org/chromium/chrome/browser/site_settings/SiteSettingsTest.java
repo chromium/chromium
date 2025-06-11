@@ -2638,7 +2638,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41490094
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41490094
     public void testCameraBlocked() throws Exception {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "Camera",
@@ -2665,7 +2665,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41490094
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41490094
     public void testCameraNotBlocked() throws Exception {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "Camera",
@@ -2717,7 +2717,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41490094
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41490094
     public void testMicNotBlocked() throws Exception {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "Mic",
@@ -3886,7 +3886,7 @@ public class SiteSettingsTest {
     @DisableIf.Build(
             message = "https://crbug.com/1269556,https://crbug.com/1414569",
             sdk_is_greater_than = Build.VERSION_CODES.N_MR1)
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/1234530
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/1234530
     public void testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(/* expectGranted= */ true);
         mPermissionRule.runNoPromptTest(

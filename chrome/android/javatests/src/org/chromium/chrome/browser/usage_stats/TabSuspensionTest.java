@@ -397,7 +397,7 @@ public class TabSuspensionTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/339003346
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/339003346
     public void testSuspendNullCurrentTab() {
         mActivityTestRule.loadUrl(mStartingUrl);
         ChromeTabUtils.closeAllTabs(InstrumentationRegistry.getInstrumentation(), mActivity);

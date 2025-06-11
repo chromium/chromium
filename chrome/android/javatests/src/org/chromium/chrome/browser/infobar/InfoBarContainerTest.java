@@ -255,7 +255,7 @@ public class InfoBarContainerTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/387250786
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/387250786
     public void testQuickAddOneAndDismiss() throws Exception {
         final TestListener infobarListener = addInfoBarToCurrentTab(false);
         Assert.assertEquals(1, sActivityTestRule.getInfoBars().size());
@@ -308,7 +308,7 @@ public class InfoBarContainerTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/40300011
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/40300011
     public void testCloseButton() throws Exception {
         sActivityTestRule.loadUrl(
                 sTestServer.getURL("/chrome/test/data/android/click_listener.html"));

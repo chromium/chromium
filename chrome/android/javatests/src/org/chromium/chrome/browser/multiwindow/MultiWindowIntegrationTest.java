@@ -106,7 +106,7 @@ public class MultiWindowIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338976206
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338976206
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/1297370
     @Feature("MultiWindow")
     @CommandLineFlags.Add({

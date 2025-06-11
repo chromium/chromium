@@ -38,7 +38,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486142
+@DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486142
 public class WebShareTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

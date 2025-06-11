@@ -292,7 +292,7 @@ public class TabsTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/353910783
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/353910783
     public void testHideKeyboard() throws Exception {
         // Open a new tab(The 1st tab) and click node.
         mActivityTestRule.loadUrlInNewTab(getUrl(TEST_FILE_PATH), false);
