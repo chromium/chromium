@@ -1804,26 +1804,6 @@
     "expires": "never"
   },
   {
-    "prefix": "keepalive-in-browser-migration",
-    "owners": ["mych@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/background-fetch/",
-      "external/wpt/beacon/",
-      "external/wpt/content-security-policy/connect-src/connect-src-beacon-allowed.sub.html",
-      "external/wpt/content-security-policy/connect-src/connect-src-beacon-blocked.sub.html",
-      "external/wpt/content-security-policy/connect-src/connect-src-beacon-redirect-to-blocked.sub.html",
-      "external/wpt/content-security-policy/reporting/",
-      "external/wpt/fetch/",
-      "external/wpt/xhr/"
-    ],
-    "args": [
-      "--enable-features=KeepAliveInBrowserMigration",
-      "--disable-features=DeprecateUnload"
-    ],
-    "expires": "Apr 1, 2024"
-  },
-  {
     "prefix": "text-size-adjust",
     "owners": ["pdr@chromium.org"],
     "platforms": ["Linux", "Mac"],

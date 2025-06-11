@@ -1196,7 +1196,6 @@ crbug.com/1517319 virtual/speculation-rules-prerender-target-hint/external/wpt/s
 
 crbug.com/326619067 [ Mac ] external/wpt/css/css-scroll-snap/snap-events/scrollsnapchanging/scrollsnapchanging-on-user-root-scroll.tentative.html [ Slow ]
 crbug.com/332903033 [ Mac ] external/wpt/css/css-scroll-snap/snap-events/scrollsnapchanging/scrollsnapchanging-on-user-scroll.tentative.html [ Slow ]
-crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/* [ Slow ]
 
 crbug.com/328849073 virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Slow ]
 

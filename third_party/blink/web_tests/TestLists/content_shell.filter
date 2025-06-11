@@ -934,13 +934,6 @@ virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-*
 virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-*
 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus.html
 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-hidden-display.html
-virtual/keepalive-in-browser-migration/external/wpt/background-fetch/abort.https.window.html
-virtual/keepalive-in-browser-migration/external/wpt/background-fetch/fetch.https.window.html
-virtual/keepalive-in-browser-migration/external/wpt/background-fetch/fetch-uploads.https.window.html
-virtual/keepalive-in-browser-migration/external/wpt/background-fetch/match.https.window.html
-virtual/keepalive-in-browser-migration/external/wpt/background-fetch/update-ui.https.window.html
-virtual/keepalive-in-browser-migration/external/wpt/fetch/fetch-later/new-window.tentative.https.window.html
-virtual/keepalive-in-browser-migration/external/wpt/fetch/stale-while-revalidate/stale-*
 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-custom-timing-function.html
 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-fixed-position-rounding-error.html
 virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/last-frame-dimensions.html
