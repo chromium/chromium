@@ -196,7 +196,7 @@ public class PaymentManifestVerifier
         mSupportedOrigins =
                 Collections.unmodifiableSet(
                         supportedOrigins == null
-                                ? new HashSet<GURL>()
+                                ? new HashSet<>()
                                 : new HashSet<>(supportedOrigins));
         mDownloader = downloader;
         mCache = webDataService;

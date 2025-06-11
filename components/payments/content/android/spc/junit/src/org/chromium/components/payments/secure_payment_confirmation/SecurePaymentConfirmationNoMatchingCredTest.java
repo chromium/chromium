@@ -84,7 +84,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     public void setUp() {
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         setWindowAndroid(windowAndroid, mWebContents);
-        Mockito.doReturn(new WeakReference<Context>(RuntimeEnvironment.application))
+        Mockito.doReturn(new WeakReference<>(RuntimeEnvironment.application))
                 .when(windowAndroid)
                 .getContext();
 
@@ -154,7 +154,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
 
     private void setContext(Context context) {
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
-        Mockito.doReturn(new WeakReference<Context>(context)).when(windowAndroid).getContext();
+        Mockito.doReturn(new WeakReference<>(context)).when(windowAndroid).getContext();
     }
 
     @Test

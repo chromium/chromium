@@ -441,20 +441,19 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 }
 
                 if (!methodToAppsMapping.containsKey(defaultMethod)) {
-                    methodToAppsMapping.put(defaultMethod, new HashSet<ResolveInfo>());
+                    methodToAppsMapping.put(defaultMethod, new HashSet<>());
                 }
                 methodToAppsMapping.get(defaultMethod).add(app);
 
                 if (UrlUtil.isURLValid(defaultUrlMethod)) {
                     if (!urlMethodToDefaultAppsMapping.containsKey(defaultUrlMethod)) {
-                        urlMethodToDefaultAppsMapping.put(
-                                defaultUrlMethod, new HashSet<ResolveInfo>());
+                        urlMethodToDefaultAppsMapping.put(defaultUrlMethod, new HashSet<>());
                     }
                     urlMethodToDefaultAppsMapping.get(defaultUrlMethod).add(app);
 
                     appOrigin = defaultUrlMethod.getOrigin();
                     if (!mOriginToUrlDefaultMethodsMapping.containsKey(appOrigin)) {
-                        mOriginToUrlDefaultMethodsMapping.put(appOrigin, new HashSet<GURL>());
+                        mOriginToUrlDefaultMethodsMapping.put(appOrigin, new HashSet<>());
                     }
                     mOriginToUrlDefaultMethodsMapping.get(appOrigin).add(defaultUrlMethod);
                 }
@@ -497,7 +496,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 }
 
                 if (!methodToAppsMapping.containsKey(supportedMethod)) {
-                    methodToAppsMapping.put(supportedMethod, new HashSet<ResolveInfo>());
+                    methodToAppsMapping.put(supportedMethod, new HashSet<>());
                 }
                 methodToAppsMapping.get(supportedMethod).add(app);
 
@@ -509,15 +508,14 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 supportedUrlMethods.add(supportedUrlMethod);
 
                 if (!mMethodToSupportedAppsMapping.containsKey(supportedUrlMethod)) {
-                    mMethodToSupportedAppsMapping.put(
-                            supportedUrlMethod, new HashSet<ResolveInfo>());
+                    mMethodToSupportedAppsMapping.put(supportedUrlMethod, new HashSet<>());
                 }
                 mMethodToSupportedAppsMapping.get(supportedUrlMethod).add(app);
 
                 if (appOrigin == null) continue;
 
                 if (!urlMethodToSupportedOriginsMapping.containsKey(supportedUrlMethod)) {
-                    urlMethodToSupportedOriginsMapping.put(supportedUrlMethod, new HashSet<GURL>());
+                    urlMethodToSupportedOriginsMapping.put(supportedUrlMethod, new HashSet<>());
                 }
                 urlMethodToSupportedOriginsMapping.get(supportedUrlMethod).add(appOrigin);
             }

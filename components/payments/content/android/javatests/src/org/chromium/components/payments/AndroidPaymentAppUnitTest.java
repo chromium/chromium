@@ -26,11 +26,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
-import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
-import org.chromium.payments.mojom.PaymentShippingOption;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,7 +146,7 @@ public class AndroidPaymentAppUnitTest {
                 "https://merchant.com",
                 "https://psp.com",
                 /* certificateChain= */ null,
-                /* modifiers= */ new HashMap<String, PaymentDetailsModifier>(),
+                /* modifiers= */ new HashMap<>(),
                 new AndroidPaymentApp.IsReadyToPayCallback() {
                     @Override
                     public void onIsReadyToPayResponse(
@@ -175,10 +173,10 @@ public class AndroidPaymentAppUnitTest {
                 /* certificateChain= */ null,
                 mMethods,
                 total,
-                /* displayItems= */ new ArrayList<PaymentItem>(),
-                /* modifiers= */ new HashMap<String, PaymentDetailsModifier>(),
+                /* displayItems= */ new ArrayList<>(),
+                /* modifiers= */ new HashMap<>(),
                 new PaymentOptions(),
-                new ArrayList<PaymentShippingOption>(),
+                new ArrayList<>(),
                 new PaymentApp.InstrumentDetailsCallback() {
                     @Override
                     public void onInstrumentDetailsReady(

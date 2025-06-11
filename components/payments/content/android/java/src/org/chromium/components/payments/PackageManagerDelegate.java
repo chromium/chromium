@@ -70,7 +70,7 @@ public class PackageManagerDelegate {
             return null;
         }
 
-        List<PackageInfo> packageInfos = new ArrayList<PackageInfo>();
+        List<PackageInfo> packageInfos = new ArrayList<>();
         for (String packageName : packageNames) {
             PackageInfo result = getPackageInfoWithSignatures(packageName);
             if (result == null) {
