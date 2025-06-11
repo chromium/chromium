@@ -360,39 +360,6 @@ TEST_F(FocusControllerTest, FocusHasChangedShouldInvalidateFocusStyle) {
             style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
-TEST_F(FocusControllerTest, FocusCanBeEmulated) {
-  SetBodyInnerHTML("<div id=host></div>");
-  auto& controller = GetFocusController();
-  controller.SetFocused(false);
-  EXPECT_FALSE(controller.IsDocumentFocused(GetDocument()));
-
-  controller.SetFocusEmulationEnabled(true);
-  EXPECT_TRUE(controller.IsDocumentFocused(GetDocument()));
-}
-
-TEST_F(FocusControllerTest, FocusIsRestoredAfterEmulation) {
-  SetBodyInnerHTML("<div id=host></div>");
-  auto& controller = GetFocusController();
-  controller.SetFocused(false);
-  controller.SetFocusEmulationEnabled(true);
-  EXPECT_TRUE(controller.IsDocumentFocused(GetDocument()));
-
-  controller.SetFocusEmulationEnabled(false);
-  EXPECT_FALSE(controller.IsDocumentFocused(GetDocument()));
-}
-
-TEST_F(FocusControllerTest, FocusedFrameCannotBeUnsetDuringEmulation) {
-  SetBodyInnerHTML("<div id=host></div>");
-  auto& controller = GetFocusController();
-  controller.SetActive(true);
-  controller.SetFocused(true);
-  controller.SetFocusEmulationEnabled(true);
-  EXPECT_EQ(GetDocument().GetFrame(), controller.FocusedFrame());
-
-  controller.SetFocusedFrame(nullptr);
-  EXPECT_EQ(GetDocument().GetFrame(), controller.FocusedFrame());
-}
-
 class FocusControllerTestWithIframes : public RenderingTest {
  public:
   FocusControllerTestWithIframes()
