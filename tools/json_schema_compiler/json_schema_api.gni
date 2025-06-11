@@ -15,7 +15,7 @@
 # - sources [required] A list of schema files used to generate the C++ types.
 #
 # - root_namespace [required]
-#     A Python string substituion pattern used to generate the C++
+#     A Python string substitution pattern used to generate the C++
 #     namespace for each API. Use %(namespace)s to replace with the API
 #     namespace, like "toplevel::%(namespace)s_api".
 #
