@@ -5,13 +5,16 @@
 #ifndef BASE_SAMPLING_HEAP_PROFILER_LOCK_FREE_ADDRESS_HASH_SET_H_
 #define BASE_SAMPLING_HEAP_PROFILER_LOCK_FREE_ADDRESS_HASH_SET_H_
 
+#include <array>
 #include <atomic>
 #include <cstdint>
+#include <new>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
@@ -33,24 +36,38 @@ namespace base {
 //
 // Internally the hashset is implemented as a vector of N buckets
 // (N has to be a power of 2). Each bucket holds a single-linked list of
-// nodes each corresponding to a key.
+// nodes each containing keys.
+//
+// As an optimization, each node can optionally hold a fixed-length array of
+// keys, so that in most cases all keys in the bucket share a cache line.
+// Ideally only in extreme cases will a bucket hold so many keys that a second
+// node in a different area of the heap must be allocated.
+//
 // It is not possible to really delete nodes from the list as there might
 // be concurrent reads being executed over the node. The |Remove| operation
 // just marks the node as empty by placing nullptr into its key field.
 // Consequent |Insert| operations may reuse empty nodes when possible.
 //
-// The structure of the hashset for N buckets is the following:
-// 0: {*}--> {key1,*}--> {key2,*}--> NULL
+// The structure of the hashset for N buckets is the following (assuming 2 keys
+// per node):
+//
+// 0: {*}--> {[key1,key2],*}--> NULL
 // 1: {*}--> NULL
-// 2: {*}--> {NULL,*}--> {key3,*}--> {key4,*}--> NULL
+// 2: {*}--> {[NULL,key3],*}--> {[key4,NULL],*}--> NULL
 // ...
-// N-1: {*}--> {keyM,*}--> NULL
+// N-1: {*}--> {[keyM,NULL],*}--> NULL
+//
+// In bucket 2, three keys were inserted. The third required a second node,
+// containing the array [key4,NULL]. Then a key was removed, leaving a NULL
+// in the first node that can be reused if needed.
 class BASE_EXPORT LockFreeAddressHashSet {
  public:
   // Creates a hash set with `buckets_count` buckets. `lock` is a lock that
   // must be held by callers of |Insert|, |Remove| and |Copy|. |Contains| is
   // lock-free.
-  LockFreeAddressHashSet(size_t buckets_count, Lock& lock);
+  LockFreeAddressHashSet(size_t buckets_count,
+                         Lock& lock,
+                         bool multi_key = false);
 
   ~LockFreeAddressHashSet();
 
@@ -97,45 +114,92 @@ class BASE_EXPORT LockFreeAddressHashSet {
  private:
   friend class LockFreeAddressHashSetTest;
 
-  struct Node {
-    ALWAYS_INLINE Node(void* key, Node* next);
-    std::atomic<void*> key;
+  using KeySlot = std::atomic<void*>;
+
+  class Node {
+   public:
     // This field is not a raw_ptr<> to avoid out-of-line destructor.
     RAW_PTR_EXCLUSION Node* next;
+
+   protected:
+    // Can only be created through subclasses.
+    ALWAYS_INLINE explicit Node(Node* next);
   };
 
+  class SingleKeyNode : public Node {
+   public:
+    ALWAYS_INLINE SingleKeyNode(void* key, Node* next);
+
+    KeySlot key;
+  };
+
+  class MultiKeyNode : public Node {
+   public:
+    ALWAYS_INLINE MultiKeyNode(void* key, Node* next);
+
+    // For the median client, the 50th %ile of bucket chain length ranges from
+    // 0.6 nodes to 2.6 nodes, depending on platform and process type. The 99th
+    // %ile ranges from 1.6 nodes to 4.6 nodes. So 4-node chunks is a good
+    // choice to maximize locality without wasting too much unused space.
+    std::array<KeySlot, 4> keys{};
+  };
+
+  // Make sure a node will fit in a single cache line.
+  static_assert(sizeof(MultiKeyNode) <=
+                std::hardware_constructive_interference_size);
+
+  // Returns the KeySlot containing `key` (which must not be null), or nullptr
+  // if it's not in the hash set.
+  ALWAYS_INLINE KeySlot* FindKey(void* key);
+  ALWAYS_INLINE const KeySlot* FindKey(void* key) const;
+
+  // Returns a view of all key slots in `node`.
+  ALWAYS_INLINE base::span<KeySlot> GetKeySlots(Node* node);
+  ALWAYS_INLINE base::span<const KeySlot> GetKeySlots(const Node* node) const;
+
+  // Returns the hash of `key`.
   ALWAYS_INLINE static uint32_t Hash(void* key);
-  ALWAYS_INLINE Node* FindNode(void* key) const;
 
   raw_ref<Lock> lock_;
 
   std::vector<std::atomic<Node*>> buckets_;
   size_t size_ GUARDED_BY(lock_) = 0;
   const size_t bucket_mask_;
+  const bool multi_key_;
 };
 
-ALWAYS_INLINE LockFreeAddressHashSet::Node::Node(void* key, Node* next)
-    : next(next) {
+ALWAYS_INLINE LockFreeAddressHashSet::Node::Node(Node* next) : next(next) {}
+
+ALWAYS_INLINE LockFreeAddressHashSet::SingleKeyNode::SingleKeyNode(void* key,
+                                                                   Node* next)
+    : Node(next) {
   this->key.store(key, std::memory_order_relaxed);
 }
 
+ALWAYS_INLINE LockFreeAddressHashSet::MultiKeyNode::MultiKeyNode(void* key,
+                                                                 Node* next)
+    : Node(next) {
+  keys.front().store(key, std::memory_order_relaxed);
+}
+
 ALWAYS_INLINE bool LockFreeAddressHashSet::Contains(void* key) const {
-  return FindNode(key) != nullptr;
+  return FindKey(key) != nullptr;
 }
 
 ALWAYS_INLINE void LockFreeAddressHashSet::Remove(void* key) {
   lock_->AssertAcquired();
-  Node* node = FindNode(key);
-  DCHECK_NE(node, nullptr);
-  // We can never delete the node, nor detach it from the current bucket
-  // as there may always be another thread currently iterating over it.
-  // Instead we just mark it as empty, so |Insert| can reuse it later.
-  node->key.store(nullptr, std::memory_order_relaxed);
+  KeySlot* key_slot = FindKey(key);
+  DCHECK_NE(key_slot, nullptr);
+  // Mark the key slot as empty, so |Insert| can reuse it later.
+  key_slot->store(nullptr, std::memory_order_relaxed);
+  // The node may now be empty, but we can never delete it, nor detach it from
+  // the current bucket as there may always be another thread currently
+  // iterating over it.
   --size_;
 }
 
-ALWAYS_INLINE LockFreeAddressHashSet::Node* LockFreeAddressHashSet::FindNode(
-    void* key) const {
+ALWAYS_INLINE LockFreeAddressHashSet::KeySlot* LockFreeAddressHashSet::FindKey(
+    void* key) {
   DCHECK_NE(key, nullptr);
   const std::atomic<Node*>& bucket = buckets_[Hash(key) & bucket_mask_];
   // It's enough to use std::memory_order_consume ordering here, as the
@@ -153,11 +217,37 @@ ALWAYS_INLINE LockFreeAddressHashSet::Node* LockFreeAddressHashSet::FindNode(
   // here.
   for (Node* node = bucket.load(std::memory_order_acquire); node != nullptr;
        node = node->next) {
-    if (node->key.load(std::memory_order_relaxed) == key) {
-      return node;
+    for (KeySlot& key_slot : GetKeySlots(node)) {
+      if (key_slot.load(std::memory_order_relaxed) == key) {
+        return &key_slot;
+      }
     }
   }
   return nullptr;
+}
+
+ALWAYS_INLINE const LockFreeAddressHashSet::KeySlot*
+LockFreeAddressHashSet::FindKey(void* key) const {
+  return const_cast<LockFreeAddressHashSet*>(this)->FindKey(key);
+}
+
+ALWAYS_INLINE base::span<LockFreeAddressHashSet::KeySlot>
+LockFreeAddressHashSet::GetKeySlots(Node* node) {
+  if (multi_key_) {
+    return base::span(reinterpret_cast<MultiKeyNode*>(node)->keys);
+  } else {
+    return base::span_from_ref(reinterpret_cast<SingleKeyNode*>(node)->key);
+  }
+}
+
+ALWAYS_INLINE base::span<const LockFreeAddressHashSet::KeySlot>
+LockFreeAddressHashSet::GetKeySlots(const Node* node) const {
+  if (multi_key_) {
+    return base::span(reinterpret_cast<const MultiKeyNode*>(node)->keys);
+  } else {
+    return base::span_from_ref(
+        reinterpret_cast<const SingleKeyNode*>(node)->key);
+  }
 }
 
 // static
