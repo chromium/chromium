@@ -778,7 +778,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // See also `PrefetchService::AddPrefetchContainerWithoutStartingPrefetch()`.
   void MigrateNewlyAdded(std::unique_ptr<PrefetchContainer> added);
 
-  // DevTools
+  // Handles loader related events. Currently used for DevTools and metrics.
   void NotifyPrefetchRequestWillBeSent(
       const network::mojom::URLResponseHeadPtr* redirect_head);
   void NotifyPrefetchResponseReceived(
@@ -1108,6 +1108,7 @@ class CONTENT_EXPORT PrefetchContainer {
   std::optional<base::TimeTicks> time_added_to_prefetch_service_;
   std::optional<base::TimeTicks> time_initial_eligibility_got_;
   std::optional<base::TimeTicks> time_prefetch_started_;
+  std::optional<base::TimeTicks> time_url_request_started_;
   std::optional<base::TimeTicks> time_header_determined_successfully_;
   std::optional<base::TimeTicks> time_prefetch_completed_successfully_;
 

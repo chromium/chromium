@@ -2138,6 +2138,9 @@ void PrefetchContainer::NotifyPrefetchResponseReceived(
   // Ensured by the caller `PrefetchService::OnPrefetchResponseStarted()`.
   CHECK(!IsDecoy());
 
+  time_url_request_started_ = head.load_timing.request_start;
+
+  // DevTools plumbing.
   auto* ftn = FrameTreeNode::From(
       RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
   // Don't emit CDP events if the trigger is not Spec Rules or the document
@@ -2145,7 +2148,6 @@ void PrefetchContainer::NotifyPrefetchResponseReceived(
   if (!ftn) {
     return;
   }
-
   devtools_instrumentation::OnPrefetchResponseReceived(ftn, RequestId(),
                                                        GetCurrentURL(), head);
 }
@@ -2239,6 +2241,19 @@ void PrefetchContainer::RecordDurationFromAdded() {
                                                   embedder_histogram_suffix_),
       }),
       time_prefetch_started_.value() - time_added_to_prefetch_service_.value());
+
+  if (!time_url_request_started_.has_value()) {
+    return;
+  }
+
+  base::UmaHistogramTimes(base::StrCat({
+                              "Prefetch.PrefetchContainer."
+                              "AddedToURLRequestStarted.",
+                              GetMetricsSuffixTriggerTypeAndEagerness(
+                                  prefetch_type_, embedder_histogram_suffix_),
+                          }),
+                          time_url_request_started_.value() -
+                              time_added_to_prefetch_service_.value());
 
   if (!time_header_determined_successfully_.has_value()) {
     return;
