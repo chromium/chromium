@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/autofill_ai_import_utils.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 
 #include <memory>
 #include <string>
@@ -20,18 +20,9 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
-
-using autofill::AttributeInstance;
-using autofill::AttributeType;
-using autofill::AutofillField;
-using autofill::DatePartRange;
-using autofill::DenseSet;
-using autofill::EntityInstance;
-using autofill::EntityType;
-using autofill::FieldType;
 
 bool EntitySatisfiesImportConstraints(const EntityInstance& entity) {
   return AttributesMeetImportConstraints(
@@ -95,9 +86,9 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field) {
 }
 
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
-    base::span<const std::unique_ptr<autofill::AutofillField>> fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     const std::string& app_locale) {
-  std::map<autofill::Section,
+  std::map<Section,
            std::map<EntityType, std::map<AttributeType, AttributeInstance>>>
       section_to_entity_types_attributes;
   for (const std::unique_ptr<AutofillField>& field : fields) {
@@ -122,7 +113,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         entity_attributes.try_emplace(*attribute_type, *attribute_type).first;
     attribute_it->second.SetInfo(field->Type().GetStorableType(), value.value,
                                  app_locale, value.format_string,
-                                 autofill::VerificationStatus::kObserved);
+                                 VerificationStatus::kObserved);
   }
 
   for (auto& [section, entities] : section_to_entity_types_attributes) {
@@ -163,8 +154,8 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
 }
 
 std::optional<std::u16string> MaybeGetLocalizedDate(
-    const autofill::AttributeInstance& attribute) {
-  autofill::FieldType field_type = attribute.type().field_type();
+    const AttributeInstance& attribute) {
+  FieldType field_type = attribute.type().field_type();
   if (!IsDateFieldType(field_type)) {
     return std::nullopt;
   }
@@ -187,4 +178,4 @@ std::optional<std::u16string> MaybeGetLocalizedDate(
   return base::LocalizedTimeFormatWithPattern(time, "yMMMd");
 }
 
-}  // namespace autofill_ai
+}  // namespace autofill

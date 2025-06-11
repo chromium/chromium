@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_IMPORT_UTILS_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_IMPORT_UTILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_IMPORT_UTILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_IMPORT_UTILS_H_
 
 #include <memory>
 #include <string>
@@ -15,19 +15,16 @@
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
+
 class AutofillField;
 class EntityInstance;
-}  // namespace autofill
 
-namespace autofill_ai {
-
-bool AttributesMeetImportConstraints(
-    autofill::EntityType entity_type,
-    autofill::DenseSet<autofill::AttributeType> attributes);
+bool AttributesMeetImportConstraints(EntityType entity_type,
+                                     DenseSet<AttributeType> attributes);
 
 // Returns import candidates.
-std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
-    base::span<const std::unique_ptr<autofill::AutofillField>> fields,
+std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
+    base::span<const std::unique_ptr<AutofillField>> fields,
     const std::string& app_locale);
 
 // Returns the localized date value of `attribute`, if its FieldType is a date.
@@ -41,6 +38,6 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
 std::optional<std::u16string> MaybeGetLocalizedDate(
     const autofill::AttributeInstance& attribute);
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_IMPORT_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_IMPORT_UTILS_H_

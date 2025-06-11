@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/autofill_ai_import_utils.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 
 #include <memory>
 #include <string>
@@ -21,7 +21,6 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

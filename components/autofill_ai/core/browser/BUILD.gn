@@ -9,8 +9,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     sources = [
       "autofill_ai_client.cc",
       "autofill_ai_client.h",
-      "autofill_ai_import_utils.cc",
-      "autofill_ai_import_utils.h",
       "autofill_ai_manager.cc",
       "autofill_ai_manager.h",
       "autofill_ai_metrics.cc",
@@ -56,7 +54,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "autofill_ai_import_utils_unittest.cc",
       "autofill_ai_manager_unittest.cc",
       "metrics/autofill_ai_logger_unittest.cc",
     ]
