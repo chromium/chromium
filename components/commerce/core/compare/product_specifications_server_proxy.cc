@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/compare/compare_utils.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -298,20 +299,19 @@ std::unique_ptr<EndpointFetcher>
 ProductSpecificationsServerProxy::CreateEndpointFetcher(
     const GURL& url,
     const std::string& post_data) {
-  const EndpointFetcher::RequestParams request_params =
-      EndpointFetcher::RequestParams::Builder(
-          endpoint_fetcher::HttpMethod::kPost, kShoppingListTrafficAnnotation)
-          .SetUrl(url)
-          .SetContentType(kContentType)
-          .SetAuthType(endpoint_fetcher::OAUTH)
-          .SetOauthScopes(std::vector<std::string>{kOAuthScope})
-          .SetConsentLevel(signin::ConsentLevel::kSync)
-          .SetTimeout(base::Milliseconds(kTimeoutMs))
-          .SetOauthConsumerName(kOAuthName)
-          .SetPostData(post_data)
-          .Build();
-  return std::make_unique<EndpointFetcher>(url_loader_factory_,
-                                           identity_manager_, request_params);
+  EndpointFetcher::RequestParams::Builder request_params(
+      endpoint_fetcher::HttpMethod::kPost, kShoppingListTrafficAnnotation);
+  request_params.SetUrl(url)
+      .SetContentType(kContentType)
+      .SetAuthType(endpoint_fetcher::OAUTH)
+      .SetOauthScopes(std::vector<std::string>{kOAuthScope})
+      .SetConsentLevel(signin::ConsentLevel::kSync)
+      .SetTimeout(base::Milliseconds(kTimeoutMs))
+      .SetOauthConsumerName(kOAuthName)
+      .SetPostData(post_data);
+  MaybeUseAlternateShoppingServer(request_params);
+  return std::make_unique<EndpointFetcher>(
+      url_loader_factory_, identity_manager_, request_params.Build());
 }
 
 std::optional<ProductSpecifications>

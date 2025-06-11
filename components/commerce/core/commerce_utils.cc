@@ -17,8 +17,8 @@
 #include "base/values.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -137,6 +137,15 @@ std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
   }
 
   return info;
+}
+
+void MaybeUseAlternateShoppingServer(
+    endpoint_fetcher::EndpointFetcher::RequestParams::Builder& params_builder) {
+  if (base::FeatureList::IsEnabled(commerce::kShoppingAlternateServer)) {
+    params_builder.SetHeaders(
+        std::vector<endpoint_fetcher::EndpointFetcher::RequestParams::Header>{
+            {kAlternateServerHeaderName, kAlternateServerHeaderTrueValue}});
+  }
 }
 
 }  // namespace commerce

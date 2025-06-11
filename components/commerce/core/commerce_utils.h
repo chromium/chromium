@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "components/commerce/core/commerce_types.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 
 class GURL;
@@ -28,6 +29,11 @@ GURL GetProductSpecsTabUrlForID(const base::Uuid& uuid);
 std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
     const optimization_guide::OptimizationMetadata& metadata,
     bool can_load_product_specs_full_page_ui = false);
+
+// Conditionally route traffic to an alternate shopping server by sending
+// HTTP headers with the request.
+void MaybeUseAlternateShoppingServer(
+    endpoint_fetcher::EndpointFetcher::RequestParams::Builder& params_builder);
 
 }  // namespace commerce
 

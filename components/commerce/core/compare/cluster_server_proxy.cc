@@ -12,6 +12,7 @@
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/compare/compare_utils.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -139,21 +140,21 @@ void ClusterServerProxy::GetComparableProducts(
 std::unique_ptr<EndpointFetcher> ClusterServerProxy::CreateEndpointFetcher(
     const GURL& url,
     const std::string& post_data) {
-  const EndpointFetcher::RequestParams request_params =
+  EndpointFetcher::RequestParams::Builder request_params =
       EndpointFetcher::RequestParams::Builder(
           endpoint_fetcher::HttpMethod::kPost,
-          kGetComparableProductsTrafficAnnotation)
-          .SetUrl(url)
-          .SetContentType(kContentType)
-          .SetAuthType(endpoint_fetcher::OAUTH)
-          .SetOauthScopes(std::vector<std::string>{kOAuthScope})
-          .SetConsentLevel(signin::ConsentLevel::kSync)
-          .SetTimeout(base::Milliseconds(kTimeoutMs))
-          .SetOauthConsumerName(kOAuthName)
-          .SetPostData(post_data)
-          .Build();
-  return std::make_unique<EndpointFetcher>(url_loader_factory_,
-                                           identity_manager_, request_params);
+          kGetComparableProductsTrafficAnnotation);
+  request_params.SetUrl(url)
+      .SetContentType(kContentType)
+      .SetAuthType(endpoint_fetcher::OAUTH)
+      .SetOauthScopes(std::vector<std::string>{kOAuthScope})
+      .SetConsentLevel(signin::ConsentLevel::kSync)
+      .SetTimeout(base::Milliseconds(kTimeoutMs))
+      .SetOauthConsumerName(kOAuthName)
+      .SetPostData(post_data);
+  commerce::MaybeUseAlternateShoppingServer(request_params);
+  return std::make_unique<EndpointFetcher>(
+      url_loader_factory_, identity_manager_, request_params.Build());
 }
 
 void ClusterServerProxy::HandleCompareResponse(

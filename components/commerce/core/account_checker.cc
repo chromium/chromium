@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -328,19 +329,19 @@ std::unique_ptr<EndpointFetcher> AccountChecker::CreateEndpointFetcher(
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
-  const EndpointFetcher::RequestParams request_params =
-      EndpointFetcher::RequestParams::Builder(http_method, annotation_tag)
-          .SetUrl(url)
-          .SetContentType(content_type)
-          .SetAuthType(endpoint_fetcher::OAUTH)
-          .SetOauthScopes(scopes)
-          .SetConsentLevel(consent_level)
-          .SetTimeout(timeout)
-          .SetOauthConsumerName(oauth_consumer_name)
-          .SetPostData(post_data)
-          .Build();
-  return std::make_unique<EndpointFetcher>(url_loader_factory_,
-                                           identity_manager_, request_params);
+  EndpointFetcher::RequestParams::Builder request_params =
+      EndpointFetcher::RequestParams::Builder(http_method, annotation_tag);
+  request_params.SetUrl(url)
+      .SetContentType(content_type)
+      .SetAuthType(endpoint_fetcher::OAUTH)
+      .SetOauthScopes(scopes)
+      .SetConsentLevel(consent_level)
+      .SetTimeout(timeout)
+      .SetOauthConsumerName(oauth_consumer_name)
+      .SetPostData(post_data);
+  MaybeUseAlternateShoppingServer(request_params);
+  return std::make_unique<EndpointFetcher>(
+      url_loader_factory_, identity_manager_, request_params.Build());
 }
 
 }  // namespace commerce

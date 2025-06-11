@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
@@ -294,19 +295,19 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
-  const EndpointFetcher::RequestParams request_params =
-      EndpointFetcher::RequestParams::Builder(http_method, annotation_tag)
-          .SetUrl(url)
-          .SetContentType(kContentType)
-          .SetAuthType(endpoint_fetcher::OAUTH)
-          .SetOauthScopes(std::vector<std::string>{kOAuthScope})
-          .SetConsentLevel(consent_level)
-          .SetTimeout(base::Milliseconds(kTimeoutMs.Get()))
-          .SetOauthConsumerName(kOAuthName)
-          .SetPostData(post_data)
-          .Build();
-  return std::make_unique<EndpointFetcher>(url_loader_factory_,
-                                           identity_manager_, request_params);
+  EndpointFetcher::RequestParams::Builder request_params =
+      EndpointFetcher::RequestParams::Builder(http_method, annotation_tag);
+  request_params.SetUrl(url)
+      .SetContentType(kContentType)
+      .SetAuthType(endpoint_fetcher::OAUTH)
+      .SetOauthScopes(std::vector<std::string>{kOAuthScope})
+      .SetConsentLevel(consent_level)
+      .SetTimeout(base::Milliseconds(kTimeoutMs.Get()))
+      .SetOauthConsumerName(kOAuthName)
+      .SetPostData(post_data);
+  MaybeUseAlternateShoppingServer(request_params);
+  return std::make_unique<EndpointFetcher>(
+      url_loader_factory_, identity_manager_, request_params.Build());
 }
 
 void SubscriptionsServerProxy::HandleManageSubscriptionsResponses(
