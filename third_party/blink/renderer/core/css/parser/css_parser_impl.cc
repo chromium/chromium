@@ -2413,8 +2413,7 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
     }
     stream.ConsumeIncludingWhitespace();
 
-    CSSSyntaxDefinition type = ConsumeFunctionType(stream).value_or(
-        CSSSyntaxDefinition::CreateUniversal());
+    std::optional<CSSSyntaxDefinition> type = ConsumeFunctionType(stream);
 
     CSSVariableData* default_value = nullptr;
     if (stream.Peek().GetType() == kColonToken) {
@@ -2432,8 +2431,22 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
           /*comma_ends_declaration=*/true, important_ignored, *context_);
     }
 
+    // If a type and a default are both provided, the default must
+    // parse successfully according to that type.
+    //
+    // https://drafts.csswg.org/css-mixins-1/#function-rule
+    if (type.has_value() && default_value) {
+      if (!default_value->NeedsVariableResolution() &&
+          !type->Parse(default_value->OriginalText(), *context_,
+                       /*is_animation_tainted=*/false,
+                       /*is_attr_tainted=*/false)) {
+        return std::nullopt;
+      }
+    }
+
     parameters.push_back(StyleRuleFunction::Parameter{
-        parameter_name, std::move(type), default_value});
+        parameter_name, type.value_or(CSSSyntaxDefinition::CreateUniversal()),
+        default_value});
     if (stream.Peek().GetType() == kRightParenthesisToken) {
       // No more arguments.
       break;
