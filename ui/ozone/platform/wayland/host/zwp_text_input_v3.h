@@ -116,6 +116,7 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
         : text(std::move(text)),
           cursor_begin(cursor_begin),
           cursor_end(cursor_end) {}
+    bool operator==(const PreeditData& other) const = default;
     std::string text;
     int32_t cursor_begin = 0;
     int32_t cursor_end = 0;
@@ -130,9 +131,11 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
   struct InputEvents {
     InputEvents();
     ~InputEvents();
-    PreeditData preedit;
+    void Reset();
+    std::unique_ptr<PreeditData> preedit;
     std::string commit;
-    DeleteSurroundingText delete_surrounding_text;
+    std::unique_ptr<DeleteSurroundingText> delete_surrounding_text;
+    // Only used when applied.
     uint32_t last_done_serial = 0;
   };
 
@@ -155,10 +158,6 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
   bool SendSurroundingText();
 
   void SendPendingImeData();
-
-  void ResetPendingImeData();
-  void ResetCommittedImeData();
-  void ResetInputEventsState();
 
   void Commit();
 
@@ -191,6 +190,9 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
 
   // Input events state that will be applied in done event.
   InputEvents pending_input_events_;
+
+  // Input events applied on done event.
+  InputEvents applied_input_events_;
 
   // Pending data to be sent to IME.
   ImeData pending_ime_data_;
