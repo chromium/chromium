@@ -18,9 +18,9 @@ DocumentPolicyViolationReportBody::DocumentPolicyViolationReportBody(
     : LocationReportBody(resource_url),
       feature_id_(feature_id),
       message_(message.empty()
-                   ? WTF::StrCat({"Document policy violation: ", feature_id,
-                                  " is not allowed in this document."})
-                   : WTF::StrCat({"Document policy violation: ", message})),
+                   ? StrCat({"Document policy violation: ", feature_id,
+                             " is not allowed in this document."})
+                   : StrCat({"Document policy violation: ", message})),
       disposition_(disposition) {
   DCHECK(!feature_id.empty());
   DCHECK(!disposition.empty());

@@ -120,7 +120,7 @@ void Headers::append(ScriptState* script_state,
     if (temp.IsNull()) {
       temp = normalized_value;
     } else {
-      temp = WTF::StrCat({temp, ", ", normalized_value});
+      temp = StrCat({temp, ", ", normalized_value});
     }
 
     // If |name|/|temporaryValue| is not a no-CORS-safelisted request-header,

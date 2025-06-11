@@ -26,7 +26,7 @@ class CORE_EXPORT PermissionsPolicyViolationReportBody
       const String& allow_attribute = WTF::g_empty_string,
       const String& src_attribute = WTF::g_empty_string)
       : feature_id_(feature_id),
-        message_(WTF::StrCat(
+        message_(StrCat(
             {(allow_attribute.empty()
                   ? "Permissions policy violation: "
                   : "Potential permissions policy violation: "),

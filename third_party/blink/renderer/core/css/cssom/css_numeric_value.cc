@@ -377,8 +377,7 @@ CSSUnitValue* CSSNumericValue::to(const String& unit_string,
 
   CSSUnitValue* result = to(target_unit);
   if (!result) {
-    exception_state.ThrowTypeError(
-        WTF::StrCat({"Cannot convert to ", unit_string}));
+    exception_state.ThrowTypeError(StrCat({"Cannot convert to ", unit_string}));
     return nullptr;
   }
 

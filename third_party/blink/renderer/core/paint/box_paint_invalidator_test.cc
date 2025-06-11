@@ -54,7 +54,7 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
 
     target.setAttribute(
         html_names::kStyleAttr,
-        AtomicString(WTF::StrCat(
+        AtomicString(StrCat(
             {target.getAttribute(html_names::kStyleAttr), "; width: 200px"})));
     GetDocument().View()->UpdateLifecycleToLayoutClean(
         DocumentUpdateReason::kTest);

@@ -40,14 +40,14 @@ class PolicyParserMessageBuffer {
   void Warn(const String& message) {
     if (!discard_message_) {
       message_buffer_.emplace_back(mojom::blink::ConsoleMessageLevel::kWarning,
-                                   WTF::StrCat({prefix_, message}));
+                                   StrCat({prefix_, message}));
     }
   }
 
   void Error(const String& message) {
     if (!discard_message_) {
       message_buffer_.emplace_back(mojom::blink::ConsoleMessageLevel::kError,
-                                   WTF::StrCat({prefix_, message}));
+                                   StrCat({prefix_, message}));
     }
   }
 

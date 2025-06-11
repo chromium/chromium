@@ -87,7 +87,7 @@ void RemoveNodeCommand::DoUnapply() {
 }
 
 String RemoveNodeCommand::ToString() const {
-  return WTF::StrCat({"RemoveNodeCommand {node:", node_->ToString(), "}"});
+  return StrCat({"RemoveNodeCommand {node:", node_->ToString(), "}"});
 }
 
 void RemoveNodeCommand::Trace(Visitor* visitor) const {

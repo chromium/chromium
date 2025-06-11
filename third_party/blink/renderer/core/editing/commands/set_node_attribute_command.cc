@@ -51,7 +51,7 @@ void SetNodeAttributeCommand::DoUnapply() {
 }
 
 String SetNodeAttributeCommand::ToString() const {
-  return WTF::StrCat(
+  return StrCat(
       {"SetNodeAttributeCommand {attribute:", attribute_.ToString(), "}"});
 }
 

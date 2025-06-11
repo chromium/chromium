@@ -74,8 +74,8 @@ namespace {
 WTF::String EventListenerBreakpointKey(const WTF::String& event_name,
                                        const WTF::String& target_name) {
   if (target_name.empty() || target_name == "*")
-    return WTF::StrCat({event_name, "$$*"});
-  return WTF::StrCat({event_name, "$$", target_name.LowerASCII()});
+    return StrCat({event_name, "$$*"});
+  return StrCat({event_name, "$$", target_name.LowerASCII()});
 }
 }  // namespace
 
@@ -315,7 +315,7 @@ static protocol::Response DomTypeForName(const String& type_string, int& type) {
     return protocol::Response::Success();
   }
   return protocol::Response::ServerError(
-      WTF::StrCat({"Unknown DOM breakpoint type: ", type_string}).Utf8());
+      StrCat({"Unknown DOM breakpoint type: ", type_string}).Utf8());
 }
 
 static String DomTypeName(int type) {
@@ -644,7 +644,7 @@ InspectorDOMDebuggerAgent::PreparePauseOnNativeEventData(
     return nullptr;
 
   const String full_event_name =
-      WTF::StrCat({kListenerEventCategoryType, event_name});
+      StrCat({kListenerEventCategoryType, event_name});
   auto event_data = protocol::DictionaryValue::create();
   event_data->setString("eventName", full_event_name);
   event_data->setString("targetName", target_name);

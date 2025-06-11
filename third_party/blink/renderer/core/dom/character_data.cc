@@ -65,9 +65,9 @@ String CharacterData::substringData(unsigned offset,
   if (offset > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"The offset ", String::Number(offset),
-                     " is greater than the node's length (",
-                     String::Number(length()), ")."}));
+        StrCat({"The offset ", String::Number(offset),
+                " is greater than the node's length (",
+                String::Number(length()), ")."}));
     return String();
   }
 
@@ -98,15 +98,15 @@ void CharacterData::insertData(unsigned offset,
   if (offset > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"The offset ", String::Number(offset),
-                     " is greater than the node's length (",
-                     String::Number(length()), ")."}));
+        StrCat({"The offset ", String::Number(offset),
+                " is greater than the node's length (",
+                String::Number(length()), ")."}));
     return;
   }
 
   String current_data = this->data();
-  String new_str = WTF::StrCat({StringView(current_data, 0, offset), data,
-                                StringView(current_data, offset)});
+  String new_str = StrCat({StringView(current_data, 0, offset), data,
+                           StringView(current_data, offset)});
 
   SetDataAndUpdate(new_str, TextDiffRange::Insert(offset, data.length()),
                    kUpdateFromNonParser);
@@ -122,9 +122,9 @@ static bool ValidateOffsetCount(unsigned offset,
   if (offset > length) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"The offset ", String::Number(offset),
-                     " is greater than the node's length (",
-                     String::Number(length), ")."}));
+        StrCat({"The offset ", String::Number(offset),
+                " is greater than the node's length (", String::Number(length),
+                ")."}));
     return false;
   }
 
@@ -148,8 +148,8 @@ void CharacterData::deleteData(unsigned offset,
     return;
 
   String current_data = this->data();
-  String new_str = WTF::StrCat({StringView(current_data, 0, offset),
-                                StringView(current_data, offset + real_count)});
+  String new_str = StrCat({StringView(current_data, 0, offset),
+                           StringView(current_data, offset + real_count)});
   SetDataAndUpdate(new_str, TextDiffRange::Delete(offset, real_count),
                    kUpdateFromNonParser);
 
@@ -166,8 +166,8 @@ void CharacterData::replaceData(unsigned offset,
     return;
 
   String current_data = this->data();
-  String new_str = WTF::StrCat({StringView(current_data, 0, offset), data,
-                                StringView(current_data, offset + real_count)});
+  String new_str = StrCat({StringView(current_data, 0, offset), data,
+                           StringView(current_data, offset + real_count)});
 
   SetDataAndUpdate(new_str,
                    TextDiffRange::Replace(offset, real_count, data.length()),

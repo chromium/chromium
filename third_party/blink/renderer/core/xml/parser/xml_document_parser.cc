@@ -943,7 +943,7 @@ static inline bool HandleNamespaceAttributes(
     AtomicString namespace_uri = ToAtomicString(ns.uri);
     if (ns.prefix) {
       namespace_q_name = AtomicString(
-          WTF::StrCat({WTF::g_xmlns_with_colon, ToAtomicString(ns.prefix)}));
+          StrCat({WTF::g_xmlns_with_colon, ToAtomicString(ns.prefix)}));
     }
     std::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
         xmlns_names::kNamespaceURI, namespace_q_name, exception_state);
@@ -987,10 +987,9 @@ static inline bool HandleElementAttributes(
       }
     }
     AtomicString attr_q_name =
-        attr_prefix.empty()
-            ? ToAtomicString(attr.localname)
-            : AtomicString(
-                  WTF::StrCat({attr_prefix, ":", ToString(attr.localname)}));
+        attr_prefix.empty() ? ToAtomicString(attr.localname)
+                            : AtomicString(StrCat({attr_prefix, ":",
+                                                   ToString(attr.localname)}));
 
     std::optional<QualifiedName> parsed_name =
         Element::ParseAttributeName(attr_uri, attr_q_name, exception_state);
@@ -1071,7 +1070,7 @@ void XMLDocumentParser::StartElementNs(
   QualifiedName q_name(prefix, local_name, adjusted_uri);
   if (!prefix.empty() && adjusted_uri.empty()) {
     q_name = QualifiedName(g_null_atom,
-                           AtomicString(WTF::StrCat({prefix, ":", local_name})),
+                           AtomicString(StrCat({prefix, ":", local_name})),
                            g_null_atom);
   }
 

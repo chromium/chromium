@@ -776,7 +776,7 @@ String IPAddressToString(const net::IPAddress& address) {
     return unbracketed;
   }
 
-  return WTF::StrCat({"[", unbracketed, "]"});
+  return StrCat({"[", unbracketed, "]"});
 }
 
 namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
@@ -1009,8 +1009,7 @@ BuildObjectForResourceRequest(const ResourceRequest& request,
           .setReferrerPolicy(GetReferrerPolicy(request.GetReferrerPolicy()))
           .build();
   if (url.HasFragmentIdentifier()) {
-    result->setUrlFragment(
-        WTF::StrCat({"#", url.FragmentIdentifier().ToString()}));
+    result->setUrlFragment(StrCat({"#", url.FragmentIdentifier().ToString()}));
   }
   if (!data_string.empty())
     result->setPostData(data_string);
@@ -1997,7 +1996,7 @@ void InspectorNetworkAgent::DidReceiveWebSocketHandshakeResponse(
     if (!add_result.is_new_entry) {
       // Protocol expects the "\n" separated format.
       add_result.stored_value->value = AtomicString(
-          WTF::StrCat({add_result.stored_value->value, "\n", header->value}));
+          StrCat({add_result.stored_value->value, "\n", header->value}));
     }
   }
 

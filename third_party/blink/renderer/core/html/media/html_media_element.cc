@@ -205,7 +205,7 @@ String UrlForLoggingMedia(const KURL& url) {
 
   if (url.GetString().length() < kMaximumURLLengthForLogging)
     return url.GetString();
-  return WTF::StrCat(
+  return StrCat(
       {url.GetString().GetString().Substring(0, kMaximumURLLengthForLogging),
        "..."});
 }
@@ -2786,8 +2786,8 @@ void HTMLMediaElement::setPlaybackRate(double rate,
     // DOMException and don't update the value.
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"The provided playback rate (", String::Number(rate),
-                     ") is not in the supported playback range."}));
+        StrCat({"The provided playback rate (", String::Number(rate),
+                ") is not in the supported playback range."}));
 
     // Do not update |playback_rate_|.
     return;

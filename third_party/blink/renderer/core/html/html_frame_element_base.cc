@@ -80,8 +80,8 @@ void HTMLFrameElementBase::OpenURL(bool replace_current_item) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kRendering,
             mojom::ConsoleMessageLevel::kWarning,
-            WTF::StrCat({"Invalid relative frame source URL (", url_,
-                         ") within data URL."})));
+            StrCat({"Invalid relative frame source URL (", url_,
+                    ") within data URL."})));
   }
   LoadOrRedirectSubframe(url, frame_name_, replace_current_item);
 }

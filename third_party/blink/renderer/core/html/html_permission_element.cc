@@ -1181,9 +1181,8 @@ HTMLPermissionElement::GetTaskRunner() {
 
 bool HTMLPermissionElement::IsClickingEnabled() {
   if (permission_descriptors_.empty()) {
-    AddConsoleError(
-        WTF::StrCat({"The permission element '", GetType(),
-                     "' cannot be activated due to invalid type."}));
+    AddConsoleError(StrCat({"The permission element '", GetType(),
+                            "' cannot be activated due to invalid type."}));
     base::UmaHistogramEnumeration(
         "Blink.PermissionElement.UserInteractionDeniedReason",
         UserInteractionDeniedReason::kInvalidType);
@@ -1197,10 +1196,9 @@ bool HTMLPermissionElement::IsClickingEnabled() {
   }
 
   if (!is_registered_in_browser_process()) {
-    AddConsoleError(
-        WTF::StrCat({"The permission element '", GetType(),
-                     "' cannot be activated because of security "
-                     "checks or because the page's quota has been exceeded."}));
+    AddConsoleError(StrCat({"The permission element '", GetType(),
+                            "' cannot be activated because of security checks "
+                            "or because the page's quota has been exceeded."}));
     base::UmaHistogramEnumeration(
         "Blink.PermissionElement.UserInteractionDeniedReason",
         UserInteractionDeniedReason::kFailedOrHasNotBeenRegistered);
@@ -1214,9 +1212,9 @@ bool HTMLPermissionElement::IsClickingEnabled() {
       [&now](const auto& it) { return it.value < now; });
 
   for (const auto& it : clicking_disabled_reasons_) {
-    AddConsoleError(WTF::StrCat({"The permission element '", GetType(),
-                                 "' cannot be activated due to ",
-                                 DisableReasonToString(it.key), "."}));
+    AddConsoleError(StrCat({"The permission element '", GetType(),
+                            "' cannot be activated due to ",
+                            DisableReasonToString(it.key), "."}));
     if (it.key == DisableReason::kIntersectionVisibilityOccludedOrDistorted &&
         occluder_node_id_ != kInvalidDOMNodeId) {
       AddOccluderInfoToConsole();
@@ -1508,7 +1506,7 @@ bool HTMLPermissionElement::IsStyleValid() {
 
   if (style->GetDisplayStyle().Display() != EDisplay::kNone &&
       style->GetDisplayStyle().Display() != EDisplay::kInlineBlock) {
-    AddConsoleWarning(WTF::StrCat(
+    AddConsoleWarning(StrCat(
         {"Invalid display style of the permission element ", GetType(),
          ". Only 'display: inline-block' or 'display: none' is allowed"}));
     base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
@@ -1518,8 +1516,8 @@ bool HTMLPermissionElement::IsStyleValid() {
 
   if (AreColorsNonOpaque(style)) {
     AddConsoleWarning(
-        WTF::StrCat({"Color or background color of the permission element '",
-                     GetType(), "' is non-opaque"}));
+        StrCat({"Color or background color of the permission element '",
+                GetType(), "' is non-opaque"}));
     base::UmaHistogramEnumeration(
         "Blink.PermissionElement.InvalidStyleReason",
         InvalidStyleReason::kNonOpaqueColorOrBackgroundColor);
@@ -1528,9 +1526,9 @@ bool HTMLPermissionElement::IsStyleValid() {
 
   if (ContrastBetweenColorAndBackgroundColor(style) < kMinimumAllowedContrast) {
     AddConsoleWarning(
-        WTF::StrCat({"Contrast between color and background color of the "
-                     "permission element '",
-                     GetType(), "' is too low"}));
+        StrCat({"Contrast between color and background color of the permission "
+                "element '",
+                GetType(), "' is too low"}));
     base::UmaHistogramEnumeration(
         "Blink.PermissionElement.InvalidStyleReason",
         InvalidStyleReason::kLowConstrastColorAndBackgroundColor);
@@ -1560,8 +1558,8 @@ bool HTMLPermissionElement::IsStyleValid() {
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kSmall),
       is_font_monospace);
   if (font_size_dip < std::min(min_font_size_dip, kDefaultSmallFontSize)) {
-    AddConsoleWarning(WTF::StrCat({"Font size of the permission element '",
-                                   GetType(), "' is too small"}));
+    AddConsoleWarning(StrCat({"Font size of the permission element '",
+                              GetType(), "' is too small"}));
     base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
                                   InvalidStyleReason::kTooSmallFontSize);
     return false;
@@ -1574,8 +1572,8 @@ bool HTMLPermissionElement::IsStyleValid() {
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kXxxLarge),
       is_font_monospace);
   if (font_size_dip > std::max(max_font_size_dip, kDefaultXxxLargeFontSize)) {
-    AddConsoleWarning(WTF::StrCat({"Font size of the permission element '",
-                                   GetType(), "' is too large"}));
+    AddConsoleWarning(StrCat({"Font size of the permission element '",
+                              GetType(), "' is too large"}));
     base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
                                   InvalidStyleReason::kTooLargeFontSize);
     return false;
@@ -1742,7 +1740,7 @@ void HTMLPermissionElement::AddOccluderInfoToConsole() {
   if (!node) {
     return;
   }
-  AddConsoleError(WTF::StrCat(
+  AddConsoleError(StrCat(
       {"The permission element is occluded by node ", node->ToString()}));
 
   auto* element = DynamicTo<Element>(node);
@@ -1753,7 +1751,7 @@ void HTMLPermissionElement::AddOccluderInfoToConsole() {
   // class attr.
   if (Node* parent = node->parentNode()) {
     AddConsoleError(
-        WTF::StrCat({"The occluder's parent node is ", parent->ToString()}));
+        StrCat({"The occluder's parent node is ", parent->ToString()}));
   }
 }
 

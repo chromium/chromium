@@ -202,8 +202,7 @@ class CORE_EXPORT InspectorAgentState {
       map_.Set(key, value);
       std::vector<uint8_t> encoded_value;
       Serialize(value, &encoded_value);
-      session_state_->EnqueueUpdate(WTF::StrCat({prefix_key_, key}),
-                                    &encoded_value);
+      session_state_->EnqueueUpdate(StrCat({prefix_key_, key}), &encoded_value);
     }
 
     // Clears the entry for |key|.
@@ -212,14 +211,14 @@ class CORE_EXPORT InspectorAgentState {
       if (it == map_.end())
         return;
       map_.erase(it);
-      session_state_->EnqueueUpdate(WTF::StrCat({prefix_key_, key}), nullptr);
+      session_state_->EnqueueUpdate(StrCat({prefix_key_, key}), nullptr);
     }
 
     // Clears the entire field.
     void Clear() override {
       // TODO(johannes): Handle this in a single update.
       for (const WTF::String& key : map_.Keys()) {
-        session_state_->EnqueueUpdate(WTF::StrCat({prefix_key_, key}), nullptr);
+        session_state_->EnqueueUpdate(StrCat({prefix_key_, key}), nullptr);
       }
       map_.clear();
     }

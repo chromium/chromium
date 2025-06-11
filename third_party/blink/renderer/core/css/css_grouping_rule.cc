@@ -268,8 +268,8 @@ void CSSGroupingRule::deleteRule(unsigned index,
   if (index >= group_rule_->ChildRules().size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"the index ", String::Number(index),
-                     " is greated than the length of the rule list."}));
+        StrCat({"the index ", String::Number(index),
+                " is greated than the length of the rule list."}));
     return;
   }
 

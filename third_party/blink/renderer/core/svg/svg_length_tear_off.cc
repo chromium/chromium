@@ -221,7 +221,7 @@ void SVGLengthTearOff::setValueAsString(const String& str,
   if (status != SVGParseStatus::kNoError) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat({"The value provided ('", str, "') is invalid."}));
+        StrCat({"The value provided ('", str, "') is invalid."}));
     return;
   }
   CommitChange(SVGPropertyCommitReason::kUpdated);
@@ -237,8 +237,8 @@ void SVGLengthTearOff::newValueSpecifiedUnits(uint16_t unit_type,
   if (!IsValidLengthUnit(unit_type)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"Cannot set value with unknown or invalid units (",
-                     String::Number(unit_type), ")."}));
+        StrCat({"Cannot set value with unknown or invalid units (",
+                String::Number(unit_type), ")."}));
     return;
   }
   Target()->NewValueSpecifiedUnits(ToCSSUnitType(unit_type),
@@ -256,8 +256,8 @@ void SVGLengthTearOff::convertToSpecifiedUnits(
   if (!IsValidLengthUnit(unit_type)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"Cannot convert to unknown or invalid units (",
-                     String::Number(unit_type), ")."}));
+        StrCat({"Cannot convert to unknown or invalid units (",
+                String::Number(unit_type), ")."}));
     return;
   }
   SVGElement* context_element = ContextElement();

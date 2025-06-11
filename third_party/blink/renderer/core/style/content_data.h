@@ -222,9 +222,7 @@ class AltTextContentData final : public ContentData {
     return static_cast<const AltTextContentData&>(data).GetText() == GetText();
   }
 
-  String DebugString() const override {
-    return WTF::StrCat({"<alt: ", text_, ">"});
-  }
+  String DebugString() const override { return StrCat({"<alt: ", text_, ">"}); }
 
  private:
   ContentData* CloneInternal() const override {

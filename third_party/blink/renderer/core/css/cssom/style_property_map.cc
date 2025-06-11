@@ -306,7 +306,7 @@ void StylePropertyMap::set(
       CssPropertyID(execution_context, property_name);
   if (property_id == CSSPropertyID::kInvalid) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"Invalid propertyName: ", property_name}));
+        StrCat({"Invalid propertyName: ", property_name}));
     return;
   }
 
@@ -317,7 +317,7 @@ void StylePropertyMap::set(
   // valid properties in this context.
   if (!property.IsProperty()) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"Invalid propertyName: ", property_name}));
+        StrCat({"Invalid propertyName: ", property_name}));
     return;
   }
 
@@ -390,7 +390,7 @@ void StylePropertyMap::append(
 
   if (property_id == CSSPropertyID::kInvalid) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"Invalid propertyName: ", property_name}));
+        StrCat({"Invalid propertyName: ", property_name}));
     return;
   }
 
@@ -454,7 +454,7 @@ void StylePropertyMap::remove(const ExecutionContext* execution_context,
   CSSPropertyID property_id = CssPropertyID(execution_context, property_name);
   if (property_id == CSSPropertyID::kInvalid) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"Invalid property name: ", property_name}));
+        StrCat({"Invalid property name: ", property_name}));
     return;
   }
 

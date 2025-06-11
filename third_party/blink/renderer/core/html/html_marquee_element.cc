@@ -180,8 +180,8 @@ void HTMLMarqueeElement::setLoop(int value, ExceptionState& exception_state) {
   if (value <= 0 && value != -1) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"The provided value (", String::Number(value),
-                     ") is neither positive nor -1."}));
+        StrCat({"The provided value (", String::Number(value),
+                ") is neither positive nor -1."}));
     return;
   }
   SetIntegralAttribute(html_names::kLoopAttr, value);
@@ -484,9 +484,8 @@ HTMLMarqueeElement::GetAnimationParameters() {
 }
 
 AtomicString HTMLMarqueeElement::CreateTransform(double value) const {
-  return AtomicString(
-      WTF::StrCat({"translate", IsHorizontal() ? "X" : "Y", "(",
-                   String::NumberToStringECMAScript(value), "px)"}));
+  return AtomicString(StrCat({"translate", IsHorizontal() ? "X" : "Y", "(",
+                              String::NumberToStringECMAScript(value), "px)"}));
 }
 
 void HTMLMarqueeElement::Trace(Visitor* visitor) const {

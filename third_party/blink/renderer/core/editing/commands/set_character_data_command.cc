@@ -67,8 +67,8 @@ void SetCharacterDataCommand::DoUnapply() {
 }
 
 String SetCharacterDataCommand::ToString() const {
-  return WTF::StrCat({"SetCharacterDataCommand {new_text:",
-                      new_text_.EncodeForDebugging(), "}"});
+  return StrCat({"SetCharacterDataCommand {new_text:",
+                 new_text_.EncodeForDebugging(), "}"});
 }
 
 void SetCharacterDataCommand::Trace(Visitor* visitor) const {

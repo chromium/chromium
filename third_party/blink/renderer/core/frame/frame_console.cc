@@ -107,10 +107,10 @@ void FrameConsole::ReportResourceResponseReceived(
     return;
   if (response.HttpStatusCode() < 400)
     return;
-  String message = WTF::StrCat(
-      {"Failed to load resource: the server responded with a status of ",
-       String::Number(response.HttpStatusCode()), " (",
-       response.HttpStatusText(), ")"});
+  String message =
+      StrCat({"Failed to load resource: the server responded with a status of ",
+              String::Number(response.HttpStatusCode()), " (",
+              response.HttpStatusText(), ")"});
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kNetwork,
       mojom::blink::ConsoleMessageLevel::kError, message,

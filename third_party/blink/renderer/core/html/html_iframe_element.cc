@@ -261,7 +261,7 @@ void HTMLIFrameElement::ParseAttribute(
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kError,
-          WTF::StrCat({"'csp' attribute is invalid: ", value})));
+          StrCat({"'csp' attribute is invalid: ", value})));
     } else if (value && value.length() > kMaxLengthCSPAttribute) {
       // TODO(antoniosartori): It would be safer to block loading iframes with
       // invalid 'csp' attribute.
@@ -558,10 +558,10 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError,
-        WTF::StrCat({"iframe trusttoken attribute was invalid JSON: ",
-                     parse_error.message, " (line ",
-                     String::Number(parse_error.line), ", col ",
-                     String::Number(parse_error.column), ")"})));
+        StrCat({"iframe trusttoken attribute was invalid JSON: ",
+                parse_error.message, " (line ",
+                String::Number(parse_error.line), ", col ",
+                String::Number(parse_error.column), ")"})));
     return nullptr;
   }
 

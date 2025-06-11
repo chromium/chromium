@@ -45,9 +45,9 @@ String FitText::ToString() const {
   if (SizeLimit()) {
     size_limit = String::Number(*SizeLimit());
   }
-  return WTF::StrCat(
-      {"FitText {target:", target, method.empty() ? "" : ", method:", method,
-       size_limit.empty() ? "" : ", size-limit:", size_limit, "}"});
+  return StrCat({"FitText {target:", target,
+                 method.empty() ? "" : ", method:", method,
+                 size_limit.empty() ? "" : ", size-limit:", size_limit, "}"});
 }
 
 }  // namespace blink

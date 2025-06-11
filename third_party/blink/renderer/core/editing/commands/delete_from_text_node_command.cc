@@ -69,9 +69,8 @@ void DeleteFromTextNodeCommand::DoUnapply() {
 }
 
 String DeleteFromTextNodeCommand::ToString() const {
-  return WTF::StrCat(
-      {"DeleteFromTextNodeCommand {offset:", String::Number(offset_),
-       ", count:", String::Number(count_), "}"});
+  return StrCat({"DeleteFromTextNodeCommand {offset:", String::Number(offset_),
+                 ", count:", String::Number(count_), "}"});
 }
 
 void DeleteFromTextNodeCommand::Trace(Visitor* visitor) const {

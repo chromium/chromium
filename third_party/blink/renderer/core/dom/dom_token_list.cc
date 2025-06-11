@@ -48,9 +48,9 @@ bool CheckTokenWithWhitespace(const String& token,
     return true;
   exception_state.ThrowDOMException(
       DOMExceptionCode::kInvalidCharacterError,
-      WTF::StrCat({"The token provided ('", token,
-                   "') contains HTML space characters, "
-                   "which are not valid in tokens."}));
+      StrCat({"The token provided ('", token,
+              "') contains HTML space characters, which are not valid in "
+              "tokens."}));
   return false;
 }
 

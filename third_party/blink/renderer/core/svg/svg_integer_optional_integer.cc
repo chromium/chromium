@@ -57,8 +57,8 @@ String SVGIntegerOptionalInteger::ValueAsString() const {
     return String::Number(first_integer_->Value());
   }
 
-  return WTF::StrCat({String::Number(first_integer_->Value()), " ",
-                      String::Number(second_integer_->Value())});
+  return StrCat({String::Number(first_integer_->Value()), " ",
+                 String::Number(second_integer_->Value())});
 }
 
 SVGParsingError SVGIntegerOptionalInteger::SetValueAsString(

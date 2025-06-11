@@ -104,7 +104,7 @@ void SplitTextNodeCommand::InsertText1AndTrimText2() {
 }
 
 String SplitTextNodeCommand::ToString() const {
-  return WTF::StrCat(
+  return StrCat(
       {"SplitTextNodeCommand {offset:", String::Number(offset_), "}"});
 }
 

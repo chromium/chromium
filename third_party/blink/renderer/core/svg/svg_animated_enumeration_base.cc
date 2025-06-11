@@ -46,10 +46,10 @@ void SVGAnimatedEnumerationBase::setBaseVal(uint16_t value,
   }
 
   if (value > BaseValue()->MaxExposedEnumValue()) {
-    exception_state.ThrowTypeError(WTF::StrCat(
-        {"The enumeration value provided (", String::Number(value),
-         ") is larger than the largest allowed value (",
-         String::Number(BaseValue()->MaxExposedEnumValue()), ")."}));
+    exception_state.ThrowTypeError(
+        StrCat({"The enumeration value provided (", String::Number(value),
+                ") is larger than the largest allowed value (",
+                String::Number(BaseValue()->MaxExposedEnumValue()), ")."}));
     return;
   }
 

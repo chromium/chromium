@@ -97,7 +97,7 @@ class FrontendMenuProvider final : public ContextMenuProvider {
   void ContextMenuItemSelected(unsigned action) override {
     if (!devtools_host_ || action >= DevToolsHost::kMaxContextMenuAction)
       return;
-    devtools_host_->EvaluateScript(WTF::StrCat(
+    devtools_host_->EvaluateScript(StrCat(
         {"DevToolsAPI.contextMenuItemSelected(", String::Number(action), ")"}));
   }
 

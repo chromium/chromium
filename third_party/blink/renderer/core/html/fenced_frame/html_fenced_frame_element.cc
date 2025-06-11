@@ -345,8 +345,8 @@ void HTMLFencedFrameElement::ParseAttribute(
         GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
-            WTF::StrCat({"Error while parsing the 'sandbox' attribute: ",
-                         String::FromUTF8(parsed.error_message)})));
+            StrCat({"Error while parsing the 'sandbox' attribute: ",
+                    String::FromUTF8(parsed.error_message)})));
       }
     }
     SetSandboxFlags(current_flags);
@@ -441,10 +441,10 @@ void HTMLFencedFrameElement::Navigate(
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        WTF::StrCat({"Cannot create a fenced frame with mode '",
-                     DeprecatedFencedFrameModeToString(GetDeprecatedMode()),
-                     "' nested in a fenced frame with mode '",
-                     DeprecatedFencedFrameModeToString(parent_mode), "'."})));
+        StrCat({"Cannot create a fenced frame with mode '",
+                DeprecatedFencedFrameModeToString(GetDeprecatedMode()),
+                "' nested in a fenced frame with mode '",
+                DeprecatedFencedFrameModeToString(parent_mode), "'."})));
     RecordFencedFrameCreationOutcome(
         FencedFrameCreationOutcome::kIncompatibleMode);
     return;

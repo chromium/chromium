@@ -606,7 +606,7 @@ bool ContentSecurityPolicy::AllowInline(
         break;
     }
     if (!message.empty()) {
-      LogToConsole(WTF::StrCat(
+      LogToConsole(StrCat(
           {"Refused to ", message, kWarningMessageForSyntheticResponse}));
       return false;
     }
@@ -918,8 +918,8 @@ bool ContentSecurityPolicy::AllowFromSource(
        type == CSPDirectiveName::WorkerSrc)) {
     LogToConsole(
 
-        WTF::StrCat({"The script from ", url.GetString(), " was blocked.",
-                     kWarningMessageForSyntheticResponse}));
+        StrCat({"The script from ", url.GetString(), " was blocked.",
+                kWarningMessageForSyntheticResponse}));
     return false;
   }
 
@@ -1410,17 +1410,16 @@ void ContentSecurityPolicy::ReportMixedContent(const KURL& blocked_url,
 }
 
 void ContentSecurityPolicy::ReportReportOnlyInMeta(const String& header) {
-  LogToConsole(WTF::StrCat(
-      {"The report-only Content Security Policy '", header,
-       "' was delivered via a <meta> element, which is disallowed. The "
-       "policy has been ignored."}));
+  LogToConsole(StrCat({"The report-only Content Security Policy '", header,
+                       "' was delivered via a <meta> element, which is "
+                       "disallowed. The policy has been ignored."}));
 }
 
 void ContentSecurityPolicy::ReportMetaOutsideHead(const String& header) {
-  LogToConsole(WTF::StrCat(
-      {"The Content Security Policy '", header,
-       "' was delivered via a <meta> element outside the document's "
-       "<head>, which is disallowed. The policy has been ignored."}));
+  LogToConsole(
+      StrCat({"The Content Security Policy '", header,
+              "' was delivered via a <meta> element outside the document's "
+              "<head>, which is disallowed. The policy has been ignored."}));
 }
 
 void ContentSecurityPolicy::LogToConsole(const String& message,

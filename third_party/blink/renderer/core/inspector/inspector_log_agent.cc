@@ -182,8 +182,8 @@ void InspectorLogAgent::InnerEnable() {
         protocol::Log::LogEntry::create()
             .setSource(protocol::Log::LogEntry::SourceEnum::Other)
             .setLevel(protocol::Log::LogEntry::LevelEnum::Warning)
-            .setText(WTF::StrCat({String::Number(storage_->ExpiredCount()),
-                                  " log entries are not shown."}))
+            .setText(StrCat({String::Number(storage_->ExpiredCount()),
+                             " log entries are not shown."}))
             .setTimestamp(0)
             .build();
     GetFrontend()->entryAdded(std::move(expired));

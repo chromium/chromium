@@ -332,9 +332,9 @@ protocol::Response InspectorEmulationAgent::setTouchEmulationEnabled(
     return response;
   int max_points = max_touch_points.value_or(1);
   if (max_points < 1 || max_points > WebTouchEvent::kTouchesLengthCap) {
-    String msg = WTF::StrCat({"Touch points must be between 1 and ",
-                              String::Number(static_cast<uint16_t>(
-                                  WebTouchEvent::kTouchesLengthCap))});
+    String msg = StrCat({"Touch points must be between 1 and ",
+                         String::Number(static_cast<uint16_t>(
+                             WebTouchEvent::kTouchesLengthCap))});
     return protocol::Response::InvalidParams(msg.Utf8());
   }
   touch_event_emulation_enabled_.Set(enabled);
@@ -598,7 +598,7 @@ AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(
     // and is expected to be always ending with `image/*,*/*;q=xxx`, therefore,
     // to remove a type we replace `image/x,` with empty string. Only webp and
     // avif types can be disabled.
-    header.Replace(WTF::StrCat({type, ","}), "");
+    header.Replace(StrCat({type, ","}), "");
   }
   return AtomicString(header);
 }
@@ -977,7 +977,7 @@ protocol::Response InspectorEmulationAgent::setDisabledImageTypes(
   for (protocol::Emulation::DisabledImageType type : *disabled_types) {
     if (DisabledImageTypeEnum::Avif == type ||
         DisabledImageTypeEnum::Webp == type) {
-      disabled_image_types_.Set(WTF::StrCat({prefix, type}), true);
+      disabled_image_types_.Set(StrCat({prefix, type}), true);
       continue;
     }
     disabled_image_types_.Clear();

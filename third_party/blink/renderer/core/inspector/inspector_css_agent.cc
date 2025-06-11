@@ -219,7 +219,7 @@ String CreateShorthandValue(Document& document,
   auto* style_sheet_contents =
       MakeGarbageCollected<StyleSheetContents>(StrictCSSParserContext(
           document.GetExecutionContext()->GetSecureContextMode()));
-  String text = WTF::StrCat({" div { ", shorthand, ": ", old_text, "; }"});
+  String text = StrCat({" div { ", shorthand, ": ", old_text, "; }"});
   CSSParser::ParseSheet(MakeGarbageCollected<CSSParserContext>(document),
                         style_sheet_contents, text);
 
@@ -487,7 +487,7 @@ class InspectorCSSAgent::SetStyleSheetTextAction final
   }
 
   String MergeId() override {
-    return WTF::StrCat({"SetStyleSheetText ", style_sheet_->Id()});
+    return StrCat({"SetStyleSheetText ", style_sheet_->Id()});
   }
 
   void Merge(Action* action) override {
@@ -703,7 +703,7 @@ class InspectorCSSAgent::SetElementStyleAction final
   }
 
   String MergeId() override {
-    return WTF::StrCat({"SetElementStyleAction:", style_sheet_->Id()});
+    return StrCat({"SetElementStyleAction:", style_sheet_->Id()});
   }
 
   std::unique_ptr<protocol::CSS::CSSStyle> TakeSerializedStyle(
@@ -1315,9 +1315,8 @@ protocol::Response InspectorCSSAgent::getLocationForSelector(
   }
 
   if ((*ranges)->empty()) {
-    String message =
-        WTF::StrCat({"Failed to find selector '", selector_text,
-                     "' in style sheet ", style_sheet->FinalURL()});
+    String message = StrCat({"Failed to find selector '", selector_text,
+                             "' in style sheet ", style_sheet->FinalURL()});
     return protocol::Response::InvalidParams(message.Utf8());
   }
 
@@ -4293,11 +4292,11 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
   SourceRange change_range;
   if (found_index == -1) {
     String new_property_text =
-        WTF::StrCat({"\n", longhand, ": ", value,
-                     (force_important ? " !important" : ""), ";"});
+        StrCat({"\n", longhand, ": ", value,
+                (force_important ? " !important" : ""), ";"});
     if (!style_text.empty() && !style_text.StripWhiteSpace().EndsWith(';'))
-      new_property_text = WTF::StrCat({";", new_property_text});
-    style_text = WTF::StrCat({style_text, new_property_text});
+      new_property_text = StrCat({";", new_property_text});
+    style_text = StrCat({style_text, new_property_text});
     change_range.start = body_range.end;
     change_range.end = body_range.end + new_property_text.length();
   } else {
@@ -4310,7 +4309,7 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
       new_value_text = value;
     }
 
-    String new_property_text = WTF::StrCat(
+    String new_property_text = StrCat(
         {declaration.name, ": ", new_value_text,
          (declaration.important || force_important ? " !important" : ""), ";"});
     style_text.replace(declaration.range.start - body_range.start,

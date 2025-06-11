@@ -192,9 +192,9 @@ protocol::Response InspectorDOMAgent::ToResponse(
   if (exception_state.HadException()) {
     String msg = exception_state.Message();
     if (IsDOMExceptionCode(exception_state.Code())) {
-      msg = WTF::StrCat({DOMException::GetErrorName(
-                             exception_state.CodeAs<DOMExceptionCode>()),
-                         " ", msg});
+      msg = StrCat({DOMException::GetErrorName(
+                        exception_state.CodeAs<DOMExceptionCode>()),
+                    " ", msg});
     }
     return protocol::Response::ServerError(msg.Utf8());
   }
@@ -1090,11 +1090,10 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(
 
   auto getParsedElement = [](Element* element, Element* contextElement,
                              const String& text, bool is_html_document) {
-    String markup = element->IsSVGElement()
-                        ? WTF::StrCat({"<svg ", text, "></svg>"})
+    String markup = element->IsSVGElement() ? StrCat({"<svg ", text, "></svg>"})
                     : element->IsMathMLElement()
-                        ? WTF::StrCat({"<math ", text, "></math>"})
-                        : WTF::StrCat({"<span ", text, "></span>"});
+                        ? StrCat({"<math ", text, "></math>"})
+                        : StrCat({"<span ", text, "></span>"});
     DocumentFragment* fragment =
         element->GetDocument().createDocumentFragment();
     if (is_html_document && contextElement)
@@ -2063,8 +2062,8 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     case Node::kCdataSectionNode:
       node_value = node->nodeValue();
       if (node_value.length() > kMaxTextSize) {
-        node_value = WTF::StrCat(
-            {node_value.Left(kMaxTextSize), StringView(kEllipsisUChar)});
+        node_value =
+            StrCat({node_value.Left(kMaxTextSize), StringView(kEllipsisUChar)});
       }
       break;
     case Node::kAttributeNode:

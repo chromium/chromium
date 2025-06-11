@@ -149,7 +149,7 @@ String SerializeString(const String& string) {
 }
 
 String SerializeURI(const String& string) {
-  return WTF::StrCat({"url(", SerializeString(string), ")"});
+  return StrCat({"url(", SerializeString(string), ")"});
 }
 
 String SerializeFontFamily(const AtomicString& string) {

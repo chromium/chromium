@@ -91,8 +91,8 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
-            WTF::StrCat({"Unrecognized focusgroup attribute values: ",
-                         invalid_tokens.ReleaseString()})));
+            StrCat({"Unrecognized focusgroup attribute values: ",
+                    invalid_tokens.ReleaseString()})));
   }
 
   FocusgroupFlags flags = FocusgroupFlags::kNone;

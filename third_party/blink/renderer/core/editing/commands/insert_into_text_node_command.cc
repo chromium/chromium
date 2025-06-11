@@ -76,9 +76,8 @@ void InsertIntoTextNodeCommand::DoUnapply() {
 }
 
 String InsertIntoTextNodeCommand::ToString() const {
-  return WTF::StrCat(
-      {"InsertIntoTextNodeCommand {offset:", String::Number(offset_),
-       ", text:", text_.EncodeForDebugging(), "}"});
+  return StrCat({"InsertIntoTextNodeCommand {offset:", String::Number(offset_),
+                 ", text:", text_.EncodeForDebugging(), "}"});
 }
 
 void InsertIntoTextNodeCommand::Trace(Visitor* visitor) const {

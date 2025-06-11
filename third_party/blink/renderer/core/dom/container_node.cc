@@ -294,9 +294,9 @@ bool ContainerNode::EnsurePreInsertionValidity(
     if (!ChildTypeAllowed(child->getNodeType())) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kHierarchyRequestError,
-          WTF::StrCat({"Nodes of type '", child->nodeName(),
-                       "' may not be inserted inside nodes of type '",
-                       nodeName(), "'."}));
+          StrCat({"Nodes of type '", child->nodeName(),
+                  "' may not be inserted inside nodes of type '", nodeName(),
+                  "'."}));
       return false;
     }
     return true;

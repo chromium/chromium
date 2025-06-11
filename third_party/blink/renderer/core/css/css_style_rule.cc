@@ -239,7 +239,7 @@ unsigned CSSStyleRule::insertRule(const ExecutionContext* execution_context,
     if (index > 0) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
-          WTF::StrCat(
+          StrCat(
               {"the index ", String::Number(index),
                " must be less than or equal to the length of the rule list."}));
       return 0;

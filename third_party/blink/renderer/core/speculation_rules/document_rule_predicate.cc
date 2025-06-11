@@ -346,9 +346,9 @@ URLPattern* ParseRawPattern(v8::Isolate* isolate,
       } else if (key == "baseURL") {
         init->setBaseURL(value);
       } else {
-        SetParseErrorMessage(
-            out_error, WTF::StrCat({"Invalid key \"", key,
-                                    "\" for a URL pattern object found."}));
+        SetParseErrorMessage(out_error,
+                             StrCat({"Invalid key \"", key,
+                                     "\" for a URL pattern object found."}));
         return nullptr;
       }
     }
@@ -374,10 +374,9 @@ String GetPredicateType(JSONObject* input, String* out_error) {
       // If we'd already found one, then this is ambiguous.
       if (!predicate_type.IsNull()) {
         SetParseErrorMessage(
-            out_error,
-            WTF::StrCat({"Document rule predicate type is ambiguous, "
-                         "two types found: \"",
-                         predicate_type, "\" and \"", type, "\"."}));
+            out_error, StrCat({"Document rule predicate type is ambiguous, "
+                               "two types found: \"",
+                               predicate_type, "\" and \"", type, "\"."}));
         return String();
       }
 
@@ -418,9 +417,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
     // "and" and "or" cannot be paired with any other keys.
     if (input->size() != 1) {
       SetParseErrorMessage(
-          out_error,
-          WTF::StrCat({"Document rule predicate with \"", predicate_type,
-                       "\" key cannot have other keys."}));
+          out_error, StrCat({"Document rule predicate with \"", predicate_type,
+                             "\" key cannot have other keys."}));
       return nullptr;
     }
     // Let rawClauses be the input[predicateType].
@@ -428,9 +426,9 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
     // If rawClauses is not a list, then return null.
     if (!raw_clauses) {
-      SetParseErrorMessage(out_error,
-                           WTF::StrCat({"\"", predicate_type,
-                                        "\" key should have a list value."}));
+      SetParseErrorMessage(
+          out_error,
+          StrCat({"\"", predicate_type, "\" key should have a list value."}));
       return nullptr;
     }
 
@@ -509,8 +507,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
             !base::Contains(kKnownRelativeToValues, relative_to)) {
           SetParseErrorMessage(
               out_error,
-              WTF::StrCat({"Unrecognized \"relative_to\" value: ",
-                           input->Get("relative_to")->ToJSONString(), "."}));
+              StrCat({"Unrecognized \"relative_to\" value: ",
+                      input->Get("relative_to")->ToJSONString(), "."}));
           return nullptr;
         }
         // If relativeTo is "document", set baseURL to the document's
@@ -521,7 +519,7 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       } else {
         // Otherwise, this is an unrecognized key. The predicate is invalid.
         SetParseErrorMessage(
-            out_error, WTF::StrCat({"Unrecognized key found: \"", key, "\"."}));
+            out_error, StrCat({"Unrecognized key found: \"", key, "\"."}));
         return nullptr;
       }
     }
@@ -549,9 +547,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       if (!pattern) {
         SetParseErrorMessage(
             out_error,
-            WTF::StrCat(
-                {"URL Pattern for \"href_matches\" could not be parsed: ",
-                 raw_pattern->ToJSONString(), "."}));
+            StrCat({"URL Pattern for \"href_matches\" could not be parsed: ",
+                    raw_pattern->ToJSONString(), "."}));
         return nullptr;
       }
       // Append pattern to patterns.
@@ -601,9 +598,9 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
                                    /*parent_rule_for_nesting=*/nullptr, nullptr,
                                    raw_selector_string, arena);
       if (selector_vector.empty()) {
-        SetParseErrorMessage(out_error,
-                             WTF::StrCat({"\"", raw_selector_string,
-                                          "\" is not a valid selector."}));
+        SetParseErrorMessage(
+            out_error,
+            StrCat({"\"", raw_selector_string, "\" is not a valid selector."}));
         return nullptr;
       }
       StyleRule* selector =

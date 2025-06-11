@@ -203,7 +203,7 @@ ScriptPromise<IDLSequence<FontFace>> FontFaceSet::load(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kSyntaxError,
-            WTF::StrCat({"Could not resolve '", font_string, "' as a font."})));
+            StrCat({"Could not resolve '", font_string, "' as a font."})));
   }
 
   FontFaceCache* font_face_cache = GetFontSelector()->GetFontFaceCache();
@@ -239,7 +239,7 @@ bool FontFaceSet::check(const String& font_string,
   if (!font) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat({"Could not resolve '", font_string, "' as a font."}));
+        StrCat({"Could not resolve '", font_string, "' as a font."}));
     return false;
   }
 

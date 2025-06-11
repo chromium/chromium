@@ -151,8 +151,8 @@ const char kShadowDelegatesFocusAttributeName[] = "shadowdelegatesfocus";
 using mojom::blink::FormControlType;
 
 KURL MakePseudoUrl(StringView type) {
-  return KURL(WTF::StrCat(
-      {"cid:", type, "-", CreateCanonicalUUIDString(), "@mhtml.blink"}));
+  return KURL(
+      StrCat({"cid:", type, "-", CreateCanonicalUUIDString(), "@mhtml.blink"}));
 }
 
 KURL MakePseudoCSSUrl() {
@@ -1093,7 +1093,7 @@ function main(metadata) {
     return blink::internal::ReplaceAllCaseInsensitive(
         css_text.ToString(), "</style", [](const String& text) {
           // \3C = '<'.
-          return WTF::StrCat({"\\3C/", text.Substring(2)});
+          return StrCat({"\\3C/", text.Substring(2)});
         });
   }
 
@@ -1397,8 +1397,7 @@ String FrameSerializer::MarkOfTheWebDeclaration(const KURL& url) {
 // static
 String FrameSerializer::GetContentID(Frame* frame) {
   DCHECK(frame);
-  return WTF::StrCat(
-      {"<frame-", frame->GetFrameIdForTracing(), "@mhtml.blink>"});
+  return StrCat({"<frame-", frame->GetFrameIdForTracing(), "@mhtml.blink>"});
 }
 
 }  // namespace blink

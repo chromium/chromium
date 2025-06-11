@@ -64,7 +64,7 @@ class CORE_EXPORT ForwardDirection {
 
   // Returns concatenated string of the given strings.
   static String Concat(const String& start, String end) {
-    return WTF::StrCat({start, end});
+    return StrCat({start, end});
   }
 };
 
@@ -114,7 +114,7 @@ class CORE_EXPORT BackwardDirection {
 
   // Returns concatenated string of the given strings.
   static String Concat(const String& start, const String& end) {
-    return WTF::StrCat({end, start});
+    return StrCat({end, start});
   }
 };
 

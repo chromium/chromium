@@ -41,8 +41,8 @@ CSSStyleValueVector ParseCSSStyleValue(
       MakeGarbageCollected<CSSParserContext>(*execution_context));
   if (style_values.empty()) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"The value provided ('", value,
-                     "') could not be parsed as a '", property_name, "'."}));
+        StrCat({"The value provided ('", value, "') could not be parsed as a '",
+                property_name, "'."}));
     return CSSStyleValueVector();
   }
 

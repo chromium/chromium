@@ -90,7 +90,7 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   String GetSuffix() const { return suffix_; }
 
   String GenerateRepresentationWithPrefixAndSuffix(int value) const {
-    return WTF::StrCat({prefix_, GenerateRepresentation(value), suffix_});
+    return StrCat({prefix_, GenerateRepresentation(value), suffix_});
   }
 
   AtomicString GetExtendsName() const { return extends_name_; }

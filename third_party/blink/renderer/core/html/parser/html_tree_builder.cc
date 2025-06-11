@@ -615,7 +615,7 @@ void AddNamesWithPrefix(PrefixedNameToQualifiedNameMap* map,
     const QualifiedName& name = *names[i];
     const AtomicString& local_name = name.LocalName();
     AtomicString prefix_colon_local_name =
-        AtomicString(WTF::StrCat({prefix, ":", local_name}));
+        AtomicString(StrCat({prefix, ":", local_name}));
     QualifiedName name_with_prefix(prefix, local_name, name.NamespaceURI());
     map->insert(prefix_colon_local_name, name_with_prefix);
   }
@@ -1614,13 +1614,11 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
             tree_.OpenElements()->TopNode()->AddConsoleMessage(
                 mojom::blink::ConsoleMessageSource::kJavaScript,
                 mojom::blink::ConsoleMessageLevel::kWarning,
-                WTF::StrCat(
-                    {"A ", token->GetName(),
-                     " tag was parsed inside of a <select> which caused a "
-                     "</select> to be inserted before this tag. "
-                     "This is not valid HTML and the behavior may be changed "
-                     "in "
-                     "future versions of chrome."}));
+                StrCat({"A ", token->GetName(),
+                        " tag was parsed inside of a <select> which caused a "
+                        "</select> to be inserted before this tag. This is not "
+                        "valid HTML and the behavior may be changed in future "
+                        "versions of chrome."}));
           }
           return;
         }
@@ -1663,7 +1661,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
             tree_.OpenElements()->TopNode()->AddConsoleMessage(
                 mojom::blink::ConsoleMessageSource::kJavaScript,
                 mojom::blink::ConsoleMessageLevel::kWarning,
-                WTF::StrCat(
+                StrCat(
                     {"A ", token->GetName(),
                      " tag was parsed inside of a <select> which was not "
                      "inserted into the document. This is not valid HTML and "

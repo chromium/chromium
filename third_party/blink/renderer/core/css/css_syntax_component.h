@@ -108,7 +108,7 @@ class CSSSyntaxComponent {
   String ToString() const {
     String result =
         (type_ == CSSSyntaxType::kIdent) ? string_ : blink::ToString(type_);
-    return WTF::StrCat({result, blink::ToString(repeat_)});
+    return StrCat({result, blink::ToString(repeat_)});
   }
 
  private:

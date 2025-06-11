@@ -173,7 +173,7 @@ bool VerifyRuleText(Document* document, const String& rule_text) {
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
   String text =
-      WTF::StrCat({rule_text, " div { ", bogus_property_name, ": none; }"});
+      StrCat({rule_text, " div { ", bogus_property_name, ": none; }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -208,16 +208,16 @@ bool VerifyStyleText(Document* document,
                      StyleRule::RuleType rule_type = StyleRule::kStyle) {
   if (rule_type == StyleRule::kProperty) {
     return VerifyRuleText(document,
-                          WTF::StrCat({"@property --property {", text, "}"}));
+                          StrCat({"@property --property {", text, "}"}));
   }
-  return VerifyRuleText(document, WTF::StrCat({"div {", text, "}"}));
+  return VerifyRuleText(document, StrCat({"div {", text, "}"}));
 }
 
 bool VerifyNestedDeclarations(Document* document, const String& rule_text) {
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
-  String text = WTF::StrCat({".a { .b {} ", rule_text, " }"});
+  String text = StrCat({".a { .b {} ", rule_text, " }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -246,8 +246,8 @@ bool VerifyPropertyNameText(Document* document, const String& name_text) {
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
-  String text = WTF::StrCat(
-      {"@property ", name_text, " { syntax: \"*\"; inherits: false; }"});
+  String text =
+      StrCat({"@property ", name_text, " { syntax: \"*\"; inherits: false; }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -268,8 +268,8 @@ bool VerifyKeyframeKeyText(Document* document, const String& key_text) {
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
-  String text = WTF::StrCat({"@keyframes boguzAnim { ", key_text,
-                             " { -webkit-boguz-propertee : none; } }"});
+  String text = StrCat({"@keyframes boguzAnim { ", key_text,
+                        " { -webkit-boguz-propertee : none; } }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -300,7 +300,7 @@ bool VerifySelectorText(Document* document, const String& selector_text) {
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
   String text =
-      WTF::StrCat({selector_text, " { ", bogus_property_name, ": none; }"});
+      StrCat({selector_text, " { ", bogus_property_name, ": none; }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -330,7 +330,7 @@ bool VerifyMediaText(Document* document, const String& media_text) {
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
-  String text = WTF::StrCat(
+  String text = StrCat(
       {"@media ", media_text, " { div { ", bogus_property_name, ": none; } }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
@@ -368,8 +368,8 @@ bool VerifyContainerQueryText(Document* document,
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
-  String text = WTF::StrCat({"@container ", container_query_text, " { div { ",
-                             bogus_property_name, ": none; } }"});
+  String text = StrCat({"@container ", container_query_text, " { div { ",
+                        bogus_property_name, ": none; } }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -408,8 +408,8 @@ bool VerifySupportsText(Document* document, const String& supports_text) {
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
-  String text = WTF::StrCat({"@supports ", supports_text, " { div { ",
-                             bogus_property_name, ": none; } }"});
+  String text = StrCat({"@supports ", supports_text, " { div { ",
+                        bogus_property_name, ": none; } }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -445,8 +445,8 @@ bool VerifyScopeText(Document* document, const String& scope_text) {
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
-  String text = WTF::StrCat(
-      {"@scope ", scope_text, " { ", bogus_property_name, ": none; }"});
+  String text =
+      StrCat({"@scope ", scope_text, " { ", bogus_property_name, ": none; }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -732,7 +732,7 @@ void InspectorStyle::PopulateAllProperties(
     String value = style_->GetPropertyValueWithHint(name, i);
     bool important = !style_->GetPropertyPriorityWithHint(name, i).empty();
     if (important)
-      value = WTF::StrCat({value, " !important"});
+      value = StrCat({value, " !important"});
     result.push_back(CSSPropertySourceData(name, value, important, false, true,
                                            SourceRange()));
   }
@@ -938,7 +938,7 @@ InspectorStyle::LonghandProperties(
               .setValue(value)
               .build();
       if (property_entry.important) {
-        longhand->setValue(WTF::StrCat({value, " !important"}));
+        longhand->setValue(StrCat({value, " !important"}));
         longhand->setImportant(true);
       }
       result->emplace_back(std::move(longhand));
@@ -1133,8 +1133,8 @@ CSSPropertyRule* InspectorStyleSheet::SetPropertyName(
           page_style_sheet_->OwnerDocument()->GetExecutionContext(), text)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat({"The property name '", text,
-                     "' is invalid and cannot be parsed"}));
+        StrCat({"The property name '", text,
+                "' is invalid and cannot be parsed"}));
     return nullptr;
   }
 
@@ -1442,7 +1442,7 @@ CSSStyleRule* InspectorStyleSheet::InsertCSSOMRuleInStyleSheet(
     page_style_sheet_->deleteRule(index, ASSERT_NO_EXCEPTION);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat(
+        StrCat(
             {"The rule '", rule_text, "' could not be added in style sheet."}));
     return nullptr;
   }
@@ -1470,7 +1470,7 @@ CSSStyleRule* InspectorStyleSheet::InsertCSSOMRuleInMediaRule(
     media_rule->deleteRule(index, ASSERT_NO_EXCEPTION);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat(
+        StrCat(
             {"The rule '", rule_text, "' could not be added in media rule."}));
     return nullptr;
   }

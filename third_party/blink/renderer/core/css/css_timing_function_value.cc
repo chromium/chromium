@@ -55,9 +55,9 @@ bool CSSLinearTimingFunctionValue::Equals(
 }
 
 String CSSCubicBezierTimingFunctionValue::CustomCSSText() const {
-  return WTF::StrCat({"cubic-bezier(", String::Number(x1_), ", ",
-                      String::Number(y1_), ", ", String::Number(x2_), ", ",
-                      String::Number(y2_), ")"});
+  return StrCat({"cubic-bezier(", String::Number(x1_), ", ",
+                 String::Number(y1_), ", ", String::Number(x2_), ", ",
+                 String::Number(y2_), ")"});
 }
 
 bool CSSCubicBezierTimingFunctionValue::Equals(
@@ -97,11 +97,10 @@ String CSSStepsTimingFunctionValue::CustomCSSText() const {
   // If the step position is jump-end or end, serialize as steps(<integer>).
   // Otherwise, serialize as steps(<integer>, <step-position>).
   if (step_position_string.empty()) {
-    return WTF::StrCat({"steps(", steps_->CssText(), ")"});
+    return StrCat({"steps(", steps_->CssText(), ")"});
   }
 
-  return WTF::StrCat(
-      {"steps(", steps_->CssText(), ", ", step_position_string, ")"});
+  return StrCat({"steps(", steps_->CssText(), ", ", step_position_string, ")"});
 }
 
 bool CSSStepsTimingFunctionValue::Equals(

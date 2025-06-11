@@ -304,14 +304,13 @@ void HTMLFormElement::PrepareForSubmission(
 
   if (GetExecutionContext()->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kForms)) {
-    GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<
-                                             ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        WTF::StrCat(
-            {"Blocked form submission to '", attributes_.Action(),
-             "' because the form's frame is sandboxed and the 'allow-forms' "
-             "permission is not set."})));
+    GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kSecurity,
+            mojom::blink::ConsoleMessageLevel::kError,
+            StrCat({"Blocked form submission to '", attributes_.Action(),
+                    "' because the form's frame is sandboxed and the "
+                    "'allow-forms' permission is not set."})));
     return;
   }
 
@@ -326,11 +325,11 @@ void HTMLFormElement::PrepareForSubmission(
         GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kSecurity,
             mojom::ConsoleMessageLevel::kError,
-            WTF::StrCat({"Form submission failed, as the <", tag_name,
-                         "> element named '", element->GetName(),
-                         "' was implicitly closed by reaching the end of the "
-                         "file. Please add an explicit end tag ('</",
-                         tag_name, ">')"})));
+            StrCat({"Form submission failed, as the <", tag_name,
+                    "> element named '", element->GetName(),
+                    "' was implicitly closed by reaching the end of the "
+                    "file. Please add an explicit end tag ('</",
+                    tag_name, ">')"})));
         DispatchEvent(*Event::Create(event_type_names::kError));
         return;
       }
@@ -512,15 +511,14 @@ void HTMLFormElement::ScheduleFormSubmission(
           network::mojom::blink::WebSandboxFlags::kForms)) {
     // FIXME: This message should be moved off the console once a solution to
     // https://bugs.webkit.org/show_bug.cgi?id=103274 exists.
-    GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<
-                                             ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        WTF::StrCat(
-            {"Blocked form submission to '",
-             form_submission->Action().ElidedString(),
-             "' because the form's frame is sandboxed and the 'allow-forms' "
-             "permission is not set."})));
+    GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kSecurity,
+            mojom::blink::ConsoleMessageLevel::kError,
+            StrCat({"Blocked form submission to '",
+                    form_submission->Action().ElidedString(),
+                    "' because the form's frame is sandboxed and the "
+                    "'allow-forms' permission is not set."})));
     return;
   }
 

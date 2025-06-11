@@ -691,9 +691,9 @@ void HTMLInputElement::setSelectionStartForBinding(
   if (!input_type_->SupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"The input element's type ('",
-                     input_type_->FormControlTypeAsString(),
-                     "') does not support selection."}));
+        StrCat({"The input element's type ('",
+                input_type_->FormControlTypeAsString(),
+                "') does not support selection."}));
     return;
   }
   TextControlElement::setSelectionStart(start.value_or(0));
@@ -705,9 +705,9 @@ void HTMLInputElement::setSelectionEndForBinding(
   if (!input_type_->SupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"The input element's type ('",
-                     input_type_->FormControlTypeAsString(),
-                     "') does not support selection."}));
+        StrCat({"The input element's type ('",
+                input_type_->FormControlTypeAsString(),
+                "') does not support selection."}));
     return;
   }
   TextControlElement::setSelectionEnd(end.value_or(0));
@@ -719,9 +719,9 @@ void HTMLInputElement::setSelectionDirectionForBinding(
   if (!input_type_->SupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"The input element's type ('",
-                     input_type_->FormControlTypeAsString(),
-                     "') does not support selection."}));
+        StrCat({"The input element's type ('",
+                input_type_->FormControlTypeAsString(),
+                "') does not support selection."}));
     return;
   }
   TextControlElement::setSelectionDirection(direction);
@@ -734,9 +734,9 @@ void HTMLInputElement::setSelectionRangeForBinding(
   if (!input_type_->SupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"The input element's type ('",
-                     input_type_->FormControlTypeAsString(),
-                     "') does not support selection."}));
+        StrCat({"The input element's type ('",
+                input_type_->FormControlTypeAsString(),
+                "') does not support selection."}));
     return;
   }
   TextControlElement::setSelectionRangeForBinding(start, end);
@@ -750,9 +750,9 @@ void HTMLInputElement::setSelectionRangeForBinding(
   if (!input_type_->SupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"The input element's type ('",
-                     input_type_->FormControlTypeAsString(),
-                     "') does not support selection."}));
+        StrCat({"The input element's type ('",
+                input_type_->FormControlTypeAsString(),
+                "') does not support selection."}));
     return;
   }
   TextControlElement::setSelectionRangeForBinding(start, end, direction);
@@ -768,9 +768,9 @@ void HTMLInputElement::SetSelectionRangeForTesting(
   if (FormControlType() != FormControlType::kInputNumber) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"The input element's type ('",
-                     input_type_->FormControlTypeAsString(),
-                     "') is not a number input."}));
+        StrCat({"The input element's type ('",
+                input_type_->FormControlTypeAsString(),
+                "') is not a number input."}));
   }
   TextControlElement::setSelectionRangeForBinding(start, end);
 }
@@ -2169,9 +2169,9 @@ void HTMLInputElement::setRangeText(const String& replacement,
   if (!input_type_->SupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"The input element's type ('",
-                     input_type_->FormControlTypeAsString(),
-                     "') does not support selection."}));
+        StrCat({"The input element's type ('",
+                input_type_->FormControlTypeAsString(),
+                "') does not support selection."}));
     return;
   }
 
@@ -2186,9 +2186,9 @@ void HTMLInputElement::setRangeText(const String& replacement,
   if (!input_type_->SupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"The input element's type ('",
-                     input_type_->FormControlTypeAsString(),
-                     "') does not support selection."}));
+        StrCat({"The input element's type ('",
+                input_type_->FormControlTypeAsString(),
+                "') does not support selection."}));
     return;
   }
 

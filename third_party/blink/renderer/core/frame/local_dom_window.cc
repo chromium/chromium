@@ -490,9 +490,9 @@ bool LocalDOMWindow::CanExecuteScripts(
       AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kSecurity,
           mojom::blink::ConsoleMessageLevel::kError,
-          WTF::StrCat({"Blocked script execution in '", Url().ElidedString(),
-                       "' because the document's frame is sandboxed and the "
-                       "'allow-scripts' permission is not set."})));
+          StrCat({"Blocked script execution in '", Url().ElidedString(),
+                  "' because the document's frame is sandboxed and the "
+                  "'allow-scripts' permission is not set."})));
     }
     return false;
   }
@@ -1322,10 +1322,10 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     if (!valid_target) {
       String message = ExceptionMessages::FailedToExecute(
           "postMessage", "DOMWindow",
-          WTF::StrCat({"The target origin provided ('",
-                       intended_target_origin->ToString(),
-                       "') does not match the recipient window's origin ('",
-                       GetSecurityOrigin()->ToString(), "')."}));
+          StrCat({"The target origin provided ('",
+                  intended_target_origin->ToString(),
+                  "') does not match the recipient window's origin ('",
+                  GetSecurityOrigin()->ToString(), "')."}));
       auto* console_message = MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kSecurity,
           mojom::ConsoleMessageLevel::kWarning, message, location);
@@ -2309,8 +2309,8 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
     UseCounter::Count(entered_window, WebFeature::kWindowOpenWithInvalidURL);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat({"Unable to open a window with invalid URL '",
-                     completed_url.GetString(), "'.\n"}));
+        StrCat({"Unable to open a window with invalid URL '",
+                completed_url.GetString(), "'.\n"}));
     return nullptr;
   }
 

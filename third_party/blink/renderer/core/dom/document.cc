@@ -1278,8 +1278,7 @@ Element* TreeScope::CreateElementForBinding(const AtomicString& name,
   if (!IsValidElementName(&document, name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        WTF::StrCat(
-            {"The tag name provided ('", name, "') is not a valid name."}));
+        StrCat({"The tag name provided ('", name, "') is not a valid name."}));
     return nullptr;
   }
 
@@ -1345,8 +1344,8 @@ Element* TreeScope::CreateElementForBinding(
   if (!IsValidElementName(&document, local_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        WTF::StrCat({"The tag name provided ('", local_name,
-                     "') is not a valid name."}));
+        StrCat({"The tag name provided ('", local_name,
+                "') is not a valid name."}));
     return nullptr;
   }
 
@@ -1383,9 +1382,9 @@ static inline QualifiedName CreateQualifiedName(
   if (!Document::HasValidNamespaceForElements(q_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNamespaceError,
-        WTF::StrCat({"The namespace URI provided ('", namespace_uri,
-                     "') is not valid for the qualified name provided ('",
-                     qualified_name, "')."}));
+        StrCat({"The namespace URI provided ('", namespace_uri,
+                "') is not valid for the qualified name provided ('",
+                qualified_name, "')."}));
     return QualifiedName::Null();
   }
 
@@ -1438,8 +1437,8 @@ Element* TreeScope::createElementNS(
   if (!IsValidElementName(&document, qualified_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        WTF::StrCat({"The tag name provided ('", qualified_name,
-                     "') is not a valid name."}));
+        StrCat({"The tag name provided ('", qualified_name,
+                "') is not a valid name."}));
     return nullptr;
   }
 
@@ -1510,14 +1509,13 @@ ProcessingInstruction* Document::createProcessingInstruction(
   if (!IsValidName(target)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        WTF::StrCat(
-            {"The target provided ('", target, "') is not a valid name."}));
+        StrCat({"The target provided ('", target, "') is not a valid name."}));
     return nullptr;
   }
   if (data.Contains("?>")) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        WTF::StrCat({"The data provided ('", data, "') contains '?>'."}));
+        StrCat({"The data provided ('", data, "') contains '?>'."}));
     return nullptr;
   }
   if (IsA<HTMLDocument>(this)) {
@@ -1612,8 +1610,8 @@ Node* Document::adoptNode(Node* source, ExceptionState& exception_state) {
     case kDocumentNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
-          WTF::StrCat({"The node provided is of type '", source->nodeName(),
-                       "', which may not be adopted."}));
+          StrCat({"The node provided is of type '", source->nodeName(),
+                  "', which may not be adopted."}));
       return nullptr;
     case kAttributeNode: {
       auto* attr = To<Attr>(source);
@@ -1771,8 +1769,8 @@ void Document::setXMLVersion(const String& version,
   if (!XMLDocumentParser::SupportsXMLVersion(version)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"This document does not support the XML version '",
-                     version, "'."}));
+        StrCat({"This document does not support the XML version '", version,
+                "'."}));
     return;
   }
 
@@ -3953,8 +3951,8 @@ void Document::setBody(HTMLElement* prp_new_body,
       !IsA<HTMLFrameSetElement>(*new_body)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kHierarchyRequestError,
-        WTF::StrCat({"The new body element is of type '", new_body->tagName(),
-                     "'. It must be either a 'BODY' or 'FRAMESET' element."}));
+        StrCat({"The new body element is of type '", new_body->tagName(),
+                "'. It must be either a 'BODY' or 'FRAMESET' element."}));
     return;
   }
 
@@ -4974,9 +4972,8 @@ void Document::ProcessBaseElement() {
       UseCounter::Count(*this, WebFeature::kBaseWithDataHref);
       AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
-          WTF::StrCat(
-              {"'", base_element_url.Protocol(),
-               "' URLs may not be used as base URLs for a document."})));
+          StrCat({"'", base_element_url.Protocol(),
+                  "' URLs may not be used as base URLs for a document."})));
     }
     if (GetExecutionContext() &&
         !GetExecutionContext()->GetSecurityOrigin()->CanRequest(
@@ -5101,7 +5098,7 @@ void Document::MaybeHandleHttpRefresh(const String& content,
       refresh_url_string.empty() ? Url() : CompleteURL(refresh_url_string);
 
   if (refresh_url.ProtocolIsJavaScript()) {
-    String message = WTF::StrCat(
+    String message = StrCat(
         {"Refused to refresh ", url_.ElidedString(), " to a javascript: URL"});
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
@@ -5282,7 +5279,7 @@ bool Document::CanAcceptChild(const Node* new_child,
       case kTextNode:
         exception_state.ThrowDOMException(
             DOMExceptionCode::kHierarchyRequestError,
-            WTF::StrCat(
+            StrCat(
                 {"Nodes of type '", child.nodeName(),
                  "' may not be inserted inside nodes of type '#document'."}));
         return false;
@@ -6415,8 +6412,7 @@ Event* Document::createEvent(ScriptState* script_state,
   }
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNotSupportedError,
-      WTF::StrCat(
-          {"The provided event type ('", event_type, "') is invalid."}));
+      StrCat({"The provided event type ('", event_type, "') is invalid."}));
   return nullptr;
 }
 
@@ -6619,9 +6615,9 @@ void Document::setDomain(const String& raw_domain,
 
   if (SchemeRegistry::IsDomainRelaxationForbiddenForURLScheme(
           dom_window_->GetSecurityOrigin()->Protocol())) {
-    exception_state.ThrowSecurityError(WTF::StrCat(
-        {"Assignment is forbidden for the '",
-         dom_window_->GetSecurityOrigin()->Protocol(), "' scheme."}));
+    exception_state.ThrowSecurityError(
+        StrCat({"Assignment is forbidden for the '",
+                dom_window_->GetSecurityOrigin()->Protocol(), "' scheme."}));
     return;
   }
 
@@ -6630,13 +6626,13 @@ void Document::setDomain(const String& raw_domain,
       raw_domain, dom_window_->GetSecurityOrigin()->Protocol(), &success);
   if (!success) {
     exception_state.ThrowSecurityError(
-        WTF::StrCat({"'", raw_domain, "' could not be parsed properly."}));
+        StrCat({"'", raw_domain, "' could not be parsed properly."}));
     return;
   }
 
   if (new_domain.empty()) {
     exception_state.ThrowSecurityError(
-        WTF::StrCat({"'", new_domain, "' is an empty domain."}));
+        StrCat({"'", new_domain, "' is an empty domain."}));
     return;
   }
 
@@ -6648,15 +6644,15 @@ void Document::setDomain(const String& raw_domain,
   network::cors::OriginAccessEntry::MatchResult result =
       access_entry.MatchesOrigin(*dom_window_->GetSecurityOrigin());
   if (result == network::cors::OriginAccessEntry::kDoesNotMatchOrigin) {
-    exception_state.ThrowSecurityError(WTF::StrCat(
-        {"'", new_domain, "' is not a suffix of '", domain(), "'."}));
+    exception_state.ThrowSecurityError(
+        StrCat({"'", new_domain, "' is not a suffix of '", domain(), "'."}));
     return;
   }
 
   if (result ==
       network::cors::OriginAccessEntry::kMatchesOriginButIsPublicSuffix) {
     exception_state.ThrowSecurityError(
-        WTF::StrCat({"'", new_domain, "' is a top-level domain."}));
+        StrCat({"'", new_domain, "' is a top-level domain."}));
     return;
   }
 
@@ -7573,8 +7569,8 @@ Attr* Document::createAttribute(const AtomicString& name,
   if (!is_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        WTF::StrCat({"The localName provided ('", name,
-                     "') contains an invalid character."}));
+        StrCat({"The localName provided ('", name,
+                "') contains an invalid character."}));
     return nullptr;
   }
   return MakeGarbageCollected<Attr>(
@@ -7595,9 +7591,9 @@ Attr* Document::createAttributeNS(const AtomicString& namespace_uri,
   if (!HasValidNamespaceForAttributes(q_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNamespaceError,
-        WTF::StrCat({"The namespace URI provided ('", namespace_uri,
-                     "') is not valid for the qualified name provided ('",
-                     qualified_name, "')."}));
+        StrCat({"The namespace URI provided ('", namespace_uri,
+                "') is not valid for the qualified name provided ('",
+                qualified_name, "')."}));
     return nullptr;
   }
 
@@ -8893,9 +8889,9 @@ void Document::FlushAutofocusCandidates() {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kRendering,
         mojom::ConsoleMessageLevel::kInfo,
-        WTF::StrCat({"Autofocus processing was blocked because a document's "
-                     "URL has a fragment '#",
-                     Url().FragmentIdentifier(), "'."})));
+        StrCat({"Autofocus processing was blocked because a document's URL has "
+                "a fragment '#",
+                Url().FragmentIdentifier(), "'."})));
     return;
   }
 
@@ -8951,9 +8947,9 @@ void Document::FlushAutofocusCandidates() {
         AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kRendering,
             mojom::ConsoleMessageLevel::kInfo,
-            WTF::StrCat({"Autofocus processing was blocked because a "
-                         "document's URL has a fragment '#",
-                         doc->Url().FragmentIdentifier(), "'."})));
+            StrCat({"Autofocus processing was blocked because a document's URL "
+                    "has a fragment '#",
+                    doc->Url().FragmentIdentifier(), "'."})));
         continue;
       }
       DCHECK_EQ(doc, this);

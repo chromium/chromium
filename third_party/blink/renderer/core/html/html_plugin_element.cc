@@ -868,9 +868,9 @@ bool HTMLPlugInElement::AllowedToLoadPlugin(const KURL& url) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kSecurity,
             mojom::blink::ConsoleMessageLevel::kError,
-            WTF::StrCat({"Failed to load '", url.ElidedString(),
-                         "' as a plugin, because the frame into which the "
-                         "plugin is loading is sandboxed."})));
+            StrCat({"Failed to load '", url.ElidedString(),
+                    "' as a plugin, because the frame into which the plugin is "
+                    "loading is sandboxed."})));
     return false;
   }
   return true;

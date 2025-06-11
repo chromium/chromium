@@ -173,9 +173,7 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
 
   void Trace(Visitor*) const override;
 
-  String DebugString() const override {
-    return WTF::StrCat({"<ref: ", url_, ">"});
-  }
+  String DebugString() const override { return StrCat({"<ref: ", url_, ">"}); }
 
  protected:
   bool IsEqualAssumingSameType(const FilterOperation&) const override;

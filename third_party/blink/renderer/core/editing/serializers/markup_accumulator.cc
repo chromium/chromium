@@ -589,7 +589,7 @@ AtomicString MarkupAccumulator::GeneratePrefix(
     // 1. Let generated prefix be the concatenation of the string "ns" and the
     // current numerical value of prefix index.
     generated_prefix =
-        AtomicString(WTF::StrCat({"ns", String::Number(prefix_index_)}));
+        AtomicString(StrCat({"ns", String::Number(prefix_index_)}));
     // 2. Let the value of prefix index be incremented by one.
     ++prefix_index_;
   } while (LookupNamespaceURI(generated_prefix));

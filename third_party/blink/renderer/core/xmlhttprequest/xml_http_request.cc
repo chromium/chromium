@@ -895,7 +895,7 @@ void XMLHttpRequest::send(FormData* body, ExceptionState& exception_state) {
     // TODO (sof): override any author-provided charset= in the
     // content type value to UTF-8 ?
     if (!HasContentTypeRequestHeader()) {
-      AtomicString content_type = AtomicString(WTF::StrCat(
+      AtomicString content_type = AtomicString(StrCat(
           {"multipart/form-data; boundary=",
            FetchUtils::NormalizeHeaderValue(http_body->Boundary().data())}));
       SetRequestHeaderInternal(http_names::kContentType, content_type);
@@ -1421,7 +1421,7 @@ void XMLHttpRequest::SetRequestHeaderInternal(const AtomicString& name,
   HTTPHeaderMap::AddResult result = request_headers_.Add(name, value);
   if (!result.is_new_entry) {
     result.stored_value->value =
-        AtomicString(WTF::StrCat({result.stored_value->value, ", ", value}));
+        AtomicString(StrCat({result.stored_value->value, ", ", value}));
   }
 }
 

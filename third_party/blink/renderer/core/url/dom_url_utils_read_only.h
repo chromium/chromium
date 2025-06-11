@@ -47,7 +47,7 @@ class CORE_EXPORT DOMURLUtilsReadOnly {
   String origin() { return origin(Url()); }
 
   static String protocol(const KURL& url) {
-    return WTF::StrCat({url.Protocol(), ":"});
+    return StrCat({url.Protocol(), ":"});
   }
   String protocol() { return protocol(Url()); }
 

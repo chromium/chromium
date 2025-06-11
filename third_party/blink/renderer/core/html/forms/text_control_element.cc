@@ -396,9 +396,9 @@ void TextControlElement::setRangeText(const String& replacement,
   if (start > end) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"The provided start value (", String::Number(start),
-                     ") is larger than the provided end value (",
-                     String::Number(end), ")."}));
+        StrCat({"The provided start value (", String::Number(start),
+                ") is larger than the provided end value (",
+                String::Number(end), ")."}));
     return;
   }
   if (OpenShadowRoot())

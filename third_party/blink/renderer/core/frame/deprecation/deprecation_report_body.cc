@@ -39,9 +39,9 @@ void DeprecationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
       // as JSON.stringify(anticipatedRemoval) in javascript. Note here
       // anticipatedRemoval will become a Date object in javascript.
       String iso8601_date =
-          WTF::StrCat({anticipated_removal_date.ToString(
-                           DateComponents::SecondFormat::kMillisecond),
-                       "Z"});
+          StrCat({anticipated_removal_date.ToString(
+                      DateComponents::SecondFormat::kMillisecond),
+                  "Z"});
       builder.AddString("anticipatedRemoval", iso8601_date);
     }
   }

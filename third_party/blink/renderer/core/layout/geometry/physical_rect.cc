@@ -148,7 +148,7 @@ bool PhysicalRect::InclusiveIntersect(const PhysicalRect& other) {
 }
 
 String PhysicalRect::ToString() const {
-  return WTF::StrCat({offset.ToString(), " ", size.ToString()});
+  return StrCat({offset.ToString(), " ", size.ToString()});
 }
 
 PhysicalRect UnionRect(const Vector<PhysicalRect>& rects) {

@@ -417,9 +417,9 @@ static protocol::Response ToResponse(
   if (exception_state.HadException()) {
     String msg = exception_state.Message();
     if (IsDOMExceptionCode(exception_state.Code())) {
-      msg = WTF::StrCat({DOMException::GetErrorName(
-                             exception_state.CodeAs<DOMExceptionCode>()),
-                         " ", msg});
+      msg = StrCat({DOMException::GetErrorName(
+                        exception_state.CodeAs<DOMExceptionCode>()),
+                    " ", msg});
     }
     return protocol::Response::ServerError(msg.Utf8());
   }

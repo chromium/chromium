@@ -17,7 +17,7 @@ namespace {
 AtomicString CreateFilterDataUrl(const char* piece) {
   // TODO(mathias): Remove `color-interpolation-filters` attribute once
   // crbug.com/335066 is fixed. See crbug.com/1270748.
-  return AtomicString(WTF::StrCat(
+  return AtomicString(StrCat(
       {"data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter "
        "id=\"f\" color-interpolation-filters=\"linearRGB\">",
        piece, "</filter></svg>#f"}));

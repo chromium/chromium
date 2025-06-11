@@ -306,7 +306,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       resource_request->SetHTTPContentType(encoding_type);
     } else {
       resource_request->SetHTTPContentType(
-          AtomicString(WTF::StrCat({encoding_type, "; boundary=", boundary})));
+          AtomicString(StrCat({encoding_type, "; boundary=", boundary})));
     }
   }
   LocalFrame* form_local_frame = form->GetDocument().GetFrame();

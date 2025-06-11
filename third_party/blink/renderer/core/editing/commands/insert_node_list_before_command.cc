@@ -54,8 +54,8 @@ void InsertNodeListBeforeCommand::DoUnapply() {
 }
 
 String InsertNodeListBeforeCommand::ToString() const {
-  return WTF::StrCat({"InsertNodeListBeforeCommand {insert_children:[",
-                      String::Number(insert_children_.size()), " nodes]}"});
+  return StrCat({"InsertNodeListBeforeCommand {insert_children:[",
+                 String::Number(insert_children_.size()), " nodes]}"});
 }
 
 void InsertNodeListBeforeCommand::Trace(Visitor* visitor) const {

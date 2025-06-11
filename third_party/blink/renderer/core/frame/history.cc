@@ -362,11 +362,11 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
     // We can safely expose the URL to JavaScript, as a) no redirection takes
     // place: JavaScript already had this URL, b) JavaScript can only access a
     // same-origin History object.
-    exception_state.ThrowSecurityError(WTF::StrCat(
-        {"A history state object with URL '", full_url.ElidedString(),
-         "' cannot be created in a document with origin '",
-         window->GetSecurityOrigin()->ToString(), "' and URL '",
-         window->Url().ElidedString(), "'."}));
+    exception_state.ThrowSecurityError(
+        StrCat({"A history state object with URL '", full_url.ElidedString(),
+                "' cannot be created in a document with origin '",
+                window->GetSecurityOrigin()->ToString(), "' and URL '",
+                window->Url().ElidedString(), "'."}));
     return;
   }
 

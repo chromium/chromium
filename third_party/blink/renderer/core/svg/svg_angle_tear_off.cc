@@ -76,8 +76,8 @@ void SVGAngleTearOff::newValueSpecifiedUnits(uint16_t unit_type,
       unit_type > SVGAngle::kSvgAngletypeGrad) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"Cannot set value with unknown or invalid units (",
-                     String::Number(unit_type), ")."}));
+        StrCat({"Cannot set value with unknown or invalid units (",
+                String::Number(unit_type), ")."}));
     return;
   }
   Target()->NewValueSpecifiedUnits(
@@ -95,8 +95,8 @@ void SVGAngleTearOff::convertToSpecifiedUnits(uint16_t unit_type,
       unit_type > SVGAngle::kSvgAngletypeGrad) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"Cannot convert to unknown or invalid units (",
-                     String::Number(unit_type), ")."}));
+        StrCat({"Cannot convert to unknown or invalid units (",
+                String::Number(unit_type), ")."}));
     return;
   }
   if (Target()->UnitType() == SVGAngle::kSvgAngletypeUnknown) {
@@ -125,7 +125,7 @@ void SVGAngleTearOff::setValueAsString(const String& value,
   if (status != SVGParseStatus::kNoError) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat({"The value provided ('", value, "') is invalid."}));
+        StrCat({"The value provided ('", value, "') is invalid."}));
     return;
   }
   CommitChange(SVGPropertyCommitReason::kUpdated);

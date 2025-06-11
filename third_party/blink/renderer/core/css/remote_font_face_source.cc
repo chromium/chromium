@@ -209,13 +209,13 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kOther,
         mojom::ConsoleMessageLevel::kWarning,
-        WTF::StrCat({"Failed to decode downloaded font: ",
-                     font->Url().ElidedString()})));
+        StrCat({"Failed to decode downloaded font: ",
+                font->Url().ElidedString()})));
     if (!font->OtsParsingMessage().empty()) {
       execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kOther,
           mojom::ConsoleMessageLevel::kWarning,
-          WTF::StrCat({"OTS parsing error: ", font->OtsParsingMessage()})));
+          StrCat({"OTS parsing error: ", font->OtsParsingMessage()})));
     }
   }
 
@@ -389,11 +389,10 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
       execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kIntervention,
           mojom::blink::ConsoleMessageLevel::kInfo,
-          WTF::StrCat(
-              {"Slow network is detected. See "
-               "https://www.chromestatus.com/feature/5636954674692096 for more "
-               "details. Fallback font will be used while loading: ",
-               font->Url().ElidedString()})));
+          StrCat({"Slow network is detected. See "
+                  "https://www.chromestatus.com/feature/5636954674692096 for "
+                  "more details. Fallback font will be used while loading: ",
+                  font->Url().ElidedString()})));
 
       // Set the loading priority to VeryLow only when all other clients agreed
       // that this font is not required for painting the text.

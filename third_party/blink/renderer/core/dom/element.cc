@@ -494,10 +494,9 @@ void EnqueueAutofocus(Element& element) {
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        WTF::StrCat({"Blocked autofocusing on a <",
-                     element.TagQName().ToString(),
-                     "> element because the element's frame is sandboxed and "
-                     "the 'allow-scripts' permission is not set."})));
+        StrCat({"Blocked autofocusing on a <", element.TagQName().ToString(),
+                "> element because the element's frame is sandboxed and the "
+                "'allow-scripts' permission is not set."})));
     return;
   }
 
@@ -511,9 +510,8 @@ void EnqueueAutofocus(Element& element) {
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        WTF::StrCat({"Blocked autofocusing on a <",
-                     element.TagQName().ToString(),
-                     "> element in a cross-origin subframe."})));
+        StrCat({"Blocked autofocusing on a <", element.TagQName().ToString(),
+                "> element in a cross-origin subframe."})));
     return;
   }
 
@@ -8116,8 +8114,8 @@ void Element::setOuterHTML(const String& html,
   if (!parent) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNoModificationAllowedError,
-        WTF::StrCat({"This element's parent is of type '", p->nodeName(),
-                     "', which is not an element node."}));
+        StrCat({"This element's parent is of type '", p->nodeName(),
+                "', which is not an element node."}));
     return;
   }
 
@@ -8189,9 +8187,9 @@ Node* Element::InsertAdjacent(const String& where,
 
   exception_state.ThrowDOMException(
       DOMExceptionCode::kSyntaxError,
-      WTF::StrCat({"The value provided ('", where,
-                   "') is not one of 'beforeBegin', 'afterBegin', "
-                   "'beforeEnd', or 'afterEnd'."}));
+      StrCat({"The value provided ('", where,
+              "') is not one of 'beforeBegin', 'afterBegin', 'beforeEnd', or "
+              "'afterEnd'."}));
   return nullptr;
 }
 
@@ -8324,9 +8322,9 @@ static Node* ContextNodeForInsertion(const String& where,
   }
   exception_state.ThrowDOMException(
       DOMExceptionCode::kSyntaxError,
-      WTF::StrCat({"The value provided ('", where,
-                   "') is not one of 'beforeBegin', 'afterBegin', "
-                   "'beforeEnd', or 'afterEnd'."}));
+      StrCat({"The value provided ('", where,
+              "') is not one of 'beforeBegin', 'afterBegin', 'beforeEnd', or "
+              "'afterEnd'."}));
   return nullptr;
 }
 

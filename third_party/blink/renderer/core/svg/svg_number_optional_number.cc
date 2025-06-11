@@ -57,8 +57,8 @@ String SVGNumberOptionalNumber::ValueAsString() const {
     return String::Number(first_number_->Value());
   }
 
-  return WTF::StrCat({String::Number(first_number_->Value()), " ",
-                      String::Number(second_number_->Value())});
+  return StrCat({String::Number(first_number_->Value()), " ",
+                 String::Number(second_number_->Value())});
 }
 
 SVGParsingError SVGNumberOptionalNumber::SetValueAsString(const String& value) {

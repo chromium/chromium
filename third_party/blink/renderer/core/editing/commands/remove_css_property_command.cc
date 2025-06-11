@@ -71,8 +71,8 @@ void RemoveCSSPropertyCommand::DoUnapply() {
 }
 
 String RemoveCSSPropertyCommand::ToString() const {
-  return WTF::StrCat({"RemoveCSSPropertyCommand {",
-                      CSSPropertyName(property_).ToAtomicString(), "}"});
+  return StrCat({"RemoveCSSPropertyCommand {",
+                 CSSPropertyName(property_).ToAtomicString(), "}"});
 }
 
 void RemoveCSSPropertyCommand::Trace(Visitor* visitor) const {

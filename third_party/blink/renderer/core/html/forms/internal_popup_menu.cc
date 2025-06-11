@@ -336,8 +336,8 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
           owner_element, owner_element.GetComputedStyle(), temp_scrollbar,
           target.first);
       if (part_style) {
-        AppendOwnerElementPseudoStyles(WTF::StrCat({target.second, ":hover"}),
-                                       data, *part_style);
+        AppendOwnerElementPseudoStyles(StrCat({target.second, ":hover"}), data,
+                                       *part_style);
       }
     }
   }

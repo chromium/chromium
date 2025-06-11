@@ -1217,7 +1217,7 @@ LayoutUnit BlockNode::EmptyLineBlockSize(
 }
 
 String BlockNode::ToString() const {
-  return WTF::StrCat({"BlockNode: ", GetLayoutBox()->ToString()});
+  return StrCat({"BlockNode: ", GetLayoutBox()->ToString()});
 }
 
 void BlockNode::CopyFragmentDataToLayoutBox(

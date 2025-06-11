@@ -376,7 +376,7 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetch(
     mojom::blink::RequestContextType request_context,
     bool allowed,
     SourceLocation* source_location) {
-  String message = WTF::StrCat(
+  String message = StrCat(
       {"Mixed Content: The page at '", main_resource_url.ElidedString(),
        "' was loaded over HTTPS, but requested an insecure ",
        RequestContextName(request_context), " '", url.ElidedString(), "'. ",
@@ -739,7 +739,7 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutWebSocket(
     const KURL& main_resource_url,
     const KURL& url,
     bool allowed) {
-  String message = WTF::StrCat(
+  String message = StrCat(
       {"Mixed Content: The page at '", main_resource_url.ElidedString(),
        "' was loaded over HTTPS, but attempted to connect to the insecure "
        "WebSocket endpoint '",
