@@ -27,8 +27,8 @@ separated from each other by a divider.
       <div id="extensionNameContainer" title="${this.extensionName_}"
           class="notice-item">
         <button @click="${this.onExtensionNameClick_}" role="link"
-            aria-roledescription="$i18n{currentTabLinkRoleDesc}"
-            aria-label="$i18n{currentTabLinkLabel}">
+            aria-label="${this.extensionName_}"
+            aria-description="$i18n{manageExtension}">
           ${this.extensionName_}
         </button>
       </div>` : ''}
