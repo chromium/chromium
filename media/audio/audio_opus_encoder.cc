@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_encoder.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/channel_mixer.h"
 #include "media/base/converting_audio_fifo.h"
 #include "media/base/encoder_status.h"

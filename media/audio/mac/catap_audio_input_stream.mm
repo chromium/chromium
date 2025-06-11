@@ -25,6 +25,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
 #include "media/audio/mac/catap_api.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 
 namespace media {

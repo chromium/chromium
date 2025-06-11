@@ -9,6 +9,7 @@
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 
 namespace media {
 

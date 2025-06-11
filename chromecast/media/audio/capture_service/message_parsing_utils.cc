@@ -22,6 +22,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "chromecast/media/audio/capture_service/constants.h"
 #include "chromecast/media/audio/capture_service/packet_header.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/limits.h"
 
 namespace chromecast {

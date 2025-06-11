@@ -18,6 +18,7 @@
 #include "chromecast/public/media/audio_post_processor2_shlib.h"
 #include "chromecast/public/volume_control.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

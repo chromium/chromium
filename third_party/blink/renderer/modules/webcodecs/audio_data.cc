@@ -11,6 +11,7 @@
 #include "base/types/to_address.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/limits.h"
 #include "media/base/sample_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"

@@ -39,6 +39,7 @@
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/audio/win/core_audio_util_win.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/seekable_buffer.h"
 #include "media/base/test_data_util.h"

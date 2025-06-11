@@ -26,6 +26,7 @@
 #include "chromecast/public/media/external_audio_pipeline_shlib.h"
 #include "chromecast/public/media/mixer_output_stream.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

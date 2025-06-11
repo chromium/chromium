@@ -26,6 +26,7 @@
 #include "chromecast/media/cma/backend/mixer/filter_group.h"
 #include "chromecast/media/cma/backend/mixer/post_processing_pipeline.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/multi_channel_resampler.h"
 

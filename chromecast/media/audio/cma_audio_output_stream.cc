@@ -21,6 +21,7 @@
 #include "chromecast/public/volume_control.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 
 namespace chromecast {
 namespace media {

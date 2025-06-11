@@ -39,6 +39,7 @@
 #include "media/audio/audio_system.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/base/audio_sample_types.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"

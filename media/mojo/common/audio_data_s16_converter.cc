@@ -13,6 +13,7 @@
 
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/channel_mixer.h"

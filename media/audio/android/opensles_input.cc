@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 
 #define LOG_ON_FAILURE_AND_RETURN(op, ...)      \
   do {                                          \

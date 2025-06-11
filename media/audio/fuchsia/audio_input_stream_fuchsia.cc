@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/fuchsia/audio_manager_fuchsia.h"
+#include "media/base/audio_sample_types.h"
 
 namespace media {
 

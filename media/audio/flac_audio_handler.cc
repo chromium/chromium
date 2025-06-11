@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_fifo.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 #include "third_party/flac/include/FLAC/ordinals.h"

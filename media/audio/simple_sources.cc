@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 
 namespace media {
 namespace {

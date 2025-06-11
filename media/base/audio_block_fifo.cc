@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/span_reader.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_sample_types.h"
 
 namespace media {
 

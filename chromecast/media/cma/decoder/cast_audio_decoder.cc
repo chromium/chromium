@@ -30,6 +30,7 @@
 #include "chromecast/media/common/base/decoder_config_logging.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/cdm_context.h"
 #include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"

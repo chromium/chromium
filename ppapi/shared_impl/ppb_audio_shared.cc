@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_sample_types.h"
 #include "ppapi/nacl_irt/public/irt_ppapi.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
 #include "ppapi/shared_impl/ppb_audio_config_shared.h"

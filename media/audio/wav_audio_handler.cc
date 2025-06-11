@@ -18,6 +18,7 @@
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 

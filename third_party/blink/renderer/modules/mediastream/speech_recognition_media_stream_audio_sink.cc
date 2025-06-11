@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"
 #include "media/base/channel_mixer.h"
 #include "media/mojo/mojom/audio_data.mojom-blink.h"

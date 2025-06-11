@@ -18,6 +18,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppb_audio_buffer.h"
 #include "ppapi/host/dispatch_host_message.h"

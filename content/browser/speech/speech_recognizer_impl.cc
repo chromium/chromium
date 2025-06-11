@@ -25,6 +25,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_sample_types.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "services/audio/public/cpp/device_factory.h"
 

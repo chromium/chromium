@@ -21,6 +21,7 @@
 #include "base/types/pass_key.h"
 #include "media/base/audio_bus.h"
 #include "media/base/limits.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/timestamp_constants.h"
 
 namespace media {
