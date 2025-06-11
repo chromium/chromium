@@ -74,6 +74,7 @@
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/event_processor.h"
@@ -83,6 +84,10 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/views_features.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -391,6 +396,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectionClipboard) {
 #if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectAllOnTap) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland" &&
+      base::FeatureList::IsEnabled(features::kOzoneBubblesUsePlatformWidgets)) {
+    GTEST_SKIP()
+        << "This test expects the window to be focused on sending a tap "
+           "event directly to omnibox. This is not possisble in wayland "
+           "if omnibox uses a separate platform widget.";
+  }
+#endif
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
   omnibox_view->SetUserText(u"http://www.google.com/");
