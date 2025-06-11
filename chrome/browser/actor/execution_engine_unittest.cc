@@ -33,7 +33,7 @@ using ::optimization_guide::proto::BrowserAction;
 namespace {
 constexpr int kFakeContentNodeId = 123;
 constexpr char kActionResultHistogram[] =
-    "Actor.ActorCoordinator.Action.ResultCode";
+    "Actor.ExecutionEngine.Action.ResultCode";
 
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:

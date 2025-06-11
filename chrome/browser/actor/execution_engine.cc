@@ -51,7 +51,7 @@ namespace {
 
 void PostTaskForActCallback(ExecutionEngine::ActionResultCallback callback,
                             mojom::ActionResultPtr result) {
-  UMA_HISTOGRAM_ENUMERATION("Actor.ActorCoordinator.Action.ResultCode",
+  UMA_HISTOGRAM_ENUMERATION("Actor.ExecutionEngine.Action.ResultCode",
                             result->code);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));

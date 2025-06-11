@@ -22,12 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Actor.ActorCoordinator.Action.ResultCode"
+<histogram name="Actor.ExecutionEngine.Action.ResultCode"
     enum="ActionResultCode" expires_after="2026-01-15">
   <owner>kmg@google.com</owner>
   <owner>boujane@google.com</owner>
   <summary>
-    Recorded just before ActionResultCallback within ActorCoordinator. Reports
+    Recorded just before ActionResultCallback within ExecutionEngine. Reports
     the result codes of completed actions.
   </summary>
 </histogram>
