@@ -293,8 +293,7 @@ BatchUploadService::ResettableState::DialogState::DialogState() = default;
 BatchUploadService::ResettableState::DialogState::~DialogState() = default;
 
 // static
-std::vector<syncer::DataType>
-BatchUploadService::AvailableTypesOrderForTesting() {
+std::vector<syncer::DataType> BatchUploadService::AvailableTypesOrder() {
   // Transforming to vector to avoid changing every definition on updates.
   return base::ToVector(kBatchUploadAvailableTypesOrder);
 }

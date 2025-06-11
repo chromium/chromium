@@ -75,8 +75,8 @@ class BatchUploadService : public KeyedService {
           void(std::map<syncer::DataType, syncer::LocalDataDescription>)>
           result_callback);
 
-  // Gets the ordered list of all available types in BatchUpload for testing.
-  static std::vector<syncer::DataType> AvailableTypesOrderForTesting();
+  // Gets the ordered list of all available types in BatchUpload.
+  static std::vector<syncer::DataType> AvailableTypesOrder();
 
  private:
   // Callback that returns a map of `syncer::LocalDataDescription` for the data

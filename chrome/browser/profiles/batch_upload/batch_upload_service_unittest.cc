@@ -101,8 +101,7 @@ class BatchUploadServiceTest : public testing::Test {
 
   // Sets one element for each available data type in `BatchUploadService`.
   void SetLocalDataDescriptionForAllAvailableTypes() {
-    for (syncer::DataType type :
-         BatchUploadService::AvailableTypesOrderForTesting()) {
+    for (syncer::DataType type : BatchUploadService::AvailableTypesOrder()) {
       SetReturnDescriptions(type, 1);
     }
   }
