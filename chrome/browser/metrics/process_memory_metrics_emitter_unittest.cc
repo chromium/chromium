@@ -1084,10 +1084,10 @@ TEST_F(ProcessMemoryMetricsEmitterTest, GpuHistogramsAreRecorded) {
   emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
 
   // Check that the expected values have been emitted to histograms.
-  histograms.ExpectBucketCount("Memory.Experimental.Gpu2.Vulkan",
+  histograms.ExpectBucketCount("Memory.Experimental.Gpu2.Vulkan2",
                                kGpuVulkanResourcesMB, 1);
   histograms.ExpectBucketCount(
-      "Memory.Experimental.Gpu2.Vulkan.AllocatedObjects",
+      "Memory.Experimental.Gpu2.Vulkan2.AllocatedObjects",
       kGpuVulkanUsedResourcesMB, 1);
 }
 

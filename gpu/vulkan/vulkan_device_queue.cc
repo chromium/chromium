@@ -589,11 +589,14 @@ bool VulkanDeviceQueue::OnMemoryDump(
   // `allocated_size` is memory allocated from the device, used is what is
   // actually used. `lazy_allocated_size` is transient memory that is lazily
   // allocated by the driver.
-  dump->AddScalar("allocated_size", "bytes", allocated_used.first);
-  dump->AddScalar("used_size", "bytes", allocated_used.second);
+  dump->AddScalar("allocated_size", "bytes",
+                  allocated_used.first - lazy_allocated_size);
+  dump->AddScalar("used_size", "bytes",
+                  allocated_used.second - lazy_allocated_size);
   dump->AddScalar("fragmentation_size", "bytes",
                   allocated_used.first - allocated_used.second);
   dump->AddScalar("lazy_allocated_size", "bytes", lazy_allocated_size);
+  dump->AddScalar("lazy_used_size", "bytes", lazy_allocated_size);
   return true;
 }
 

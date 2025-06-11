@@ -299,14 +299,18 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      MetricSize::kCustom, "average_size", EmitTo::kSizeInUmaOnly, nullptr,
      ImageSizeMetricRange},
     // For the Vulkan Memory Allocator, "allocated_size" is the amount of GPU
-    // memory used by the allocator, not the amount allocated by clients, which
-    // is "used_size".
-    {"gpu/vulkan", "Vulkan", MetricSize::kLarge, "allocated_size",
+    // memory used by the allocator except lazily allocated memory; "used_size"
+    // is the amount allocated by clients except lazily used memory.
+    {"gpu/vulkan", "Vulkan2", MetricSize::kLarge, "allocated_size",
      EmitTo::kSizeInUmaOnly, nullptr},
-    {"gpu/vulkan", "Vulkan.AllocatedObjects", MetricSize::kLarge, "used_size",
+    {"gpu/vulkan", "Vulkan2.AllocatedObjects", MetricSize::kLarge, "used_size",
      EmitTo::kSizeInUmaOnly, nullptr},
-    {"gpu/vulkan", "Vulkan.Fragmentation", MetricSize::kLarge,
+    {"gpu/vulkan", "Vulkan2.Fragmentation", MetricSize::kLarge,
      "fragmentation_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/vulkan", "Vulkan2.LazyAllocatedObjects", MetricSize::kLarge,
+     "lazy_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/vulkan", "Vulkan2.LazyUsedObjects", MetricSize::kLarge,
+     "lazy_used_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"history", "History", MetricSize::kSmall, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetHistory},
 #if BUILDFLAG(IS_MAC)

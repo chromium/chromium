@@ -1033,12 +1033,18 @@ bool DawnSharedContext::OnMemoryDump(
     // `allocated_size` is memory allocated from the device, used is what is
     // actually used.
     dump->AddScalar("allocated_size", MemoryAllocatorDump::kUnitsBytes,
-                    allocator_usage.totalAllocatedMemory);
-    dump->AddScalar("used_size", MemoryAllocatorDump::kUnitsBytes,
-                    allocator_usage.totalUsedMemory);
+                    allocator_usage.totalAllocatedMemory -
+                        allocator_usage.totalLazyAllocatedMemory);
+    dump->AddScalar(
+        "used_size", MemoryAllocatorDump::kUnitsBytes,
+        allocator_usage.totalUsedMemory - allocator_usage.totalLazyUsedMemory);
     dump->AddScalar(
         "fragmentation_size", MemoryAllocatorDump::kUnitsBytes,
         allocator_usage.totalAllocatedMemory - allocator_usage.totalUsedMemory);
+    dump->AddScalar("lazy_allocated_size", MemoryAllocatorDump::kUnitsBytes,
+                    allocator_usage.totalLazyAllocatedMemory);
+    dump->AddScalar("lazy_used_size", MemoryAllocatorDump::kUnitsBytes,
+                    allocator_usage.totalLazyUsedMemory);
   }
 
   return true;

@@ -449,15 +449,24 @@ chromium-metrics-reviews@google.com.
       summary="Only counting memory used by the shared-space of V8 heap"/>
   <variant name=".V8.Main.Heap.SharedSpace.AllocatedObjects"
       summary="Only counting objects allocated in the shared-space of V8 heap"/>
-  <variant name=".Vulkan"
-      summary="Total memory allocated by the Vulkan Memory Allocator. Only
-               reported when Vulkan is used for rendering."/>
-  <variant name=".Vulkan.AllocatedObjects"
+  <variant name=".Vulkan2"
+      summary="Total memory allocated by the Vulkan Memory Allocator except
+               memory that is lazily allocated. Only reported when Vulkan is
+               used for rendering."/>
+  <variant name=".Vulkan2.AllocatedObjects"
       summary="Total memory allocated by clients from the Vulkan Memory
-               Allocator. Only reported when Vulkan is used for rendering."/>
-  <variant name=".Vulkan.Fragmentation"
+               Allocator except memory that is lazily used. Only reported
+               when Vulkan is used for rendering."/>
+  <variant name=".Vulkan2.Fragmentation"
       summary="Total memory lost to fragmentation in the Vulkan Memory
                Allocator. Only reported when Vulkan is used for rendering."/>
+  <variant name=".Vulkan2.LazyAllocatedObjects"
+      summary="Total memory that is lazily allocated by the Vulkan Memory
+               Allocator. Only reported when Vulkan is used for rendering."/>
+  <variant name=".Vulkan2.LazyUsedObjects"
+      summary="Total memory that is lazily allocated by clients from the
+               Vulkan Memory Allocator. Only reported when Vulkan is used for
+               rendering."/>
 </variants>
 
 <variants name="ProcessMemoryAllocatorCustom2">
