@@ -49,7 +49,7 @@ namespace {
 // A simple, valid template: IIDGUID and STATS are placeholders that the
 // production code will substitute.
 constexpr char kUrlTemplate[] =
-    "https://example.com/installer.exe?iid=IIDGUID&stats=STATS";
+    "https://example.com/installer.exe?iid=IIDGUID&stats=STATS&lang=LANGUAGE";
 
 class MockInstallerDownloaderModel : public InstallerDownloaderModel {
  public:
@@ -181,8 +181,11 @@ TEST_F(InstallerDownloaderControllerTest,
                       "[0-9a-f]{12}"),
                   // Metrics flag.
                   HasSubstr("&stats=1"),
+                  // Language substitution.
+                  HasSubstr("&lang=en"),
                   // No leftover placeholders.
-                  Not(HasSubstr("IIDGUID")), Not(HasSubstr("STATS")))),
+                  Not(HasSubstr("IIDGUID")), Not(HasSubstr("STATS")),
+                  Not(HasSubstr("LANGUAGE")))),
           destination.AppendASCII(kDownloadedInstallerFileName.Get()), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
@@ -210,6 +213,20 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsDisabled) {
       StartDownload(Property(&GURL::spec, HasSubstr("&stats=0")),
                     destination.AppendASCII(kDownloadedInstallerFileName.Get()),
                     _, _));
+
+  controller_->OnDownloadRequestAccepted(destination);
+}
+
+TEST_F(InstallerDownloaderControllerTest, DownloadUrlLanguageSubstitution) {
+  EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
+
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
+  EXPECT_CALL(
+      *mock_model_,
+      StartDownload(
+          Property(&GURL::spec,
+                   AllOf(HasSubstr("&lang=en"), Not(HasSubstr("LANGUAGE")))),
+          destination.AppendASCII(kDownloadedInstallerFileName.Get()), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
 }

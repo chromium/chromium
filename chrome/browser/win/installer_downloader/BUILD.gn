@@ -33,11 +33,13 @@ source_set("controller") {
   deps = [
     ":infobar",
     ":prefs",
+    "//chrome//browser:global_features",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/win:cloud_synced_folder_checker",
+    "//components/application_locale_storage",
     "//components/download/public/common:public",
     "//components/infobars/content",
     "//components/infobars/core",
