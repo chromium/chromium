@@ -224,23 +224,21 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
     }
     case CalculationOperator::kMultiply: {
       DCHECK_EQ(children.size(), 2u);
-      if (children.front()->IsOperation() || children.back()->IsOperation()) {
+      const CalculationExpressionNode& lhs = *children[0];
+      const CalculationExpressionNode& rhs = *children[1];
+      const bool lhs_is_number = lhs.IsNumber();
+      const auto* number_node =
+          DynamicTo<CalculationExpressionNumberNode>(lhs_is_number ? lhs : rhs);
+      const auto* pixels_and_percent_node =
+          DynamicTo<CalculationExpressionPixelsAndPercentNode>(
+              lhs_is_number ? rhs : lhs);
+      if (!number_node || !pixels_and_percent_node) {
         return MakeGarbageCollected<CalculationExpressionOperationNode>(
-            Children({std::move(children[0]), std::move(children[1])}), op);
+            std::move(children), op);
       }
-      auto& maybe_pixels_and_percent_node =
-          children[0]->IsNumber() ? children[1] : children[0];
-      if (!maybe_pixels_and_percent_node->IsPixelsAndPercent()) {
-        return MakeGarbageCollected<CalculationExpressionOperationNode>(
-            Children({std::move(children[0]), std::move(children[1])}), op);
-      }
-      auto& number_node = children[0]->IsNumber() ? children[0] : children[1];
-      const auto& number = To<CalculationExpressionNumberNode>(*number_node);
       PixelsAndPercent pixels_and_percent =
-          To<CalculationExpressionPixelsAndPercentNode>(
-              *maybe_pixels_and_percent_node)
-              .GetPixelsAndPercent();
-      pixels_and_percent *= number.Value();
+          pixels_and_percent_node->GetPixelsAndPercent();
+      pixels_and_percent *= number_node->Value();
       return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
           pixels_and_percent);
     }
