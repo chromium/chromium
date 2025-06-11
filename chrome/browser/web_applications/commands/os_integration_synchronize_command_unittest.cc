@@ -471,5 +471,16 @@ TEST_F(OsIntegrationSynchronizeCommandTest, UpgradeToFullyInstalled) {
   EXPECT_TRUE(states->has_shortcut());
 }
 
+TEST_F(OsIntegrationSynchronizeCommandTest,
+       IgnoreSynchonizationForNonExistantApp) {
+  base::test::TestFuture<void> done;
+  SynchronizeOsOptions options;
+  options.add_shortcut_to_desktop = true;
+  provider()->scheduler().SynchronizeOsIntegration(
+      "non-existent-app-id", done.GetCallback(), options,
+      /*upgrade_to_fully_installed_if_installed=*/true);
+  ASSERT_TRUE(done.Wait());
+}
+
 }  // namespace
 }  // namespace web_app
