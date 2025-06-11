@@ -2048,7 +2048,7 @@ CSSMathExpressionOperation::ConvertLiteralsFromPercentageToNumber() const {
   CalculationResultCategory category =
       category_ == kCalcPercent ? kCalcNumber : category_;
   return MakeGarbageCollected<CSSMathExpressionOperation>(
-      category, std::move(ops), operator_);
+      category, std::move(ops), operator_, type_);
 }
 
 namespace {
@@ -2222,7 +2222,7 @@ std::tuple<const CSSMathExpressionNode*, wtf_size_t> SubstituteForSizeKeyword(
     CSSMathExpressionOperation* new_op =
         MakeGarbageCollected<CSSMathExpressionOperation>(
             operation->Category(), std::move(dest_operands),
-            operation->OperatorType());
+            operation->OperatorType(), operation->Type());
     return std::make_tuple(MaybeSimplifyIfSumOrProductNode(new_op),
                            total_substitution_count);
   }
@@ -2253,7 +2253,7 @@ const CSSMathExpressionNode* SubstituteForPercentages(
 
     return MakeGarbageCollected<CSSMathExpressionOperation>(
         operation->Category(), std::move(dest_operands),
-        operation->OperatorType());
+        operation->OperatorType(), operation->Type());
   }
 
   if (const auto* numeric_literal =
@@ -3466,7 +3466,7 @@ const CSSMathExpressionNode& CSSMathExpressionOperation::PopulateWithTreeScope(
     populated_operands.push_back(&op->EnsureScopedValue(tree_scope));
   }
   return *MakeGarbageCollected<CSSMathExpressionOperation>(
-      Category(), std::move(populated_operands), operator_);
+      Category(), std::move(populated_operands), operator_, type_);
 }
 
 const CSSMathExpressionNode* CSSMathExpressionOperation::TransformAnchors(
@@ -3480,7 +3480,7 @@ const CSSMathExpressionNode* CSSMathExpressionOperation::TransformAnchors(
   }
   if (transformed_operands != operands_) {
     return MakeGarbageCollected<CSSMathExpressionOperation>(
-        Category(), std::move(transformed_operands), operator_);
+        Category(), std::move(transformed_operands), operator_, type_);
   }
   return this;
 }
