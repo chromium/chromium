@@ -651,8 +651,14 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, TextType) {
 
 // Case when text that is larger and comes before an image. The
 // LargestContentfulPaintType should be those of a text element.
+// TODO(crbug.com/333963663): Test is flaky.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LargeTextAndImage_TextType DISABLED_LargeTextAndImage_TextType
+#else
+#define MAYBE_LargeTextAndImage_TextType LargeTextAndImage_TextType
+#endif
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
-                       LargeTextAndImage_TextType) {
+                       MAYBE_LargeTextAndImage_TextType) {
   auto flag_set = blink::LargestContentfulPaintType::kText;
   std::string text =
       "This is a text that is larger and comes before an image. The "
