@@ -378,6 +378,10 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
     out << Tr{} << "last_address_form_submitted:"
         << upload.last_address_form_submitted();
   }
+  if (upload.has_secondary_form_signature()) {
+    out << Tr{}
+        << "secondary_form_signature:" << upload.secondary_form_signature();
+  }
   if (upload.has_last_credit_card_form_submitted()) {
     out << Tr{} << "last_credit_card_form_submitted:"
         << upload.last_credit_card_form_submitted();
