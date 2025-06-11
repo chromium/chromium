@@ -85,10 +85,17 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
     return browser_view->GetLocationBarView();
   }
 
-  PageActionIconView* GetZoomView() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar_button_provider()
-        ->GetPageActionIconView(PageActionIconType::kZoom);
+  views::View* GetZoomView() {
+    auto* toolbar_button_provider =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider();
+
+    if (IsPageActionMigrated(PageActionIconType::kZoom)) {
+      return toolbar_button_provider->GetPageActionView(kActionZoomNormal);
+    }
+
+    return toolbar_button_provider->GetPageActionIconView(
+        PageActionIconType::kZoom);
   }
 
   ContentSettingImageView& GetContentSettingImageView(
@@ -108,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, LocationBarDecoration) {
       browser()->tab_strip_model()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
-  PageActionIconView* zoom_view = GetZoomView();
+  auto* zoom_view = GetZoomView();
 
   ASSERT_TRUE(zoom_view);
   EXPECT_FALSE(zoom_view->GetVisible());
@@ -152,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, BubblesCloseOnHide) {
       browser()->tab_strip_model()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
-  PageActionIconView* zoom_view = GetZoomView();
+  auto* zoom_view = GetZoomView();
 
   ASSERT_TRUE(zoom_view);
   EXPECT_FALSE(zoom_view->GetVisible());
