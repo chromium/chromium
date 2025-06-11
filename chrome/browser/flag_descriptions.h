@@ -3697,6 +3697,9 @@ extern const char kUseAngleDescriptionAndroid[];
 extern const char kUseAngleGLES[];
 extern const char kUseAngleVulkan[];
 
+extern const char kEnableExclusiveAccessManagerName[];
+extern const char kEnableExclusiveAccessManagerDescription[];
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows, Mac and Android  --------------------------------------------------
