@@ -75,6 +75,7 @@ void MaybeReportDeepScanningVerdict(
     const std::string& content_transfer_method,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
+    const safe_browsing::ReferrerChain& referrer_chain,
     BinaryUploadService::Result result,
     const enterprise_connectors::ContentAnalysisResponse& response,
     enterprise_connectors::EventResult event_result);

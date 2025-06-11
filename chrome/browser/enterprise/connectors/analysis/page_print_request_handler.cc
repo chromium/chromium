@@ -186,7 +186,8 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
       /*content_tranfer_method*/ "", safe_browsing::DeepScanAccessPoint::PRINT,
-      /*content_size*/ -1, result, response_,
+      /*content_size*/ -1, content_analysis_info_->referrer_chain(), result,
+      response_,
       CalculateEventResult(content_analysis_info_->settings(),
                            request_handler_result.complies, should_warn));
 

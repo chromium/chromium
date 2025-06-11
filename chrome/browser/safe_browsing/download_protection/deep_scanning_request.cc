@@ -26,6 +26,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -41,6 +42,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/download_item_utils.h"
 
@@ -662,13 +664,14 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
   DCHECK(file_metadata_.count(current_path));
   file_metadata_.at(current_path).scan_response = std::move(response);
   if (profile) {
+    safe_browsing::ReferrerChain referrers = referrer_chain();
     const auto& file_metadata = file_metadata_.at(current_path);
     report_callbacks_.AddUnsafe(base::BindOnce(
         &MaybeReportDeepScanningVerdict, profile, metadata_->GetURL(),
         metadata_->GetTabUrl(), "", "", file_metadata.filename,
         file_metadata.sha256, file_metadata.mime_type,
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
-        DeepScanAccessPoint::DOWNLOAD, file_metadata.size, result,
+        DeepScanAccessPoint::DOWNLOAD, file_metadata.size, referrers, result,
         file_metadata.scan_response));
 
     metadata_->AddScanResultMetadata(file_metadata);
@@ -762,10 +765,8 @@ DeepScanningRequest::reason() const {
   return reason_;
 }
 
-google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
-DeepScanningRequest::referrer_chain() const {
-  return google::protobuf::RepeatedPtrField<
-      ::safe_browsing::ReferrerChainEntry>();
+safe_browsing::ReferrerChain DeepScanningRequest::referrer_chain() const {
+  return metadata_->GetReferrerChain();
 }
 
 google::protobuf::RepeatedPtrField<std::string>

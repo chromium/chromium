@@ -20,6 +20,7 @@ class FileSystemAccessMetadata : public DeepScanningMetadata {
   ~FileSystemAccessMetadata() override;
 
   content::BrowserContext* GetBrowserContext() const override;
+  safe_browsing::ReferrerChain GetReferrerChain() const override;
   const base::FilePath& GetFullPath() const override;
   const base::FilePath& GetTargetFilePath() const override;
   const std::string& GetHash() const override;

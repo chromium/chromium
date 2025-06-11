@@ -44,6 +44,7 @@ class DeepScanningMetadata {
 
   // File metadata accessor methods used in deep scanning.
   virtual content::BrowserContext* GetBrowserContext() const = 0;
+  virtual safe_browsing::ReferrerChain GetReferrerChain() const = 0;
   virtual const base::FilePath& GetFullPath() const = 0;
   virtual const base::FilePath& GetTargetFilePath() const = 0;
   virtual const std::string& GetHash() const = 0;
