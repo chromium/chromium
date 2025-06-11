@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/download/model",
+  "+ios/chrome/browser/profile/model",
+  "+ios/chrome/browser/search_engines/model",
+]
