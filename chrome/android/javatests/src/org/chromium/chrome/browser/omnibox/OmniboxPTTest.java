@@ -70,6 +70,7 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.BAKLAVA, message = "crbug.com/424223725")
     public void testOpenTypeDelete_fromNtp() {
         WebPageStation blankPage = mCtaTestRule.start();
         RegularNewTabPageStation ntp = blankPage.openNewTabFast();
