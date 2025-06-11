@@ -360,7 +360,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOriginMissingParts() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -386,7 +386,7 @@ public class InstalledAppProviderTest {
     @UiThreadTest
     public void testNoRelatedApps() throws Exception {
         // The web manifest has no related apps.
-        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {};
+        RelatedApplication[] manifestRelatedApps = new RelatedApplication[] {};
 
         // One Android app is installed named |PACKAGE_NAME_1|. It has a related web app with origin
         // |ORIGIN|.
@@ -405,7 +405,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppNoId() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {createRelatedApplication(PLATFORM_ANDROID, null, null)};
 
         setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
@@ -424,7 +424,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedNonAndroidApp() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_OTHER, PACKAGE_NAME_1, null)
                 };
@@ -445,7 +445,7 @@ public class InstalledAppProviderTest {
     @UiThreadTest
     public void testOneRelatedAppNotInstalled() throws Exception {
         // The web manifest has a related Android app named |PACKAGE_NAME_1|.
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -458,12 +458,14 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
     }
 
-    /** Android app manifest has an asset_statements key, but the resource it links to is missing. */
+    /**
+     * Android app manifest has an asset_statements key, but the resource it links to is missing.
+     */
     @Test
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppBrokenAssetStatementsResource() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -482,7 +484,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppNoAssetStatements() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -497,7 +499,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppNoAssetStatementsNullMetadata() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -519,7 +521,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppRelatedToDifferentOrigins() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -543,7 +545,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneInstalledRelatedApp() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -563,7 +565,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testDynamicallyChangingUrl() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -595,7 +597,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testInstalledRelatedAppWithUrl() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, URL_UNRELATED)
                 };
@@ -611,7 +613,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testMultipleAssetStatements() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -636,7 +638,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementSyntaxError() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -653,7 +655,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNotArray() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -670,7 +672,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementArrayNoObjects() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -696,7 +698,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNoRelation() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -723,7 +725,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNonStandardRelation() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -741,7 +743,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNoTarget() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -758,7 +760,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNoNamespace() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -778,7 +780,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testNonWebAssetStatement() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -794,7 +796,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNoSite() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -814,7 +816,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementSiteSyntaxError() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -831,7 +833,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementSiteMissingParts() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -860,7 +862,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementSiteHasPath() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -881,7 +883,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testExtraInstalledApp() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -931,7 +933,7 @@ public class InstalledAppProviderTest {
         setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
 
         // Installed app.
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -983,7 +985,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testRelatedAppsOverAllowedThreshold() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[MAX_ALLOWED_RELATED_APPS + 1];
         for (int i = 0; i < MAX_ALLOWED_RELATED_APPS; i++) {
             manifestRelatedApps[i] =
@@ -1006,7 +1008,7 @@ public class InstalledAppProviderTest {
     @UiThreadTest
     public void testInstalledWebApkForWebsite() throws Exception {
         RelatedApplication webApk = createRelatedApplication(PLATFORM_WEBAPP, null, MANIFEST_URL);
-        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {webApk};
+        RelatedApplication[] manifestRelatedApps = new RelatedApplication[] {webApk};
         mFakePackageManager.addWebApk(MANIFEST_URL);
 
         RelatedApplication[] expectedInstalledRelatedApps = new RelatedApplication[] {webApk};
@@ -1020,7 +1022,7 @@ public class InstalledAppProviderTest {
     public void testInstalledWebApkForOtherWebsite() throws Exception {
         RelatedApplication webApk =
                 createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL);
-        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {webApk};
+        RelatedApplication[] manifestRelatedApps = new RelatedApplication[] {webApk};
         mFakePackageManager.addWebApk(OTHER_MANIFEST_URL);
 
         verifyInstalledApps(manifestRelatedApps, new RelatedApplication[] {});
@@ -1036,7 +1038,7 @@ public class InstalledAppProviderTest {
     public void testInstalledWebApkForOtherWebsiteNotInstalled() throws Exception {
         RelatedApplication webApk =
                 createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL);
-        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {webApk};
+        RelatedApplication[] manifestRelatedApps = new RelatedApplication[] {webApk};
 
         mTestInstalledAppProviderImplJni.addVerfication(MANIFEST_URL, OTHER_MANIFEST_URL);
         verifyInstalledApps(manifestRelatedApps, new RelatedApplication[] {});
@@ -1050,7 +1052,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOrderOfResults() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL),
                     createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL3),

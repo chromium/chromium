@@ -448,7 +448,7 @@ public class ShareImageFileUtils {
      * Writes given data to into the given fos.
      *
      * @param fos The FileOutputStream to write to.
-     * @param byte[] The byte[] to write.
+     * @param data The byte array to write.
      */
     private static void writeImageData(FileOutputStream fos, final byte[] data) throws IOException {
         fos.write(data);

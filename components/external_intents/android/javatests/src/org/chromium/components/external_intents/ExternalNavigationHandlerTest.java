@@ -420,7 +420,7 @@ public class ExternalNavigationHandlerTest {
     @SmallTest
     public void testIgnore() {
         // Ensure the following URLs are not broadcast for external navigation.
-        String urlsToIgnore[] =
+        String[] urlsToIgnore =
                 new String[] {
                     "about:test",
                     "content:test", // Content URLs should not be exposed outside of Chrome.
@@ -2650,7 +2650,7 @@ public class ExternalNavigationHandlerTest {
     public void testUrlIntentToOtherBrowser() {
         mDelegate.setResolvesToOtherBrowser(true);
 
-        String unsafeUrls[] =
+        String[] unsafeUrls =
                 new String[] {
                     "intent:#Intent;S.EXTRA_HIDDEN_URL=encodedUrl;action=CUSTOM.ACTION;end",
                     "intent:#Intent;S.EXTRA_HIDDEN_URL=encodedUrl;end",

@@ -102,7 +102,7 @@ final class MediaItem {
 
     @Override
     public String toString() {
-        String state[] = {
+        String[] state = {
             "PENDING",
             "PLAYING",
             "PAUSED",

@@ -300,7 +300,7 @@ public class PlayerFrameMediatorTest {
     }
 
     private static void assertViewportStateIs(Matrix matrix, PlayerFrameViewport viewport) {
-        float matrixValues[] = new float[9];
+        float[] matrixValues = new float[9];
         matrix.getValues(matrixValues);
         assert matrixValues[Matrix.MSCALE_X] == matrixValues[Matrix.MSCALE_Y];
         assertViewportStateIs(

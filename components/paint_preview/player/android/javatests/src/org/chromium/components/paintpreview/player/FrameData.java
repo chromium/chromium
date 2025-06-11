@@ -57,7 +57,7 @@ public class FrameData {
     }
 
     private int[] flattenRects(Rect[] rects) {
-        int flattenedRects[] = new int[rects.length * 4];
+        int[] flattenedRects = new int[rects.length * 4];
         for (int i = 0; i < rects.length; i++) {
             flattenedRects[i * 4] = rects[i].left;
             flattenedRects[i * 4 + 1] = rects[i].top;
