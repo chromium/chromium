@@ -1037,7 +1037,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
-                        TouchToFillLoyaltyCardOutcome.MANAGE_PASSES);
+                        TouchToFillLoyaltyCardOutcome.MANAGE_LOYALTY_CARDS);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));

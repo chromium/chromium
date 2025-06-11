@@ -137,13 +137,13 @@ class TouchToFillPaymentMethodMediator {
      */
     @IntDef({
         TouchToFillLoyaltyCardOutcome.LOYALTY_CARD,
-        TouchToFillLoyaltyCardOutcome.MANAGE_PASSES,
+        TouchToFillLoyaltyCardOutcome.MANAGE_LOYALTY_CARDS,
         TouchToFillLoyaltyCardOutcome.DISMISS
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface TouchToFillLoyaltyCardOutcome {
         int LOYALTY_CARD = 0;
-        int MANAGE_PASSES = 1;
+        int MANAGE_LOYALTY_CARDS = 1;
         int DISMISS = 2;
         int MAX_VALUE = DISMISS;
     }
@@ -387,7 +387,8 @@ class TouchToFillPaymentMethodMediator {
     public void showManageLoyaltyCards() {
         assert mLoyaltyCards != null;
         mDelegate.openPassesManagementUi();
-        recordTouchToFillLoyaltyCardOutcomeHistogram(TouchToFillLoyaltyCardOutcome.MANAGE_PASSES);
+        recordTouchToFillLoyaltyCardOutcomeHistogram(
+                TouchToFillLoyaltyCardOutcome.MANAGE_LOYALTY_CARDS);
     }
 
     private void onSelectedCreditCard(AutofillSuggestion suggestion) {
