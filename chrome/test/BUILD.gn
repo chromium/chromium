@@ -5753,6 +5753,8 @@ if (!is_android) {
     sources +=
         [ "../browser/metrics/structured_metrics_service_browsertest.cc" ]
 
+    sources += [ "../browser/ui/singleton_tabs_browsertest.cc" ]
+
     if (is_win || is_mac || is_linux) {
       sources += [
         "../browser/ui/startup/first_run_service_browsertest.cc",
@@ -8019,7 +8021,6 @@ test("unit_tests") {
       "../browser/ui/performance_controls/tab_resource_usage_tab_helper_unittest.cc",
       "../browser/ui/profiles/profile_view_utils_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
-      "../browser/ui/singleton_tabs_unittest.cc",
       "../browser/ui/startup/launch_mode_recorder_unittest.cc",
       "../browser/ui/sync/profile_signin_confirmation_helper_unittest.cc",
       "../browser/ui/tab_sharing/tab_sharing_infobar_delegate_unittest.cc",
