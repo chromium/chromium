@@ -368,15 +368,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case AXEventGenerator::Event::NAME_CHANGED:
       mac_notification = NSAccessibilityTitleChangedNotification;
       break;
-    case AXEventGenerator::Event::CHILDREN_CHANGED:
-      [native_node childrenChanged];
-      return;
-    case AXEventGenerator::Event::ROLE_CHANGED:
-      // Objects with internal roles mapped to NSAccessibilityUnknownRole are
-      // not included in the final platform tree.
-      // TODO(crbug.com/419580129) Look into using isAccessibilityElement = NO.
-      NotifyChildrenChangedOnParent(wrapper);
-      return;
 
     // Currently unused events on this platform.
     case AXEventGenerator::Event::NONE:
@@ -388,6 +379,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
     case AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
+    case AXEventGenerator::Event::CHILDREN_CHANGED:
     case AXEventGenerator::Event::CONTROLS_CHANGED:
     case AXEventGenerator::Event::DETAILS_CHANGED:
     case AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
@@ -422,6 +414,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case AXEventGenerator::Event::READONLY_CHANGED:
     case AXEventGenerator::Event::RELATED_NODE_CHANGED:
     case AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
+    case AXEventGenerator::Event::ROLE_CHANGED:
     case AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
     case AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
     case AXEventGenerator::Event::SELECTED_CHANGED:
@@ -504,21 +497,6 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
   BrowserAccessibilityManager::OnAtomicUpdateFinished(tree, root_changed,
                                                       changes);
 
-  // Ensure extra mac node children are updated when AXTableInfo changes.
-  // This ensures that the children of a table are refreshed after
-  // AXTableInfo::Update(), and is necessary because the node data of the
-  // table doesn't necessarily change, and therefore CHILDREN_CHANGED is
-  // not called for the added indirect table header child.
-  for (const auto& change : changes) {
-    if (ui::IsTableLike(change.node->GetRole())) {
-      BrowserAccessibility* wrapper = GetFromAXNode(change.node);
-      BrowserAccessibilityCocoa* native_node =
-          base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
-              wrapper->GetNativeViewAccessible().Get());
-      [native_node childrenChanged];
-    }
-  }
-
   std::set<const BrowserAccessibilityCocoa*> changed_editable_roots;
   for (const auto& change : changes) {
     if (change.node->HasState(ax::mojom::State::kEditable)) {
@@ -543,54 +521,19 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
   }
 }
 
-void BrowserAccessibilityManagerMac::NotifyChildrenChangedOnParent(
-    BrowserAccessibility* node) const {
-  CHECK(node);
-  while (node) {
-    BrowserAccessibilityMac* node_mac =
-        static_cast<BrowserAccessibilityMac*>(node);
-    BrowserAccessibilityCocoa* node_cocoa = node_mac->GetNativeWrapper();
-    [node_cocoa childrenChanged];
-    if ([node_cocoa isIncludedInPlatformTree]) {
-      break;
-    }
-    node = node->PlatformGetParent();
-  }
-}
-
 void BrowserAccessibilityManagerMac::OnNodeDataChanged(
     AXTree* tree,
     const AXNodeData& old_node_data,
     const AXNodeData& new_node_data) {
-  // Toggling visibility affects the children of the parent, because unlike on
-  // other platforms, invisible nodes are not exposed on Mac (this set of
-  // insvisible includes aria-hidden nodes, and inert nodes).
-  // TODO(crbug.com/419580129) Look into using isAccessibilityElement = NO.
-  if (old_node_data.IsInvisible() != new_node_data.IsInvisible()) {
-    NotifyChildrenChangedOnParent(GetFromID(new_node_data.id));
-  }
-
-  if (ui::IsImage(new_node_data.role) &&
-      old_node_data.GetNameFrom() != new_node_data.GetNameFrom()) {
-    // The mac role changes to/from NSAccessibilityUnknownRole based on
-    // whether the alt attribute becomes explicitly empty or not.
-    // TODO(crbug.com/419580129) Look into using isAccessibilityElement = NO.
-    NotifyChildrenChangedOnParent(GetFromID(new_node_data.id));
-  }
-
-  if (features::IsMacAccessibilityOptimizeChildrenChangedEnabled()) {
-    // When this feature is enabled, we only invalidate the children when
-    // the children will actually change, instead of every change to AXNodeData.
-    // This occurance is captured via handling of the CHILDREN_CHANGED event.
-    return;
-  }
-
-  // If the child ids remained the same, can skip childrenChanged,
-  // unless its a table, because those may have changed its columns
-  // because of other changes within the table.
   BrowserAccessibilityMac* node =
       static_cast<BrowserAccessibilityMac*>(GetFromID(new_node_data.id));
   CHECK(node);
+  if (!features::IsMacAccessibilityOptimizeChildrenChangedEnabled() ||
+      (old_node_data.child_ids == new_node_data.child_ids &&
+       !node->node()->GetExtraMacNodes())) {
+    return;
+  }
+
   [node->GetNativeWrapper() childrenChanged];
 }
 

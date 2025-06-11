@@ -14,20 +14,3 @@ rootWebArea
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++image name='full'
-=== Start Continuation ===
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++staticText name=' '
-++++++++inlineTextBox name=' '
-++++++image name=''
-++++++staticText name=' '
-++++++++inlineTextBox name=' '
-++++++image name='new-alt'
-++++++staticText name=' '
-++++++++inlineTextBox name=' '
-++++++staticText name=' '
-++++++++inlineTextBox name=' '
-++++++image
-++++++staticText name=' '
-++++++++inlineTextBox name=' '

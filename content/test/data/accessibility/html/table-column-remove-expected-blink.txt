@@ -1,23 +1,3 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++table ariaColumnCount=2 tableColumnCount=2
-++++++++rowGroup ignored
-++++++++++row
-++++++++++++cell name='AB' ariaCellColumnIndex=1 tableCellColumnIndex=0
-++++++++++++++staticText name='AB'
-++++++++++++++++inlineTextBox name='AB'
-++++++++++++cell name='B' ariaCellColumnIndex=2 tableCellColumnIndex=1
-++++++++++++++staticText name='B'
-++++++++++++++++inlineTextBox name='B'
-++++++++++row
-++++++++++++cell name='CD' ariaCellColumnIndex=1 tableCellColumnIndex=0
-++++++++++++++staticText name='CD'
-++++++++++++++++inlineTextBox name='CD'
-++++++++++++cell name='D' ariaCellColumnIndex=2 tableCellColumnIndex=1
-++++++++++++++staticText name='D'
-++++++++++++++++inlineTextBox name='D'
-=== Start Continuation ===
 rootWebArea name='done'
 ++genericContainer ignored
 ++++genericContainer ignored

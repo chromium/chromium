@@ -7,13 +7,3 @@ AXWebArea
 ++++AXImage AXDescription='To get missing image descriptions, open the context menu.'
 ++++AXStaticText AXValue=' '
 ++++AXImage AXDescription='full'
-=== Start Continuation ===
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue=' '
-++++AXStaticText AXValue=' '
-++++AXImage AXDescription='new-alt'
-++++AXStaticText AXValue=' '
-++++AXStaticText AXValue=' '
-++++AXImage AXDescription='To get missing image descriptions, open the context menu.'
-++++AXStaticText AXValue=' '

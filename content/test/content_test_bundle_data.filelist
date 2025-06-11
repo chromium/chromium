@@ -5511,7 +5511,7 @@ data/accessibility/html/tabindex-with-link-children.html
 data/accessibility/html/table-canvas-fallback-expected-blink.txt
 data/accessibility/html/table-canvas-fallback.html
 data/accessibility/html/table-column-remove-expected-blink.txt
-data/accessibility/html/table-column-remove-expected-mac.txt
+data/accessibility/html/table-column-remove-expected-fuchsia.txt
 data/accessibility/html/table-column-remove.html
 data/accessibility/html/table-focusable-sections-expected-android-assist-data.txt
 data/accessibility/html/table-focusable-sections-expected-android-external.txt

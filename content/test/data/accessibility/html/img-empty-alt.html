@@ -1,21 +1,10 @@
-<!--
-@EXECUTE-AND-WAIT-FOR:toggleAlt()
--->
 <html>
   <body>
     <img src="unread.jpg" alt="" role="presentation">
     <img src="read.jpg" alt="" aria-hidden="false">
-    <img src="read.jpg" class="will-add-alt" alt="">
+    <img src="read.jpg" alt="">
     <img src="read.jpg" alt>
     <img src="read.jpg">
-    <img src="read.jpg" class="will-remove-alt" alt="full">
+    <img src="read.jpg" alt="full">
   </body>
-
-  <script>
-    function toggleAlt() {
-      document.querySelector('img.will-add-alt').setAttribute('alt', 'new-alt');
-      document.querySelector('img.will-remove-alt').setAttribute('alt', '');
-      return 'new-alt';
-    }
-  </script>
 </html>
