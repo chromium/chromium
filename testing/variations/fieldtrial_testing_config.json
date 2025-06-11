@@ -23139,6 +23139,21 @@
             ]
         }
     ],
+    "SkipModerateMemoryPressureLevelMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkipModerateMemoryPressureLevelMac"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipPagehideInCommitForDSENavigation": [
         {
             "platforms": [
