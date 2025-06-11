@@ -42,30 +42,21 @@ enum class ClassifyUrlThrottleStatus : int {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleStatus)
 
-// LINT.IfChange(ClassifyUrlThrottleUseCase)
-enum class ClassifyUrlThrottleUseCase : int {
-  kNotAllowed = 0,
-  kFamilyLinkSupervisedUser = 1,
-  kMaxValue = kFamilyLinkSupervisedUser,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleUseCase)
-
 enum class InterstitialResultCallbackActions {
   kCancelNavigation = 0,
   kCancelWithInterstitial = 1
 };
 
-// Returns a new throttle for the given navigation, or nullptr if no
-// throttling is required.
-void MaybeCreateAndAddClassifyUrlNavigationThrottle(
-    content::NavigationThrottleRegistry& registry);
 
 // Navigation throttle that processes requests and redirects in parallel with
 // their verification against ClassifyUrl, up until the response is ready for
 // processing. Only then the navigation can be deferred.
 class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
  public:
-  static void CreateAndAdd(content::NavigationThrottleRegistry& registry);
+// Adds a ClassifyUrlNavigationThrottle to the registry for all profiles except
+// for OffTheRecord profiles.
+  static void MaybeCreateAndAdd(
+  content::NavigationThrottleRegistry& registry);
 
   ClassifyUrlNavigationThrottle(const ClassifyUrlNavigationThrottle&) = delete;
   ClassifyUrlNavigationThrottle& operator=(

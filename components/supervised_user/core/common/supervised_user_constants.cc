@@ -67,6 +67,7 @@ const char kSkipParentApprovalToInstallExtensions[] =
     "SkipParentApprovalToInstallExtensions";
 
 const char kChildAccountSUID[] = "ChildAccountSUID";
+const char kSupervisedProfileSUID[] = "SupervisedProfileSUID";
 
 const char kChromeAvatarIndex[] = "chrome-avatar-index";
 const char kChromeOSAvatarIndex[] = "chromeos-avatar-index";
@@ -135,8 +136,6 @@ extern const char kClassifyUrlThrottleStatusHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.Status";
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.FinalStatus";
-extern const char kClassifyUrlThrottleUseCaseHistogramName[] =
-    "SupervisedUsers.ClassifyUrlThrottle.UseCase";
 
 const char kLocalWebApprovalDurationMillisecondsHistogramName[] =
     "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";

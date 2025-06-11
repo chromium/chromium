@@ -342,20 +342,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
   EXPECT_FALSE(observer.last_navigation_succeeded());
 }
 
-// Tests if the reason for throttling was recorded.
-IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest, RecordsUseCase) {
-  base::HistogramTester histogram_tester;
-  kids_management_api_mock().AllowSubsequentClassifyUrl();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     kExampleHost, "/supervised_user/simple.html")));
-
-  histogram_tester.ExpectUniqueSample(
-      supervised_user::kClassifyUrlThrottleUseCaseHistogramName,
-      supervised_user::ClassifyUrlThrottleUseCase::kFamilyLinkSupervisedUser,
-      1);
-}
-
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
                        BlockMainFrameWithInterstitial) {
   BlockHost(kExampleHost2);
