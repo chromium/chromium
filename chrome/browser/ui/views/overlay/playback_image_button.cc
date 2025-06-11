@@ -45,9 +45,9 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
     pause_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kPauseIcon,
                                                   kColorPipWindowForeground,
                                                   kPlaybackButtonIconSize);
-    replay_image_ = ui::ImageModel::FromVectorIcon(
-        vector_icons::kReplayIcon, ui::kColorSysOnSecondaryContainer,
-        kPlaybackButtonIconSize);
+    replay_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kReplayIcon,
+                                                   kColorPipWindowForeground,
+                                                   kPlaybackButtonIconSize);
 
     UpdateImageAndText();
   }
@@ -108,7 +108,7 @@ void PlaybackImageButton::UpdateImageAndText() {
     }
     case VideoOverlayWindowViews::kEndOfVideo: {
       SetImageModel(views::Button::STATE_NORMAL, replay_image_);
-      SetPlayButtonBackground();
+      SetPauseButtonBackground();
       std::u16string replay_text =
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_REPLAY_CONTROL_TEXT);
       SetTooltipText(replay_text);
