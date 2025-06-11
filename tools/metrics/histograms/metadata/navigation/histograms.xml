@@ -3432,8 +3432,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".Conservative"/>
     <variant name=".Eager"/>
     <variant name=".Moderate"/>
-    <variant name=".NonEager"/>
-    <variant name=".Total"/>
   </token>
 </histogram>
 

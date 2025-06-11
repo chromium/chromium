@@ -501,15 +501,6 @@ void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
                                                        "Moderate");
     RecordReceivedPrerendersPerPrimaryPageChangedCount(eager, trigger_type,
                                                        "Eager");
-
-    // Record per eager or non-eager(eager case has already been recorded
-    // above).
-    RecordReceivedPrerendersPerPrimaryPageChangedCount(
-        conservative + moderate, trigger_type, "NonEager");
-
-    // Record the total number of prerenders.
-    RecordReceivedPrerendersPerPrimaryPageChangedCount(
-        conservative + moderate + eager, trigger_type, "Total");
   }
 }
 

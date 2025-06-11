@@ -10604,9 +10604,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest,
   EXPECT_THAT(GetAllSamples("Conservative"),
               base::BucketsAre(base::Bucket(0, 1)));
   EXPECT_THAT(GetAllSamples("Moderate"), base::BucketsAre(base::Bucket(0, 1)));
-  EXPECT_THAT(GetAllSamples("NonEager"), base::BucketsAre(base::Bucket(0, 1)));
   EXPECT_THAT(GetAllSamples("Eager"), base::BucketsAre(base::Bucket(1, 1)));
-  EXPECT_THAT(GetAllSamples("Total"), base::BucketsAre(base::Bucket(1, 1)));
 
   // Next, try to trigger followings:
   // a) 4 prerenders whose eagerness is eager
@@ -10650,23 +10648,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest,
             prerendering_url_conservative);
   ASSERT_TRUE(activation_manager.was_activated());
 
-  // Expect following results:
-  // - For each eagerness category, the number of prerenders triggered with that
-  // eagerness is recorded.
-  // - The sum of moderate and conservative prerenders is recorded to
-  // "NonEager" (2 + 1 = 3).
-  // - Total eligible numbers of prerenders is recorded to "Total" (4 + 2 + 1 =
-  // 7).
+  // Expect our results:
   EXPECT_THAT(GetAllSamples("Eager"),
               base::BucketsAre(base::Bucket(1, 1), base::Bucket(4, 1)));
   EXPECT_THAT(GetAllSamples("Moderate"),
               base::BucketsAre(base::Bucket(0, 1), base::Bucket(2, 1)));
   EXPECT_THAT(GetAllSamples("Conservative"),
               base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
-  EXPECT_THAT(GetAllSamples("NonEager"),
-              base::BucketsAre(base::Bucket(0, 1), base::Bucket(3, 1)));
-  EXPECT_THAT(GetAllSamples("Total"),
-              base::BucketsAre(base::Bucket(1, 1), base::Bucket(7, 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest,
