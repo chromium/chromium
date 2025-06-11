@@ -8,6 +8,8 @@ source_set("model") {
     "mini_map_service.mm",
     "mini_map_service_factory.h",
     "mini_map_service_factory.mm",
+    "mini_map_tab_helper.h",
+    "mini_map_tab_helper.mm",
   ]
   deps = [
     "//components/google/core/common",
@@ -27,7 +29,10 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "mini_map_service_unittest.mm" ]
+  sources = [
+    "mini_map_service_unittest.mm",
+    "mini_map_tab_helper_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base/test:test_support",

@@ -92,6 +92,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:dwa_web_state_observer",
+    "//ios/chrome/browser/mini_map/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/overlays/model",
