@@ -15,13 +15,13 @@
 // Define constants within the namespace
 namespace {
 // The width and height of each color palette cell in the collection view.
-const CGFloat kColorCellSize = 48.0;
+const CGFloat kColorCellSize = 54.0;
 
 // The vertical spacing between rows of cells.
 const CGFloat kLineSpacing = 28.0;
 
 // The horizontal spacing between cells in the same row.
-const CGFloat kItemSpacing = 20.0;
+const CGFloat kItemSpacing = 8.0;
 
 // The top padding for the section in the collection view.
 const CGFloat kSectionInsetTop = 20.0;
@@ -34,6 +34,9 @@ const CGFloat kSectionInsetBottom = 20.0;
 }  // namespace
 
 @interface HomeCustomizationBackgroundColorPickerViewController () {
+  // This view controller's main collection view for displaying content.
+  UICollectionView* _collectionView;
+
   // An array storing the available color palette configurations,
   // ordered by their index in the palette.
   NSArray<HomeCustomizationColorPaletteConfiguration*>*
@@ -42,6 +45,9 @@ const CGFloat kSectionInsetBottom = 20.0;
   // The `UICollectionViewCellRegistration` for registering  and configuring the
   // `HomeCustomizationColorPaletteCell` in the collection view.
   UICollectionViewCellRegistration* _colorCellRegistration;
+
+  // Currently selected color index in the palette.
+  NSNumber* _selectedColorIndex;
 }
 @end
 
@@ -50,6 +56,7 @@ const CGFloat kSectionInsetBottom = 20.0;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  __weak __typeof(self) weakSelf = self;
   self.title = l10n_util::GetNSStringWithFixup(
       IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_COLOR_TITLE);
 
@@ -70,34 +77,38 @@ const CGFloat kSectionInsetBottom = 20.0;
            configurationHandler:^(
                HomeCustomizationColorPaletteCell* cell, NSIndexPath* indexPath,
                HomeCustomizationColorPaletteConfiguration* configuration) {
-             cell.configuration = configuration;
+             [weakSelf configureBackgroundCell:cell
+                                 configuration:configuration
+                                   atIndexPath:indexPath];
            }];
 
-  UICollectionView* collectionView =
-      [[UICollectionView alloc] initWithFrame:CGRectZero
-                         collectionViewLayout:layout];
-  collectionView.dataSource = self;
-  collectionView.delegate = self;
+  _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
+                                       collectionViewLayout:layout];
+  _collectionView.dataSource = self;
+  _collectionView.delegate = self;
 
-  collectionView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:collectionView];
+  _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_collectionView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [collectionView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-    [collectionView.leadingAnchor
+    [_collectionView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [_collectionView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
-    [collectionView.trailingAnchor
+    [_collectionView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
-    [collectionView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+    [_collectionView.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor]
   ]];
 }
 
 #pragma mark - HomeCustomizationBackgroundColorPickerConsumer
 
 - (void)setColorPaletteConfigurations:
-    (NSArray<HomeCustomizationColorPaletteConfiguration*>*)
-        colorPaletteConfigurations {
+            (NSArray<HomeCustomizationColorPaletteConfiguration*>*)
+                colorPaletteConfigurations
+                   selectedColorIndex:(NSNumber*)selectedColorIndex {
   _colorPaletteConfigurations = colorPaletteConfigurations;
+  _selectedColorIndex = selectedColorIndex;
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -109,11 +120,11 @@ const CGFloat kSectionInsetBottom = 20.0;
 
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/408243803): implement background color UI selection.
   BackgroundCustomizationConfiguration* backgroundConfiguration =
       [[BackgroundCustomizationConfiguration alloc]
           initWithBackgroundColor:_colorPaletteConfigurations[indexPath.item]
                                       .seedColor];
+  _selectedColorIndex = @(indexPath.item);
   [self.presentationDelegate
       applyBackgroundForConfiguration:backgroundConfiguration];
 }
@@ -134,6 +145,24 @@ const CGFloat kSectionInsetBottom = 20.0;
   }
 
   return nil;
+}
+
+#pragma mark - Private
+
+// Configures a `HomeCustomizationColorPaletteCell` with the provided background
+// color configuration and selects it if it matches the currently selected
+// background color.
+- (void)configureBackgroundCell:(HomeCustomizationColorPaletteCell*)cell
+                  configuration:
+                      (HomeCustomizationColorPaletteConfiguration*)configuration
+                    atIndexPath:(NSIndexPath*)indexPath {
+  cell.configuration = configuration;
+
+  if ([_selectedColorIndex isEqualToNumber:@(indexPath.item)]) {
+    [_collectionView selectItemAtIndexPath:indexPath
+                                  animated:NO
+                            scrollPosition:UICollectionViewScrollPositionNone];
+  }
 }
 
 @end

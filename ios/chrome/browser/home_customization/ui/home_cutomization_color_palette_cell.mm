@@ -8,6 +8,19 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_configuration.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+
+// Define constants within the namespace.
+namespace {
+
+// Border width for the highlight state.
+const CGFloat kHighlightBorderWidth = 3.0;
+
+// Border width for the gap between content and borders.
+const CGFloat kGapBorderWidth = 3.0;
+
+}  // namespace
 
 @implementation HomeCustomizationColorPaletteCell {
   // View representing the light tone color.
@@ -18,12 +31,34 @@
 
   // View representing the medium tone color.
   UIView* _mediumColorView;
+
+  // Container view that provides the outer highlight border.
+  // Acts as a decorative wrapper for the inner content.
+  UIView* _borderWrapperView;
+
+  // Main content view rendered inside the border wrapper.
+  // Displays the core visual element.
+  UIView* _innerContentView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.backgroundColor = UIColor.clearColor;
+    self.contentView.backgroundColor = UIColor.clearColor;
+
+    // Outer container view that holds the highlight border.
+    _borderWrapperView = [[UIView alloc] init];
+    _borderWrapperView.translatesAutoresizingMaskIntoConstraints = NO;
+    _borderWrapperView.backgroundColor = UIColor.clearColor;
+    _borderWrapperView.layer.masksToBounds = YES;
+    [self.contentView addSubview:_borderWrapperView];
+
+    // Inner content view, placed with a gap inside the border wrapper view.
+    // This holds the actual content.
+    _innerContentView = [[UIView alloc] init];
+    _innerContentView.translatesAutoresizingMaskIntoConstraints = NO;
+    _innerContentView.layer.masksToBounds = YES;
+    [_borderWrapperView addSubview:_innerContentView];
 
     _lightColorView = [[UIView alloc] init];
     _darkColorView = [[UIView alloc] init];
@@ -33,37 +68,51 @@
     _darkColorView.translatesAutoresizingMaskIntoConstraints = NO;
     _mediumColorView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [self addSubview:_lightColorView];
-    [self addSubview:_darkColorView];
-    [self addSubview:_mediumColorView];
+    [_innerContentView addSubview:_lightColorView];
+    [_innerContentView addSubview:_darkColorView];
+    [_innerContentView addSubview:_mediumColorView];
 
     [NSLayoutConstraint activateConstraints:@[
       // Top half (light color).
-      [_lightColorView.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [_lightColorView.topAnchor
+          constraintEqualToAnchor:_innerContentView.topAnchor],
       [_lightColorView.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor],
+          constraintEqualToAnchor:_innerContentView.leadingAnchor],
       [_lightColorView.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor],
-      [_lightColorView.heightAnchor constraintEqualToAnchor:self.heightAnchor
-                                                 multiplier:0.5],
+          constraintEqualToAnchor:_innerContentView.trailingAnchor],
+      [_lightColorView.heightAnchor
+          constraintEqualToAnchor:_innerContentView.heightAnchor
+                       multiplier:0.5],
 
       // Bottom left quarter (dark color).
-      [_darkColorView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-      [_darkColorView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-      [_darkColorView.widthAnchor constraintEqualToAnchor:self.widthAnchor
-                                               multiplier:0.5],
-      [_darkColorView.heightAnchor constraintEqualToAnchor:self.heightAnchor
-                                                multiplier:0.5],
+      [_darkColorView.bottomAnchor
+          constraintEqualToAnchor:_innerContentView.bottomAnchor],
+      [_darkColorView.leadingAnchor
+          constraintEqualToAnchor:_innerContentView.leadingAnchor],
+      [_darkColorView.widthAnchor
+          constraintEqualToAnchor:_innerContentView.widthAnchor
+                       multiplier:0.5],
+      [_darkColorView.heightAnchor
+          constraintEqualToAnchor:_innerContentView.heightAnchor
+                       multiplier:0.5],
 
       // Bottom right quarter (medium color).
-      [_mediumColorView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+      [_mediumColorView.bottomAnchor
+          constraintEqualToAnchor:_innerContentView.bottomAnchor],
       [_mediumColorView.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor],
-      [_mediumColorView.widthAnchor constraintEqualToAnchor:self.widthAnchor
-                                                 multiplier:0.5],
-      [_mediumColorView.heightAnchor constraintEqualToAnchor:self.heightAnchor
-                                                  multiplier:0.5],
+          constraintEqualToAnchor:_innerContentView.trailingAnchor],
+      [_mediumColorView.widthAnchor
+          constraintEqualToAnchor:_innerContentView.widthAnchor
+                       multiplier:0.5],
+      [_mediumColorView.heightAnchor
+          constraintEqualToAnchor:_innerContentView.heightAnchor
+                       multiplier:0.5],
     ]];
+
+    // Constraints for positioning the border wrapper view inside the cell.
+    AddSameConstraints(_borderWrapperView, self.contentView);
+    AddSameConstraintsWithInset(_innerContentView, _borderWrapperView,
+                                kGapBorderWidth + kHighlightBorderWidth);
   }
   return self;
 }
@@ -71,9 +120,15 @@
 - (void)layoutSubviews {
   [super layoutSubviews];
 
-  // Circle shape by rounding the corners
-  self.layer.cornerRadius = self.bounds.size.width / 2.0;
-  self.clipsToBounds = YES;
+  CGFloat diameter = self.bounds.size.width;
+
+  // Circle shape by rounding the corners.
+  _borderWrapperView.layer.cornerRadius = diameter / 2.0;
+  _innerContentView.layer.cornerRadius =
+      (diameter - 2 * (kGapBorderWidth + kHighlightBorderWidth)) / 2.0;
+
+  _borderWrapperView.clipsToBounds = YES;
+  _innerContentView.clipsToBounds = YES;
 }
 
 - (void)setConfiguration:
@@ -82,6 +137,23 @@
   _lightColorView.backgroundColor = configuration.lightColor;
   _darkColorView.backgroundColor = configuration.darkColor;
   _mediumColorView.backgroundColor = configuration.mediumColor;
+}
+
+- (void)setSelected:(BOOL)selected {
+  if (self.selected == selected) {
+    return;
+  }
+
+  [super setSelected:selected];
+
+  if (selected) {
+    _borderWrapperView.layer.borderColor =
+        [UIColor colorNamed:kStaticBlueColor].CGColor;
+    _borderWrapperView.layer.borderWidth = kHighlightBorderWidth;
+  } else {
+    _borderWrapperView.layer.borderColor = nil;
+    _borderWrapperView.layer.borderWidth = 0;
+  }
 }
 
 @end

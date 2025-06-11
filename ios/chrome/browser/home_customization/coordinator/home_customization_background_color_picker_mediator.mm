@@ -24,7 +24,7 @@
     [configs addObject:CreateColorPaletteConfigurationFromSeedColor(seedColor)];
   }];
 
-  [_consumer setColorPaletteConfigurations:configs];
+  [_consumer setColorPaletteConfigurations:configs selectedColorIndex:nil];
 }
 
 @end

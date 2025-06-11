@@ -12,11 +12,12 @@
 // A consumer protocol that receives updates about background color palettes.
 @protocol HomeCustomizationBackgroundColorPickerConsumer
 
-// Sets the available background color palette configurations, indexed by seed
-// color index.
+// Sets the background color palette configurations for each seed color,
+// and specifies the index of the currently selected background color.
 - (void)setColorPaletteConfigurations:
-    (NSArray<HomeCustomizationColorPaletteConfiguration*>*)
-        colorPaletteConfigurations;
+            (NSArray<HomeCustomizationColorPaletteConfiguration*>*)
+                colorPaletteConfigurations
+                   selectedColorIndex:(NSNumber*)selectedColorIndex;
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_COLOR_PICKER_CONSUMER_H_
