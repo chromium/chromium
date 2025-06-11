@@ -1042,6 +1042,14 @@
     "expiry_milestone": 132
   },
   {
+    "name": "battery-charge-limit",
+    "owners": [
+      "mwoj@google.com",
+      "cros-sw-perf@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "best-of-app-fre",
     "owners": [ "thegreenfrog@google.com", "bling-gsu-pod@google.com"],
     "expiry_milestone": 146

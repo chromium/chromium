@@ -3877,6 +3877,9 @@ extern const char kAutocorrectParamsTuningDescription[];
 extern const char kBatteryBadgeIconName[];
 extern const char kBatteryBadgeIconDescription[];
 
+extern const char kBatteryChargeLimitName[];
+extern const char kBatteryChargeLimitDescription[];
+
 extern const char kBlockTelephonyDevicePhoneMuteName[];
 extern const char kBlockTelephonyDevicePhoneMuteDescription[];
 
