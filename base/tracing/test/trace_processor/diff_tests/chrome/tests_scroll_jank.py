@@ -372,7 +372,7 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_input_pipeline_steps
         GROUP BY latency_id
         ORDER by input_type
-        LIMIT 20
+        LIMIT 20;
         """,
         out=Csv("""
         "latency_id","input_type","steps"
