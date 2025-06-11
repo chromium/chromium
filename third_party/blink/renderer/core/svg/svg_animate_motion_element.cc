@@ -186,12 +186,10 @@ void SVGAnimateMotionElement::ClearAnimationValue() {
   target_element->ClearAnimatedMotionTransform();
 }
 
-void SVGAnimateMotionElement::UpdateKeyframeValues(const Keyframe&,
-                                                   SVGPropertyBase& from,
-                                                   SVGPropertyBase& to) {
+void SVGAnimateMotionElement::UpdateKeyframeValues(const Keyframe& keyframe) {
   DCHECK(targetElement());
-  from_point_ = To<SVGPoint>(from);
-  to_point_ = To<SVGPoint>(to);
+  from_point_ = values_[keyframe.from_index];
+  to_point_ = values_[keyframe.to_index];
 }
 
 void SVGAnimateMotionElement::CalculateFromAndToValues(
@@ -212,11 +210,10 @@ void SVGAnimateMotionElement::CalculateFromAndByValues(
                       from_point_->Value().OffsetFromOrigin());
 }
 
-void SVGAnimateMotionElement::CalculateValues(
-    const Vector<String>& values,
-    HeapVector<Member<SVGPropertyBase>>& out_values) {
+void SVGAnimateMotionElement::CalculateValues(const Vector<String>& values) {
+  values_.clear();
   for (const auto& value : values) {
-    out_values.push_back(ParsePoint(value));
+    values_.push_back(ParsePoint(value));
   }
 }
 
@@ -230,9 +227,8 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
   if (GetAnimationMode() != kPathAnimation) {
     // Values-animation accumulates using the last values entry corresponding to
     // the end of duration time.
-    const SVGPropertyBase* to_point_at_end_of_duration_value =
-        GetAnimationMode() == kValuesAnimation ? ValueAtEndOfDuration()
-                                               : to_point_.Get();
+    const SVGPoint* to_point_at_end_of_duration_value =
+        GetAnimationMode() == kValuesAnimation ? values_.back() : to_point_;
     const gfx::PointF& from_point = from_point_->Value();
     const gfx::PointF& to_point = to_point_->Value();
     const gfx::PointF& to_point_at_end_of_duration =
@@ -296,9 +292,11 @@ void SVGAnimateMotionElement::ApplyResultsToTarget(
   target_element->SetAnimatedMotionTransform(animation_value.motion_transform);
 }
 
-float SVGAnimateMotionElement::CalculateDistance(const SVGPropertyBase& from,
-                                                 const SVGPropertyBase& to) {
-  return (To<SVGPoint>(to).Value() - To<SVGPoint>(from).Value()).Length();
+float SVGAnimateMotionElement::CalculateDistance(
+    const Keyframe& keyframe) const {
+  const SVGPoint& from_point = *values_[keyframe.from_index];
+  const SVGPoint& to_point = *values_[keyframe.to_index];
+  return (to_point.Value() - from_point.Value()).Length();
 }
 
 AnimationMode SVGAnimateMotionElement::CalculateAnimationMode() {
@@ -313,6 +311,7 @@ AnimationMode SVGAnimateMotionElement::CalculateAnimationMode() {
 void SVGAnimateMotionElement::Trace(Visitor* visitor) const {
   visitor->Trace(from_point_);
   visitor->Trace(to_point_);
+  visitor->Trace(values_);
   SVGAnimationElement::Trace(visitor);
 }
 

@@ -111,8 +111,6 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
 
   void WillChangeAnimationTarget() override;
   void AnimationAttributeChanged();
-  void InvalidateValues();
-  SVGPropertyBase* ValueAtEndOfDuration() const { return values_.back(); }
 
   struct Keyframe {
     wtf_size_t from_index = kNotFound;
@@ -135,22 +133,17 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   bool CheckAnimationParameters() const;
   bool UpdateAnimationValues();
 
-  virtual void UpdateKeyframeValues(const Keyframe& keyframe,
-                                    SVGPropertyBase& from,
-                                    SVGPropertyBase& to) = 0;
+  virtual void UpdateKeyframeValues(const Keyframe& keyframe) = 0;
   virtual void CalculateFromAndToValues(const String& from_string,
                                         const String& to_string) = 0;
   virtual void CalculateFromAndByValues(const String& from_string,
                                         const String& by_string) = 0;
-  virtual void CalculateValues(const Vector<String>& values,
-                               HeapVector<Member<SVGPropertyBase>>&) = 0;
+  virtual void CalculateValues(const Vector<String>& values) = 0;
+  virtual wtf_size_t ValuesCount() const = 0;
   virtual void CalculateAnimationValue(SMILAnimationValue&,
                                        float percent,
                                        unsigned repeat_count) const = 0;
-  virtual float CalculateDistance(const SVGPropertyBase& from,
-                                  const SVGPropertyBase& to) {
-    return -1.f;
-  }
+  virtual float CalculateDistance(const Keyframe& keyframe) const = 0;
 
   float CurrentValuesForValuesAnimation(float percent,
                                         Keyframe& keyframe) const;
@@ -179,8 +172,6 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   AnimationValidity animation_valid_;
   bool registered_animation_;
   bool use_paced_key_times_;
-
-  HeapVector<Member<SVGPropertyBase>> values_;
 
   // FIXME: We should probably use doubles for this, but there's no point
   // making such a change unless all SVG logic for sampling animations is

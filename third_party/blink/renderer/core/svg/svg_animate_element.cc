@@ -621,8 +621,7 @@ void SVGAnimateElement::CalculateAnimationValue(
   // Values-animation accumulates using the last values entry corresponding to
   // the end of duration time.
   SVGPropertyBase* to_at_end_of_duration_value =
-      GetAnimationMode() == kValuesAnimation ? ValueAtEndOfDuration()
-                                             : to_property_.Get();
+      GetAnimationMode() == kValuesAnimation ? values_.back() : to_property_;
 
   SMILAnimationEffectParameters parameters = ComputeEffectParameters();
   animated_value->CalculateAnimatedValue(
@@ -642,15 +641,13 @@ AnimationMode SVGAnimateElement::CalculateAnimationMode() {
   return animation_mode;
 }
 
-void SVGAnimateElement::UpdateKeyframeValues(const Keyframe& keyframe,
-                                             SVGPropertyBase& from,
-                                             SVGPropertyBase& to) {
+void SVGAnimateElement::UpdateKeyframeValues(const Keyframe& keyframe) {
   DCHECK(targetElement());
-  from_property_ = &from;
+  from_property_ = values_[keyframe.from_index];
   from_property_value_type_ = values_is_inherit_[keyframe.from_index]
                                   ? kInheritValue
                                   : kRegularPropertyValue;
-  to_property_ = &to;
+  to_property_ = values_[keyframe.to_index];
   to_property_value_type_ = values_is_inherit_[keyframe.to_index]
                                 ? kInheritValue
                                 : kRegularPropertyValue;
@@ -684,15 +681,20 @@ void SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
   to_property_->Add(from_property_, targetElement());
 }
 
-void SVGAnimateElement::CalculateValues(
-    const Vector<String>& values,
-    HeapVector<Member<SVGPropertyBase>>& out_values) {
-  values_is_inherit_.clear();
+void SVGAnimateElement::CalculateValues(const Vector<String>& values) {
+  ClearValues();
   for (const auto& value : values) {
-    out_values.push_back(ParseValue(value));
+    values_.push_back(ParseValue(value));
     values_is_inherit_.push_back(
         PropertyValueType(IsAnimatingCSSProperty(), value) == kInheritValue);
   }
+}
+
+void SVGAnimateElement::ClearValues() {
+  values_.clear();
+  values_is_inherit_.clear();
+  from_property_.Clear();
+  to_property_.Clear();
 }
 
 SVGPropertyBase* SVGAnimateElement::CreateUnderlyingValueForAnimation() const {
@@ -787,9 +789,10 @@ bool SVGAnimateElement::AnimatedPropertyTypeSupportsAddition() const {
   }
 }
 
-float SVGAnimateElement::CalculateDistance(const SVGPropertyBase& from,
-                                           const SVGPropertyBase& to) {
+float SVGAnimateElement::CalculateDistance(const Keyframe& keyframe) const {
   DCHECK(targetElement());
+  const SVGPropertyBase& from = *values_[keyframe.from_index];
+  const SVGPropertyBase& to = *values_[keyframe.to_index];
   // FIXME: A return value of float is not enough to support paced animations on
   // lists.
   return from.CalculateDistance(&to, targetElement());
@@ -797,9 +800,7 @@ float SVGAnimateElement::CalculateDistance(const SVGPropertyBase& from,
 
 void SVGAnimateElement::WillChangeAnimatedType() {
   UnregisterAnimation(attribute_name_);
-  InvalidateValues();
-  from_property_.Clear();
-  to_property_.Clear();
+  ClearValues();
 }
 
 void SVGAnimateElement::DidChangeAnimatedType() {
@@ -845,6 +846,7 @@ void SVGAnimateElement::Trace(Visitor* visitor) const {
   visitor->Trace(from_property_);
   visitor->Trace(to_property_);
   visitor->Trace(target_property_);
+  visitor->Trace(values_);
   SVGAnimationElement::Trace(visitor);
 }
 

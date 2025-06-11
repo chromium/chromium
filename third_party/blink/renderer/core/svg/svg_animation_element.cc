@@ -167,7 +167,6 @@ static bool ParseKeySplines(const String& string,
 }
 
 void SVGAnimationElement::Trace(Visitor* visitor) const {
-  visitor->Trace(values_);
   visitor->Trace(key_times_from_attribute_);
   visitor->Trace(key_times_for_paced_);
   visitor->Trace(key_points_);
@@ -178,7 +177,6 @@ void SVGAnimationElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   if (name == svg_names::kValuesAttr) {
-    InvalidateValues();
     AnimationAttributeChanged();
     return;
   }
@@ -233,10 +231,6 @@ void SVGAnimationElement::AnimationAttributeChanged() {
   // Assumptions may not hold after an attribute change.
   animation_valid_ = AnimationValidity::kUnknown;
   last_keyframe_ = Keyframe();
-}
-
-void SVGAnimationElement::InvalidateValues() {
-  values_.clear();
 }
 
 void SVGAnimationElement::UnregisterAnimation(
@@ -372,7 +366,7 @@ void SVGAnimationElement::CalculateKeyTimesForCalcModePaced() {
   DCHECK_EQ(GetCalcMode(), kCalcModePaced);
   DCHECK_EQ(GetAnimationMode(), kValuesAnimation);
 
-  const unsigned values_count = values_.size();
+  const wtf_size_t values_count = ValuesCount();
   if (values_count <= 1) {
     // Don't swap lists.
     use_paced_key_times_ = false;
@@ -386,8 +380,9 @@ void SVGAnimationElement::CalculateKeyTimesForCalcModePaced() {
   float total_distance = 0;
   calculated_key_times.push_back(0);
   for (unsigned n = 0; n < values_count - 1; ++n) {
+    const Keyframe keyframe = {n, n + 1};
     // Distance in any units
-    float distance = CalculateDistance(*values_[n], *values_[n + 1]);
+    float distance = CalculateDistance(keyframe);
     if (distance < 0) {
       return;
     }
@@ -481,11 +476,12 @@ float SVGAnimationElement::CurrentValuesFromKeyPoints(
   DCHECK_NE(GetCalcMode(), kCalcModePaced);
   DCHECK(!key_points_.empty());
   DCHECK_EQ(key_points_.size(), KeyTimes().size());
+  const wtf_size_t values_count = ValuesCount();
   float effective_percent = CalculatePercentFromKeyPoints(percent);
   unsigned index =
       effective_percent == 1
-          ? values_.size() - 2
-          : static_cast<unsigned>(effective_percent * (values_.size() - 1));
+          ? values_count - 2
+          : static_cast<unsigned>(effective_percent * (values_count - 1));
   keyframe = {index, index + 1};
   return effective_percent;
 }
@@ -493,8 +489,8 @@ float SVGAnimationElement::CurrentValuesFromKeyPoints(
 float SVGAnimationElement::CurrentValuesForValuesAnimation(
     float percent,
     Keyframe& keyframe) const {
-  unsigned values_count = values_.size();
   DCHECK_EQ(animation_valid_, AnimationValidity::kValid);
+  const wtf_size_t values_count = ValuesCount();
   DCHECK_GE(values_count, 1u);
 
   if (percent == 1 || values_count == 1) {
@@ -533,15 +529,16 @@ float SVGAnimationElement::CurrentValuesForValuesAnimation(
     to_percent = static_cast<float>(index + 1) / (values_count - 1);
   }
 
-  if (index == values_count - 1)
+  if (index == values_count - 1) {
     --index;
+  }
   keyframe = {index, index + 1};
   DCHECK_GT(to_percent, from_percent);
   float effective_percent =
       (percent - from_percent) / (to_percent - from_percent);
 
   if (calc_mode == kCalcModeSpline) {
-    DCHECK_EQ(key_splines_.size(), values_.size() - 1);
+    DCHECK_EQ(key_splines_.size(), values_count - 1);
     effective_percent = CalculatePercentForSpline(effective_percent, index);
   }
   return effective_percent;
@@ -585,14 +582,15 @@ bool SVGAnimationElement::CheckAnimationParameters() const {
       return false;
   }
   if (animation_mode_ == kValuesAnimation) {
-    if (values_.empty()) {
+    const wtf_size_t values_count = ValuesCount();
+    if (values_count == 0) {
       return false;
     }
     const CalcMode calc_mode = GetCalcMode();
     // For 'values' animations, there should be exactly as many 'keyTimes' as
     // 'values'.
     if (calc_mode != kCalcModePaced && !has_key_points && has_key_times &&
-        values_.size() != KeyTimes().size()) {
+        values_count != KeyTimes().size()) {
       return false;
     }
     // If 'keyTimes' is specified its last value should be 1 (and the first 0)
@@ -604,7 +602,7 @@ bool SVGAnimationElement::CheckAnimationParameters() const {
     // If 'calcMode' is 'spline', there should be one less spline than there
     // are 'values'.
     if (calc_mode == kCalcModeSpline &&
-        key_splines_.size() != values_.size() - 1) {
+        key_splines_.size() != values_count - 1) {
       return false;
     }
   }
@@ -629,16 +627,14 @@ bool SVGAnimationElement::UpdateAnimationValues() {
       CalculateFromAndByValues(g_empty_string, ByValue());
       break;
     case kValuesAnimation: {
-      if (values_.empty()) {
-        Vector<String> string_values;
-        const AtomicString& values_attr = getAttribute(svg_names::kValuesAttr);
-        if (!ParseValues(values_attr, string_values)) {
-          ReportAttributeParsingError(SVGParseStatus::kParsingFailed,
-                                      svg_names::kValuesAttr, values_attr);
-          return false;
-        }
-        CalculateValues(string_values, values_);
+      Vector<String> string_values;
+      const AtomicString& values_attr = getAttribute(svg_names::kValuesAttr);
+      if (!ParseValues(values_attr, string_values)) {
+        ReportAttributeParsingError(SVGParseStatus::kParsingFailed,
+                                    svg_names::kValuesAttr, values_attr);
+        return false;
       }
+      CalculateValues(string_values);
       if (GetCalcMode() == kCalcModePaced) {
         CalculateKeyTimesForCalcModePaced();
       }
@@ -694,8 +690,7 @@ void SVGAnimationElement::ApplyAnimation(SMILAnimationValue& animation_value) {
     Keyframe keyframe;
     effective_percent = CurrentValuesForValuesAnimation(percent, keyframe);
     if (keyframe != last_keyframe_) {
-      UpdateKeyframeValues(keyframe, *values_[keyframe.from_index],
-                           *values_[keyframe.to_index]);
+      UpdateKeyframeValues(keyframe);
       last_keyframe_ = keyframe;
     }
   } else if (!key_points_.empty() && (animation_mode == kPathAnimation ||

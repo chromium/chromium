@@ -48,21 +48,21 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
 
   SMILAnimationValue CreateAnimationValue() const override;
   void ClearAnimationValue() override;
-  void UpdateKeyframeValues(const Keyframe& keyframe,
-                            SVGPropertyBase& from,
-                            SVGPropertyBase& to) override;
+  void UpdateKeyframeValues(const Keyframe& keyframe) override;
   void CalculateFromAndToValues(const String& from_string,
                                 const String& to_string) override;
   void CalculateFromAndByValues(const String& from_string,
                                 const String& by_string) override;
-  void CalculateValues(const Vector<String>& values,
-                       HeapVector<Member<SVGPropertyBase>>&) override;
+  void CalculateValues(const Vector<String>& values) override;
+  wtf_size_t ValuesCount() const override {
+    DCHECK_EQ(GetAnimationMode(), kValuesAnimation);
+    return values_.size();
+  }
   void CalculateAnimationValue(SMILAnimationValue&,
                                float percentage,
                                unsigned repeat_count) const override;
   void ApplyResultsToTarget(const SMILAnimationValue&) override;
-  float CalculateDistance(const SVGPropertyBase& from,
-                          const SVGPropertyBase& to) override;
+  float CalculateDistance(const Keyframe&) const override;
 
   enum RotateMode { kRotateAngle, kRotateAuto, kRotateAutoReverse };
   RotateMode GetRotateMode() const;
@@ -74,6 +74,8 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   // implies we should (opera doesn't either)
   Member<SVGPoint> from_point_;
   Member<SVGPoint> to_point_;
+
+  HeapVector<Member<SVGPoint>> values_;
 
   Path path_;
   Path animation_path_;

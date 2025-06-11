@@ -69,21 +69,21 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   void ClearAnimationValue() final;
 
   AnimationMode CalculateAnimationMode() override;
-  void UpdateKeyframeValues(const Keyframe& keyframe,
-                            SVGPropertyBase& from,
-                            SVGPropertyBase& to) override;
+  void UpdateKeyframeValues(const Keyframe& keyframe) override;
   void CalculateFromAndToValues(const String& from_string,
                                 const String& to_string) final;
   void CalculateFromAndByValues(const String& from_string,
                                 const String& by_string) final;
-  void CalculateValues(const Vector<String>& values,
-                       HeapVector<Member<SVGPropertyBase>>&) final;
+  void CalculateValues(const Vector<String>& values) final;
+  wtf_size_t ValuesCount() const final {
+    DCHECK_EQ(GetAnimationMode(), kValuesAnimation);
+    return values_.size();
+  }
   void CalculateAnimationValue(SMILAnimationValue&,
                                float percentage,
                                unsigned repeat_count) const final;
   void ApplyResultsToTarget(const SMILAnimationValue&) final;
-  float CalculateDistance(const SVGPropertyBase& from,
-                          const SVGPropertyBase& to) final;
+  float CalculateDistance(const Keyframe&) const final;
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
@@ -112,6 +112,8 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   void WillChangeAnimatedType();
   void DidChangeAnimatedType();
 
+  void ClearValues();
+
   virtual SVGPropertyBase* CreateUnderlyingValueForAnimation() const;
   virtual SVGPropertyBase* ParseValue(const String&) const;
   SVGPropertyBase* CreateUnderlyingValueForAttributeAnimation() const;
@@ -139,6 +141,7 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
  private:
   AnimatedPropertyValueType from_property_value_type_;
   AnimatedPropertyValueType to_property_value_type_;
+  HeapVector<Member<SVGPropertyBase>> values_;
   std::vector<bool> values_is_inherit_
       ALLOW_DISCOURAGED_TYPE("More space-efficient than Vector<bool>");
   AttributeType attribute_type_;
