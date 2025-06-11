@@ -1206,18 +1206,19 @@ void PdfAccessibilityTreeBuilder::AddRemainingAnnotations(
     para_node->child_ids.push_back(link_node->id);
   }
 
-  // Push all the images not anchored to any text run to the last paragraph.
-  for (size_t i = current_image_index_; i < images_->size(); i++) {
-    const chrome_pdf::AccessibilityImageInfo& image_info = (*images_)[i];
+  // Push all the images not anchored to any text run to the last paragraph
+  // unless OCR has run. PDF Searchify either OCRs all images on a page, or none
+  // of them.
+  bool push_remaining_images = true;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    // Drop the image if it's OCRed. PDF Searchify either OCRs all images on a
-    // page, or none of them.
-    if (ocr_applied) {
-      continue;
-    }
+  push_remaining_images = !ocr_applied;
 #endif
-    ui::AXNodeData* image_node = CreateImageNode(image_info);
-    para_node->child_ids.push_back(image_node->id);
+  if (push_remaining_images) {
+    for (size_t i = current_image_index_; i < images_->size(); i++) {
+      const chrome_pdf::AccessibilityImageInfo& image_info = (*images_)[i];
+      ui::AXNodeData* image_node = CreateImageNode(image_info);
+      para_node->child_ids.push_back(image_node->id);
+    }
   }
 
   if (base::FeatureList::IsEnabled(chrome_pdf::features::kAccessiblePDFForm)) {
