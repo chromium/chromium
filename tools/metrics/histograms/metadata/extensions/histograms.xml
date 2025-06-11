@@ -5602,7 +5602,7 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ZeroStatePromo.WebStoreLinkClicked.{Link}"
+<histogram name="Extensions.ZeroStatePromo.IphActionChromeWebStoreLink"
     enum="WebStoreLinkClicked" expires_after="2025-07-27">
   <owner>uwyiming@chromium.org</owner>
   <owner>cws-consumer-team@google.com</owner>
@@ -5610,7 +5610,6 @@ This is emitted for two scenarios when a worker may be unregistered:
     Records that the users clicked a link or button in the Extension Zero State
     promo page. The value indicates the link that the user clicked.
   </summary>
-  <token key="Link"/>
 </histogram>
 
 <histogram

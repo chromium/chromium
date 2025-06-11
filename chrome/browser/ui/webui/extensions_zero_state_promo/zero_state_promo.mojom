@@ -23,7 +23,7 @@ enum WebStoreLinkClicked {
   // The 'Enhance with AI' link.
   kAi = 4,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebStoreLinkClicked)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/extensions/enums.xml:WebStoreLinkClicked)
 
 // URL for each WebStoreLinkClicked.
 const string kDiscoverExtensionWebStoreUrl = "https://chromewebstore.google.com/";

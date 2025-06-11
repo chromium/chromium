@@ -29,7 +29,7 @@ class ZeroStatePromoPageHandlerTest : public BrowserWithTestWindowTest {
       zero_state_promo::mojom::WebStoreLinkClicked link,
       base::HistogramBase::Count32 expected_count) {
     histogram_tester_->ExpectBucketCount(
-        "Extension.ZeroStatePromo.IphActionChromeWebStoreLink", link,
+        "Extensions.ZeroStatePromo.IphActionChromeWebStoreLink", link,
         expected_count);
   }
 

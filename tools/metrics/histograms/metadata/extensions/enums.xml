@@ -3707,6 +3707,18 @@ Called by update_extension_permission.py.-->
   <int value="2" label="Not allowlisted"/>
 </enum>
 
+<!-- LINT.IfChange(WebStoreLinkClicked) -->
+
+<enum name="WebStoreLinkClicked">
+  <int value="0" label="'Discover Extensions' link"/>
+  <int value="1" label="'Find Coupons' link"/>
+  <int value="2" label="'Write Better' link"/>
+  <int value="3" label="'Boost Productivity' link"/>
+  <int value="4" label="'Enhance with AI' link"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo.mojom:WebStoreLinkClicked) -->
+
 </enums>
 
 </histogram-configuration>

@@ -59,7 +59,7 @@ class ExtensionsZeroStatePromoTestBase : public InteractiveFeaturePromoTest {
       base::HistogramBase::Count32 expected_count) {
     return Do([this, link, expected_count]() {
       histogram_tester_.ExpectBucketCount(
-          "Extension.ZeroStatePromo.IphActionChromeWebStoreLink", link,
+          "Extensions.ZeroStatePromo.IphActionChromeWebStoreLink", link,
           expected_count);
     });
   }
