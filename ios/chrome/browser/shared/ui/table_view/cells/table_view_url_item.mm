@@ -160,6 +160,8 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
   // UIImageView for the symbol replacing the favicon. Stays nil if no
   // replacement symbol is ever set.
   UIImageView* _faviconReplacementSymbolImageView;
+  // Vertical stack view that holds the title, URL, and third row labels.
+  UIStackView* _labelStackView;
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
@@ -203,9 +205,9 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
     _metadataImage.accessibilityIdentifier = kTableViewURLCellMetadataImageID;
 
     // Use stack views to layout the subviews except for the favicon.
-    UIStackView* verticalStack = [[UIStackView alloc]
+    _labelStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _titleLabel, _URLLabel, _thirdRowLabel ]];
-    verticalStack.axis = UILayoutConstraintAxisVertical;
+    _labelStackView.axis = UILayoutConstraintAxisVertical;
     [_metadataLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh
                                       forAxis:UILayoutConstraintAxisHorizontal];
     [_metadataLabel
@@ -221,7 +223,7 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
 
     // Horizontal view holds vertical stack view and metadata views.
     UIView* horizontalView = [[UIView alloc] init];
-    [horizontalView addSubview:verticalStack];
+    [horizontalView addSubview:_labelStackView];
     [horizontalView addSubview:_metadataImage];
     [horizontalView addSubview:_metadataLabel];
 
@@ -229,7 +231,7 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
     _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     _faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
     horizontalView.translatesAutoresizingMaskIntoConstraints = NO;
-    verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
+    _labelStackView.translatesAutoresizingMaskIntoConstraints = NO;
     _metadataImage.translatesAutoresizingMaskIntoConstraints = NO;
     _metadataLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_faviconContainerView];
@@ -243,7 +245,7 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
     heightConstraint.priority = UILayoutPriorityRequired - 1;
 
     _titleMetadataImageSpacingConstraint = [_metadataImage.leadingAnchor
-        constraintEqualToAnchor:verticalStack.trailingAnchor
+        constraintEqualToAnchor:_labelStackView.trailingAnchor
                        constant:0];
     _metadataViewsSpacingConstraint = [_metadataLabel.leadingAnchor
         constraintEqualToAnchor:_metadataImage.trailingAnchor
@@ -273,18 +275,18 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
                          constant:-kTableViewHorizontalSpacing],
       [horizontalView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
-      [verticalStack.topAnchor
+      [_labelStackView.topAnchor
           constraintEqualToAnchor:horizontalView.topAnchor],
-      [verticalStack.bottomAnchor
+      [_labelStackView.bottomAnchor
           constraintEqualToAnchor:horizontalView.bottomAnchor],
-      [verticalStack.leadingAnchor
+      [_labelStackView.leadingAnchor
           constraintEqualToAnchor:horizontalView.leadingAnchor],
       [_metadataImage.centerYAnchor
           constraintEqualToAnchor:horizontalView.centerYAnchor],
       [_metadataImage.heightAnchor
           constraintLessThanOrEqualToAnchor:horizontalView.heightAnchor],
       [_metadataLabel.firstBaselineAnchor
-          constraintEqualToAnchor:verticalStack.firstBaselineAnchor],
+          constraintEqualToAnchor:_labelStackView.firstBaselineAnchor],
       [_metadataLabel.trailingAnchor
           constraintEqualToAnchor:horizontalView.trailingAnchor],
       [_metadataLabel.heightAnchor
@@ -310,6 +312,12 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
 
 - (void)setFaviconContainerBackgroundColor:(UIColor*)backgroundColor {
   [self.faviconContainerView setFaviconBackgroundColor:backgroundColor];
+}
+
+- (void)setLabelSpacing:(CGFloat)spacing {
+  _labelSpacing = spacing;
+  _labelStackView.spacing = _labelSpacing;
+  [self.contentView setNeedsLayout];
 }
 
 // Hide or show the metadata and URL labels depending on the presence of text.

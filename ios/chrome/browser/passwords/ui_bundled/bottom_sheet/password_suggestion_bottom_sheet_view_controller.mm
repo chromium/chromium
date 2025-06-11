@@ -38,6 +38,9 @@ CGFloat const kSpacingBeforeTitle = 16;
 // Spacing use for the spacing after the logo title in the bottom sheet.
 CGFloat const kSpacingAfterTitle = 4;
 
+// Vertical spacing between the labels of a password suggestion cell.
+CGFloat const kSpacingBetweenCellLabels = 2;
+
 // Returns the username to display for the given `suggestion`.
 NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
   NSString* username = suggestion.value;
@@ -431,6 +434,10 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
     cell.thirdRowLabel.text = l10n_util::GetNSString(
         IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL);
     cell.thirdRowLabel.hidden = NO;
+  }
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kIOSFillRecoveryPassword)) {
+    cell.labelSpacing = kSpacingBetweenCellLabels;
   }
   cell.accessibilityValue = [self cellAccessibilityValueAtIndexPath:indexPath];
   cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
