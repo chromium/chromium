@@ -1871,10 +1871,8 @@ void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingAppController::OnDeviceLocked() {
-  if (IsReadAloudEnabled() && read_aloud_model_.speech_playing()) {
-    read_aloud_model_.LogSpeechStop(
-        ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
-  }
+  read_aloud_model_.LogSpeechStop(
+      ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
   // Signal to the WebUI that the device has been locked. We'll only receive
   // this callback on ChromeOS.
   ExecuteJavaScript("chrome.readingMode.onLockScreen();");
@@ -1887,18 +1885,14 @@ void ReadAnythingAppController::OnTtsEngineInstalled() {
 
 void ReadAnythingAppController::OnReadingModeHidden() {
   model_.set_will_hide(true);
-  if (read_aloud_model_.speech_playing()) {
-    read_aloud_model_.LogSpeechStop(
-        ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
-  }
+  read_aloud_model_.LogSpeechStop(
+      ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
 }
 
 void ReadAnythingAppController::OnTabWillDetach() {
   model_.set_will_hide(true);
-  if (read_aloud_model_.speech_playing()) {
-    read_aloud_model_.LogSpeechStop(
-        ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
-  }
+  read_aloud_model_.LogSpeechStop(
+      ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
 }
 
 void ReadAnythingAppController::OnTabMuteStateChange(bool muted) {
@@ -1946,7 +1940,7 @@ void ReadAnythingAppController::OnIsSpeechActiveChanged(bool is_speech_active) {
   if (read_aloud_model_.speech_playing() == is_speech_active) {
     return;
   }
-  read_aloud_model_.set_speech_playing(is_speech_active);
+  read_aloud_model_.SetSpeechPlaying(is_speech_active);
   if (!is_speech_active) {
     SendEventUpdates();
   }
@@ -1954,6 +1948,11 @@ void ReadAnythingAppController::OnIsSpeechActiveChanged(bool is_speech_active) {
 
 void ReadAnythingAppController::OnIsAudioCurrentlyPlayingChanged(
     bool is_audio_currently_playing) {
+  if (read_aloud_model_.audio_currently_playing() ==
+      is_audio_currently_playing) {
+    return;
+  }
+  read_aloud_model_.SetAudioCurrentlyPlaying(is_audio_currently_playing);
   page_handler_->OnReadAloudAudioStateChange(is_audio_currently_playing);
 }
 

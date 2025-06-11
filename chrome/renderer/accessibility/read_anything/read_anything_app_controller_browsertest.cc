@@ -342,7 +342,7 @@ TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_OnlyLogsIfSpeechPlaying) {
-  read_aloud_model().set_speech_playing(false);
+  read_aloud_model().SetSpeechPlaying(false);
   base::HistogramTester histogram_tester;
 
   controller().OnDeviceLocked();
@@ -353,7 +353,7 @@ TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_OnlyLogsIfSpeechPlaying) {
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
-  read_aloud_model().set_speech_playing(true);
+  read_aloud_model().SetSpeechPlaying(true);
   controller().OnDeviceLocked();
   histogram_tester.ExpectUniqueSample(
       ReadAloudAppModel::kSpeechStopSourceHistogramName,
@@ -370,7 +370,7 @@ TEST_F(ReadAnythingAppControllerTest, OnIsAudioCurrentlyPlayingChanged) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeHidden_OnlyLogsIfSpeechPlaying) {
-  read_aloud_model().set_speech_playing(false);
+  read_aloud_model().SetSpeechPlaying(false);
   base::HistogramTester histogram_tester;
 
   controller().OnReadingModeHidden();
@@ -381,7 +381,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
-  read_aloud_model().set_speech_playing(true);
+  read_aloud_model().SetSpeechPlaying(true);
   controller().OnReadingModeHidden();
   histogram_tester.ExpectUniqueSample(
       ReadAloudAppModel::kSpeechStopSourceHistogramName,
@@ -389,7 +389,7 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_OnlyLogsIfSpeechPlaying) {
-  read_aloud_model().set_speech_playing(false);
+  read_aloud_model().SetSpeechPlaying(false);
   base::HistogramTester histogram_tester;
 
   controller().OnTabWillDetach();
@@ -400,7 +400,7 @@ TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_OnlyLogsIfSpeechPlaying) {
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
-  read_aloud_model().set_speech_playing(true);
+  read_aloud_model().SetSpeechPlaying(true);
   controller().OnTabWillDetach();
   histogram_tester.ExpectUniqueSample(
       ReadAloudAppModel::kSpeechStopSourceHistogramName,
@@ -408,7 +408,7 @@ TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_OnlyLogsIfSpeechPlaying) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsReload) {
-  read_aloud_model().set_speech_playing(true);
+  read_aloud_model().SetSpeechPlaying(true);
   ui::AXTreeUpdate update1;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   test::SetUpdateTreeID(&update1, id_1);
@@ -442,7 +442,7 @@ TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsReload) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsNewPage) {
-  read_aloud_model().set_speech_playing(true);
+  read_aloud_model().SetSpeechPlaying(true);
   ui::AXTreeUpdate update1;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   test::SetUpdateTreeID(&update1, id_1);

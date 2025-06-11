@@ -43,6 +43,10 @@ class ReadAloudAppModel {
 
   static constexpr char kSpeechStopSourceHistogramName[] =
       "Accessibility.ReadAnything.SpeechStopSource";
+  static constexpr char kAudioStartTimeFailureHistogramName[] =
+      "Accessibility.ReadAnything.AudioStartTime.Failure";
+  static constexpr char kAudioStartTimeSuccessHistogramName[] =
+      "Accessibility.ReadAnything.AudioStartTime.Success";
 
   ReadAloudAppModel();
   ~ReadAloudAppModel();
@@ -51,7 +55,9 @@ class ReadAloudAppModel {
 
   bool speech_tree_initialized() { return speech_tree_initialized_; }
   bool speech_playing() { return speech_playing_; }
-  void set_speech_playing(bool is_playing) { speech_playing_ = is_playing; }
+  void SetSpeechPlaying(bool is_playing);
+  bool audio_currently_playing() { return audio_currently_playing_; }
+  void SetAudioCurrentlyPlaying(bool is_playing);
   double speech_rate() const { return speech_rate_; }
   void set_speech_rate(double rate) { speech_rate_ = rate; }
   const base::Value::List& languages_enabled_in_pref() const {
@@ -172,6 +178,8 @@ class ReadAloudAppModel {
  private:
   friend ReadAnythingReadAloudAppModelTest;
 
+  void LogAudioDelay(bool success);
+
   // Helper method for GetCurrentText.
   a11y::ReadAloudCurrentGranularity GetNextNodes(
       bool is_pdf,
@@ -289,8 +297,11 @@ class ReadAloudAppModel {
   // Initiate phrase calculation from the first sentence.
   void StartPhraseCalculation();
 
-  // Whether Read Aloud speech is currently playing or not.
+  // Whether Read Aloud speech was initiated. Audio may or may not have actually
+  // started output.
   bool speech_playing_ = false;
+  // Whether audio for Read aloud is actually playing.
+  bool audio_currently_playing_ = false;
 
   // The current speech rate for reading aloud.
   double speech_rate_ = 1.0;
@@ -325,6 +336,9 @@ class ReadAloudAppModel {
   };
   std::map<std::string, std::unique_ptr<base::SingleSampleMetric>>
       metric_to_single_sample_;
+
+  // The time when the speech becomes active.
+  base::TimeTicks speech_active_time_ms_;
 
   // Traversal state
 

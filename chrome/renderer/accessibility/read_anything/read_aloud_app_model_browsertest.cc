@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "read_anything_test_utils.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -32,7 +33,7 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
   bool SpeechPlaying() { return model_->speech_playing(); }
 
   void SetSpeechPlaying(bool speech_playing) {
-    model_->set_speech_playing(speech_playing);
+    model_->SetSpeechPlaying(speech_playing);
   }
 
   double SpeechRate() { return model_->speech_rate(); }
@@ -206,19 +207,70 @@ TEST_F(ReadAnythingReadAloudAppModelTest, LogSpeechStop_WithoutReadAloud) {
   base::HistogramTester histogram_tester;
 
   LogSpeechStop(source);
-  EXPECT_EQ(0, histogram_tester.GetTotalSum(
-                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+
+  histogram_tester.ExpectTotalCount(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      ReadAloudAppModel::kAudioStartTimeSuccessHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      ReadAloudAppModel::kAudioStartTimeFailureHistogramName, 0);
 }
 #endif
 
-TEST_F(ReadAnythingReadAloudAppModelTest, LogSpeechStop_WithReadAloud) {
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       LogSpeechStop_WithReadAloud_AudioDidNotStart_LogsDelay) {
   EnableReadAloud();
+  SetSpeechPlaying(true);
+  const auto delay = base::Milliseconds(25);
+  task_environment_.FastForwardBy(delay);
   auto source = ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode;
   base::HistogramTester histogram_tester;
 
   LogSpeechStop(source);
+
   histogram_tester.ExpectUniqueSample(
       ReadAloudAppModel::kSpeechStopSourceHistogramName, source, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      ReadAloudAppModel::kAudioStartTimeFailureHistogramName, delay, 1);
+  histogram_tester.ExpectTotalCount(
+      ReadAloudAppModel::kAudioStartTimeSuccessHistogramName, 0);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       LogSpeechStop_WithReadAloud_AudioDidStart_DoesNotLogDelay) {
+  EnableReadAloud();
+  SetSpeechPlaying(true);
+  const auto delay = base::Milliseconds(12);
+  task_environment_.FastForwardBy(delay);
+  model().SetAudioCurrentlyPlaying(true);
+  auto source = ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode;
+  base::HistogramTester histogram_tester;
+
+  LogSpeechStop(source);
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName, source, 1);
+  histogram_tester.ExpectTotalCount(
+      ReadAloudAppModel::kAudioStartTimeSuccessHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      ReadAloudAppModel::kAudioStartTimeFailureHistogramName, 0);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest, SetAudioCurrentlyPlaying_LogsDelay) {
+  EnableReadAloud();
+  SetSpeechPlaying(true);
+  const auto delay = base::Milliseconds(27);
+  task_environment_.FastForwardBy(delay);
+  base::HistogramTester histogram_tester;
+
+  model().SetAudioCurrentlyPlaying(true);
+
+  histogram_tester.ExpectTotalCount(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName, 0);
+  histogram_tester.ExpectUniqueTimeSample(
+      ReadAloudAppModel::kAudioStartTimeSuccessHistogramName, delay, 1);
+  histogram_tester.ExpectTotalCount(
+      ReadAloudAppModel::kAudioStartTimeFailureHistogramName, 0);
 }
 
 TEST_F(ReadAnythingReadAloudAppModelTest, SpeechPlaying) {

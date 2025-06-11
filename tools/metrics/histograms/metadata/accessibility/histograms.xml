@@ -2815,6 +2815,23 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.AudioStartTime.{Result}" units="ms"
+    expires_after="2026-06-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the time from when the user intiates speech via the play button in
+    Read aloud to when audio starts, or fails to start due to user action. The
+    latter could indicate latency is too long.
+  </summary>
+  <token key="Result">
+    <variant name="Failure"
+        summary="Speech was initiated but audio never started before
+                 something from ReadAnythingSpeechStopSource stopped it"/>
+    <variant name="Success" summary="Speech was initiated and audio started"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.Color" enum="ReadAnythingColor"
     expires_after="2026-06-01">
   <owner>abigailbklein@google.com</owner>
