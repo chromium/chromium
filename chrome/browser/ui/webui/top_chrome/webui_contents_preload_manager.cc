@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/webui/top_chrome/profile_preload_candidate_selector.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crash/core/common/crash_key.h"
@@ -116,30 +117,6 @@ content::WebUIController* GetWebUIController(
 
   return webui->GetController();
 }
-
-class WebUIContentsPreloadState
-    : public content::WebContentsUserData<WebUIContentsPreloadState> {
- public:
-  // Whether the WebUI was preloaded.
-  bool preloaded = false;
-
-  // Whether the WebUI is ready to be shown. This is set to true when the WebUI
-  // calls TopChromeWebUIController::Embedder::ShowUI().
-  bool ready_to_show = false;
-
-  // The timeticks when Request() is called. If nullopt, the WebUI is not yet
-  // requested.
-  std::optional<base::TimeTicks> request_time;
-
- private:
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-  friend class content::WebContentsUserData<WebUIContentsPreloadState>;
-
-  explicit WebUIContentsPreloadState(content::WebContents* web_contents)
-      : WebContentsUserData(*web_contents) {}
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebUIContentsPreloadState);
 
 }  // namespace
 

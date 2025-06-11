@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
@@ -30,7 +31,9 @@ class PerProfileWebUITrackerImpl : public PerProfileWebUITracker {
 
   // PerProfileWebUITracker:
   void AddWebContents(content::WebContents* web_contents) override;
-  bool ProfileHasWebUI(Profile* profile, std::string webui_url) const override;
+  bool ProfileHasWebUI(Profile* profile, const std::string& webui_url) const override;
+  bool ProfileHasBackgroundWebUI(Profile* profile,
+                                 const std::string& webui_url) const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -109,9 +112,31 @@ void PerProfileWebUITrackerImpl::AddWebContents(
 }
 
 bool PerProfileWebUITrackerImpl::ProfileHasWebUI(Profile* profile,
-                                                 std::string webui_url) const {
+                                                 const std::string& webui_url) const {
   url::Origin webui_origin = url::Origin::Create(GURL(webui_url));
   return profile_origin_set_.contains({profile, webui_origin});
+}
+
+bool PerProfileWebUITrackerImpl::ProfileHasBackgroundWebUI(
+    Profile* profile,
+    const std::string& webui_url) const {
+  url::Origin webui_origin = url::Origin::Create(GURL(webui_url));
+  for (const auto& [web_contents, _] : web_contents_observers_) {
+    if (web_contents->GetBrowserContext() != profile ||
+        web_contents->GetVisibleURL().host() != webui_origin.host()) {
+      continue;
+    }
+    const auto* preload_state =
+        WebUIContentsPreloadState::FromWebContents(web_contents);
+    CHECK(preload_state);
+    if (!preload_state->request_time.has_value()) {
+      // A background WebUI must be preloaded. Note that the reversed condition
+      // is not true. A preloaded WebUI can be in the foreground.
+      CHECK(preload_state->preloaded);
+      return true;
+    }
+  }
+  return false;
 }
 
 void PerProfileWebUITrackerImpl::AddObserver(Observer* observer) {
