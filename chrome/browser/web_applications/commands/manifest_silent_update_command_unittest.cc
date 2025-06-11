@@ -18,12 +18,12 @@
 namespace web_app {
 class ManifestSilentUpdateCommandTest : public WebAppTest {
  public:
-  ManifestSilentUpdateCommandTest() { DLOG(INFO) << this; }
+  ManifestSilentUpdateCommandTest() = default;
   ManifestSilentUpdateCommandTest(const ManifestSilentUpdateCommandTest&) =
       delete;
   ManifestSilentUpdateCommandTest& operator=(
       const ManifestSilentUpdateCommandTest&) = delete;
-  ~ManifestSilentUpdateCommandTest() override { DLOG(INFO) << this; }
+  ~ManifestSilentUpdateCommandTest() override = default;
 
   void SetUp() override {
     WebAppTest::SetUp();

@@ -4,47 +4,25 @@
 
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 
-#include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
-#include "base/notreached.h"
-#include "base/strings/to_string.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
-#include "chrome/browser/web_applications/callback_utils.h"
-#include "chrome/browser/web_applications/generated_icon_fix_util.h"
-#include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/manifest_update_manager.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_icon_operations.h"
-#include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
-#include "chrome/common/chrome_features.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace web_app {
 
-bool SizeAndPurpose::operator<(const SizeAndPurpose& other) const {
-  return size.height() < other.size.height() &&
-         size.width() < other.size.width() && purpose < other.purpose;
-}
-
-bool SizeAndPurpose::operator==(const SizeAndPurpose& other) const {
-  return size == other.size && purpose == other.purpose;
-}
-
-size_t SizeAndPurpose::absl_container_hash::operator()(
-    const SizeAndPurpose& key) const {
-  return absl::HashOf(key.size.width(), key.size.height(), key.purpose);
+std::ostream& operator<<(std::ostream& os,
+                         ManifestSilentUpdateCommandStage stage) {
+  switch (stage) {
+    case ManifestSilentUpdateCommandStage::kStartManifestDataFetching:
+      return os << "kStartManifestDataFetching";
+    case ManifestSilentUpdateCommandStage::kLoadingExistingManifestData:
+      return os << "kLoadingExistingManifestData";
+    case ManifestSilentUpdateCommandStage::kCompleteCommand:
+      return os << "kCompleteCommand";
+  }
 }
 
 ManifestSilentUpdateCommand::ManifestSilentUpdateCommand(
@@ -89,98 +67,25 @@ void ManifestSilentUpdateCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   }
   Observe(web_contents_.get());
 
-  // Runs a linear sequence of asynchronous and synchronous steps.
-  // This sequence can be early exited at any point by a call to
-  // CompleteCommandAndSelfDestruct().
-  RunChainedCallbacks(
-      base::BindOnce(&ManifestSilentUpdateCommand::DownloadNewManifestData,
-                     GetWeakPtr()),
-
-      base::BindOnce(&ManifestSilentUpdateCommand::LoadExistingManifestData,
-                     GetWeakPtr()),
-
-      base::BindOnce(
-          &ManifestSilentUpdateCommand::DownloadChangedIconUrlBitmaps,
-          GetWeakPtr()),
-
-      base::BindOnce(&ManifestSilentUpdateCommand::CheckComplete,
-                     GetWeakPtr()));
-}
-
-IconPurpose GetIconPurpose(apps::IconInfo::Purpose purpose) {
-  switch (purpose) {
-    case apps::IconInfo::Purpose::kAny:
-      return IconPurpose::ANY;
-    case apps::IconInfo::Purpose::kMonochrome:
-      return IconPurpose::MONOCHROME;
-    case apps::IconInfo::Purpose::kMaskable:
-      return IconPurpose::MASKABLE;
-  }
-}
-
-absl::flat_hash_map<SizeAndPurpose, GURL>
-ManifestSilentUpdateCommand::CreateIconSizeAndPurposeMap(
-    const std::vector<apps::IconInfo>& icon_infos) {
-  absl::flat_hash_map<SizeAndPurpose, GURL> icons_size_and_purpose_map;
-  for (const apps::IconInfo& info : icon_infos) {
-    IconPurpose info_purpose = GetIconPurpose(info.purpose);
-    SizeAndPurpose key = {gfx::Size(info.square_size_px.value_or(0),
-                                    info.square_size_px.value_or(0)),
-                          info_purpose};
-    icons_size_and_purpose_map[key] = info.url;
-  }
-  return icons_size_and_purpose_map;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ManifestUpdateCheckStage::kDownloadingNewManifestData:
-////////////////////////////////////////////////////////////////////////////////
-void ManifestSilentUpdateCommand::DownloadNewManifestData(
-    base::OnceClosure next_step_callback) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kPendingAppLock);
-  stage_ = ManifestUpdateCheckStage::kDownloadingNewManifestData;
-
-  RunChainedCallbacks(
-      base::BindOnce(&ManifestSilentUpdateCommand::DownloadNewManifestJson,
-                     GetWeakPtr()),
-
-      base::BindOnce(&ManifestSilentUpdateCommand::StashNewManifestJson,
-                     GetWeakPtr()),
-
-      base::BindOnce(&ManifestSilentUpdateCommand::ValidateNewScopeExtensions,
-                     GetWeakPtr()),
-
-      base::BindOnce(
-          &ManifestSilentUpdateCommand::StashValidatedScopeExtensions,
-          GetWeakPtr()),
-
-      std::move(next_step_callback));
-}
-
-void ManifestSilentUpdateCommand::DownloadNewManifestJson(
-    WebAppDataRetriever::CheckInstallabilityCallback next_step_callback) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
-
-  if (IsWebContentsDestroyed()) {
-    CompleteCommandAndSelfDestruct(
-        ManifestUpdateCheckResult::kWebContentsDestroyed);
-    return;
-  }
-
+  // ManifestSilentUpdateCommandStage::kStartManifestDataFetching:
+  stage_ = ManifestSilentUpdateCommandStage::kStartManifestDataFetching;
   webapps::InstallableParams params;
   params.valid_primary_icon = true;
   params.installable_criteria =
       webapps::InstallableCriteria::kValidManifestIgnoreDisplay;
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      web_contents_.get(), std::move(next_step_callback), params);
+      web_contents_.get(),
+      base::BindOnce(&ManifestSilentUpdateCommand::StashNewManifestJson,
+                     GetWeakPtr()),
+      params);
 }
 
 void ManifestSilentUpdateCommand::StashNewManifestJson(
-    base::OnceClosure next_step_callback,
     blink::mojom::ManifestPtr opt_manifest,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode installable_status) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+  DCHECK_EQ(stage_,
+            ManifestSilentUpdateCommandStage::kStartManifestDataFetching);
 
   GetMutableDebugValue().Set(
       "manifest_url", opt_manifest ? opt_manifest->manifest_url.spec() : "");
@@ -203,34 +108,20 @@ void ManifestSilentUpdateCommand::StashNewManifestJson(
     return;
   }
 
-  new_icon_size_and_purpose_map_ =
-      CreateIconSizeAndPurposeMap(new_install_info_->manifest_icons);
-
-  std::move(next_step_callback).Run();
-}
-
-void ManifestSilentUpdateCommand::ValidateNewScopeExtensions(
-    OnDidGetWebAppOriginAssociations next_step_callback) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
-
-  if (IsWebContentsDestroyed()) {
-    CompleteCommandAndSelfDestruct(
-        ManifestUpdateCheckResult::kWebContentsDestroyed);
-    return;
-  }
-
-  CHECK(new_install_info_);
+  // Start validating scope extensions.
   ScopeExtensions new_scope_extensions = new_install_info_->scope_extensions;
 
   lock_->origin_association_manager().GetWebAppOriginAssociations(
       new_install_info_->manifest_id(), std::move(new_scope_extensions),
-      std::move(next_step_callback));
+      base::BindOnce(
+          &ManifestSilentUpdateCommand::StashValidatedScopeExtensions,
+          GetWeakPtr()));
 }
 
 void ManifestSilentUpdateCommand::StashValidatedScopeExtensions(
-    base::OnceClosure next_step_callback,
     ScopeExtensions validated_scope_extensions) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+  DCHECK_EQ(stage_,
+            ManifestSilentUpdateCommandStage::kStartManifestDataFetching);
 
   if (IsWebContentsDestroyed()) {
     CompleteCommandAndSelfDestruct(
@@ -240,47 +131,19 @@ void ManifestSilentUpdateCommand::StashValidatedScopeExtensions(
 
   new_install_info_->validated_scope_extensions =
       std::make_optional(std::move(validated_scope_extensions));
-  std::move(next_step_callback).Run();
-}
 
-////////////////////////////////////////////////////////////////////////////////
-// ManifestUpdateCheckStage::kLoadingExistingManifestData:
-////////////////////////////////////////////////////////////////////////////////
-
-void ManifestSilentUpdateCommand::LoadExistingManifestData(
-    base::OnceClosure next_step_callback) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
-  stage_ = ManifestUpdateCheckStage::kLoadingExistingManifestData;
-
-  RunChainedCallbacks(
-      base::BindOnce(&ManifestSilentUpdateCommand::LoadExistingAppIcons,
-                     GetWeakPtr()),
-
+  // ManifestSilentUpdateCommandStage::kLoadingExistingManifestData
+  stage_ = ManifestSilentUpdateCommandStage::kLoadingExistingManifestData;
+  lock_->icon_manager().ReadAllIcons(
+      app_id_,
       base::BindOnce(&ManifestSilentUpdateCommand::StashExistingAppIcons,
-                     GetWeakPtr()),
-
-      base::BindOnce(
-          &ManifestSilentUpdateCommand::LoadExistingShortcutsMenuIcons,
-          GetWeakPtr()),
-
-      base::BindOnce(
-          &ManifestSilentUpdateCommand::StashExistingShortcutsMenuIcons,
-          GetWeakPtr()),
-
-      std::move(next_step_callback));
-}
-
-void ManifestSilentUpdateCommand::LoadExistingAppIcons(
-    WebAppIconManager::ReadIconBitmapsCallback next_step_callback) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
-
-  lock_->icon_manager().ReadAllIcons(app_id_, std::move(next_step_callback));
+                     GetWeakPtr()));
 }
 
 void ManifestSilentUpdateCommand::StashExistingAppIcons(
-    base::OnceClosure next_step_callback,
     IconBitmaps icon_bitmaps) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
+  DCHECK_EQ(stage_,
+            ManifestSilentUpdateCommandStage::kLoadingExistingManifestData);
 
   if (icon_bitmaps.empty()) {
     CompleteCommandAndSelfDestruct(
@@ -288,117 +151,28 @@ void ManifestSilentUpdateCommand::StashExistingAppIcons(
     return;
   }
 
-  existing_app_icon_bitmaps_ = std::move(icon_bitmaps);
-  existing_icon_size_and_purpose_map_ =
-      CreateIconSizeAndPurposeMap(GetWebApp().manifest_icons());
-
-  std::move(next_step_callback).Run();
-}
-
-void ManifestSilentUpdateCommand::LoadExistingShortcutsMenuIcons(
-    WebAppIconManager::ReadShortcutsMenuIconsCallback next_step_callback) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
-
   lock_->icon_manager().ReadAllShortcutsMenuIcons(
-      app_id_, std::move(next_step_callback));
+      app_id_,
+      base::BindOnce(
+          &ManifestSilentUpdateCommand::StashExistingShortcutsMenuIcons,
+          GetWeakPtr()));
 }
 
 void ManifestSilentUpdateCommand::StashExistingShortcutsMenuIcons(
-    base::OnceClosure next_step_callback,
     ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
+  DCHECK_EQ(stage_,
+            ManifestSilentUpdateCommandStage::kLoadingExistingManifestData);
 
   existing_shortcuts_menu_icon_bitmaps_ =
       std::move(shortcuts_menu_icon_bitmaps);
-  std::move(next_step_callback).Run();
+  CheckComplete();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// ManifestUpdateCheckStage::kCheckUpdateNeededAndDownloadIcons:
-////////////////////////////////////////////////////////////////////////////////
-
-void ManifestSilentUpdateCommand::DownloadChangedIconUrlBitmaps(
-    base::OnceClosure next_step_callback) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
-  stage_ = ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps;
-  RunChainedCallbacks(
-      base::BindOnce(&ManifestSilentUpdateCommand::DownloadNewIconBitmaps,
-                     GetWeakPtr()),
-
-      base::BindOnce(&ManifestSilentUpdateCommand::StashNewIconBitmaps,
-                     GetWeakPtr()),
-
-      std::move(next_step_callback));
-}
-
-void ManifestSilentUpdateCommand::DownloadNewIconBitmaps(
-    WebAppIconDownloader::WebAppIconDownloaderCallback next_step_callback) {
-  DCHECK_EQ(stage_,
-            ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps);
-  CHECK(new_install_info_);
-  IconUrlSizeSet icon_urls_to_download;
-
-  for (const auto& [new_key, new_url] : new_icon_size_and_purpose_map_) {
-    auto existing_map_it = existing_icon_size_and_purpose_map_.find(new_key);
-    auto new_map_it = new_icon_size_and_purpose_map_.find(new_key);
-    if (existing_map_it != existing_icon_size_and_purpose_map_.end() &&
-        new_map_it != new_icon_size_and_purpose_map_.end() &&
-        existing_map_it->second == new_map_it->second) {
-      const auto& existing_icon_bitmap =
-          existing_app_icon_bitmaps_.GetBitmapsForPurpose(new_key.purpose);
-      new_install_info_->icon_bitmaps.SetBitmapsForPurpose(
-          new_key.purpose, existing_icon_bitmap);
-    } else {
-      icon_urls_to_download.insert(
-          IconUrlWithSize::Create(new_url, new_key.size));
-    }
-  }
-
-  // Getting the URLs for other icons including shortcut, file handler, and home
-  // tab icons.
-  for (const auto& other_icon_url_size :
-       GetValidIconUrlsNotFromManifestIconField(*new_install_info_)) {
-    icon_urls_to_download.insert(other_icon_url_size);
-  }
-
-  IconDownloaderOptions options = {.skip_page_favicons = true,
-                                   .fail_all_if_any_fail = true};
-  icon_downloader_->Start(web_contents_.get(), icon_urls_to_download,
-                          std::move(next_step_callback), options);
-}
-
-void ManifestSilentUpdateCommand::StashNewIconBitmaps(
-    base::OnceClosure next_step_callback,
-    IconsDownloadedResult result,
-    IconsMap icons_map,
-    DownloadedIconsHttpResults icons_http_results) {
-  DCHECK_EQ(stage_,
-            ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps);
-
-  GetMutableDebugValue().Set("icon_download_result", base::ToString(result));
-
-  RecordIconDownloadMetrics(result, icons_http_results);
-
-  if (result != IconsDownloadedResult::kCompleted) {
-    CompleteCommandAndSelfDestruct(
-        ManifestUpdateCheckResult::kIconDownloadFailed);
-    return;
-  }
-
-  PopulateOtherIcons(new_install_info_.get(), icons_map);
-  PopulateProductIcons(new_install_info_.get(), &icons_map);
-
-  std::move(next_step_callback).Run();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ManifestUpdateCheckStage::kComplete:
-////////////////////////////////////////////////////////////////////////////////
-
+// ManifestSilentUpdateCommandStage::kCompleteCommand:
 void ManifestSilentUpdateCommand::CheckComplete() {
   DCHECK_EQ(stage_,
-            ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps);
-  stage_ = ManifestUpdateCheckStage::kComplete;
+            ManifestSilentUpdateCommandStage::kLoadingExistingManifestData);
+  stage_ = ManifestSilentUpdateCommandStage::kCompleteCommand;
 
   ManifestUpdateCheckResult check_result =
       manifest_data_changes_ ? ManifestUpdateCheckResult::kAppUpdateNeeded
