@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FAKE_LOCAL_FRAME_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FAKE_LOCAL_FRAME_HOST_H_
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "net/storage_access_api/status.h"
@@ -77,10 +78,12 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void GoToEntryAtOffset(
       int32_t offset,
       bool has_user_gesture,
+      base::TimeTicks actual_navigation_start,
       std::optional<blink::scheduler::TaskAttributionId>) override;
   void NavigateToNavigationApiKey(
       const WTF::String& key,
       bool has_user_gesture,
+      base::TimeTicks actual_navigation_start,
       std::optional<blink::scheduler::TaskAttributionId> task_id) override {}
   void NavigateEventHandlerPresenceChanged(bool present) override {}
   void UpdateTitle(const WTF::String& title,

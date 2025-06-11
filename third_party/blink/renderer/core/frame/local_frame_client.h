@@ -207,6 +207,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual bool NavigateBackForward(
       int offset,
+      base::TimeTicks actual_navigation_start,
       std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) const = 0;
 

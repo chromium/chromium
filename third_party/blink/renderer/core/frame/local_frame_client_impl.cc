@@ -802,6 +802,7 @@ void LocalFrameClientImpl::DidStopLoading() {
 
 bool LocalFrameClientImpl::NavigateBackForward(
     int offset,
+    base::TimeTicks actual_navigation_start,
     std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) const {
   WebViewImpl* webview = web_frame_->ViewImpl();
@@ -817,7 +818,8 @@ bool LocalFrameClientImpl::NavigateBackForward(
   bool has_user_gesture =
       LocalFrame::HasTransientUserActivation(web_frame_->GetFrame());
   web_frame_->GetFrame()->GetLocalFrameHostRemote().GoToEntryAtOffset(
-      offset, has_user_gesture, soft_navigation_heuristics_task_id);
+      offset, has_user_gesture, actual_navigation_start,
+      soft_navigation_heuristics_task_id);
   return true;
 }
 

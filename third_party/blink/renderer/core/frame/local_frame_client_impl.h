@@ -154,6 +154,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidStopLoading() override;
   bool NavigateBackForward(
       int offset,
+      base::TimeTicks actual_navigation_start,
       std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) const override;
   void DidDispatchPingLoader(const KURL&) override;
