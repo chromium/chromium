@@ -1011,15 +1011,34 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
                              details_vector) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    // TODO(https://crbug.com/423472677): Group multiple cookie access details
+    // with the same RenderFrameHost. This UMA metrics is to decide whether to
+    // optimize this method or not.
+    base::UmaHistogramCounts1M(
+        "Cookie.OnCookiesAccessed.BatchSize.CookieAccessObserver",
+        details_vector.size());
+    std::optional<base::ElapsedTimer> timer;
+    if (base::ShouldRecordSubsampledMetric(0.01)) {
+      timer.emplace();
+    }
     for (auto& details : details_vector) {
       for (GlobalRenderFrameHostId frame_id : GetRoutingIdsForOrigin(
                storage_partition_, url::Origin::Create(details->url))) {
         if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
+          std::vector<network::mojom::CookieAccessDetailsPtr> details_list;
+          details_list.reserve(1);
+          details_list.push_back(mojo::Clone(details));
           rfh->NotifyCookiesAccessed(
-              mojo::Clone(details_vector),
+              std::move(details_list),
               CookieAccessDetails::Source::kNonNavigation);
         }
       }
+    }
+    if (timer) {
+      base::UmaHistogramCustomMicrosecondsTimes(
+          "Browser.CookieAccessObserver.StoragePartitionImpl.Duration."
+          "Subsampled",
+          timer->Elapsed(), base::Microseconds(1), base::Seconds(1), 100);
     }
   }
 

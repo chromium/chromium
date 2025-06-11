@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <variants name="CookieAccessReceiver">
   <variant name="NavigationRequest"/>
   <variant name="RenderFrameHost"/>
+  <variant name="StoragePartitionImpl"/>
 </variants>
 
 <!-- LINT.IfChange(NoSpareRendererReason) -->
