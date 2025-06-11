@@ -109,6 +109,8 @@ class ServerCertificateDatabaseService : public KeyedService {
 
 #if BUILDFLAG(IS_CHROMEOS)
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  static void DisableNSSCertMigrationForTesting();
 #endif
 
   base::WeakPtr<ServerCertificateDatabaseService> GetWeakPtr() {

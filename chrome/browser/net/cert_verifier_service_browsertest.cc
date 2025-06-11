@@ -739,27 +739,19 @@ IN_PROC_BROWSER_TEST_F(CertVerifierMultiProfileUserSettingsTest,
 class CertVerifierNSSMigrationTest : public PlatformBrowserTest {
  public:
   CertVerifierNSSMigrationTest() {
-    const std::vector<base::test::FeatureRef> feature_flags = {
-        features::kEnableCertManagementUIV2,
-        features::kEnableCertManagementUIV2Write};
     if (GetTestPreCount() == 2) {
-      feature_list_.InitWithFeatures(/*enabled_features=*/{},
-                                     /*disabled_features=*/feature_flags);
-    } else {
-      feature_list_.InitWithFeatures(/*enabled_features=*/feature_flags,
-                                     /*disabled_features=*/{});
+      net::ServerCertificateDatabaseService::
+          DisableNSSCertMigrationForTesting();
     }
   }
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Setup the NSS database before doing migration. The PRE_PRE_ test is run with
-// the feature flag disabled so migration will not be attempted yet.
+// DisableNSSCertMigrationForTesting() so the migration will not be attempted
+// yet.
 IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest,
                        PRE_PRE_TestNSSCertMigration) {
   // PRE_ test and main test don't share state, so there isn't an easy way use a
@@ -793,9 +785,8 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest,
       "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished", 0);
 }
 
-// Tests that when the feature flag is set, NSS cert migration is done on
-// initialization and that the verification is blocked on the migration
-// completing.
+// Tests that NSS cert migration is done on initialization and that the
+// verification is blocked on the migration completing.
 IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
   net::EmbeddedTestServer https_test_server{
       net::EmbeddedTestServer::TYPE_HTTPS};

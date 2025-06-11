@@ -24,6 +24,14 @@
 
 namespace net {
 
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool g_disable_nss_cert_migration_for_testing = false;
+#endif
+
+}  // namespace
+
 #if BUILDFLAG(IS_CHROMEOS)
 ServerCertificateDatabaseService::ServerCertificateDatabaseService(
     base::FilePath profile_path,
@@ -70,8 +78,9 @@ void ServerCertificateDatabaseService::GetAllCertificates(
   // processed once the migration is done.
   // TODO(crbug.com/390333881): Remove the migration code once sufficient time
   // has passed after the feature is launched.
-  if (prefs_->GetInteger(prefs::kNSSCertsMigratedToServerCertDb) ==
-      static_cast<int>(NSSMigrationResultPref::kNotMigrated)) {
+  if (!g_disable_nss_cert_migration_for_testing &&
+      prefs_->GetInteger(prefs::kNSSCertsMigratedToServerCertDb) ==
+          static_cast<int>(NSSMigrationResultPref::kNotMigrated)) {
     if (!nss_migrator_) {
       DVLOG(1) << "starting migration for profile "
                << profile_path_.AsUTF8Unsafe();
@@ -178,6 +187,10 @@ void ServerCertificateDatabaseService::RegisterProfilePrefs(
       prefs::kNSSCertsMigratedToServerCertDb,
       static_cast<int>(net::ServerCertificateDatabaseService::
                            NSSMigrationResultPref::kNotMigrated));
+}
+
+void ServerCertificateDatabaseService::DisableNSSCertMigrationForTesting() {
+  g_disable_nss_cert_migration_for_testing = true;
 }
 #endif
 
