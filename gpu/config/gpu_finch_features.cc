@@ -383,7 +383,7 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnBackendDebugLabels{
 #if BUILDFLAG(IS_WIN)
 // Whether the we should DumpWithoutCrashing when D3D related errors are detected.
 const base::FeatureParam<bool> kSkiaGraphiteDawnDumpWCOnD3DError{
-    &kSkiaGraphite, "dawn_dumpwc_d3d_errors", true};
+    &kSkiaGraphite, "dawn_dumpwc_d3d_errors", false};
 
 BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
              "SkiaGraphiteDawnUseD3D12",
