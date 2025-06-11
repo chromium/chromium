@@ -386,7 +386,12 @@
     {
       name: "LanguageDetector",
       permissions_policy_name: "language-detector",
-      depends_on: ["LanguageDetectionAPI", "BuiltInAIAPI"],
+      depends_on: ["LanguageDetectionAPI"],
+    },
+    {
+      name: "LanguageModel",
+      permissions_policy_name: "language-model",
+      depends_on: ["AIPromptAPI"],
     },
     {
       name: "LocalFonts",
@@ -472,7 +477,7 @@
     {
       name: "Rewriter",
       permissions_policy_name: "rewriter",
-      depends_on: ["AIRewriterAPI", "BuiltInAIAPI"],
+      depends_on: ["AIRewriterAPI"],
     },
     {
       name: "RunAdAuction",
@@ -536,7 +541,7 @@
     {
       name: "Summarizer",
       permissions_policy_name: "summarizer",
-      depends_on: ["AISummarizationAPI", "BuiltInAIAPI"],
+      depends_on: ["AISummarizationAPI"],
     },
     {
       name: "SyncXHR",
@@ -546,7 +551,7 @@
     {
       name: "Translator",
       permissions_policy_name: "translator",
-      depends_on: ["TranslationAPI", "BuiltInAIAPI"],
+      depends_on: ["TranslationAPI"],
     },
     {
       name: "TrustTokenRedemption",
@@ -607,7 +612,7 @@
     {
       name: "Writer",
       permissions_policy_name: "writer",
-      depends_on: ["AIWriterAPI", "BuiltInAIAPI"],
+      depends_on: ["AIWriterAPI"],
     },
   ],
   // LINT.ThenChange(//third_party/blink/public/devtools_protocol/browser_protocol.pdl:PermissionsPolicyFeature)

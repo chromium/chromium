@@ -282,3 +282,36 @@ async function testCreateMonitorWithAbort(t, method, options = {}) {
   await testCreateMonitorWithAbortAt(t, 0, method, options);
   await testCreateMonitorWithAbortAt(t, 1, method, options);
 }
+
+const getId = (() => {
+  let idCount = 0;
+  return () => idCount++;
+})();
+
+function runIframeTest(iframe, testName) {
+  const id = getId();
+  iframe.contentWindow.postMessage({id, type: testName}, '*');
+  const {promise, resolve, reject} = Promise.withResolvers();
+  window.onmessage = message => {
+    if (message.data.id !== id) {
+      reject('Unexpected messsage id');
+    } else if (message.data.success) {
+      resolve(message.data.success);
+    } else {
+      reject(message.data.err)
+    }
+  };
+  return promise;
+}
+
+function loadIframe(src, permissionPolicy) {
+  let iframe = document.createElement('iframe');
+  const {promise, resolve} = Promise.withResolvers();
+  iframe.onload = () => {
+    resolve(iframe);
+  };
+  iframe.src = src;
+  iframe.allow = permissionPolicy;
+  document.body.appendChild(iframe);
+  return promise;
+}

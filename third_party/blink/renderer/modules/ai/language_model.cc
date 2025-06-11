@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
@@ -407,11 +408,19 @@ ScriptPromise<LanguageModel> LanguageModel::create(
       MakeGarbageCollected<ScriptPromiseResolver<LanguageModel>>(script_state);
   auto promise = resolver->Promise();
 
+  // Block access if the Permission Policy is not enabled.
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (!execution_context->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError, kExceptionMessagePermissionPolicy));
+    return promise;
+  }
+
   LogCreateOptionMetrics(*options, "create");
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kCreateSession);
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(execution_context);
   if (!ai_manager_remote.is_connected()) {
@@ -462,6 +471,14 @@ ScriptPromise<V8Availability> LanguageModel::availability(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   auto promise = resolver->Promise();
+
+  // Return unavailable if the Permission Policy is not enabled.
+  if (!ExecutionContext::From(script_state)
+           ->IsFeatureEnabled(
+               network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+    resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
+    return promise;
+  }
 
   LogCreateOptionMetrics(*options, "availability");
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(

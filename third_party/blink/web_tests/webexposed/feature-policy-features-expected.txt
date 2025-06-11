@@ -56,6 +56,7 @@ interest-cohort
 join-ad-interest-group
 keyboard-map
 language-detector
+language-model
 local-fonts
 local-network-access
 magnetometer
