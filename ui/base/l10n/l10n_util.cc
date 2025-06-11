@@ -284,32 +284,29 @@ constexpr auto kPlatformLocales = base::MakeFixedFlatSet<std::string_view>({
 #undef PLATFORM_LOCALE
 });
 
-// Returns true if |locale_name| has an alias in the ICU data file.
-bool IsDuplicateName(const std::string& locale_name) {
-  static const char* const kDuplicateNames[] = {
-    "ar_001",
-    "en",
-    "en_001",
-    "en_150",
-    "pt",  // pt-BR and pt-PT are used.
-    "zh",
-    "zh_hans_cn",
-    "zh_hant_hk",
-    "zh_hant_mo",
-    "zh_hans_sg",
-    "zh_hant_tw"
-  };
+// Returns true if `locale_name` has an alias in the ICU data file.
+bool IsDuplicateName(std::string_view locale_name) {
+  static constexpr auto kDuplicateNames =
+      base::MakeFixedFlatSet<std::string_view>({
+          "ar_001",
+          "en",
+          "en_001",
+          "en_150",
+          "pt",  // pt-BR and pt-PT are used.
+          "zh",
+          "zh_hans_cn",
+          "zh_hant_hk",
+          "zh_hant_mo",
+          "zh_hans_sg",
+          "zh_hant_tw",
+      });
 
   // Skip all the es_Foo other than es_419 for now.
   if (base::StartsWith(locale_name, "es_",
                        base::CompareCase::INSENSITIVE_ASCII)) {
     return !locale_name.ends_with("419");
   }
-  for (const char* duplicate_name : kDuplicateNames) {
-    if (base::EqualsCaseInsensitiveASCII(duplicate_name, locale_name))
-      return true;
-  }
-  return false;
+  return kDuplicateNames.contains(base::ToLowerASCII(locale_name));
 }
 
 // We added 30+ minimally populated locales with only a few entries
