@@ -191,6 +191,12 @@ scoped_refptr<BlobDataHandle> BodyStreamBuffer::DrainAsBlobDataHandle(
   if (made_from_readable_stream_)
     return nullptr;
 
+  // TODO(crbug.com/423955471): Find out why `consumer_` can be null here and
+  // stop it from happening.
+  if (!consumer_) {
+    return nullptr;
+  }
+
   scoped_refptr<BlobDataHandle> blob_data_handle =
       consumer_->DrainAsBlobDataHandle(policy);
   if (blob_data_handle) {
@@ -209,6 +215,12 @@ scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData(
 
   if (made_from_readable_stream_)
     return nullptr;
+
+  // TODO(crbug.com/423955471): Find out why `consumer_` can be null here and
+  // stop it from happening.
+  if (!consumer_) {
+    return nullptr;
+  }
 
   scoped_refptr<EncodedFormData> form_data = consumer_->DrainAsFormData();
   if (form_data) {
