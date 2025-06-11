@@ -193,3 +193,24 @@ function computeSNR(actual, expected) {
 
   return signalPower / noisePower;
 }
+
+/**
+ * Creates a test buffer with linear ramp PCM data: 0, 1, 2, ... length-1.
+ * @param {!BaseAudioContext} context
+ * @param {number} length Frames in the buffer
+ * @return {!AudioBuffer}
+ */
+function createTestBuffer(context, length) {
+  const buffer = new AudioBuffer({
+    length: length,
+    numberOfChannels: 1,
+    sampleRate: context.sampleRate
+  });
+
+  const channelData = buffer.getChannelData(0);
+  for (let i = 0; i < length; ++i) {
+    channelData[i] = i;
+  }
+
+  return buffer;
+}

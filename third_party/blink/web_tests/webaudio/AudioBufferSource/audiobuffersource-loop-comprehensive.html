@@ -1,26 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>
-      audiobuffersource-loop-comprehensive.html
-    </title>
+    <title>audiobuffersource-loop-comprehensive.html</title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/audiobuffersource-testing.js"></script>
   </head>
   <body>
     <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
-
       // The following test cases assume an AudioBuffer of length 8 whose PCM
       // data is a linear ramp, 0, 1, 2, 3,... |description| is optional and
       // will be computed from the other parameters. |offsetFrame| is optional
       // and defaults to 0.
-
-      let tests = [
-
+      const tests = [
         {
           description:
               'loop whole buffer by default with loopStart == loopEnd == 0',
@@ -28,7 +21,9 @@
           loopEndFrame: 0,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7]
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+          ]
         },
 
         {
@@ -37,7 +32,9 @@
           loopEndFrame: 8,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7]
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+          ]
         },
 
         {
@@ -46,7 +43,9 @@
           loopEndFrame: 8,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7]
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7
+          ]
         },
 
         {
@@ -55,7 +54,9 @@
           loopEndFrame: 4,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
+          expected: [
+            0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3
+          ]
         },
 
         {
@@ -63,7 +64,9 @@
           loopEndFrame: 6,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5]
+          expected: [
+            0, 1, 2, 3, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5
+          ]
         },
 
         {
@@ -71,7 +74,9 @@
           loopEndFrame: 7,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3]
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3
+          ]
         },
 
         {
@@ -79,8 +84,9 @@
           loopEndFrame: 6,
           renderFrames: 16,
           playbackRate: 0.5,
-          expected:
-              [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 4, 4.5, 5, 5.5]
+          expected: [
+            0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 4, 4.5, 5, 5.5
+          ]
         },
 
         {
@@ -88,8 +94,9 @@
           loopEndFrame: 6,
           renderFrames: 16,
           playbackRate: 1.5,
-          expected:
-              [0, 1.5, 3, 4.5, 4, 5.5, 5, 4.5, 4, 5.5, 5, 4.5, 4, 5.5, 5, 4.5]
+          expected: [
+            0, 1.5, 3, 4.5, 4, 5.5, 5, 4.5, 4, 5.5, 5, 4.5, 4, 5.5, 5, 4.5
+          ]
         },
 
         // Offset past loop end, so playback starts at loop start
@@ -99,7 +106,9 @@
           renderFrames: 16,
           playbackRate: 1,
           offsetFrame: 6,
-          expected: [2, 3, 4, 2, 3, 4, 2, 3, 4, 2, 3, 4, 2, 3, 4, 2]
+          expected: [
+            2, 3, 4, 2, 3, 4, 2, 3, 4, 2, 3, 4, 2, 3, 4, 2
+          ]
         },
 
         // Offset before loop start, so start at offset and continue
@@ -109,7 +118,9 @@
           renderFrames: 16,
           playbackRate: 1,
           offsetFrame: 1,
-          expected: [1, 2, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4]
+          expected: [
+            1, 2, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4
+          ]
         },
 
         // Offset between loop start and loop end, so start at offset and
@@ -120,7 +131,9 @@
           renderFrames: 16,
           playbackRate: 1,
           offsetFrame: 4,
-          expected: [4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4]
+          expected: [
+            4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4
+          ]
         },
 
         {
@@ -129,7 +142,7 @@
           loopEndFrame: 6,
           renderFrames: 16,
           playbackRate: 47,
-          expected: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          expected: Array(16).fill(0)
         },
 
         // Try illegal loop-points - they should be ignored and we'll loop the
@@ -141,7 +154,10 @@
           loopEndFrame: 3,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7]
+          expectWholeBuffer: true,
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+          ]
         },
 
         {
@@ -150,7 +166,10 @@
           loopEndFrame: 3,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7]
+          expectWholeBuffer: true,
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+          ]
         },
 
         {
@@ -159,7 +178,10 @@
           loopEndFrame: 3,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7]
+          expectWholeBuffer: true,
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+          ]
         },
 
         {
@@ -168,7 +190,10 @@
           loopEndFrame: 30000,
           renderFrames: 16,
           playbackRate: 1,
-          expected: [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7]
+          expectWholeBuffer: true,
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+          ]
         },
 
         // Start a loop with a duration longer than the buffer.  The output
@@ -224,82 +249,125 @@
 
       ];
 
-      let sampleRate = 32768;
-      let buffer;
-      let bufferFrameLength = 8;
-      let testSpacingFrames = 32;
-      let testSpacingSeconds = testSpacingFrames / sampleRate;
-      let totalRenderLengthFrames = tests.length * testSpacingFrames;
+      const sampleRate = 32768;
+      const bufferFrameLength = 8;
+      const testSpacingFrames = 32;
+      const testSpacingSeconds = testSpacingFrames / sampleRate;
+      const totalRenderLengthFrames = testSpacingFrames * tests.length;
 
-      function runLoopTest(context, testNumber, test, should) {
-        let source = context.createBufferSource();
-
+      /**
+       * Runs a loop test by scheduling an AudioBufferSourceNode with given
+       * params.
+       * @param {!BaseAudioContext} context
+       * @param {number} testNumber
+       * @param {!Object} test
+       */
+      function runLoopTest(context, testNumber, test) {
+        const source = new AudioBufferSourceNode(context);
         source.buffer = buffer;
         source.playbackRate.value = test.playbackRate;
         source.loop = true;
+
+        const invalidLoop =
+            test.loopStartFrame < 0 ||
+            test.loopEndFrame > buffer.length ||
+            (test.loopEndFrame !== 0 &&
+             test.loopStartFrame >= test.loopEndFrame);
+
+        if (invalidLoop && !test.expectWholeBuffer) {
+          throw new Error(
+              `Test ${testNumber}: unexpected invalid loop points ` +
+              `(start=${test.loopStartFrame}, end=${test.loopEndFrame})`);
+        }
+
         source.loopStart = test.loopStartFrame / context.sampleRate;
         source.loopEnd = test.loopEndFrame / context.sampleRate;
 
-        let offset =
-            test.offsetFrame ? test.offsetFrame / context.sampleRate : 0;
-
+        const offset = test.offsetFrame
+            ? test.offsetFrame / context.sampleRate
+            : 0;
         source.connect(context.destination);
 
-        // Render each test one after the other, spaced apart by
-        // testSpacingSeconds.
-        let startTime = testNumber * testSpacingSeconds;
+        const startTime = testNumber * testSpacingSeconds;
 
-        // If durationFrames is given, run the test for the specified duration.
-        if (test.durationFrames) {
+        if (test.durationFrames !== undefined) {
           if (!test.renderFrames) {
-            throw(
-                'renderFrames is required for test ' + testNumber + ': ' +
-                test.description);
-          } else {
-            if (test.durationFrames > testSpacingFrames ||
-                test.durationFrames < 0) {
-              throw(
-                  'Test ' + testNumber + ': durationFrames (' +
-                  test.durationFrames + ') outside the range [0, ' +
-                  testSpacingFrames + ']');
-            }
-            source.start(
-                startTime, offset, test.durationFrames / context.sampleRate);
+            throw new Error(
+                `renderFrames is required for test ${testNumber}: ` +
+                `${test.description || ''}`);
           }
-        } else if (test.renderFrames) {
-          let duration = test.renderFrames / context.sampleRate;
-          if (test.renderFrames > testSpacingFrames || test.renderFrames < 0) {
-            throw(
-                'Test ' + testNumber + ': renderFrames (' + test.renderFrames +
-                ') outside the range [0, ' + testSpacingFrames + ']');
+          if (test.durationFrames > testSpacingFrames ||
+              test.durationFrames < 0) {
+            throw new Error(
+                `Test ${testNumber}: durationFrames (${test.durationFrames}) ` +
+                `outside the range [0, ${testSpacingFrames}]`
+            );
+          }
+          source.start(startTime,
+                       offset,
+                       test.durationFrames / context.sampleRate);
+        } else if (test.renderFrames !== undefined) {
+          if (test.renderFrames > testSpacingFrames ||
+              test.renderFrames < 0) {
+            throw new Error(
+                `Test ${testNumber}: renderFrames (${test.renderFrames}) ` +
+                `outside the range [0, ${testSpacingFrames}]`
+            );
           }
           source.start(startTime, offset);
-          source.stop(startTime + duration);
+          source.stop(
+              startTime +
+              test.renderFrames / context.sampleRate);
         } else {
-          throw(
-              'Test ' + testNumber +
-              ' must specify renderFrames and possibly durationFrames');
+          throw new Error(
+              `Test ${testNumber} must specify renderFrames ` +
+              `and optionally durationFrames`);
         }
       }
 
-      audit.define('AudioBufferSource looping test', function(task, should) {
-        // Create offline audio context.
-        let context =
-            new OfflineAudioContext(1, totalRenderLengthFrames, sampleRate);
+      /**
+       * Checks all tests' output in the rendered AudioBuffer against expected
+       * data.
+       * @param {!AudioBuffer} audioBuffer
+       */
+      function checkAllTests(audioBuffer) {
+        const channelData = audioBuffer.getChannelData(0);
+
+        tests.forEach((test, i) => {
+          const startFrame = i * testSpacingFrames;
+          const expectedLength = test.expected.length;
+
+          // Extract output segment to check
+          const actual = channelData.slice(
+              startFrame, startFrame + expectedLength);
+          const expected = Float32Array.from(test.expected);
+
+          // Assert length matches
+          assert_equals(
+              actual.length,
+              expectedLength,
+              `Test ${i}: length mismatch for “${test.description || ''}”`);
+
+          assert_array_equals(
+              actual,
+              expected,
+              `Test ${i}: rendered samples differ for “${test.description || ''}”`);
+        });
+      }
+
+      // Main test
+      promise_test(async () => {
+        const context = new OfflineAudioContext(
+          1, totalRenderLengthFrames, sampleRate
+        );
         buffer = createTestBuffer(context, bufferFrameLength);
 
-        should(function() {
-          for (let i = 0; i < tests.length; ++i)
-            runLoopTest(context, i, tests[i], should);
-        }, 'Generate ' + tests.length + ' test cases').notThrow();
+        // Schedule all tests
+        tests.forEach((t, idx) => runLoopTest(context, idx, t));
 
-        context.startRendering().then(function(audioBuffer) {
-          checkAllTests(audioBuffer, should);
-          task.done();
-        });
-      });
-
-      audit.run();
+        const renderedBuffer = await context.startRendering();
+        checkAllTests(renderedBuffer);
+      }, 'AudioBufferSource looping test');
     </script>
   </body>
 </html>
