@@ -93,10 +93,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kAutofillThirdPartyPasswordManagersAllowed,
                                 true);
   registry->RegisterBooleanPref(
+      kFacilitatedPaymentsEwallet, /*default_value=*/true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
       kFacilitatedPaymentsPix, /*default_value=*/true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
-      kFacilitatedPaymentsEwallet, /*default_value=*/true,
+      kFacilitatedPaymentsPixAccountLinking, /*default_value=*/true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif
 
@@ -251,6 +254,20 @@ void ClearSyncTransportOptIns(PrefService* prefs) {
   prefs->SetDict(kAutofillSyncTransportOptIn, base::Value::Dict());
 }
 
+void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value) {
+#if BUILDFLAG(IS_ANDROID)
+  prefs->SetBoolean(kFacilitatedPaymentsEwallet, value);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs) {
+#if BUILDFLAG(IS_ANDROID)
+  return prefs->GetBoolean(kFacilitatedPaymentsEwallet);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 void SetFacilitatedPaymentsPix(PrefService* prefs, bool value) {
 #if BUILDFLAG(IS_ANDROID)
   prefs->SetBoolean(kFacilitatedPaymentsPix, value);
@@ -265,16 +282,17 @@ bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value) {
+void SetFacilitatedPaymentsPixAccountLinking(PrefService* prefs, bool value) {
 #if BUILDFLAG(IS_ANDROID)
-  prefs->SetBoolean(kFacilitatedPaymentsEwallet, value);
+  prefs->SetBoolean(kFacilitatedPaymentsPixAccountLinking, value);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs) {
+bool IsFacilitatedPaymentsPixAccountLinkingEnabled(const PrefService* prefs) {
 #if BUILDFLAG(IS_ANDROID)
-  return prefs->GetBoolean(kFacilitatedPaymentsEwallet);
+  return prefs->GetBoolean(kFacilitatedPaymentsPixAccountLinking);
 #else
+  // Default to false on other platforms as the feature is Android-only.
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -386,6 +386,7 @@ chromium-metrics-reviews@google.com.
   <int value="83" label="AutomaticPasskeyUpgrades"/>
   <int value="84" label="(test) SyncablePriorityPrefForTesting"/>
   <int value="85" label="(test) SyncableAlwaysSyncingPriorityPrefForTesting"/>
+  <int value="86" label="FacilitatedPaymentsPixAccountLinking"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

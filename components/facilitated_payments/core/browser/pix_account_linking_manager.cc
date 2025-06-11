@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 
 namespace payments::facilitated {
@@ -19,6 +20,11 @@ PixAccountLinkingManager::~PixAccountLinkingManager() = default;
 
 void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
   if (!client_->IsPixAccountLinkingSupported()) {
+    return;
+  }
+
+  if (!client_->GetPaymentsDataManager()
+           ->IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled()) {
     return;
   }
 

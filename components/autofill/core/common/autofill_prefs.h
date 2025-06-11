@@ -141,9 +141,11 @@ inline constexpr char kAutofillUsingVirtualViewStructure[] =
 // If set to false, user can only use the built-in password manager.
 inline constexpr char kAutofillThirdPartyPasswordManagersAllowed[] =
     "autofill.third_party_password_managers_allowed";
-inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
 inline constexpr char kFacilitatedPaymentsEwallet[] =
     "facilitated_payments.ewallet";
+inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
+inline constexpr char kFacilitatedPaymentsPixAccountLinking[] =
+    "facilitated_payments.pix_account_linking";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // The maximum value for the
@@ -211,13 +213,17 @@ void SetPaymentCardBenefits(PrefService* prefs, bool value);
 
 void ClearSyncTransportOptIns(PrefService* prefs);
 
+void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value);
+
+bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs);
+
 void SetFacilitatedPaymentsPix(PrefService* prefs, bool value);
 
 bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs);
 
-void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value);
+void SetFacilitatedPaymentsPixAccountLinking(PrefService* prefs, bool value);
 
-bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs);
+bool IsFacilitatedPaymentsPixAccountLinkingEnabled(const PrefService* prefs);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
