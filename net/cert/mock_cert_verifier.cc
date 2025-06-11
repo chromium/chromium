@@ -147,6 +147,17 @@ int MockCertVerifier::Verify(const RequestParams& params,
   return ERR_IO_PENDING;
 }
 
+void MockCertVerifier::Verify2QwacBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<net::X509Certificate>& tls_cert,
+    base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+        callback,
+    const net::NetLogWithSource& net_log) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+}
+
 void MockCertVerifier::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

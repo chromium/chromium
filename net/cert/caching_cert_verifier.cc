@@ -98,6 +98,19 @@ int CachingCertVerifier::Verify(const CertVerifier::RequestParams& params,
   return result;
 }
 
+void CachingCertVerifier::Verify2QwacBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<X509Certificate>& tls_cert,
+    base::OnceCallback<void(const scoped_refptr<X509Certificate>&)> callback,
+    const NetLogWithSource& net_log) {
+  // 2-QWAC binding verification isn't cached.  This isn't performance
+  // critical and if we wanted to cache, it would make more sense to do at
+  // the 2-QWAC link header processing layer.
+  verifier_->Verify2QwacBinding(binding, hostname, tls_cert,
+                                std::move(callback), net_log);
+}
+
 void CachingCertVerifier::SetConfig(const CertVerifier::Config& config) {
   verifier_->SetConfig(config);
   config_id_++;

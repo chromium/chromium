@@ -252,6 +252,11 @@ class TestNetworkContext : public mojom::NetworkContext {
       const std::string& ocsp_result,
       const std::string& sct_list,
       VerifyCertCallback callback) override {}
+  void Verify2QwacCertBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_certificate,
+      Verify2QwacCertBindingCallback callback) override {}
   void IsHSTSActiveForHost(const std::string& host,
                            bool is_top_level_nav,
                            IsHSTSActiveForHostCallback callback) override {}

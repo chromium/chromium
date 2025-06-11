@@ -270,6 +270,18 @@ void CertVerifierServiceImpl::VerifyHelper(
   }
 }
 
+void CertVerifierServiceImpl::Verify2QwacBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<net::X509Certificate>& tls_cert,
+    const net::NetLogSource& net_log_source,
+    base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+        callback) {
+  verifier_->Verify2QwacBinding(
+      binding, hostname, tls_cert, std::move(callback),
+      net::NetLogWithSource::Make(net::NetLog::Get(), net_log_source));
+}
+
 void CertVerifierServiceImpl::OnCertVerifierChanged() {
   client_->OnCertVerifierChanged();
 }

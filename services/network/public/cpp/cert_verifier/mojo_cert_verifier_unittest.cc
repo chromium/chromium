@@ -87,6 +87,17 @@ class MojoCertVerifierTest : public PlatformTest {
       test_->received_netlogsources_[params] = net_log_source;
     }
 
+    void Verify2QwacBinding(
+        const std::string& binding,
+        const std::string& hostname,
+        const scoped_refptr<net::X509Certificate>& tls_cert,
+        const net::NetLogSource& net_log_source,
+        base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+            callback) override {
+      ADD_FAILURE();
+      std::move(callback).Run(nullptr);
+    }
+
     void SetConfig(const net::CertVerifier::Config& config) override {
       config_ = config;
     }

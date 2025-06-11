@@ -82,6 +82,15 @@ class FailingCertVerifier : public net::CertVerifier {
     verify_result->cert_status = net::CERT_STATUS_INVALID;
     return net::ERR_CERT_INVALID;
   }
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+          callback,
+      const net::NetLogWithSource& net_log) override {
+    std::move(callback).Run(nullptr);
+  }
   void SetConfig(const Config& config) override {}
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}

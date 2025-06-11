@@ -113,6 +113,16 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
                            net_log);
 }
 
+void IgnoreErrorsCertVerifier::Verify2QwacBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<X509Certificate>& tls_cert,
+    base::OnceCallback<void(const scoped_refptr<X509Certificate>&)> callback,
+    const net::NetLogWithSource& net_log) {
+  verifier_->Verify2QwacBinding(binding, hostname, tls_cert,
+                                std::move(callback), net_log);
+}
+
 void IgnoreErrorsCertVerifier::SetConfig(const Config& config) {
   verifier_->SetConfig(config);
 }

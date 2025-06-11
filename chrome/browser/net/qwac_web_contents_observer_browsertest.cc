@@ -4,20 +4,29 @@
 
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/base/features.h"
+#include "net/cert/internal/trust_store_chrome.h"
+#include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
+#include "net/test/cert_builder.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/two_qwac_cert_binding_builder.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 
 namespace {
 
@@ -191,39 +200,100 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverDisabledBrowserTest,
 
 class QwacWebContentsObserverBrowserTest
     : public QwacWebContentsObserverTestBase {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    // Disable certificate transparency so that adding test roots as known
+    // roots works without having to add test CT setup as well.
+    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
+        false);
+    PlatformBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  // Installs a CRS proto update that trusts `root_cert` for TLS and adds
+  // `eutl_cert` as an EUTL.
+  //
+  // Technically the TLS cert bound by a 2-QWAC doesn't need to be trusted
+  // by a root that is in the CRS, but the CRS update will fail if
+  // `trust_anchors()` is empty. To satisfy this we put the test root in the
+  // CRS anchors list. Because it doesn't matter for the test whether the root
+  // is trusted by the CRS or by TestRootCerts, we don't bother with creating
+  // a unique test root or clearing TestRootCerts.
+  void InstallCRSUpdate(net::X509Certificate* root_cert,
+                        net::X509Certificate* eutl_cert) {
+    ASSERT_TRUE(root_cert);
+    ASSERT_TRUE(eutl_cert);
+
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version_);
+
+    auto* anchor = root_store_proto.add_trust_anchors();
+    anchor->set_der(base::as_string_view(root_cert->cert_span()));
+
+    auto* additional_cert = root_store_proto.add_additional_certs();
+    additional_cert->set_der(base::as_string_view(eutl_cert->cert_span()));
+    additional_cert->set_eutl(true);
+
+    base::RunLoop update_run_loop;
+    content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
+        mojo_base::ProtoWrapper(root_store_proto),
+        update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       net::features::kVerifyQWACs};
+
+  int64_t crs_version_ = net::CompiledChromeRootStoreVersion();
 };
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
                        TestSuccessAndCachedGoBack) {
-  const std::string kFakeQwac = "fake qwac data";
+  ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+
+  net::TwoQwacCertBindingBuilder binding_builder;
+  auto tls_leaf = embedded_https_test_server().GetCertificate();
+  ASSERT_TRUE(tls_leaf);
+  binding_builder.SetBoundCerts(
+      {std::string(base::as_string_view(tls_leaf->cert_span()))});
+  ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
+                                    binding_builder.GetJWS(),
+                                    "application/jose");
 
   ServePageWithQwacHeaderHandler main_page_handler(embedded_https_test_server(),
                                                    "/main", "/qwac");
-  ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
-                                    kFakeQwac, "application/jose");
   ServeResponseHandler nonqwac_page_handler(embedded_https_test_server(),
                                             "/main_noqwac", "", "text/html");
-  auto test_server_handle = embedded_https_test_server().StartAndReturnHandle();
+  auto test_server_handle =
+      embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
   ASSERT_TRUE(test_server_handle.is_valid());
 
+  InstallCRSUpdate(
+      /*root_cert=*/embedded_https_test_server().GetRoot().get(),
+      /*eutl_cert=*/
+      binding_builder.GetRootBuilder()->GetX509Certificate().get());
+
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main")));
 
   {
     auto* status = GetCurrentPageQwacStatus();
     ASSERT_TRUE(status);
     ASSERT_TRUE(WaitForStatusFinished(status));
-    EXPECT_EQ(kFakeQwac, status->GetResponseBodyForTesting());
+    ASSERT_TRUE(status->verified_2qwac_cert());
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        binding_builder.GetLeafBuilder()->GetX509CertificateFullChain().get()));
+    ASSERT_TRUE(status->tls_cert());
+    EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
   }
 
   // Navigate to a different page without a qwac.
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main_noqwac")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main_noqwac")));
   EXPECT_FALSE(GetCurrentPageQwacStatus());
 
   // Now go back to the previous page. If BFCache is enabled, qwac status
@@ -239,7 +309,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
     } else {
       ASSERT_TRUE(WaitForStatusFinished(status));
     }
-    EXPECT_EQ(kFakeQwac, status->GetResponseBodyForTesting());
+    ASSERT_TRUE(status->verified_2qwac_cert());
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        binding_builder.GetLeafBuilder()->GetX509CertificateFullChain().get()));
+    ASSERT_TRUE(status->tls_cert());
+    EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
   }
@@ -247,45 +321,69 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
                        TestSuccessAndCachedNavigateSamePage) {
-  const std::string kFakeQwac = "fake qwac data";
+  ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+
+  net::TwoQwacCertBindingBuilder binding_builder;
+  auto tls_leaf = embedded_https_test_server().GetCertificate();
+  ASSERT_TRUE(tls_leaf);
+  binding_builder.SetBoundCerts(
+      {std::string(base::as_string_view(tls_leaf->cert_span()))});
+  ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
+                                    binding_builder.GetJWS(),
+                                    "application/jose");
 
   ServePageWithQwacHeaderHandler main_page_handler(embedded_https_test_server(),
                                                    "/main", "/qwac");
-  ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
-                                    kFakeQwac, "application/jose");
   ServeResponseHandler nonqwac_page_handler(embedded_https_test_server(),
                                             "/main_noqwac", "", "text/html");
-  auto test_server_handle = embedded_https_test_server().StartAndReturnHandle();
+  auto test_server_handle =
+      embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
   ASSERT_TRUE(test_server_handle.is_valid());
 
+  InstallCRSUpdate(
+      /*root_cert=*/embedded_https_test_server().GetRoot().get(),
+      /*eutl_cert=*/
+      binding_builder.GetRootBuilder()->GetX509Certificate().get());
+
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main")));
 
   {
     auto* status = GetCurrentPageQwacStatus();
     ASSERT_TRUE(status);
     ASSERT_TRUE(WaitForStatusFinished(status));
-    EXPECT_EQ(kFakeQwac, status->GetResponseBodyForTesting());
+    ASSERT_TRUE(status->verified_2qwac_cert());
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        binding_builder.GetLeafBuilder()->GetX509CertificateFullChain().get()));
+    ASSERT_TRUE(status->tls_cert());
+    EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
   }
 
   // Navigate to a different page without a qwac.
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main_noqwac")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main_noqwac")));
   EXPECT_FALSE(GetCurrentPageQwacStatus());
 
   // Now navigate to the original page URL again.
   // The page and the 2-QWAC should be in HTTP cache, so the page and qwac
   // status should be loaded without reloading either from the http server.
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main")));
 
   {
     auto* status = GetCurrentPageQwacStatus();
     ASSERT_TRUE(status);
     ASSERT_TRUE(WaitForStatusFinished(status));
-    EXPECT_EQ(kFakeQwac, status->GetResponseBodyForTesting());
+    ASSERT_TRUE(status->verified_2qwac_cert());
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        binding_builder.GetLeafBuilder()->GetX509CertificateFullChain().get()));
+    ASSERT_TRUE(status->tls_cert());
+    EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
   }
@@ -293,27 +391,43 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
                        TestReloadDifferentCertAndQwac) {
-  const std::string kFakeQwac1 = "initial fake qwac data";
-  const std::string kFakeQwac2 = "changed fake qwac data";
-
   int port;
   {
+    ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+    net::TwoQwacCertBindingBuilder binding_builder;
+    auto tls_leaf = embedded_https_test_server().GetCertificate();
+    ASSERT_TRUE(tls_leaf);
+    binding_builder.SetBoundCerts(
+        {std::string(base::as_string_view(tls_leaf->cert_span()))});
+    ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
+                                      binding_builder.GetJWS(),
+                                      "application/jose");
     ServePageWithQwacHeaderHandler main_page_handler(
         embedded_https_test_server(), "/main", "/qwac");
-    ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
-                                      kFakeQwac1, "application/jose");
     auto test_server_handle =
-        embedded_https_test_server().StartAndReturnHandle();
+        embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
     ASSERT_TRUE(test_server_handle.is_valid());
 
+    InstallCRSUpdate(
+        /*root_cert=*/embedded_https_test_server().GetRoot().get(),
+        /*eutl_cert=*/
+        binding_builder.GetRootBuilder()->GetX509Certificate().get());
+
     EXPECT_TRUE(content::NavigateToURL(
-        web_contents(), embedded_https_test_server().GetURL("/main")));
+        web_contents(),
+        embedded_https_test_server().GetURL("www.example.com", "/main")));
 
     {
       auto* status = GetCurrentPageQwacStatus();
       ASSERT_TRUE(status);
       ASSERT_TRUE(WaitForStatusFinished(status));
-      EXPECT_EQ(kFakeQwac1, status->GetResponseBodyForTesting());
+      ASSERT_TRUE(status->verified_2qwac_cert());
+      EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+          binding_builder.GetLeafBuilder()
+              ->GetX509CertificateFullChain()
+              .get()));
+      ASSERT_TRUE(status->tls_cert());
+      EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     }
 
     // Save the port number and release the `test_server_handle`, shutting down
@@ -327,13 +441,26 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
   // there's not really any other way to test this.
   net::EmbeddedTestServer https_test_server_2(
       net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server_2.SetCertHostnames({"example.com"});
+  https_test_server_2.SetCertHostnames({"*.example.com"});
+  ASSERT_TRUE(https_test_server_2.InitializeAndListen(port));
+  net::TwoQwacCertBindingBuilder binding_builder_2;
+  auto tls_leaf_2 = https_test_server_2.GetCertificate();
+  ASSERT_TRUE(tls_leaf_2);
+  binding_builder_2.SetBoundCerts(
+      {std::string(base::as_string_view(tls_leaf_2->cert_span()))});
+  ServeResponseHandler qwac_handler(https_test_server_2, "/qwac2",
+                                    binding_builder_2.GetJWS(),
+                                    "application/jose");
   ServePageWithQwacHeaderHandler main_page_handler(https_test_server_2, "/main",
                                                    "/qwac2");
-  ServeResponseHandler qwac_handler(https_test_server_2, "/qwac2", kFakeQwac2,
-                                    "application/jose");
-  auto test_server_handle = https_test_server_2.StartAndReturnHandle(port);
+  auto test_server_handle =
+      https_test_server_2.StartAcceptingConnectionsAndReturnHandle();
   ASSERT_TRUE(test_server_handle.is_valid());
+
+  InstallCRSUpdate(
+      /*root_cert=*/https_test_server_2.GetRoot().get(),
+      /*eutl_cert=*/
+      binding_builder_2.GetRootBuilder()->GetX509Certificate().get());
 
   // Reload the page.
   content::TestNavigationObserver reload_observer(
@@ -348,31 +475,55 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
     ASSERT_TRUE(status);
     ASSERT_TRUE(WaitForStatusFinished(status));
     // Should have gotten the new 2-QWAC response.
-    EXPECT_EQ(kFakeQwac2, status->GetResponseBodyForTesting());
+    ASSERT_TRUE(status->verified_2qwac_cert());
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        binding_builder_2.GetLeafBuilder()
+            ->GetX509CertificateFullChain()
+            .get()));
+    ASSERT_TRUE(status->tls_cert());
+    EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf_2.get()));
   }
 }
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
                        SameDocumentNavigation) {
-  const std::string kFakeQwac = "fake qwac data";
+  ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+
+  net::TwoQwacCertBindingBuilder binding_builder;
+  auto tls_leaf = embedded_https_test_server().GetCertificate();
+  ASSERT_TRUE(tls_leaf);
+  binding_builder.SetBoundCerts(
+      {std::string(base::as_string_view(tls_leaf->cert_span()))});
+  ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
+                                    binding_builder.GetJWS(),
+                                    "application/jose");
 
   ServePageWithQwacHeaderHandler main_page_handler(embedded_https_test_server(),
                                                    "/main", "/qwac");
-  ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
-                                    kFakeQwac, "application/jose");
   ServeResponseHandler nonqwac_page_handler(embedded_https_test_server(),
                                             "/main_noqwac", "", "text/html");
-  auto test_server_handle = embedded_https_test_server().StartAndReturnHandle();
+  auto test_server_handle =
+      embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
   ASSERT_TRUE(test_server_handle.is_valid());
 
+  InstallCRSUpdate(
+      /*root_cert=*/embedded_https_test_server().GetRoot().get(),
+      /*eutl_cert=*/
+      binding_builder.GetRootBuilder()->GetX509Certificate().get());
+
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main")));
 
   {
     auto* status = GetCurrentPageQwacStatus();
     ASSERT_TRUE(status);
     ASSERT_TRUE(WaitForStatusFinished(status));
-    EXPECT_EQ(kFakeQwac, status->GetResponseBodyForTesting());
+    ASSERT_TRUE(status->verified_2qwac_cert());
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        binding_builder.GetLeafBuilder()->GetX509CertificateFullChain().get()));
+    ASSERT_TRUE(status->tls_cert());
+    EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
   }
@@ -381,12 +532,17 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
   // Since the page didn't change, the qwac status should still be available
   // and not need to be re-fetched.
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main#anchor")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main#anchor")));
   {
     auto* status = GetCurrentPageQwacStatus();
     ASSERT_TRUE(status);
     ASSERT_TRUE(status->is_finished());
-    EXPECT_EQ(kFakeQwac, status->GetResponseBodyForTesting());
+    ASSERT_TRUE(status->verified_2qwac_cert());
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        binding_builder.GetLeafBuilder()->GetX509CertificateFullChain().get()));
+    ASSERT_TRUE(status->tls_cert());
+    EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
   }
@@ -394,22 +550,40 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
                        SameOriginRedirectAllowed) {
-  const std::string kFakeQwac = "fake qwac data";
+  ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+
+  net::TwoQwacCertBindingBuilder binding_builder;
+  auto tls_leaf = embedded_https_test_server().GetCertificate();
+  ASSERT_TRUE(tls_leaf);
+  binding_builder.SetBoundCerts(
+      {std::string(base::as_string_view(tls_leaf->cert_span()))});
+  ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
+                                    binding_builder.GetJWS(),
+                                    "application/jose");
 
   ServePageWithQwacHeaderHandler main_page_handler(
       embedded_https_test_server(), "/main", "/server-redirect?/qwac");
-  ServeResponseHandler qwac_handler(embedded_https_test_server(), "/qwac",
-                                    kFakeQwac, "application/jose");
-  auto test_server_handle = embedded_https_test_server().StartAndReturnHandle();
+  auto test_server_handle =
+      embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
   ASSERT_TRUE(test_server_handle.is_valid());
 
+  InstallCRSUpdate(
+      /*root_cert=*/embedded_https_test_server().GetRoot().get(),
+      /*eutl_cert=*/
+      binding_builder.GetRootBuilder()->GetX509Certificate().get());
+
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main")));
 
   auto* status = GetCurrentPageQwacStatus();
   ASSERT_TRUE(status);
   ASSERT_TRUE(WaitForStatusFinished(status));
-  EXPECT_EQ(kFakeQwac, status->GetResponseBodyForTesting());
+  ASSERT_TRUE(status->verified_2qwac_cert());
+  EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+      binding_builder.GetLeafBuilder()->GetX509CertificateFullChain().get()));
+  ASSERT_TRUE(status->tls_cert());
+  EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
@@ -425,9 +599,10 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
   ASSERT_TRUE(test_server_handle.is_valid());
 
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main"),
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main"),
       /*expected_commit_url=*/
-      embedded_https_test_server().GetURL("/realmain")));
+      embedded_https_test_server().GetURL("www.example.com", "/realmain")));
 
   // The QWAC link header was present on a redirect, but not on the final page
   // load, so no QwacStatus should be created.
@@ -446,12 +621,14 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
 
   ServePageWithQwacHeaderHandler main_page_handler(
       embedded_https_test_server(), "/main",
-      "/server-redirect?" + other_https_test_server.GetURL("/qwac").spec());
+      "/server-redirect?" +
+          other_https_test_server.GetURL("foo.example.com", "/qwac").spec());
   auto test_server_handle = embedded_https_test_server().StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle.is_valid());
 
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main")));
 
   auto* status = GetCurrentPageQwacStatus();
   // The initial QWAC url is same-origin so a fetch request should be started
@@ -459,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
   // redirect to a different origin.
   ASSERT_TRUE(status);
   ASSERT_TRUE(WaitForStatusFinished(status));
-  EXPECT_EQ(std::nullopt, status->GetResponseBodyForTesting());
+  EXPECT_FALSE(status->verified_2qwac_cert());
 }
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
@@ -474,12 +651,13 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
 
   ServePageWithQwacHeaderHandler main_page_handler(
       embedded_https_test_server(), "/main",
-      other_https_test_server.GetURL("/qwac").spec());
+      other_https_test_server.GetURL("foo.example.com", "/qwac").spec());
   auto test_server_handle = embedded_https_test_server().StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle.is_valid());
 
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main")));
 
   // Since the initial QWAC url was cross-origin, the fetch is never started
   // and no QwacStatus should be created.
@@ -498,12 +676,13 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
   ASSERT_TRUE(test_server_handle.is_valid());
 
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_https_test_server().GetURL("/main")));
+      web_contents(),
+      embedded_https_test_server().GetURL("www.example.com", "/main")));
 
   auto* status = GetCurrentPageQwacStatus();
   ASSERT_TRUE(status);
   ASSERT_TRUE(WaitForStatusFinished(status));
-  EXPECT_EQ(std::nullopt, status->GetResponseBodyForTesting());
+  EXPECT_FALSE(status->verified_2qwac_cert());
   EXPECT_EQ(1, qwac_handler.request_count());
 }
 
@@ -515,17 +694,14 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest, NotFetchedForHttp) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle.is_valid());
 
-  EXPECT_TRUE(content::NavigateToURL(web_contents(),
-                                     embedded_test_server()->GetURL("/main")));
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_test_server()->GetURL("www.example.com", "/main")));
 
   EXPECT_FALSE(GetCurrentPageQwacStatus());
   EXPECT_EQ(1, main_page_handler.request_count());
 }
 
-// TODO(crbug.com/392931069): These tests all currently just check that the
-// 2-QWAC was fetched or not but don't check the verification. Once 2-QWAC
-// verification has been implemented, the tests should be updated to confirm
-// the 2-QWAC verification result.
 // TODO(crbug.com/392931069): Test that qwac is not fetched after clicking
 // through HTTPS error.
 // TODO(crbug.com/392931069): Test that qwac requests shows up in netlog?

@@ -47,6 +47,12 @@ class NET_EXPORT_PRIVATE MultiThreadedCertVerifier
              CompletionOnceCallback callback,
              std::unique_ptr<Request>* out_req,
              const NetLogWithSource& net_log) override;
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<X509Certificate>&)> callback,
+      const NetLogWithSource& net_log) override;
   void SetConfig(const CertVerifier::Config& config) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

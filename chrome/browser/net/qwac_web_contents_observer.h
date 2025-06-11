@@ -19,7 +19,6 @@
 // fetches the binding, verifies it, and stores the resulting 2-QWAC state on
 // content::Page's user data.
 //
-// TODO(crbug.com/392931069): Hook up actual verification of the 2-QWAC.
 // TODO(crbug.com/392931069): Add histograms.
 class QwacWebContentsObserver : public content::WebContentsObserver {
  public:
@@ -31,12 +30,19 @@ class QwacWebContentsObserver : public content::WebContentsObserver {
     QwacStatus(const QwacStatus&) = delete;
     QwacStatus& operator=(const QwacStatus&) = delete;
 
+    // Returns true if 2-QWAC processing finished.  `verified_2qwac_cert()`
+    // should be checked to see if verification succeeded.
     bool is_finished() const { return is_finished_; }
-    net::X509Certificate* tls_cert() const { return tls_cert_.get(); }
 
-    const std::optional<std::string>& GetResponseBodyForTesting() const {
-      return response_body_;
+    // Returns the verified 2-QWAC certificate chain, if 2-QWAC verification
+    // succeeded, or nullptr if verification failed. Should only be called if
+    // `is_finished()` is true.
+    net::X509Certificate* verified_2qwac_cert() const {
+      CHECK(is_finished());
+      return verified_2qwac_.get();
     }
+
+    net::X509Certificate* tls_cert() const { return tls_cert_.get(); }
 
     // Registers a callback to be run when processing the 2-QWAC has completed.
     // Should only be called if `is_finished()` is false. If the QwacStatus is
@@ -47,6 +53,7 @@ class QwacWebContentsObserver : public content::WebContentsObserver {
    private:
     QwacStatus(
         content::Page& page,
+        std::string hostname,
         scoped_refptr<net::X509Certificate> tls_cert,
         GURL qwac_url,
         const url::Origin& initiator,
@@ -56,16 +63,26 @@ class QwacWebContentsObserver : public content::WebContentsObserver {
     PAGE_USER_DATA_KEY_DECL();
 
     void On2QwacDownloadComplete(std::optional<std::string> response_body);
+    void On2QwacVerificationComplete(
+        const scoped_refptr<net::X509Certificate>& verified_2qwac);
 
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+    std::string hostname_;
     scoped_refptr<net::X509Certificate> tls_cert_;
 
-    // TODO(crbug.com/392931069): remove this once the feature can be tested
-    // end-to-end.
-    std::optional<std::string> response_body_;
-
+    // True when fetching and verifying the binding is complete. If this is
+    // true, `verified_2qwac_` can be checked to see if verification
+    // succeeded.
     bool is_finished_ = false;
+
+    // The 2-QWAC certificate chain from verifying the binding. This will be
+    // null if verifying the 2-qwac binding failed, or if `is_finished_` is
+    // false.
+    scoped_refptr<net::X509Certificate> verified_2qwac_;
+
     CallbackList callback_list_;
+
+    base::WeakPtrFactory<QwacStatus> weak_ptr_factory_{this};
   };
 
   // Observes a Tab and will update which WebContents is being observed

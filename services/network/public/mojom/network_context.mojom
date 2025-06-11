@@ -1562,6 +1562,14 @@ interface NetworkContext {
                               string sct_list)
       => (int32 error_code, CertVerifyResult cv_result, bool pkp_bypassed);
 
+  // Performs 2-QWAC verification. Returns the verified 2-QWAC certificate
+  // chain if `binding` is a valid 2-QWAC binding for `hostname` which binds
+  // `tls_certificate`.
+  Verify2QwacCertBinding(string binding,
+                         string hostname,
+                         X509Certificate tls_certificate)
+      => (X509Certificate verified_cert);
+
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.
   AddHSTS(string host, mojo_base.mojom.Time expiry, bool include_subdomains)

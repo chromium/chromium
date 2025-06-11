@@ -48,11 +48,21 @@ interface CertVerifierService {
   EnableNetworkAccess(
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       pending_remote<URLLoaderFactoryConnector>? reconnector);
+
   // Mojo IPC used to verify a certificate. Sends results to the
   // |cert_verifier_request| interface when verification is complete.
   Verify(RequestParams params,
          network.mojom.NetLogSource net_log_source,
          pending_remote<CertVerifierRequest> cert_verifier_request);
+
+  // Verify a 2-QWAC binding. The mojo response will be called with the
+  // verified 2-QWAC certificate chain on success, or with null on failure.
+  Verify2QwacBinding(string binding,
+                     string hostname,
+                     network.mojom.X509Certificate tls_certificate,
+                     network.mojom.NetLogSource net_log_source)
+       => (network.mojom.X509Certificate verified_cert);
+
   // Sets the config for the underlying CertVerifier.
   SetConfig(CertVerifierConfig config);
 };

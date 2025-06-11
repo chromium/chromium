@@ -225,6 +225,21 @@ class WrappedTestingCertVerifier : public net::CertVerifier {
     return g_cert_verifier_for_testing->Verify(
         params, verify_result, std::move(callback), out_req, net_log);
   }
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+          callback,
+      const net::NetLogWithSource& net_log) override {
+    if (!g_cert_verifier_for_testing) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+      return;
+    }
+    g_cert_verifier_for_testing->Verify2QwacBinding(
+        binding, hostname, tls_cert, std::move(callback), net_log);
+  }
   void SetConfig(const Config& config) override {
     if (!g_cert_verifier_for_testing) {
       return;
@@ -2083,6 +2098,20 @@ void NetworkContext::VerifyCertForSignedExchange(
     VerifyCertCallback callback) {
   VerifyCertInternal(certificate, host_port, ocsp_result, sct_list,
                      CTVerificationMode::kSignedExchange, std::move(callback));
+}
+
+void NetworkContext::Verify2QwacCertBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<net::X509Certificate>& tls_certificate,
+    Verify2QwacCertBindingCallback callback) {
+  net::CertVerifier* cert_verifier =
+      g_cert_verifier_for_testing ? g_cert_verifier_for_testing
+                                  : url_request_context_->cert_verifier();
+  cert_verifier->Verify2QwacBinding(
+      binding, hostname, tls_certificate, std::move(callback),
+      net::NetLogWithSource::Make(url_request_context_->net_log(),
+                                  net::NetLogSourceType::CERT_VERIFIER_JOB));
 }
 
 void NetworkContext::NotifyExternalCacheHit(const GURL& url,

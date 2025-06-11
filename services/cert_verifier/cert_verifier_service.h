@@ -60,6 +60,13 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
               const net::NetLogSource& net_log_source,
               mojo::PendingRemote<mojom::CertVerifierRequest>
                   cert_verifier_request) override;
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_cert,
+      const net::NetLogSource& net_log_source,
+      base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+          callback) override;
   void SetConfig(const net::CertVerifier::Config& config) override;
   void EnableNetworkAccess(
       mojo::PendingRemote<network::mojom::URLLoaderFactory>,

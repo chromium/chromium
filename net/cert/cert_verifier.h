@@ -189,6 +189,18 @@ class NET_EXPORT CertVerifier {
                      std::unique_ptr<Request>* out_req,
                      const NetLogWithSource& net_log) = 0;
 
+  // Verifies that `binding` is a valid 2-QWAC binding for `hostname` and
+  // `tls_cert`. On success, callback will be called asynchronously with the
+  // verified 2-QWAC certificate chain. Otherwise the callback will be called
+  // with nullptr. The callback might be run even after the CertVerifier is
+  // destroyed.
+  virtual void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<X509Certificate>&)> callback,
+      const NetLogWithSource& net_log) = 0;
+
   // Sets the configuration for new certificate verifications to be |config|.
   // Any in-progress verifications (i.e. those with outstanding Request
   // handles) will continue using the old configuration. This may be called

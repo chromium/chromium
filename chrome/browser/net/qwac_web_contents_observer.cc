@@ -8,12 +8,15 @@
 #include "components/link_header_util/link_header_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -61,11 +64,14 @@ PAGE_USER_DATA_KEY_IMPL(QwacWebContentsObserver::QwacStatus);
 
 QwacWebContentsObserver::QwacStatus::QwacStatus(
     content::Page& page,
+    std::string hostname,
     scoped_refptr<net::X509Certificate> tls_cert,
     GURL qwac_url,
     const url::Origin& initiator,
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory)
-    : content::PageUserData<QwacStatus>(page), tls_cert_(std::move(tls_cert)) {
+    : content::PageUserData<QwacStatus>(page),
+      hostname_(std::move(hostname)),
+      tls_cert_(std::move(tls_cert)) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(qwac_url);
   resource_request->request_initiator = initiator;
@@ -114,11 +120,27 @@ QwacWebContentsObserver::QwacStatus::RegisterCallback(
 
 void QwacWebContentsObserver::QwacStatus::On2QwacDownloadComplete(
     std::optional<std::string> response_body) {
-  if (response_body) {
-    response_body_ = std::move(*response_body);
+  if (!response_body) {
+    is_finished_ = true;
+    callback_list_.Notify();
+    return;
   }
 
+  page()
+      .GetMainDocument()
+      .GetProcess()
+      ->GetStoragePartition()
+      ->GetNetworkContext()
+      ->Verify2QwacCertBinding(
+          *response_body, hostname_, tls_cert_,
+          base::BindOnce(&QwacStatus::On2QwacVerificationComplete,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void QwacWebContentsObserver::QwacStatus::On2QwacVerificationComplete(
+    const scoped_refptr<net::X509Certificate>& verified_2qwac) {
   is_finished_ = true;
+  verified_2qwac_ = verified_2qwac;
   callback_list_.Notify();
 }
 
@@ -267,7 +289,8 @@ void QwacWebContentsObserver::DidFinishNavigation(
       url_loader_factory.BindNewPipeAndPassReceiver());
 
   QwacStatus::CreateForPage(
-      page, navigation_handle->GetSSLInfo()->cert, std::move(full_qwac_url),
+      page, navigation_handle->GetURL().host(),
+      navigation_handle->GetSSLInfo()->cert, std::move(full_qwac_url),
       /*initiator=*/render_frame_host->GetLastCommittedOrigin(),
       std::move(url_loader_factory));
 }

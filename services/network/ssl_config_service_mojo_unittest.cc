@@ -96,6 +96,16 @@ class TestCertVerifierConfigObserver : public net::CertVerifier {
     ADD_FAILURE() << "Verify should not be called by tests";
     return net::ERR_FAILED;
   }
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+          callback,
+      const net::NetLogWithSource& net_log) override {
+    ADD_FAILURE();
+    std::move(callback).Run(nullptr);
+  }
   void SetConfig(const Config& config) override {
     set_config_call_.SetValue(config);
   }

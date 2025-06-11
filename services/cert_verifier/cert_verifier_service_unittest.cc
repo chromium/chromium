@@ -106,6 +106,16 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
     *out_req = std::move(dummy_req);
     return net::ERR_IO_PENDING;
   }
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+          callback,
+      const net::NetLogWithSource& net_log) override {
+    ADD_FAILURE();
+    std::move(callback).Run(nullptr);
+  }
   void SetConfig(const Config& config) override { config_ = config; }
   void AddObserver(Observer* observer) override {
     EXPECT_FALSE(observer_);

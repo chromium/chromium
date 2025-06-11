@@ -154,6 +154,16 @@ class GMockCertVerifier : public net::CertVerifier {
     verify_result->Reset();
     return VerifyImpl(params, verify_result, out_req, net_log);
   }
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+          callback,
+      const net::NetLogWithSource& net_log) override {
+    ADD_FAILURE();
+    std::move(callback).Run(nullptr);
+  }
 
   MOCK_METHOD4(VerifyImpl,
                int(const net::CertVerifier::RequestParams& params,
