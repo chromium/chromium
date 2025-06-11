@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_WEBKIT_CONSTANTS_MAC_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_WEBKIT_CONSTANTS_MAC_H_
 
+#include <Availability.h>
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
@@ -51,8 +52,15 @@ enum AXTextEditType {
 };
 
 // Native mac notifications fired.
-NSString* const NSAccessibilityAutocorrectionOccurredNotification =
+NSString* const CrNSAccessibilityAutocorrectionOccurredNotification =
+#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
     @"AXAutocorrectionOccurred";
+#else
+    // This is public as of the macOS 26 SDK. When macOS 26 is the minimum,
+    // eliminate the compatibility Cr* name and transition use sites directly to
+    // the NS* name.
+    NSAccessibilityAutocorrectionOccurredNotification;
+#endif
 NSString* const NSAccessibilityLoadCompleteNotification = @"AXLoadComplete";
 NSString* const NSAccessibilityInvalidStatusChangedNotification =
     @"AXInvalidStatusChanged";

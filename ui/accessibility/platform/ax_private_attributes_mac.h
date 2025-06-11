@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ATTRIBUTES_MAC_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ATTRIBUTES_MAC_H_
 
+#include <Availability.h>
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
@@ -57,8 +58,15 @@ constexpr NSString* const NSAccessibilityBrailleRoleDescription =
     @"AXBrailleRoleDescription";
 
 COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityBlockQuoteLevelAttribute =
+constexpr NSString* const CrNSAccessibilityBlockQuoteLevelAttribute =
+#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
     @"AXBlockQuoteLevel";
+#else
+    // This is public as of the macOS 26 SDK. When macOS 26 is the minimum,
+    // eliminate the compatibility Cr* name and transition use sites directly to
+    // the NS* name.
+    NSAccessibilityBlockQuoteLevelAttribute;
+#endif
 COMPONENT_EXPORT(AX_PLATFORM)
 constexpr NSString* const NSAccessibilityChromeAXNodeIdAttribute =
     @"ChromeAXNodeId";
@@ -140,6 +148,14 @@ constexpr NSString* const NSAccessibilityOwnsAttribute = @"AXOwns";
 COMPONENT_EXPORT(AX_PLATFORM)
 constexpr NSString* const NSAccessibilityPopupValueAttribute = @"AXPopupValue";
 COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityVisitedAttribute = @"AXVisited";
+constexpr NSString* const CrNSAccessibilityVisitedAttribute =
+#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
+    @"AXVisited";
+#else
+    // This is public as of the macOS 26 SDK. When macOS 26 is the minimum,
+    // eliminate the compatibility Cr* name and transition use sites directly to
+    // the NS* name.
+    NSAccessibilityVisitedAttribute;
+#endif
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ATTRIBUTES_MAC_H_

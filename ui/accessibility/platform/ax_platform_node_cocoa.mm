@@ -940,7 +940,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::Role::kRadioGroup:
       return NSAccessibilityRadioGroupRole;
     case ax::mojom::Role::kRootWebArea:
-      return NSAccessibilityWebAreaRole;
+      return CrNSAccessibilityWebAreaRole;
     case ax::mojom::Role::kRow:
       return NSAccessibilityRowRole;
     case ax::mojom::Role::kRowHeader:
@@ -1502,7 +1502,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
-    NSAccessibilityBlockQuoteLevelAttribute, NSAccessibilityChildrenAttribute,
+    CrNSAccessibilityBlockQuoteLevelAttribute, NSAccessibilityChildrenAttribute,
     NSAccessibilityDOMClassList, NSAccessibilityDOMIdentifierAttribute,
     NSAccessibilityDescriptionAttribute, NSAccessibilityElementBusyAttribute,
     NSAccessibilityParentAttribute, NSAccessibilityPositionAttribute,
@@ -1515,8 +1515,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     // Attributes which are not required, but are general to all roles.
     NSAccessibilityRoleDescriptionAttribute, NSAccessibilityEnabledAttribute,
     NSAccessibilityFocusedAttribute, NSAccessibilityHelpAttribute,
-    NSAccessibilityTopLevelUIElementAttribute, NSAccessibilityVisitedAttribute,
-    NSAccessibilityWindowAttribute, NSAccessibilityChromeAXNodeIdAttribute
+    NSAccessibilityTopLevelUIElementAttribute,
+    CrNSAccessibilityVisitedAttribute, NSAccessibilityWindowAttribute,
+    NSAccessibilityChromeAXNodeIdAttribute
   ];
   // Attributes required for user-editable controls.
   NSArray* const kValueAttributes = @[ NSAccessibilityValueAttribute ];
@@ -1620,7 +1621,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if (ui::IsSetLike(role))
     [axAttributes addObject:@"AXARIASetSize"];
 
-  if ([[self accessibilityRole] isEqualToString:NSAccessibilityWebAreaRole]) {
+  if ([[self accessibilityRole] isEqualToString:CrNSAccessibilityWebAreaRole]) {
     [axAttributes addObjectsFromArray:@[
       NSAccessibilityLoadedAttribute, NSAccessibilityLoadingProgressAttribute
     ]];
@@ -2915,7 +2916,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::Role::kHeader:  // Default: IDS_AX_ROLE_HEADER
       return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
     case ax::mojom::Role::kRootWebArea: {
-      if ([role isEqualToString:NSAccessibilityWebAreaRole]) {
+      if ([role isEqualToString:CrNSAccessibilityWebAreaRole]) {
         return l10n_util::GetNSString(IDS_AX_ROLE_WEB_AREA);
       }
       // Preserve platform default of "group" in the case of the child
@@ -3509,10 +3510,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return nil;
 
   std::string url;
-  if ([[self accessibilityRole] isEqualToString:NSAccessibilityWebAreaRole])
+  if ([[self accessibilityRole] isEqualToString:CrNSAccessibilityWebAreaRole]) {
     url = _node->GetDelegate()->GetTreeData().url;
-  else
+  } else {
     url = _node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+  }
 
   if (url.empty())
     return nil;
