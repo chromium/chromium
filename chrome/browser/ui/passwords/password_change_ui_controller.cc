@@ -175,6 +175,7 @@ PasswordChangeUIController::PasswordChangeUIController(
 
 PasswordChangeUIController::~PasswordChangeUIController() {
   CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
+  CloseToastWidget(views::Widget::ClosedReason::kUnspecified);
 }
 
 void PasswordChangeUIController::UpdateState(
@@ -196,7 +197,7 @@ void PasswordChangeUIController::UpdateState(
 
   // If there is no toast configuration for a given state, just close the
   // toast.
-  CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
+  CloseToastWidget(views::Widget::ClosedReason::kUnspecified);
 
   // TODO(crbug.com/417389698): Handle other states.
   if (ShouldDisplayDialog(state_)) {
@@ -215,12 +216,15 @@ void PasswordChangeUIController::UpdateState(
     // TODO(crbug.com/338254375): Remove once it is a default state.
     model_host->SetOwnershipOfNewWidget(
         views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    tab_interface->GetTabFeatures()
-        ->tab_dialog_manager()
-        ->CreateAndShowDialog(
-            model_host.release(),
-            std::make_unique<tabs::TabDialogManager::Params>())
-        .release();
+    dialog_widget_ =
+        tab_interface->GetTabFeatures()
+            ->tab_dialog_manager()
+            ->CreateAndShowDialog(
+                model_host.release(),
+                std::make_unique<tabs::TabDialogManager::Params>());
+    dialog_widget_->MakeCloseSynchronous(
+        base::BindOnce(&PasswordChangeUIController::CloseDialogWidget,
+                       base::Unretained(this)));
     return;
   }
 }
@@ -263,10 +267,15 @@ void PasswordChangeUIController::ShowToast(
           ->tab_dialog_manager()
           ->CreateAndShowDialog(toast_view.release(), std::move(params));
   toast_widget_->MakeCloseSynchronous(base::BindOnce(
-      &PasswordChangeUIController::CloseDialogWidget, base::Unretained(this)));
+      &PasswordChangeUIController::CloseToastWidget, base::Unretained(this)));
 }
 
 void PasswordChangeUIController::CloseDialogWidget(
+    views::Widget::ClosedReason reason) {
+  dialog_widget_.reset();
+}
+
+void PasswordChangeUIController::CloseToastWidget(
     views::Widget::ClosedReason reason) {
   toast_view_ = nullptr;
   toast_widget_.reset();

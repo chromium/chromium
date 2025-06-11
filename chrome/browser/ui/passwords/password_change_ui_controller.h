@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
+#include "ui/views/widget/widget.h"
 
 namespace content {
 class WebContents;
@@ -28,14 +29,20 @@ class PasswordChangeUIController {
   // Updates the `state_` and the UI.
   virtual void UpdateState(PasswordChangeDelegate::State state);
 
+  const views::Widget* dialog_widget() const { return dialog_widget_.get(); }
+
  private:
   // Handles clicking accept button on the currently displayed dialog.
   void OnDialogAccepted();
 
+  // Closes the dialog and logs the `reason`.
+  // TODO(crbug.com/407504591): Actually log the reason.
+  void CloseDialogWidget(views::Widget::ClosedReason reason);
+
   void ShowToast(PasswordChangeToast::ToastOptions options);
   void ShowDialog(std::unique_ptr<ui::DialogModel> dialog_model);
 
-  void CloseDialogWidget(views::Widget::ClosedReason reason);
+  void CloseToastWidget(views::Widget::ClosedReason reason);
 
   // Controls password change process. Owns this class.
   const raw_ptr<PasswordChangeDelegate> password_change_delegate_;
@@ -44,6 +51,9 @@ class PasswordChangeUIController {
   std::unique_ptr<views::Widget> toast_widget_;
 
   base::WeakPtr<content::WebContents> web_contents_;
+
+  // Widget containing the currently open dialog, if any.
+  std::unique_ptr<views::Widget> dialog_widget_;
 
   // Current state of the password change flow.
   PasswordChangeDelegate::State state_ =

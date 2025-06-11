@@ -794,14 +794,12 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       FailureBubbleNotDisplayedAutomatically) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, FailureDialogDisplayed) {
   SetPrivacyNoticeAcceptedPref();
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
-  BubbleObserver prompt_observer(WebContents());
 
   StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
   MockPasswordChangeOutcome(
@@ -815,17 +813,17 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
            PasswordChangeDelegate::State::kPasswordChangeFailed;
   }));
 
-  // TODO(crbug.com/417388947): Check that dialog is displayed instead.
-  EXPECT_FALSE(prompt_observer.IsBubbleDisplayedAutomatically());
+  EXPECT_TRUE(static_cast<PasswordChangeDelegateImpl*>(delegate)
+                  ->ui_controller()
+                  ->dialog_widget()
+                  ->IsVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       LeakCheckBubbleNotDisplayedAutomatically) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, LeakCheckDialogDisplayed) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
-  BubbleObserver prompt_observer(WebContents());
 
   password_change_service()->OfferPasswordChangeUi(main_url, u"test",
                                                    u"pa$$word", WebContents());
@@ -834,9 +832,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kOfferingPasswordChange);
-
-  // TODO(crbug.com/417388947): Check that dialog is displayed instead.
-  EXPECT_FALSE(prompt_observer.IsBubbleDisplayedAutomatically());
+  EXPECT_TRUE(static_cast<PasswordChangeDelegateImpl*>(delegate)
+                  ->ui_controller()
+                  ->dialog_widget()
+                  ->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
@@ -927,14 +926,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
             delegate->GetCurrentState());
 
-  BubbleObserver prompt_observer(WebContents());
-
-  delegate->OnOtpFieldDetected(
-      static_cast<PasswordChangeDelegateImpl*>(delegate)->executor());
+  auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
+  delegate->OnOtpFieldDetected(delegate_impl->executor());
 
   EXPECT_EQ(PasswordChangeDelegate::State::kOtpDetected,
             delegate->GetCurrentState());
-  // TODO(crbug.com/417388947): Check that dialog is displayed instead.
-  EXPECT_FALSE(prompt_observer.IsBubbleDisplayedAutomatically());
+  EXPECT_TRUE(delegate_impl->ui_controller()->dialog_widget()->IsVisible());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 }
