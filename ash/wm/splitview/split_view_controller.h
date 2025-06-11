@@ -20,6 +20,7 @@
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_types.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
@@ -224,9 +225,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // snap WMEvent i.e. WM_EVENT_SNAP_PRIMARY or WM_EVENT_SNAP_SECONDARY. `this`
   // will decide if this window needs to be snapped in split view.
   // `snap_action_source` specifies the source for this snap event.
+  // `grouping_request` specifies whether group formation should be attempted,
+  // and is ignored in tablet mode (where snap groups are forced).
   void OnSnapEvent(aura::Window* window,
                    WMEventType event_type,
-                   WindowSnapActionSource snap_action_source);
+                   WindowSnapActionSource snap_action_source,
+                   WindowSnapGrouping grouping_request);
 
   // Attaches the to-be-snapped `window` to split view at `snap_position`. It
   // will try to remove the `window` from the overview grid first if `window`
@@ -464,7 +468,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   bool ShouldWindowBeManagedBySplitViewController(
       aura::Window* window,
-      WindowSnapActionSource snap_action_source) const;
+      WindowSnapActionSource snap_action_source,
+      WindowSnapGrouping grouping_request) const;
 
   // Called after a to-be-snapped window `window` got snapped. It updates the
   // split view states and notifies observers about the change. It also restore

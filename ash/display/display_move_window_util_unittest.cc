@@ -474,14 +474,14 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   window_state->Maximize();
 
   using chromeos::WindowStateType;
-  const std::vector<chromeos::WindowStateType>& restore_stack =
-      window_state->window_state_restore_history();
   EXPECT_EQ(gfx::Rect(10, 20, 200, 100),
             window_state->GetRestoreBoundsInScreen());
 
   // Moving the window to the second display through shortcut should update both
   // the restore bounds and the restore history stack.
   PerformMoveWindowAccel();
+  std::vector<chromeos::WindowStateType> restore_stack =
+      window_state->GetWindowStateTypeRestoreHistoryForTesting();
   EXPECT_TRUE(window_state->IsMaximized());
   EXPECT_EQ(restore_bounds_in_second_display,
             window_state->GetRestoreBoundsInScreen());
@@ -491,6 +491,7 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   // Verify the restore bounds and restore history after toggling to fullscreen
   // the window.
   accelerators::ToggleFullscreen();
+  restore_stack = window_state->GetWindowStateTypeRestoreHistoryForTesting();
   EXPECT_TRUE(window_state->IsFullscreen());
   EXPECT_EQ(gfx::Rect(400, 0, 400, 300), w->GetBoundsInScreen());
   EXPECT_EQ(restore_bounds_in_second_display,
@@ -502,6 +503,7 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   // Verify the restore bounds and restore history after toggling to
   // restore the window to maxmized.
   accelerators::ToggleFullscreen();
+  restore_stack = window_state->GetWindowStateTypeRestoreHistoryForTesting();
   EXPECT_TRUE(window_state->IsMaximized());
   EXPECT_EQ(restore_bounds_in_second_display,
             window_state->GetRestoreBoundsInScreen());
@@ -514,6 +516,7 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   // the window again. And the window should stay in the second display with
   // correct restore bounds.
   accelerators::ToggleFullscreen();
+  restore_stack = window_state->GetWindowStateTypeRestoreHistoryForTesting();
   EXPECT_TRUE(window_state->IsFullscreen());
   EXPECT_EQ(restore_bounds_in_second_display,
             window_state->GetRestoreBoundsInScreen());

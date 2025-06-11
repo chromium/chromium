@@ -694,7 +694,8 @@ void SplitViewController::SnapWindow(aura::Window* window,
 
 bool SplitViewController::ShouldWindowBeManagedBySplitViewController(
     aura::Window* window,
-    WindowSnapActionSource snap_action_source) const {
+    WindowSnapActionSource snap_action_source,
+    WindowSnapGrouping grouping_request) const {
   if (!ShouldAllowSplitView()) {
     return false;
   }
@@ -712,6 +713,7 @@ bool SplitViewController::ShouldWindowBeManagedBySplitViewController(
   }
 
   return InTabletMode() || in_overview ||
+         grouping_request == WindowSnapGrouping::kGrouped ||
          ShouldConsiderWindowForSplitViewSetupView(window,
                                                    snap_action_source) ||
          // While we don't want the keyboard shortcuts to start partial
@@ -719,10 +721,10 @@ bool SplitViewController::ShouldWindowBeManagedBySplitViewController(
          snap_action_source == WindowSnapActionSource::kKeyboardShortcutToSnap;
 }
 
-void SplitViewController::OnSnapEvent(
-    aura::Window* window,
-    WMEventType event_type,
-    WindowSnapActionSource snap_action_source) {
+void SplitViewController::OnSnapEvent(aura::Window* window,
+                                      WMEventType event_type,
+                                      WindowSnapActionSource snap_action_source,
+                                      WindowSnapGrouping grouping_request) {
   CHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
         event_type == WM_EVENT_SNAP_SECONDARY);
 
@@ -733,7 +735,8 @@ void SplitViewController::OnSnapEvent(
     return;
   }
 
-  if (ShouldWindowBeManagedBySplitViewController(window, snap_action_source)) {
+  if (ShouldWindowBeManagedBySplitViewController(window, snap_action_source,
+                                                 grouping_request)) {
     const SnapPosition to_snap_position = event_type == WM_EVENT_SNAP_PRIMARY
                                               ? SnapPosition::kPrimary
                                               : SnapPosition::kSecondary;

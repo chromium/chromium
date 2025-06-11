@@ -224,16 +224,22 @@ void BaseState::HandleWindowSnapping(
     WindowState* window_state,
     WMEventType event_type,
     WindowSnapActionSource snap_action_source) {
-  DCHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
-         event_type == WM_EVENT_SNAP_SECONDARY);
-  DCHECK(window_state->CanSnap());
+  CHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
+        event_type == WM_EVENT_SNAP_SECONDARY);
+  CHECK(window_state->CanSnap());
 
   window_state->SetBoundsChangedByUser(true);
+
   aura::Window* window = window_state->window();
+  WindowSnapGrouping snap_group_restore =
+      (snap_action_source == WindowSnapActionSource::kSnapByWindowStateRestore)
+          ? window_state->GetSnapGroupingForRestore()
+          : WindowSnapGrouping::kUngrouped;
+
   // `SplitViewController` will decide if the window needs to be snapped in
   // split view.
-  SplitViewController::Get(window)->OnSnapEvent(window, event_type,
-                                                snap_action_source);
+  SplitViewController::Get(window)->OnSnapEvent(
+      window, event_type, snap_action_source, snap_group_restore);
 }
 
 }  // namespace ash

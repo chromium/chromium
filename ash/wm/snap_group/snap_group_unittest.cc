@@ -41,6 +41,7 @@
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
@@ -152,6 +153,8 @@ namespace {
 using chromeos::WindowStateType;
 using testing::ElementsAre;
 using ui::mojom::CursorType;
+using enum WindowSnapGrouping;
+
 using WindowCyclingDirection = WindowCycleController::WindowCyclingDirection;
 
 void SwitchToTabletMode() {
@@ -299,9 +302,7 @@ std::pair<gfx::Rect, gfx::Rect> GetExpectedSnappedBounds(
   return std::make_pair(primary_bounds, secondary_bounds);
 }
 
-enum Grouping { kUngrouped, kGrouped };
-
-void ExpectWindowsSnappedSideBySide(Grouping grouping,
+void ExpectWindowsSnappedSideBySide(WindowSnapGrouping grouping,
                                     aura::Window* primary,
                                     aura::Window* secondary) {
   EXPECT_EQ(WindowState::Get(primary)->GetStateType(),
@@ -326,7 +327,7 @@ void ExpectWindowsSnappedSideBySide(Grouping grouping,
   }
 }
 
-void SnapWindowsSideBySide(Grouping grouping,
+void SnapWindowsSideBySide(WindowSnapGrouping grouping,
                            aura::Window* primary,
                            aura::Window* secondary) {
   auto snap_source = (grouping == kGrouped)
@@ -3404,25 +3405,110 @@ TEST_F(SnapGroupTest, NoDumpWithoutCrashOnMinimize) {
     auto* window_state2 = WindowState::Get(w2.get());
     EXPECT_EQ(chromeos::kDefaultSnapRatio, window_state2->snap_ratio());
 
-    // Unminimize `w1`. Test the windows are still at 1/2 with no divider.
+    // Unminimize `w1`. Test the windows are again forming a snap group.
     window_state1->Unminimize();
-    ASSERT_FALSE(
+    ASSERT_TRUE(
         snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-    // Verify `w1` is at the same position, aka approximately the same
-    // bounds it was at before.
-    EXPECT_TRUE(w1_bounds.ApproximatelyEqual(
-        w1->GetBoundsInScreen(),
-        /*tolerance=*/kSplitviewDividerShortSideLength / 2));
-    EXPECT_EQ(left_half, w1->GetBoundsInScreen());
-    EXPECT_EQ(chromeos::kDefaultSnapRatio, window_state1->snap_ratio());
-    EXPECT_TRUE(w2_bounds.ApproximatelyEqual(
-        w2->GetBoundsInScreen(),
-        /*tolerance=*/kSplitviewDividerShortSideLength / 2));
-    EXPECT_EQ(right_half, w2->GetBoundsInScreen());
-    EXPECT_EQ(chromeos::kDefaultSnapRatio, window_state2->snap_ratio());
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
+                                     GetTopmostSnapGroupDivider());
+    EXPECT_EQ(w1_bounds, w1->GetBoundsInScreen());
+    EXPECT_EQ(w2_bounds, w2->GetBoundsInScreen());
+
     MaximizeToClearTheSession(w1.get());
     MaximizeToClearTheSession(w2.get());
   }
+}
+
+TEST_F(SnapGroupTest, RestoreGrouped) {
+  auto* snap_group_controller = SnapGroupController::Get();
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+
+  auto* w1_state = WindowState::Get(w1.get());
+
+  TRACE_CALL(SnapWindowsSideBySide(kGrouped, w1.get(), w2.get()));
+
+  w1_state->Maximize();
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  w1_state->Restore();
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w1.get(), w2.get()));
+
+  w1_state->Minimize();
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  w1_state->Restore();
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w1.get(), w2.get()));
+
+  Shell::Get()->float_controller()->ToggleFloat(w1.get());
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsFloated());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  w1_state->Restore();
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w1.get(), w2.get()));
+
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  w1_state->OnWMEvent(&fullscreen_event);
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsFullscreen());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  w1_state->Restore();
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w1.get(), w2.get()));
+}
+
+TEST_F(SnapGroupTest, RestoreUngrouped) {
+  auto* snap_group_controller = SnapGroupController::Get();
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+
+  auto* w1_state = WindowState::Get(w1.get());
+
+  TRACE_CALL(SnapWindowsSideBySide(kUngrouped, w1.get(), w2.get()));
+
+  w1_state->Maximize();
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  w1_state->Restore();
+  EXPECT_TRUE(w1_state->IsSnapped());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  w1_state->Minimize();
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  w1_state->Restore();
+  EXPECT_TRUE(w1_state->IsSnapped());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  Shell::Get()->float_controller()->ToggleFloat(w1.get());
+  EXPECT_TRUE(w1_state->IsFloated());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  w1_state->Restore();
+  EXPECT_TRUE(w1_state->IsSnapped());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  w1_state->OnWMEvent(&fullscreen_event);
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsFullscreen());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  w1_state->Restore();
+  EXPECT_TRUE(w1_state->IsSnapped());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
 // Verifies no crashes occur when re-snapping a secondary window (with transient
