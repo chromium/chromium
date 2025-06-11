@@ -1551,8 +1551,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             _THIRD_PARTY_EXCEPT_BLINK,
             # sql/ itself uses virtual tables in the recovery module and tests.
             r'^sql/.*',
-            # TODO(https://crbug.com/695592): Remove once WebSQL is deprecated.
-            r'third_party/blink/web_tests/storage/websql/.*'
             # Various performance tools that do not build as part of Chrome.
             r'^tools/perf.*',
             r'.*perfetto.*',
