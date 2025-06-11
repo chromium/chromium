@@ -113,10 +113,10 @@ class PLATFORM_EXPORT FloatRoundedRect {
     }
 
     String ToString() const;
+    void Scale(float factor);
 
    private:
     friend class FloatRoundedRect;
-    void Scale(float factor);
     void Outset(const gfx::OutsetsF& outsets);
     void OutsetForMarginOrShadow(const gfx::OutsetsF&);
     void OutsetForShapeMargin(float outset);

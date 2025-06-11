@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -156,6 +157,13 @@ class PLATFORM_EXPORT ContouredRect {
     constexpr float DiagonalLength() const {
       return (End() - Start()).Length();
     }
+
+    constexpr gfx::PointF HalfCorner() const {
+      const float normalized_half_corner = HalfCornerForCurvature(curvature_);
+      return MapPoint(
+          gfx::Vector2dF(normalized_half_corner, normalized_half_corner));
+    }
+
     static constexpr float HalfCornerForCurvature(float curvature) {
       return std::pow(0.5, 1 / ClampCurvature(curvature));
     }

@@ -20,8 +20,10 @@ class CORE_EXPORT ContouredBorderGeometry {
   STATIC_ONLY(ContouredBorderGeometry);
 
  public:
-  static ContouredRect ContouredBorder(const ComputedStyle&,
-                                       const PhysicalRect& border_rect);
+  static ContouredRect ContouredBorder(
+      const ComputedStyle&,
+      const PhysicalRect& border_rect,
+      PhysicalBoxSides edges_to_include = PhysicalBoxSides());
 
   static ContouredRect PixelSnappedContouredBorder(
       const ComputedStyle&,

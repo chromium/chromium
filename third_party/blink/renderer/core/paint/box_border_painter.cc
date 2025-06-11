@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/line_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -789,28 +790,6 @@ void DrawLineForBoxSide(GraphicsContext& context,
   }
 }
 
-void FindIntersection(const gfx::PointF& p1,
-                      const gfx::PointF& p2,
-                      const gfx::PointF& d1,
-                      const gfx::PointF& d2,
-                      gfx::PointF& intersection) {
-  float px_length = p2.x() - p1.x();
-  float py_length = p2.y() - p1.y();
-
-  float dx_length = d2.x() - d1.x();
-  float dy_length = d2.y() - d1.y();
-
-  float denom = px_length * dy_length - py_length * dx_length;
-  if (!denom)
-    return;
-
-  float param =
-      ((d1.x() - p1.x()) * dy_length - (d1.y() - p1.y()) * dx_length) / denom;
-
-  intersection.set_x(p1.x() + param * px_length);
-  intersection.set_y(p1.y() + param * py_length);
-}
-
 using Corner = ContouredRect::Corner;
 
 struct CornerInfo {
@@ -819,6 +798,15 @@ struct CornerInfo {
   // The outer corner of the inner border, if it was not adjusted for curvature.
   gfx::PointF unadjusted_inner_edge;
 };
+
+void FindIntersection(const gfx::PointF& p1,
+                      const gfx::PointF& p2,
+                      const gfx::PointF& d1,
+                      const gfx::PointF& d2,
+                      gfx::PointF& intersection) {
+  intersection =
+      gfx::LineF(p1, p2).IntersectionWith({d1, d2}).value_or(intersection);
+}
 
 void ClipOutHalfCornerWithMiter(GraphicsContext& context,
                                 const CornerInfo& corner_info,
