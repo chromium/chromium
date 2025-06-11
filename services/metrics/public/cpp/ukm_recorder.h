@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_source.h"
