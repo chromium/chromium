@@ -972,9 +972,7 @@ class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
         MockTouchToFillDelegate::Create(&*manager));
     manager->set_fast_checkout_delegate(MockFastCheckoutDelegate::Create());
     test_api(*manager).SetExternalDelegate(
-        std::make_unique<TestAutofillExternalDelegate>(
-            &*manager,
-            /*call_parent_methods=*/true));
+        std::make_unique<TestAutofillExternalDelegate>(&*manager));
     test_api(*manager).set_credit_card_access_manager(
         std::make_unique<NiceMock<MockCreditCardAccessManager>>(&*manager));
     test_api(*manager).set_amount_extraction_manager(

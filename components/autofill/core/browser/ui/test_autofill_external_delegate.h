@@ -20,8 +20,7 @@ namespace autofill {
 class TestAutofillExternalDelegate : public AutofillExternalDelegate {
  public:
   explicit TestAutofillExternalDelegate(
-      BrowserAutofillManager* autofill_manager,
-      bool call_parent_methods);
+      BrowserAutofillManager* autofill_manager);
 
   TestAutofillExternalDelegate(const TestAutofillExternalDelegate&) = delete;
   TestAutofillExternalDelegate& operator=(const TestAutofillExternalDelegate&) =
@@ -83,10 +82,6 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   bool has_suggestions_available_on_field_focus() const;
 
  private:
-  // If true, calls AutofillExternalDelegate::OnQuery and
-  // AutofillExternalDelegate::OnSuggestionsReturned.
-  bool call_parent_methods_;
-
   // Records if OnQuery has been called yet.
   bool on_query_seen_ = false;
 

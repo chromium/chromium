@@ -14,10 +14,8 @@
 namespace autofill {
 
 TestAutofillExternalDelegate::TestAutofillExternalDelegate(
-    BrowserAutofillManager* autofill_manager,
-    bool call_parent_methods)
-    : AutofillExternalDelegate(autofill_manager),
-      call_parent_methods_(call_parent_methods) {}
+    BrowserAutofillManager* autofill_manager)
+    : AutofillExternalDelegate(autofill_manager) {}
 
 TestAutofillExternalDelegate::~TestAutofillExternalDelegate() = default;
 
@@ -43,12 +41,8 @@ void TestAutofillExternalDelegate::OnQuery(
   on_query_seen_ = true;
   on_suggestions_returned_seen_ = false;
   trigger_source_ = trigger_source;
-
-  // If necessary, call the superclass's OnQuery to set up its other fields
-  // properly.
-  if (call_parent_methods_)
-    AutofillExternalDelegate::OnQuery(form, field, caret_bounds, trigger_source,
-                                      update_datalist);
+  AutofillExternalDelegate::OnQuery(form, field, caret_bounds, trigger_source,
+                                    update_datalist);
 }
 
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
@@ -60,13 +54,8 @@ void TestAutofillExternalDelegate::OnSuggestionsReturned(
   field_id_ = field_id;
   suggestions_ = suggestions;
   suggestion_ranking_context_ = suggestion_ranking_context;
-
-  // If necessary, call the superclass's OnSuggestionsReturned in order to
-  // execute logic relating to showing the popup or not.
-  if (call_parent_methods_) {
-    AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions,
-                                                    suggestion_ranking_context);
-  }
+  AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions,
+                                                  suggestion_ranking_context);
 }
 
 bool TestAutofillExternalDelegate::HasActiveScreenReader() const {

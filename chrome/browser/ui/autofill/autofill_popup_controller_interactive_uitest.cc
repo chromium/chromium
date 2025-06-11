@@ -67,8 +67,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
 
     test_api(autofill_manager())
         .SetExternalDelegate(std::make_unique<TestAutofillExternalDelegate>(
-            &autofill_manager(),
-            /*call_parent_methods=*/true));
+            &autofill_manager()));
 
     disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
