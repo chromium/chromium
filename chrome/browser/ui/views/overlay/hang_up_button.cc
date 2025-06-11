@@ -15,6 +15,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 
 HangUpButton::HangUpButton(PressedCallback callback)
@@ -22,6 +23,14 @@ HangUpButton::HangUpButton(PressedCallback callback)
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_HANG_UP_TEXT));
   UpdateImage();
+
+  // We use a solid background color in the 2024 updated UI, and that ends up
+  // sitting above the ink drop layer, so we need to force the ink drop layer
+  // higher here.
+  if (base::FeatureList::IsEnabled(
+          media::kVideoPictureInPictureControlsUpdate2024)) {
+    views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
+  }
 }
 
 void HangUpButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
