@@ -1870,15 +1870,14 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
   }
 
   CopyStagingTextureToBackColorBufferIfNeeded();
-  gpu::SyncToken sync_token;
-  gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  gpu::SyncToken sync_token = back_color_buffer_->EndAccess();
 
   auto* sii = ContextProvider()->SharedImageInterface();
   sii->PresentSwapChain(sync_token,
                         back_color_buffer_->shared_image->mailbox());
 
-  sync_token = sii->GenUnverifiedSyncToken();
-  gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  back_color_buffer_->BeginAccess(sii->GenUnverifiedSyncToken(),
+                                  /*readonly=*/false);
 
   // If a multisample fbo is used it already preserves the previous contents.
   if (preserve_drawing_buffer_ == kPreserve && !WantExplicitResolve()) {
@@ -1890,7 +1889,7 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
     GLuint dest_texture_id =
         staging_texture_ ? staging_texture_ : back_color_buffer_->texture_id();
     front_color_buffer_->BeginAccess(gpu::SyncToken(), /*readonly=*/true);
-    ;
+
     gl_->CopySubTextureCHROMIUM(front_color_buffer_->texture_id(), 0,
                                 dest_texture_target, dest_texture_id, 0, 0, 0,
                                 0, 0, size_.width(), size_.height(), GL_FALSE,
