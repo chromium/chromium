@@ -4684,7 +4684,6 @@ EXPORTS
     ?back@?$vector@UTransitionType@cctz@time_internal@absl@@V?$allocator@UTransitionType@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@QAEAAUTransitionType@cctz@time_internal@absl@@XZ
     ?back@?$vector@UViableSubstitution@strings_internal@absl@@V?$allocator@UViableSubstitution@strings_internal@absl@@@__Cr@std@@@__Cr@std@@QAEAAUViableSubstitution@strings_internal@absl@@XZ
     ?back@CordRepBtree@cord_internal@absl@@QBEIXZ
-    ?backing_array_start@CommonFields@container_internal@absl@@QBEPAXXZ
     ?base@?$__wrap_iter@PAPAVCommandLineFlag@absl@@@__Cr@std@@QBEPAPAVCommandLineFlag@absl@@XZ
     ?base@?$__wrap_iter@PAPAVCordzHandle@cord_internal@absl@@@__Cr@std@@QBEPAPAVCordzHandle@cord_internal@absl@@XZ
     ?base@?$__wrap_iter@PAPAVLogSink@absl@@@__Cr@std@@QBEPAPAVLogSink@absl@@XZ
@@ -5120,7 +5119,6 @@ EXPORTS
     ?get_soo_data@HeapOrSoo@container_internal@absl@@QBEPBXXZ
     ?get_weekday@detail@cctz@time_internal@absl@@YA?AW4weekday@1234@ABV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@1234@@Z
     ?get_yearday@detail@cctz@time_internal@absl@@YAHABV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@1234@@Z
-    ?growth_info@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@AAEAAVGrowthInfo@23@XZ
     ?growth_info@CommonFields@container_internal@absl@@QAEAAVGrowthInfo@23@XZ
     ?growth_info@CommonFields@container_internal@absl@@QBE?AVGrowthInfo@23@XZ
     ?growth_left@CommonFields@container_internal@absl@@QBEIXZ
@@ -5150,6 +5148,7 @@ EXPORTS
     ?index@CordRepBtree@cord_internal@absl@@QBEIW4EdgeType@123@@Z
     ?infoz@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@AAE?AVHashtablezInfoHandle@23@XZ
     ?infoz@CommonFields@container_internal@absl@@QAE?AVHashtablezInfoHandle@23@XZ
+    ?infoz_ptr@CommonFields@container_internal@absl@@QBEPAVHashtablezInfoHandle@23@XZ
     ?inline_size@InlineData@cord_internal@absl@@QBEIXZ
     ?inline_size@InlineRep@Cord@absl@@ABEIXZ
     ?inline_size@Rep@InlineData@cord_internal@absl@@QBEIXZ

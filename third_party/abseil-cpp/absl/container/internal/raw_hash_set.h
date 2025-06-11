@@ -521,15 +521,16 @@ class HashtableSize {
   uint64_t data_;
 };
 
-// Extracts the H1 portion of a hash: 57 bits mixed with a per-table seed.
+// Mixes the hash with a per-table seed. Note that we only use the low bits of
+// H1 because we bitwise-and with capacity later.
 inline size_t H1(size_t hash, PerTableSeed seed) {
-  return (hash >> 7) ^ seed.seed();
+  return hash ^ seed.seed();
 }
 
-// Extracts the H2 portion of a hash: the 7 bits not used for H1.
+// Extracts the H2 portion of a hash: the 7 most significant bits.
 //
 // These are used as an occupied control byte.
-inline h2_t H2(size_t hash) { return hash & 0x7F; }
+inline h2_t H2(size_t hash) { return hash >> (sizeof(size_t) * 8 - 7); }
 
 // When there is an insertion with no reserved growth, we rehash with
 // probability `min(1, RehashProbabilityConstant() / capacity())`. Using a
@@ -805,6 +806,9 @@ constexpr size_t AlignUpTo(size_t offset, size_t align) {
 // Helper class for computing offsets and allocation size of hash set fields.
 class RawHashSetLayout {
  public:
+  // TODO(b/413062340): maybe don't allocate growth info for capacity 1 tables.
+  // Doing so may require additional branches/complexity so it might not be
+  // worth it.
   explicit RawHashSetLayout(size_t capacity, size_t slot_size,
                             size_t slot_align, bool has_infoz)
       : control_offset_(ControlOffset(has_infoz)),
@@ -964,12 +968,6 @@ class CommonFields : public CommonFieldsGenerationInfo {
       generate_new_seed();
     }
   }
-  void* backing_array_start() const {
-    // growth_info (and maybe infoz) is stored before control bytes.
-    ABSL_SWISSTABLE_ASSERT(
-        reinterpret_cast<uintptr_t>(control()) % alignof(size_t) == 0);
-    return control() - ControlOffset(has_infoz());
-  }
 
   // Note: we can't use slots() because Qt defines "slots" as a macro.
   void* slot_array() const { return heap_or_soo_.slot_array().get(); }
@@ -1030,6 +1028,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
   size_t growth_left() const { return growth_info().GetGrowthLeft(); }
 
   GrowthInfo& growth_info() {
+    ABSL_SWISSTABLE_ASSERT(!is_small());
     return GetGrowthInfoFromControl(control());
   }
   GrowthInfo growth_info() const {
@@ -1039,14 +1038,21 @@ class CommonFields : public CommonFieldsGenerationInfo {
   bool has_infoz() const { return size_.has_infoz(); }
   void set_has_infoz() { size_.set_has_infoz(); }
 
+  HashtablezInfoHandle* infoz_ptr() const {
+    // growth_info is stored before control bytes.
+    ABSL_SWISSTABLE_ASSERT(
+        reinterpret_cast<uintptr_t>(control()) % alignof(size_t) == 0);
+    ABSL_SWISSTABLE_ASSERT(has_infoz());
+    return reinterpret_cast<HashtablezInfoHandle*>(
+        control() - ControlOffset(/*has_infoz=*/true));
+  }
+
   HashtablezInfoHandle infoz() {
-    return has_infoz()
-               ? *reinterpret_cast<HashtablezInfoHandle*>(backing_array_start())
-               : HashtablezInfoHandle();
+    return has_infoz() ? *infoz_ptr() : HashtablezInfoHandle();
   }
   void set_infoz(HashtablezInfoHandle infoz) {
     ABSL_SWISSTABLE_ASSERT(has_infoz());
-    *reinterpret_cast<HashtablezInfoHandle*>(backing_array_start()) = infoz;
+    *infoz_ptr() = infoz;
   }
 
   bool should_rehash_for_bug_detection_on_insert() const {
@@ -1569,27 +1575,6 @@ constexpr bool ShouldSampleHashtablezInfoForAlloc() {
   // allocators to get us out of this mess.  This is not a hard guarantee but
   // a workaround while we plan the exact guarantee we want to provide.
   return std::is_same_v<CharAlloc, std::allocator<char>>;
-}
-
-template <bool kSooEnabled>
-bool ShouldSampleHashtablezInfoOnResize(bool force_sampling,
-                                        bool is_hashtablez_eligible,
-                                        size_t old_capacity, CommonFields& c) {
-  if (!is_hashtablez_eligible) return false;
-  // Force sampling is only allowed for SOO tables.
-  ABSL_SWISSTABLE_ASSERT(kSooEnabled || !force_sampling);
-  if (kSooEnabled && force_sampling) {
-    return true;
-  }
-  // In SOO, we sample on the first insertion so if this is an empty SOO case
-  // (e.g. when reserve is called), then we still need to sample.
-  if (kSooEnabled && old_capacity == SooCapacity() && c.empty()) {
-    return ShouldSampleNextTable();
-  }
-  if (!kSooEnabled && old_capacity == 0) {
-    return ShouldSampleNextTable();
-  }
-  return false;
 }
 
 // Allocates `n` bytes for a backing array.
@@ -3429,16 +3414,13 @@ class raw_hash_set {
   //
   // See `CapacityToGrowth()`.
   size_t growth_left() const {
-    ABSL_SWISSTABLE_ASSERT(!is_soo());
     return common().growth_left();
   }
 
   GrowthInfo& growth_info() {
-    ABSL_SWISSTABLE_ASSERT(!is_soo());
     return common().growth_info();
   }
   GrowthInfo growth_info() const {
-    ABSL_SWISSTABLE_ASSERT(!is_soo());
     return common().growth_info();
   }
 
@@ -3484,7 +3466,6 @@ class raw_hash_set {
     SooEnabled() ? common().set_empty_soo() : common().decrement_size();
     if (!SooEnabled()) {
       SanitizerPoisonObject(single_slot());
-      growth_info().OverwriteFullAsEmpty();
     }
   }
   iterator single_iterator() {

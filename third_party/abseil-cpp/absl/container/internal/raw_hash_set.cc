@@ -522,7 +522,6 @@ void EraseMetaOnly(CommonFields& c, const ctrl_t* ctrl, size_t slot_size) {
 
   if (c.is_small()) {
     SanitizerPoisonMemoryRegion(c.slot_array(), slot_size);
-    c.growth_info().OverwriteFullAsEmpty();
     return;
   }
 
@@ -1433,10 +1432,6 @@ std::pair<ctrl_t*, void*> PrepareInsertSmallNonSoo(
 
   static_assert(NextCapacity(0) == 1);
   PrepareInsertCommon(common);
-  // TODO(b/413062340): maybe don't allocate growth info for capacity 1 tables.
-  // Doing so may require additional branches/complexity so it might not be
-  // worth it.
-  GetGrowthInfoFromControl(new_ctrl).InitGrowthLeftNoDeleted(0);
 
   if (ABSL_PREDICT_FALSE(has_infoz)) {
     ReportSingleGroupTableGrowthToInfoz(common, infoz, get_hash());
@@ -1857,8 +1852,7 @@ void ReserveTableToFitNewSize(CommonFields& common,
   ABSL_SWISSTABLE_ASSERT(!common.empty() || cap > policy.soo_capacity());
   ABSL_SWISSTABLE_ASSERT(cap > 0);
   const size_t max_size_before_growth =
-      cap <= policy.soo_capacity() ? policy.soo_capacity()
-                                   : common.size() + common.growth_left();
+      IsSmallCapacity(cap) ? cap : common.size() + common.growth_left();
   if (new_size <= max_size_before_growth) {
     return;
   }
