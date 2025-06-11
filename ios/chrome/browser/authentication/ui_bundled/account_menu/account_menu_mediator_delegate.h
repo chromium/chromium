@@ -48,9 +48,6 @@ class SigninInProgress;
 // The user tapped on "Add account…".
 - (void)didTapAddAccount;
 
-// The user tapped to open Settings page.
-- (void)didTapSettingsButton;
-
 // The signin is finished.
 - (void)signinFinished;
 @end

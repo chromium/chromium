@@ -88,10 +88,6 @@ const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[] =
 const char kFeedSettingDiscoverReferrerParameter[] =
     "DiscoverReferrerParameter";
 
-// Feature parameter for `kIdentityDiscAccountMenu`.
-const char kShowSettingsInAccountMenuParam[] =
-    "identity-disc-account-menu-with-settings-button";
-
 const char kFeedSwipeInProductHelpArmParam[] = "feed-swipe-in-product-help-arm";
 
 #pragma mark - Helpers
@@ -156,14 +152,6 @@ double GetDeprecateFeedHeaderParameterValueAsDouble(
   }
   return base::GetFieldTrialParamByFeatureAsDouble(kDeprecateFeedHeader,
                                                    param_name, default_value);
-}
-
-bool IdentityDiscAccountMenuEnabledWithSettings() {
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        kIdentityDiscAccountMenu, kShowSettingsInAccountMenuParam, false);
-  }
-  return false;
 }
 
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation() {

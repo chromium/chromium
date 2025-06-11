@@ -22,7 +22,6 @@
 @property(nonatomic, weak) id<AccountMenuDataSource> dataSource;
 
 - (instancetype)initWithHideEllipsisMenu:(BOOL)hideEllipsisMenu
-                      showSettingsButton:(BOOL)showSettingsButton
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

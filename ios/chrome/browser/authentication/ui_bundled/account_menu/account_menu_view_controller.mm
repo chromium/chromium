@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -66,8 +65,6 @@ typedef NS_ENUM(NSUInteger, SectionIdentifier) {
   AccountsSectionIdentifier,
   // Sign-out.
   SignOutSectionIdentifier,
-  // Settings.
-  SettingsSectionIdentifier,
 };
 
 typedef NS_ENUM(NSUInteger, RowIdentifier) {
@@ -80,8 +77,6 @@ typedef NS_ENUM(NSUInteger, RowIdentifier) {
   RowIdentifierAddAccount,
   RowIdentifierManageAccounts,
   // The secondary account entries use the gaia ID as item identifier.
-  // Settings section.
-  RowIdentifierSettings,
 };
 
 // Custom detent identifier for when the bottom sheet is minimized.
@@ -113,16 +108,12 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   BOOL _resizeReady;
   // Whether or not to hide the ellipsis menu.
   BOOL _hideEllipsisMenu;
-  // Whether or not to show the settings button.
-  BOOL _showSettingsButton;
 }
 
-- (instancetype)initWithHideEllipsisMenu:(BOOL)hideEllipsisMenu
-                      showSettingsButton:(BOOL)showSettingsButton {
+- (instancetype)initWithHideEllipsisMenu:(BOOL)hideEllipsisMenu {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _hideEllipsisMenu = hideEllipsisMenu;
-    _showSettingsButton = showSettingsButton;
   }
   return self;
 }
@@ -387,10 +378,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
           l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
       accessibilityIdentifier = kAccountMenuSignoutButtonId;
       break;
-    case RowIdentifierSettings:
-      label = l10n_util::GetNSString(IDS_IOS_ACCOUNT_MENU_OPEN_SETTINGS);
-      accessibilityIdentifier = kAccountMenuOpenSettingsButtonId;
-      break;
     default:
       NOTREACHED();
   }
@@ -550,23 +537,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [snapshot appendItemsWithIdentifiers:accountsIdentifiers
              intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
 
-  if (_showSettingsButton) {
-    // The sign-out button is grouped with the accounts section.
-    [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
-               intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
-    [snapshot appendSectionsWithIdentifiers:@[ @(SettingsSectionIdentifier) ]];
-    [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSettings) ]
-               intoSectionWithIdentifier:@(SettingsSectionIdentifier)];
-  } else {
-    [snapshot appendSectionsWithIdentifiers:@[ @(SignOutSectionIdentifier) ]];
-    // The sign-out button has its own section.
-    if (_hideEllipsisMenu) {
-      [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierManageAccounts) ]
-                 intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
-    }
-    [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
+  [snapshot appendSectionsWithIdentifiers:@[ @(SignOutSectionIdentifier) ]];
+  // The sign-out button has its own section.
+  if (_hideEllipsisMenu) {
+    [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierManageAccounts) ]
                intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
   }
+  [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
+             intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
 
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
@@ -617,9 +595,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_AddAccount"));
         [self.mutator didTapAddAccount];
-        break;
-      case RowIdentifierSettings:
-        [self.mutator didTapSettingsButton];
         break;
       case RowIdentifierErrorExplanation:
         break;

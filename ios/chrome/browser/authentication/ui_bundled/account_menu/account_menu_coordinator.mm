@@ -163,8 +163,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   _identityManager = IdentityManagerFactory::GetForProfile(profile);
 
   _viewController = [[AccountMenuViewController alloc]
-      initWithHideEllipsisMenu:_accessPoint == AccountMenuAccessPoint::kWeb
-            showSettingsButton:IdentityDiscAccountMenuEnabledWithSettings()];
+      initWithHideEllipsisMenu:_accessPoint == AccountMenuAccessPoint::kWeb];
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -280,16 +279,6 @@ void maybeShowSettingsIPH(Browser* browser) {
   _manageAccountsCoordinator.delegate = self;
   _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
   [_manageAccountsCoordinator start];
-}
-
-- (void)didTapSettingsButton {
-  CHECK(IdentityDiscAccountMenuEnabledWithSettings());
-  // Close the account menu and open the Settings page.
-  [self stopChildrenAndViewController];
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [self.delegate accountMenuCoordinatorWantsToBeStopped:self];
-  [applicationHandler showSettingsFromViewController:nil];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect

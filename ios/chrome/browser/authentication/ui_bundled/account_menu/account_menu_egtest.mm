@@ -79,13 +79,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector(testOpenSettings)]) {
-    config.features_enabled_and_params.push_back(
-        {kIdentityDiscAccountMenu,
-         {{{kShowSettingsInAccountMenuParam, "true"}}}});
-  } else {
-    config.features_enabled.push_back(kIdentityDiscAccountMenu);
-  }
+  config.features_enabled.push_back(kIdentityDiscAccountMenu);
   if ([self isRunningTest:@selector
             (testMultipleIdentities_IdentityConfirmationToast)] ||
       [self isRunningTest:@selector
@@ -530,21 +524,6 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [self assertSnackbarShownAndDismissItWithIdentity:kManagedIdentity2];
   [self assertAccountMenuIsNotShown];
   [SigninEarlGrey verifySignedInWithFakeIdentity:kManagedIdentity2];
-}
-
-// Test the open Settings button.
-- (void)testOpenSettings {
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  [self selectIdentityDisc];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuOpenSettingsButtonId)]
-      performAction:grey_tap()];
-  [self assertAccountMenuIsNotShown];
-  // Check that the Settings page is presented.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
-      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Test snackbar

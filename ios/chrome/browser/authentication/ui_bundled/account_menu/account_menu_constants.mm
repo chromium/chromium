@@ -18,8 +18,6 @@ NSString* const kAccountMenuErrorMessageId = @"AccountMenuErrorMessageId";
 NSString* const kAccountMenuSignoutButtonId = @"AccountMenuSignoutButtonId";
 NSString* const kAccountMenuActivityIndicatorId =
     @"AccountMenuActivityIndicatorId";
-NSString* const kAccountMenuOpenSettingsButtonId =
-    @"AccountMenuOpenSettingsButtonId";
 NSString* const kAccountMenuManageAccountsButtonId =
     @"AccountMenuManageAccountsButtonId";
 NSString* const kAccountMenuEditAccountListId = @"kEditAccountListId";

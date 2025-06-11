@@ -136,8 +136,7 @@ class AccountMenuViewControllerTest : public PlatformTest,
     AddSecondaryIdentity();
 
     view_controller_ =
-        [[AccountMenuViewController alloc] initWithHideEllipsisMenu:NO
-                                                 showSettingsButton:NO];
+        [[AccountMenuViewController alloc] initWithHideEllipsisMenu:NO];
     mutator_ = OCMStrictProtocolMock(@protocol(AccountMenuMutator));
 
     view_controller_.dataSource = data_source_;
@@ -149,21 +148,7 @@ class AccountMenuViewControllerTest : public PlatformTest,
 
   void ViewControllerWithEllipsisMenuHidden() {
     view_controller_ =
-        [[AccountMenuViewController alloc] initWithHideEllipsisMenu:YES
-                                                 showSettingsButton:NO];
-    mutator_ = OCMStrictProtocolMock(@protocol(AccountMenuMutator));
-
-    view_controller_.dataSource = data_source_;
-    view_controller_.mutator = mutator_;
-    navigation_controller_ = [[UINavigationController alloc]
-        initWithRootViewController:view_controller_];
-    [view_controller_ viewDidLoad];
-  }
-
-  void ViewControllerWithSettingsButton() {
-    view_controller_ =
-        [[AccountMenuViewController alloc] initWithHideEllipsisMenu:NO
-                                                 showSettingsButton:YES];
+        [[AccountMenuViewController alloc] initWithHideEllipsisMenu:YES];
     mutator_ = OCMStrictProtocolMock(@protocol(AccountMenuMutator));
 
     view_controller_.dataSource = data_source_;
@@ -290,22 +275,6 @@ TEST_P(AccountMenuViewControllerTest, TestAccountMenuWithoutEllipsis) {
   EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
   // Manage Accounts, and Sign Out
   EXPECT_EQ(2, [TableView() numberOfRowsInSection:1]);
-}
-
-// Test the account menu with Settings button.
-TEST_P(AccountMenuViewControllerTest, TestAccountMenuWithSettings) {
-  ViewControllerWithSettingsButton();
-
-  [view_controller_ updatePrimaryAccount];
-  ExpectTextAtPath(
-      l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM),
-      [NSIndexPath indexPathForRow:2 inSection:0]);
-
-  EXPECT_EQ(2, TableView().numberOfSections);
-  // The secondary account, Add Account..., and sign-out.
-  EXPECT_EQ(3, [TableView() numberOfRowsInSection:0]);
-  // The Settings button.
-  EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
 }
 
 #pragma mark - Test tapping on the views.
