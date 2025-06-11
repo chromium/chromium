@@ -70,7 +70,7 @@ import java.util.Set;
             @Nullable EitherTabId tabId,
             @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
         if (mNativeMessagingBackendServiceBridge == 0) {
-            return new ArrayList<PersistentMessage>();
+            return new ArrayList<>();
         }
 
         Integer type_int;
@@ -103,7 +103,7 @@ import java.util.Set;
             @Nullable EitherGroupId groupId,
             @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
         if (mNativeMessagingBackendServiceBridge == 0) {
-            return new ArrayList<PersistentMessage>();
+            return new ArrayList<>();
         }
 
         Integer type_int;
@@ -135,7 +135,7 @@ import java.util.Set;
     public List<PersistentMessage> getMessages(
             @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
         if (mNativeMessagingBackendServiceBridge == 0) {
-            return new ArrayList<PersistentMessage>();
+            return new ArrayList<>();
         }
 
         Integer type_int;
@@ -152,7 +152,7 @@ import java.util.Set;
     @Override
     public List<ActivityLogItem> getActivityLog(ActivityLogQueryParams params) {
         if (mNativeMessagingBackendServiceBridge == 0) {
-            return new ArrayList<ActivityLogItem>();
+            return new ArrayList<>();
         }
 
         return MessagingBackendServiceBridgeJni.get()

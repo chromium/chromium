@@ -93,7 +93,7 @@ class ConversionUtils {
 
     @CalledByNative
     private static ArrayList<PersistentMessage> createPersistentMessageList() {
-        return new ArrayList<PersistentMessage>();
+        return new ArrayList<>();
     }
 
     @CalledByNative
@@ -133,7 +133,7 @@ class ConversionUtils {
 
     @CalledByNative
     private static Set<String> createStringSet() {
-        return new TreeSet<String>();
+        return new TreeSet<>();
     }
 
     @CalledByNative
@@ -153,7 +153,7 @@ class ConversionUtils {
 
     @CalledByNative
     private static ArrayList<ActivityLogItem> createActivityLogItemList() {
-        return new ArrayList<ActivityLogItem>();
+        return new ArrayList<>();
     }
 
     @CalledByNative
