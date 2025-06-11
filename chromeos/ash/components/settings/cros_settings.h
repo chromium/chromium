@@ -122,19 +122,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettings {
   }
 
  private:
-  friend class CrosSettingsTest;
-
-  // Allows accessing to SetInstance.
   friend class CrosSettingsHolder;
-  friend class ScopedTestingCrosSettings;
-
-  // Sets `cros_settings` as a global instance. This does not take ownership,
-  // so the caller still has the responsibility to destroy the instance
-  // on appropriate timing. Also, the caller has the responsibility to call
-  // `SetInstance(nullptr)` before destroying the instance.
-  // If this is called while the global instance is already set, this will
-  // cause crash.
-  static void SetInstance(CrosSettings* cros_settings);
+  friend class CrosSettingsTest;
 
   // Fires system setting change callback.
   void FireObservers(const std::string& path);

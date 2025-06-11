@@ -23,16 +23,12 @@ ScopedTestingCrosSettings::ScopedTestingCrosSettings()
   system_settings_ptr_ = system_settings.get();
   test_instance_->AddSettingsProvider(std::move(system_settings));
 
-  CHECK(!CrosSettings::IsInitialized());
-  CrosSettings::SetInstance(test_instance_.get());
   user_login_permission_tracker_ =
       std::make_unique<UserLoginPermissionTracker>(test_instance_.get());
 }
 
 ScopedTestingCrosSettings::~ScopedTestingCrosSettings() {
   user_login_permission_tracker_.reset();
-  CHECK_EQ(CrosSettings::Get(), test_instance_.get());
-  CrosSettings::SetInstance(nullptr);
   device_settings_ptr_ = nullptr;
   system_settings_ptr_ = nullptr;
 }

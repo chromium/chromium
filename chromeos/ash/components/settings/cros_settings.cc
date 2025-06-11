@@ -37,16 +37,15 @@ CrosSettings* CrosSettings::Get() {
   return g_cros_settings;
 }
 
-// static
-void CrosSettings::SetInstance(CrosSettings* cros_settings) {
-  CHECK(!g_cros_settings || !cros_settings);
-  g_cros_settings = cros_settings;
+CrosSettings::CrosSettings() {
+  CHECK(!g_cros_settings);
+  g_cros_settings = this;
 }
-
-CrosSettings::CrosSettings() = default;
 
 CrosSettings::~CrosSettings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(g_cros_settings, this);
+  g_cros_settings = nullptr;
 }
 
 bool CrosSettings::IsCrosSettings(std::string_view path) {

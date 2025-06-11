@@ -31,14 +31,8 @@ CrosSettingsHolder::CrosSettingsHolder(
       notify_callback, device_settings_service, local_state));
   cros_settings_->AddSettingsProvider(
       std::make_unique<SystemSettingsProvider>(notify_callback));
-
-  CrosSettings::SetInstance(cros_settings_.get());
 }
 
-CrosSettingsHolder::~CrosSettingsHolder() {
-  // Nobody should override the global instance.
-  CHECK_EQ(CrosSettings::Get(), cros_settings_.get());
-  CrosSettings::SetInstance(nullptr);
-}
+CrosSettingsHolder::~CrosSettingsHolder() = default;
 
 }  // namespace ash
