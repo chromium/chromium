@@ -661,9 +661,18 @@ template("single_apple_toolchain") {
         # module optimization is enabled or not.
         if (swift_whole_module_optimization) {
           outputs += [
-            "$_output_dir/{{module_name}}.swiftconstvalues",
-            "$_output_dir/{{module_name}}.swiftdeps",
+            "$_output_dir/{{module_name}}.swiftconstvalues"
           ]
+
+          # This seems broken in Xcode 26 beta 1. The OutputFileMap.json
+          # confirms the file should be there, but when
+          # whole-module-optimization is enabled it's not there.
+          if (xcode_version_int < 2600) {
+            outputs += [
+              "$_output_dir/{{module_name}}.swiftdeps"
+            ]
+          }
+
         } else {
           outputs += [ "$_output_dir/{{module_name}}.priors" ]
           partial_outputs += [
