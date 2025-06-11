@@ -1277,10 +1277,10 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
   switch (feature) {
     case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
     case wgpu::FeatureName::MultiDrawIndirect:
-    case wgpu::FeatureName::TextureCompressionASTCSliced3D:
-    case wgpu::FeatureName::TextureCompressionBCSliced3D:
     case wgpu::FeatureName::Unorm16TextureFormats:
     case wgpu::FeatureName::Snorm16TextureFormats:
+    case wgpu::FeatureName::SharedBufferMemoryD3D12Resource:
+    case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     case wgpu::FeatureName::AdapterPropertiesD3D:
     case wgpu::FeatureName::AdapterPropertiesVk:
@@ -1291,10 +1291,12 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
              safety_level_ == webgpu::SafetyLevel::kSafeExperimental;
     case wgpu::FeatureName::DepthClipControl:
     case wgpu::FeatureName::Depth32FloatStencil8:
-    case wgpu::FeatureName::TimestampQuery:
     case wgpu::FeatureName::TextureCompressionBC:
+    case wgpu::FeatureName::TextureCompressionBCSliced3D:
     case wgpu::FeatureName::TextureCompressionETC2:
     case wgpu::FeatureName::TextureCompressionASTC:
+    case wgpu::FeatureName::TextureCompressionASTCSliced3D:
+    case wgpu::FeatureName::TimestampQuery:
     case wgpu::FeatureName::IndirectFirstInstance:
     case wgpu::FeatureName::ShaderF16:
     case wgpu::FeatureName::RG11B10UfloatRenderable:
@@ -1303,8 +1305,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::Float32Blendable:
     case wgpu::FeatureName::ClipDistances:
     case wgpu::FeatureName::DualSourceBlending:
-    case wgpu::FeatureName::DawnMultiPlanarFormats:
-    case wgpu::FeatureName::Subgroups: {
+    case wgpu::FeatureName::Subgroups:
+    case wgpu::FeatureName::DawnMultiPlanarFormats: {
       // Likely case when no features are blocked.
       if (runtime_unsafe_features_.empty() ||
           safety_level_ == webgpu::SafetyLevel::kUnsafe) {
@@ -1318,10 +1320,6 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
 
       return !runtime_unsafe_features_.contains(info->name);
     }
-    case wgpu::FeatureName::SharedBufferMemoryD3D12Resource:
-      return safety_level_ == webgpu::SafetyLevel::kUnsafe;
-    case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
-      return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     default:
       return false;
   }
