@@ -1,0 +1,35 @@
+Tests the LargestTextPaint::candiate trace events
+Recording started
+Tracing complete
+Event shape:
+Object: {
+	args: {
+		data: {
+			DOMNodeId: number
+			candidateIndex: number
+			frame_height: number
+			frame_width: number
+			frame_x: number
+			frame_y: number
+			isEmbeddedFrame: boolean
+			isMainFrame: boolean
+			isOutermostMainFrame: boolean
+			nodeName: string
+			root_height: number
+			root_width: number
+			root_x: number
+			root_y: number
+			size: number
+		}
+		frame: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+nodeName: H1 id='hello-world' class='header'
+
