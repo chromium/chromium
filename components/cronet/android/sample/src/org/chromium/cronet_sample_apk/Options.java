@@ -65,7 +65,7 @@ public class Options {
                             + " packets when the network is degrading, QUIC will migrate the"
                             + " sessions to a different network even before the original network"
                             + " has disconnected.",
-                        new Action<Boolean>() {
+                        new Action<>() {
                             @Override
                             @OptIn(markerClass = ConnectionMigrationOptions.Experimental.class)
                             public void configureBuilder(ActionData data, Boolean value) {

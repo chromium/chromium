@@ -94,7 +94,7 @@ public class RequestFinishedInfoTest {
     }
 
     static class ThreadExecutor implements Executor {
-        private final List<Thread> mThreads = new ArrayList<Thread>();
+        private final List<Thread> mThreads = new ArrayList<>();
 
         @Override
         public void execute(Runnable task) {

@@ -67,10 +67,10 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     private int mBufferPositionBeforeRead;
 
     // Data to write.
-    private final ArrayList<WriteBuffer> mWriteBuffers = new ArrayList<WriteBuffer>();
+    private final ArrayList<WriteBuffer> mWriteBuffers = new ArrayList<>();
 
     // Buffers that we yet to receive the corresponding onWriteCompleted callback.
-    private final ArrayList<WriteBuffer> mWriteBuffersToBeAcked = new ArrayList<WriteBuffer>();
+    private final ArrayList<WriteBuffer> mWriteBuffersToBeAcked = new ArrayList<>();
 
     // Whether to use a direct executor.
     private final boolean mUseDirectExecutor;

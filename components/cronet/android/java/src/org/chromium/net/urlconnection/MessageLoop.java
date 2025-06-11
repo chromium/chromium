@@ -39,7 +39,7 @@ class MessageLoop implements Executor {
     private long mThreadId = INVALID_THREAD_ID;
 
     MessageLoop() {
-        mQueue = new LinkedBlockingQueue<Runnable>();
+        mQueue = new LinkedBlockingQueue<>();
     }
 
     private boolean calledOnValidThread() {

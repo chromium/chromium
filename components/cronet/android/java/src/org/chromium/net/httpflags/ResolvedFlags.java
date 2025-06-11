@@ -200,7 +200,7 @@ public final class ResolvedFlags {
     public static ResolvedFlags resolve(Flags flags, String appId, String cronetVersion) {
         try (var traceEvent = ScopedSysTraceEvent.scoped("Cronet ResolvedFlags#resolve")) {
             int[] parsedCronetVersion = parseVersionString(cronetVersion);
-            Map<String, Value> resolvedFlags = new HashMap<String, Value>();
+            Map<String, Value> resolvedFlags = new HashMap<>();
             for (var flag : flags.getFlagsMap().entrySet()) {
                 try {
                     Value value = Value.resolve(flag.getValue(), appId, parsedCronetVersion);

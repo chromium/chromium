@@ -279,9 +279,7 @@ public class CronetUrlRequestTest {
             String[] urls, String message, int statusCode, int receivedBytes, String... headers) {
         ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
         for (int i = 0; i < headers.length; i += 2) {
-            headersList.add(
-                    new AbstractMap.SimpleImmutableEntry<String, String>(
-                            headers[i], headers[i + 1]));
+            headersList.add(new AbstractMap.SimpleImmutableEntry<>(headers[i], headers[i + 1]));
         }
         UrlResponseInfoImpl unknown =
                 new UrlResponseInfoImpl(
@@ -746,7 +744,7 @@ public class CronetUrlRequestTest {
         String headers = callback.mResponseAsString;
         Pattern pattern = Pattern.compile(headerName + ":\\s(.*)\\r\\n");
         Matcher matcher = pattern.matcher(headers);
-        List<String> actualValues = new ArrayList<String>();
+        List<String> actualValues = new ArrayList<>();
         while (matcher.find()) {
             actualValues.add(matcher.group(1));
         }

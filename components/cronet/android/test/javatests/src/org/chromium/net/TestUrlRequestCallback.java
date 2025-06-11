@@ -20,13 +20,13 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Callback that tracks information from different callbacks and and has a
- * method to block thread until the request completes on another thread.
- * Allows to cancel, block request or throw an exception from an arbitrary step.
+ * Callback that tracks information from different callbacks and and has a method to block thread
+ * until the request completes on another thread. Allows to cancel, block request or throw an
+ * exception from an arbitrary step.
  */
 public class TestUrlRequestCallback extends UrlRequest.Callback {
-    public ArrayList<UrlResponseInfo> mRedirectResponseInfoList = new ArrayList<UrlResponseInfo>();
-    public ArrayList<String> mRedirectUrlList = new ArrayList<String>();
+    public ArrayList<UrlResponseInfo> mRedirectResponseInfoList = new ArrayList<>();
+    public ArrayList<String> mRedirectUrlList = new ArrayList<>();
     private UrlResponseInfo mResponseInfo;
     public CronetException mError;
 

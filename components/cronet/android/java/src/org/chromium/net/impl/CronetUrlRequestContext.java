@@ -160,7 +160,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     /** Set of storage paths currently in use. */
     @GuardedBy("sInUseStoragePaths")
-    private static final HashSet<String> sInUseStoragePaths = new HashSet<String>();
+    private static final HashSet<String> sInUseStoragePaths = new HashSet<>();
 
     /** Storage path used by this context. */
     private final String mInUseStoragePath;

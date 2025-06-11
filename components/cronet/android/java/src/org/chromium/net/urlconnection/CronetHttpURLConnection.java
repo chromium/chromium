@@ -67,7 +67,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
             mCronetEngine = cronetEngine;
             mMessageLoop = new MessageLoop();
             mInputStream = new CronetInputStream(this);
-            mRequestHeaders = new ArrayList<Pair<String, String>>();
+            mRequestHeaders = new ArrayList<>();
         }
     }
 
@@ -407,14 +407,13 @@ public class CronetHttpURLConnection extends HttpURLConnection {
             throw new IllegalStateException(
                     "Cannot access request headers after connection is set.");
         }
-        Map<String, List<String>> map =
-                new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, List<String>> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (Pair<String, String> entry : mRequestHeaders) {
             if (map.containsKey(entry.first)) {
                 // This should not happen due to setRequestPropertyInternal.
                 throw new IllegalStateException("Should not have multiple values.");
             } else {
-                List<String> values = new ArrayList<String>();
+                List<String> values = new ArrayList<>();
                 values.add(entry.second);
                 map.put(entry.first, Collections.unmodifiableList(values));
             }
@@ -698,7 +697,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         }
         Map<String, List<String>> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (Map.Entry<String, String> entry : getAllHeadersAsList()) {
-            List<String> values = new ArrayList<String>();
+            List<String> values = new ArrayList<>();
             if (map.containsKey(entry.getKey())) {
                 values.addAll(map.get(entry.getKey()));
             }
@@ -717,8 +716,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         for (Map.Entry<String, String> entry : mResponseInfo.getAllHeadersAsList()) {
             // Strips Content-Encoding response header. See crbug.com/592700.
             if (!entry.getKey().equalsIgnoreCase("Content-Encoding")) {
-                mResponseHeadersList.add(
-                        new AbstractMap.SimpleImmutableEntry<String, String>(entry));
+                mResponseHeadersList.add(new AbstractMap.SimpleImmutableEntry<>(entry));
             }
         }
         mResponseHeadersList = Collections.unmodifiableList(mResponseHeadersList);

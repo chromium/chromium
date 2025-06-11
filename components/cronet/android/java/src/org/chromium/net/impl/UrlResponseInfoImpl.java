@@ -53,7 +53,7 @@ public final class UrlResponseInfoImpl extends UrlResponseInfo {
             }
             Map<String, List<String>> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
             for (Map.Entry<String, String> entry : mAllHeadersList) {
-                List<String> values = new ArrayList<String>();
+                List<String> values = new ArrayList<>();
                 if (map.containsKey(entry.getKey())) {
                     values.addAll(map.get(entry.getKey()));
                 }

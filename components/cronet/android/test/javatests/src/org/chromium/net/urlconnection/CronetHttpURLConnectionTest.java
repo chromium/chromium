@@ -1000,8 +1000,8 @@ public class CronetHttpURLConnectionTest {
         // connect() is non-blocking. This is to make sure disconnect() triggers cancellation.
         mUrlConnection.connect();
         FutureTask<IOException> task =
-                new FutureTask<IOException>(
-                        new Callable<IOException>() {
+                new FutureTask<>(
+                        new Callable<>() {
                             @Override
                             public IOException call() {
                                 try {
@@ -1044,7 +1044,7 @@ public class CronetHttpURLConnectionTest {
     private List<String> getRequestHeaderValues(String allHeaders, String headerName) {
         Pattern pattern = Pattern.compile(headerName + ":\\s(.*)\\r\\n");
         Matcher matcher = pattern.matcher(allHeaders);
-        List<String> headerValues = new ArrayList<String>();
+        List<String> headerValues = new ArrayList<>();
         while (matcher.find()) {
             headerValues.add(matcher.group(1));
         }
@@ -1154,8 +1154,8 @@ public class CronetHttpURLConnectionTest {
         // connect() is non-blocking.
         mUrlConnection.connect();
         FutureTask<IOException> task =
-                new FutureTask<IOException>(
-                        new Callable<IOException>() {
+                new FutureTask<>(
+                        new Callable<>() {
                             @Override
                             public IOException call() {
                                 // This should not throw, even though internally it may encounter an

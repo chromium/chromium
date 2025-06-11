@@ -97,7 +97,7 @@ public class UrlRequestCallbacks {
             InMemoryTransformCronetCallback<T> callback) {
         CompletableFuture<CronetResponse<T>> completableFuture = new CompletableFuture<>();
         callback.addCompletionListener(
-                new CronetRequestCompletionListener<T>() {
+                new CronetRequestCompletionListener<>() {
                     @Override
                     public void onFailed(
                             @Nullable UrlResponseInfo info, CronetException exception) {

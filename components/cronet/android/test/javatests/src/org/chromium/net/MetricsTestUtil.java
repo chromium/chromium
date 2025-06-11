@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 public class MetricsTestUtil {
     /** Executor which runs tasks only when told to with runAllTasks(). */
     public static class TestExecutor implements Executor {
-        private final LinkedList<Runnable> mTaskQueue = new LinkedList<Runnable>();
+        private final LinkedList<Runnable> mTaskQueue = new LinkedList<>();
 
         @Override
         public void execute(Runnable task) {

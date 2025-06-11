@@ -73,7 +73,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
                             10,
                             50,
                             TimeUnit.SECONDS,
-                            new LinkedBlockingQueue<Runnable>(),
+                            new LinkedBlockingQueue<>(),
                             new ThreadFactory() {
                                 @Override
                                 public Thread newThread(final Runnable r) {

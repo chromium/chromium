@@ -490,7 +490,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     /** Returns a read-only copy of {@code mPendingData} for testing. */
     public List<ByteBuffer> getPendingDataForTesting() {
         synchronized (mNativeStreamLock) {
-            List<ByteBuffer> pendingData = new LinkedList<ByteBuffer>();
+            List<ByteBuffer> pendingData = new LinkedList<>();
             for (ByteBuffer buffer : mPendingData) {
                 pendingData.add(buffer.asReadOnlyBuffer());
             }
@@ -501,7 +501,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     /** Returns a read-only copy of {@code mFlushData} for testing. */
     public List<ByteBuffer> getFlushDataForTesting() {
         synchronized (mNativeStreamLock) {
-            List<ByteBuffer> flushData = new LinkedList<ByteBuffer>();
+            List<ByteBuffer> flushData = new LinkedList<>();
             for (ByteBuffer buffer : mFlushData) {
                 flushData.add(buffer.asReadOnlyBuffer());
             }
