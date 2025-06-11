@@ -303,6 +303,18 @@ inline constexpr int kWaitForLaunchctlUpdateSec = 5;
 inline constexpr base::TimeDelta kMinimumEventLoggingCooldown =
     base::Minutes(15);
 
+// The minimum factor by which kDefaultLastCheckPeriod can be
+// multiplied to get the next check delay.
+inline constexpr double kUpdateCheckMinDelayFactor = 1.0;
+
+// The maximum factor by which kDefaultLastCheckPeriod can be
+// multiplied to get the next check delay.
+inline constexpr double kUpdateCheckMaxDelayFactor = 1.2;
+
+// Probability of applying kUpdateCheckMaxDelayFactor to the next
+// check delay.
+inline constexpr double kProbabilityOfIncreasedDelay = 0.1;
+
 // Install Errors.
 //
 // Specific errors for the updater that are passed through `update_client` are
