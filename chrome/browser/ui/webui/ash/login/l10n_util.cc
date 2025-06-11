@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
@@ -473,6 +474,19 @@ base::Value::List GetUILanguageList(
           : StartupCustomizationDocument::GetInstance()->configured_locales(),
       true));
   AdjustUILanguageList(selected, languages_list);
+
+  // Filter the list for the allowlisted languages in Fjord OOBE.
+  if (fjord_util::ShouldShowFjordOobe()) {
+    base::Value::List filtered_language_list;
+    for (const auto& language : languages_list) {
+      if (fjord_util::IsAllowlistedLanguage(
+              language.GetDict().Find("code")->GetString())) {
+        filtered_language_list.Append(language.Clone());
+      }
+    }
+    languages_list = std::move(filtered_language_list);
+  }
+
   return languages_list;
 }
 

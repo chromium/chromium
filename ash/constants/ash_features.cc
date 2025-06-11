@@ -1118,6 +1118,12 @@ BASE_FEATURE(kFirstPartyVietnameseInput,
 // Controls if the Fjord variant of OOBE is shown.
 BASE_FEATURE(kFjordOobe, "FjordOobe", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Force flag for the Fjord variant of OOBE. This is to make testing easier
+// because the Fjord OOBE variant is buildflag dependent.
+BASE_FEATURE(kFjordOobeForceEnabled,
+             "FjordOobeForceEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Flex Auto-Enrollment feature on ChromeOS
 BASE_FEATURE(kFlexAutoEnrollment,
              "FlexAutoEnrollment",
@@ -3807,6 +3813,10 @@ bool IsFirmwareUpdateUIV2Enabled() {
 
 bool IsFjordOobeEnabled() {
   return base::FeatureList::IsEnabled(kFjordOobe);
+}
+
+bool IsFjordOobeForceEnabled() {
+  return base::FeatureList::IsEnabled(kFjordOobeForceEnabled);
 }
 
 bool IsFlexAutoEnrollmentEnabled() {
