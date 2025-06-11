@@ -284,23 +284,41 @@ class GapAccumulator {
   }
 
   const GapGeometry* BuildGapGeometry() {
+    const bool has_valid_main_axis_gaps =
+        !main_axis_gaps_.empty() && gap_between_lines_ > LayoutUnit();
+    const bool has_valid_cross_axis_gaps =
+        !cross_axis_gaps_.empty() && gap_between_items_ > LayoutUnit();
+    if (!has_valid_main_axis_gaps && !has_valid_cross_axis_gaps) {
+      // `GapGeometry` requires at least one axis to be valid.
+      return nullptr;
+    }
+
     GapGeometry* gap_geometry =
         MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kFlex);
 
     if (is_column_) {
       // In a column flex container, the main axis gaps become the "columns" and
       // the cross axis gaps become the "rows".
-      gap_geometry->SetBlockGapSize(gap_between_items_);
-      gap_geometry->SetInlineGapSize(gap_between_lines_);
-      gap_geometry->SetGapIntersections(kForRows, std::move(cross_axis_gaps_));
-      gap_geometry->SetGapIntersections(kForColumns,
-                                        std::move(main_axis_gaps_));
+      if (gap_between_lines_ > LayoutUnit()) {
+        gap_geometry->SetInlineGapSize(gap_between_lines_);
+        gap_geometry->SetGapIntersections(kForColumns,
+                                          std::move(main_axis_gaps_));
+      }
+      if (gap_between_items_ > LayoutUnit()) {
+        gap_geometry->SetBlockGapSize(gap_between_items_);
+        gap_geometry->SetGapIntersections(kForRows,
+                                          std::move(cross_axis_gaps_));
+      }
     } else {
-      gap_geometry->SetBlockGapSize(gap_between_lines_);
-      gap_geometry->SetInlineGapSize(gap_between_items_);
-      gap_geometry->SetGapIntersections(kForColumns,
-                                        std::move(cross_axis_gaps_));
-      gap_geometry->SetGapIntersections(kForRows, std::move(main_axis_gaps_));
+      if (gap_between_lines_ > LayoutUnit()) {
+        gap_geometry->SetBlockGapSize(gap_between_lines_);
+        gap_geometry->SetGapIntersections(kForRows, std::move(main_axis_gaps_));
+      }
+      if (gap_between_items_ > LayoutUnit()) {
+        gap_geometry->SetInlineGapSize(gap_between_items_);
+        gap_geometry->SetGapIntersections(kForColumns,
+                                          std::move(cross_axis_gaps_));
+      }
     }
 
     return gap_geometry;
