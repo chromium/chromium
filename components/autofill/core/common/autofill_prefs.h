@@ -89,6 +89,12 @@ inline constexpr char kAutofillUploadEncodingSeed[] =
 // via a 10-bit modulus) to an integer bit-field where each bit denotes whether
 // or not a given vote upload event has occurred.
 inline constexpr char kAutofillVoteUploadEvents[] = "autofill.upload_events";
+// Dictionary pref used to track which secondary form signature vote uploads
+// have been performed. Each entry in the dictionary maps a form signature
+// (reduced via a 10-bit modulus) to an integer bit-field where each bit denotes
+// whether or not a given vote upload event has occurred.
+inline constexpr char kAutofillVoteSecondaryFormSignatureUploadEvents[] =
+    "autofill.secondary_form_signature_upload_events";
 // Dictionary pref used to track which form signature metadata uploads have been
 // performed. Each entry in the dictionary maps a form signature (reduced
 // via a 10-bit modulus) to an integer flag that denotes whether or not a given

@@ -57,6 +57,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(kAutocompleteLastVersionRetentionPolicy, 0);
   registry->RegisterStringPref(kAutofillUploadEncodingSeed, "");
   registry->RegisterDictionaryPref(kAutofillVoteUploadEvents);
+  registry->RegisterDictionaryPref(
+      kAutofillVoteSecondaryFormSignatureUploadEvents);
   registry->RegisterDictionaryPref(kAutofillMetadataUploadEvents);
   registry->RegisterTimePref(kAutofillUploadEventsLastResetTimestamp, {});
   registry->RegisterDictionaryPref(kAutofillSyncTransportOptIn);
