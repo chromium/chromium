@@ -3,7 +3,9 @@ default: null
 desc: |-
   Setting the policy to Enabled prevents webpage elements that aren't from the domain that's in the browser's address bar from setting cookies. Setting the policy to Disabled lets those elements set cookies and prevents users from changing this setting.
 
-        Leaving it unset turns third-party cookies on, but users can change this setting.
+        Leaving it unset allows third-party cookies, but users can change this setting.
+
+        Note: This policy doesn't apply in Incognito mode, where third-party cookies are blocked and can only be allowed at the site level. To allow cookies at the site level, use the <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME">CookiesAllowedForUrls</ph> policy.
 example_value: false
 features:
   can_be_recommended: true
