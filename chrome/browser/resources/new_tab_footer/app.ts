@@ -48,7 +48,8 @@ export enum FooterElement {
   OTHER = 0,
   CUSTOMIZE_BUTTON = 1,
   EXTENSION_NAME = 2,
-  MAX_VALUE = EXTENSION_NAME,
+  MANAGEMENT_NOTICE = 3,
+  MAX_VALUE = MANAGEMENT_NOTICE,
 }
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
@@ -187,6 +188,7 @@ export class NewTabFooterAppElement extends CrLitElement {
 
   protected onManagementNoticeClick_(e: Event) {
     e.preventDefault();
+    recordClick(FooterElement.MANAGEMENT_NOTICE);
     this.handler_.openManagementPage();
   }
 

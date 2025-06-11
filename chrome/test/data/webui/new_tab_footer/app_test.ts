@@ -207,6 +207,10 @@ suite('NewTabFooterAppTest', () => {
 
       // Assert.
       assertEquals(1, handler.getCallCount('openManagementPage'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.Footer.Click', FooterElement.MANAGEMENT_NOTICE));
     });
   });
 
