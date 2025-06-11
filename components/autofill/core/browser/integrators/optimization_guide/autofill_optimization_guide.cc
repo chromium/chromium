@@ -238,7 +238,8 @@ void AutofillOptimizationGuide::OnDidParseForm(
     optimization_types.insert(
         optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   if (base::FeatureList::IsEnabled(features::kAutofillEnableAblationStudy)) {
     AddAblationOptimizationTypes(optimization_types);
@@ -402,6 +403,11 @@ bool AutofillOptimizationGuide::ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
 bool AutofillOptimizationGuide::IsUrlEligibleForBnplIssuer(
     BnplIssuer::IssuerId issuer_id,
     const GURL& url) const {
+  if (base::FeatureList::IsEnabled(
+          ::autofill::features::kAutofillEnableAmountExtractionTesting)) {
+    return true;
+  }
+
   auto can_apply_optimization = [&url, this](
                                     optimization_guide::proto::OptimizationType
                                         issuer_optimization_type) {

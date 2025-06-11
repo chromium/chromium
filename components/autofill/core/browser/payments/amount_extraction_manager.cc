@@ -108,16 +108,6 @@ AmountExtractionManager::GetEligibleFeatures(const SuggestionsContext& context,
     return {};
   }
 
-  if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-                BUILDFLAG(IS_CHROMEOS)) {
-    if (base::FeatureList::IsEnabled(
-            ::autofill::features::
-                kAutofillEnableAmountExtractionDesktopLogging)) {
-      // Insert all amount extraction eligible features for logging.
-      return DenseSet<EligibleFeature>::all();
-    }
-  }
-
   const DenseSet<EligibleFeature> eligible_features =
       CheckEligiblilityForFeaturesRequiringAmountExtraction();
 
@@ -190,8 +180,7 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
                 BUILDFLAG(IS_CHROMEOS)) {
     if (base::FeatureList::IsEnabled(
-            ::autofill::features::
-                kAutofillEnableAmountExtractionDesktopLogging)) {
+            ::autofill::features::kAutofillEnableAmountExtractionTesting)) {
       VLOG(3) << "The result of amount extraction on domain "
               << autofill_manager_->client()
                      .GetLastCommittedPrimaryMainFrameOrigin()
@@ -214,8 +203,7 @@ void AmountExtractionManager::OnTimeoutReached() {
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
                 BUILDFLAG(IS_CHROMEOS)) {
     if (base::FeatureList::IsEnabled(
-            ::autofill::features::
-                kAutofillEnableAmountExtractionDesktopLogging)) {
+            ::autofill::features::kAutofillEnableAmountExtractionTesting)) {
       VLOG(3) << "The amount extraction on domain "
               << autofill_manager_->client()
                      .GetLastCommittedPrimaryMainFrameOrigin()

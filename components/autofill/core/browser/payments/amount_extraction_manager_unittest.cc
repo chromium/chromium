@@ -69,7 +69,7 @@ class AmountExtractionManagerTest : public Test {
                               features::kAutofillEnableBuyNowPayLaterSyncing,
                               features::kAutofillEnableBuyNowPayLater},
         /*disabled_features=*/{
-            features::kAutofillEnableAmountExtractionDesktopLogging});
+            features::kAutofillEnableAmountExtractionTesting});
   }
 
  protected:
@@ -284,31 +284,6 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerInIncognitoMode) {
                     /*field_type=*/field_type),
                 IsEmpty());
   }
-}
-
-TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenLoggingFeatureIsEnabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
-                            features::kAutofillEnableBuyNowPayLater,
-                            features::kAutofillEnableAmountExtractionDesktop,
-                            features::
-                                kAutofillEnableAmountExtractionDesktopLogging},
-      /*disabled_features=*/{});
-  SuggestionsContext context;
-  context.is_autofill_available = true;
-  context.filling_product = FillingProduct::kCreditCard;
-
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_manager_->client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForBnplIssuer)
-      .WillByDefault(Return(false));
-
-  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
-                  context, /*should_suppress_suggestions=*/false,
-                  /*has_suggestions=*/true,
-                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
-              ElementsAre(AmountExtractionManager::EligibleFeature::kBnpl));
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfNoBnplIssuer) {

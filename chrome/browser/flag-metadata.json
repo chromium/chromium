@@ -695,7 +695,7 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-enable-amount-extraction-desktop-logging",
+    "name": "autofill-enable-amount-extraction-testing",
     "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 145
   },

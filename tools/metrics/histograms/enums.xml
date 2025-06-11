@@ -8720,6 +8720,8 @@ from previous Chrome versions.
   <int value="-1953121360" label="EphemeralTab:disabled"/>
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
   <int value="-1950469963" label="SeparatePointingStickSettings:enabled"/>
+  <int value="-1949653354"
+      label="AutofillEnableAmountExtractionTesting:disabled"/>
   <int value="-1949364473" label="webview-disable-app-recovery"/>
   <int value="-1948236151" label="DrawPredictedInkPoint:disabled"/>
   <int value="-1947165979" label="GridTabSwitcherSurfaceColorUpdate:enabled"/>
@@ -9842,6 +9844,8 @@ from previous Chrome versions.
       label="CustomizeChromeSidePanelExtensionsCard:disabled"/>
   <int value="-1524323669" label="InstalledAppsInCbd:enabled"/>
   <int value="-1524294555" label="EnableImprovedGuestProfileMenu:enabled"/>
+  <int value="-1522502320"
+      label="AutofillEnableAmountExtractionTesting:enabled"/>
   <int value="-1522389453" label="AndroidWidgetFullscreenToast:enabled"/>
   <int value="-1522266403" label="PasswordLeakToggleMove:enabled"/>
   <int value="-1522135125" label="DiacriticsUseReplaceSurroundingText:enabled"/>

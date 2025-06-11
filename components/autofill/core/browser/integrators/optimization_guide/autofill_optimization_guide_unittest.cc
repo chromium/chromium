@@ -725,6 +725,50 @@ TEST_F(AutofillOptimizationGuideTest,
       BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
 }
 
+// Test that we allow checkout with BNPL for Affirm on a non-allowlisted URL
+// when AmountExtractionDesktopLogging is enabled.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    IsUrlEligibleForBnplIssuer_AmountExtractionDesktopLoggingEnabled_AffirmUrlAllowed) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAmountExtractionTesting};
+
+  EXPECT_CALL(
+      decider(),
+      CanApplyOptimization(
+          Eq(GURL("https://www.testurl.test")),
+          Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
+          Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .Times(0);
+
+  // testurl.test is not in the allowlist, but
+  // kAutofillEnableAmountExtractionTesting overrides the allowlist.
+  EXPECT_TRUE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplAffirm, GURL("https://www.testurl.test")));
+}
+
+// Test that we allow checkout with BNPL for Zip on a non-allowlisted URL when
+// AmountExtractionDesktopLogging is enabled.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    IsUrlEligibleForBnplIssuer_AmountExtractionDesktopLoggingEnabled_ZipUrlAllowed) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAmountExtractionTesting};
+
+  EXPECT_CALL(
+      decider(),
+      CanApplyOptimization(
+          Eq(GURL("https://www.testurl.test")),
+          Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+          Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .Times(0);
+
+  // testurl.test is not in the allowlist, but
+  // kAutofillEnableAmountExtractionTesting overrides the allowlist.
+  EXPECT_TRUE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
+}
+
 // Test that we do not allow checkout amount searching when the amount
 // extraction allowlist is off.
 TEST_F(AutofillOptimizationGuideTest,
@@ -744,7 +788,8 @@ TEST_F(AutofillOptimizationGuideTest,
   EXPECT_FALSE(guide().IsUrlEligibleForBnplIssuer(
       BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // Test that the ablation site lists are registered in case the ablation
 // experiment is enabled.
