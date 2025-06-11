@@ -702,6 +702,9 @@ BASE_FEATURE(kPrefetchPrerenderIntegration,
              "PrefetchPrerenderIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If explicitly disabled, prefetch proxy is not used.
+BASE_FEATURE(kPrefetchProxy, "PrefetchProxy", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, browser-initiated prefetch is allowed.
 // Please see crbug.com/40946257 for more details.
 BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,

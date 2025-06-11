@@ -271,4 +271,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // TODO(crbug.com/422161917): Revert this for the ablation study.
   aw_feature_overrides.EnableFeature(
       features::kServiceWorkerBackgroundUpdateForRegisteredStorageKeys);
+
+  // Explicitly disable PrefetchProxy instead of relying only on passing an
+  // empty URL.
+  aw_feature_overrides.DisableFeature(features::kPrefetchProxy);
 }
