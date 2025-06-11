@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.List;
 
 /** Manages a list of recently closed tabs. */
+@NullMarked
 public interface RecentlyClosedTabManager {
     /**
      * Sets the {@link Runnable} to be called whenever the list of recently closed entries changes.

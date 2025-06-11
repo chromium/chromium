@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Represents a recently closed group from TabRestoreService. */
+@NullMarked
 public class RecentlyClosedGroup extends RecentlyClosedEntry {
     private final String mTitle;
     private final @TabGroupColorId int mColor;

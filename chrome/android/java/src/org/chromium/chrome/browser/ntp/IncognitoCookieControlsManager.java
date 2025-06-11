@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -27,6 +31,7 @@ import org.chromium.components.content_settings.CookieControlsEnforcement;
  * class will be registered as an OnCheckedChangeListener for a corresponding
  * cookie controls view.
  */
+@NullMarked
 public class IncognitoCookieControlsManager
         implements CookieControlsServiceObserver, OnCheckedChangeListener, View.OnClickListener {
     /** Interface for a class that wants to receive updates from this manager. */
@@ -41,7 +46,7 @@ public class IncognitoCookieControlsManager
         void onUpdate(boolean checked, @CookieControlsEnforcement int enforcement);
     }
 
-    private CookieControlsServiceBridge mServiceBridge;
+    private @Nullable CookieControlsServiceBridge mServiceBridge;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private boolean mIsInitialized;
     private boolean mChecked;
@@ -64,6 +69,7 @@ public class IncognitoCookieControlsManager
     public void destroy() {
         if (mServiceBridge != null) {
             mServiceBridge.destroy();
+            mIsInitialized = false;
             mServiceBridge = null;
         }
     }
@@ -84,7 +90,10 @@ public class IncognitoCookieControlsManager
 
     /** Tells the bridge to update itself if necessary. */
     public void updateIfNecessary() {
-        if (mIsInitialized) mServiceBridge.updateServiceIfNecessary();
+        if (mIsInitialized) {
+            assumeNonNull(mServiceBridge);
+            mServiceBridge.updateServiceIfNecessary();
+        }
     }
 
     /**
@@ -112,6 +121,7 @@ public class IncognitoCookieControlsManager
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         boolean isCookieToggle = buttonView.getId() == R.id.cookie_controls_card_toggle;
         if (isChecked != mChecked && isCookieToggle) {
+            assumeNonNull(mServiceBridge);
             mServiceBridge.handleCookieControlsToggleChanged(isChecked);
         }
     }
