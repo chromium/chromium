@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <compare>
 #include <optional>
 #include <string>
