@@ -164,6 +164,12 @@ BASE_FEATURE(kWebViewSeparateResourceContext,
              "WebViewSeparateResourceContext",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to skip shouldInterceptRequest and other checks for prefetch
+// requests.
+BASE_FEATURE(kWebViewSkipInterceptsForPrefetch,
+             "WebViewSkipInterceptsForPrefetch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether to use initial network state during initialization to speed up
 // startup.
 BASE_FEATURE(kWebViewUseInitialNetworkStateAtStartup,

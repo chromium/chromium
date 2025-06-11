@@ -23,6 +23,7 @@
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
 #include "android_webview/browser/network_service/net_helpers.h"
+#include "android_webview/browser/prefetch/aw_prefetch_manager.h"
 #include "android_webview/browser/renderer_host/auto_login_parser.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
@@ -64,6 +65,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "url/gurl.h"
@@ -610,8 +612,17 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
 
 // logic for when not to invoke shouldInterceptRequest callback
 bool InterceptedRequest::ShouldNotInterceptRequest() {
-  if (request_was_redirected_)
+  bool should_skip_intercept_for_prefetch_enabled =
+      base::FeatureList::IsEnabled(features::kWebViewSkipInterceptsForPrefetch);
+  // Do not call shouldInterceptRequest callback for prefetch requests that are
+  // not also prerenders. This is because prerenders are treated as typical
+  // navigations in WebView and therefore should be intercepted as usual.
+  if (request_was_redirected_ ||
+      (should_skip_intercept_for_prefetch_enabled &&
+       AwPrefetchManager::IsPrefetchRequest(request_) &&
+       !AwPrefetchManager::IsPrerenderRequest(request_))) {
     return true;
+  }
 
   // Do not call shouldInterceptRequest callback for special android urls,
   // unless they fail to load on first attempt. Special android urls are urls
@@ -1035,6 +1046,15 @@ void InterceptedRequest::SendNoIntercept(std::optional<bool> xrw_enabled) {
   std::unique_ptr<InterceptResponseReceivedArgs>
       intercept_response_received_args =
           std::make_unique<InterceptResponseReceivedArgs>();
+
+  bool should_skip_intercept_for_prefetch_enabled =
+      base::FeatureList::IsEnabled(features::kWebViewSkipInterceptsForPrefetch);
+  if (should_skip_intercept_for_prefetch_enabled &&
+      AwPrefetchManager::IsPrefetchRequest(request_)) {
+    // Skip the XRW check if this is a prefetch request.
+    InterceptResponseReceived(std::move(intercept_response_received_args));
+    return;
+  }
 
   CheckXrwOriginTrialAsync(
       browser_context_handle_, xrw_enabled, request_.url, frame_tree_node_id_,

@@ -19,4 +19,16 @@ TEST(PreloadingHeadersTest, IsSecPurposeForPrefetch) {
   EXPECT_FALSE(IsSecPurposeForPrefetch(""));
 }
 
+TEST(PreloadingHeadersTest, IsSecPurposeForPrerender) {
+  EXPECT_FALSE(IsSecPurposeForPrerender(kSecPurposePrefetchHeaderValue));
+  EXPECT_FALSE(IsSecPurposeForPrerender(
+      kSecPurposePrefetchAnonymousClientIpHeaderValue));
+  EXPECT_TRUE(
+      IsSecPurposeForPrerender(kSecPurposePrefetchPrerenderHeaderValue));
+  EXPECT_TRUE(
+      IsSecPurposeForPrerender(kSecPurposePrefetchPrerenderPreviewHeaderValue));
+  EXPECT_FALSE(IsSecPurposeForPrerender(std::nullopt));
+  EXPECT_FALSE(IsSecPurposeForPrerender(""));
+}
+
 }  // namespace blink
