@@ -4348,5 +4348,49 @@
       "--enable-features=CSSDoNotHideVisitedColor"
     ],
     "expires": "Jun 3, 2026"
+  },
+  {
+    "prefix": "log-dns-prefetch-and-preconnect",
+    "owners": [
+      "leimy@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "Fuchsia"
+    ],
+    "bases": [
+      "http/tests/linkHeader/link-dnsprefetch-valid.php",
+      "http/tests/linkHeader/link-header-skips-invalid-headers.php",
+      "http/tests/linkHeader/link-preconnect-schemeless.https.php",
+      "http/tests/linkHeader/link-preconnect-schemeless.php",
+      "http/tests/linkHeader/link-preconnect-valid.php"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--web-settings-for-testing=logDnsPrefetchAndPreconnect:true"
+    ],
+    "expires": "never"
+  },
+  {
+    "prefix": "log-preload",
+    "owners": [
+      "leimy@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "Fuchsia"
+    ],
+    "bases": [
+      "http/tests/linkHeader/link-header-preload-fetchpriority.php"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--web-settings-for-testing=logPreload:true"
+    ],
+    "expires": "never"
   }
 ]
