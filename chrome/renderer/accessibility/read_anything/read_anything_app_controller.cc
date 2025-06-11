@@ -1078,8 +1078,12 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
   ui::AXSerializableTree* tree = model_.GetActiveTree();
-  DCHECK(tree);
-  DCHECK(tree->root());
+  // Fail gracefully if RootId() is ever called with an invalid active tree.
+  DUMP_WILL_BE_CHECK(tree);
+  DUMP_WILL_BE_CHECK(tree->root());
+  if (!tree || !tree->root()) {
+    return ui::kInvalidAXNodeID;
+  }
   return tree->root()->id();
 }
 
