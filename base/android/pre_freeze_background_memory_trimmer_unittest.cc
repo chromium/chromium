@@ -198,7 +198,7 @@ class PreFreezeSelfCompactionTestWithParam
     : public PreFreezeSelfCompactionTest,
       public testing::WithParamInterface<int> {
  public:
-  std::unique_ptr<PreFreezeBackgroundMemoryTrimmer::CompactionState> GetState(
+  std::unique_ptr<SelfCompactionManager::CompactionState> GetState(
       const base::TimeTicks& triggered_at) {
     auto task_runner = task_environment_.GetMainThreadTaskRunner();
     if (UseRunningCompact()) {
