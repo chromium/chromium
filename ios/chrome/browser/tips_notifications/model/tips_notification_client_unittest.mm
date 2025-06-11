@@ -89,15 +89,9 @@ class TipsNotificationClientTest : public PlatformTest {
     update->Set(kTipsNotificationKey, true);
   }
 
-  ~TipsNotificationClientTest() override {
-    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-    EXPECT_OCMOCK_VERIFY(mock_scene_state_);
-  }
-
   // Sets up a mock notification center, so notification requests can be
   // tested.
   void SetupMockNotificationCenter() {
-    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
     mock_notification_center_ = OCMClassMock([UNUserNotificationCenter class]);
     // Swizzle in the mock notification center.
     UNUserNotificationCenter* (^swizzle_block)() =
@@ -463,8 +457,7 @@ TEST_F(TipsNotificationClientTest, WhatsNewRequest) {
 }
 
 // Tests that the client can request a Proactive Whats New notification.
-// TODO(crbug.com/422439656): Re-enable the test.
-TEST_F(TipsNotificationClientTest, DISABLED_WhatsNewProactiveRequest) {
+TEST_F(TipsNotificationClientTest, WhatsNewProactiveRequest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kIOSReactivationNotifications);
   SetSentNotifications({TipsNotificationType::kLens,
@@ -559,7 +552,7 @@ TEST_F(TipsNotificationClientTest, WhatsNewHandle) {
 }
 
 // Tests that the client can register a SetUpList Continuation notification.
-TEST_F(TipsNotificationClientTest, DISABLED_SetUpListContinuationRequest) {
+TEST_F(TipsNotificationClientTest, SetUpListContinuationRequest) {
   WriteFirstRunSentinel();
   StubGetPendingRequests(nil);
   SetSentNotifications({TipsNotificationType::kEnhancedSafeBrowsing,
@@ -877,8 +870,7 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
 
 // Tests that the client can register a CPE Promo notification, only when the
 // CPE promo was displayed more than 7 days ago.
-// TODO(crbug.com/422439656): Re-enable the test.
-TEST_F(TipsNotificationClientTest, DISABLED_CPERequest) {
+TEST_F(TipsNotificationClientTest, CPERequest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kIOSExpandedTips);
   WriteFirstRunSentinel();
@@ -906,6 +898,7 @@ TEST_F(TipsNotificationClientTest, DISABLED_CPERequest) {
   base::RunLoop run_loop;
   client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
   run_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 
   // Simulate that the CPE promo was displayed more than 30 days ago.
   local_state->SetTime(prefs::kIosCredentialProviderPromoDisplayTime,
@@ -966,6 +959,7 @@ TEST_F(TipsNotificationClientTest, LensOverlayRequest) {
   base::RunLoop run_loop;
   client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
   run_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 
   // Simulate that the LensOverlay was displayed more than 30 days ago.
   local_state->SetTime(prefs::kLensOverlayLastPresented,
