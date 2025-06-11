@@ -22072,6 +22072,27 @@
             ]
         }
     ],
+    "SeaPenTextInputI18n": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SeaPenTextInputTranslation"
+                    ]
+                },
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "SeaPenTextInputTranslation"
+                    ]
+                }
+            ]
+        }
+    ],
     "SeaPenUseExptTemplate": [
         {
             "platforms": [
