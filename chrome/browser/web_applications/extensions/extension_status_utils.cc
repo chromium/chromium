@@ -26,17 +26,6 @@ namespace {
 
 const char* g_preinstalled_app_for_testing = nullptr;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// TODO(b/268221237): Remove this allow-list.
-const char kDefaultAllowedExtensionIds[] =
-    "alhngdkjgnedakdlnamimgfihgkmenbh,"
-    "gnddkmpjjjcimefninepfmmddpgaaado";
-
-base::FeatureParam<std::string> kChromeAppAllowlist{
-    &features::kChromeAppsDeprecation, "allow_list",
-    kDefaultAllowedExtensionIds};
-#endif
-
 }  // namespace
 
 namespace extensions {
@@ -124,18 +113,6 @@ bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
       extension_id, extensions::ExtensionRegistry::EVERYTHING);
   if (!app || !app->is_app())
     return false;
-
-  // This feature parameter can specify specific extension ids to continue
-  // allowing.
-  if (!kChromeAppAllowlist.Get().empty()) {
-    std::vector<std::string> allowed_extension_ids =
-        base::SplitString(kChromeAppAllowlist.Get(), ",", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    for (const std::string& allowed_extension_id : allowed_extension_ids) {
-      if (extension_id == allowed_extension_id)
-        return false;
-    }
-  }
 
   return true;
 }
