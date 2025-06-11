@@ -66,7 +66,6 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.OptimizedFrameLayout;
-import org.chromium.ui.xr.scenecore.XrSceneCoreUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -110,12 +109,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         super(context, attrs);
         mToolbarLayoutHeight =
                 getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-
-        var xrManager = XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(context);
-        if (xrManager != null) {
-            mXrSpaceModeObservableSupplier = xrManager.getXrSpaceModeObservableSupplier();
-            mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);
-        }
     }
 
     @Override
@@ -866,6 +859,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     ToolbarViewResourceFrameLayout getToolbarContainerForTesting() {
         return mToolbarContainer;
+    }
+
+    public void setXrSpaceModeObservableSupplierMaybe(
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+        if (mXrSpaceModeObservableSupplier == null && xrSpaceModeObservableSupplier != null) {
+            mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+            mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);
+        }
     }
 
     public void onXrSpaceModeChanged(Boolean fullSpaceMode) {

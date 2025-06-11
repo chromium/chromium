@@ -323,7 +323,11 @@ public class HubLayoutUnitTest {
                 LazyOneshotSupplier.fromValue(mFrameLayout);
         HubLayoutDependencyHolder dependencyHolder =
                 new HubLayoutDependencyHolder(
-                        hubManagerSupplier, rootViewSupplier, mScrimController, mOnAlphaChange);
+                        hubManagerSupplier,
+                        rootViewSupplier,
+                        mScrimController,
+                        mOnAlphaChange,
+                        /* xrSceneCoreSessionManager= */ null);
 
         mTabModelSelectorSupplier = () -> mTabModelSelector;
         mHubLayout =
@@ -736,7 +740,11 @@ public class HubLayoutUnitTest {
                 LazyOneshotSupplier.fromValue(mFrameLayout);
         HubLayoutDependencyHolder dependencyHolder =
                 new HubLayoutDependencyHolder(
-                        hubManagerSupplier, rootViewSupplier, mScrimController, mOnAlphaChange);
+                        hubManagerSupplier,
+                        rootViewSupplier,
+                        mScrimController,
+                        mOnAlphaChange,
+                        /* xrSceneCoreSessionManager= */ null);
         mHubLayout =
                 new HubLayout(
                         mActivity,

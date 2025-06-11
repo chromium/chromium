@@ -15,8 +15,10 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubColorMixer.OverviewModeAlphaObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
 /**
  * Holds dependencies for initialization of {@link HubLayout}. These dependencies come from the
@@ -30,6 +32,7 @@ public class HubLayoutDependencyHolder {
     private final LazyOneshotSupplier<ViewGroup> mHubRootViewGroupSupplier;
     private final HubLayoutScrimController mScrimController;
     private final OverviewModeAlphaObserver mOnOverviewAlphaChange;
+    private final @Nullable XrSceneCoreSessionManager mXrSceneCoreSessionManager;
 
     /**
      * @param hubManagerSupplier The supplier of {@link HubManager}.
@@ -42,6 +45,8 @@ public class HubLayoutDependencyHolder {
      *     {@link HubLayout} scrims.
      * @param onOverviewAlphaChange Observer to notify when overview color alpha changes during
      *     animations.
+     * @param xrSceneCoreSessionManager The {@link XrSceneCoreSessionManager} to manage XR space
+     *     modes.
      */
     public HubLayoutDependencyHolder(
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
@@ -49,13 +54,15 @@ public class HubLayoutDependencyHolder {
             ScrimManager scrimManager,
             Supplier<View> scrimAnchorViewSupplier,
             ObservableSupplier<Boolean> isIncognitoSupplier,
-            OverviewModeAlphaObserver onOverviewAlphaChange) {
+            OverviewModeAlphaObserver onOverviewAlphaChange,
+            @Nullable XrSceneCoreSessionManager xrSceneCoreSessionManager) {
         this(
                 hubManagerSupplier,
                 hubRootViewGroupSupplier,
                 new HubLayoutScrimController(
                         scrimManager, scrimAnchorViewSupplier, isIncognitoSupplier),
-                onOverviewAlphaChange);
+                onOverviewAlphaChange,
+                xrSceneCoreSessionManager);
     }
 
     /**
@@ -63,17 +70,21 @@ public class HubLayoutDependencyHolder {
      * @param hubRootViewGroupSupplier Supplier for the root view to attach the hub to.
      * @param scrimController The {@link HubLayoutScrimController} for managing scrims.
      * @param onOverviewAlphaChange Observer to notify when alpha changes during animations.
+     * @param xrSceneCoreSessionManager The {@link XrSceneCoreSessionManager} to manage XR space
+     *     modes.
      */
     @VisibleForTesting
     HubLayoutDependencyHolder(
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
             LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
             HubLayoutScrimController scrimController,
-            OverviewModeAlphaObserver onOverviewAlphaChange) {
+            OverviewModeAlphaObserver onOverviewAlphaChange,
+            @Nullable XrSceneCoreSessionManager xrSceneCoreSessionManager) {
         mHubManagerSupplier = hubManagerSupplier;
         mHubRootViewGroupSupplier = hubRootViewGroupSupplier;
         mScrimController = scrimController;
         mOnOverviewAlphaChange = onOverviewAlphaChange;
+        mXrSceneCoreSessionManager = xrSceneCoreSessionManager;
     }
 
     /** Returns the {@link HubManager} creating it if necessary. */
@@ -94,5 +105,11 @@ public class HubLayoutDependencyHolder {
     /** Returns the observer to notify when alpha changes during animations. */
     public OverviewModeAlphaObserver getOnOverviewAlphaChange() {
         return mOnOverviewAlphaChange;
+    }
+
+    /** Returns {@link XrSceneCoreSessionManager} managing XR space modes. */
+    @Nullable
+    public XrSceneCoreSessionManager getXrSceneCoreSessionManager() {
+        return mXrSceneCoreSessionManager;
     }
 }

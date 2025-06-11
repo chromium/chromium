@@ -126,7 +126,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable ArchivedTabsAutoDeletePromoManager archivedTabsAutoDeletePromoManager,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
+            @NonNull Supplier<LayoutStateProvider> layoutStateProviderSupplier,
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
         TabSwitcherPaneCoordinatorFactory factory =
@@ -177,7 +178,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                                 userEducationHelper,
                                 edgeToEdgeSupplier,
                                 compositorViewHolderSupplier,
-                                tabGroupCreationUiDelegate)
+                                tabGroupCreationUiDelegate,
+                                xrSpaceModeObservableSupplier)
                         : new TabSwitcherPane(
                                 activity,
                                 ContextUtils.getAppSharedPreferences(),
@@ -194,7 +196,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                                 edgeToEdgeSupplier,
                                 compositorViewHolderSupplier,
                                 tabGroupCreationUiDelegate,
-                                archivedTabsAutoDeletePromoManager);
+                                archivedTabsAutoDeletePromoManager,
+                                xrSpaceModeObservableSupplier);
         return Pair.create(pane, pane);
     }
 

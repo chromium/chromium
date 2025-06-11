@@ -292,7 +292,8 @@ public class TabSwitcherPaneUnitTest {
                         mEdgeToEdgeSupplier,
                         mCompositorViewHolderSupplier,
                         mUiFlow,
-                        mMockArchivedTabsAutoDeletePromoManager);
+                        mMockArchivedTabsAutoDeletePromoManager,
+                        /* xrSpaceModeObservableSupplier= */ null);
         ShadowLooper.runUiThreadTasks();
         verify(mSharedPreferences)
                 .registerOnSharedPreferenceChangeListener(

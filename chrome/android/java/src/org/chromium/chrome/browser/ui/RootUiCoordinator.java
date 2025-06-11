@@ -341,6 +341,7 @@ public class RootUiCoordinator
     private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
     protected AdaptiveToolbarUiCoordinator mAdaptiveToolbarUiCoordinator;
+    private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -384,6 +385,8 @@ public class RootUiCoordinator
      * @param savedInstanceState The saved bundle for the last recorded state.
      * @param overviewColorSupplier Notifies when the overview color changes.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
+     * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
+     *     space mode, false otherwise.
      */
     public RootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -424,7 +427,8 @@ public class RootUiCoordinator
             @Nullable BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
-            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
+            @NonNull EdgeToEdgeManager edgeToEdgeManager,
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -556,6 +560,7 @@ public class RootUiCoordinator
         mBottomControlsStacker =
                 new BottomControlsStacker(mBrowserControlsManager, mActivity, mWindowAndroid);
         mTopControlsStacker = new TopControlsStacker();
+        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -1525,7 +1530,8 @@ public class RootUiCoordinator
                             getMultiInstanceManager(),
                             mTabBookmarkerSupplier,
                             getMenuButtonVisibilityDelegate(),
-                            mTopControlsStacker);
+                            mTopControlsStacker,
+                            mXrSpaceModeObservableSupplier);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

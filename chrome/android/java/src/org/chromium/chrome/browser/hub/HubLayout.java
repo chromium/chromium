@@ -220,7 +220,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             maybeUpdateLayout();
         }
 
-        mXrSessionManager = XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(getContext());
+        mXrSessionManager = dependencyHolder.getXrSceneCoreSessionManager();
     }
 
     @Override

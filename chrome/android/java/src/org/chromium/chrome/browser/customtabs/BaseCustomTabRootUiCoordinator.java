@@ -272,7 +272,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 backPressManager,
                 null,
                 new ObservableSupplierImpl<>(Color.TRANSPARENT),
-                edgeToEdgeManager);
+                edgeToEdgeManager,
+                /* xrSpaceModeObservableSupplier= */ null);
         mToolbarCoordinator = customTabToolbarCoordinator;
         mIntentDataProvider = intentDataProvider;
         mCustomTabSearchClient = new SearchActivityClientImpl(activity, IntentOrigin.CUSTOM_TAB);

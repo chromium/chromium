@@ -132,6 +132,8 @@ public interface TabManagementDelegate {
      *     groups.
      * @param layoutStateProviderSupplier Supplies the LayoutStateProvider, which is used to observe
      *     when the TabSwitcher is hidden.
+     * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
+     *     space mode, false otherwise.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             Activity activity,
@@ -163,7 +165,8 @@ public interface TabManagementDelegate {
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable ArchivedTabsAutoDeletePromoManager archivedTabsAutoDeletePromoManager,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            Supplier<LayoutStateProvider> layoutStateProviderSupplier);
+            Supplier<LayoutStateProvider> layoutStateProviderSupplier,
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.

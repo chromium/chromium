@@ -562,6 +562,7 @@ public class ChromeTabbedActivity extends ChromeActivity
     @Nullable private ExtensionKeybindingRegistry mExtensionKeybindingRegistry;
 
     private @Nullable XrSceneCoreSessionManager mXrSceneCoreSessionManager;
+    private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -852,7 +853,8 @@ public class ChromeTabbedActivity extends ChromeActivity
                         mRootUiCoordinator.getScrimManager(),
                         rootViewSupplier::get,
                         incognitoSupplier,
-                        adaptOnOverviewColorAlphaChange());
+                        adaptOnOverviewColorAlphaChange(),
+                        getXrSceneCoreSessionManager());
 
         return hubLayoutDependencyHolder;
     }
@@ -924,7 +926,8 @@ public class ChromeTabbedActivity extends ChromeActivity
                             actionConfirmationManager,
                             mRootUiCoordinator.getDataSharingTabManager(),
                             mRootUiCoordinator.getBottomSheetController(),
-                            mRootUiCoordinator.getShareDelegateSupplier());
+                            mRootUiCoordinator.getShareDelegateSupplier(),
+                            getXrSpaceModeObservableSupplier());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }
@@ -1035,7 +1038,8 @@ public class ChromeTabbedActivity extends ChromeActivity
                         () ->
                                 ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                         .getTabGroupSyncController(),
-                        mLayoutStateProviderSupplier);
+                        mLayoutStateProviderSupplier,
+                        getXrSpaceModeObservableSupplier());
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }
@@ -1113,9 +1117,10 @@ public class ChromeTabbedActivity extends ChromeActivity
     }
 
     private void onTabSwitcherClicked() {
-        if (mXrSceneCoreSessionManager != null) {
+        var xrSceneCoreSessionManager = getXrSceneCoreSessionManager();
+        if (xrSceneCoreSessionManager != null) {
             // Do nothing if space mode switch is already started.
-            mXrSceneCoreSessionManager.startSpaceModeChange(
+            xrSceneCoreSessionManager.startSpaceModeChange(
                     true, this::onTabSwitcherClickedInternal);
         } else {
             onTabSwitcherClickedInternal();
@@ -2530,7 +2535,6 @@ public class ChromeTabbedActivity extends ChromeActivity
         mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
 
-        initializeXrSceneCoreSessionManager();
         initHub();
     }
 
@@ -2585,7 +2589,8 @@ public class ChromeTabbedActivity extends ChromeActivity
                 initHubOverviewColorSupplier(),
                 mManualFillingComponentSupplier,
                 getEdgeToEdgeManager(),
-                mBookmarkManagerOpenerSupplier);
+                mBookmarkManagerOpenerSupplier,
+                getXrSpaceModeObservableSupplier());
     }
 
     @Override
@@ -2630,6 +2635,10 @@ public class ChromeTabbedActivity extends ChromeActivity
 
         mContentContainer = findViewById(android.R.id.content);
         mControlContainer = findViewById(R.id.control_container);
+        if (mControlContainer != null) {
+            mControlContainer.setXrSpaceModeObservableSupplierMaybe(
+                    getXrSpaceModeObservableSupplier());
+        }
 
         Supplier<Boolean> dialogVisibilitySupplier =
                 () -> {
@@ -3943,6 +3952,9 @@ public class ChromeTabbedActivity extends ChromeActivity
         }
 
         if (mXrSceneCoreSessionManager != null) {
+            mXrSceneCoreSessionManager
+                    .getXrSpaceModeObservableSupplier()
+                    .removeObserver(mOnXrSpaceModeChanged);
             mXrSceneCoreSessionManager.destroy();
             mXrSceneCoreSessionManager = null;
         }
@@ -4317,19 +4329,6 @@ public class ChromeTabbedActivity extends ChromeActivity
         }
     }
 
-    private void initializeXrSceneCoreSessionManager() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // TODO(crbug.com/422134376): To detect "Android XR" query OS instead of device's
-            // properties.
-            if (XrUtils.isXrDevice()) {
-                mXrSceneCoreSessionManager = new XrSceneCoreSessionManagerImpl(this);
-                mXrSceneCoreSessionManager
-                        .getXrSpaceModeObservableSupplier()
-                        .addSyncObserver(this::onXrSpaceModeChanged);
-            }
-        }
-    }
-
     /**
      * Hide/show web content, make background opaque or transparent when switching to/from XR full
      * space mode.
@@ -4355,6 +4354,23 @@ public class ChromeTabbedActivity extends ChromeActivity
 
     @Override
     public @Nullable XrSceneCoreSessionManager getXrSceneCoreSessionManager() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // TODO(crbug.com/422134376): To detect "Android XR" query OS instead of device's
+            // properties.
+            if (XrUtils.isXrDevice() && mXrSceneCoreSessionManager == null) {
+                mXrSceneCoreSessionManager = new XrSceneCoreSessionManagerImpl(this);
+                mXrSceneCoreSessionManager
+                        .getXrSpaceModeObservableSupplier()
+                        .addSyncObserver(mOnXrSpaceModeChanged);
+            }
+        }
         return mXrSceneCoreSessionManager;
+    }
+
+    private @Nullable ObservableSupplier<Boolean> getXrSpaceModeObservableSupplier() {
+        var xrSceneCoreSessionManager = getXrSceneCoreSessionManager();
+        return xrSceneCoreSessionManager != null
+                ? xrSceneCoreSessionManager.getXrSpaceModeObservableSupplier()
+                : null;
     }
 }

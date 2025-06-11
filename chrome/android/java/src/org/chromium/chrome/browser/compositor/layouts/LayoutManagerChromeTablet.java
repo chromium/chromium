@@ -79,6 +79,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
      * @param bottomSheetController The {@link BottomSheetController} used to show bottom sheets.
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
+     * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
+     *     space mode, false otherwise.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -101,7 +103,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             ActionConfirmationManager actionConfirmationManager,
             DataSharingTabManager dataSharingTabManager,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull Supplier<ShareDelegate> shareDelegateSupplier) {
+            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         super(
                 host,
                 contentContainer,
@@ -131,7 +134,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         actionConfirmationManager,
                         dataSharingTabManager,
                         bottomSheetController,
-                        shareDelegateSupplier);
+                        shareDelegateSupplier,
+                        xrSpaceModeObservableSupplier);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;

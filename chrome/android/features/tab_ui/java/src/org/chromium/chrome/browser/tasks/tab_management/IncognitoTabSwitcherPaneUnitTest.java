@@ -154,7 +154,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mUserEducationHelper,
                         mEdgeToEdgeSupplier,
                         mCompositorViewHolderSupplier,
-                        mUiFlow);
+                        mUiFlow,
+                        /* xrSpaceModeObservableSupplier= */ null);
     }
 
     @After

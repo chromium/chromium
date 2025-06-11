@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 public class XrUtils {
     private static XrUtils sInstance = new XrUtils();
     private static @Nullable Boolean sXrDeviceOverrideForTesting;
+    private static @Nullable Boolean sIsXrDevice;
 
     // For spatialization of Chrome app using Jetpack XR.
     private boolean mInFullSpaceMode;
@@ -31,14 +32,13 @@ public class XrUtils {
 
     /** Return if the app is running on an immersive XR device. */
     public static boolean isXrDevice() {
-        boolean xrDevice =
-                (sXrDeviceOverrideForTesting != null)
-                        ? sXrDeviceOverrideForTesting
-                        : (PackageManagerUtils.hasSystemFeature(
-                                        PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)
-                                || PackageManagerUtils.hasSystemFeature(
-                                        PackageManagerUtils.XR_OPENXR_FEATURE_NAME));
-        return xrDevice;
+        if (sIsXrDevice == null) sIsXrDevice = isXrDeviceInternal();
+        return sXrDeviceOverrideForTesting != null ? sXrDeviceOverrideForTesting : sIsXrDevice;
+    }
+
+    private static boolean isXrDeviceInternal() {
+        return PackageManagerUtils.hasSystemFeature(PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)
+                || PackageManagerUtils.hasSystemFeature(PackageManagerUtils.XR_OPENXR_FEATURE_NAME);
     }
 
     /**

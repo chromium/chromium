@@ -213,7 +213,6 @@ import org.chromium.ui.resources.dynamics.DynamicResourceSnapshot;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ViewRectProvider;
-import org.chromium.ui.xr.scenecore.XrSceneCoreUtils;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -392,7 +391,7 @@ public class ToolbarManager
     private final NewTabPageDelegate mNtpDelegate;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
-    private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -741,6 +740,8 @@ public class ToolbarManager
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @param menuButtonVisibilityDelegate Delegate for handling the visibility of the menu button.
      * @param topControlsStacker TopControlsStacker to manage the view's y-offset.
+     * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
+     *     space mode, false otherwise.
      */
     public ToolbarManager(
             AppCompatActivity activity,
@@ -790,7 +791,8 @@ public class ToolbarManager
             @Nullable MultiInstanceManager multiInstanceManager,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @Nullable MenuButtonCoordinator.VisibilityDelegate menuButtonVisibilityDelegate,
-            TopControlsStacker topControlsStacker) {
+            TopControlsStacker topControlsStacker,
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -1663,9 +1665,8 @@ public class ToolbarManager
                             browsingModeThemeColorProvider);
         }
 
-        var xrManager = XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(mActivity);
-        if (xrManager != null) {
-            mXrSpaceModeObservableSupplier = xrManager.getXrSpaceModeObservableSupplier();
+        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+        if (mXrSpaceModeObservableSupplier != null) {
             mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);
         }
 
