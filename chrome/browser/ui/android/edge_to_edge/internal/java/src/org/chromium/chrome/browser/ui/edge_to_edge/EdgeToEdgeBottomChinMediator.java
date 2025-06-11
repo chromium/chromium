@@ -125,6 +125,7 @@ class EdgeToEdgeBottomChinMediator
                 mEdgeToEdgeController.getBottomInsetPx(),
                 mEdgeToEdgeController.isDrawingToEdge(),
                 mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
+        if (!mDefaultVisibility) mModel.set(Y_OFFSET, mModel.get(HEIGHT));
         updateHeightAndVisibility();
     }
 

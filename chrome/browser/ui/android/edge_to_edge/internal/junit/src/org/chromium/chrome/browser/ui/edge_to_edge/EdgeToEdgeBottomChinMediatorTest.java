@@ -90,6 +90,8 @@ public class EdgeToEdgeBottomChinMediatorTest {
     @Before
     public void setUp() {
         mModel = new PropertyModel.Builder(EdgeToEdgeBottomChinProperties.ALL_KEYS).build();
+        // set a default height for testing.
+        doReturn(42).when(mEdgeToEdgeController).getSystemBottomInsetPx();
         mMediator =
                 new EdgeToEdgeBottomChinMediator(
                         mModel,
@@ -104,7 +106,14 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
     @Test
     public void testInitialization() {
-        assertEquals(0, mModel.get(Y_OFFSET));
+        if (mIsTablet) {
+            assertEquals(
+                    "Should be initialized to the default height.",
+                    mModel.get(HEIGHT),
+                    mModel.get(Y_OFFSET));
+        } else {
+            assertEquals(0, mModel.get(Y_OFFSET));
+        }
 
         verify(mKeyboardVisibilityDelegate).addKeyboardVisibilityListener(eq(mMediator));
         verify(mLayoutManager).addObserver(eq(mMediator));
