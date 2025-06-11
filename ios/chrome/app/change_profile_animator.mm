@@ -192,6 +192,7 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
   __weak SceneState* _sceneState;
   ProfileInitStage _minimumInitStage;
   ChangeProfileContinuation _continuation;
+  BOOL _cancelledAnimation;
 }
 
 - (instancetype)initWithWindow:(MDCOverlayWindow*)window {
@@ -250,7 +251,17 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
 #pragma mark SceneStateAnimator
 
 - (void)cancelAnimation {
-  [_animation unblurWithDuration:kAnimationDuration];
+  if (!_cancelledAnimation) {
+    _cancelledAnimation = YES;
+    [_animation unblurWithDuration:kAnimationDuration];
+  }
+}
+
+- (void)restartAnimation {
+  if (_cancelledAnimation) {
+    _cancelledAnimation = NO;
+    [_animation blurWithDuration:kAnimationDuration];
+  }
 }
 
 #pragma mark Private methods

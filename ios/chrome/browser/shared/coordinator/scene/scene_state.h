@@ -28,8 +28,13 @@ class SigninInProgress;
 // the user to interact with some mandatory interactive step.
 @protocol SceneStateAnimator
 
-// Cancel any in progress animation.
+// Cancel any in progress animation. The animation can be restarted with
+// the -restartAnimation method.
 - (void)cancelAnimation;
+
+// Restart the animation if it has been cancelled. Does nothing if the
+// animation has not been cancelled before.
+- (void)restartAnimation;
 
 @end
 

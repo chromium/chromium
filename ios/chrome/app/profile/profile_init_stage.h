@@ -41,7 +41,10 @@ enum class ProfileInitStage {
   // conditions are already handled, the transition will be instantanous.
   //
   // It is possible to add new stage between kUIReady and kNormalUI to add new
-  // blocking stage if a feature requires it.
+  // blocking stage if a feature requires it. All those transitions must either
+  // be instantaneous or are assumed to require user interaction (and cause the
+  // ProfileController to cancel any in-progress animation related to profile
+  // switching).
 
   // This presents the first run experience. Only presented for new profile
   // (maybe first profile?)
