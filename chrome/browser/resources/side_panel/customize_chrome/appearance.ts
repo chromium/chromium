@@ -80,6 +80,8 @@ export class AppearanceElement extends AppearanceElementBase {
       showManagedButton_: {type: Boolean},
       showManagedDialog_: {type: Boolean},
       showEditTheme_: {type: Boolean},
+      managedByName_: {type: String},
+      managedByDescription_: {type: String},
       newTabPageType_: {type: NewTabPageType},
 
       wallpaperSearchButtonEnabled_: {
@@ -114,7 +116,8 @@ export class AppearanceElement extends AppearanceElementBase {
   protected accessor newTabPageType_: NewTabPageType =
       NewTabPageType.kFirstPartyWebUI;
   protected accessor showEditTheme_: boolean = true;
-  protected ntpManagedByName_: string = '';
+  protected accessor managedByName_: string = '';
+  protected managedByDesc_: string = '';
   private setThemeEditableId_: number|null = null;
   private setThemeListenerId_: number|null = null;
   private attachedTabStateUpdatedId_: number|null = null;
@@ -155,8 +158,9 @@ export class AppearanceElement extends AppearanceElementBase {
     this.ntpManagedByNameUpdatedId_ =
         CustomizeChromeApiProxy.getInstance()
             .callbackRouter.ntpManagedByNameUpdated.addListener(
-                (ntpManagedByName: string) => {
-                  this.ntpManagedByName_ = ntpManagedByName;
+                (name: string, description: string) => {
+                  this.managedByName_ = name;
+                  this.managedByDesc_ = description;
                 });
     this.pageHandler_.updateNtpManagedByName();
   }
@@ -194,6 +198,11 @@ export class AppearanceElement extends AppearanceElementBase {
       this.showThemeSnapshot_ = this.computeShowThemeSnapshot_();
       this.showUploadedImageButton_ = this.computeShowUploadedImageButton_();
       this.showSearchedImageButton_ = this.computeShowSearchedImageButton_();
+    }
+
+    if (changedPrivateProperties.has('newTabPageType_') ||
+        changedPrivateProperties.has('managedByName_') ||
+        changedPrivateProperties.has('managedByDesc_')) {
       this.showManagedButton_ = this.computeShowManagedButton_();
     }
 
@@ -291,7 +300,7 @@ export class AppearanceElement extends AppearanceElementBase {
 
   private computeShowManagedButton_(): boolean {
     return this.newTabPageType_ !== NewTabPageType.kFirstPartyWebUI &&
-        !!this.ntpManagedByName_;
+        !!this.managedByName_;
   }
 
   protected onEditThemeClicked_() {

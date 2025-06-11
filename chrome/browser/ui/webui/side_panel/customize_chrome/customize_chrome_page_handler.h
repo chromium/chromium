@@ -144,8 +144,6 @@ class CustomizeChromePageHandler
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
 
-  std::u16string GetManagingThirdPartyName() const;
-
   // Returns the type of New Tab Page the SidePanel is attached to.
   side_panel::mojom::NewTabPageType GetNewTabPageType(const GURL& url);
 

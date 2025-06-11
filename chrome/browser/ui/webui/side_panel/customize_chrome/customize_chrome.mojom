@@ -238,7 +238,7 @@ interface CustomizeChromePage {
   ScrollToSection(CustomizeChromeSection section);
   // Sets Information about the tab that is attached to the CustomizeChromePage.
   AttachedTabStateUpdated(NewTabPageType ntp_type);
-  // Sets the name of the system that manages the new tab page if there is one.
-  // If not, empty string should be provided.
-  NtpManagedByNameUpdated(string ntp_managed_by_name);
+  // Sets the name and description of the system that manages the new tab page,
+  // if there is one. If not, empty strings should be provided.
+  NtpManagedByNameUpdated(string name, string description);
 };

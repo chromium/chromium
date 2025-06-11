@@ -130,7 +130,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
        IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_UPLOADED_IMAGE_COMPLETE},
       {"followThemeToggle", IDS_NTP_CUSTOMIZE_CHROME_FOLLOW_THEME_LABEL},
       {"refreshDaily", IDS_NTP_CUSTOM_BG_DAILY_REFRESH},
-      {"newTabPageManagedBy", IDS_NTP_CUSTOMIZE_CHROME_MANAGED_NEW_TAB_PAGE},
+      {"managedByExtension", IDS_NTP_MANAGED_BY_EXTENSION},
+      {"managedBySearchEngine", IDS_NTP_MANAGED_BY_SEARCH_ENGINE},
       {"newTabPageManagedByA11yLabel",
        IDS_NTP_CUSTOMIZE_CHROME_MANAGED_NEW_TAB_PAGE_ACCESSIBILITY},
       // Shortcut strings.

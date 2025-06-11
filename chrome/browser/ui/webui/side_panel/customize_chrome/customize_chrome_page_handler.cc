@@ -546,8 +546,22 @@ void CustomizeChromePageHandler::UpdateAttachedTabState() {
 }
 
 void CustomizeChromePageHandler::UpdateNtpManagedByName() {
-  page_->NtpManagedByNameUpdated(
-      base::UTF16ToUTF8(GetManagingThirdPartyName()));
+  std::string name;
+  std::string description;
+
+  // Check overriding extensions first.
+  const extensions::Extension* extension_managing_ntp =
+      extensions::GetExtensionOverridingNewTabPage(profile_);
+  if (extension_managing_ntp) {
+    name = extension_managing_ntp->short_name();
+    description = l10n_util::GetStringUTF8(IDS_NTP_MANAGED_BY_EXTENSION);
+  } else if (IsNtpManagedByThirdPartySearchEngine()) {
+    name = base::UTF16ToUTF8(
+        template_url_service_->GetDefaultSearchProvider()->short_name());
+    description = l10n_util::GetStringUTF8(IDS_NTP_MANAGED_BY_SEARCH_ENGINE);
+  }
+
+  page_->NtpManagedByNameUpdated(name, description);
 }
 
 void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
@@ -581,22 +595,6 @@ bool CustomizeChromePageHandler::IsCustomLinksEnabled() const {
 
 bool CustomizeChromePageHandler::IsShortcutsVisible() const {
   return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
-}
-
-std::u16string CustomizeChromePageHandler::GetManagingThirdPartyName() const {
-  // Check overriding extensions first.
-  const extensions::Extension* extension_managing_ntp =
-      extensions::GetExtensionOverridingNewTabPage(profile_);
-  if (extension_managing_ntp) {
-    return base::UTF8ToUTF16(extension_managing_ntp->short_name());
-  }
-
-  // Check 3rd party search engines next.
-  if (IsNtpManagedByThirdPartySearchEngine()) {
-    return template_url_service_->GetDefaultSearchProvider()->short_name();
-  }
-
-  return std::u16string();
 }
 
 void CustomizeChromePageHandler::OnNativeThemeUpdated(

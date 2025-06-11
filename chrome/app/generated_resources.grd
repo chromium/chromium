@@ -7760,8 +7760,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_FOOTER_HEADER" desc="The toggle for the Footer title in the customization menu on the New Tab Page." meaning="The footer which shows at the bottom of the New Tab page.">
         Footer
       </message>
-      <message name="IDS_NTP_CUSTOMIZE_CHROME_MANAGED_NEW_TAB_PAGE" desc="The string that shows on the customize chrome UI when a 3rd party manages the new tab page.">
-        <ph name="THIRD_PARTY_NTP_MANAGER">$1<ex>ZomboCom</ex></ph> is managing your new tab page
+      <message name="IDS_NTP_MANAGED_BY_SEARCH_ENGINE" desc="The string that shows on the customize chrome UI when a 3rd party manages the new tab page.">
+        Current search engine managing your new tab page
+      </message>
+      <message name="IDS_NTP_MANAGED_BY_EXTENSION" desc="The string that shows on the customize chrome UI when a 3rd party manages the new tab page.">
+        Current extension managing your new tab page
       </message>
       <message name="IDS_NTP_CUSTOMIZE_CHROME_MANAGED_NEW_TAB_PAGE_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="Accessibility label for the button that shows on the customize chrome UI when a 3rd party manages the new tab page.">
         <ph name="THIRD_PARTY_NTP_MANAGER">$1<ex>ZomboCom</ex></ph> is managing your new tab page, opens in a new tab
