@@ -5918,10 +5918,6 @@ crbug.com/40197500 [ Mac12-arm64 ] external/wpt/largest-contentful-paint/multipl
 # mac-arm CI 10-05-2021
 crbug.com/40197500 [ Mac12-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 
-
-# Sheriff 2021-09-16
-crbug.com/1250457 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-inactive-pseudo.html [ Timeout ]
-
 # FileSystemHandle::move() is temporarily disabled for directory handles
 crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.html [ Failure ]
 crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.worker.html [ Failure ]
