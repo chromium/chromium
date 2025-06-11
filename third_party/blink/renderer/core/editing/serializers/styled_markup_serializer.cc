@@ -350,13 +350,11 @@ bool StyledMarkupSerializer<Strategy>::DetermineParentTagAndUpdateLastClosed(
     last_closed_ = last_closed_->parentElement();
     return true;
   }
-  if (RuntimeEnabledFeatures::IncludeTableTagInExtendedSelectionEnabled()) {
-    if (last_closed_ && IsTablePartElement(last_closed_)) {
-      if (auto* first_ancestor_table_traversal =
-              Traversal<HTMLTableElement>::FirstAncestor(*last_closed_)) {
-        last_closed_ = first_ancestor_table_traversal;
-        return true;
-      }
+  if (last_closed_ && IsTablePartElement(last_closed_)) {
+    if (auto* first_ancestor_table_traversal =
+            Traversal<HTMLTableElement>::FirstAncestor(*last_closed_)) {
+      last_closed_ = first_ancestor_table_traversal;
+      return true;
     }
   }
   if (last_closed_ && IsListItemTag(last_closed_)) {
