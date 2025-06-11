@@ -2568,7 +2568,7 @@
     {
       name: "HTMLCommandRequestClose",
       depends_on: ["HTMLCommandAttributes"],
-      status: "experimental",
+      status: "stable",
     },
     // The `<embed>` should follow the specification, layout is not forced
     // when the `type` attribute is set to `image`.
