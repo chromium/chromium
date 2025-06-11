@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/cast_receiver/renderer/public/content_renderer_client_mixins.h"
 #include "components/cast_receiver/renderer/wrapping_url_loader_throttle_provider.h"

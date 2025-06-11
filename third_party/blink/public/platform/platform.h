@@ -63,6 +63,7 @@
 #include "ui/gl/angle_implementation.h"
 #include "v8/include/v8-local-handle.h"
 
+class GURL;
 class SkCanvas;
 class SkBitmap;
 
@@ -134,6 +135,7 @@ class WebLocalFrame;
 class WebSandboxSupport;
 class WebSecurityOrigin;
 class WebThemeEngine;
+class WebURL;
 class WebVideoCaptureImplManager;
 struct WebContentSecurityPolicyHeader;
 

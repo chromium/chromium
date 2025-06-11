@@ -9,16 +9,16 @@
 #include <vector>
 
 #include "base/types/optional_ref.h"
-#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_url_request.h"
 
 namespace network {
 struct ResourceRequest;
 }  // namespace network
 
 namespace blink {
+
+class URLLoaderThrottle;
 
 enum class URLLoaderThrottleProviderType {
   // Used for requests from frames. Please note that the requests could be
