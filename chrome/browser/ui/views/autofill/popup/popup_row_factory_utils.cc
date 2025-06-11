@@ -163,6 +163,7 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kIban:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kPassword:
+    case FillingProduct::kDataList:
     case FillingProduct::kNone:
       break;
   }

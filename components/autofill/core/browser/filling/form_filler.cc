@@ -76,6 +76,7 @@ bool FillingProductSupportsRefills(FillingProduct filling_product) {
     case FillingProduct::kIdentityCredential:
       return false;
     case FillingProduct::kPassword:
+    case FillingProduct::kDataList:
     case FillingProduct::kNone:
       NOTREACHED();
   }
@@ -147,6 +148,7 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
       return FieldTypeSet{EMAIL_ADDRESS, NAME_FIRST, NAME_FULL};
     case FillingProduct::kAutocomplete:
     case FillingProduct::kCompose:
+    case FillingProduct::kDataList:
       return std::nullopt;
     case FillingProduct::kNone:
       NOTREACHED();
@@ -236,6 +238,7 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kCompose:
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
       return false;
   }
   NOTREACHED();

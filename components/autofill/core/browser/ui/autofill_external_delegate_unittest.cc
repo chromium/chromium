@@ -557,15 +557,13 @@ TEST_F(AutofillExternalDelegateTest, GetMainFillingProduct) {
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kAutocomplete);
 
-  // Show only datalist suggestion with autocomplete suggestion in the popup.
+  // Show only datalist suggestion in the popup.
   OnSuggestionsReturned(
       queried_field().global_id(),
       {test::CreateAutofillSuggestion(SuggestionType::kDatalistEntry,
-                                      u"datalist"),
-       test::CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
-                                      u"autocomplete")});
+                                      u"datalist")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
-            FillingProduct::kAutocomplete);
+            FillingProduct::kDataList);
 
   // Show auxiliary helper suggestion in the popup.
   OnSuggestionsReturned(

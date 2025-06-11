@@ -248,6 +248,7 @@ bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kAddress:
     case FillingProduct::kNone:
     case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
       return false;
   }
 }

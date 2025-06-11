@@ -360,6 +360,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     case FillingProduct::kAutofillAi:
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
       break;
   }
 

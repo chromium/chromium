@@ -131,6 +131,8 @@ chromium-metrics-reviews@google.com.
       summary="User chose to fill a field with a compose suggestion."/>
   <variant name="CreditCard"
       summary="User chose to fill a form or field with a credit card profile."/>
+  <variant name="DataList"
+      summary="User chose to fill a field with a datalist suggestion."/>
   <variant name="Iban" summary="User chose to fill a field with an iban."/>
   <variant name="IdentityCredential"
       summary="User chose to fill a field with an identity credential."/>
@@ -145,7 +147,7 @@ chromium-metrics-reviews@google.com.
       summary="User chose to fill a field with a plus addresses suggestion."/>
 </variants>
 
-<!-- LINT.ThenChange(/components/autofill/core/browser/filling_product.cc:FillingProductToString) -->
+<!-- LINT.ThenChange(/components/autofill/core/browser/filling/filling_product.cc:FillingProductToString) -->
 
 <variants name="Autofill.FormEventWithMetadata">
   <variant name="FilledWithMetadata" summary="A card with metadata was filled"/>

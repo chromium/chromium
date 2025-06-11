@@ -65,6 +65,7 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kAutofillAi:
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
       NOTREACHED();
   }
 }
@@ -97,6 +98,7 @@ void LogSuggestionAcceptedIndex(int index,
     case FillingProduct::kIdentityCredential:
     case FillingProduct::kPassword:
     case FillingProduct::kNone:
+    case FillingProduct::kDataList:
       // It is NOTREACHED because all other types should be handled separately.
       NOTREACHED();
   }

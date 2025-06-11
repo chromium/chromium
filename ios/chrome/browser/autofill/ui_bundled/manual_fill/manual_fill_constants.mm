@@ -116,6 +116,7 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
     case autofill::FillingProduct::kPassword:
       return manual_fill::ManualFillDataType::kPassword;
     case autofill::FillingProduct::kAutocomplete:
+    case autofill::FillingProduct::kDataList:
     case autofill::FillingProduct::kNone:
       return manual_fill::ManualFillDataType::kOther;
     case autofill::FillingProduct::kCompose:

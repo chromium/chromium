@@ -70,6 +70,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
     case FillingProduct::kPassword:
     case FillingProduct::kNone:
     case FillingProduct::kAutocomplete:
+    case FillingProduct::kDataList:
       filling_product_bucket = FillingProductToString(filling_product);
       break;
     case FillingProduct::kCompose:

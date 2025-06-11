@@ -38,7 +38,9 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "LoyaltyCard";
     case FillingProduct::kIdentityCredential:
       return "IdentityCredential";
-  };
+    case FillingProduct::kDataList:
+      return "DataList";
+  }
   NOTREACHED();
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct)
@@ -92,6 +94,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kPlusAddressError:
       return FillingProduct::kPlusAddresses;
     case SuggestionType::kDatalistEntry:
+      return FillingProduct::kDataList;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kSeePromoCodeDetails:
