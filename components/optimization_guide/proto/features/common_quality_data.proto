@@ -250,7 +250,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 27
+// Next ID: 28
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -264,6 +264,9 @@ message ContentAttributes {
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_CANVAS.
     CanvasData canvas_data = 24;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_VIDEO.
+    VideoData video_data = 27;
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_ANCHOR.
     AnchorData anchor_data = 14;
@@ -504,6 +507,14 @@ message CanvasData {
   int32 layout_width = 1 [features = { field_presence: EXPLICIT }];
 
   int32 layout_height = 2 [features = { field_presence: EXPLICIT }];
+}
+
+message VideoData {
+  // The URL of the video.
+  string url = 1 [features = { field_presence: EXPLICIT }];
+
+  // The source origin for the video.
+  SecurityOrigin security_origin = 2 [features = { field_presence: EXPLICIT }];
 }
 
 message AnchorData {
@@ -1677,7 +1688,7 @@ enum AnnotatedPageContentMode {
 // When adding new types, please also update AIPageContentAttributeType in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
 // See crrev.com/c/6072788 for an example.
-// Next ID: 27;
+// Next ID: 28
 enum ContentAttributeType {
   // Unknown is not a valid attribute type and should never be used by the
   // client. You can consider discarding ContentNodes with this attribute type.
@@ -1704,6 +1715,8 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_SVG = 25;
 
   CONTENT_ATTRIBUTE_CANVAS = 26;
+
+  CONTENT_ATTRIBUTE_VIDEO = 27;
 
   // Structured chunks.
   CONTENT_ATTRIBUTE_ORDERED_LIST = 6;
