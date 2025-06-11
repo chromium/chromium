@@ -413,6 +413,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Multiple downloads pending"/>
   <int value="10" label="Scheduled"/>
   <int value="11" label="Multiple downloads scheduled"/>
+  <int value="12" label="Dangerous"/>
+  <int value="13" label="Multiple downloads dangerous"/>
 </enum>
 
 <enum name="DownloadInputStreamReadErrorType">
