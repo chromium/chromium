@@ -225,9 +225,42 @@ TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
 }
 
 // Tests that predictions with a confidence below the threshold are reported as
-// NO_SERVER_DATA.
+// NO_SERVER_DATA - with small form rules disabled.
 TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
-       GetModelPredictionsForForm_Threshold) {
+       GetModelPredictionsForForm_Threshold_WithoutSmallFormRules) {
+  // Disable small form rules.
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kAutofillModelPredictions,
+      {{features::kAutofillModelPredictionsSmallFormRules.name, "false"}});
+
+  // Set a really high threshold and expect that all predictions are suppressed.
+  ReadModelMetadata("autofill_model_metadata.binarypb");
+  model_metadata()
+      .mutable_postprocessing_parameters()
+      ->set_confidence_threshold_per_field(/*confidence_threshold=*/100);
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite",
+                                  model_handler());
+  std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future;
+  model_handler().GetModelPredictionsForForm(std::move(form_structure),
+                                             future.GetCallback());
+  EXPECT_THAT(future.Get()->fields(),
+              testing::Pointwise(MlTypeEq(), std::vector<FieldType>(
+                                                 future.Get()->field_count(),
+                                                 NO_SERVER_DATA)));
+}
+
+// Tests that predictions with a confidence below the threshold are reported as
+// NO_SERVER_DATA - with small form rules enabled.
+TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
+       GetModelPredictionsForForm_Threshold_WithSmallFormRules) {
+  // Enable small form rules.
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kAutofillModelPredictions,
+      {{features::kAutofillModelPredictionsSmallFormRules.name, "true"}});
+
   // Set a really high threshold and expect that all predictions are suppressed.
   ReadModelMetadata("autofill_model_metadata.binarypb");
   model_metadata()
@@ -449,6 +482,66 @@ TEST_F(FieldClassificationModelHandlerTestWithMockedModelExecution,
   ASSERT_TRUE(result2);
   EXPECT_THAT(result2->fields(),
               testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
+}
+
+// Sanity check that predictions for a small form are not cleared if the small
+// form rules are not enabled.
+TEST_F(FieldClassificationModelHandlerTestWithMockedModelExecution,
+       SmallFormRulesDisabled_PredictionsNotCleared) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kAutofillModelPredictions,
+      {{features::kAutofillModelPredictionsSmallFormRules.name, "false"}});
+  ASSERT_FALSE(model_handler().ShouldApplySmallFormRules());
+  auto small_form = std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.label = u"Name"}}}));
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future;
+
+  EXPECT_CALL(model_handler(), ExecuteModelWithInput)
+      .WillOnce([](MockExecuteModelCallback callback,
+                   const FieldClassificationModelEncoder::ModelInput& input) {
+        // Mock a NAME_FULL prediction.
+        std::move(callback).Run(FieldClassificationModelEncoder::ModelOutput{
+            {0.0, 0.0, 1.0, 0.0, 0.0}});
+      });
+  model_handler().GetModelPredictionsForForm(std::move(small_form),
+                                             future.GetCallback());
+
+  FormStructure* result = future.Get().get();
+  ASSERT_TRUE(result);
+  // The heuristic type should be what the model predicted, since the small form
+  // rules are disabled.
+  EXPECT_THAT(result->fields(), testing::Pointwise(MlTypeEq(), {NAME_FULL}));
+}
+
+// Test that predictions are cleared for small forms when the small form rules
+// are enabled via feature params.
+TEST_F(FieldClassificationModelHandlerTestWithMockedModelExecution,
+       SmallFormRulesEnabled_PredictionsCleared) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kAutofillModelPredictions,
+      {{features::kAutofillModelPredictionsSmallFormRules.name, "true"}});
+  ASSERT_TRUE(model_handler().ShouldApplySmallFormRules());
+
+  auto small_form = std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.label = u"Nome completo"}}}));
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future;
+
+  EXPECT_CALL(model_handler(), ExecuteModelWithInput)
+      .WillOnce([](MockExecuteModelCallback callback,
+                   const FieldClassificationModelEncoder::ModelInput& input) {
+        // Mock a NAME_FULL prediction.
+        std::move(callback).Run(FieldClassificationModelEncoder::ModelOutput{
+            {0.0, 0.0, 1.0, 0.0, 0.0}});
+      });
+  model_handler().GetModelPredictionsForForm(std::move(small_form),
+                                             future.GetCallback());
+
+  FormStructure* result = future.Get().get();
+  ASSERT_TRUE(result);
+  // The small form rules should have cleared the prediction.
+  EXPECT_THAT(result->fields(), testing::Pointwise(MlTypeEq(), {UNKNOWN_TYPE}));
 }
 
 }  // namespace

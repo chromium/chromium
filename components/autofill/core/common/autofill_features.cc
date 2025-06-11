@@ -462,6 +462,17 @@ BASE_FEATURE_PARAM(bool,
                    "model_active",
                    false);
 
+// When true, apply small form rules to ML predictions - if there are too few
+// fields or too few distinct types, predictions are cleared. There are some
+// special cases. See
+// `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
+BASE_FEATURE_PARAM(bool,
+    kAutofillModelPredictionsSmallFormRules,
+    &kAutofillModelPredictions,
+    "small_form_rules",
+    false);
+
+
 // If enabled, a pre-filled field will not be filled.
 BASE_FEATURE(kAutofillSkipPreFilledFields,
              "AutofillSkipPreFilledFields",

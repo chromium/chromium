@@ -13,6 +13,9 @@
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
@@ -112,6 +115,45 @@ FieldClassificationModelHandler::FieldClassificationModelHandler(
 }
 FieldClassificationModelHandler::~FieldClassificationModelHandler() = default;
 
+bool FieldClassificationModelHandler::ShouldApplySmallFormRules() const {
+  return (optimization_target_ ==
+          optimization_guide::proto::OptimizationTarget::
+              OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION) &&
+         features::kAutofillModelPredictionsSmallFormRules.Get();
+}
+
+void FieldClassificationModelHandler::ApplySmallFormRules(
+    const FormStructure& form,
+    std::vector<FieldType>& predicted_types) const {
+  FieldCandidatesMap field_candidates_map;
+  for (size_t i = 0; i < predicted_types.size(); ++i) {
+    FieldCandidates candidates;
+    candidates.AddFieldCandidate(
+        predicted_types[i],
+        // Arbitrary value to satisfy the API - not used.
+        MatchAttribute::kLabel, 1.0f);
+    field_candidates_map.try_emplace(form.field(i)->global_id(),
+                                     std::move(candidates));
+  }
+
+  FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
+      form.fields(), field_candidates_map, form.is_form_element(),
+      form.client_country(), nullptr);
+
+  for (size_t i = 0; i < predicted_types.size(); ++i) {
+    const auto& field_id = form.field(i)->global_id();
+    if (!field_candidates_map.contains(field_id)) {
+      if (predicted_types[i] == NO_SERVER_DATA) {
+        // Leave NO_SERVER_DATA predictions as is, give a chance to regex to
+        // overwrite them.
+        continue;
+      }
+      // The field was cleared by the small form rules.
+      predicted_types[i] = UNKNOWN_TYPE;
+    }
+  }
+}
+
 void FieldClassificationModelHandler::GetModelPredictionsForForm(
     std::unique_ptr<FormStructure> form_structure,
     base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback) {
@@ -157,6 +199,9 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
                 self->ShouldEmitPredictions(form_structure.get(), *output)) {
               std::vector<FieldType> predicted_types =
                   self->GetMostLikelyTypes(*form_structure, *output);
+              if (self->ShouldApplySmallFormRules()) {
+                self->ApplySmallFormRules(*form_structure, predicted_types);
+              }
               self->AssignPredictedFieldTypesToForm(predicted_types,
                                                     *form_structure);
               if (model_input_hash.has_value()) {

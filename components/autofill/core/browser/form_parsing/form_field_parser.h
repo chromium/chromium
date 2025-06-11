@@ -206,6 +206,18 @@ class FormFieldParser {
       std::initializer_list<MatchParams (*)(const MatchParams&)> projections =
           {});
 
+  // Removes entries from `field_candidates` in case
+  // - not enough fields were classified by local heuristics.
+  // - fields were not explicitly allow-listed because they appear in
+  //   contexts that don't contain enough fields (e.g. forms with only an
+  //   email address).
+  static void ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
+      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      FieldCandidatesMap& field_candidates,
+      bool is_form_tag,
+      GeoIpCountryCode client_country,
+      LogManager* log_manager);
+
  protected:
   friend class FormFieldParserTestApi;
 
@@ -297,17 +309,6 @@ class FormFieldParser {
   typedef std::unique_ptr<FormFieldParser> ParseFunction(
       ParsingContext& context,
       AutofillScanner* scanner);
-
-  // Removes entries from `field_candidates` in case
-  // - not enough fields were classified by local heuristics.
-  // - fields were not explicitly allow-listed because they appear in
-  //   contexts that don't contain enough fields (e.g. forms with only an
-  //   email address).
-  static void ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
-      ParsingContext& context,
-      const std::vector<std::unique_ptr<AutofillField>>& fields,
-      FieldCandidatesMap& field_candidates,
-      bool is_form_tag);
 
   // Removes checkable fields and returns fields to be processed for field
   // detection.
