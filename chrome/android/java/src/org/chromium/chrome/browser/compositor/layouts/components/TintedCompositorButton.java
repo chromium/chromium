@@ -11,9 +11,11 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 
 /** Class for a CompositorButton that uses tint instead of multiple drawable resources. */
+@NullMarked
 public class TintedCompositorButton extends CompositorButton {
     private final Context mContext;
 

@@ -10,12 +10,14 @@ import android.view.MotionEvent;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.util.MotionEventUtils;
 
 /**
  * A {@link AreaMotionEventFilter} intercepts all events that start in a specific Rect on the
  * screen.
  */
+@NullMarked
 public class AreaMotionEventFilter extends MotionEventFilter {
     private final RectF mTriggerRect = new RectF();
 

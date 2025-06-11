@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -35,6 +37,7 @@ import java.util.List;
  * alternative to the Android UI for lower level hardware accelerated rendering.
  * This layout also pass through all the events that may happen.
  */
+@NullMarked
 public abstract class Layout {
     /** The orientation of the device. */
     @IntDef({Orientation.UNSET, Orientation.PORTRAIT, Orientation.LANDSCAPE})
@@ -104,8 +107,8 @@ public abstract class Layout {
     private @Orientation int mCurrentOrientation;
 
     // Tabs
-    protected TabModelSelector mTabModelSelector;
-    protected TabContentManager mTabContentManager;
+    protected @Nullable TabModelSelector mTabModelSelector;
+    protected @Nullable TabContentManager mTabContentManager;
 
     // Helpers
     private final LayoutUpdateHost mUpdateHost;
@@ -113,7 +116,7 @@ public abstract class Layout {
 
     /** The tabs currently being rendered as part of this layout. The tabs are
      * drawn using the same ordering as this array. */
-    protected LayoutTab[] mLayoutTabs;
+    protected LayoutTab @Nullable [] mLayoutTabs;
 
     // Current state of the Layout.
     private @LayoutState int mLayoutState;
@@ -560,7 +563,7 @@ public abstract class Layout {
     /**
      * @return The {@link LayoutTab}s to be drawn.
      */
-    public LayoutTab[] getLayoutTabsToRender() {
+    public LayoutTab @Nullable [] getLayoutTabsToRender() {
         return mLayoutTabs;
     }
 
@@ -601,7 +604,7 @@ public abstract class Layout {
      * @param isKeyboardShowing Whether or not the keyboard is showing.
      * @return The {@link EventFilter} the {@link Layout} is listening to.
      */
-    public EventFilter findInterceptingEventFilter(
+    public @Nullable EventFilter findInterceptingEventFilter(
             MotionEvent e, PointF offsets, boolean isKeyboardShowing) {
         EventFilter layoutEventFilter = getEventFilter();
         if (layoutEventFilter != null) {
