@@ -278,10 +278,24 @@ function index_get_all_keys_test(storeName, options, testDescription) {
       /*shouldUseDictionaryArgument=*/ false, testDescription);
 }
 
+function index_get_all_keys_with_options_test(
+    storeName, options, testDescription) {
+  get_all_test(
+      'getAllKeys', storeName, 'test_idx', options,
+      /*shouldUseDictionaryArgument=*/ true, testDescription);
+}
+
 function index_get_all_values_test(storeName, options, testDescription) {
   get_all_test(
       'getAll', storeName, 'test_idx', options,
       /*shouldUseDictionaryArgument=*/ false, testDescription);
+}
+
+function index_get_all_values_with_options_test(
+    storeName, options, testDescription) {
+  get_all_test(
+      'getAll', storeName, 'test_idx', options,
+      /*shouldUseDictionaryArgument=*/ true, testDescription);
 }
 
 function index_get_all_records_test(storeName, options, testDescription) {

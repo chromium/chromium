@@ -213,8 +213,6 @@ test(
 // Generic (key-or-key-path) methods on IDBIndex.
 ['get',
  'getKey',
- 'getAll',
- 'getAllKeys',
  'count',
  'openCursor',
  'openKeyCursor',
@@ -245,7 +243,7 @@ test(
 });
 
 // Verify methods that take `IDBGetAllOptions` on `IDBIndex`.
-['getAllRecords'].forEach(method => {
+['getAll', 'getAllKeys', 'getAllRecords'].forEach(method => {
   indexeddb_upgrade_only_test((t, db) => {
     const store = db.createObjectStore('store');
     const index = store.createIndex('index', 'keyPath');
