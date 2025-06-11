@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
 #include "chrome/browser/ui/browser_finder.h"
