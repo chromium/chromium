@@ -439,7 +439,9 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
                  double sample_rate,
                  unsigned render_quantum_frames) const;
 
-  void InsertEvent(std::unique_ptr<ParamEvent>, ExceptionState&)
+  // Returns true if the event was inserted, false if an exception occurred and
+  // the event was not inserted.
+  bool InsertEvent(std::unique_ptr<ParamEvent>, ExceptionState&)
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
   float ValuesForFrameRangeImpl(size_t start_frame,
                                 size_t end_frame,
