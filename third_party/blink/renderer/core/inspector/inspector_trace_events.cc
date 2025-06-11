@@ -251,7 +251,7 @@ void InspectorTraceEvents::Did(const probe::ParseHTML& probe) {
                    [&](perfetto::TracedValue context) {
                      InspectorParseHtmlEndData(
                          std::move(context),
-                         probe.parser->LineNumber().ZeroBasedInt() - 1);
+                         probe.parser->LineNumber().ZeroBasedInt());
                    });
   TRACE_EVENT_INSTANT1(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters",
