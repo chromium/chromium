@@ -141,6 +141,7 @@ class TestPhishingDetector : public mojom::PhishingDetector {
 
   void StartPhishingDetection(
       const GURL& url,
+      safe_browsing::mojom::ClientSideDetectionType request_type,
       StartPhishingDetectionCallback callback) override {
     if (should_timeout_) {
       deferred_callbacks_.push_back(std::move(callback));

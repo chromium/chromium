@@ -170,17 +170,18 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     mojom::PhishingDetectorResult result;
     std::optional<mojo_base::ProtoWrapper> verdict;
     phishing_detector->StartPhishingDetection(
-        url, base::BindOnce(
-                 [](base::RepeatingClosure quit_closure,
-                    mojom::PhishingDetectorResult* out_result,
-                    std::optional<mojo_base::ProtoWrapper>* out_verdict,
-                    mojom::PhishingDetectorResult result,
-                    std::optional<mojo_base::ProtoWrapper> verdict) {
-                   *out_result = result;
-                   *out_verdict = std::move(verdict);
-                   quit_closure.Run();
-                 },
-                 run_loop.QuitClosure(), &result, &verdict));
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
 
     run_loop.Run();
 
@@ -263,17 +264,18 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     mojom::PhishingDetectorResult result;
     std::optional<mojo_base::ProtoWrapper> verdict;
     phishing_detector->StartPhishingDetection(
-        url, base::BindOnce(
-                 [](base::RepeatingClosure quit_closure,
-                    mojom::PhishingDetectorResult* out_result,
-                    std::optional<mojo_base::ProtoWrapper>* out_verdict,
-                    mojom::PhishingDetectorResult result,
-                    std::optional<mojo_base::ProtoWrapper> verdict) {
-                   *out_result = result;
-                   *out_verdict = std::move(verdict);
-                   quit_closure.Run();
-                 },
-                 run_loop.QuitClosure(), &result, &verdict));
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
 
     run_loop.Run();
 
@@ -404,17 +406,18 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     mojom::PhishingDetectorResult result;
     std::optional<mojo_base::ProtoWrapper> verdict;
     phishing_detector->StartPhishingDetection(
-        url, base::BindOnce(
-                 [](base::RepeatingClosure quit_closure,
-                    mojom::PhishingDetectorResult* out_result,
-                    std::optional<mojo_base::ProtoWrapper>* out_verdict,
-                    mojom::PhishingDetectorResult result,
-                    std::optional<mojo_base::ProtoWrapper> verdict) {
-                   *out_result = result;
-                   *out_verdict = std::move(verdict);
-                   quit_closure.Run();
-                 },
-                 run_loop.QuitClosure(), &result, &verdict));
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
 
     run_loop.Run();
 

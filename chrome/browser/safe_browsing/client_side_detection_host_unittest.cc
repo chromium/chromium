@@ -278,6 +278,7 @@ class FakePhishingDetector : public mojom::PhishingDetector {
   // mojom::PhishingDetector
   void StartPhishingDetection(
       const GURL& url,
+      safe_browsing::mojom::ClientSideDetectionType request_type,
       StartPhishingDetectionCallback callback) override {
     url_ = url;
     phishing_detection_started_ = true;

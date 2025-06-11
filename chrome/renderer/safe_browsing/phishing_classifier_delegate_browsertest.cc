@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/common/features.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -28,6 +27,7 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
@@ -159,8 +159,9 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
 
   void OnStartPhishingDetection(const GURL& url) {
     delegate_->StartPhishingDetection(
-        url, base::BindOnce(&PhishingClassifierDelegateTest::VerifyRequestProto,
-                            base::Unretained(this)));
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(&PhishingClassifierDelegateTest::VerifyRequestProto,
+                       base::Unretained(this)));
   }
 
   void SimulateRedirection(const GURL& redir_url) {

@@ -131,6 +131,25 @@ enum PhishingDetectorResult {
   VISUAL_EXTRACTION_FAILED = 10,
 };
 
+enum ClientSideDetectionType {
+  // Send a CSD request regardless of the client side model's score values.
+  kForceRequest,
+  // Either the local DOM or visual model triggered.
+  kTriggerModels,
+  // A Notification prompt triggered.
+  kNotificationPermissionPrompt,
+  // Keyboard lock request triggered.
+  kKeyboardLock,
+  // Pointer lock request triggered.
+  kPointerLock,
+  // Vibration API request triggered.
+  kVibrationApi,
+  // Fullscreen API request triggered.
+  kFullscreen,
+  // Password protection request triggered.
+  kPasswordProtection,
+};
+
 // Interface for starting phishing classification. This is scoped to a
 // particular RenderFrame.
 [EnableIf=full_safe_browsing]
@@ -138,8 +157,11 @@ interface PhishingDetector {
   // Tells the renderer to begin phishing detection for the given toplevel URL
   // which it has started loading. Returns the serialized request proto and a
   // `result` enum to indicate failure. If the URL is phishing the `request`
-  // ClientPhishingRequest will have `is_phishing()` set to true.
-  StartPhishingDetection(url.mojom.Url url)
+  // ClientPhishingRequest will have `is_phishing()` set to true. The
+  // `request_type` correlates to the phishing detection request type from the
+  // browser process and is only used for logging on the renderer.
+  StartPhishingDetection(
+    url.mojom.Url url, ClientSideDetectionType request_type)
       => (PhishingDetectorResult result,
           mojo_base.mojom.ProtoWrapper? request);
 };

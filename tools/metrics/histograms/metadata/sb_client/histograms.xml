@@ -472,6 +472,30 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.CancelClassificationReason{RequestType}"
+    enum="SBClientPhishingCancelClassificationReason"
+    expires_after="2026-06-04">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The counts for various reasons why an in-progress phishing classification
+    was canceled.
+  </summary>
+  <token key="RequestType">
+    <variant name="" summary="all request types"/>
+    <variant name=".ForceRequest" summary="Force request"/>
+    <variant name=".FullscreenApi" summary="Fullscreen API"/>
+    <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
+    <variant name=".NotificationPermissionPrompt"
+        summary="Notification permission prompt"/>
+    <variant name=".PasswordProtection"
+        summary="Password protection requested"/>
+    <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
+    <variant name=".TriggerModel" summary="Trigger model"/>
+    <variant name=".VibrationApi" summary="Vibration API"/>
+  </token>
+</histogram>
+
 <histogram name="SBClientPhishing.CancelImageEmbeddingReason"
     enum="SBClientPhishingCancelImageEmbeddingReason"
     expires_after="2026-07-05">

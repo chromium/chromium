@@ -247,6 +247,7 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
   dom_features_collection_complete_ = false;
   phishing_detector_->StartPhishingDetection(
       main_frame_url(),
+      safe_browsing::mojom::ClientSideDetectionType::kPasswordProtection,
       base::BindRepeating(&PasswordProtectionRequestContent::OnGetDomFeatures,
                           weak_factory_.GetWeakPtr()));
 
