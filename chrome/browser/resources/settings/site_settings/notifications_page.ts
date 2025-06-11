@@ -55,6 +55,12 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
 
   static get properties() {
     return {
+      searchTerm: {
+        type: String,
+        notify: true,
+        value: '',
+      },
+
       isGuest_: {
         type: Boolean,
         value() {
@@ -104,6 +110,7 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
     };
   }
 
+  declare searchTerm: string;
   declare private isGuest_: boolean;
   declare private enablePermissionSiteSettingsRadioButton_: boolean;
   declare private shouldShowSafetyHub_: boolean;

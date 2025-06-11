@@ -39,6 +39,12 @@ export class GeolocationPageElement extends GeolocationPageElementBase {
 
   static get properties() {
     return {
+      searchTerm: {
+        type: String,
+        notify: true,
+        value: '',
+      },
+
       enablePermissionSiteSettingsRadioButton_: {
         type: Boolean,
         value: () =>
@@ -67,6 +73,7 @@ export class GeolocationPageElement extends GeolocationPageElementBase {
     };
   }
 
+  declare searchTerm: string;
   declare private enablePermissionSiteSettingsRadioButton_: boolean;
   declare private isLocationAllowed_: boolean;
   private siteSettingsPrefsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
