@@ -44,10 +44,6 @@ gfx::RectF TextElementTiming::ComputeIntersectionRect(
     const LocalFrameView* frame_view) {
   Node* node = object.GetNode();
   DCHECK(node);
-  if (!NeededForTiming(*node)) {
-    return gfx::RectF();
-  }
-
   return ElementTimingUtils::ComputeIntersectionRect(
       &frame_view->GetFrame(), aggregated_visual_rect, property_tree_state);
 }

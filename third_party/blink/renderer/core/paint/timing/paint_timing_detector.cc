@@ -180,12 +180,6 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
     return false;
   }
 
-  ImagePaintTimingDetector& image_paint_timing_detector =
-      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
-  if (!image_paint_timing_detector.IsRecordingLargestImagePaint()) {
-    return false;
-  }
-
   if (!IsBackgroundImageContentful(*object, image)) {
     return false;
   }
@@ -195,9 +189,10 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
   // TODO(yoav): |image| and |cached_image.GetImage()| are not the same here in
   // the case of SVGs. Figure out why and if we can remove this footgun.
 
-  return image_paint_timing_detector.RecordImage(
-      *object, image.Size(), *cached_image, current_paint_chunk_properties,
-      &style_image, image_border);
+  return frame_view->GetPaintTimingDetector()
+      .GetImagePaintTimingDetector()
+      .RecordImage(*object, image.Size(), *cached_image,
+                   current_paint_chunk_properties, &style_image, image_border);
 }
 
 // static
@@ -214,14 +209,6 @@ bool PaintTimingDetector::NotifyImagePaint(
   if (!frame_view) {
     return false;
   }
-  PaintTimingDetector& paint_timing_detector =
-      frame_view->GetPaintTimingDetector();
-  ImagePaintTimingDetector& image_paint_timing_detector =
-      paint_timing_detector.GetImagePaintTimingDetector();
-  if (!image_paint_timing_detector.IsRecordingLargestImagePaint()) {
-    return false;
-  }
-
   Node* image_node = object.GetNode();
   HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
 
@@ -230,15 +217,15 @@ bool PaintTimingDetector::NotifyImagePaint(
     ReportImagePixelInaccuracy(element);
   }
 
-  return image_paint_timing_detector.RecordImage(
-      object, intrinsic_size, media_timing, current_paint_chunk_properties,
-      nullptr, image_border);
+  return frame_view->GetPaintTimingDetector()
+      .GetImagePaintTimingDetector()
+      .RecordImage(object, intrinsic_size, media_timing,
+                   current_paint_chunk_properties, nullptr, image_border);
 }
 
 void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
                                               const MediaTiming* media_timing) {
-  if (IgnorePaintTimingScope::ShouldIgnore() ||
-      !image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
+  if (IgnorePaintTimingScope::ShouldIgnore()) {
     return;
   }
   image_paint_timing_detector_->NotifyImageFinished(object, media_timing);
@@ -252,9 +239,7 @@ void PaintTimingDetector::LayoutObjectWillBeDestroyed(
 void PaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const ImageResourceContent* cached_image) {
-  if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
-    image_paint_timing_detector_->NotifyImageRemoved(object, cached_image);
-  }
+  image_paint_timing_detector_->NotifyImageRemoved(object, cached_image);
 }
 
 void PaintTimingDetector::OnInputOrScroll() {

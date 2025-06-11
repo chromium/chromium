@@ -137,12 +137,15 @@ class CORE_EXPORT ImageRecordsManager {
       // |AssignPaintTimeToRegisteredQueuedRecords|.
     }
   }
-  // Returns whether an image was added to |pending_images_|.
-  bool RecordFirstPaintAndReturnIsPending(const MediaRecordId& record_id,
-                                          const uint64_t& visual_size,
-                                          const gfx::Rect& frame_visual_rect,
-                                          const gfx::RectF& root_visual_rect,
-                                          double bpp);
+  // Always adds media record to `recorded_images_`, and might create a new
+  // ImageRecord to add to `pending_images_`.
+  ImageRecord* RecordFirstPaintAndMaybeCreateImageRecord(
+      bool record_media_only_and_skip_measuring_all_image_records,
+      const MediaRecordId& record_id,
+      const uint64_t& visual_size,
+      const gfx::Rect& frame_visual_rect,
+      const gfx::RectF& root_visual_rect,
+      double bpp);
   bool IsRecordedImage(MediaRecordIdHash record_id_hash) const {
     return recorded_images_.Contains(record_id_hash);
   }

@@ -164,7 +164,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   void AssignPaintTimeToQueuedRecords(uint32_t frame_index,
                                       const base::TimeTicks&,
                                       const DOMPaintTimingInfo&);
-  void MaybeRecordTextRecord(
+  TextRecord* MaybeRecordTextRecord(
       const LayoutObject& object,
       const uint64_t& visual_size,
       const PropertyTreeStateOrAlias& property_tree_state,

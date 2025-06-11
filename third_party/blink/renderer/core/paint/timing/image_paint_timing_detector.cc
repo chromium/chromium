@@ -333,51 +333,7 @@ bool ImagePaintTimingDetector::RecordImage(
 
   MediaRecordId record_id(&object, &media_timing);
   MediaRecordIdHash record_id_hash = record_id.GetHash();
-
-  if (int depth = IgnorePaintTimingScope::IgnoreDepth()) {
-    // Record the largest loaded image that is hidden due to documentElement
-    // being invisible but by no other reason (i.e. IgnoreDepth() needs to be
-    // 1).
-    if (depth == 1 && IgnorePaintTimingScope::IsDocumentElementInvisible() &&
-        media_timing.IsSufficientContentLoadedForPaint()) {
-      gfx::RectF mapped_visual_rect =
-          frame_view_->GetPaintTimingDetector().CalculateVisualRect(
-              image_border, current_paint_chunk_properties);
-      uint64_t rect_size = ComputeImageRectSize(
-          image_border, mapped_visual_rect, intrinsic_size,
-          current_paint_chunk_properties, object, media_timing);
-      records_manager_.MaybeUpdateLargestIgnoredImage(
-          record_id, rect_size, image_border, mapped_visual_rect);
-    }
-    return false;
-  }
-
-  if (records_manager_.IsRecordedImage(record_id_hash)) {
-    ImageRecord* record = records_manager_.GetPendingImage(record_id_hash);
-    if (!record)
-      return false;
-    if (media_timing.IsPaintedFirstFrame()) {
-      added_entry_in_latest_frame_ |=
-          records_manager_.OnFirstAnimatedFramePainted(record_id_hash,
-                                                       frame_index_);
-    }
-    if (!record->loaded && media_timing.IsSufficientContentLoadedForPaint()) {
-      records_manager_.OnImageLoaded(record_id_hash, frame_index_, style_image);
-      added_entry_in_latest_frame_ = true;
-      if (std::optional<PaintTimingVisualizer>& visualizer =
-              frame_view_->GetPaintTimingDetector().Visualizer()) {
-        gfx::RectF mapped_visual_rect =
-            frame_view_->GetPaintTimingDetector().CalculateVisualRect(
-                image_border, current_paint_chunk_properties);
-        visualizer->DumpImageDebuggingRect(
-            object, mapped_visual_rect,
-            media_timing.IsSufficientContentLoadedForPaint(),
-            media_timing.Url());
-      }
-      return true;
-    }
-    return false;
-  }
+  ImageRecord* record = nullptr;
 
   gfx::RectF mapped_visual_rect =
       frame_view_->GetPaintTimingDetector().CalculateVisualRect(
@@ -386,25 +342,74 @@ bool ImagePaintTimingDetector::RecordImage(
       image_border, mapped_visual_rect, intrinsic_size,
       current_paint_chunk_properties, object, media_timing);
 
-  RecordPotentialSoftNavigationPaint(frame_view_, mapped_visual_rect, node);
-
-  double bpp = (rect_size > 0)
-                   ? media_timing.ContentSizeForEntropy() * 8.0 / rect_size
-                   : 0.0;
-
-  bool added_pending = records_manager_.RecordFirstPaintAndReturnIsPending(
-      record_id, rect_size, image_border, mapped_visual_rect, bpp);
-  if (!added_pending)
+  if (int depth = IgnorePaintTimingScope::IgnoreDepth()) {
+    // Record the largest loaded image that is hidden due to documentElement
+    // being invisible but by no other reason (i.e. IgnoreDepth() needs to be
+    // 1).
+    if (depth == 1 && IgnorePaintTimingScope::IsDocumentElementInvisible() &&
+        media_timing.IsSufficientContentLoadedForPaint()) {
+      records_manager_.MaybeUpdateLargestIgnoredImage(
+          record_id, rect_size, image_border, mapped_visual_rect);
+    }
     return false;
+  }
 
+  // RecordImage is called whenever an image is painted, which may happen many
+  // times for the same record.  The very first paint for this record, we have
+  // to create and initialize things, and all subsequent paints we just do a
+  // lookup.
+  // Note: Mentions of "Image" should all be "Media" since it can include
+  // <video> content.
+  if (records_manager_.IsRecordedImage(record_id_hash)) {
+    record = records_manager_.GetPendingImage(record_id_hash);
+  } else {
+    double bpp = (rect_size > 0)
+                     ? media_timing.ContentSizeForEntropy() * 8.0 / rect_size
+                     : 0.0;
+    record = records_manager_.RecordFirstPaintAndMaybeCreateImageRecord(
+        !IsRecordingLargestImagePaint(), record_id, rect_size, image_border,
+        mapped_visual_rect, bpp);
+
+    // We record soft paint, even if we didn't create a new LCP Record, because
+    // we only create records for new largest content, but we want to record
+    // all paints.
+    RecordPotentialSoftNavigationPaint(frame_view_, mapped_visual_rect, node);
+  }
+
+  // Note: Even if IsRecordedImage() returns `true`, or if we are calling a new
+  // `RecordFirstPaintAndMaybeCreateImageRecord`, we might still not have an
+  // `ImageRecord*` for the media.  This is because we "record" all new media on
+  // first paint, but we only do Record-keeping for some Nodes (i.e. those which
+  // actually need timing for some reason).
+  if (!record) {
+    return false;
+  }
+
+  // If this frame is the first painted frame for animated content, mark it and
+  // call `QueueToMeasurePaintTime` (eventually) to measure it.
+  // This mechanism works a bit differently for images and video.
+  // The stored value may or may not be exposed as the `renderTime` depending on
+  // flags.
   if (media_timing.IsPaintedFirstFrame()) {
     added_entry_in_latest_frame_ |=
         records_manager_.OnFirstAnimatedFramePainted(record_id_hash,
                                                      frame_index_);
   }
-  if (media_timing.IsSufficientContentLoadedForPaint()) {
+
+  // TODO(crbug.com/372929290): This next check will pass when <video> content
+  // has loaded just the first frame of video.  This is likely unexpected, and
+  // should likely have been handled in the if block for `IsPaintedFirstFrame`,
+  // above.
+  if (!record->loaded && media_timing.IsSufficientContentLoadedForPaint()) {
     records_manager_.OnImageLoaded(record_id_hash, frame_index_, style_image);
     added_entry_in_latest_frame_ = true;
+
+    if (std::optional<PaintTimingVisualizer>& visualizer =
+            frame_view_->GetPaintTimingDetector().Visualizer()) {
+      visualizer->DumpImageDebuggingRect(
+          object, mapped_visual_rect,
+          media_timing.IsSufficientContentLoadedForPaint(), media_timing.Url());
+    }
     return true;
   }
   return false;
@@ -571,7 +576,8 @@ void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
   }
 }
 
-bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
+ImageRecord* ImageRecordsManager::RecordFirstPaintAndMaybeCreateImageRecord(
+    bool record_media_only_and_skip_measuring_all_image_records,
     const MediaRecordId& record_id,
     const uint64_t& visual_size,
     const gfx::Rect& frame_visual_rect,
@@ -580,24 +586,28 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
   // Don't process the image yet if it is invisible, as it may later become
   // visible, and potentially eligible to be an LCP candidate.
   if (visual_size == 0u) {
-    return false;
+    return nullptr;
   }
   recorded_images_.insert(record_id.GetHash());
+
+  if (record_media_only_and_skip_measuring_all_image_records) {
+    return nullptr;
+  }
+
   // If this cannot become an LCP candidate, no need to do anything else.
-  if (visual_size == 0u ||
-      (largest_painted_image_ &&
-       largest_painted_image_->recorded_size > visual_size)) {
-    return false;
+  if (largest_painted_image_ &&
+      largest_painted_image_->recorded_size > visual_size) {
+    return nullptr;
   }
   if (bpp < kMinimumEntropyForLCP) {
-    return false;
+    return nullptr;
   }
 
   ImageRecord* record = CreateImageRecord(
       *record_id.GetLayoutObject(), record_id.GetMediaTiming(), visual_size,
       frame_visual_rect, root_visual_rect, record_id.GetHash());
   AddPendingImage(record);
-  return true;
+  return record;
 }
 void ImageRecordsManager::AddPendingImage(ImageRecord* record) {
   if (!largest_pending_image_ ||
