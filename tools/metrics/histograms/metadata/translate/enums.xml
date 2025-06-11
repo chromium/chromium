@@ -79,41 +79,41 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SupportedLanguage) -->
 
 <enum name="SupportedLanguage">
-  <int value="0" label="ar"/>
-  <int value="1" label="bg"/>
-  <int value="2" label="bn"/>
-  <int value="3" label="cs"/>
-  <int value="4" label="da"/>
+  <int value="0" label="en"/>
+  <int value="1" label="es"/>
+  <int value="2" label="ja"/>
+  <int value="3" label="ar"/>
+  <int value="4" label="bn"/>
   <int value="5" label="de"/>
-  <int value="6" label="el"/>
-  <int value="7" label="en"/>
-  <int value="8" label="es"/>
-  <int value="9" label="fi"/>
-  <int value="10" label="fr"/>
-  <int value="11" label="hi"/>
-  <int value="12" label="hr"/>
-  <int value="13" label="hu"/>
-  <int value="14" label="id"/>
-  <int value="15" label="it"/>
-  <int value="16" label="iw"/>
-  <int value="17" label="ja"/>
-  <int value="18" label="ko"/>
-  <int value="19" label="lt"/>
-  <int value="20" label="nl"/>
-  <int value="21" label="no"/>
-  <int value="22" label="pl"/>
-  <int value="23" label="pt"/>
-  <int value="24" label="ro"/>
-  <int value="25" label="ru"/>
-  <int value="26" label="sk"/>
-  <int value="27" label="sl"/>
-  <int value="28" label="sv"/>
-  <int value="29" label="th"/>
-  <int value="30" label="tr"/>
-  <int value="31" label="uk"/>
-  <int value="32" label="vi"/>
-  <int value="33" label="zh"/>
-  <int value="34" label="zh-Hant"/>
+  <int value="6" label="fr"/>
+  <int value="7" label="hi"/>
+  <int value="8" label="it"/>
+  <int value="9" label="ko"/>
+  <int value="10" label="nl"/>
+  <int value="11" label="pl"/>
+  <int value="12" label="pt"/>
+  <int value="13" label="ru"/>
+  <int value="14" label="th"/>
+  <int value="15" label="tr"/>
+  <int value="16" label="vi"/>
+  <int value="17" label="zh"/>
+  <int value="18" label="zh-Hant"/>
+  <int value="19" label="bg"/>
+  <int value="20" label="cs"/>
+  <int value="21" label="da"/>
+  <int value="22" label="el"/>
+  <int value="23" label="fi"/>
+  <int value="24" label="hr"/>
+  <int value="25" label="hu"/>
+  <int value="26" label="id"/>
+  <int value="27" label="iw"/>
+  <int value="28" label="lt"/>
+  <int value="29" label="no"/>
+  <int value="30" label="ro"/>
+  <int value="31" label="sk"/>
+  <int value="32" label="sl"/>
+  <int value="33" label="sv"/>
+  <int value="34" label="uk"/>
   <int value="35" label="kn"/>
   <int value="36" label="ta"/>
   <int value="37" label="te"/>
