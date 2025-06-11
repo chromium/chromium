@@ -11109,13 +11109,16 @@ TEST_P(WebFrameOverscrollTest, OverscrollBehaviorGoesToCompositor) {
   auto* widget = web_view_helper.GetMainFrameWidget();
   auto* layer_tree_host = web_view_helper.GetLayerTreeHost();
 
+  WebString set_behavior_auto_script =
+      RuntimeEnabledFeatures::PropagateOverscrollBehaviorFromRootEnabled()
+          ? WebString(
+                "document.documentElement.style='overscroll-behavior: auto;'")
+          : WebString("document.body.style='overscroll-behavior: auto;'");
   WebLocalFrame* mainFrame =
       web_view_helper.GetWebView()->MainFrame()->ToWebLocalFrame();
   EXPECT_EQ(web_view_helper.GetLayerTreeHost()->overscroll_behavior(),
             kOverscrollBehaviorAuto);
-  mainFrame->ExecuteScript(
-      WebScriptSource(WebString("document.body.style="
-                                "'overscroll-behavior: auto;'")));
+  mainFrame->ExecuteScript(WebScriptSource(set_behavior_auto_script));
   layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
                                     base::OnceClosure());
 
@@ -11129,9 +11132,14 @@ TEST_P(WebFrameOverscrollTest, OverscrollBehaviorGoesToCompositor) {
   EXPECT_EQ(web_view_helper.GetLayerTreeHost()->overscroll_behavior(),
             kOverscrollBehaviorAuto);
 
+  WebString set_behavior_contain_script =
+      RuntimeEnabledFeatures::PropagateOverscrollBehaviorFromRootEnabled()
+          ? WebString(
+                "document.documentElement.style='overscroll-behavior: "
+                "contain;'")
+          : WebString("document.body.style='overscroll-behavior: contain;'");
   mainFrame->ExecuteScript(
-      WebScriptSource(WebString("document.body.style="
-                                "'overscroll-behavior: contain;'")));
+      WebScriptSource(WebString(set_behavior_contain_script)));
   layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
                                     base::OnceClosure());
 
@@ -11144,9 +11152,14 @@ TEST_P(WebFrameOverscrollTest, OverscrollBehaviorGoesToCompositor) {
   EXPECT_EQ(web_view_helper.GetLayerTreeHost()->overscroll_behavior(),
             kOverscrollBehaviorContain);
 
+  WebString set_behavior_none_script =
+      RuntimeEnabledFeatures::PropagateOverscrollBehaviorFromRootEnabled()
+          ? WebString(
+                "document.documentElement.style='overscroll-behavior: "
+                "none;'")
+          : WebString("document.body.style='overscroll-behavior: none;'");
   mainFrame->ExecuteScript(
-      WebScriptSource(WebString("document.body.style="
-                                "'overscroll-behavior: none;'")));
+      WebScriptSource(WebString(set_behavior_none_script)));
   layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
                                     base::OnceClosure());
 

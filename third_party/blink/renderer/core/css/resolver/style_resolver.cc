@@ -3437,6 +3437,19 @@ void StyleResolver::PropagateStyleToViewport() {
       }
     }
 
+    if (overscroll_behavior_style) {
+      if (GetDocument().IsInOutermostMainFrame()) {
+        using OverscrollBehaviorType = cc::OverscrollBehavior::Type;
+        GetDocument().GetPage()->GetChromeClient().SetOverscrollBehavior(
+            *GetDocument().GetFrame(),
+            cc::OverscrollBehavior(
+                static_cast<OverscrollBehaviorType>(
+                    overscroll_behavior_style->OverscrollBehaviorX()),
+                static_cast<OverscrollBehaviorType>(
+                    overscroll_behavior_style->OverscrollBehaviorY())));
+      }
+    }
+
     EOverflow overflow_x = EOverflow::kAuto;
     EOverflow overflow_y = EOverflow::kAuto;
     EOverflowAnchor overflow_anchor = EOverflowAnchor::kAuto;
@@ -3461,15 +3474,6 @@ void StyleResolver::PropagateStyleToViewport() {
         overflow_anchor = EOverflowAnchor::kAuto;
       }
 
-      if (GetDocument().IsInOutermostMainFrame()) {
-        using OverscrollBehaviorType = cc::OverscrollBehavior::Type;
-        GetDocument().GetPage()->GetChromeClient().SetOverscrollBehavior(
-            *GetDocument().GetFrame(),
-            cc::OverscrollBehavior(static_cast<OverscrollBehaviorType>(
-                                       overflow_style->OverscrollBehaviorX()),
-                                   static_cast<OverscrollBehaviorType>(
-                                       overflow_style->OverscrollBehaviorY())));
-      }
 
       if (overflow_style->HasCustomScrollbarStyle(document_element)) {
         update_scrollbar_style = true;
