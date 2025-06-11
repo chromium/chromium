@@ -13733,6 +13733,7 @@ from previous Chrome versions.
   <int value="-72590181" label="DrawCutoutEdgeToEdge:enabled"/>
   <int value="-72581685" label="FilesDriveShortcuts:disabled"/>
   <int value="-72455054" label="WebVrAutopresent:disabled"/>
+  <int value="-70602185" label="LensOverlayVisualSelectionUpdates:disabled"/>
   <int value="-70595606" label="ash-enable-unified-desktop"/>
   <int value="-70434056" label="UseGles2ForOopR:enabled"/>
   <int value="-69427025" label="OfflinePagesPrefetchingUI:enabled"/>
@@ -15578,6 +15579,7 @@ from previous Chrome versions.
   <int value="625916211" label="ConchSystemAudioFromMic:disabled"/>
   <int value="626349796" label="ArcVmMemorySize:disabled"/>
   <int value="626413969" label="PinnedTabToastOnClose:enabled"/>
+  <int value="626530588" label="LensOverlayVisualSelectionUpdates:enabled"/>
   <int value="626662478" label="Canvas2DHibernation:disabled"/>
   <int value="628302973" label="NTPSnippets:enabled"/>
   <int value="628438173" label="AccessibilityPerformanceFiltering:enabled"/>

@@ -3777,6 +3777,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "enable-lens-overlay-updated-visuals",
+    "owners": [ "mercerd@google.com", "lens-chrome@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-lens-search-side-panel-new-feedback",
     "owners": [ "juanmojica@google.com", "lens-chrome-eng@google.com" ],
     "expiry_milestone": 140

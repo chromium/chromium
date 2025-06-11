@@ -1536,6 +1536,9 @@ extern const char kLensOverlayTranslateLanguagesDescription[];
 extern const char kLensOverlayLatencyOptimizationsName[];
 extern const char kLensOverlayLatencyOptimizationsDescription[];
 
+extern const char kLensOverlayUpdatedVisualsName[];
+extern const char kLensOverlayUpdatedVisualsDescription[];
+
 extern const char kLensImageFormatOptimizationsName[];
 extern const char kLensImageFormatOptimizationsDescription[];
 

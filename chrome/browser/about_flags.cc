@@ -11746,6 +11746,13 @@ const FeatureEntry kFeatureEntries[] = {
          "LensOverlayImageContextMenuActions")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay-updated-visuals",
+     flag_descriptions::kLensOverlayUpdatedVisualsName,
+     flag_descriptions::kLensOverlayUpdatedVisualsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayVisualSelectionUpdates)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
     {"jump-start-omnibox", flag_descriptions::kJumpStartOmniboxName,
      flag_descriptions::kJumpStartOmniboxDescription, kOsAndroid,
@@ -12943,12 +12950,12 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
 BUILDFLAG(IS_WIN)
-     {"lens-search-side-panel-default-width-change",
-      flag_descriptions::kLensSearchSidePanelDefaultWidthChangeName,
-      flag_descriptions::kLensSearchSidePanelDefaultWidthChangeDescription,
-      kOsDesktop,
-      FEATURE_VALUE_TYPE(
-          lens::features::kLensSearchSidePanelDefaultWidthChange)},
+    {"lens-search-side-panel-default-width-change",
+     flag_descriptions::kLensSearchSidePanelDefaultWidthChangeName,
+     flag_descriptions::kLensSearchSidePanelDefaultWidthChangeDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         lens::features::kLensSearchSidePanelDefaultWidthChange)},
  #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
          // BUILDFLAG(IS_WIN)
 
