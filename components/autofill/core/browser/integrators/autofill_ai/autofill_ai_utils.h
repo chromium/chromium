@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_UTILS_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_UTILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_UTILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_UTILS_H_
 
 #include <set>
 #include <string>
@@ -12,11 +12,9 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
 namespace autofill {
+
 class FormStructure;
 class EntityInstance;
-}  // namespace autofill
-
-namespace autofill_ai {
 
 // Separator to use between a certain entity label attributes, for example:
 // "Passport · Jon Doe · Germany".
@@ -51,6 +49,6 @@ EntitiesLabels GetLabelsForEntities(
     bool return_at_least_one_label,
     const std::string& app_locale);
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_UTILS_H_

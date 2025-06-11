@@ -29,10 +29,10 @@
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_utils.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_ai/core/browser/autofill_ai_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -77,14 +77,15 @@ struct SuggestionWithMetadata {
 // `labels_for_all_suggestions` contain for each suggestion all the strings that
 // should be concatenated to generate the final label.
 std::vector<Suggestion> AssignLabelsToSuggestions(
-    EntitiesLabels labels_for_all_suggestions,
+    autofill::EntitiesLabels labels_for_all_suggestions,
     std::vector<Suggestion> suggestions) {
   CHECK_EQ(labels_for_all_suggestions->size(), suggestions.size());
 
   size_t suggestion_index = 0;
   for (Suggestion& suggestion : suggestions) {
-    suggestion.labels.push_back({Suggestion::Text(base::JoinString(
-        (*labels_for_all_suggestions)[suggestion_index], kLabelSeparator))});
+    suggestion.labels.push_back({Suggestion::Text(
+        base::JoinString((*labels_for_all_suggestions)[suggestion_index],
+                         autofill::kLabelSeparator))});
     suggestion_index++;
   }
 
@@ -112,7 +113,7 @@ std::vector<Suggestion> AssignLabelsToSuggestions(
 //    `triggering_field_attribute` as the attribute type to exclude from the
 //    possible labels, since it will already be part of the suggestion main
 //    text.
-EntitiesLabels GetLabelsForSuggestions(
+autofill::EntitiesLabels GetLabelsForSuggestions(
     base::span<const SuggestionWithMetadata> suggestions_with_metadata,
     base::span<const EntityInstance*> other_entities_that_can_fill_section,
     const std::string& app_locale) {
@@ -127,12 +128,12 @@ EntitiesLabels GetLabelsForSuggestions(
 
   // Note that `all_entities_labels` are for all entities, including
   // that were not used in suggestions generation.
-  EntitiesLabels all_entities_labels =
+  autofill::EntitiesLabels all_entities_labels =
       GetLabelsForEntities(entities, /*allow_only_disambiguating_types=*/true,
                            /*return_at_least_one_label=*/false, app_locale);
   // Returns only the first N labels for entity, which refers to the N
   // suggestion in `suggestions_with_metadata`.
-  return EntitiesLabels(std::vector<std::vector<std::u16string>>(
+  return autofill::EntitiesLabels(std::vector<std::vector<std::u16string>>(
       all_entities_labels->begin(),
       all_entities_labels->begin() + suggestions_with_metadata.size()));
 }
@@ -170,8 +171,8 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
 
   // Initialize the final list of labels to be used by each suggestion. Note
   // that they always contain at least the entity name.
-  EntitiesLabels suggestions_labels =
-      EntitiesLabels(std::vector<std::vector<std::u16string>>(
+  autofill::EntitiesLabels suggestions_labels =
+      autofill::EntitiesLabels(std::vector<std::vector<std::u16string>>(
           n_suggestions,
           {std::u16string(
               triggering_field_attribute.entity_type().GetNameForI18n())}));
@@ -180,9 +181,11 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
   // Get the list of disambiguating labels, the list is created for the entities
   // used to build the suggestions, but it also uses other entity that can fill
   // a field in the form.
-  EntitiesLabels disambiguating_labels_for_all_entities_that_fill_section =
-      GetLabelsForSuggestions(suggestions_with_metadata,
-                              other_entities_that_can_fill_section, app_locale);
+  autofill::EntitiesLabels
+      disambiguating_labels_for_all_entities_that_fill_section =
+          GetLabelsForSuggestions(suggestions_with_metadata,
+                                  other_entities_that_can_fill_section,
+                                  app_locale);
 
   for (size_t i = 0; i < suggestions_labels->size(); i++) {
     std::vector<std::u16string>& suggestion_labels = (*suggestions_labels)[i];

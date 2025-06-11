@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/autofill_ai_utils.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_utils.h"
 
 #include <ranges>
 #include <string>
@@ -17,15 +17,9 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
-
-using autofill::AttributeInstance;
-using autofill::AttributeType;
-using autofill::AutofillField;
-using autofill::EntityInstance;
-using autofill::FieldTypeGroup;
 
 // For a list of entities, this defines all attributes for each entity, together
 // with their value.
@@ -69,13 +63,12 @@ EntitiesLabels GetLabelsForEntities(
     bool return_at_least_one_label,
     const std::string& app_locale) {
   if (entity_instances.empty()) {
-    return autofill_ai::EntitiesLabels(
-        std::vector<std::vector<std::u16string>>());
+    return EntitiesLabels(std::vector<std::vector<std::u16string>>());
   }
   // Step 1#
   // Retrieve entities attributes types and values, skipping those in
   // `attribute_types_to_exclude`.
-  autofill_ai::AttributesAndValues entities_attributes_and_values;
+  AttributesAndValues entities_attributes_and_values;
   for (const EntityInstance* entity : entity_instances) {
     // Retrieve all entity values, this will be used to generate labels.
     std::vector<std::pair<AttributeType, std::u16string>>&
@@ -94,8 +87,7 @@ EntitiesLabels GetLabelsForEntities(
   // If every attribute was excluded, due to `attribute_types_to_exclude`,
   // return early.
   if (entities_attributes_and_values.empty()) {
-    return autofill_ai::EntitiesLabels(
-        std::vector<std::vector<std::u16string>>());
+    return EntitiesLabels(std::vector<std::vector<std::u16string>>());
   }
 
   // Step 2#
@@ -161,8 +153,8 @@ EntitiesLabels GetLabelsForEntities(
         attribute_types_and_values_available_for_entities[0][0].first);
   }
 
-  autofill_ai::EntitiesLabels entities_labels_output =
-      autofill_ai::EntitiesLabels(std::vector<std::vector<std::u16string>>(
+  EntitiesLabels entities_labels_output =
+      EntitiesLabels(std::vector<std::vector<std::u16string>>(
           entity_instances.size(), std::vector<std::u16string>()));
 
   // Step 4#
@@ -170,7 +162,7 @@ EntitiesLabels GetLabelsForEntities(
   // generate labels for each entity. Stop when the concatenation of labels for
   // each entity is unique.
   size_t max_number_of_labels =
-      std::min(autofill_ai::kMaxNumberOfLabels, entities_labels_output->size());
+      std::min(kMaxNumberOfLabels, entities_labels_output->size());
   for (AttributeType attribute_type_to_use_as_label :
        disambiguating_attribute_types) {
     // Used to check whether the list of labels for the entities is unique.
@@ -207,4 +199,4 @@ EntitiesLabels GetLabelsForEntities(
   return entities_labels_output;
 }
 
-}  // namespace autofill_ai
+}  // namespace autofill

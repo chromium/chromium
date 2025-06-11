@@ -330,6 +330,8 @@ static_library("browser") {
     "heuristic_source.cc",
     "heuristic_source.h",
     "integrators/autofill_ai/autofill_ai_delegate.h",
+    "integrators/autofill_ai/autofill_ai_utils.cc",
+    "integrators/autofill_ai/autofill_ai_utils.h",
     "integrators/compose/autofill_compose_delegate.h",
     "integrators/fast_checkout/fast_checkout_client.h",
     "integrators/fast_checkout/fast_checkout_delegate.h",
