@@ -1078,19 +1078,6 @@ bool LayoutObject::IsBeforeInPreOrder(const LayoutObject& other) const {
   NOTREACHED();
 }
 
-LayoutObject* LayoutObject::LastLeafChild() const {
-  NOT_DESTROYED();
-  LayoutObject* r = SlowLastChild();
-  while (r) {
-    LayoutObject* n = nullptr;
-    n = r->SlowLastChild();
-    if (!n)
-      break;
-    r = n;
-  }
-  return r;
-}
-
 static void AddLayers(LayoutObject* obj,
                       PaintLayer* parent_layer,
                       LayoutObject*& new_object,
@@ -5178,16 +5165,6 @@ void LayoutObject::SetModifiedStyleOutsideStyleRecalc(
   if (auto* element = DynamicTo<Element>(GetNode())) {
     element->SetComputedStyle(style);
   }
-}
-
-bool LayoutObject::SelfPaintingLayerNeedsVisualOverflowRecalc() const {
-  NOT_DESTROYED();
-  if (HasLayer()) {
-    auto* box_model_object = To<LayoutBoxModelObject>(this);
-    if (box_model_object->HasSelfPaintingLayer())
-      return box_model_object->Layer()->NeedsVisualOverflowRecalc();
-  }
-  return false;
 }
 
 void LayoutObject::MarkSelfPaintingLayerForVisualOverflowRecalc() {

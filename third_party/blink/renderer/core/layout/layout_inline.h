@@ -276,8 +276,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   template <typename PhysicalRectCollector>
   void CollectLineBoxRects(const PhysicalRectCollector&) const;
 
-  void AddChildIgnoringContinuation(LayoutObject* new_child,
-                                    LayoutObject* before_child = nullptr) final;
   void AddChildAsBlockInInline(LayoutObject* new_child,
                                LayoutObject* before_child);
 
