@@ -36,6 +36,7 @@ import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBui
 import org.chromium.components.sync.protocol.WebApkSpecifics;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,8 +79,8 @@ public class WebApkSyncServiceTest {
             Document document =
                     documentBuilder.parse(
                             new ByteArrayInputStream(mPrimaryIconXmlContents.getBytes()));
-
-            return new XmlResourceParserImpl(document, "file", PACKAGE_NAME, PACKAGE_NAME, null);
+            return new XmlResourceParserImpl(
+                    document, Paths.get("file"), PACKAGE_NAME, PACKAGE_NAME, null);
         } catch (Exception e) {
             return null;
         }

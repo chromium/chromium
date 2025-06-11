@@ -40,6 +40,7 @@ import org.chromium.webapk.lib.common.splash.SplashLayout;
 import org.chromium.webapk.test.WebApkTestHelper;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,7 +93,12 @@ public class WebApkInfoTest {
                     String packageName,
                     String applicationPackageName,
                     ResourceTable resourceTable) {
-                super(document, fileName, packageName, applicationPackageName, resourceTable);
+                super(
+                        document,
+                        Paths.get(fileName),
+                        packageName,
+                        applicationPackageName,
+                        resourceTable);
                 mPackageName = packageName;
             }
 

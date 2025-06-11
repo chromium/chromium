@@ -8,10 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +24,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -136,6 +139,7 @@ public class WebappLauncherActivityTest {
     }
 
     private Intent getNextStartedActivity() {
-        return ShadowApplication.getInstance().getNextStartedActivity();
+        return shadowOf((Application) ApplicationProvider.getApplicationContext())
+                .getNextStartedActivity();
     }
 }

@@ -372,6 +372,7 @@ robolectric_binary("webapk_shell_apk_junit_tests") {
     "//chrome/android/webapk/test:junit_test_support",
     "//components/webapk/android/libs/common:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
   ]
 }
 
@@ -391,6 +392,7 @@ robolectric_binary("webapk_shell_apk_h2o_junit_tests") {
     "//chrome/android/webapk/libs/common:common_java",
     "//chrome/android/webapk/test:junit_test_support",
     "//components/webapk/android/libs/common:java",
+    "//third_party/androidx:androidx_test_core_java",
   ]
   data_deps = [ ":${h2o_junit_manifest_target_name}" ]
 }

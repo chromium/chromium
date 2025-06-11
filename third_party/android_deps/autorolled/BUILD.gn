@@ -75,7 +75,7 @@ template("define_autorolled_targets") {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_ow2_asm_asm_java") {
-    jar_path = "autorolled/cipd/libs/org_ow2_asm_asm/asm-9.7.1.jar"
+    jar_path = "autorolled/cipd/libs/org_ow2_asm_asm/asm-9.8.jar"
     output_name = "org_ow2_asm_asm"
     enable_bytecode_checks = false
   }
@@ -83,7 +83,7 @@ template("define_autorolled_targets") {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_ow2_asm_asm_commons_java") {
     jar_path =
-        "autorolled/cipd/libs/org_ow2_asm_asm_commons/asm-commons-9.7.1.jar"
+        "autorolled/cipd/libs/org_ow2_asm_asm_commons/asm-commons-9.8.jar"
     output_name = "org_ow2_asm_asm_commons"
     enable_bytecode_checks = false
     deps = [
@@ -94,22 +94,10 @@ template("define_autorolled_targets") {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_ow2_asm_asm_tree_java") {
-    jar_path = "autorolled/cipd/libs/org_ow2_asm_asm_tree/asm-tree-9.7.1.jar"
+    jar_path = "autorolled/cipd/libs/org_ow2_asm_asm_tree/asm-tree-9.8.jar"
     output_name = "org_ow2_asm_asm_tree"
     enable_bytecode_checks = false
     deps = [ "//third_party/android_deps:org_ow2_asm_asm_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_ow2_asm_asm_util_java") {
-    jar_path = "autorolled/cipd/libs/org_ow2_asm_asm_util/asm-util-9.7.1.jar"
-    output_name = "org_ow2_asm_asm_util"
-    enable_bytecode_checks = false
-    deps = [
-      "//third_party/android_deps:org_ow2_asm_asm_analysis_java",
-      "//third_party/android_deps:org_ow2_asm_asm_java",
-      "//third_party/android_deps:org_ow2_asm_asm_tree_java",
-    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -121,22 +109,6 @@ template("define_autorolled_targets") {
 
     # Please depend on //third_party/android_deps:guava_android_java instead.
     visibility = [ "//third_party/android_deps:*" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_ow2_asm_asm_analysis_java") {
-    jar_path =
-        "autorolled/cipd/libs/org_ow2_asm_asm_analysis/asm-analysis-9.7.1.jar"
-    output_name = "org_ow2_asm_asm_analysis"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/autorolled/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [ "//third_party/android_deps:org_ow2_asm_asm_tree_java" ]
   }
   if (!limit_android_deps) {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -669,7 +641,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_robolectric_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_robolectric/robolectric-4.14.1.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_robolectric/robolectric-4.15-beta-1.jar"
       output_name = "org_robolectric_robolectric"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -974,7 +946,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_bouncycastle_bcprov_jdk18on_java") {
-      jar_path = "autorolled/cipd/libs/org_bouncycastle_bcprov_jdk18on/bcprov-jdk18on-1.78.1.jar"
+      jar_path = "autorolled/cipd/libs/org_bouncycastle_bcprov_jdk18on/bcprov-jdk18on-1.80.jar"
       output_name = "org_bouncycastle_bcprov_jdk18on"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1061,7 +1033,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_annotations_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_annotations/annotations-4.14.1.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_annotations/annotations-4.15-beta-1.jar"
       output_name = "org_robolectric_annotations"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1077,7 +1049,8 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_junit_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_junit/junit-4.14.1.jar"
+      jar_path =
+          "autorolled/cipd/libs/org_robolectric_junit/junit-4.15-beta-1.jar"
       output_name = "org_robolectric_junit"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1090,17 +1063,14 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        "//third_party/android_deps:org_robolectric_annotations_java",
         "//third_party/android_deps:org_robolectric_pluginapi_java",
         "//third_party/android_deps:org_robolectric_sandbox_java",
-        "//third_party/android_deps:org_robolectric_shadowapi_java",
-        "//third_party/android_deps:org_robolectric_utils_reflector_java",
       ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_nativeruntime_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_nativeruntime/nativeruntime-4.14.1.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_nativeruntime/nativeruntime-4.15-beta-1.jar"
       output_name = "org_robolectric_nativeruntime"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1117,13 +1087,12 @@ template("define_autorolled_targets") {
         "//third_party/android_deps:org_robolectric_nativeruntime_dist_compat_java",
         "//third_party/android_deps:org_robolectric_shadowapi_java",
         "//third_party/android_deps:org_robolectric_utils_java",
-        "//third_party/android_deps:org_robolectric_utils_reflector_java",
       ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_nativeruntime_dist_compat_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_nativeruntime_dist_compat/nativeruntime-dist-compat-1.0.16.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_nativeruntime_dist_compat/nativeruntime-dist-compat-1.0.17.jar"
       output_name = "org_robolectric_nativeruntime_dist_compat"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1139,8 +1108,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_pluginapi_java") {
-      jar_path =
-          "autorolled/cipd/libs/org_robolectric_pluginapi/pluginapi-4.14.1.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_pluginapi/pluginapi-4.15-beta-1.jar"
       output_name = "org_robolectric_pluginapi"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1160,7 +1128,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_plugins_maven_dependency_resolver_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.14.1.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.15-beta-1.jar"
       output_name = "org_robolectric_plugins_maven_dependency_resolver"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1182,8 +1150,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_resources_java") {
-      jar_path =
-          "autorolled/cipd/libs/org_robolectric_resources/resources-4.14.1.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_resources/resources-4.15-beta-1.jar"
       output_name = "org_robolectric_resources"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1198,7 +1165,6 @@ template("define_autorolled_targets") {
       deps = [
         "//third_party/android_deps:com_google_auto_value_auto_value_annotations_java",
         "//third_party/android_deps:guava_android_java",
-        "//third_party/android_deps:org_robolectric_annotations_java",
         "//third_party/android_deps:org_robolectric_pluginapi_java",
         "//third_party/android_deps:org_robolectric_utils_java",
       ]
@@ -1207,7 +1173,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_sandbox_java") {
       jar_path =
-          "autorolled/cipd/libs/org_robolectric_sandbox/sandbox-4.14.1.jar"
+          "autorolled/cipd/libs/org_robolectric_sandbox/sandbox-4.15-beta-1.jar"
       output_name = "org_robolectric_sandbox"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1234,8 +1200,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_shadowapi_java") {
-      jar_path =
-          "autorolled/cipd/libs/org_robolectric_shadowapi/shadowapi-4.14.1.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_shadowapi/shadowapi-4.15-beta-1.jar"
       output_name = "org_robolectric_shadowapi"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1255,7 +1220,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_shadows_framework_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_shadows_framework/shadows-framework-4.14.1.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_shadows_framework/shadows-framework-4.15-beta-1.jar"
       output_name = "org_robolectric_shadows_framework"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1285,7 +1250,8 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_utils_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_utils/utils-4.14.1.jar"
+      jar_path =
+          "autorolled/cipd/libs/org_robolectric_utils/utils-4.15-beta-1.jar"
       output_name = "org_robolectric_utils"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1300,14 +1266,13 @@ template("define_autorolled_targets") {
       deps = [
         "//third_party/android_deps:javax_annotation_javax_annotation_api_java",
         "//third_party/android_deps:javax_inject_javax_inject_java",
-        "//third_party/android_deps:org_robolectric_annotations_java",
         "//third_party/android_deps:org_robolectric_pluginapi_java",
       ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_utils_reflector_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_utils_reflector/utils-reflector-4.14.1.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_utils_reflector/utils-reflector-4.15-beta-1.jar"
       output_name = "org_robolectric_utils_reflector"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1322,14 +1287,13 @@ template("define_autorolled_targets") {
       deps = [
         "//third_party/android_deps:org_ow2_asm_asm_commons_java",
         "//third_party/android_deps:org_ow2_asm_asm_java",
-        "//third_party/android_deps:org_ow2_asm_asm_util_java",
         "//third_party/android_deps:org_robolectric_utils_java",
       ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_yaml_snakeyaml_java") {
-      jar_path = "autorolled/cipd/libs/org_yaml_snakeyaml/snakeyaml-2.3.jar"
+      jar_path = "autorolled/cipd/libs/org_yaml_snakeyaml/snakeyaml-2.4.jar"
       output_name = "org_yaml_snakeyaml"
       requires_robolectric = true
       enable_bytecode_checks = false

@@ -18,9 +18,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.UserManager;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -758,7 +762,8 @@ public class SigninManagerImplTest {
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
         // Make sure that the user is not a demo user.
-        ShadowApplication shadowApplication = ShadowApplication.getInstance();
+        ShadowApplication shadowApplication =
+                shadowOf((Application) ApplicationProvider.getApplicationContext());
         UserManager userManager = Mockito.mock(UserManager.class);
         Mockito.when(userManager.isDemoUser()).thenReturn(false);
         shadowApplication.setSystemService(Context.USER_SERVICE, userManager);
@@ -773,7 +778,8 @@ public class SigninManagerImplTest {
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(false);
 
         // Make sure that the user is not a demo user.
-        ShadowApplication shadowApplication = ShadowApplication.getInstance();
+        ShadowApplication shadowApplication =
+                shadowOf((Application) ApplicationProvider.getApplicationContext());
         UserManager userManager = Mockito.mock(UserManager.class);
         Mockito.when(userManager.isDemoUser()).thenReturn(false);
         shadowApplication.setSystemService(Context.USER_SERVICE, userManager);

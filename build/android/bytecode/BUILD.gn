@@ -26,6 +26,5 @@ java_library("trace_event_adder_java") {
   deps = [
     "//third_party/android_deps:org_ow2_asm_asm_commons_java",
     "//third_party/android_deps:org_ow2_asm_asm_java",
-    "//third_party/android_deps:org_ow2_asm_asm_util_java",
   ]
 }

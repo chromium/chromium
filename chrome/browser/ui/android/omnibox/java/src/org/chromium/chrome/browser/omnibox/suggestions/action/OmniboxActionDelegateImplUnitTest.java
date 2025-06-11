@@ -11,9 +11,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.robolectric.Shadows.shadowOf;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +28,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -145,7 +148,7 @@ public class OmniboxActionDelegateImplUnitTest {
 
     @Test
     public void startActivity_targetSelf() {
-        ShadowApplication.getInstance().checkActivities(true);
+        shadowOf((Application) ApplicationProvider.getApplicationContext()).checkActivities(true);
         Intent i = new Intent();
         i.setClass(mContext, TestActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -158,7 +161,7 @@ public class OmniboxActionDelegateImplUnitTest {
     @Test
     public void startActivity_targetOther() {
         // Do not arm the package resolution.
-        ShadowApplication.getInstance().checkActivities(false);
+        shadowOf((Application) ApplicationProvider.getApplicationContext()).checkActivities(false);
         Intent i = new Intent("some magic here");
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         assertFalse(IntentUtils.intentTargetsSelf(i));
@@ -169,7 +172,7 @@ public class OmniboxActionDelegateImplUnitTest {
 
     @Test
     public void startActivity_failure() {
-        ShadowApplication.getInstance().checkActivities(true);
+        shadowOf((Application) ApplicationProvider.getApplicationContext()).checkActivities(true);
         Intent i = new Intent("some magic here");
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         assertFalse(mDelegate.startActivity(i));

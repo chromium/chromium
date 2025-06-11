@@ -4,10 +4,15 @@
 
 package org.chromium.webapk.shell_apk;
 
+import static org.robolectric.Shadows.shadowOf;
+
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -68,7 +73,10 @@ public final class MainActivityTest {
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(intentStartUrl));
         Robolectric.buildActivity(H2OMainActivity.class, launchIntent).create();
 
-        Intent startedActivityIntent = ShadowApplication.getInstance().getNextStartedActivity();
+        Intent startedActivityIntent =
+                ((ShadowApplication)
+                                shadowOf((Application) ApplicationProvider.getApplicationContext()))
+                        .getNextStartedActivity();
         assertWebApkLaunched(startedActivityIntent, expectedStartUrl);
     }
 
@@ -95,7 +103,10 @@ public final class MainActivityTest {
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(intentStartUrl));
         Robolectric.buildActivity(H2OMainActivity.class, launchIntent).create();
 
-        Intent startedActivityIntent = ShadowApplication.getInstance().getNextStartedActivity();
+        Intent startedActivityIntent =
+                ((ShadowApplication)
+                                shadowOf((Application) ApplicationProvider.getApplicationContext()))
+                        .getNextStartedActivity();
         assertWebApkLaunched(startedActivityIntent, expectedStartUrl);
     }
 
@@ -122,7 +133,10 @@ public final class MainActivityTest {
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(intentStartUrl));
         Robolectric.buildActivity(H2OMainActivity.class, launchIntent).create();
 
-        Intent startedActivityIntent = ShadowApplication.getInstance().getNextStartedActivity();
+        Intent startedActivityIntent =
+                ((ShadowApplication)
+                                shadowOf((Application) ApplicationProvider.getApplicationContext()))
+                        .getNextStartedActivity();
         assertWebApkLaunched(startedActivityIntent, expectedStartUrl);
     }
 
@@ -148,7 +162,10 @@ public final class MainActivityTest {
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(intentStartUrl));
         Robolectric.buildActivity(H2OMainActivity.class, launchIntent).create();
 
-        Intent startedActivityIntent = ShadowApplication.getInstance().getNextStartedActivity();
+        Intent startedActivityIntent =
+                ((ShadowApplication)
+                                shadowOf((Application) ApplicationProvider.getApplicationContext()))
+                        .getNextStartedActivity();
         assertWebApkLaunched(startedActivityIntent, intentStartUrl);
     }
 
@@ -177,7 +194,10 @@ public final class MainActivityTest {
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(intentStartUrl));
         Robolectric.buildActivity(H2OMainActivity.class, launchIntent).create();
 
-        Intent startedActivityIntent = ShadowApplication.getInstance().getNextStartedActivity();
+        Intent startedActivityIntent =
+                ((ShadowApplication)
+                                shadowOf((Application) ApplicationProvider.getApplicationContext()))
+                        .getNextStartedActivity();
         assertWebApkLaunched(startedActivityIntent, expectedStartUrl);
     }
 
@@ -203,7 +223,10 @@ public final class MainActivityTest {
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(startUrl));
         Robolectric.buildActivity(H2OMainActivity.class, launchIntent).create();
 
-        Intent startedActivityIntent = ShadowApplication.getInstance().getNextStartedActivity();
+        Intent startedActivityIntent =
+                ((ShadowApplication)
+                                shadowOf((Application) ApplicationProvider.getApplicationContext()))
+                        .getNextStartedActivity();
         assertTabbedBrowserLaunched(startedActivityIntent, nonChromeBrowserPackageName, startUrl);
     }
 
@@ -227,7 +250,10 @@ public final class MainActivityTest {
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(startUrl));
         Robolectric.buildActivity(H2OMainActivity.class, launchIntent).create();
 
-        Intent startedActivityIntent = ShadowApplication.getInstance().getNextStartedActivity();
+        Intent startedActivityIntent =
+                ((ShadowApplication)
+                                shadowOf((Application) ApplicationProvider.getApplicationContext()))
+                        .getNextStartedActivity();
         assertWebApkLaunched(startedActivityIntent, startUrl);
     }
 
@@ -259,7 +285,10 @@ public final class MainActivityTest {
         launchIntent.putExtras((Bundle) extrasToPropagate.clone());
         Robolectric.buildActivity(H2OMainActivity.class, launchIntent).create();
 
-        Intent startedActivityIntent = ShadowApplication.getInstance().getNextStartedActivity();
+        Intent startedActivityIntent =
+                ((ShadowApplication)
+                                shadowOf((Application) ApplicationProvider.getApplicationContext()))
+                        .getNextStartedActivity();
         assertWebApkLaunched(startedActivityIntent, startUrl);
         Bundle actualExtras = startedActivityIntent.getExtras();
         Assert.assertNotNull(actualExtras);

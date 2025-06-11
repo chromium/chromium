@@ -17,6 +17,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -234,7 +235,8 @@ public class HttpNegotiateAuthenticatorTest {
 
         // Verify that the broadcast receiver is registered
         Intent intent = new Intent(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION);
-        ShadowApplication shadowApplication = ShadowApplication.getInstance();
+        ShadowApplication shadowApplication =
+                shadowOf((Application) RuntimeEnvironment.application);
         List<BroadcastReceiver> receivers = shadowApplication.getReceiversForIntent(intent);
         assertThat("There is one registered broadcast receiver", receivers.size(), equalTo(1));
 

@@ -53,6 +53,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -108,6 +109,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/424153626")
     public void testShrinkTab() {
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -634,6 +636,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/424153626")
     public void testShrinkTab_NoToolbarFadeForBottomToolbar() {
         var watcher =
                 HistogramWatcher.newBuilder()

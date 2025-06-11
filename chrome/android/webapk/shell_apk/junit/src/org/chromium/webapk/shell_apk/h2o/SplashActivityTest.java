@@ -11,9 +11,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -21,12 +23,13 @@ import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
@@ -96,11 +99,11 @@ public final class SplashActivityTest {
 
     @Before
     public void setUp() {
-        Context appContext = RuntimeEnvironment.application;
+        Context appContext = ApplicationProvider.getApplicationContext();
         ActivityManager activityManager =
                 (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
         mShadowActivityManager = Shadows.shadowOf(activityManager);
-        mShadowApplication = ShadowApplication.getInstance();
+        mShadowApplication = shadowOf((Application) ApplicationProvider.getApplicationContext());
         mShadowPackageManager = Shadows.shadowOf(appContext.getPackageManager());
 
         MockLaunchHostBrowserSelector.setNeedsToShowDialog(false);

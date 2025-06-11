@@ -6,11 +6,13 @@ package org.chromium.webapk.shell_apk.h2o;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.webapk.shell_apk.ManageDataLauncherActivity.SITE_SETTINGS_SHORTCUT_ID;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +23,8 @@ import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -76,10 +80,9 @@ public final class LaunchTest {
 
     @Before
     public void setUp() {
-        sWebApkPackageName = RuntimeEnvironment.application.getPackageName();
-
-        mShadowApplication = ShadowApplication.getInstance();
-        mAppContext = RuntimeEnvironment.application;
+        mAppContext = ApplicationProvider.getApplicationContext();
+        sWebApkPackageName = mAppContext.getPackageName();
+        mShadowApplication = shadowOf((Application) mAppContext);
         mPackageManager = mAppContext.getPackageManager();
         mShadowPackageManager = Shadows.shadowOf(mPackageManager);
     }

@@ -15,8 +15,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.credentials.CredentialManager;
@@ -25,6 +27,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -109,9 +112,9 @@ public class Fido2CredentialRequestRobolectricTest {
 
         MockitoAnnotations.initMocks(this);
 
-        ShadowApplication shadowApp = ShadowApplication.getInstance();
-        shadowApp.setSystemService(
-                Context.CREDENTIAL_SERVICE, Shadow.newInstanceOf(CredentialManager.class));
+        ((ShadowApplication) shadowOf((Application) ApplicationProvider.getApplicationContext()))
+                .setSystemService(
+                        Context.CREDENTIAL_SERVICE, Shadow.newInstanceOf(CredentialManager.class));
 
         GURL gurl =
                 new GURL(

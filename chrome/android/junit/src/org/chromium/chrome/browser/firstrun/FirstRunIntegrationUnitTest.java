@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.robolectric.Shadows.shadowOf;
+
 import android.app.Activity;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +17,7 @@ import android.os.Bundle;
 import android.os.UserManager;
 
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -26,8 +30,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
@@ -66,8 +68,8 @@ public final class FirstRunIntegrationUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
-        mShadowApplication = ShadowApplication.getInstance();
+        mContext = ApplicationProvider.getApplicationContext();
+        mShadowApplication = shadowOf((Application) ApplicationProvider.getApplicationContext());
 
         UserManager userManager = Mockito.mock(UserManager.class);
         Mockito.when(userManager.isDemoUser()).thenReturn(false);
@@ -207,8 +209,7 @@ public final class FirstRunIntegrationUnitTest {
                         FirstRunActivityBase.EXTRA_FRE_COMPLETE_LAUNCH_INTENT);
         Assert.assertNotNull(freCompleteLaunchIntent);
         Assert.assertEquals(
-                webApkPackageName,
-                Shadows.shadowOf(freCompleteLaunchIntent).getSavedIntent().getPackage());
+                webApkPackageName, shadowOf(freCompleteLaunchIntent).getSavedIntent().getPackage());
     }
 
     /**
@@ -295,7 +296,7 @@ public final class FirstRunIntegrationUnitTest {
         Assert.assertNotNull(freCompleteLaunchIntent);
         Assert.assertEquals(
                 mContext.getPackageName(),
-                Shadows.shadowOf(freCompleteLaunchIntent).getSavedIntent().getPackage());
+                shadowOf(freCompleteLaunchIntent).getSavedIntent().getPackage());
     }
 
     @Test

@@ -43,6 +43,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -558,6 +559,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/424161113")
     public void configurationChangedDuringDelayedTask() {
         setConfigurationWithNewWidth(NARROW_NORMAL_WINDOW_WIDTH);
         simulateLayoutChange(NARROW_NORMAL_WINDOW_WIDTH);
@@ -570,6 +572,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/424161113")
     public void destroyDuringDelayedTask() {
         setConfigurationWithNewWidth(NARROW_NORMAL_WINDOW_WIDTH);
         simulateLayoutChange(NARROW_NORMAL_WINDOW_WIDTH);
@@ -584,6 +587,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/424161113")
     public void destroyBeforeCapture() {
         setConfigurationWithNewWidth(NARROW_NORMAL_WINDOW_WIDTH);
         simulateLayoutChange(NARROW_NORMAL_WINDOW_WIDTH);

@@ -1317,7 +1317,7 @@
     {
         "name": "error_prone_annotation",
         "group": "com.google.errorprone",
-        "version": "2.34.0"
+        "version": "2.38.0"
     },
     {
         "name": "error_prone_annotations",
@@ -1437,7 +1437,7 @@
     {
         "name": "icu4j",
         "group": "com.ibm.icu",
-        "version": "75.1"
+        "version": "77.1"
     },
     {
         "name": "dalvik-dx",
@@ -1527,7 +1527,7 @@
     {
         "name": "bcprov-jdk18on",
         "group": "org.bouncycastle",
-        "version": "1.78.1"
+        "version": "1.80"
     },
     {
         "name": "tagsoup",
@@ -1722,27 +1722,27 @@
     {
         "name": "asm",
         "group": "org.ow2.asm",
-        "version": "9.7.1"
+        "version": "9.8"
     },
     {
         "name": "asm-analysis",
         "group": "org.ow2.asm",
-        "version": "9.7.1"
+        "version": "7.0"
     },
     {
         "name": "asm-commons",
         "group": "org.ow2.asm",
-        "version": "9.7.1"
+        "version": "9.8"
     },
     {
         "name": "asm-tree",
         "group": "org.ow2.asm",
-        "version": "9.7.1"
+        "version": "9.8"
     },
     {
         "name": "asm-util",
         "group": "org.ow2.asm",
-        "version": "9.7.1"
+        "version": "7.0"
     },
     {
         "name": "reactive-streams",
@@ -1752,71 +1752,71 @@
     {
         "name": "annotations",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "junit",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "nativeruntime",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "nativeruntime-dist-compat",
         "group": "org.robolectric",
-        "version": "1.0.16"
+        "version": "1.0.17"
     },
     {
         "name": "pluginapi",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "plugins-maven-dependency-resolver",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "resources",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "robolectric",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "sandbox",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "shadowapi",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "shadows-framework",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "utils",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "utils-reflector",
         "group": "org.robolectric",
-        "version": "4.14.1"
+        "version": "4.15-beta-1"
     },
     {
         "name": "snakeyaml",
         "group": "org.yaml",
-        "version": "2.3"
+        "version": "2.4"
     }
 ]
