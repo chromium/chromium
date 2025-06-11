@@ -350,6 +350,10 @@ coverage_builder(
                 ),
             ),
             # Keep this same as android-10-x86-rel
+            "content_unittests": targets.mixin(
+                ci_only = True,
+            ),
+            # Keep this same as android-10-x86-rel
             "gl_tests_validating": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.gl_tests.filter",

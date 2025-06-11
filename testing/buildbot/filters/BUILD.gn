@@ -256,7 +256,6 @@ source_set("content_unittests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/android.emulator_10.content_unittests.filter",
     "//testing/buildbot/filters/android.emulator_14.content_unittests.filter",
     "//testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
     "//testing/buildbot/filters/android.device.content_unittests.filter",

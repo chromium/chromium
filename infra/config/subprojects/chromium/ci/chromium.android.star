@@ -3088,10 +3088,8 @@ ci.builder(
                     shards = 6,
                 ),
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "content_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_unittests.filter",
-                ],
                 ci_only = True,
             ),
             # If you change this, make similar changes in android-x86-code-coverage
