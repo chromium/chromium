@@ -92,8 +92,8 @@ void ClipboardRequestHandler::ReportWarningBypass(
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      content_transfer_method_, access_point_, content_size_, response_,
-      user_justification);
+      content_transfer_method_, access_point_, content_size_,
+      content_analysis_info_->referrer_chain(), response_, user_justification);
 }
 
 void ClipboardRequestHandler::UploadForDeepScanning(

@@ -107,7 +107,8 @@ void PagePrintRequestHandler::ReportWarningBypass(
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
       /*content_tranfer_method*/ "", safe_browsing::DeepScanAccessPoint::PRINT,
-      /*content_size*/ -1, response_, user_justification);
+      /*content_size*/ -1, content_analysis_info_->referrer_chain(), response_,
+      user_justification);
 }
 
 void PagePrintRequestHandler::UploadForDeepScanning(

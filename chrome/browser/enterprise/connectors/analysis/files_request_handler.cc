@@ -156,7 +156,8 @@ void FilesRequestHandler::ReportWarningBypass(
         paths_[index].AsUTF8Unsafe(), file_info_[index].sha256,
         file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
         content_transfer_method_, access_point_, file_info_[index].size,
-        warning.second, user_justification);
+        content_analysis_info_->referrer_chain(), warning.second,
+        user_justification);
   }
 }
 

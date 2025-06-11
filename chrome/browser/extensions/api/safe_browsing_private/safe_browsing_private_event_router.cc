@@ -525,6 +525,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     const std::string& scan_id,
     const std::string& content_transfer_method,
     safe_browsing::DeepScanAccessPoint access_point,
+    const safe_browsing::ReferrerChain& referrer_chain,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     std::optional<std::u16string> user_justification) {
@@ -563,6 +564,9 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
   }
   if (!content_transfer_method.empty()) {
     event.Set(kKeyContentTransferMethod, content_transfer_method);
+  }
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
   }
   std::string content_area_account_email =
       enterprise_connectors::ContentAreaUserProvider::GetUser(

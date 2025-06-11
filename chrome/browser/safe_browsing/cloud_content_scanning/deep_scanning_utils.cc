@@ -212,6 +212,7 @@ void ReportAnalysisConnectorWarningBypass(
     const std::string& content_transfer_method,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
+    const safe_browsing::ReferrerChain& referrer_chain,
     const enterprise_connectors::ContentAnalysisResponse& response,
     std::optional<std::u16string> user_justification) {
   DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
@@ -228,7 +229,7 @@ void ReportAnalysisConnectorWarningBypass(
     router->OnAnalysisConnectorWarningBypassed(
         url, tab_url, source, destination, file_name, download_digest_sha256,
         mime_type, trigger, response.request_token(), content_transfer_method,
-        access_point, result, content_size, user_justification);
+        access_point, referrer_chain, result, content_size, user_justification);
   }
 }
 
