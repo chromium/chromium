@@ -58,10 +58,6 @@ optimization_guide::proto::BrowserAction MakeDragAndRelease(
     const gfx::Point& to_point);
 optimization_guide::proto::BrowserAction MakeWait();
 
-// Use this in a ScopedFeatureList of tests to use test-appropriate parameters
-// for the actor feature.
-base::FieldTrialParams GetDefaultActorParamsForTesting();
-
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
 void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,
                        mojom::ActionResultCode expected_code);

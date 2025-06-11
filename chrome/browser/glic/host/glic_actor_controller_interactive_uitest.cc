@@ -48,12 +48,11 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   using ActionProtoProvider = base::OnceCallback<std::string()>;
 
   GlicActorControllerUiTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActor, actor::GetDefaultActorParamsForTesting()},
-         {optimization_guide::features::
-              kAnnotatedPageContentWithActionableElements,
-          {}}},
-        {});
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicActor,
+                              optimization_guide::features::
+                                  kAnnotatedPageContentWithActionableElements},
+        /*disabled_features=*/{});
   }
   ~GlicActorControllerUiTest() override = default;
 

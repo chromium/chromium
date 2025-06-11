@@ -43,7 +43,7 @@ base::TimeDelta GetGlobalTimeoutDelay() {
 // Timeout used when waiting on local work. This can be shorter because it's
 // used after network requests are completed.
 base::TimeDelta GetMainThreadTimeoutDelay() {
-  return features::kGlicActorActorObservationDelay.Get();
+  return features::kGlicActorPageStabilityLocalTimeout.Get();
 }
 
 }  // namespace

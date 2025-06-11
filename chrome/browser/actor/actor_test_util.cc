@@ -225,13 +225,6 @@ BrowserAction MakeWait() {
   return action;
 }
 
-base::FieldTrialParams GetDefaultActorParamsForTesting() {
-  // TODO(crbug.com/414662842): Remove in followup as we now use
-  // PageStabilityMonitor.
-  return {{"glic-actor-observation-delay", "10ms"},
-          {"glic-actor-page-stability-timeout", "10s"}};
-}
-
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
   const auto& result = *(future.Get());
   EXPECT_TRUE(IsOk(result))

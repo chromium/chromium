@@ -38,11 +38,9 @@ namespace {
 class ExecutionEngineBrowserTest : public InProcessBrowserTest {
  public:
   ExecutionEngineBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlic, {}},
-                              {features::kTabstripComboButton, {}},
-                              {features::kGlicActor,
-                               GetDefaultActorParamsForTesting()}},
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicActor},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ExecutionEngineBrowserTest(const ExecutionEngineBrowserTest&) = delete;

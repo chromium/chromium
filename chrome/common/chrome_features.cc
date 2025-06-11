@@ -339,9 +339,8 @@ BASE_FEATURE(kGlicActor, "GlicActor", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls renderer tool observation timeout when waiting on local
 // (non-network) work.
-// TODO(bokan): Rename to more accurately reflect its usage.
-const base::FeatureParam<base::TimeDelta> kGlicActorActorObservationDelay{
-    &kGlicActor, "glic-actor-observation-delay", base::Seconds(3)};
+const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
+    &kGlicActor, "glic-actor-page-stability-local-timeout", base::Seconds(3)};
 
 // The overall observation timeout when waiting on a renderer tool to complete.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{

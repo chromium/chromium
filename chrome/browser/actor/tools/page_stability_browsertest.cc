@@ -48,11 +48,9 @@ const char* kFetchPath = "/fetchtarget.html";
 class ActorPageStabilityTest : public InProcessBrowserTest {
  public:
   ActorPageStabilityTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlic, {}},
-                              {features::kTabstripComboButton, {}},
-                              {features::kGlicActor,
-                               GetDefaultActorParamsForTesting()}},
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicActor},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ActorPageStabilityTest(const ActorPageStabilityTest&) = delete;
