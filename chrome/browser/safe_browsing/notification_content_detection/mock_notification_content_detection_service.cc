@@ -5,7 +5,7 @@
 #include "chrome/browser/safe_browsing/notification_content_detection/mock_notification_content_detection_service.h"
 
 #include "base/memory/ptr_util.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 
 namespace safe_browsing {

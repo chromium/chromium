@@ -17,7 +17,7 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/epoch_topics.h"
 #include "components/browsing_topics/test_util.h"
-#include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"

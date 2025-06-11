@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
+
 #include <memory>
 #include <utility>
 
@@ -10,12 +11,12 @@
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/core/model_info.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
+#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/core/optimization_target_model_observer.h"
-#include "components/optimization_guide/core/test_model_info_builder.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

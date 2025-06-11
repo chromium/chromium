@@ -6,8 +6,8 @@
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_TEST_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
 
 #include "base/files/scoped_temp_dir.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 
 namespace page_content_annotations {
 

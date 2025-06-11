@@ -4,7 +4,7 @@
 
 #include "components/passage_embeddings/passage_embedder_model_observer.h"
 
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
 
 namespace passage_embeddings {

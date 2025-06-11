@@ -24,7 +24,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite/src/tensorflow/lite/c/c_api_types.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/register.h"

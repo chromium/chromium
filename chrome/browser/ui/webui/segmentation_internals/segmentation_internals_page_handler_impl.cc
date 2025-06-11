@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 

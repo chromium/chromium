@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/language_detection/core/browser/language_detection_model_provider.h"
-#include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;

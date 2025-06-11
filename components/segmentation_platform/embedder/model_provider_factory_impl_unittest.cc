@@ -6,7 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"

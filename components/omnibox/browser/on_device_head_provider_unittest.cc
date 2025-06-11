@@ -25,7 +25,7 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 using testing::_;

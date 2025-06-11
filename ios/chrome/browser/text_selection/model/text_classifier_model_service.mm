@@ -7,8 +7,8 @@
 #import <string>
 
 #import "base/files/file_path.h"
+#import "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #import "components/optimization_guide/core/optimization_guide_logger.h"
-#import "components/optimization_guide/core/optimization_guide_model_provider.h"
 #import "components/optimization_guide/proto/models.pb.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 

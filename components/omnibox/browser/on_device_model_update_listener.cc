@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/delivery/model_util.h"
 
 namespace {
 // Helper function which finds the model and return its filename from the model

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/prediction_signature_model_executor.h"
 #include "components/version_info/version_info.h"

@@ -4,11 +4,11 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 
 namespace optimization_guide {
 

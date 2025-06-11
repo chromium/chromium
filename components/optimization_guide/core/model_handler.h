@@ -20,11 +20,11 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/optional_ref.h"
+#include "components/optimization_guide/core/delivery/model_util.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/model_executor.h"
-#include "components/optimization_guide/core/model_util.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {

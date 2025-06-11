@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/optional_ref.h"
-#include "components/optimization_guide/core/model_info.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/remote.h"

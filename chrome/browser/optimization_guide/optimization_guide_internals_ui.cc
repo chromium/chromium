@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 
 #include <cstdint>
@@ -18,10 +17,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/grit/optimization_guide_internals_resources.h"
 #include "components/grit/optimization_guide_internals_resources_map.h"
+#include "components/optimization_guide/core/delivery/prediction_manager.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/core/prediction_manager.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_page_handler_impl.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"

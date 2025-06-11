@@ -17,7 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_handler.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 
 // Autocomplete scoring service using machine learning models via

@@ -21,8 +21,8 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_handler.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
 
 namespace autofill {

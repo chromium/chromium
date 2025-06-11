@@ -8,7 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -11,7 +11,7 @@
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
 namespace passage_embeddings {

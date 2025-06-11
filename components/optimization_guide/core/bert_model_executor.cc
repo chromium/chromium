@@ -7,7 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.h"

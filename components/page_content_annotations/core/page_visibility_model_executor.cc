@@ -7,7 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "components/page_content_annotations/core/page_visibility_op_resolver.h"

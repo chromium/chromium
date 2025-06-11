@@ -8,7 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 
 class OptimizationGuideService;
 

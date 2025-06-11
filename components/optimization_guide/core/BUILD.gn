@@ -439,29 +439,29 @@ static_library("core") {
 
 static_library("prediction") {
   sources = [
-    "model_enums.h",
-    "model_info.cc",
-    "model_info.h",
-    "model_store_metadata_entry.cc",
-    "model_store_metadata_entry.h",
-    "model_util.cc",
-    "model_util.h",
-    "optimization_guide_model_provider.h",
-    "optimization_target_model_observer.h",
-    "prediction_manager.cc",
-    "prediction_manager.h",
-    "prediction_model_download_manager.cc",
-    "prediction_model_download_manager.h",
-    "prediction_model_download_observer.h",
-    "prediction_model_fetch_timer.cc",
-    "prediction_model_fetch_timer.h",
-    "prediction_model_fetcher.h",
-    "prediction_model_fetcher_impl.cc",
-    "prediction_model_fetcher_impl.h",
-    "prediction_model_override.cc",
-    "prediction_model_override.h",
-    "prediction_model_store.cc",
-    "prediction_model_store.h",
+    "delivery/model_enums.h",
+    "delivery/model_info.cc",
+    "delivery/model_info.h",
+    "delivery/model_store_metadata_entry.cc",
+    "delivery/model_store_metadata_entry.h",
+    "delivery/model_util.cc",
+    "delivery/model_util.h",
+    "delivery/optimization_guide_model_provider.h",
+    "delivery/optimization_target_model_observer.h",
+    "delivery/prediction_manager.cc",
+    "delivery/prediction_manager.h",
+    "delivery/prediction_model_download_manager.cc",
+    "delivery/prediction_model_download_manager.h",
+    "delivery/prediction_model_download_observer.h",
+    "delivery/prediction_model_fetch_timer.cc",
+    "delivery/prediction_model_fetch_timer.h",
+    "delivery/prediction_model_fetcher.h",
+    "delivery/prediction_model_fetcher_impl.cc",
+    "delivery/prediction_model_fetcher_impl.h",
+    "delivery/prediction_model_override.cc",
+    "delivery/prediction_model_override.h",
+    "delivery/prediction_model_store.cc",
+    "delivery/prediction_model_store.h",
   ]
   deps = [
     ":core_util",
@@ -538,10 +538,10 @@ static_library("hints_test_support") {
 static_library("delivery_test_support") {
   testonly = true
   sources = [
-    "test_model_info_builder.cc",
-    "test_model_info_builder.h",
-    "test_optimization_guide_model_provider.cc",
-    "test_optimization_guide_model_provider.h",
+    "delivery/test_model_info_builder.cc",
+    "delivery/test_model_info_builder.h",
+    "delivery/test_optimization_guide_model_provider.cc",
+    "delivery/test_optimization_guide_model_provider.h",
   ]
   deps = [
     ":prediction",
@@ -715,14 +715,14 @@ source_set("hints_unit_tests") {
 source_set("delivery_unit_tests") {
   testonly = true
   sources = [
-    "model_store_metadata_entry_unittest.cc",
-    "model_util_unittest.cc",
-    "prediction_manager_unittest.cc",
-    "prediction_model_download_manager_unittest.cc",
-    "prediction_model_fetch_timer_unittest.cc",
-    "prediction_model_fetcher_unittest.cc",
-    "prediction_model_override_unittest.cc",
-    "prediction_model_store_unittest.cc",
+    "delivery/model_store_metadata_entry_unittest.cc",
+    "delivery/model_util_unittest.cc",
+    "delivery/prediction_manager_unittest.cc",
+    "delivery/prediction_model_download_manager_unittest.cc",
+    "delivery/prediction_model_fetch_timer_unittest.cc",
+    "delivery/prediction_model_fetcher_unittest.cc",
+    "delivery/prediction_model_override_unittest.cc",
+    "delivery/prediction_model_store_unittest.cc",
   ]
   deps = [
     ":core_util",

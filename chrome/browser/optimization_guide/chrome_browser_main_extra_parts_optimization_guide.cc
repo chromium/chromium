@@ -10,9 +10,9 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/optimization_guide/core/delivery/prediction_manager.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/prediction_manager.h"
 
 void ChromeBrowserMainExtraPartsOptimizationGuide::PreCreateThreads() {
   base::FilePath model_downloads_dir;

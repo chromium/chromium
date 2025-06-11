@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_IOS_CHROME_PREDICTION_MODEL_STORE_H_
 
 #import "base/no_destructor.h"
-#import "components/optimization_guide/core/prediction_model_store.h"
+#import "components/optimization_guide/core/delivery/prediction_model_store.h"
 
 namespace optimization_guide {
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_CHROME_PREDICTION_MODEL_STORE_H_
 
 #include "base/no_destructor.h"
-#include "components/optimization_guide/core/prediction_model_store.h"
+#include "components/optimization_guide/core/delivery/prediction_model_store.h"
 
 class PrefService;
 

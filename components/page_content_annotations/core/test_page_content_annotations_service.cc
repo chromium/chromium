@@ -8,8 +8,8 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 
 namespace page_content_annotations {
 

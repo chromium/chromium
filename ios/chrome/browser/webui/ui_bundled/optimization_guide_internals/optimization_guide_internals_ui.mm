@@ -6,7 +6,7 @@
 
 #import "components/grit/optimization_guide_internals_resources.h"
 #import "components/grit/optimization_guide_internals_resources_map.h"
-#import "components/optimization_guide/core/prediction_manager.h"
+#import "components/optimization_guide/core/delivery/prediction_manager.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_page_handler_impl.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
