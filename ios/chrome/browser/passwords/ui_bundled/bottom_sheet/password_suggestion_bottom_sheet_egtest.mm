@@ -93,6 +93,18 @@ id<GREYMatcher> PasswordManagerContextMenuItem() {
                     grey_interactable(), nullptr);
 }
 
+// Returns the matcher for the recovery password suggestion with the given
+// `suggestion_username`.
+id<GREYMatcher> RecoveryPasswordSuggestion(NSString* suggestion_username) {
+  id<GREYMatcher> recovery_icon = grey_accessibilityID(kHistorySymbol);
+  id<GREYMatcher> recovery_text =
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL));
+  return grey_allOf(grey_accessibilityID(suggestion_username),
+                    grey_descendant(recovery_icon),
+                    grey_descendant(recovery_text), nullptr);
+}
+
 // Get the top presented view controller, in this case the bottom sheet view
 // controller.
 UIViewController* TopPresentedViewController() {
@@ -1147,7 +1159,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
   // TODO(crbug.com/422206607): Switch the `grey_nil()` matcher for
   // `grey_sufficientlyVisible` once a recovery password will have been added.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kHistorySymbol)]
+  [[EarlGrey selectElementWithMatcher:RecoveryPasswordSuggestion(@"user")]
       assertWithMatcher:grey_nil()];
 }
 

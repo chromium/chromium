@@ -434,7 +434,11 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.numberOfLines = 1;
   cell.URLLabel.hidden = NO;
-  // TODO(crbug.com/417943553): Set `cell.thirdRowLabel`.
+  if (formSuggestion.metadata.is_recovery_password) {
+    cell.thirdRowLabel.text = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL);
+    cell.thirdRowLabel.hidden = NO;
+  }
   cell.accessibilityLabel = [self cellAccessibilityLabel:cell];
   cell.accessibilityValue = [self cellAccessibilityValueAtIndexPath:indexPath];
   cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
