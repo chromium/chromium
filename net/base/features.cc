@@ -175,6 +175,12 @@ BASE_FEATURE_PARAM(int,
                    "PingIntervalInSeconds",
                    30);
 
+BASE_FEATURE_PARAM(std::string,
+                   kQuicConnectionOptions,
+                   &kSearchEnginePreconnect2,
+                   "QuicConnectionOptions",
+                   "");
+
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
              "ShortLaxAllowUnsafeThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);

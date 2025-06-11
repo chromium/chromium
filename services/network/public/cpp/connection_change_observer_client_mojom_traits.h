@@ -41,6 +41,11 @@ struct StructTraits<network::mojom::ConnectionKeepAliveConfigDataView,
     return keep_alive_config.enable_connection_keep_alive;
   }
 
+  static std::string quic_connection_options(
+      const net::ConnectionKeepAliveConfig& keep_alive_config) {
+    return keep_alive_config.quic_connection_options;
+  }
+
   static bool Read(network::mojom::ConnectionKeepAliveConfigDataView data,
                    net::ConnectionKeepAliveConfig* out);
 };
