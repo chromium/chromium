@@ -13,12 +13,14 @@
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 
 @class AlertCoordinator;
+enum class AuthenticationOperation;
 class Browser;
 class FaviconLoader;
 class ProfileIOS;
 enum class ShareKitFlowOutcome;
 @class ShareKitPreviewItem;
 class ShareKitService;
+enum class SigninContextStyle;
 @class SigninCoordinator;
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @protocol SystemIdentity;
@@ -26,18 +28,31 @@ class TabGroup;
 class TabGroupFaviconsGridConfigurator;
 class TabGroupService;
 
-namespace tab_groups {
-class TabGroupSyncService;
-}  // namespace tab_groups
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
 
 namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
 namespace collaboration {
+
+// Bundles the necessary UI configuration parameters for the sign-in flow based
+// on the specific collaboration action.
+struct FlowConfig {
+  signin_metrics::AccessPoint access_point;
+  SigninContextStyle context_style;
+  BOOL full_screen_promo;
+};
 
 class CollaborationService;
 enum class FlowType;
+enum class SigninStatus;
 
 // Structure to hold parameters for IOSCollaborationControllerDelegate.
 struct IOSCollaborationControllerDelegateParams {
@@ -188,6 +203,9 @@ class IOSCollaborationControllerDelegate
 
   // Removes the scrim view if it exists.
   void RemoveScrimView(bool delayed);
+
+  // Returns a FlowConfig based on FlowType.
+  FlowConfig GetFlowConfig(FlowType flow_type);
 
   raw_ptr<Browser> browser_ = nullptr;
 

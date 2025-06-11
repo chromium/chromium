@@ -16,6 +16,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
@@ -211,72 +212,62 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
     return;
   }
 
-  // Make sure that the scrim view is added to avoid interaction with the app in
-  // between the authentication steps.
+  // Add the scrim view to prevent interaction during authentication.
   AddScrimView();
-
-  ServiceStatus service_status = collaboration_service_->GetServiceStatus();
-
-  AuthenticationOperation operation;
-
-  switch (service_status.signin_status) {
-    case SigninStatus::kNotSignedIn:
-      operation = AuthenticationOperation::kSheetSigninAndHistorySync;
-      break;
-
-    case SigninStatus::kSigninDisabled:
-      // TODO(crbug.com/390153810): Handle the sign in disabled case.
-      NOTREACHED();
-
-    case SigninStatus::kSignedInPaused:
-      // TODO(crbug.com/390153810): Handle the sign in paused.
-      NOTREACHED();
-
-    case SigninStatus::kSignedIn:
-      operation = AuthenticationOperation::kHistorySync;
-      break;
-  }
 
   auto completion_block = base::CallbackToBlock(base::BindOnce(
       &IOSCollaborationControllerDelegate::OnAuthenticationComplete,
       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
 
-  AccessPoint access_point;
-  SigninContextStyle context_style;
-  BOOL fullScreenPromo = NO;
-  switch (flow_type) {
-    case FlowType::kJoin:
-      access_point = AccessPoint::kCollaborationJoinTabGroup;
-      context_style = SigninContextStyle::kCollaborationJoinTabGroup;
-      fullScreenPromo = YES;
-      break;
-    case FlowType::kShareOrManage:
-      access_point = AccessPoint::kCollaborationShareTabGroup;
-      context_style = SigninContextStyle::kCollaborationShareTabGroup;
-      break;
-    case FlowType::kLeaveOrDelete:
-      access_point = AccessPoint::kCollaborationLeaveOrDeleteTabGroup;
-      context_style = SigninContextStyle::kDefault;
-      break;
+  const signin_metrics::PromoAction promo_action =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  const FlowConfig flow_config = GetFlowConfig(flow_type);
+
+  ServiceStatus service_status = collaboration_service_->GetServiceStatus();
+  switch (service_status.signin_status) {
+    case SigninStatus::kNotSignedIn:  // Fallthrough
+    case SigninStatus::kSignedIn: {
+      AuthenticationOperation operation =
+          service_status.signin_status == SigninStatus::kNotSignedIn
+              ? AuthenticationOperation::kSheetSigninAndHistorySync
+              : AuthenticationOperation::kHistorySync;
+      ShowSigninCommand* command =
+          [[ShowSigninCommand alloc] initWithOperation:operation
+                                              identity:nil
+                                           accessPoint:flow_config.access_point
+                                           promoAction:promo_action
+                                            completion:completion_block];
+      command.optionalHistorySync = NO;
+      command.fullScreenPromo = flow_config.full_screen_promo;
+      command.contextStyle = flow_config.context_style;
+      signin_coordinator_ = [SigninCoordinator
+          signinCoordinatorWithCommand:command
+                               browser:browser_
+                    baseViewController:base_view_controller_];
+      [signin_coordinator_ start];
+      return;
+    }
+    case SigninStatus::kSigninDisabled:
+      // TODO(crbug.com/390153810): Handle the sign-in disabled case.
+      return;
+    case SigninStatus::kSignedInPaused: {
+      // For a paused sign-in, re-authentication is required.
+      signin_coordinator_ = [SigninCoordinator
+          primaryAccountReauthCoordinatorWithBaseViewController:
+              base_view_controller_
+                                                        browser:browser_
+                                                   contextStyle:
+                                                       flow_config.context_style
+                                                    accessPoint:
+                                                        flow_config.access_point
+                                                    promoAction:promo_action
+                                           continuationProvider:
+                                               DoNothingContinuationProvider()];
+      signin_coordinator_.signinCompletion = completion_block;
+      [signin_coordinator_ start];
+      return;
+    }
   }
-
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:operation
-               identity:nil
-            accessPoint:access_point
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:completion_block];
-
-  command.optionalHistorySync = NO;
-  command.fullScreenPromo = fullScreenPromo;
-  command.contextStyle = context_style;
-
-  signin_coordinator_ =
-      [SigninCoordinator signinCoordinatorWithCommand:command
-                                              browser:browser_
-                                   baseViewController:base_view_controller_];
-  [signin_coordinator_ start];
 }
 
 void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange() {
@@ -833,6 +824,28 @@ void IOSCollaborationControllerDelegate::RemoveScrimView(bool delayed) {
   } else {
     animation_block();
   }
+}
+
+FlowConfig IOSCollaborationControllerDelegate::GetFlowConfig(
+    FlowType flow_type) {
+  FlowConfig config;
+  config.full_screen_promo = NO;
+  switch (flow_type) {
+    case FlowType::kJoin:
+      config.access_point = AccessPoint::kCollaborationJoinTabGroup;
+      config.context_style = SigninContextStyle::kCollaborationJoinTabGroup;
+      config.full_screen_promo = YES;
+      break;
+    case FlowType::kShareOrManage:
+      config.access_point = AccessPoint::kCollaborationShareTabGroup;
+      config.context_style = SigninContextStyle::kCollaborationShareTabGroup;
+      break;
+    case FlowType::kLeaveOrDelete:
+      config.access_point = AccessPoint::kCollaborationLeaveOrDeleteTabGroup;
+      config.context_style = SigninContextStyle::kDefault;
+      break;
+  }
+  return config;
 }
 
 }  // namespace collaboration
