@@ -55,17 +55,19 @@ AX_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
   assertEquals(undefined, runMacroResult.error);
 });
 
-AX_TEST_F('DictationMacrosTest', 'ListCommandsMacro', async function() {
-  this.toggleDictationOn();
-  const macro = await this.getSimpleParseStrategy().parse('help');
-  assertEquals('LIST_COMMANDS', macro.getNameAsString());
-  const checkContextResult = macro.checkContext();
-  assertTrue(checkContextResult.canTryAction);
-  assertEquals(undefined, checkContextResult.error);
-  const runMacroResult = macro.run();
-  assertTrue(runMacroResult.isSuccess);
-  assertEquals(undefined, runMacroResult.error);
-});
+// TODO(crbug.com/420947900): Test is flaky.
+AX_TEST_F(
+    'DictationMacrosTest', 'DISABLED_ListCommandsMacro', async function() {
+      this.toggleDictationOn();
+      const macro = await this.getSimpleParseStrategy().parse('help');
+      assertEquals('LIST_COMMANDS', macro.getNameAsString());
+      const checkContextResult = macro.checkContext();
+      assertTrue(checkContextResult.canTryAction);
+      assertEquals(undefined, checkContextResult.error);
+      const runMacroResult = macro.run();
+      assertTrue(runMacroResult.isSuccess);
+      assertEquals(undefined, runMacroResult.error);
+    });
 
 AX_TEST_F('DictationMacrosTest', 'StopListeningMacro', async function() {
   this.toggleDictationOn();
