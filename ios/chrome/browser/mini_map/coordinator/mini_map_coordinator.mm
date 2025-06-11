@@ -39,9 +39,6 @@
 // The WebState that triggered the request.
 @property(assign) base::WeakPtr<web::WebState> webState;
 
-// The text to be recognized as an address.
-@property(nonatomic, copy) NSString* text;
-
 // Whether the consent of the user is required.
 @property(assign) BOOL consentRequired;
 
@@ -54,17 +51,26 @@
   BOOL _stopCalled;
 
   BOOL _showingMap;
+
+  // The text to be recognized as an address.
+  NSString* _text;
+
+  // The Universal link URL to maps to display the MiniMap for.
+  NSURL* _url;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   webState:(web::WebState*)webState
                                       text:(NSString*)text
+                                       url:(NSURL*)URL
                            consentRequired:(BOOL)consentRequired
                                       mode:(MiniMapMode)mode {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    CHECK_EQ((text ? 1 : 0) + (URL ? 1 : 0), 1);
     _text = text;
+    _url = URL;
     if (webState) {
       _webState = webState->GetWeakPtr();
     }
@@ -111,7 +117,7 @@
         [weakSelf mapDismissedRequestingQuery:query];
       };
   self.miniMapController = ios::provider::CreateMiniMapController();
-  [self.miniMapController configureAddress:self.text];
+  [self.miniMapController configureAddress:_text];
   [self.miniMapController configureCompletion:completion];
   [self.miniMapController
       configureCompletionWithSearchQuery:completionWithQuery];

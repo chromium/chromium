@@ -110,6 +110,7 @@ class MiniMapCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                           webState:nullptr
                               text:@"Address"
+                               url:nil
                    consentRequired:consent_required
                               mode:type];
     [coordinator_ start];

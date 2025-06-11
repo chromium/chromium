@@ -20,6 +20,9 @@ class WebState;
 - (void)presentMiniMapForText:(NSString*)text
                    inWebState:(web::WebState*)webState;
 
+// Shows the minimap for `URL`.
+- (void)presentMiniMapForURL:(NSURL*)URL inWebState:(web::WebState*)webState;
+
 // Shows the minimap directions for text.
 - (void)presentMiniMapDirectionsForText:(NSString*)text
                              inWebState:(web::WebState*)webState;

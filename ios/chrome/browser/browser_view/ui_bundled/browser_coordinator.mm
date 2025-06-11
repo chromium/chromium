@@ -4324,6 +4324,7 @@ enum class ToolbarKind {
                                                      browser:self.browser
                                                     webState:webState
                                                         text:text
+                                                         url:nil
                                              consentRequired:YES
                                                         mode:MiniMapMode::kMap];
   [self.miniMapCoordinator start];
@@ -4336,6 +4337,19 @@ enum class ToolbarKind {
                                                      browser:self.browser
                                                     webState:webState
                                                         text:text
+                                                         url:nil
+                                             consentRequired:NO
+                                                        mode:MiniMapMode::kMap];
+  [self.miniMapCoordinator start];
+}
+
+- (void)presentMiniMapForURL:(NSURL*)URL inWebState:(web::WebState*)webState {
+  self.miniMapCoordinator =
+      [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser
+                                                    webState:webState
+                                                        text:nil
+                                                         url:URL
                                              consentRequired:NO
                                                         mode:MiniMapMode::kMap];
   [self.miniMapCoordinator start];
@@ -4348,6 +4362,7 @@ enum class ToolbarKind {
                          browser:self.browser
                         webState:webState
                             text:text
+                             url:nil
                  consentRequired:NO
                             mode:MiniMapMode::kDirections];
   [self.miniMapCoordinator start];
