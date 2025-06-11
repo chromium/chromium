@@ -386,18 +386,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.ClosedTabIsAboutBlank" enum="Boolean"
-    expires_after="2025-11-09">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>bling-fundamentals@google.com</owner>
-  <summary>
-    This metric is logged whenever a tab is closed and whether or not the tab is
-    currently displaying the about:blank page. Collecting this data may help to
-    validate the fix for crbug.com/41494450, where pages opened in Chrome never
-    load.
-  </summary>
-</histogram>
-
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
     expires_after="2025-09-07">
   <owner>gambard@chromium.org</owner>

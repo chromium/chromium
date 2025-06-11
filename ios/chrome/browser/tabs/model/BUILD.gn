@@ -4,7 +4,6 @@
 
 source_set("model") {
   sources = [
-    "closing_web_state_observer_browser_agent.h",
     "ios_synced_window_delegate_getter.h",
     "synced_window_delegate_browser_agent.h",
     "tab_helper_delegate_installer.h",
@@ -25,7 +24,6 @@ source_set("model") {
 
 source_set("tabs_internal") {
   sources = [
-    "closing_web_state_observer_browser_agent.mm",
     "ios_synced_window_delegate_getter.mm",
     "synced_window_delegate_browser_agent.mm",
     "tab_helper_util.mm",
