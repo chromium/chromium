@@ -19,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.Adapter;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
@@ -58,6 +59,30 @@ import java.util.function.Function;
 @NullMarked
 class AppMenuHandlerImpl
         implements AppMenuHandler, StartStopWithNativeObserver, ConfigurationChangedObserver {
+
+    /** An {@link Adapter} for the list of items in the app menu. */
+    private static final class AppMenuAdapter extends ModelListAdapter {
+        AppMenuAdapter(ModelList modelList) {
+            super(modelList);
+        }
+
+        @Override
+        public boolean areAllItemsEnabled() {
+            for (int i = 0; i < getCount(); i++) {
+                if (!isEnabled(i)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            return getItemViewType(position) != AppMenuItemType.DIVIDER
+                    && ((ListItem) getItem(position)).model.get(AppMenuItemProperties.ENABLED);
+        }
+    }
+
     private @Nullable AppMenu mAppMenu;
     private @Nullable AppMenuDragHelper mAppMenuDragHelper;
     private final List<AppMenuBlocker> mBlockers;
@@ -250,7 +275,7 @@ class AppMenuHandlerImpl
             mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
         setupModelForHighlightAndClick(mModelList, mHighlightMenuId, mAppMenu);
-        ModelListAdapter adapter = new ModelListAdapter(mModelList);
+        AppMenuAdapter adapter = new AppMenuAdapter(mModelList);
         mAppMenu.updateMenu(mModelList, adapter);
 
         SparseArray<Function<Context, Integer>> customSizingProviders = new SparseArray<>();
