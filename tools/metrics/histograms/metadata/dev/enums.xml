@@ -1532,6 +1532,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="65" label="Application - Bounce Tracking Mitigations"/>
   <int value="66" label="Drawer - Resource Loading"/>
   <int value="67" label="Drawer - Autofill"/>
+  <int value="68" label="AI Assistance"/>
 </enum>
 
 <enum name="DevToolsRecordingAssertion">
