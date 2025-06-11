@@ -168,7 +168,17 @@ void MessagePumpIOSForIO::HandleFdIOEvent(CFFileDescriptorRef fdref,
     scoped_do_work_item = pump->delegate()->BeginWorkItem();
   }
 
-  if (callback_types & kCFFileDescriptorWriteCallBack) {
+  // When the watcher is in one-shot mode (i.e. `is_persistent` is false) and
+  // the FD watcher is watching both read and write events, the contract is that
+  // only one will be reported (which one is chosen does not matter).
+  // This implementation reports writes before reads, so `can_read` is true iff
+  // the watcher is not in one-shot mode or no write event is being reported.
+  const bool is_persistent = controller->is_persistent_;
+  const bool can_write = callback_types & kCFFileDescriptorWriteCallBack;
+  const bool can_read = callback_types & kCFFileDescriptorReadCallBack &&
+                        (is_persistent || !can_write);
+
+  if (can_write) {
     controller->OnFileCanWriteWithoutBlocking(fd, pump);
   }
 
@@ -176,15 +186,14 @@ void MessagePumpIOSForIO::HandleFdIOEvent(CFFileDescriptorRef fdref,
   // invalidated in the write callback. As |FdWatchController| invalidates
   // its file descriptor on destruction, the file descriptor being valid also
   // guarantees that |controller| has not been deleted.
-  if (callback_types & kCFFileDescriptorReadCallBack &&
-      CFFileDescriptorIsValid(fdref)) {
+  if (can_read && CFFileDescriptorIsValid(fdref)) {
     DCHECK_EQ(fdref, controller->fdref_.get());
     controller->OnFileCanReadWithoutBlocking(fd, pump);
   }
 
   // Re-enable callbacks after the read/write if the file descriptor is still
   // valid and the controller is persistent.
-  if (CFFileDescriptorIsValid(fdref) && controller->is_persistent_) {
+  if (CFFileDescriptorIsValid(fdref) && is_persistent) {
     DCHECK_EQ(fdref, controller->fdref_.get());
     CFFileDescriptorEnableCallBacks(fdref, callback_types);
   }
