@@ -14,9 +14,6 @@
           "devtools.gen_ai_settings": {
             "value": 0
           },
-          "omnibox.ai_mode_search_suggest_settings": {
-            "value": 0
-          },
           "omnibox.ai_mode_settings": {
             "value": 0
           },
@@ -47,9 +44,6 @@
         "prefs": {
           "devtools.gen_ai_settings": {
             "value": 1
-          },
-          "omnibox.ai_mode_search_suggest_settings": {
-            "value": 0
           },
           "omnibox.ai_mode_settings": {
             "value": 0
@@ -82,9 +76,6 @@
           "devtools.gen_ai_settings": {
             "value": 2
           },
-          "omnibox.ai_mode_search_suggest_settings": {
-            "value": 1
-          },
           "omnibox.ai_mode_settings": {
             "value": 1
           },
@@ -112,9 +103,6 @@
         "policies": {},
         "prefs": {
           "devtools.gen_ai_settings": {
-            "default_value": 0
-          },
-          "omnibox.ai_mode_search_suggest_settings": {
             "default_value": 0
           },
           "omnibox.ai_mode_settings": {
@@ -207,9 +195,6 @@
             "value": 0
           },
           "devtools.gen_ai_settings": {
-            "value": 0
-          },
-          "omnibox.ai_mode_search_suggest_settings": {
             "value": 0
           },
           "omnibox.ai_mode_settings": {
@@ -379,9 +364,6 @@
           "GenAiDefaultSettings": 0
         },
         "prefs": {
-          "omnibox.ai_mode_search_suggest_settings": {
-            "value": 0
-          },
           "omnibox.ai_mode_settings": {
             "value": 0
           }
@@ -392,9 +374,6 @@
           "GenAiDefaultSettings": 1
         },
         "prefs": {
-          "omnibox.ai_mode_search_suggest_settings": {
-            "value": 0
-          },
           "omnibox.ai_mode_settings": {
             "value": 0
           }
@@ -405,9 +384,6 @@
           "GenAiDefaultSettings": 2
         },
         "prefs": {
-          "omnibox.ai_mode_search_suggest_settings": {
-            "value": 1
-          },
           "omnibox.ai_mode_settings": {
             "value": 1
           }
@@ -416,9 +392,6 @@
       {
         "policies": {},
         "prefs": {
-          "omnibox.ai_mode_search_suggest_settings": {
-            "default_value": 0
-          },
           "omnibox.ai_mode_settings": {
             "default_value": 0
           }

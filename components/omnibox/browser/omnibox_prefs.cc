@@ -20,7 +20,6 @@
 namespace omnibox {
 
 namespace {
-constexpr int kAIModeSearchSuggestAllowed = 0;
 constexpr int kAIModeAllowed = 0;
 }  // namespace
 
@@ -47,10 +46,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kShownCountHistoryScopePromo, 0);
   registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsScopePromo, 0);
   registry->RegisterIntegerPref(kFocusedSrpWebCount, 0);
-  // TODO(crbug.com/422744656): Remove `kAIModeSearchSuggestSettings` pref once
-  // `kAIModeSettings` is implemented.
-  registry->RegisterIntegerPref(omnibox::kAIModeSearchSuggestSettings,
-                                kAIModeSearchSuggestAllowed);
   registry->RegisterIntegerPref(omnibox::kAIModeSettings, kAIModeAllowed);
 }
 

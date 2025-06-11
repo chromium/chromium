@@ -1364,7 +1364,7 @@ policies:
   1363: TLS13EarlyDataEnabled
   1364: LocalNetworkAccessRestrictionsEnabled
   1365: PrefetchWithServiceWorkerEnabled
-  1366: AIModeSearchSuggestSettings
+  1366: ''
   1367: AIModeSettings
   1368: WatermarkStyle
 
