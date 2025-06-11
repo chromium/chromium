@@ -10089,7 +10089,6 @@ test("unit_tests") {
   if (enable_session_service) {
     sources += [
       "../browser/sessions/app_session_service_unittest.cc",
-      "../browser/sessions/exit_type_service_unittest.cc",
       "../browser/sessions/session_data_service_unittest.cc",
       "../browser/sessions/session_restore_observer_unittest.cc",
       "../browser/sessions/session_restore_stats_collector_unittest.cc",

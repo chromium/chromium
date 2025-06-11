@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/session_crashed_bubble_view.h"
 #include "chrome/common/chrome_constants.h"
@@ -26,6 +27,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -227,4 +229,28 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest,
   run_loop.Run();
   EXPECT_FALSE(GetExitTypeService()->waiting_for_user_to_ack_crash());
   EXPECT_TRUE(IsSessionServiceSavingEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, Defaults) {
+  ExitTypeService* service =
+      ExitTypeService::GetInstanceForProfile(browser()->profile());
+  ASSERT_TRUE(service);
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  // The initial state is crashed; store for later reference.
+  std::string crash_value(prefs->GetString(prefs::kSessionExitType));
+
+  // The first call to a type other than crashed should change the value.
+  service->SetCurrentSessionExitType(ExitType::kForcedShutdown);
+  std::string first_call_value(prefs->GetString(prefs::kSessionExitType));
+  EXPECT_NE(crash_value, first_call_value);
+
+  // Subsequent calls to a non-crash value should be ignored.
+  service->SetCurrentSessionExitType(ExitType::kClean);
+  std::string second_call_value(prefs->GetString(prefs::kSessionExitType));
+  EXPECT_EQ(first_call_value, second_call_value);
+
+  // Setting back to a crashed value should work.
+  service->SetCurrentSessionExitType(ExitType::kCrashed);
+  std::string final_value(prefs->GetString(prefs::kSessionExitType));
+  EXPECT_EQ(crash_value, final_value);
 }
