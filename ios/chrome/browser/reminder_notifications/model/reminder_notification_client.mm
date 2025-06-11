@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/json/values_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/values.h"
@@ -17,8 +18,11 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_mediator.h"
 #import "ios/chrome/browser/reminder_notifications/model/reminder_notification_builder.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
 ReminderNotificationClient::ReminderNotificationClient(ProfileIOS* profile)
@@ -195,7 +199,19 @@ void ReminderNotificationClient::ScheduleNotification(
       [[ReminderNotificationBuilder alloc] initWithURL:reminder_url
                                                   time:reminder_time.value()];
 
-  // TODO(crbug.com/392921766): Set page title and image for the notification.
+  Browser* browser = GetActiveForegroundBrowser();
+
+  web::WebState* web_state =
+      browser ? browser->GetWebStateList()->GetActiveWebState() : nullptr;
+
+  if (web_state &&
+      (web_state->GetLastCommittedURL() == reminder_url ||
+       web_state->GetVisibleURL() == reminder_url) &&
+      !web_state->GetTitle().empty()) {
+    [builder setPageTitle:base::SysUTF16ToNSString(web_state->GetTitle())];
+  }
+
+  // TODO(crbug.com/392921766): Set page image for the notification.
 
   ScheduledNotificationRequest request = [builder buildRequest];
 
