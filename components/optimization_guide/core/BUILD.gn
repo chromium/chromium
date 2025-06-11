@@ -712,31 +712,98 @@ source_set("hints_unit_tests") {
   ]
 }
 
-source_set("unit_tests") {
+source_set("delivery_unit_tests") {
   testonly = true
   sources = [
-    "feature_registry/enterprise_policy_registry_unittest.cc",
-    "feature_registry/mqls_feature_registry_unittest.cc",
-    "feature_registry/settings_ui_registry_unittest.cc",
-    "model_execution/performance_class_unittest.cc",
-    "model_handler_unittest.cc",
-    "model_quality/model_quality_log_entry_unittest.cc",
-    "model_quality/model_quality_logs_uploader_service_unittest.cc",
-    "model_quality/model_quality_util_unittest.cc",
     "model_store_metadata_entry_unittest.cc",
     "model_util_unittest.cc",
-    "noisy_metrics_recorder_unittest.cc",
-    "optimization_guide_features_unittest.cc",
-    "optimization_guide_permissions_util_unittest.cc",
-    "optimization_guide_proto_util_unittest.cc",
-    "optimization_guide_switches_unittest.cc",
-    "optimization_guide_util_unittest.cc",
     "prediction_manager_unittest.cc",
     "prediction_model_download_manager_unittest.cc",
     "prediction_model_fetch_timer_unittest.cc",
     "prediction_model_fetcher_unittest.cc",
     "prediction_model_override_unittest.cc",
     "prediction_model_store_unittest.cc",
+  ]
+  deps = [
+    ":core_util",
+    ":delivery_test_support",
+    ":features",
+    ":prediction",
+    "//base",
+    "//base/test:test_support",
+    "//components/download/public/background_service/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:test_support",
+    "//components/services/unzip:in_process",
+    "//components/sync_preferences:test_support",
+    "//components/variations:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+    "//third_party/zlib/google:zip",
+  ]
+}
+
+source_set("inference_unit_tests") {
+  testonly = true
+  sources = [ "model_handler_unittest.cc" ]
+  deps = [
+    ":delivery_test_support",
+    ":inference_test_support",
+    ":model_executor",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gtest",
+  ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "bert_model_executor_unittest.cc",
+      "model_validator_unittest.cc",
+      "tflite_model_executor_unittest.cc",
+    ]
+    deps += [
+      ":core_util",
+      ":features",
+      ":prediction",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+    ]
+  }
+  if (build_with_mediapipe_lib) {
+    assert(build_with_tflite_lib)
+
+    sources += [ "mediapipe_text_model_executor_unittest.cc" ]
+    deps += [ "//third_party/mediapipe" ]
+  }
+}
+
+source_set("model_execution_unit_tests") {
+  testonly = true
+  sources = [
+    "model_execution/performance_class_unittest.cc",
+    "model_quality/model_quality_log_entry_unittest.cc",
+    "model_quality/model_quality_logs_uploader_service_unittest.cc",
+    "model_quality/model_quality_util_unittest.cc",
+  ]
+  deps = [
+    ":core_util",
+    ":delivery_test_support",
+    ":features",
+    ":model_execution",
+    ":model_execution_test_support",
+    "//base",
+    "//base/test:test_proto",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/variations:test_support",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//testing/gtest",
   ]
 
   if (build_with_model_execution) {
@@ -768,78 +835,53 @@ source_set("unit_tests") {
       "model_execution/substitution_unittest.cc",
       "model_quality/model_execution_logging_wrappers_unittest.cc",
     ]
-  }
-  if (build_with_tflite_lib) {
-    sources += [
-      "bert_model_executor_unittest.cc",
-      "model_validator_unittest.cc",
-      "tflite_model_executor_unittest.cc",
+    deps += [
+      ":prediction",
+      "//components/component_updater",
+      "//components/optimization_guide/public/mojom",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync_preferences:test_support",
+      "//services/data_decoder/public/cpp:test_support",
+      "//services/on_device_model/public/cpp",
+      "//services/on_device_model/public/cpp/test_support",
+      "//services/on_device_model/public/mojom",
+      "//third_party/tflite:buildflags",
     ]
   }
+}
 
-  if (build_with_mediapipe_lib) {
-    assert(build_with_tflite_lib)
-
-    sources += [ "mediapipe_text_model_executor_unittest.cc" ]
-  }
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "feature_registry/enterprise_policy_registry_unittest.cc",
+    "feature_registry/mqls_feature_registry_unittest.cc",
+    "feature_registry/settings_ui_registry_unittest.cc",
+    "noisy_metrics_recorder_unittest.cc",
+    "optimization_guide_features_unittest.cc",
+    "optimization_guide_permissions_util_unittest.cc",
+    "optimization_guide_proto_util_unittest.cc",
+    "optimization_guide_switches_unittest.cc",
+    "optimization_guide_util_unittest.cc",
+  ]
 
   deps = [
-    ":bloomfilter",
     ":core",
+    ":delivery_unit_tests",
     ":features",
     ":filters_unit_tests",
     ":hints_unit_tests",
-    ":prediction",
-    ":test_support",
-    ":unit_tests_bundle_data",
+    ":inference_unit_tests",
+    ":model_execution_unit_tests",
     "//base",
-    "//base/test:test_proto",
     "//base/test:test_support",
-    "//components/download/public/background_service/test:test_support",
-    "//components/leveldb_proto:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/optimization_guide/public/mojom",
     "//components/prefs:test_support",
-    "//components/services/unzip:in_process",
-    "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
-    "//components/ukm:test_support",
     "//components/unified_consent",
-    "//components/variations:test_support",
-    "//net:test_support",
-    "//services/data_decoder/public/cpp:test_support",
-    "//services/network:network_service",
-    "//services/network:test_support",
-    "//services/on_device_model/public/cpp",
-    "//services/on_device_model/public/cpp/test_support",
+    "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/tflite:buildflags",
-    "//third_party/zlib/google:zip",
-    "//ui/base",
-    "//url:url",
   ]
-
-  if (build_with_model_execution) {
-    deps += [ "//components/component_updater" ]
-  }
-
-  if (build_with_tflite_lib) {
-    deps += [
-      "//third_party/abseil-cpp:absl",
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
-    ]
-  }
-
-  if (build_with_mediapipe_lib) {
-    assert(build_with_tflite_lib)
-
-    deps += [ "//third_party/mediapipe" ]
-  }
 }
 
 bundle_data("unit_tests_bundle_data") {
