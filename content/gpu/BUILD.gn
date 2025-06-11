@@ -54,7 +54,6 @@ target(link_target_type, "gpu_sources") {
     "//content/common:mojo_bindings",
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
-    "//gpu:gpu",
     "//gpu/ipc/common:command_buffer_traits",
     "//gpu/ipc/service",
     "//ipc",

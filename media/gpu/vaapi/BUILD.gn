@@ -148,7 +148,6 @@ source_set("common") {
   public_deps = [
     "//base",
     "//build/config/linux/libdrm",
-    "//gpu",
     "//media",
     "//media/gpu:common",
     "//media/gpu/chromeos:fourcc",
@@ -290,7 +289,6 @@ test("vaapi_unittest") {
     ":vaapi_utils_unittest",
     "//base",
     "//base/test:test_support",
-    "//gpu",
     "//media/gpu/test:helpers",
     "//testing/gtest",
     "//third_party/minigbm",

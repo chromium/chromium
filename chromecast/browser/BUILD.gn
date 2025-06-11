@@ -281,7 +281,6 @@ cast_source_set("browser") {
     "//content/public/browser",
     "//content/public/common",
     "//device/bluetooth",
-    "//gpu",
     "//ipc",
     "//media",
     "//media/gpu:buildflags",

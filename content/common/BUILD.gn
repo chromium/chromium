@@ -229,7 +229,6 @@ source_set("common") {
     "//content/public/common/zygote:buildflags",
     "//device/base/synchronization",
     "//device/bluetooth",
-    "//gpu",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/service",

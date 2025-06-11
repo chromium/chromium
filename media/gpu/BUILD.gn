@@ -92,7 +92,6 @@ component("gpu") {
     ":command_buffer_helper",
     ":common",
     "//base",
-    "//gpu",
     "//media",
     "//third_party/angle:includes",
     "//ui/gfx/geometry",

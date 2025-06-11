@@ -389,7 +389,6 @@ source_set("vr_gl_test_support") {
   if (use_command_buffer) {
     sources += [ "test/gl_test_environment_cmd_buffer.cc" ]
     deps += [
-      "//gpu:gpu",
       "//gpu/command_buffer/client:gles2_implementation",
       "//gpu/ipc:gl_in_process_context",
     ]

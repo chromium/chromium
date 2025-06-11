@@ -656,7 +656,6 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "mailbox_mojom_traits.h" ]
-      traits_public_deps = [ "//gpu" ]
     },
     {
       types = [
@@ -666,7 +665,6 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "mailbox_holder_mojom_traits.h" ]
-      traits_public_deps = [ "//gpu" ]
     },
     {
       types = [
@@ -677,7 +675,6 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "exported_shared_image_mojom_traits.h" ]
-      traits_public_deps = [ "//gpu" ]
     },
     {
       types = [
@@ -697,7 +694,6 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "sync_token_mojom_traits.h" ]
-      traits_public_deps = [ "//gpu" ]
     },
   ]
 
@@ -727,7 +723,7 @@ mojom("interfaces") {
           },
         ]
         traits_headers = [ "luid_mojom_traits.h" ]
-        traits_public_deps = [ "//gpu" ]
+        traits_public_deps = []
       },
     ]
   }

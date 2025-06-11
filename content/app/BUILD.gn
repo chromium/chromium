@@ -40,7 +40,6 @@ if (is_win) {
     "//content/public/android:content_app_jni",
     "//device/bluetooth",
     "//device/gamepad",
-    "//gpu",
     "//media",
     "//media/capture",
     "//media/midi",

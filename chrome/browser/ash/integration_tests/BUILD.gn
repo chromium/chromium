@@ -42,7 +42,6 @@ if (is_chromeos_device) {
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
       "//content/test:test_support",
-      "//gpu",
       "//skia:skia_core_public_headers",
       "//testing/gtest",
       "//ui/display/manager",

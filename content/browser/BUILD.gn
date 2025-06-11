@@ -196,7 +196,6 @@ source_set("browser") {
     "//device/gamepad",
     "//device/vr/public/mojom:isolated_xr_service",
     "//google_apis",
-    "//gpu",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/client:raster_interface",

@@ -224,7 +224,6 @@ static_library("login") {
     "//content/public/common",
     "//device/bluetooth",
     "//extensions/browser",
-    "//gpu",
     "//media",
     "//media:media_buildflags",
     "//media/capture:capture_switches",

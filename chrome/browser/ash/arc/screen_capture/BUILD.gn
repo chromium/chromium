@@ -27,7 +27,6 @@ static_library("screen_capture") {
     "//components/viz/common",
     "//content/public/browser",
     "//content/public/browser",
-    "//gpu",
     "//gpu/command_buffer/client:raster_interface",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",

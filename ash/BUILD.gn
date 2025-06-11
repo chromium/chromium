@@ -3559,6 +3559,7 @@ component("ash") {
     "//google_apis/drive",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_interface",
+    "//gpu/ipc/client",
     "//media",
     "//media/capture:capture_lib",
     "//net",

@@ -75,7 +75,6 @@ viz_source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/viz/test:test_support",
-    "//gpu",
     "//gpu/ipc/host",
     "//media:media_buildflags",
     "//mojo/public/cpp/bindings",
