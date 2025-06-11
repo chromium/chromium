@@ -124,7 +124,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
 
   // content::RenderFrameObserver:
   void AccessibilityModeChanged(const ui::AXMode& mode) override;
-  void OnDestruct() override;
+  void OnDestruct() override {}
   void WasHidden() override;
   void WasShown() override;
 
@@ -213,11 +213,6 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
 
   ui::AXTreeData tree_data_;
   ui::AXTree tree_;
-
-  // ‌PdfAccessibilityTree belongs to the PDF plugin which is created by the
-  // renderer. `render_frame_` is reset when renderer sends OnDestruct() to its
-  // observers.
-  raw_ptr<content::RenderFrame> render_frame_;
 
   // Unowned. Must outlive `this`.
   const raw_ptr<chrome_pdf::PdfAccessibilityActionHandler> action_handler_;

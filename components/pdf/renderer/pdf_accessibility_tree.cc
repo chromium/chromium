@@ -208,7 +208,6 @@ PdfAccessibilityTree::PdfAccessibilityTree(
     chrome_pdf::PdfAccessibilityActionHandler* action_handler,
     blink::WebPluginContainer* plugin_container)
     : content::RenderFrameObserver(render_frame),
-      render_frame_(render_frame),
       action_handler_(action_handler),
       plugin_container_(plugin_container) {
   DCHECK(render_frame);
@@ -451,7 +450,7 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   // `AXTreeData` member because the constructor of `AXTree` might expect the
   // tree to be constructed with a valid tree ID.
   update.has_tree_data = true;
-  const auto& tree_id = render_frame_->GetWebFrame()->GetAXTreeID();
+  const auto& tree_id = render_frame()->GetWebFrame()->GetAXTreeID();
   update.tree_data.tree_id = tree_id;
   tree_data_.tree_id = tree_id;
   tree_data_.focus_id = doc_node_->id;
@@ -480,11 +479,11 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PdfAccessibilityTree::OnHasSearchifyText() {
-  // TODO(crbug.com/360803943): Look into if `render_frame()` can be null, and
-  // create a better distinction between `render_frame()` and `render_frame_`.
-  // TODO(accessibility): remove this dependency.
+  if (!render_frame()) {
+    return;
+  }
   content::RenderAccessibility* render_accessibility =
-      render_frame() ? render_frame()->GetRenderAccessibility() : nullptr;
+      render_frame()->GetRenderAccessibility();
   bool screen_reader_mode =
       (render_accessibility && render_accessibility->GetAXMode().has_mode(
                                    ui::AXMode::kExtendedProperties));
@@ -830,7 +829,7 @@ bool PdfAccessibilityTree::GetTreeData(ui::AXTreeData* tree_data) const {
     return false;
   }
 
-  tree_data->tree_id = render_frame_->GetWebFrame()->GetAXTreeID();
+  tree_data->tree_id = render_frame()->GetWebFrame()->GetAXTreeID();
   tree_data->focus_id = tree_data_.focus_id;
   tree_data->sel_is_backward = tree_data_.sel_is_backward;
   tree_data->sel_anchor_object_id = tree_data_.sel_anchor_object_id;
@@ -900,10 +899,6 @@ void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
 
   MaybeHandleAccessibilityChange(
       /*always_load_or_reload_accessibility=*/true);
-}
-
-void PdfAccessibilityTree::OnDestruct() {
-  render_frame_ = nullptr;
 }
 
 void PdfAccessibilityTree::WasHidden() {
