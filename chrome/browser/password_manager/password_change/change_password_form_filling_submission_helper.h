@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -74,7 +73,6 @@ class ChangePasswordFormFillingSubmissionHelper {
   PasswordChangeSubmissionVerifier* submission_verifier() {
     return submission_verifier_.get();
   }
-  ButtonClickHelper* click_helper() { return click_helper_.get(); }
 #endif
 
  private:
@@ -108,8 +106,6 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   void OnFormSubmitted();
 
-  void OnButtonClicked(bool result);
-
   void OnSubmissionDetectedOrTimeout();
 
   base::OneShotTimer timeout_timer_;
@@ -123,8 +119,6 @@ class ChangePasswordFormFillingSubmissionHelper {
   std::unique_ptr<PasswordChangeSubmissionVerifier> submission_verifier_;
   base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
       capture_annotated_page_content_;
-
-  std::unique_ptr<ButtonClickHelper> click_helper_;
 
   base::WeakPtrFactory<ChangePasswordFormFillingSubmissionHelper>
       weak_ptr_factory_{this};
