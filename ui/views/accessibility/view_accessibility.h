@@ -513,6 +513,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   virtual AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting() const;
 
+  virtual Widget* GetWidget() const;
+
   //
   // Methods for managing virtual views.
   //

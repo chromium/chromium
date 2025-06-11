@@ -122,6 +122,8 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   const char* GetViewClassName() const;
   gfx::NativeViewAccessible GetNativeObject() const override;
 
+  Widget* GetWidget() const override;
+
   // ui::AXPlatformNodeDelegate. Note that
   // - Some of these functions have Mac-specific implementations in
   //   ax_virtual_view_mac.mm.

@@ -1477,6 +1477,13 @@ ViewAccessibility::GetAtomicViewAXTreeManagerForTesting() const {
   return nullptr;
 }
 
+Widget* ViewAccessibility::GetWidget() const {
+  if (!view_) {
+    return nullptr;
+  }
+  return view_->GetWidget();
+}
+
 gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
   CHECK(view_);
   if (focused_virtual_child_) {
