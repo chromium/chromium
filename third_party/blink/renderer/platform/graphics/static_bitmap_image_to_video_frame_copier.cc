@@ -228,8 +228,9 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
   }
 
   auto shared_image = image->GetSharedImage();
-  context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
-      image->GetSyncToken().GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      shared_image->BeginRasterAccess(context_provider->RasterInterface(),
+                                      image->GetSyncToken(), /*readonly=*/true);
   context_provider->RasterInterface()->ReadbackYUVPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(), image_size,
       gfx::Rect(image_size),
@@ -246,6 +247,7 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
       WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync,
                     weak_ptr_factory_.GetWeakPtr(), output_frame,
                     std::move(callback)));
+  gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 }
 
 void StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync(
