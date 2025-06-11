@@ -706,6 +706,43 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
+    public void testRecoveryPasswordCredentialAccessibilityDescription() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(
+                                                    NIK, new FillableItemCollectionInfo(1, 2)),
+                                            buildCredentialItem(
+                                                    NIK_BACKUP,
+                                                    new FillableItemCollectionInfo(2, 2)),
+                                            buildFooterItem(false)));
+                    mModel.set(VISIBLE, true);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertNotNull(getCredentials().getChildAt(1));
+        String expected_label =
+                getActivity()
+                        .getString(
+                                R.string
+                                        .touch_to_fill_recovery_password_credential_accessibility_description_with_url,
+                                NIK_BACKUP.getFormattedUsername(),
+                                NIK_BACKUP.getDisplayName());
+        assertEquals(
+                getCredentials().getChildAt(1).getContentDescription(),
+                getActivity()
+                        .getString(
+                                R.string.touch_to_fill_a11y_item_collection_info,
+                                expected_label,
+                                2,
+                                2));
+    }
+
+    @Test
+    @MediumTest
     public void testPasskeyCredentialAccessibilityDescription() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

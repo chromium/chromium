@@ -211,20 +211,7 @@ class TouchToFillViewBinder {
 
     private static String createContentDescription(
             Credential credential, FillableItemCollectionInfo collectionInfo, Context context) {
-        String label;
-        if (TextUtils.isEmpty(credential.getDisplayName())) {
-            label =
-                    context.getString(
-                            R.string.touch_to_fill_password_credential_accessibility_description,
-                            credential.getFormattedUsername());
-        } else {
-            label =
-                    context.getString(
-                            R.string
-                                    .touch_to_fill_password_credential_accessibility_description_with_url,
-                            credential.getFormattedUsername(),
-                            credential.getDisplayName());
-        }
+        String label = createLabelForContentDescription(credential, context);
 
         String contentDescription =
                 collectionInfo == null
@@ -235,6 +222,26 @@ class TouchToFillViewBinder {
                                 collectionInfo.getPosition(),
                                 collectionInfo.getTotal());
         return contentDescription;
+    }
+
+    private static String createLabelForContentDescription(Credential credential, Context context) {
+        if (TextUtils.isEmpty(credential.getDisplayName())) {
+            int stringId =
+                    credential.isBackupCredential()
+                            ? R.string
+                                    .touch_to_fill_recovery_password_credential_accessibility_description
+                            : R.string.touch_to_fill_password_credential_accessibility_description;
+            return context.getString(stringId, credential.getFormattedUsername());
+        }
+
+        int stringId =
+                credential.isBackupCredential()
+                        ? R.string
+                                .touch_to_fill_recovery_password_credential_accessibility_description_with_url
+                        : R.string
+                                .touch_to_fill_password_credential_accessibility_description_with_url;
+        return context.getString(
+                stringId, credential.getFormattedUsername(), credential.getDisplayName());
     }
 
     /**
