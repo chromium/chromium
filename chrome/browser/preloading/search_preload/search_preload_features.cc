@@ -18,6 +18,8 @@ const base::FeatureParam<base::TimeDelta>
     kDsePreload2OnSuggestSharedDictionaryTtl{
         &kDsePreload2, "kDsePreload2OnSuggestSharedDictionaryTtl",
         base::Milliseconds(60000)};
+const base::FeatureParam<base::TimeDelta> kDsePreload2PrefetchTtl{
+    &kDsePreload2, "kDsePreload2PrefetchTtl", base::Milliseconds(60000)};
 
 BASE_FEATURE(kDsePreload2OnPress,
              "DsePreload2OnPress",

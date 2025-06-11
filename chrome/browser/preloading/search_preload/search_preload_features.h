@@ -27,6 +27,8 @@ extern const base::FeatureParam<size_t> kDsePreload2MaxPrefetch;
 // The amount of time preloaded dictionary is kept alive.
 extern const base::FeatureParam<base::TimeDelta>
     kDsePreload2OnSuggestSharedDictionaryTtl;
+// Time to live (TTL) of prefetch.
+extern const base::FeatureParam<base::TimeDelta> kDsePreload2PrefetchTtl;
 
 // Enables on-press prefetch.
 BASE_DECLARE_FEATURE(kDsePreload2OnPress);

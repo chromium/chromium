@@ -1127,6 +1127,167 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
   check("four", true, {"one", "two"});
 }
 
+class SearchPreloadBrowserTest_Ttl : public SearchPreloadBrowserTestBase {
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            {
+                features::kPrefetchPrerenderIntegration,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2MaxPrefetch", "2"},
+                    {"kDsePreload2PrefetchTtl", "1000ms"},
+                },
+            },
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+// Prefetch expires after `kDsePreload2PrefetchTtl`.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Ttl, PrefetchExpiresAfterTtl) {
+  SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "hello";
+  std::string search_terms = original_query;
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  {
+    content::test::TestPrefetchWatcher watcher;
+
+    ChangeAutocompleteResult(original_query, search_terms,
+                             PrefetchHint::kEnabled, PrerenderHint::kDisabled);
+
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
+  }
+
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
+
+  WaitForDuration(base::Milliseconds(1001));
+
+  // Navigate.
+  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), urls.navigation));
+
+  // Prefetch is not used.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
+}
+
+// Scenario:
+//
+// - A user inputs "hello".
+// - Autocomplete suggests to prerender "hello".
+// - `SearchPreloadService` starts prefetch with query "?q=hello&pf=cs...".
+// - `SearchPreloadService` starts prerender with query "?q=hello...".
+// - Prefetch is expired.
+//   - Prerender is still available because it already used the prefetch result.
+// - A user navigates to a page with query "?q=hello&..."
+// - Prerender is used.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Ttl,
+                       PrerenderIsAvailableAfterPrefetchTtl) {
+  SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "hello";
+  std::string search_terms = original_query;
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  {
+    content::test::TestPrefetchWatcher watcher;
+    content::test::PrerenderHostRegistryObserver registry_observer(
+        GetWebContents());
+
+    ChangeAutocompleteResult(original_query, search_terms,
+                             PrefetchHint::kEnabled, PrerenderHint::kEnabled);
+
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
+
+    registry_observer.WaitForTrigger(urls.prerender);
+    prerender_helper().WaitForPrerenderLoadCompletion(GetWebContents(),
+                                                      urls.prerender);
+  }
+
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
+
+  WaitForDuration(base::Milliseconds(1001));
+
+  // Navigate.
+  content::test::PrerenderHostObserver prerender_observer(GetWebContents(),
+                                                          urls.prerender);
+  NavigateToPrerenderedResult(urls.navigation);
+  prerender_observer.WaitForActivation();
+
+  // Prerender is used.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "DefaultSearchEngine",
+      alternative_content::PrerenderFinalStatus::kActivated, 1);
+}
+
+// Limit cares TTL; expired prefetch is not counted.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Ttl, LimitCaresTtl) {
+  SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  auto check = [&](std::string original_query,
+                   const bool is_triggered_expected) {
+    request_collector().Reset();
+
+    std::string search_terms = original_query;
+    SearchUrls urls = GetSearchUrls(search_terms);
+
+    {
+      content::test::TestPrefetchWatcher watcher;
+
+      ChangeAutocompleteResult(original_query, search_terms,
+                               PrefetchHint::kEnabled,
+                               PrerenderHint::kDisabled);
+
+      if (is_triggered_expected) {
+        watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                                   urls.prefetch_on_suggest);
+      }
+    }
+
+    EXPECT_EQ(is_triggered_expected,
+              request_collector().CountByPath(urls.prefetch_on_suggest));
+    EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
+  };
+
+  check("one", true);
+  check("two", true);
+  check("three", false);
+  WaitForDuration(base::Milliseconds(1001));
+  check("four", true);
+}
+
 // Test suite to check preloading shared dictionary.
 class SearchPreloadBrowserTest_SharedDictionary
     : public SearchPreloadBrowserTestBase {
