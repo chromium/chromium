@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/overloaded.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"

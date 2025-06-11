@@ -5,7 +5,6 @@
 #include "components/web_package/input_reader.h"
 
 #include "base/containers/contains.h"
-#include "base/functional/overloaded.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
