@@ -11,6 +11,10 @@ owners:
 - adamkl@google.com
 - cbe-cep-eng@google.com
 
+supported_on:
+- chrome.*:139-
+- chrome_os:139-
+
 features:
   cloud_only: true
   dynamic_refresh: true
@@ -37,8 +41,5 @@ example_value:
   fill_opacity: 4
   outline_opacity: 6
   font_size: 24
-future_on:
-- chrome.*
-- chrome_os
 tags: []
 label: Custom Watermark Configuration
