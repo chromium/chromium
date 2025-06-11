@@ -51,14 +51,22 @@ class ServerBackedStateKeysBroker;
 //   * server-backed state keys could not be retrieved.
 //
 // The operation will be concluded by calling `report_result` with the retrieved
-// enrollment state or error. In case we retrieved state or determined lack
-// thereof, additional details are stored as a dictionary under key
-// `prefs::kServerBackedDeviceState` in `local_state`, which can contain entries
-// with the following keys and values:
+// enrollment state or error. Enrollment states can be:
+//   * kDisabled,
+//   * kEnrollment, or
+//   * kNoEnrollment.
+// In case we retrieved state, i.e. there was no error, additional details are
+// stored as a dictionary under key `prefs::kServerBackedDeviceState` in
+// `local_state`, which can contain entries with the following keys and values:
 //  * kDeviceStateMode:
-//    * kNoEnrollment,
-//    * kEnrollment, or
-//    * kDisabled;
+//    * empty string (used when the state is kNoEnrollment),
+//    * kDeviceStateInitialModeEnrollmentEnforced,
+//    * kDeviceStateInitialModeEnrollmentZeroTouch,
+//    * kDeviceStateInitialModeTokenEnrollment,
+//    * kDeviceStateModeDisabled,
+//    * kDeviceStateRestoreModeReEnrollmentEnforced,
+//    * kDeviceStateRestoreModeReEnrollmentRequested, or
+//    * kDeviceStateRestoreModeReEnrollmentZeroTouch,
 //  * kDeviceStateManagementDomain:
 //    * domain name or email address of the device owner;
 //  * kDeviceStateDisabledMessage:
