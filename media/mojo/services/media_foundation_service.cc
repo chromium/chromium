@@ -138,8 +138,22 @@ bool IsTypeSupportedInternalEx(
     const std::string& key_system,
     bool is_hw_secure,
     const std::string& content_type) {
-  return IsMediaFoundationContentTypeSupported(mf_type_support, key_system,
-                                               content_type);
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  bool supported = IsMediaFoundationContentTypeSupported(
+      mf_type_support, key_system, content_type);
+  // The above function may take seconds to run. Report UMA to understand the
+  // actual performance impact. Report UMA only for success cases.
+  if (supported) {
+    auto uma_name = "Media.EME.MediaFoundationService." +
+                    GetKeySystemNameForUMA(key_system, is_hw_secure) +
+                    ".IsTypeSupportedEx";
+    base::UmaHistogramTimes(uma_name, base::TimeTicks::Now() - start_time);
+  }
+
+  DVLOG(3) << __func__ << " " << (supported ? "[yes]" : "[no]") << ": "
+           << key_system << ", " << content_type;
+
+  return supported;
 }
 
 std::string GetFourCCString(VideoCodec codec) {

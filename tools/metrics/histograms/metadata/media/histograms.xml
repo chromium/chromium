@@ -3381,6 +3381,22 @@ chromium-metrics-reviews@google.com.
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
 
+<histogram
+    name="Media.EME.MediaFoundationService.{KeySystem}.HardwareSecure.IsTypeSupportedEx"
+    units="ms" expires_after="2026-01-15">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Time for IMFExtendedDRMTypeSupport::IsTypeSupportedEx() to finish in
+    MediaFoundationService when using {KeySystem} in hardware secure mode, which
+    are called by MediaFoundationService.IsKeySystemSupported() (called once per
+    CDM per browser session lifetime). IsKeySystemSupported() calls
+    IsTypeSupportedEx() multiple times, for different audio/video codecs and
+    encryption schemes.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
+</histogram>
+
 <histogram name="Media.EME.MojoCdm.ConnectionError"
     enum="BooleanConnectionError" expires_after="2026-01-15">
   <owner>xhwang@chromium.org</owner>
