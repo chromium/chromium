@@ -1332,6 +1332,7 @@ target(core_generated_target_type, "core_generated") {
 
   # Dependencies required to compile the sources.
   public_deps += [
+    ":buildflags",
     ":element_locator_proto",
     ":prerequisites",
     "//gin",
