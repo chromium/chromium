@@ -34,7 +34,8 @@
       </template>
       <template is="dom-if" if="[[enableDeleteBrowsingDataRevamp_]]" restamp>
         <settings-clear-browsing-data-dialog-v2 prefs="{{prefs}}"
-            on-close="onCbdDialogClosed_">
+            on-close="onCbdDialogClosed_"
+            on-browsing-data-deleted="onBrowsingDataDeleted_">
         </settings-clear-browsing-data-dialog-v2>
       </template>
     </template>
@@ -1335,3 +1336,6 @@
         </template>
       </template>
     </settings-animated-pages>
+    <cr-toast id="deleteBrowsingDataToast" duration="5000">
+      <div>[[dbdDeletionConfirmationToastLabel_]]</div>
+    </cr-toast>

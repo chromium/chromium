@@ -622,6 +622,7 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       {"clearPasswords", IDS_SETTINGS_CLEAR_PASSWORDS},
       {"clearFormData", IDS_SETTINGS_CLEAR_FORM_DATA},
       {"clearHostedAppData", IDS_SETTINGS_CLEAR_HOSTED_APP_DATA},
+      {"clearPeriod15Min", IDS_SETTINGS_CLEAR_PERIOD_15_MIN},
       {"clearPeriod15Minutes", IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES},
       {"clearPeriodHour", IDS_SETTINGS_CLEAR_PERIOD_HOUR},
       {"clearPeriod24Hours", IDS_SETTINGS_CLEAR_PERIOD_24_HOURS},
@@ -649,8 +650,11 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_MANAGE_IN_GOOGLE_PASSWORD_MANAGER},
       {"searchHistory", IDS_SETTINGS_SEARCH_HISTORY},
       {"myActivity", IDS_SETTINGS_MY_ACTIVITY},
-      {"manageInYourGoogleAccount",
-       IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT}};
+      {"manageInYourGoogleAccount", IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT},
+      {"deletionConfirmationToast",
+       IDS_SETTINGS_DELETION_CONFIRMATION_TOAST_LABEL},
+      {"deletionConfirmationAllTimeToast",
+       IDS_SETTINGS_DELETION_CONFIRMATION_ALL_TIME_TOAST_LABEL}};
 
   html_source->AddString(
       "clearGoogleSearchHistoryGoogleDse",

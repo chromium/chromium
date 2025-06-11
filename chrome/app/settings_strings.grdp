@@ -823,8 +823,11 @@
   <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_MORE" translateable="false">
     More
   </message>
-  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes." translateable="false">
+  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MIN" desc="The option in the 'Delete browsing data' settings page time picker to delete browsing data from the last 15 minutes. The 'minutes' is shortened to 'min' to allow the time options in the time picker to fit in the screen." translateable="false">
     Last 15 min
+  </message>
+  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes." translateable="false">
+    Last 15 minutes
   </message>
   <message name="IDS_SETTINGS_MANAGE_IN_GOOGLE_PASSWORD_MANAGER" desc="Description for the 'Passwords and Passkeys' option in 'Other Google Data' page." translateable="false">
     Manage in Google Password Manager
@@ -846,6 +849,12 @@
   </message>
   <message name="IDS_SETTINGS_DELETE_DATA_FROM_DEVICE" translateable="false">
     Delete from this device
+  </message>
+  <message name="IDS_SETTINGS_DELETION_CONFIRMATION_TOAST_LABEL" translateable="false">
+    <ph name="TIME_PERIOD">$1<ex>Last 15 minutes</ex></ph> deleted
+  </message>
+  <message name="IDS_SETTINGS_DELETION_CONFIRMATION_ALL_TIME_TOAST_LABEL" translateable="false">
+    Deleted
   </message>
 
   <!-- Downloads Page -->

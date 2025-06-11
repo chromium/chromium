@@ -123,6 +123,25 @@ suite('PrivacyPage', function() {
     assertTrue(!!dialog);
   });
 
+  test('showDeletionConfirmationToast', function() {
+    assertFalse(page.$.deleteBrowsingDataToast.open);
+    page.$.clearBrowsingData.click();
+    flush();
+
+    const dialog = page.shadowRoot!.querySelector(
+        'settings-clear-browsing-data-dialog-v2');
+    assertTrue(!!dialog);
+    dialog.dispatchEvent(new CustomEvent('browsing-data-deleted', {
+      bubbles: true,
+      composed: true,
+      detail: {deletionConfirmationText: 'test'},
+    }));
+    flush();
+
+    assertTrue(page.$.deleteBrowsingDataToast.open);
+    assertEquals('test', page.$.deleteBrowsingDataToast.textContent!.trim());
+  });
+
   // TODO(crbug.com/417690232): Update once its kBundledSecuritySettings is
   // launched.
   test('onSecurityPageClick', function() {

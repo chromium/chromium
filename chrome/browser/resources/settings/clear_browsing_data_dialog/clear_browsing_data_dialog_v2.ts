@@ -32,10 +32,11 @@ import type {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {loadTimeData} from '../i18n_setup.js';
 
 import type {ClearBrowsingDataBrowserProxy} from './clear_browsing_data_browser_proxy.js';
-import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl} from './clear_browsing_data_browser_proxy.js';
+import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, TimePeriod} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog_v2.html.js';
 import {canDeleteAccountData} from './clear_browsing_data_signin_util.js';
 import type {SettingsClearBrowsingDataTimePicker} from './clear_browsing_data_time_picker.js';
+import {getTimePeriodString} from './clear_browsing_data_time_picker.js';
 
 /**
  * @param dialog the dialog to close
@@ -325,10 +326,27 @@ export class SettingsClearBrowsingDataDialogV2Element extends
             dataTypes, timePeriod);
     this.isDeletionInProgress_ = false;
     this.showHistoryDeletionDialog_ = showHistoryNotice;
+    this.showDeletionConfirmationToast_(timePeriod);
 
     if (this.$.deleteBrowsingDataDialog.open) {
       closeDialog(this.$.deleteBrowsingDataDialog, !showHistoryNotice);
     }
+  }
+
+  private showDeletionConfirmationToast_(timePeriod: TimePeriod) {
+    const deletionConfirmationToastLabel = timePeriod === TimePeriod.ALL_TIME ?
+        loadTimeData.getString('deletionConfirmationAllTimeToast') :
+        loadTimeData.getStringF(
+            'deletionConfirmationToast',
+            getTimePeriodString(timePeriod, /*short=*/ false));
+
+    this.dispatchEvent(new CustomEvent('browsing-data-deleted', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        deletionConfirmationText: deletionConfirmationToastLabel,
+      },
+    }));
   }
 
   private getSelectedDataTypes_(): string[] {

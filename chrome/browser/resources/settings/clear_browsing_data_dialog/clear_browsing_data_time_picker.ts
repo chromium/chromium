@@ -32,10 +32,12 @@ interface TimePeriodOption {
   label: string;
 }
 
-export function getTimePeriodString(timePeriod: TimePeriod) {
+export function getTimePeriodString(
+    timePeriod: TimePeriod, short: boolean = true) {
   switch (timePeriod) {
     case TimePeriod.LAST_15_MINUTES:
-      return loadTimeData.getString('clearPeriod15Minutes');
+      return short ? loadTimeData.getString('clearPeriod15Min') :
+                     loadTimeData.getString('clearPeriod15Minutes');
     case TimePeriod.LAST_HOUR:
       return loadTimeData.getString('clearPeriodHour');
     case TimePeriod.LAST_DAY:
