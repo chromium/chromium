@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
@@ -350,7 +351,7 @@ void BlockFiles::DeleteBlock(Addr address, bool deep) {
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
   if (deep)
-    file->Write(zero_buffer_.data(), size, offset);
+    file->Write(base::as_byte_span(zero_buffer_).first(size), offset);
 
   std::optional<FileType> type_to_delete;
   {
@@ -398,12 +399,12 @@ bool BlockFiles::IsValid(Addr address) {
 
   static bool read_contents = false;
   if (read_contents) {
-    auto buffer =
-        std::make_unique<char[]>(Addr::BlockSizeForFileType(BLOCK_4K) * 4);
+    auto buffer = base::HeapArray<uint8_t>::Uninit(
+        Addr::BlockSizeForFileType(BLOCK_4K) * 4);
     size_t size = address.BlockSize() * address.num_blocks();
     size_t offset = address.start_block() * address.BlockSize() +
                     kBlockHeaderSize;
-    bool ok = file->Read(buffer.get(), size, offset);
+    bool ok = file->Read(buffer.as_span().first(size), offset);
     DCHECK(ok);
   }
 
@@ -427,7 +428,7 @@ bool BlockFiles::CreateBlockFile(int index, FileType file_type, bool force) {
   header.this_file = static_cast<int16_t>(index);
   DCHECK(index <= std::numeric_limits<int16_t>::max() && index >= 0);
 
-  return file->Write(&header, sizeof(header), 0);
+  return file->Write(base::byte_span_from_ref(header), 0);
 }
 
 bool BlockFiles::OpenBlockFile(int index) {

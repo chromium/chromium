@@ -2618,7 +2618,7 @@ TEST_F(DiskCacheEntryTest, KeySanityCheck3) {
       base::MakeRefCounted<disk_cache::File>(true /* want sync ops*/);
   ASSERT_TRUE(key_file->Init(cache_impl_->GetFileName(key_addr)));
 
-  ASSERT_TRUE(key_file->Write("b", 1u, kVeryLong));
+  ASSERT_TRUE(key_file->Write(base::byte_span_from_cstring("b"), kVeryLong));
   key_file = nullptr;
 
   // This case gets graceful recovery.

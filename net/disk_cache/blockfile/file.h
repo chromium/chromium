@@ -62,16 +62,6 @@ class NET_EXPORT_PRIVATE File : public base::RefCounted<File> {
   bool Read(base::span<uint8_t> buffer, size_t offset);
   bool Write(base::span<const uint8_t> buffer, size_t offset);
 
-  // DEPRECATED: Use the above `base::span` variant to avoid unsafe buffer
-  // usage.
-  // TODO(https://crbug.com/40284755): Remove this once the callers are gone.
-  bool Read(void* buffer, size_t buffer_len, size_t offset);
-
-  // DEPRECATED: Use the above `base::span` variant to avoid unsafe buffer
-  // usage.
-  // TODO(https://crbug.com/40284755): Remove this once the callers are gone.
-  bool Write(const void* buffer, size_t buffer_len, size_t offset);
-
   // Performs asynchronous IO. callback will be called when the IO completes,
   // as an APC on the thread that queued the operation.
   bool Read(base::span<uint8_t> buffer,

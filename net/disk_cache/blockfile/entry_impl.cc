@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/numerics/safe_math.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -454,7 +455,10 @@ bool EntryImpl::CreateEntry(Addr node_address,
     if (address.is_block_file())
       offset = address.start_block() * address.BlockSize() + kBlockHeaderSize;
 
-    if (!key_file || !key_file->Write(key.data(), key.size() + 1, offset)) {
+    if (!key_file ||
+        !key_file->Write(
+            base::byte_span_with_nul_from_cstring_view(base::cstring_view(key)),
+            offset)) {
       DeleteData(address, kKeyFileIndex);
       return false;
     }
@@ -791,7 +795,7 @@ std::string EntryImpl::GetKey() const {
   // |key_len + 1| bytes total --- as if due to a corrupt file it isn't |key_|
   // would get its internal nul messed up.
   key_.resize(key_len);
-  if (!key_file->Read(key_.data(), key_.size(), offset)) {
+  if (!key_file->Read(base::as_writable_byte_span(key_), offset)) {
     key_.clear();
   }
   DCHECK_LE(strlen(key_.data()), static_cast<size_t>(key_len));

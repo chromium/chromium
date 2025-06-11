@@ -1309,7 +1309,7 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
   header.table_len = DesiredIndexTableLen(max_size_);
   header.create_time = Time::Now().ToInternalValue();
 
-  if (!file->Write(&header, sizeof(header), 0)) {
+  if (!file->Write(base::byte_span_from_ref(header), 0)) {
     return false;
   }
 
@@ -1446,7 +1446,7 @@ bool BackendImpl::InitStats() {
   auto data = base::HeapArray<uint8_t>::Uninit(size);
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
-  if (!file->Read(data.data(), size, offset)) {
+  if (!file->Read(data.as_span(), offset)) {
     return false;
   }
 
@@ -1474,7 +1474,8 @@ void BackendImpl::StoreStats() {
 
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
-  file->Write(data.data(), size, offset);  // ignore result.
+  file->Write(data.as_span().first(static_cast<size_t>(size)),
+              offset);  // ignore result.
 }
 
 void BackendImpl::RestartCache(bool failure) {

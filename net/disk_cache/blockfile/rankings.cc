@@ -614,7 +614,7 @@ bool Rankings::GetRanking(CacheRankingsBlock* rankings) {
   }
 
   // Note that we should not leave this module without deleting rankings first.
-  rankings->SetData(entry->rankings()->Data());
+  rankings->SetData(entry->rankings()->AllData());
 
   return true;
 }

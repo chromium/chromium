@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -152,7 +153,7 @@ class NET_EXPORT_PRIVATE BlockFiles {
   base::FilePath Name(int index);
 
   bool init_ = false;
-  std::vector<char> zero_buffer_;  // Speed-up cleaning deleted entries.
+  std::vector<uint8_t> zero_buffer_;  // Speed-up cleaning deleted entries.
   base::FilePath path_;  // Path to the backing folder.
   std::vector<scoped_refptr<MappedFile>> block_files_;  // The actual files.
   std::unique_ptr<base::ThreadChecker> thread_checker_;

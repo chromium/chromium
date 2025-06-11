@@ -3848,8 +3848,8 @@ TEST_F(DiskCacheBackendTest, FileSharing) {
     char buffer2[kSize];
     std::ranges::fill(base::as_writable_byte_span(buffer1), 't');
     std::ranges::fill(base::as_writable_byte_span(buffer2), 0);
-    EXPECT_TRUE(file->Write(buffer1, kSize, 0));
-    EXPECT_TRUE(file->Read(buffer2, kSize, 0));
+    EXPECT_TRUE(file->Write(base::as_byte_span(buffer1), 0));
+    EXPECT_TRUE(file->Read(base::as_writable_byte_span(buffer2), 0));
     EXPECT_EQ(base::as_byte_span(buffer1), base::as_byte_span(buffer2));
   }
 

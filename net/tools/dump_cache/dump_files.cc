@@ -20,6 +20,8 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -103,19 +105,29 @@ void DumpStats(const base::FilePath& path, disk_cache::CacheAddr addr) {
   size_t offset = address.start_block() * address.BlockSize() +
                   disk_cache::kBlockHeaderSize;
 
-  auto buffer = std::make_unique<int32_t[]>(length);
-  if (!file->Read(buffer.get(), length, offset))
+  auto buffer = base::HeapArray<int32_t>::Uninit(length / sizeof(int32_t));
+  if (!file->Read(base::as_writable_bytes(buffer.as_span()), offset)) {
     return;
+  }
 
-  printf("Stats:\nSignatrure: 0x%x\n", buffer[0]);
+  printf("Stats:\nSignature: 0x%x\n", buffer[0]);
   printf("Total size: %d\n", buffer[1]);
   for (int i = 0; i < disk_cache::Stats::kDataSizesLength; i++)
     printf("Size(%d): %d\n", i, buffer[i + 2]);
 
-  int64_t* counters = reinterpret_cast<int64_t*>(
-      buffer.get() + 2 + disk_cache::Stats::kDataSizesLength);
+  static_assert(disk_cache::Stats::kDataSizesLength % 2 == 0,
+                "Code below assumes counters immediately after sizes");
+  base::span<int32_t> counter_portion = buffer.as_span().subspan(
+      2u + static_cast<size_t>(disk_cache::Stats::kDataSizesLength));
+
+  // SAFETY: Alignment comes from kDataSizesLength being even. Boundaries are
+  // those of `counter_portion`, just interpreted as 64-bit and not 32-bit.
+  base::span<uint64_t> counters = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<uint64_t*>(counter_portion.data()),
+                 counter_portion.size() / 2));
+
   for (int i = 0; i < disk_cache::Stats::MAX_COUNTER; i++)
-    printf("Count(%d): %" PRId64 "\n", i, *counters++);
+    printf("Count(%d): %" PRId64 "\n", i, counters[i]);
   printf("-------------------------\n\n");
 }
 
@@ -316,15 +328,16 @@ bool CacheDumper::HexDump(disk_cache::CacheAddr addr, std::string* out) {
     return false;
 
   size_t size = address.num_blocks() * address.BlockSize();
-  auto buffer = std::make_unique<char[]>(size);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(size);
 
   size_t offset = address.start_block() * address.BlockSize() +
                   disk_cache::kBlockHeaderSize;
-  if (!file->Read(buffer.get(), size, offset))
+  if (!file->Read(buffer.as_span(), offset)) {
     return false;
+  }
 
   base::StringAppendF(out, "0x%x:\n", addr);
-  DumpCacheHelper::HexDump(buffer.get(), size, out);
+  DumpCacheHelper::HexDump(buffer.as_span(), out);
   return true;
 }
 
@@ -605,8 +618,8 @@ int DumpAllocation(const base::FilePath& file) {
     return -1;
 
   std::string out;
-  DumpCacheHelper::HexDump(reinterpret_cast<char*>(&header.allocation_map),
-                           sizeof(header.allocation_map), &out);
+  DumpCacheHelper::HexDump(base::byte_span_from_ref(header.allocation_map),
+                           &out);
   printf("%s\n", out.c_str());
   return 0;
 }

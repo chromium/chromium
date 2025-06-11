@@ -53,8 +53,8 @@ TEST_F(DiskCacheTest, MappedFile_SyncIO) {
   CacheTestFillBuffer(buffer1_span, false);
   buffer1_span.copy_prefix_from(
       base::byte_span_with_nul_from_cstring("the data"));
-  EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 8192));
-  EXPECT_TRUE(file->Read(buffer2, sizeof(buffer2), 8192));
+  EXPECT_TRUE(file->Write(base::as_byte_span(buffer1), 8192));
+  EXPECT_TRUE(file->Read(base::as_writable_byte_span(buffer2), 8192));
   EXPECT_STREQ(buffer1, buffer2);
 }
 

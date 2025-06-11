@@ -9,6 +9,8 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
+
 namespace disk_cache {
 
 // This interface exposes common functionality for a single block of data
@@ -18,11 +20,8 @@ class FileBlock {
  public:
   virtual ~FileBlock() = default;
 
-  // Returns a pointer to the actual data.
-  virtual void* buffer() const = 0;
-
-  // Returns the size of the block;
-  virtual size_t size() const = 0;
+  // Returns where the data is stored.
+  virtual base::span<uint8_t> as_span() const = 0;
 
   // Returns the file offset of this block.
   virtual int offset() const = 0;

@@ -51,7 +51,7 @@ TEST_F(DiskCacheTest, StorageBlock_SetData) {
   EXPECT_TRUE(0 == entry2.Data()->hash);
 
   EXPECT_TRUE(entry2.Data() != entry1.Data());
-  entry2.SetData(entry1.Data());
+  entry2.SetData(entry1.AllData());
   EXPECT_EQ(0xaa5555aa, entry2.Data()->hash);
   EXPECT_TRUE(entry2.Data() == entry1.Data());
 }
@@ -92,4 +92,33 @@ TEST_F(DiskCacheTest, StorageBlock_DifferentNumBuffers) {
   // Now specify 2 buffers at index 1.
   entry2.CopyFrom(&entry1);
   EXPECT_TRUE(entry2.Load());
+}
+
+TEST_F(DiskCacheTest, StorageBlock_CopyFrom) {
+  base::FilePath filename = cache_path_.AppendASCII("a_test");
+  auto file = base::MakeRefCounted<disk_cache::MappedFile>();
+  ASSERT_TRUE(CreateCacheTestFile(filename));
+  ASSERT_TRUE(file->Init(filename, 8192));
+
+  // 1 buffer at index 1.
+  CacheEntryBlock entry1(file.get(), disk_cache::Addr(0xa0010001));
+  EXPECT_TRUE(entry1.Load());
+  entry1.Data()->creation_time = 1;
+  EXPECT_TRUE(entry1.Store());
+
+  // 1 buffer at index 3.
+  CacheEntryBlock entry2(file.get(), disk_cache::Addr(0xa0010003));
+  EXPECT_TRUE(entry2.Load());
+  entry2.Data()->creation_time = 3;
+  EXPECT_TRUE(entry2.Store());
+
+  // Now make sure `entry2` points to the same block as `entry1` after copy;
+  // both with and w/o refetching from disk.
+  entry2.CopyFrom(&entry1);
+  EXPECT_EQ(entry1.address(), entry2.address());
+  EXPECT_EQ(1, entry2.Data()->creation_time);
+  EXPECT_EQ(entry1.Data()->self_hash, entry2.Data()->self_hash);
+  EXPECT_TRUE(entry2.Load());
+  EXPECT_EQ(1, entry2.Data()->creation_time);
+  EXPECT_EQ(entry1.Data()->self_hash, entry2.Data()->self_hash);
 }
