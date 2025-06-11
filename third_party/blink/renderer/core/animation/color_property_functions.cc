@@ -235,6 +235,10 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
     case CSSPropertyID::kOutlineColor:
       builder.SetInternalVisitedOutlineColor(style_color);
       return;
+    case CSSPropertyID::kRowRuleColor:
+      // TODO(crbug.com/357648037): The row-rule-color property is not
+      // valid for :visited currently.
+      return;
     case CSSPropertyID::kStopColor:
       builder.SetStopColor(style_color);
       return;
