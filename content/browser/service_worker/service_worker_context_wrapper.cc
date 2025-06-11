@@ -80,9 +80,13 @@ namespace content {
 
 namespace {
 
-BASE_FEATURE(kBackgroundUpdateForRegisteredStorageKeys,
-             "BackgroundUpdateForRegisteredStorageKeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Another switch for `kServiceWorkerBackgroundUpdateForRegisteredStorageKeys`
+// intended to be controlled from Field Trial (e.g. kill-switch). The original
+// flag may be overridden by `AwFieldTrials::RegisterFeatureOverrides`.
+BASE_FEATURE(
+    kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled,
+    "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled",
+    base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Translate a ServiceWorkerVersion::Status to a
 // ServiceWorkerRunningInfo::ServiceWorkerVersionStatus.
@@ -274,7 +278,10 @@ ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
       process_manager_(std::make_unique<ServiceWorkerProcessManager>()),
       storage_shared_buffer_(
           base::FeatureList::IsEnabled(
-              kBackgroundUpdateForRegisteredStorageKeys)
+              features::
+                  kServiceWorkerBackgroundUpdateForRegisteredStorageKeys) &&
+                  base::FeatureList::IsEnabled(
+                      kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled)
               ? base::MakeRefCounted<
                     storage::ServiceWorkerStorage::StorageSharedBuffer>(
                     /*enable_registered_storage_keys=*/true)
