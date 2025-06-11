@@ -1483,18 +1483,15 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   Element* block_start = EnclosingBlock(insertion_pos.AnchorNode());
   if ((IsHTMLListElement(inserted_nodes.RefNode()) ||
-       (RuntimeEnabledFeatures::PasteListItemOutsidePreviousListItemEnabled() &&
-        IsListItemTag(inserted_nodes.RefNode())) ||
+       IsListItemTag(inserted_nodes.RefNode()) ||
        (IsHTMLListElement(inserted_nodes.RefNode()->firstChild()))) &&
       block_start && block_start->GetLayoutObject()->IsListItem() &&
       IsEditable(*block_start->parentNode())) {
     inserted_nodes.SetRefNode(InsertAsListItems(
         To<HTMLElement>(inserted_nodes.RefNode()), block_start, insertion_pos,
         inserted_nodes, editing_state));
-    if (RuntimeEnabledFeatures::PasteListItemOutsidePreviousListItemEnabled()) {
-      if (IsListItemTag(block_start) && !block_start->firstChild()) {
-        RemoveNode(block_start, editing_state);
-      }
+    if (IsListItemTag(block_start) && !block_start->firstChild()) {
+      RemoveNode(block_start, editing_state);
     }
     if (editing_state->IsAborted()) {
       return;
@@ -2131,9 +2128,7 @@ Node* ReplaceSelectionCommand::InsertAsListItems(HTMLElement* list_element,
                                                  InsertedNodes& inserted_nodes,
                                                  EditingState* editing_state) {
   Node* list_item;
-  bool list_element_is_list_item_type =
-      RuntimeEnabledFeatures::PasteListItemOutsidePreviousListItemEnabled() &&
-      IsListItemTag(list_element);
+  bool list_element_is_list_item_type = IsListItemTag(list_element);
   if (list_element_is_list_item_type) {
     list_item = list_element;
   } else {
