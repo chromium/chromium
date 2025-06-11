@@ -125,7 +125,6 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/423646543")
     public void testReaderModeInCct() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
@@ -149,7 +148,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/423646543")
+    @DisabledTest(message = "https://crbug.com/423966068")
     public void testReaderModeInCct_Downloaded() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
@@ -175,7 +174,6 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/423646543")
     public void testReaderModeInCct_Incognito() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         openReaderModeInIncognitoCct();
@@ -266,7 +264,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/423827873")
+    @DisabledTest(message = "https://crbug.com/423967273")
     public void testPreferenceInCct() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
@@ -288,6 +286,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/423967273")
     public void testPreferenceInTab() throws TimeoutException {
         mDownloadTestRule.loadUrl(
                 DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
