@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,6 +41,11 @@ SaveAndFillDialog::SaveAndFillDialog(
 SaveAndFillDialog::~SaveAndFillDialog() = default;
 
 void SaveAndFillDialog::AddedToWidget() {
+  focus_manager_ = GetFocusManager();
+  if (focus_manager_) {
+    focus_manager_->AddFocusChangeListener(this);
+  }
+
   if (controller_->IsUploadSaveAndFill()) {
     GetBubbleFrameView()->SetTitleView(
         std::make_unique<TitleWithIconAfterLabelView>(
@@ -53,6 +59,13 @@ void SaveAndFillDialog::AddedToWidget() {
   }
 }
 
+void SaveAndFillDialog::RemovedFromWidget() {
+  if (focus_manager_) {
+    focus_manager_->RemoveFocusChangeListener(this);
+    focus_manager_ = nullptr;
+  }
+}
+
 std::u16string SaveAndFillDialog::GetWindowTitle() const {
   return controller_ ? controller_->GetWindowTitle() : std::u16string();
 }
@@ -63,6 +76,15 @@ void SaveAndFillDialog::ContentsChanged(views::Textfield* sender,
     card_number_data_.SetErrorState(
         /*is_valid_input=*/controller_->IsValidCreditCardNumber(new_contents),
         /*error_message=*/controller_->GetInvalidCardNumberErrorMessage());
+  }
+}
+
+void SaveAndFillDialog::OnDidChangeFocus(views::View* before,
+                                         views::View* now) {
+  if (before == &card_number_data_.GetInputTextField()) {
+    card_number_data_.GetInputTextField().SetText(
+        GetFormattedCardNumberForDisplay(
+            card_number_data_.GetInputTextField().GetText()));
   }
 }
 
