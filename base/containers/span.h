@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <concepts>
+#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <limits>
