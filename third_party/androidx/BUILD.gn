@@ -45,6 +45,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
+      ":androidx_navigationevent_navigationevent_compose_java",
       ":androidx_savedstate_savedstate_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
@@ -3069,6 +3070,38 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_java",
       ":androidx_core_core_viewtree_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_navigationevent_navigationevent_compose_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_navigationevent_navigationevent_compose_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_navigationevent_navigationevent_compose_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_navigationevent_navigationevent_compose_android/navigationevent-compose-android-1.0.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_navigationevent_navigationevent_compose_android/androidx_navigationevent_navigationevent_compose_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_compose_runtime_runtime_java",
+      ":androidx_compose_ui_ui_java",
+      ":androidx_navigationevent_navigationevent_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }

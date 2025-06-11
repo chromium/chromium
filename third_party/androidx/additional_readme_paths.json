@@ -118,6 +118,7 @@
     "committed/libs/androidx_navigation_navigation_compose_android",
     "committed/libs/androidx_navigation_navigation_runtime_android",
     "committed/libs/androidx_navigationevent_navigationevent_android",
+    "committed/libs/androidx_navigationevent_navigationevent_compose_android",
     "committed/libs/androidx_paging_paging_common_android",
     "committed/libs/androidx_paging_paging_common_ktx",
     "committed/libs/androidx_paging_paging_compose_android",
