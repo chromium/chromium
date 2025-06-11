@@ -1329,6 +1329,10 @@ bool IsDefaultSearchEngine(Profile* profile, const GURL& url) {
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
 
+  if (!template_url_service) {
+    return false;
+  }
+
   const TemplateURL* default_search_engine =
       template_url_service->GetDefaultSearchProvider();
 
