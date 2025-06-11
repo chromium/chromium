@@ -5865,6 +5865,13 @@
        ]
       ]
      },
+     "chrome-interpolation-crash.html": [
+      "4b424c9b5ecc792a4a6d29bf519ac216b2bd75ee",
+      [
+       null,
+       {}
+      ]
+     ],
      "crashtests": {
       "chrome-405422528-crash.html": [
        "fcf7407b5f754aa236ddd053f67fb3a15fc6e1d9",
@@ -10004,6 +10011,13 @@
       ]
      ],
      "crashtests": {
+      "empty-values-list-paced-animation.html": [
+       "16d450e98b9f79f11ffb7229ba5e7f1051237a0e",
+       [
+        null,
+        {}
+       ]
+      ],
       "firefox-bug-1930221.html": [
        "52e3d7fb8abbd7a9a94f13dfbb78d4e2946f951f",
        [
@@ -20772,14 +20786,14 @@
      ]
     ],
     "SpeechRecognition-concurrentMediaStreamTrack-manual.https.html": [
-     "9da5cc6347830d76febcb516776e4b2fcbc7d9f4",
+     "c3bdd703172058a139420dab2fc9943707681b92",
      [
       null,
       {}
      ]
     ],
     "SpeechRecognition-mediaStreamTrack-manual.https.html": [
-     "01a5cd0825e7bf50b009928e26c2d32ab67398d9",
+     "212ccb7fd5c8e42a84a449c831da4111c3307bf8",
      [
       null,
       {}
@@ -139123,6 +139137,19 @@
        [
         [
          "/css/css-grid/reference/anonymous-grid-items-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anonymous-grid-items-002.html": [
+      "5463b7254c3426dfdd1a12bc3a88139cd5778c7c",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/anonymous-grid-items-002-ref.html",
          "=="
         ]
        ],
@@ -259452,6 +259479,35 @@
       ]
      ],
      "scoped": {
+      "from-scale-zero.html": [
+       "029b8301512e3fc94fc8b428186e811cd376edc7",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/scoped/from-scale-zero-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "nested-scope.html": [
        "b9cc25c3338912ae91da453c20924dd5cc90e294",
        [
@@ -259485,6 +259541,19 @@
         [
          [
           "/css/css-view-transitions/scoped/content-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "to-scale-zero.html": [
+       "531cb089373805320b3afd8ba4da9aff62f706ee",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/scoped/empty-ref.html",
           "=="
          ]
         ],
@@ -339487,6 +339556,10 @@
       "259c00b2a587c9aa2d07de97fb547b32f9772b92",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "620243de1d3fdc2e4e779baeb8eb38a06df63752",
+      []
+     ],
      "contain-inline-size-bfc-floats-001-ref.html": [
       "383920cc99e2b4184bde5634143d291bf62579df",
       []
@@ -353093,6 +353166,10 @@
        []
       ]
      },
+     "anonymous-grid-items-002-ref.html": [
+      "0a14a1f9c5534e9775495e322a1bc95b3eb6a6c8",
+      []
+     ],
      "child-border-box-and-max-content-001-ref.html": [
       "df8393a1f0310b7b524d49b05962600602c1500e",
       []
@@ -357083,7 +357160,7 @@
      },
      "clip-path": {
       "WEB_FEATURES.yml": [
-       "b098d35ca731931d2cce2450f70e69e5f9dde900",
+       "dfd5ee78995b24edb05c4054010c0bf784986fcf",
        []
       ],
       "animations": {
@@ -372645,10 +372722,6 @@
       "fd831030523d7df442c688fe0723defca6a8165b",
       []
      ],
-     "changing-while-transition-004-expected.txt": [
-      "bf82e66edde84dfc7e64b2e1311d7d591a042b03",
-      []
-     ],
      "custom-property-and-allow-discrete-expected.txt": [
       "c7a2837faf664628af3f67032994b5d0b802ac48",
       []
@@ -375594,7 +375667,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "cbdc654b1d6280d3eeb3d49e440b69c71eb00463",
+      "b3d63413d47a0c782cd3151c830ef5b72bfddd4d",
       []
      ],
      "animating-new-content-ref.html": [
@@ -376388,6 +376461,14 @@
      "scoped": {
       "content-ref.html": [
        "1216fdfa85051ce2d19e97853b63f8ba70348209",
+       []
+      ],
+      "empty-ref.html": [
+       "a8b9d0e6b24602b1242d806a322b55d80a1b8fd0",
+       []
+      ],
+      "from-scale-zero-ref.html": [
+       "ce087d8846316fb1e4f5c0b2d1087bf73763ec0f",
        []
       ],
       "nested-scope-ref.html": [
@@ -383216,7 +383297,7 @@
       []
      ],
      "testdriver.md": [
-      "e0fae529875ee89d5e8a2457cdab35e1866f663b",
+      "b939f85da12c483e9af60a0f4eb7979b0c7495a2",
       []
      ],
      "testharness-api.md": [
@@ -412711,6 +412792,14 @@
           "feaf5ceae7a8828a6020a0c89730ed0e17a6d4f2",
           []
          ],
+         "simulate_gatt_connection_response.https.html.ini": [
+          "15e36e89896f44ed13dcd473ec0b7e35933e61e6",
+          []
+         ],
+         "simulate_gatt_disconnection.https.html.ini": [
+          "28b1484c55d5b33fb68d8d88e879df817806b605",
+          []
+         ],
          "simulate_preconnected_peripheral.https.html.ini": [
           "b2c823097f63695eb3567355bcd65bea7df2be7b",
           []
@@ -412915,7 +413004,7 @@
       "bluetooth": {
        "resources": {
         "bidi-bluetooth-helper.js": [
-         "7f6962d1c85496ca85867b6814b88bf6464275f1",
+         "87a2a55fa0ecb40549af833d1b5a051453852c75",
          []
         ]
        }
@@ -414572,6 +414661,10 @@
    "js-self-profiling": {
     "META.yml": [
      "84e5177d5e5e4c0b689038b80f9baaad5baa7f88",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "1d2e9bdb5652cdc112afd6a6d45d329d07ac1aaf",
      []
     ],
     "__dir__.headers": [
@@ -427884,11 +427977,11 @@
       []
      ],
      "soft-navigation-helper.js": [
-      "4bc16b44e00097ce2e3ee63ac7d64c14db565b7a",
+      "9ee79d36f76fdd6e8f6324fe0425f80825d2670d",
       []
      ],
      "soft-navigation-test-helper.js": [
-      "5a9739edc04a0ee60ccc32a30c964a3f3ca01192",
+      "d4b6ad04a78605852bf2eee63a073c0e0d127e71",
       []
      ]
     },
@@ -428519,11 +428612,11 @@
      []
     ],
     "historical-expected.txt": [
-     "3310f71c342c2388e2770a0a58560ea558027061",
+     "dd91c362b94fb47cf6aee4317d57d18117b3b4c1",
      []
     ],
     "idlharness.window-expected.txt": [
-     "18443119282ecb0b3055145065963199613ee71b",
+     "49886379427a9907261f1fb3cb58ca3dba967661",
      []
     ],
     "webspeech.js": [
@@ -428857,22 +428950,6 @@
      ],
      "patched-global.any.worker-expected.txt": [
       "2e9003101aab1f0e532cc10f52d40f1885b1679f",
-      []
-     ],
-     "read-min.any-expected.txt": [
-      "31bec614b9235773689fa363fbfd163ce95c0da3",
-      []
-     ],
-     "read-min.any.serviceworker-expected.txt": [
-      "31bec614b9235773689fa363fbfd163ce95c0da3",
-      []
-     ],
-     "read-min.any.sharedworker-expected.txt": [
-      "31bec614b9235773689fa363fbfd163ce95c0da3",
-      []
-     ],
-     "read-min.any.worker-expected.txt": [
-      "31bec614b9235773689fa363fbfd163ce95c0da3",
       []
      ]
     },
@@ -435859,18 +435936,36 @@
        ],
        "bluetooth": {
         "__init__.py": [
-         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         "81a5939346058cef4f32b5322b60f35d33f0b12a",
          []
         ],
+        "disable_simulation": {
+         "__init__.py": [
+          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          []
+         ]
+        },
         "simulate_adapter": {
          "__init__.py": [
-          "1e1fcc05ef5b0964f649e48304b1ed2f5e7eced5",
+          "aa2f04dff9bab01e2d29a5db75bf975dfb9d406d",
+          []
+         ]
+        },
+        "simulate_gatt_connection_response": {
+         "__init__.py": [
+          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          []
+         ]
+        },
+        "simulate_gatt_disconnection": {
+         "__init__.py": [
+          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
           []
          ]
         },
         "simulate_preconnected_peripheral": {
          "__init__.py": [
-          "846c103d5da7b307f8cf61eca12fde929f290ed0",
+          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
           []
          ]
         }
@@ -497382,14 +497477,14 @@
       ]
      ],
      "position-try-transition-basic.html": [
-      "eb4222090bd1584d31cc15f59f4a6bff9808c0e7",
+      "f1b16576346f3ae0b47e0accbaa2202e63c80cfa",
       [
        null,
        {}
       ]
      ],
      "position-try-transition-flip.html": [
-      "e8e692a7295b9c9c3900764952058c8745da673e",
+      "24c9af2bcbaf745ff1a8137f787820e3ffb51f0a",
       [
        null,
        {}
@@ -501306,7 +501401,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "a5c489e40a6cffd28709757b1645db319a2a70b9",
+       "83259ebe2df69cf55c61d275ae88cf912621590f",
        [
         null,
         {}
@@ -532162,7 +532257,7 @@
       ]
      ],
      "if-conditionals.html": [
-      "f6d981798ae7a03f97b4fd089ee02141c7f90813",
+      "bc25196e615139e43082c00d6bb066709754ad02",
       [
        null,
        {}
@@ -652796,6 +652891,15 @@
            "testdriver": true
           }
          ]
+        ],
+        "select-in-page-typeahead.tentative.html": [
+         "c31087ec5c2dd94c22fe7414d81e26d7f4c4e128",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
         ]
        },
        "inserted-or-removed.html": [
@@ -667204,7 +667308,7 @@
      "bidi": {
       "bluetooth": {
        "handle_request_device_prompt.https.html": [
-        "3d1b9176003388e40be27f8a7582ad1a3240a860",
+        "5d95fe8c3f707804ae47b861b05e9a221d7f35dd",
         [
          null,
          {
@@ -667216,7 +667320,31 @@
         ]
        ],
        "simulate_adapter.https.html": [
-        "ed60285c41fabe6665ed81e720932428afab1d63",
+        "b8497088b19031a478ecc4d9ae09b9f2b1e050ab",
+        [
+         null,
+         {
+          "testdriver": true,
+          "testdriver_features": [
+           "bidi"
+          ]
+         }
+        ]
+       ],
+       "simulate_gatt_connection_response.https.html": [
+        "449b28461144c32804063c354642b311fc9b4735",
+        [
+         null,
+         {
+          "testdriver": true,
+          "testdriver_features": [
+           "bidi"
+          ]
+         }
+        ]
+       ],
+       "simulate_gatt_disconnection.https.html": [
+        "0b8a8df93a641192f019cd57783164bbb8281f8c",
         [
          null,
          {
@@ -667228,7 +667356,7 @@
         ]
        ],
        "simulate_preconnected_peripheral.https.html": [
-        "318bd29cf4ee77dd34bb0a2f5fc91e54d29fc189",
+        "54f5aece12ba4224811c6f884c3f62468f7c720b",
         [
          null,
          {
@@ -715538,7 +715666,7 @@
      ]
     ],
     "image-lcp-followed-by-two-image-softnavs-lcp.tentative.html": [
-     "66a9e5136f6fed4dfb425acf50c0e8ad0ef7fbd0",
+     "4a394649c523061a43724f632598abcef5b6e1bf",
      [
       null,
       {
@@ -715712,7 +715840,7 @@
     "smoke": {
      "tentative": {
       "almost-soft-navigation.html": [
-       "f36e01ac800a0a7a702e0dc8e488ca0a89312a78",
+       "c66495be7d6c4d02166c6d4d02a3e1acdd7ecc5d",
        [
         null,
         {
@@ -715730,7 +715858,16 @@
        ]
       ],
       "dom.html": [
-       "6d2bd68a0e835fe9eb748632d12c7e5c73ebbeb3",
+       "e663b79081e0a963a591217754e91ae0d5577d2e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "lcp-unbuffered.html": [
+       "cf6dd768313d8209fe15fc1fd8be6855e29c0559",
        [
         null,
         {
@@ -715739,7 +715876,7 @@
        ]
       ],
       "lcp.html": [
-       "eb19c01494dcdb99c5bedb78b5242059563436f1",
+       "cc582c6cbc3b8ae4b8d484bf0561a64b5cb39bbc",
        [
         null,
         {
@@ -777745,7 +777882,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "a6155fb25ce36b2dbee504e87a20ece86713adbc",
+      "b578270223928f89dc19c0819018465e37628ad0",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
@@ -839845,23 +839982,71 @@
       },
       "external": {
        "bluetooth": {
+        "disable_simulation": {
+         "context.py": [
+          "55aa4e5962583d00db8d3da2c14ab78dc805cd44",
+          [
+           null,
+           {}
+          ]
+         ],
+         "disable_simulation.py": [
+          "4cbcd7806b317d547944c9ab1d3f9fe209a0de69",
+          [
+           null,
+           {}
+          ]
+         ]
+        },
         "simulate_adapter": {
          "context.py": [
-          "ef56a33219ce0e1e4524cf14c8116b9d65ac97cf",
+          "f176269bfbe711ed63d1d8d973a44f1500b12e45",
           [
            null,
            {}
           ]
          ],
          "invalid.py": [
-          "3175e196e81b9475efc6e3ce10425c692ade57cf",
+          "8fe2538873b8baf2de8dc03c8299787c195baf21",
           [
            null,
            {}
           ]
          ],
          "state.py": [
-          "ad21326081e077c6cff4484dd75ab65f2c4cb28c",
+          "e2558f4509a234c1e6f7700bde08777bfb70b1a0",
+          [
+           null,
+           {}
+          ]
+         ]
+        },
+        "simulate_gatt_connection_response": {
+         "invalid.py": [
+          "0bff922e6dbcaa0a85b6566a5ae605ff5789c123",
+          [
+           null,
+           {}
+          ]
+         ],
+         "simulate_gatt_connection_response.py": [
+          "1c0139c75b8332ec6623733688cc4c30823302ca",
+          [
+           null,
+           {}
+          ]
+         ]
+        },
+        "simulate_gatt_disconnection": {
+         "invalid.py": [
+          "40ff1f199cfd17d621c0f754f58eaab212c77962",
+          [
+           null,
+           {}
+          ]
+         ],
+         "simulate_gatt_disconnection.py": [
+          "426c84eb0a4d44975ca967ddae82d94ec5581500",
           [
            null,
            {}
@@ -839877,7 +840062,7 @@
           ]
          ],
          "simulate_preconnected_peripheral.py": [
-          "aaba084dd67e5684037fe48e0d00bf413e84c8d7",
+          "057f9fac07d98b58f632ce558c245bd54aa99b5b",
           [
            null,
            {}
