@@ -78,11 +78,11 @@ enum Precedence {
   kNeutralPrecedence = 0,
 
   // Lower priority (weaker ties to the target)
+  kAppendDataCallPrecedence,
   kDecaySpanToPointerPrecedence,
   kAdaptBinaryOperationPrecedence,
   kEmitSingleVariableSpanPrecedence,
   kAdaptBinaryPlusEqOperationPrecedence,
-  kAppendDataCallPrecedence,
   // Higher priority (stronger ties to the target)
 };
 
