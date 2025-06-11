@@ -186,6 +186,9 @@ message IntelligentScanInfo {
     // The on device model is unavailable, which can be from a few reasons such
     // as device incapability or not enough space on disk.
     ON_DEVICE_MODEL_UNAVAILABLE = 3;
+    // The on device model could not create an output. This can only be matched
+    // if the previous three are not the case.
+    ON_DEVICE_MODEL_OUTPUT_MISSING = 4;
   }
   optional NoInfoReason no_info_reason = 3;
 }

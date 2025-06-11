@@ -1356,13 +1356,15 @@ void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
           GetRequestTypeName(verdict->client_side_detection_type()),
       response.has_value());
+  IntelligentScanInfo intelligent_scan_info;
   if (response.has_value()) {
-    IntelligentScanInfo intelligent_scan_info;
     intelligent_scan_info.set_brand(response->brand());
     intelligent_scan_info.set_intent(response->intent());
-    *verdict->mutable_intelligent_scan_info() =
-        std::move(intelligent_scan_info);
+  } else {
+    intelligent_scan_info.set_no_info_reason(
+        IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
   }
+  *verdict->mutable_intelligent_scan_info() = std::move(intelligent_scan_info);
 
   MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist);
 }
