@@ -65,7 +65,12 @@ void HeadlessWindowTreeHost::SetBoundsInPixels(const gfx::Rect& bounds) {
     bounds_ = bounds;
 
     if (origin_changed) {
+      auto weak_ptr = GetWeakPtr();
       OnHostMovedInPixels();
+      // Reporting the move may destroy |this|.
+      if (!weak_ptr) {
+        return;
+      }
     }
 
     // Report host size even if it is not changing to ensure the compositor
