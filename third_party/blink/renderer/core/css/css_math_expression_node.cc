@@ -1638,8 +1638,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateCalcSizeOperation(
     return nullptr;
   }
 
-  return MakeGarbageCollected<CSSMathExpressionOperation>(left_side, right_side,
-                                                          op, new_category);
+  return MakeGarbageCollected<CSSMathExpressionOperation>(
+      left_side, right_side, op, new_category, CSSMathType());
 }
 
 // static
@@ -1678,7 +1678,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
   }
 
   return MakeGarbageCollected<CSSMathExpressionOperation>(
-      category, std::move(operands), op);
+      category, std::move(operands), op, CSSMathType());
 }
 
 // Helper function for parsing number value
@@ -1806,7 +1806,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateTrigonometricFunction(
         is_number_output ? CalculationResultCategory::kCalcNumber
                          : CalculationResultCategory::kCalcAngle;
     return MakeGarbageCollected<CSSMathExpressionOperation>(
-        category, std::move(operands), op);
+        category, std::move(operands), op, CSSMathType());
   }
   CSSPrimitiveValue::UnitType unit_type =
       is_number_output ? CSSPrimitiveValue::UnitType::kNumber
@@ -1852,7 +1852,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSteppedValueFunction(
         CSSPrimitiveValue::CanonicalUnit(operands.front()->ResolvedUnitType()));
   }
   return MakeGarbageCollected<CSSMathExpressionOperation>(
-      category, std::move(operands), op);
+      category, std::move(operands), op, CSSMathType());
 }
 
 // static
@@ -1886,7 +1886,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
         value = std::pow(a.value(), b.value());
       } else {
         return MakeGarbageCollected<CSSMathExpressionOperation>(
-            category, std::move(operands), CSSMathOperator::kPow);
+            category, std::move(operands), CSSMathOperator::kPow,
+            CSSMathType());
       }
       break;
     }
@@ -1895,7 +1896,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
       if (!CanEagerlySimplify(operands.front())) {
         return MakeGarbageCollected<CSSMathExpressionOperation>(
             operands.front()->Category(), std::move(operands),
-            CSSMathOperator::kSqrt);
+            CSSMathOperator::kSqrt, CSSMathType());
       }
       double a = ValueAsNumber(operands[0], error);
       value = std::sqrt(a);
@@ -1918,7 +1919,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
             operands.front()->ResolvedUnitType());
       } else {
         return MakeGarbageCollected<CSSMathExpressionOperation>(
-            category, std::move(operands), CSSMathOperator::kHypot);
+            category, std::move(operands), CSSMathOperator::kHypot,
+            CSSMathType());
       }
       break;
     }
@@ -1931,7 +1933,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
       }
       if (!CanEagerlySimplify(operands)) {
         return MakeGarbageCollected<CSSMathExpressionOperation>(
-            kCalcNumber, std::move(operands), CSSMathOperator::kLog);
+            kCalcNumber, std::move(operands), CSSMathOperator::kLog,
+            CSSMathType());
       }
       double a = ValueAsNumber(operands[0], error);
       if (operands.size() == 2) {
@@ -1946,7 +1949,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
       DCHECK_EQ(operands.size(), 1u);
       if (!CanEagerlySimplify(operands.front())) {
         return MakeGarbageCollected<CSSMathExpressionOperation>(
-            kCalcNumber, std::move(operands), CSSMathOperator::kExp);
+            kCalcNumber, std::move(operands), CSSMathOperator::kExp,
+            CSSMathType());
       }
       double a = ValueAsNumber(operands[0], error);
       value = std::exp(a);
@@ -1986,7 +1990,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
             std::abs(opt.value()), operand->ResolvedUnitType());
       }
       return MakeGarbageCollected<CSSMathExpressionOperation>(
-          operand->Category(), std::move(operands), CSSMathOperator::kAbs);
+          operand->Category(), std::move(operands), CSSMathOperator::kAbs,
+          CSSMathType());
     }
     case CSSValueID::kSign: {
       if (CanEagerlySimplify(operand)) {
@@ -2000,7 +2005,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
             signum, CSSPrimitiveValue::UnitType::kNumber);
       }
       return MakeGarbageCollected<CSSMathExpressionOperation>(
-          kCalcNumber, std::move(operands), CSSMathOperator::kSign);
+          kCalcNumber, std::move(operands), CSSMathOperator::kSign,
+          CSSMathType());
     }
     default:
       NOTREACHED();
@@ -2035,7 +2041,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateInvertFunction(
         -CSSMathType(*operand));
   }
   return MakeGarbageCollected<CSSMathExpressionOperation>(
-      kCalcNumber, Operands{operand}, CSSMathOperator::kInvert);
+      kCalcNumber, Operands{operand}, CSSMathOperator::kInvert, CSSMathType());
 }
 
 const CSSMathExpressionNode*
@@ -4225,7 +4231,7 @@ class CSSMathExpressionNodeParser {
     }
     return MakeGarbageCollected<CSSMathExpressionOperation>(
         CalculationResultCategory::kCalcNumber, std::move(nodes),
-        CSSValueIDToCSSMathOperator(function_id));
+        CSSValueIDToCSSMathOperator(function_id), CSSMathType());
   }
 
   CSSMathExpressionNode* ParseCalcSize(CSSValueID function_id,
@@ -4635,7 +4641,7 @@ class CSSMathExpressionNodeParser {
     }
     stream.ConsumeIncludingWhitespace();
     return MakeGarbageCollected<CSSMathExpressionOperation>(
-        CalculationResultCategory::kCalcNumber, rounding_op);
+        CalculationResultCategory::kCalcNumber, rounding_op, CSSMathType());
   }
 
   CSSMathExpressionNode* ParseValueTerm(CSSParserTokenStream& stream,
@@ -5039,7 +5045,8 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
                                ? CSSMathOperator::kProgress
                                : CSSMathOperator::kMediaProgress;
       return MakeGarbageCollected<CSSMathExpressionOperation>(
-          CalculationResultCategory::kCalcNumber, std::move(operands), op);
+          CalculationResultCategory::kCalcNumber, std::move(operands), op,
+          CSSMathType());
     }
     case CalculationOperator::kCalcSize: {
       CHECK_EQ(children.size(), 2u);

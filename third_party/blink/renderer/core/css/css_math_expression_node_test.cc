@@ -399,7 +399,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctionsToCalculationExpression) {
         CSSMathExpressionNumericLiteral::Create(
             10, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
-        kCalcNumber, std::move(operands), test_case.op);
+        kCalcNumber, std::move(operands), test_case.op, CSSMathType());
     CSSToLengthConversionData resolver{/*element=*/nullptr};
     const CalculationExpressionNode* node =
         operation->ToCalculationExpression(resolver);
@@ -491,7 +491,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsToCalculationExpression) {
         CSSMathExpressionNumericLiteral::Create(
             4.0f, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
-        kCalcNumber, std::move(operands), test_case.op);
+        kCalcNumber, std::move(operands), test_case.op, CSSMathType());
     CSSToLengthConversionData resolver{/*element=*/nullptr};
     const CalculationExpressionNode* node =
         operation->ToCalculationExpression(resolver);
