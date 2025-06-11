@@ -83,6 +83,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       base::Seconds(19);
   static constexpr base::TimeDelta kTimeToLiveInBackgroundForSpeculationRules =
       base::Seconds(600);
+  static constexpr int kMaxRunningSpeculationRulesEagerPrerenders = 10;
+  static constexpr int kMaxRunningSpeculationRulesNonEagerPrerenders = 2;
 
   using PassKey = base::PassKey<PrerenderHostRegistry>;
 
@@ -234,7 +236,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // Represents the group of prerender limit calculated by PreloadingTriggerType
   // and SpeculationEagerness on GetPrerenderLimitGroup.
-  // Currently, this is used when kPrerender2NewLimitAndScheduler is enabled.
   enum class PrerenderLimitGroup {
     kSpeculationRulesEager,
     kSpeculationRulesNonEager,
@@ -316,7 +317,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // Calculates PrerenderLimitGroup by PreloadingTriggerType and
   // SpeculationEagerness.
-  // Currently, this is only used under kPrerender2NewLimitAndScheduler.
   PrerenderLimitGroup GetPrerenderLimitGroup(
       PreloadingTriggerType trigger_type,
       std::optional<blink::mojom::SpeculationEagerness> eagerness);
@@ -327,9 +327,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // Returns whether a certain type of PreloadingTriggerType is allowed to be
   // added to PrerenderHostRegistry according to the limit of the given
-  // PreloadingTriggerType.
-  // If kPrerender2NewLimitAndScheduler is enabled, SpeculationEagerness is
-  // additionally considered to apply the new limits and behaviors according to
+  // PreloadingTriggerType. SpeculationEagerness is additionally considered in
+  // order to apply the limits and behaviors according to
   // PrerenderLimitGroup.
   bool IsAllowedToStartPrerenderingForTrigger(
       PreloadingTriggerType trigger_type,
@@ -369,9 +368,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   base::flat_map<FrameTreeNodeId, std::unique_ptr<PrerenderHost>>
       prerender_host_by_frame_tree_node_id_;
 
-  // Holds the host id of non-eager prerenders by their arrival order.
-  // Currently, it is used to calculate the oldest prerender on
-  // GetOldestHostPerLimitGroup for kPrerender2NewLimitAndScheduler.
+  // Holds the host id of non-eager prerenders by their arrival order. It is
+  // used to calculate the oldest prerender on GetOldestHostPerLimitGroup.
   base::circular_deque<FrameTreeNodeId>
       non_eager_prerender_host_id_by_arrival_order_;
 

@@ -1910,20 +1910,14 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
   switch (limit_group) {
     case PrerenderLimitGroup::kSpeculationRulesEager: {
       int host_count = GetHostCountByLimitGroup(limit_group);
-      return host_count <
-             base::GetFieldTrialParamByFeatureAsInt(
-                 features::kPrerender2NewLimitAndScheduler,
-                 "max_num_of_running_speculation_rules_eager_prerenders", 10);
+      return host_count < kMaxRunningSpeculationRulesEagerPrerenders;
     }
     case PrerenderLimitGroup::kSpeculationRulesNonEager: {
       int host_count = GetHostCountByLimitGroup(limit_group);
-      int limit_non_eager = base::GetFieldTrialParamByFeatureAsInt(
-          features::kPrerender2NewLimitAndScheduler,
-          "max_num_of_running_speculation_rules_non_eager_prerenders", 2);
 
       // When the limit on non-eager speculation rules is reached, cancel the
       // oldest host to allow a newly incoming trigger to start.
-      if (host_count >= limit_non_eager) {
+      if (host_count >= kMaxRunningSpeculationRulesNonEagerPrerenders) {
         FrameTreeNodeId oldest_prerender_host_id;
 
         // Find the oldest non-eager prerender that has not been canceled yet.
@@ -1944,7 +1938,8 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
             oldest_prerender_host_id,
             PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded));
 
-        CHECK_LT(GetHostCountByLimitGroup(limit_group), limit_non_eager);
+        CHECK_LT(GetHostCountByLimitGroup(limit_group),
+                 kMaxRunningSpeculationRulesNonEagerPrerenders);
       }
 
       return true;

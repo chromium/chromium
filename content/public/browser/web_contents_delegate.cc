@@ -413,9 +413,7 @@ PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
 }
 
 int WebContentsDelegate::AllowedPrerenderingCount(WebContents& web_contents) {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kPrerender2NewLimitAndScheduler,
-      "max_num_of_running_embedder_prerenders", 2);
+  return 2;
 }
 
 NavigationController::UserAgentOverrideOption

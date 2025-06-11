@@ -443,29 +443,16 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   contents()->ActivatePrerenderedPage(kPrerenderingUrl);
 }
 
-class PrerenderHostRegistryLimitTest : public PrerenderHostRegistryTest {
- public:
-  PrerenderHostRegistryLimitTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrerender2NewLimitAndScheduler,
-          {{"max_num_of_running_speculation_rules_eager_prerenders",
-            base::NumberToString(MaxNumOfRunningSpeculationRules())}}}},
-        {});
-  }
-
-  int MaxNumOfRunningSpeculationRules() { return 2; }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to a specific number, and after once the prerender page was activated,
 // PrerenderHostRegistry can start prerendering a new one.
-TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_Activation) {
+TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
   std::vector<FrameTreeNodeId> frame_tree_node_ids;
-  std::vector<GURL> prerendering_ulrs;
-  for (int i = 0; i < MaxNumOfRunningSpeculationRules() + 1; i++) {
+  std::vector<GURL> prerendering_urls;
+  for (int i = 0;
+       i <
+       PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders + 1;
+       i++) {
     const GURL prerendering_url("https://example.com/next" +
                                 base::NumberToString(i));
     FrameTreeNodeId frame_tree_node_id =
@@ -475,28 +462,34 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_Activation) {
             contents()->GetPrimaryMainFrame()));
 
     frame_tree_node_ids.push_back(frame_tree_node_id);
-    prerendering_ulrs.push_back(prerendering_url);
+    prerendering_urls.push_back(prerendering_url);
   }
 
   // PrerenderHostRegistry should only start prerendering within the limit.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRules(); i++) {
+  for (int i = 0;
+       i < PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders;
+       i++) {
     EXPECT_TRUE(frame_tree_node_ids[i]);
   }
-  EXPECT_TRUE(frame_tree_node_ids[MaxNumOfRunningSpeculationRules()].is_null());
+  EXPECT_TRUE(
+      frame_tree_node_ids
+          [PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders]
+              .is_null());
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 
   // Activate the first prerender.
   PrerenderHost* prerender_host =
-      registry().FindHostByUrlForTesting(prerendering_ulrs[0]);
+      registry().FindHostByUrlForTesting(prerendering_urls[0]);
   CommitPrerenderNavigation(*prerender_host);
-  contents()->ActivatePrerenderedPage(prerendering_ulrs[0]);
+  contents()->ActivatePrerenderedPage(prerendering_urls[0]);
 
   // After the first prerender page was activated, PrerenderHostRegistry can
   // start prerendering a new one.
   FrameTreeNodeId frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
-          prerendering_ulrs[MaxNumOfRunningSpeculationRules()],
+          prerendering_urls[PrerenderHostRegistry::
+                                kMaxRunningSpeculationRulesEagerPrerenders],
           PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
@@ -508,7 +501,7 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_Activation) {
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to a specific number, and new candidates can be processed after the initiator
 // page navigates to a new same-origin page.
-TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_SameOriginNavigateAway) {
+TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
   RenderFrameHostImpl* render_frame_host = contents()->GetPrimaryMainFrame();
   ASSERT_TRUE(render_frame_host);
 
@@ -518,20 +511,27 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_SameOriginNavigateAway) {
   ASSERT_TRUE(remote1.is_connected());
 
   std::vector<GURL> prerendering_urls;
-  for (int i = 0; i < MaxNumOfRunningSpeculationRules() + 1; i++) {
+  for (int i = 0;
+       i <
+       PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders + 1;
+       i++) {
     prerendering_urls.emplace_back("https://example.com/next" +
                                    base::NumberToString(i));
   }
   SendCandidates(prerendering_urls, remote1);
 
   // PrerenderHostRegistry should only start prerenderings within the limit.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRules(); i++) {
+  for (int i = 0;
+       i < PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders;
+       i++) {
     ASSERT_NE(registry().FindHostByUrlForTesting(prerendering_urls[i]),
               nullptr);
   }
-  ASSERT_EQ(registry().FindHostByUrlForTesting(
-                prerendering_urls[MaxNumOfRunningSpeculationRules()]),
-            nullptr);
+  ASSERT_EQ(
+      registry().FindHostByUrlForTesting(
+          prerendering_urls[PrerenderHostRegistry::
+                                kMaxRunningSpeculationRulesEagerPrerenders]),
+      nullptr);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 
@@ -541,18 +541,26 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_SameOriginNavigateAway) {
 
   // After the initiator page navigates away, the started prerendering should be
   // cancelled, and PrerenderHostRegistry can start prerendering a new one.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRules() + 1; i++) {
+  for (int i = 0;
+       i <
+       PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders + 1;
+       i++) {
     EXPECT_EQ(registry().FindHostByUrlForTesting(prerendering_urls[i]),
               nullptr);
   }
   mojo::Remote<blink::mojom::SpeculationHost> remote2;
   SpeculationHostImpl::Bind(render_frame_host,
                             remote2.BindNewPipeAndPassReceiver());
-  SendCandidate(prerendering_urls[MaxNumOfRunningSpeculationRules()], remote2);
+  SendCandidate(
+      prerendering_urls
+          [PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders],
+      remote2);
 
-  EXPECT_NE(registry().FindHostByUrlForTesting(
-                prerendering_urls[MaxNumOfRunningSpeculationRules()]),
-            nullptr);
+  EXPECT_NE(
+      registry().FindHostByUrlForTesting(
+          prerendering_urls[PrerenderHostRegistry::
+                                kMaxRunningSpeculationRulesEagerPrerenders]),
+      nullptr);
   ExpectBucketCountOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 }
@@ -560,7 +568,7 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_SameOriginNavigateAway) {
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to a specific number, and new candidates can be processed after the initiator
 // page navigates to a new cross-origin page.
-TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_CrossOriginNavigateAway) {
+TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   RenderFrameHostImpl* render_frame_host = contents()->GetPrimaryMainFrame();
   ASSERT_TRUE(render_frame_host);
 
@@ -570,20 +578,27 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_CrossOriginNavigateAway) {
   ASSERT_TRUE(remote1.is_connected());
 
   std::vector<GURL> prerendering_urls;
-  for (int i = 0; i < MaxNumOfRunningSpeculationRules() + 1; i++) {
+  for (int i = 0;
+       i <
+       PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders + 1;
+       i++) {
     prerendering_urls.emplace_back("https://example.com/next" +
                                    base::NumberToString(i));
   }
   SendCandidates(prerendering_urls, remote1);
 
   // PrerenderHostRegistry should only start prerenderings within the limit.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRules(); i++) {
+  for (int i = 0;
+       i < PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders;
+       i++) {
     ASSERT_NE(registry().FindHostByUrlForTesting(prerendering_urls[i]),
               nullptr);
   }
-  ASSERT_EQ(registry().FindHostByUrlForTesting(
-                prerendering_urls[MaxNumOfRunningSpeculationRules()]),
-            nullptr);
+  ASSERT_EQ(
+      registry().FindHostByUrlForTesting(
+          prerendering_urls[PrerenderHostRegistry::
+                                kMaxRunningSpeculationRulesEagerPrerenders]),
+      nullptr);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 
@@ -593,7 +608,10 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_CrossOriginNavigateAway) {
 
   // After the initiator page navigates away, the started prerendering should be
   // cancelled, and PrerenderHostRegistry can start prerendering a new one.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRules() + 1; i++) {
+  for (int i = 0;
+       i <
+       PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders + 1;
+       i++) {
     EXPECT_EQ(registry().FindHostByUrlForTesting(prerendering_urls[i]),
               nullptr);
   }
@@ -607,29 +625,11 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_CrossOriginNavigateAway) {
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 }
 
-class PrerenderHostRegistryNewLimitAndSchedulerTest
+class PrerenderHostRegistryLimitGroupTest
     : public PrerenderHostRegistryTest,
       public testing::WithParamInterface<bool> {
  public:
   using PrerenderLimitGroup = PrerenderHostRegistry::PrerenderLimitGroup;
-
-  PrerenderHostRegistryNewLimitAndSchedulerTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrerender2NewLimitAndScheduler,
-          {{"max_num_of_running_speculation_rules_eager_prerenders",
-            base::NumberToString(
-                MaxNumOfRunningSpeculationRulesEagerPrerenders())},
-           {"max_num_of_running_speculation_rules_non_eager_prerenders",
-            base::NumberToString(
-                MaxNumOfRunningSpeculationRulesNonEagerPrerenders())},
-           {"max_num_of_running_embedder_prerenders",
-            base::NumberToString(MaxNumOfRunningEmbedderPrerenders())}}}},
-        {});
-  }
-
-  int MaxNumOfRunningSpeculationRulesEagerPrerenders() { return 2; }
-  int MaxNumOfRunningSpeculationRulesNonEagerPrerenders() { return 2; }
-  int MaxNumOfRunningEmbedderPrerenders() { return 2; }
 
   const std::string embedder_histogram_suffix = "EmbedderSuffixForTest";
 
@@ -691,20 +691,17 @@ class PrerenderHostRegistryNewLimitAndSchedulerTest
                      enacting_predictor, PreloadingConfidence{100})
                : registry().CreateAndStartHost(prerender_attributes);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderHostRegistryNewLimitAndSchedulerTest,
+                         PrerenderHostRegistryLimitGroupTest,
                          testing::Bool());
 
-// Tests the behavior of eager prerenders with the new limit and scheduler.
-TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
-       NewLimitAndScheduler_Eager) {
+TEST_P(PrerenderHostRegistryLimitGroupTest, Eager) {
   // Starts the eager prerenders as many times as the specific limit.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRulesEagerPrerenders(); i++) {
+  for (int i = 0;
+       i < PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders;
+       i++) {
     FrameTreeNodeId frame_tree_node_id = CreateAndStartHostByLimitGroup(
         PrerenderLimitGroup::kSpeculationRulesEager);
     EXPECT_TRUE(frame_tree_node_id);
@@ -734,13 +731,12 @@ TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
       embedder_histogram_suffix, 0);
 }
 
-// Tests the behavior of non-eager prerenders with the new limit and scheduler.
-TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
-       NewLimitAndScheduler_NonEager) {
+TEST_P(PrerenderHostRegistryLimitGroupTest, NonEager) {
   std::vector<FrameTreeNodeId> started_prerender_ids;
 
   // Starts the non-eager prerenders as many times as the specific limit.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders();
+  for (int i = 0;
+       i < PrerenderHostRegistry::kMaxRunningSpeculationRulesNonEagerPrerenders;
        i++) {
     FrameTreeNodeId frame_tree_node_id = CreateAndStartHostByLimitGroup(
         PrerenderLimitGroup::kSpeculationRulesNonEager);
@@ -791,11 +787,11 @@ TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
       embedder_histogram_suffix, 0);
 }
 
-// Tests the behavior of embedder prerenders with the limit.
-TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
-       NewLimitAndScheduler_Embedder) {
+TEST_P(PrerenderHostRegistryLimitGroupTest, Embedder) {
   // Starts the embedder prerenders as many times as the specific limit.
-  for (int i = 0; i < MaxNumOfRunningEmbedderPrerenders(); i++) {
+  const int max_embedder_prerenders =
+      web_contents()->GetDelegate()->AllowedPrerenderingCount(*web_contents());
+  for (int i = 0; i < max_embedder_prerenders; i++) {
     FrameTreeNodeId frame_tree_node_id =
         CreateAndStartHostByLimitGroup(PrerenderLimitGroup::kEmbedder);
     EXPECT_TRUE(frame_tree_node_id);

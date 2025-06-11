@@ -934,10 +934,13 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   }
 
   void InsertAnchor(const GURL url) {
+    // Give them large margins so that ResetPointerPosition() does not
+    // accidentally hover over the first-inserted link.
     const std::string script = R"(
       const anchor = document.createElement('a');
       anchor.href = $1;
       anchor.text = $1;
+      anchor.style = "margin: 100px; display: block;";
       document.body.appendChild(anchor);
     )";
     ASSERT_TRUE(ExecJs(web_contents(), JsReplace(script, url.spec())));
@@ -7509,14 +7512,8 @@ class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
     // SpeculationRulesTargetHint.
     enabled_features.push_back(base::test::FeatureRefAndParams(
         blink::features::kPrerender2InNewTab, {}));
-    enabled_features.push_back(base::test::FeatureRefAndParams(
-        features::kPrerender2NewLimitAndScheduler,
-        {{"max_num_of_running_speculation_rules_eager_prerenders",
-          base::NumberToString(MaxNumOfRunningPrerenders())}}));
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
-
-  int MaxNumOfRunningPrerenders() const { return 4; }
 
  protected:
   void TestSequentialPrerenderingVisibilityStateTransition(
@@ -7811,8 +7808,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   });
 }
 
-// Test that if the 5 URLs are specified in the speculation rule while only 4
-// prerenders are allowed, the 5th prerender should be cancelled.
+// Test that if 1 more than the limit number of URLs are specified in the
+// speculation rule, the final one prerender is cancelled.
 IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
                        ExceedTheRequestNumberLimit) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
@@ -7823,8 +7820,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
   std::vector<GURL> prerender_urls;
 
-  ASSERT_EQ(MaxNumOfRunningPrerenders(), 4);
-  for (int i = 0; i < MaxNumOfRunningPrerenders() + 1; i++) {
+  for (int i = 0;
+       i <
+       PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders + 1;
+       i++) {
     prerender_urls.push_back(embedded_test_server()->GetURL(
         "/empty.html?prerender" + base::NumberToString(i)));
   }
@@ -7833,7 +7832,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
-  // Insert 5 URLs into the speculation rules at the same time.
+  // Insert 1 more than the limit URLs into the speculation rules at the same
+  // time.
   AddPrerendersAsync(prerender_urls);
 
   // Stop the first prerendering initial navigation.
@@ -7843,7 +7843,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   registry_observer.WaitForTrigger(prerender_urls.back());
 
   // The last prerender is destroyed since the number of prerender requests
-  // from speculation rules exceeds its limit of 4.
+  // from speculation rules exceeds its limit.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 1);
@@ -8189,9 +8189,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
 
-  ASSERT_EQ(MaxNumOfRunningPrerenders(), 4);
+  // This test only makes sense if we don't hit the limit.
+  ASSERT_GE(PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders,
+            4);
+
   std::vector<GURL> prerender_urls;
-  for (int i = 1; i <= MaxNumOfRunningPrerenders(); i++) {
+  for (int i = 1; i <= 4; i++) {
     prerender_urls.push_back(embedded_test_server()->GetURL(
         "/empty.html?prerender" + base::NumberToString(i)));
   }
@@ -10713,40 +10716,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest,
   EXPECT_TRUE(prerender_observer_b.was_activated());
 }
 
-class PrerenderNewLimitAndSchedulerBrowserTest
-    : public PrerenderEagernessBrowserTest,
-      public testing::WithParamInterface<std::string> {
- public:
-  PrerenderNewLimitAndSchedulerBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrerender2NewLimitAndScheduler,
-          {{"max_num_of_running_speculation_rules_eager_prerenders",
-            base::NumberToString(
-                MaxNumOfRunningSpeculationRulesEagerPrerenders())},
-           {"max_num_of_running_speculation_rules_non_eager_prerenders",
-            base::NumberToString(
-                MaxNumOfRunningSpeculationRulesNonEagerPrerenders())},
-           {"max_num_of_running_embedder_prerenders",
-            base::NumberToString(MaxNumOfRunningEmbedderPrerenders())}}}},
-        {});
-  }
-  int MaxNumOfRunningSpeculationRulesEagerPrerenders() { return 2; }
-  int MaxNumOfRunningSpeculationRulesNonEagerPrerenders() { return 1; }
-  int MaxNumOfRunningEmbedderPrerenders() { return 2; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderNewLimitAndSchedulerBrowserTest,
-                         testing::Values("_self", "_blank"),
-                         [](const testing::TestParamInfo<std::string>& info) {
-                           return info.param;
-                         });
-
-IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
-                       ResetForNonEagerPrerener) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
+                       ResetForNonEagerPrerender) {
+#if !BUILDFLAG(IS_ANDROID)
   const GURL initial_url = GetUrl("/empty.html");
   std::vector<GURL> prerendering_urls;
   std::vector<base::WeakPtr<WebContents>> prerender_web_contents_list;
@@ -10758,7 +10730,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
   // by hovering their links. All prerenders should be started at the time of
   // hovering, and the oldest started prerender should be canceled and removed
   // from the registry for the limit after the last prerender is started.
-  int num_of_attempts = MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+  int num_of_attempts =
+      PrerenderHostRegistry::kMaxRunningSpeculationRulesNonEagerPrerenders + 1;
   for (int i = 0; i < num_of_attempts; i++) {
     PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
         current_frame_host());
@@ -10768,7 +10741,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
     InsertAnchor(prerendering_url);
     AddPrerendersAsync({prerendering_url},
                        blink::mojom::SpeculationEagerness::kModerate,
-                       GetParam());
+                       GetTargetHint());
     preloading_decider_observer.WaitUpdateSpeculationCandidates();
 
     test::PrerenderHostCreationWaiter host_creation_waiter;
@@ -10815,6 +10788,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
       EXPECT_TRUE(host_existing_in_registry);
     }
   }
+#else
+  // TODO(crbug.com/40269669): Android doesn't support pointer interaction.
+  GTEST_SKIP();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 
@@ -11367,24 +11344,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 class MultiplePrerendersBrowserTest : public PrerenderBrowserTest {
  public:
   MultiplePrerendersBrowserTest() {
-    base::test::FeatureRefAndParams memory_controls{
-        blink::features::kPrerender2MemoryControls,
-        // A value 100 allows prerenderings regardless of the current memory
-        // usage.
-        {{"acceptable_percent_of_system_memory", "100"},
-         // Allow prerendering on low-end trybot devices so that prerendering
-         // can run on any bots.
-         {"memory_threshold_in_mb", "0"}}};
-
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrerender2NewLimitAndScheduler,
-          {{"max_num_of_running_speculation_rules_eager_prerenders",
-            base::NumberToString(MaxNumOfRunningPrerenders())}}},
-         memory_controls},
+        {{blink::features::kPrerender2MemoryControls,
+          // A value 100 allows prerenderings regardless of the current memory
+          // usage.
+          {{"acceptable_percent_of_system_memory", "100"},
+           // Allow prerendering on low-end trybot devices so that prerendering
+           // can run on any bots.
+           {"memory_threshold_in_mb", "0"}}}},
         {});
   }
-
-  int MaxNumOfRunningPrerenders() const { return 4; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -11394,19 +11363,13 @@ class MultiplePrerendersWithLimitedMemoryBrowserTest
     : public MultiplePrerendersBrowserTest {
  public:
   MultiplePrerendersWithLimitedMemoryBrowserTest() {
-    base::test::FeatureRefAndParams memory_controls{
-        blink::features::kPrerender2MemoryControls,
-        // A value 0 doesn't allow any prerendering.
-        {{"acceptable_percent_of_system_memory", "0"},
-         // Allow prerendering on low-end trybot devices so that prerendering
-         // can run on any bots.
-         {"memory_threshold_in_mb", "0"}}};
-
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrerender2NewLimitAndScheduler,
-          {{"max_num_of_running_speculation_rules_eager_prerenders",
-            base::NumberToString(MaxNumOfRunningPrerenders())}}},
-         memory_controls},
+        {{blink::features::kPrerender2MemoryControls,
+          // A value 0 doesn't allow any prerendering.
+          {{"acceptable_percent_of_system_memory", "0"},
+           // Allow prerendering on low-end trybot devices so that prerendering
+           // can run on any bots.
+           {"memory_threshold_in_mb", "0"}}}},
         {});
   }
 
@@ -11534,7 +11497,9 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
-  for (int i = 0; i < MaxNumOfRunningPrerenders(); i++) {
+  for (int i = 0;
+       i < PrerenderHostRegistry::kMaxRunningSpeculationRulesEagerPrerenders;
+       i++) {
     GURL prerendering_url =
         GetUrl("/empty.html?prerender" + base::NumberToString(i));
 

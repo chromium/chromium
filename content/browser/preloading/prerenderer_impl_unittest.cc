@@ -227,27 +227,9 @@ TEST_F(PrerendererTest, RemoveRendererHostAfterCandidateRemoved) {
   EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[1]));
 }
 
-class PrerendererNewLimitAndSchedulerTest : public PrerendererTest {
- public:
-  PrerendererNewLimitAndSchedulerTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrerender2NewLimitAndScheduler,
-          {{"max_num_of_running_speculation_rules_non_eager_prerenders",
-            base::NumberToString(
-                MaxNumOfRunningSpeculationRulesNonEagerPrerenders())}}}},
-        {});
-  }
-
-  int MaxNumOfRunningSpeculationRulesNonEagerPrerenders() { return 2; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that Prerenderer will remove the host if the host is canceled with
 // non-eager limit, and the canceled host can be reprocessed.
-TEST_F(PrerendererNewLimitAndSchedulerTest,
-       RemoveRendererHostAfterNonEagerLimitCancel) {
+TEST_F(PrerendererTest, RemoveRendererHostAfterNonEagerLimitCancel) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   PrerendererImpl prerenderer(*GetRenderFrameHost());
 
@@ -255,7 +237,9 @@ TEST_F(PrerendererNewLimitAndSchedulerTest,
 
   // Prerender as many times as limit + 1. All prerenders should be started
   // once.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+  for (int i = 0;
+       i <
+       PrerenderHostRegistry::kMaxRunningSpeculationRulesNonEagerPrerenders + 1;
        i++) {
     const GURL url = GetSameOriginUrl("/empty.html?" + base::ToString(i));
     urls.push_back(url);
@@ -269,7 +253,9 @@ TEST_F(PrerendererNewLimitAndSchedulerTest,
     EXPECT_TRUE(registry->FindHostByUrlForTesting(url));
   }
 
-  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+  for (int i = 0;
+       i <
+       PrerenderHostRegistry::kMaxRunningSpeculationRulesNonEagerPrerenders + 1;
        i++) {
     if (i == 0) {
       // The first (= oldest) prerender should be removed since the (limit +
@@ -288,7 +274,9 @@ TEST_F(PrerendererNewLimitAndSchedulerTest,
   prerenderer.MaybePrerender(std::move(candidate),
                              preloading_predictor::kUnspecified,
                              PreloadingConfidence{100});
-  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+  for (int i = 0;
+       i <
+       PrerenderHostRegistry::kMaxRunningSpeculationRulesNonEagerPrerenders + 1;
        i++) {
     if (i == 1) {
       EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[i]));
