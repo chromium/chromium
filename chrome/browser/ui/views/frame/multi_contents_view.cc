@@ -59,14 +59,19 @@ MultiContentsView::MultiContentsView(BrowserView* browser_view,
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
 
   drop_target_view_ =
-      AddChildView(std::make_unique<MultiContentsDropTargetView>());
+      AddChildView(std::make_unique<MultiContentsDropTargetView>(*delegate_));
   drop_target_view_->SetVisible(false);
   drop_target_controller_ =
       std::make_unique<MultiContentsViewDropTargetController>(
           *drop_target_view_);
 }
 
-MultiContentsView::~MultiContentsView() = default;
+MultiContentsView::~MultiContentsView() {
+  drop_target_controller_.reset();
+  auto* drop_target_view = drop_target_view_.get();
+  drop_target_view_ = nullptr;
+  RemoveChildViewT(drop_target_view);
+}
 
 ContentsWebView* MultiContentsView::GetActiveContentsView() {
   return contents_container_views_[active_index_]->GetContentsView();
@@ -230,9 +235,8 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
   // TODO(crbug.com/394369035): The used drop target view is a placeholder, and
   // therefore will never be visible. The actual drop target view will be
   // added later.
-  layouts.child_layouts.emplace_back(drop_target_view_.get(),
-                                     false,
-                                     gfx::Rect(0,0, 0, 0));
+  layouts.child_layouts.emplace_back(drop_target_view_.get(), false,
+                                     gfx::Rect(0, 0, 0, 0));
 
   layouts.host_size = gfx::Size(width, height);
   return layouts;
@@ -282,12 +286,11 @@ MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
 }
 
 void MultiContentsView::UpdateContentsBorderAndOverlay() {
-    for (auto* contents_container_view : contents_container_views_) {
-        const bool is_active = contents_container_view->GetContentsView() ==
-                               GetActiveContentsView();
-        contents_container_view->UpdateBorderAndOverlay(IsInSplitView(),
-                                                        is_active);
-    }
+  for (auto* contents_container_view : contents_container_views_) {
+    const bool is_active =
+        contents_container_view->GetContentsView() == GetActiveContentsView();
+    contents_container_view->UpdateBorderAndOverlay(IsInSplitView(), is_active);
+  }
 }
 
 BEGIN_METADATA(MultiContentsView)

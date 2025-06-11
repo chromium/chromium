@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "content/public/common/drop_data.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view_class_properties.h"
@@ -25,6 +26,14 @@ content::DropData ValidUrlDropData() {
   return valid_url_data;
 }
 
+class MockDropDelegate : public MultiContentsDropTargetView::DropDelegate {
+ public:
+  MOCK_METHOD(void,
+              HandleLinkDrop,
+              (const std::vector<GURL>& urls),
+              (override));
+};
+
 class MultiContentsViewDropTargetControllerTest : public testing::Test {
  public:
   MultiContentsViewDropTargetControllerTest() = default;
@@ -33,7 +42,7 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
   void SetUp() override {
     multi_contents_view_ = std::make_unique<views::View>();
     drop_target_view_ = multi_contents_view_->AddChildView(
-        std::make_unique<MultiContentsDropTargetView>());
+        std::make_unique<MultiContentsDropTargetView>(drop_delegate_));
     drop_target_view_->SetVisible(false);
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
         *drop_target_view_);
@@ -60,6 +69,7 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
   }
 
  private:
+  MockDropDelegate drop_delegate_;
   std::unique_ptr<MultiContentsViewDropTargetController> controller_;
   std::unique_ptr<views::View> multi_contents_view_;
   raw_ptr<MultiContentsDropTargetView> drop_target_view_;

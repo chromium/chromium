@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -979,6 +980,10 @@ class MultiContentsViewDelegateImpl : public MultiContentsView::Delegate {
   }
 
   void ReverseWebContents() override { browser_view_->ReverseWebContents(); }
+
+  void HandleLinkDrop(const std::vector<GURL>& urls) override {
+    browser_view_->OpenInNewSplit(urls);
+  }
 
  private:
   raw_ptr<BrowserView> browser_view_;
@@ -4933,6 +4938,25 @@ void BrowserView::ActivateWebContents(content::WebContents* web_contents) {
   if (tab_index != TabStripModel::kNoTab) {
     browser_->tab_strip_model()->ActivateTabAt(tab_index);
   }
+}
+
+void BrowserView::OpenInNewSplit(const std::vector<GURL>& urls) {
+  CHECK(!urls.empty());
+  CHECK(!IsInSplitView());
+
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  CHECK(tab_strip_model);
+
+  const int new_tab_idx = tab_strip_model->active_index() + 1;
+
+  // We currently only support creating a split with one link; i.e., the first
+  // link in the provided list.
+  chrome::AddTabAt(browser_.get(), urls.front(), new_tab_idx, false);
+
+  // TODO(crbug.com/406792273): Support entrypoint for vertical splits.
+  tab_strip_model->AddToNewSplit(
+      {new_tab_idx},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical));
 }
 
 std::vector<ContentsWebView*> BrowserView::GetAllVisibleContentsWebViews() {

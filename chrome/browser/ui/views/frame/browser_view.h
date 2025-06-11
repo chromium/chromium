@@ -979,6 +979,10 @@ class BrowserView : public BrowserWindow,
   // Activate the tab containing the given WebContents (if any).
   void ActivateWebContents(content::WebContents* web_contents);
 
+  // Expects a non-empty list of urls, and opens the first url in a new tab
+  // split.
+  void OpenInNewSplit(const std::vector<GURL>& urls);
+
   // BrowserUserEducationInterface private methods:
   user_education::FeaturePromoControllerCommon* GetFeaturePromoControllerImpl()
       override;

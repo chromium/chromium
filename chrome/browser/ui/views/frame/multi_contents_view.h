@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/resize_area_delegate.h"
@@ -45,9 +46,9 @@ class MultiContentsView : public views::View,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewElementId);
 
-  class Delegate {
+  class Delegate : public MultiContentsDropTargetView::DropDelegate {
    public:
-    virtual ~Delegate() = default;
+    ~Delegate() override = default;
 
     virtual void WebContentsFocused(content::WebContents* contents) = 0;
     virtual void ResizeWebContents(double ratio) = 0;

@@ -25,14 +25,19 @@ class MultiContentsDropTargetView : public views::View,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsDropTargetElementId);
 
-  MultiContentsDropTargetView();
+  class DropDelegate {
+   public:
+    virtual ~DropDelegate() = default;
+
+    // Handles links that are dropped on the view.
+    virtual void HandleLinkDrop(const std::vector<GURL>& urls) = 0;
+  };
+
+  explicit MultiContentsDropTargetView(DropDelegate& drop_delegate);
   MultiContentsDropTargetView(const MultiContentsDropTargetView&) = delete;
   MultiContentsDropTargetView& operator=(const MultiContentsDropTargetView&) =
       delete;
   ~MultiContentsDropTargetView() override;
-
-  // views::View:
-  void OnThemeChanged() override;
 
   double GetAnimationValue() const;
 
@@ -41,17 +46,34 @@ class MultiContentsDropTargetView : public views::View,
 
   bool IsClosing() const;
 
-  raw_ptr<views::ImageView> icon_view_for_testing() { return icon_view_; }
-  gfx::SlideAnimation& animation_for_testing() { return animation_; }
+  // views::View
+  void OnThemeChanged() override;
+  bool GetDropFormats(int* formats,
+                      std::set<ui::ClipboardFormatType>* format_types) override;
+  bool CanDrop(const ui::OSExchangeData& data) override;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
+  void OnDragDone() override;
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
+  raw_ptr<views::ImageView> icon_view_for_testing() { return icon_view_; }
+  gfx::SlideAnimation& animation_for_testing() { return animation_; }
+
  private:
   void UpdateVisibility(bool should_be_open);
 
   bool ShouldShowAnimation() const;
+
+  void DoDrop(const ui::DropTargetEvent& event,
+              ui::mojom::DragOperation& output_drag_op,
+              std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
+
+  const raw_ref<DropDelegate> drop_delegate_;
 
   // Animation controlling showing and hiding of the drop target view.
   gfx::SlideAnimation animation_{this};
