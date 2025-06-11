@@ -6636,8 +6636,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_UNAVAILABLE_TITLE" desc="Title shown above a message in the Regular Tabs page of the tab grid when the IncognitoModeAvailability enterprise policy is set to forced. [iOS only]">
         Only Incognito mode is available
       </message>
-      <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_WITH_GROUPS_TITLE" desc="The accessibility label of the Regular Tabs page (as opposed to the Incognito Tabs page) in the tab grid UI when Tab Groups are enabled. [iOS only]">
-        Open tabs and tab groups
+      <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_WITH_GROUPS_TITLE" desc="The accessibility label of the Regular Tabs page (as opposed to the Incognito Tabs page) in the tab grid UI when Tab Groups are enabled. This is a noun group, not a verb for an action.[iOS only]">
+        Currently open tabs and tab groups
       </message>
       <message name="IDS_IOS_TAB_GRID_REMOTE_TABS_TITLE" desc="The accessibility label of the Remote Tabs page in the tab grid UI. [iOS only]">
         Tabs from other devices
