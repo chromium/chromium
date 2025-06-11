@@ -216,11 +216,19 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
         .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
   }
 
-  void EncompassContributionSizes(MinMaxSizes&& sizes) {
+  void EncompassContributionSize(MinMaxSizes sizes) {
     if (contribution_sizes) {
       contribution_sizes->Encompass(sizes);
     } else {
-      contribution_sizes = std::move(sizes);
+      contribution_sizes = sizes;
+    }
+  }
+
+  void EncompassContributionSize(LayoutUnit block_size) {
+    if (contribution_sizes) {
+      contribution_sizes->Encompass(block_size);
+    } else {
+      contribution_sizes = block_size;
     }
   }
 
@@ -276,7 +284,9 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   OutOfFlowItemPlacement row_placement;
 
   // Virtual masonry items don't have a node, so we cache the maximum of every
-  // intrinsic contribution among the items that make up its respective group.
+  // intrinsic contribution among the items that make up its respective group,
+  // which may be the min/max sizes if parallel to the grid-axis, and the block
+  // contribution size if perpendicular.
   std::optional<MinMaxSizes> contribution_sizes;
 };
 

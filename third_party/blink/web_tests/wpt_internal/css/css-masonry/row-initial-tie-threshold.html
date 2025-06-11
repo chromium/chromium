@@ -2,26 +2,26 @@
 <html>
 <meta charset="utf-8">
 <title>CSS Masonry Test: Initial value of item-tolerance</title>
-<link rel="author" title="Ethan Jimenez" href="mailto:ethavar@microsoft.com">
+<link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid-3/#item-slack">
-<link rel="match" href="initial-tie-threshold-ref.html">
+<link rel="match" href="row-initial-tie-threshold-ref.html">
 <link rel="stylesheet" href="/fonts/ahem.css">
 <style>
 .masonry {
     display: masonry;
+    masonry-direction: row;
     background: gray;
-    position: relative;
-    item-tolerance: 0;
     font: 50px/1 Ahem;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     item-tolerance: initial;
     gap: 20px;
     padding: 20px;
-    width: 400px;
+    width: 170px;
 }
 
 .auto-item {
     padding: 10px;
+    height: 100px;
 }
 
 .auto-item:nth-of-type(1) {
@@ -43,10 +43,10 @@
 <body>
   <p>Test that the initial tie threshold for masonry is correctly resolved.</p>
   <div class="masonry">
-    <div class="auto-item" style="height: 80px"></div>
-    <div class="auto-item" style="height: 30px"></div>
-    <div class="auto-item" style="height: 30px"></div>
-    <div class="auto-item" style="height: 80px"></div>
+    <div class="auto-item" style="width: 80px"></div>
+    <div class="auto-item" style="width: 30px"></div>
+    <div class="auto-item" style="width: 30px"></div>
+    <div class="auto-item" style="width: 80px"></div>
   </div>
 </body>
 </html>

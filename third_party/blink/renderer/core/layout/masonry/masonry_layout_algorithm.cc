@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/masonry/masonry_layout_algorithm.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
@@ -30,10 +31,8 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     // When item-direction is row, we pass in `kLayout` for `sizing_constraint`
     // because the grid-axis is the block axis, and we can only apply sizing
     // constraints to the inline axis.
-    const auto track_collection = BuildGridAxisTracks(
-        line_resolver,
-        is_for_columns ? sizing_constraint : SizingConstraint::kLayout,
-        start_offset);
+    const auto track_collection =
+        BuildGridAxisTracks(line_resolver, sizing_constraint, start_offset);
 
     if (is_for_columns) {
       // Track sizing is done during the guess placement step, which happens in
@@ -121,6 +120,30 @@ LayoutUnit CalculateAlignmentOffset(AxisEdge alignment, LayoutUnit free_space) {
     default:
       NOTREACHED();
   }
+}
+
+// TODO(almaher): Should we consolidate this with LayoutGridItemForMeasure()?
+const LayoutResult* LayoutMasonryItemForMeasure(
+    const GridItemData& masonry_item,
+    const ConstraintSpace& constraint_space,
+    SizingConstraint sizing_constraint) {
+  const auto& node = masonry_item.node;
+
+  // Disable side effects during MinMax computation to avoid potential "MinMax
+  // after layout" crashes. This is not necessary during the layout pass, and
+  // would have a negative impact on performance if used there.
+  //
+  // TODO(ikilpatrick): For subgrid, ideally we don't want to disable side
+  // effects as it may impact performance significantly; this issue can be
+  // avoided by introducing additional cache slots (see crbug.com/1272533).
+  //
+  // TODO(almaher): Handle submasonry here.
+  std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
+  if (!node.GetLayoutBox()->NeedsLayout() &&
+      sizing_constraint != SizingConstraint::kLayout) {
+    disable_side_effects.emplace();
+  }
+  return node.Layout(constraint_space);
 }
 
 }  // namespace
@@ -226,9 +249,11 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
 
 GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
     const GridLineResolver& line_resolver,
+    SizingConstraint sizing_constraint,
     wtf_size_t& start_offset) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.MasonryTrackSizingDirection();
+  const bool is_for_columns = grid_axis_direction == kForColumns;
 
   wtf_size_t max_end_line;
   GridItems virtual_items;
@@ -239,10 +264,25 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
     auto span = group_properties.Span();
 
     for (const auto& item_node : group_items) {
-      const auto space =
-          CreateConstraintSpaceForMeasure(GridItemData(item_node, style));
-      virtual_item->EncompassContributionSizes(
-          ComputeMinAndMaxContentContributionForSelf(item_node, space).sizes);
+      // TODO(almaher): Refactor the code such that we use items collected in
+      // ConstructMasonryItems() when building up the virtual items instead of
+      // creating new Garbage Collected items. This will likely require an
+      // adjustment to the data structure we produce in CollectItemGroups().
+      GridItemData* item_data =
+          MakeGarbageCollected<GridItemData>(item_node, style);
+      const auto space = CreateConstraintSpaceForMeasure(*item_data);
+
+      // TODO(almaher): Add margins to contribution sizes.
+      // TODO(almaher): Update to whether this is parallel, instead of
+      // `is_for_columns`, and add tests for orthogonal items.
+      if (is_for_columns) {
+        virtual_item->EncompassContributionSize(
+            ComputeMinAndMaxContentContributionForSelf(item_node, space).sizes);
+      } else {
+        virtual_item->EncompassContributionSize(
+            ComputeMasonryItemBlockContribution(
+                grid_axis_direction, sizing_constraint, space, item_data));
+      }
     }
 
     if (span.IsIndefinite()) {
@@ -272,6 +312,8 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
 
 namespace {
 
+// TODO(almaher): Eventually look into consolidating repeated code with
+// GridLayoutAlgorithm::ContributionSizeForGridItem().
 LayoutUnit ContributionSizeForVirtualItem(
     GridItemContributionType contribution_type,
     GridItemData* virtual_item) {
@@ -279,6 +321,9 @@ LayoutUnit ContributionSizeForVirtualItem(
   DCHECK(virtual_item->contribution_sizes);
 
   switch (contribution_type) {
+    // TODO(almaher): Do we need to do something special for
+    // kForIntrinsicMinimums (see
+    // GridLayoutAlgorithm::ContributionSizeForGridItem())?
     case GridItemContributionType::kForContentBasedMinimums:
     case GridItemContributionType::kForIntrinsicMaximums:
     case GridItemContributionType::kForIntrinsicMinimums:
@@ -294,13 +339,66 @@ LayoutUnit ContributionSizeForVirtualItem(
 
 }  // namespace
 
+// TODO(almaher): Eventually look into consolidating repeated code with
+// GridLayoutAlgorithm::ContributionSizeForGridItem().
+LayoutUnit MasonryLayoutAlgorithm::ComputeMasonryItemBlockContribution(
+    GridTrackSizingDirection track_direction,
+    SizingConstraint sizing_constraint,
+    const ConstraintSpace space_for_measure,
+    GridItemData* masonry_item) const {
+  DCHECK(masonry_item);
+
+  // TODO(ikilpatrick): We'll need to record if any child used an indefinite
+  // size for its contribution, such that we can then do the 2nd pass on the
+  // track-sizing algorithm.
+
+  // TODO(almaher): Handle baseline logic here.
+
+  // TODO(ikilpatrick): This should try and skip layout when possible. Notes:
+  //  - We'll need to do a full layout for tables.
+  //  - We'll need special logic for replaced elements.
+  //  - We'll need to respect the aspect-ratio when appropriate.
+
+  // TODO(almaher): Properly handle submasonry here.
+
+  const LayoutResult* result = nullptr;
+  if (space_for_measure.AvailableSize().inline_size == kIndefiniteSize) {
+    // If we are orthogonal virtual item, resolving against an indefinite
+    // size, set our inline size to our min-content or max-content contribution
+    // size depending on the `sizing_contraint`.
+    const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
+                                  masonry_item->node, space_for_measure)
+                                  .sizes;
+    const auto fallback_space = CreateConstraintSpaceForMeasure(
+        *masonry_item, /*opt_fixed_inline_size=*/sizing_constraint ==
+                               SizingConstraint::kMinContent
+                           ? sizes.min_size
+                           : sizes.max_size);
+
+    result = LayoutMasonryItemForMeasure(*masonry_item, fallback_space,
+                                         sizing_constraint);
+  } else {
+    result = LayoutMasonryItemForMeasure(*masonry_item, space_for_measure,
+                                         sizing_constraint);
+  }
+
+  LogicalBoxFragment baseline_fragment(
+      masonry_item->BaselineWritingDirection(track_direction),
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
+
+  // TODO(almaher): Properly handle baselines here.
+
+  return baseline_fragment.BlockSize();
+}
+
 GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
     const GridLineResolver& line_resolver,
     SizingConstraint sizing_constraint,
     wtf_size_t& start_offset) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.MasonryTrackSizingDirection();
-  auto virtual_items = BuildVirtualMasonryItems(line_resolver, start_offset);
+  auto virtual_items =
+      BuildVirtualMasonryItems(line_resolver, sizing_constraint, start_offset);
 
   auto BuildRanges = [&]() {
     GridRangeBuilder range_builder(
@@ -352,6 +450,7 @@ wtf_size_t MasonryLayoutAlgorithm::ComputeAutomaticRepetitions() const {
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpace(
     const GridItemData& masonry_item,
     const LogicalSize& containing_size,
+    const LogicalSize& fixed_available_size,
     LayoutResultCacheSlot result_cache_slot) const {
   ConstraintSpaceBuilder builder(
       GetConstraintSpace(), masonry_item.node.Style().GetWritingDirection(),
@@ -360,7 +459,20 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpace(
   builder.SetCacheSlot(result_cache_slot);
   builder.SetIsPaintedAtomically(true);
 
-  builder.SetAvailableSize(containing_size);
+  {
+    LogicalSize available_size = containing_size;
+    if (fixed_available_size.inline_size != kIndefiniteSize) {
+      available_size.inline_size = fixed_available_size.inline_size;
+      builder.SetIsFixedInlineSize(true);
+    }
+
+    if (fixed_available_size.block_size != kIndefiniteSize) {
+      available_size.block_size = fixed_available_size.block_size;
+      builder.SetIsFixedBlockSize(true);
+    }
+    builder.SetAvailableSize(available_size);
+  }
+
   builder.SetPercentageResolutionSize(containing_size);
   builder.SetInlineAutoBehavior(masonry_item.column_auto_behavior);
   builder.SetBlockAutoBehavior(masonry_item.row_auto_behavior);
@@ -390,18 +502,40 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
     containing_rect->size = containing_size;
   }
 
+  // TODO(almaher): Will likely need special fixed available size handling for
+  // submasonry.
   return CreateConstraintSpace(masonry_item, containing_size,
+                               /*fixed_available_size=*/kIndefiniteLogicalSize,
                                LayoutResultCacheSlot::kLayout);
 }
 
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
-    const GridItemData& masonry_item) const {
-  auto containing_size = ChildAvailableSize();
+    const GridItemData& masonry_item,
+    std::optional<LayoutUnit> opt_fixed_inline_size) const {
+  LogicalSize containing_size = ChildAvailableSize();
+  const auto writing_mode = GetConstraintSpace().GetWritingMode();
+
   // This method is only used for passing a constraint space into
   // `ComputeMinAndMaxContentContributionForSelf`, and the inline size should
   // always be indefinite in that case to allow for text flow.
   containing_size.inline_size = kIndefiniteSize;
+
+  // TODO(almaher): Do we need to do something special here for subgrid like
+  // GridLayoutAlgorithm::CreateConstraintSpaceForMeasure()?
+  LogicalSize fixed_available_size = kIndefiniteLogicalSize;
+
+  if (opt_fixed_inline_size) {
+    const auto item_writing_mode = masonry_item.node.Style().GetWritingMode();
+    if (IsParallelWritingMode(item_writing_mode, writing_mode)) {
+      DCHECK_EQ(fixed_available_size.inline_size, kIndefiniteSize);
+      fixed_available_size.inline_size = *opt_fixed_inline_size;
+    } else {
+      DCHECK_EQ(fixed_available_size.block_size, kIndefiniteSize);
+      fixed_available_size.block_size = *opt_fixed_inline_size;
+    }
+  }
   return CreateConstraintSpace(masonry_item, containing_size,
+                               fixed_available_size,
                                LayoutResultCacheSlot::kMeasure);
 }
 

@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html>
 <link rel="help" href="https://drafts.csswg.org/css-grid-3">
-<link rel="match" href="auto-placement-001-ref.html">
-<link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
+<link rel="match" href="row-gaps-001-ref.html">
+<link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <style>
 .masonry {
     display: masonry;
+    masonry-direction: row;
     background: gray;
-    position: relative;
     item-tolerance: 0;
-    grid-template-columns: auto auto auto;
-    width: 340px;
+    grid-template-rows: repeat(3, 100px);
+    height: 400px;
+    width: 380px;
     padding: 20px;
-    gap: 20px;
+    gap: 50px 10px;
+}
+
+.masonry > div {
+    width: 100px;
 }
 
 .auto-item {
@@ -33,12 +38,12 @@
 
 .two-track-spanner {
     background: lightpink;
-    grid-column: span 2;
+    grid-row: span 2;
     padding: 10px;
 }
 </style>
 <body>
-  <p>Test that masonry items with auto placement are correctly positioned within the grid axis.</p>
+  <p>Test that gaps are correctly used within masonry containers.</p>
   <div class="masonry">
     <div class="auto-item">This is some text</div>
     <div class="auto-item">Some larger words in this sentence</div>

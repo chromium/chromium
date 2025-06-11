@@ -52,11 +52,19 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   // Returns a collection of items that reflect the intrinsic contributions from
   // the item groups, which will be used to resolve the grid axis' track sizes.
   GridItems BuildVirtualMasonryItems(const GridLineResolver& line_resolver,
+                                     SizingConstraint sizing_constraint,
                                      wtf_size_t& start_offset) const;
+
+  LayoutUnit ComputeMasonryItemBlockContribution(
+      GridTrackSizingDirection track_direction,
+      SizingConstraint sizing_constraint,
+      const ConstraintSpace space_for_measure,
+      GridItemData* virtual_item) const;
 
   ConstraintSpace CreateConstraintSpace(
       const GridItemData& masonry_item,
       const LogicalSize& containing_size,
+      const LogicalSize& fixed_available_size,
       LayoutResultCacheSlot result_cache_slot) const;
 
   // If `containing_rect` is provided, it will store the available size for the
@@ -68,7 +76,8 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       LogicalRect* containing_rect = nullptr) const;
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
-      const GridItemData& masonry_item) const;
+      const GridItemData& masonry_item,
+      std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt) const;
 
   LayoutUnit intrinsic_block_size_;
 };

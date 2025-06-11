@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
-<title>CSS Masonry Test: Alignment for items and self in grid axis</title>
+<meta charset="utf-8">
+<title>CSS Masonry Test: Centered alignment in grid axis</title>
 <link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid-3/#alignment">
-<link rel="match" href="justify-items-end-justify-self-start-001-ref.html">
+<link rel="match" href="column-justify-items-center-001-ref.html">
 <style>
 .masonry {
     display: masonry;
@@ -12,7 +13,7 @@
     item-tolerance: 0;
     grid-template-columns: repeat(3, 100px);
     width: 300px;
-    justify-items: end;
+    justify-items: center;
 }
 
 .fifty-width {
@@ -21,13 +22,12 @@
 }
 </style>
 <body>
-  <p>Test that using justify-items moves each masonry item to the end of the grid-axis track it is on</p>
-  <p>and that justify-self overrides justify-items.</p>
+  <p>Test that using justify-items centers each item to the grid-axis track it is on.</p>
   <div class="masonry">
     <div class="fifty-width">
       This is some text
     </div>
-    <div class="fifty-width" style="justify-self: start">
+    <div class="fifty-width">
       Some larger words in this sentence
     </div>
     <div class="fifty-width">

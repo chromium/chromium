@@ -32,8 +32,8 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
     ASSERT_EQ(grid_axis_direction, style.MasonryTrackSizingDirection());
 
-    for (const auto& masonry_item :
-         algorithm.BuildVirtualMasonryItems(line_resolver, start_offset)) {
+    for (const auto& masonry_item : algorithm.BuildVirtualMasonryItems(
+             line_resolver, SizingConstraint::kLayout, start_offset)) {
       MasonryItemCachedData item_data;
 
       item_data.resolved_span =
