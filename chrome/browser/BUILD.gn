@@ -6468,7 +6468,10 @@ static_library("browser") {
     all_dependent_configs = [ ":browser_win_linker_flags" ]
 
     if (is_chrome_branded) {
-      deps += [ "//chrome/updater/app/server/win:updater_legacy_idl" ]
+      deps += [
+        "//chrome/browser/platform_experience/installer:installer_win",
+        "//chrome/updater/app/server/win:updater_legacy_idl",
+      ]
       sources += [
         "policy/status_provider/updater_status_and_value_provider.cc",
         "policy/status_provider/updater_status_and_value_provider.h",

@@ -51,7 +51,6 @@
 #include "base/version.h"
 #include "base/win/elevation_util.h"
 #include "base/win/pe_image.h"
-#include "base/win/scoped_variant.h"
 #include "base/win/win_util.h"
 #include "base/win/wrapped_window_proc.h"
 #include "build/branding_buildflags.h"
@@ -64,7 +63,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/first_run/upgrade_util_win.h"
-#include "chrome/browser/google/google_update_app_command.h"
 #include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -135,6 +133,10 @@
 #include "ui/gfx/system_fonts_win.h"
 #include "ui/gfx/win/crash_id_helper.h"
 #include "ui/strings/grit/app_locale_settings.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/platform_experience/installer/installer_win.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -469,68 +471,6 @@ void ReportParentProcessName() {
   }
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Switch used to install platform_experience_helper
-const char kPlatformExperienceHelperForceInstallSwitch[] = "force-install";
-// Directory under which platform_experience_helper is installed
-const wchar_t kPlatformExperienceHelperDir[] = L"PlatformExperienceHelper";
-// Name of the platform_experience_helper executable
-const wchar_t kPlatformExperienceHelperExe[] =
-    L"platform_experience_helper.exe";
-
-// This function might block.
-// Returns true if the platform_experience_helper is installed.
-// Returns true if it can't determine whether it's installed or not.
-bool PlatformExperienceHelperMightBeInstalled() {
-  base::FilePath peh_base_dir = base::PathService::CheckedGet(
-      install_static::IsSystemInstall()
-          ? static_cast<int>(base::DIR_EXE)
-          : static_cast<int>(chrome::DIR_USER_DATA));
-
-  base::FilePath peh_exe_path =
-      peh_base_dir.Append(kPlatformExperienceHelperDir)
-          .Append(kPlatformExperienceHelperExe);
-  return base::PathExists(peh_exe_path);
-}
-
-// This function might block.
-void MaybeInstallPlatformExperienceHelper() {
-  if (PlatformExperienceHelperMightBeInstalled()) {
-    return;
-  }
-
-  // TODO(crbug.com/422447800): Report metrics for number of installer launch
-  // attempts (success vs. failure), split by user vs system installs.
-  if (install_static::IsSystemInstall()) {
-    auto command = GetUpdaterAppCommand(installer::kCmdInstallPEH);
-    if (!command.has_value()) {
-      return;
-    }
-
-    const VARIANT& var = base::win::ScopedVariant::kEmptyVariant;
-    (*command)->execute(var, var, var, var, var, var, var, var, var);
-    return;
-  }
-
-  base::FilePath peh_installer_path =
-      base::PathService::CheckedGet(base::DIR_MODULE)
-          .Append(FILE_PATH_LITERAL("os_update_handler.exe"));
-  base::CommandLine install_cmd(peh_installer_path);
-  install_cmd.AppendSwitch(kPlatformExperienceHelperForceInstallSwitch);
-  InstallUtil::AppendModeAndChannelSwitches(&install_cmd);
-
-  base::LaunchOptions launch_options;
-  launch_options.feedback_cursor_off = true;
-  launch_options.force_breakaway_from_job_ = true;
-  ::SetLastError(ERROR_SUCCESS);
-  base::Process process = base::LaunchProcess(install_cmd, launch_options);
-  if (!process.IsValid()) {
-    PLOG(ERROR) << "Failed to launch \"" << install_cmd.GetCommandLineString()
-                << "\"";
-  }
-}
-#endif  // GOOGLE_CHROME_BRANDING
-
 // This error message is not localized because we failed to load the
 // localization data files.
 const char kMissingLocaleDataTitle[] = "Missing File Error";
@@ -808,7 +748,8 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&MaybeInstallPlatformExperienceHelper));
+        base::BindOnce(
+            &platform_experience::MaybeInstallPlatformExperienceHelper));
   }
 #endif  // GOOGLE_CHROME_BRANDING
 
