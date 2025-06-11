@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -86,7 +87,7 @@ struct MockTransaction {
   const char* response_headers;
   // If |response_time| is unspecified, the current time will be used.
   base::Time response_time;
-  const char* data;
+  std::string_view data;
   // Any aliases for the requested URL, as read from DNS records. Includes all
   // known aliases, e.g. from A, AAAA, or HTTPS, not just from the address used
   // for the connection, in no particular order.

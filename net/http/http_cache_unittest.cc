@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/http/http_cache.h"
 
 #include <stdint.h>
@@ -647,8 +642,9 @@ void CreateTruncatedEntry(std::string raw_headers, MockHttpCache* cache) {
   EXPECT_TRUE(MockHttpCache::WriteResponseInfo(entry, &response, true, true));
 
   auto buf = base::MakeRefCounted<IOBufferWithSize>(100);
-  int len =
-      static_cast<int>(base::strlcpy(buf->data(), "rg: 00-09 rg: 10-19 ", 100));
+  std::string_view in = "rg: 00-09 rg: 10-19 ";
+  buf->span().copy_prefix_from(base::as_byte_span(in));
+  int len = in.size();
   TestCompletionCallback cb;
   int rv = entry->WriteData(1, 0, buf.get(), len, cb.callback(), true);
   EXPECT_EQ(len, cb.GetResult(rv));
@@ -4975,7 +4971,7 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingHuge) {
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
   std::string response_headers = base::StrCat(
       {kSimpleGET_Transaction.response_headers, "Content-Length: ",
-       base::NumberToString(strlen(kSimpleGET_Transaction.data)), "\n"});
+       base::NumberToString(kSimpleGET_Transaction.data.size()), "\n"});
   transaction.response_headers = response_headers.c_str();
   MockHttpRequest request(transaction);
 
@@ -9476,8 +9472,9 @@ TEST_F(HttpCacheGetTest, Previous206NotSparse) {
   EXPECT_TRUE(MockHttpCache::WriteResponseInfo(entry, &response, true, false));
 
   auto buf(base::MakeRefCounted<IOBufferWithSize>(500));
-  int len = static_cast<int>(
-      base::strlcpy(buf->data(), kRangeGET_TransactionOK.data, 500));
+  buf->span().copy_prefix_from(
+      base::as_byte_span(kRangeGET_TransactionOK.data));
+  int len = kRangeGET_TransactionOK.data.size();
   TestCompletionCallback cb;
   int rv = entry->WriteData(1, 0, buf.get(), len, cb.callback(), true);
   EXPECT_EQ(len, cb.GetResult(rv));
@@ -9522,8 +9519,9 @@ TEST_F(HttpCacheRangeGetTest, Previous206NotSparser2) {
   EXPECT_TRUE(MockHttpCache::WriteResponseInfo(entry, &response, true, false));
 
   auto buf = base::MakeRefCounted<IOBufferWithSize>(500);
-  int len = static_cast<int>(
-      base::strlcpy(buf->data(), kRangeGET_TransactionOK.data, 500));
+  buf->span().copy_prefix_from(
+      base::as_byte_span(kRangeGET_TransactionOK.data));
+  int len = kRangeGET_TransactionOK.data.size();
   TestCompletionCallback cb;
   int rv = entry->WriteData(1, 0, buf.get(), len, cb.callback(), true);
   EXPECT_EQ(len, cb.GetResult(rv));
@@ -9561,8 +9559,9 @@ TEST_F(HttpCacheGetTest, Previous206NotValidation) {
   EXPECT_TRUE(MockHttpCache::WriteResponseInfo(entry, &response, true, false));
 
   auto buf = base::MakeRefCounted<IOBufferWithSize>(500);
-  int len = static_cast<int>(
-      base::strlcpy(buf->data(), kRangeGET_TransactionOK.data, 500));
+  buf->span().copy_prefix_from(
+      base::as_byte_span(kRangeGET_TransactionOK.data));
+  int len = kRangeGET_TransactionOK.data.size();
   TestCompletionCallback cb;
   int rv = entry->WriteData(1, 0, buf.get(), len, cb.callback(), true);
   EXPECT_EQ(len, cb.GetResult(rv));

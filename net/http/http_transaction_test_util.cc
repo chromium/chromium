@@ -603,7 +603,7 @@ int MockNetworkTransaction::DoSendRequest() {
 
   std::string resp_status = t->status;
   std::string resp_headers = t->response_headers;
-  std::string resp_data = t->data;
+  std::string resp_data(t->data);
 
   if (t->handler) {
     t->handler.Run(&current_request_, &resp_status, &resp_headers, &resp_data);

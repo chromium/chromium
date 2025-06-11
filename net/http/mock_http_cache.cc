@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/mock_http_cache.h"
+
+#include <stdint.h>
 
 #include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -107,7 +105,9 @@ int MockDiskEntry::ReadData(int index,
   }
 
   int num = std::min(buf_len, static_cast<int>(data_[index].size()) - offset);
-  memcpy(buf->data(), &data_[index][offset], num);
+  buf->span().copy_prefix_from(base::span(data_[index])
+                                   .subspan(base::checked_cast<size_t>(offset),
+                                            base::checked_cast<size_t>(num)));
 
   if (MockHttpCache::GetTestMode(test_mode_) & TEST_MODE_SYNC_CACHE_READ) {
     return num;
@@ -157,7 +157,9 @@ int MockDiskEntry::WriteData(int index,
 
   data_[index].resize(offset + buf_len);
   if (buf_len) {
-    memcpy(&data_[index][offset], buf->data(), buf_len);
+    base::span(data_[index])
+        .subspan(base::checked_cast<size_t>(offset))
+        .copy_prefix_from(buf->first(buf_len));
   }
 
   if (MockHttpCache::GetTestMode(test_mode_) & TEST_MODE_SYNC_CACHE_WRITE) {
@@ -201,7 +203,9 @@ int MockDiskEntry::ReadSparseData(int64_t offset,
   }
 
   int num = std::min(static_cast<int>(data_[1].size()) - real_offset, buf_len);
-  memcpy(buf->data(), &data_[1][real_offset], num);
+  buf->span().copy_prefix_from(
+      base::span(data_[1]).subspan(base::checked_cast<size_t>(real_offset),
+                                   base::checked_cast<size_t>(num)));
 
   if (MockHttpCache::GetTestMode(test_mode_) & TEST_MODE_SYNC_CACHE_READ) {
     return num;
@@ -249,7 +253,9 @@ int MockDiskEntry::WriteSparseData(int64_t offset,
     data_[1].resize(real_offset + buf_len);
   }
 
-  memcpy(&data_[1][real_offset], buf->data(), buf_len);
+  base::span(data_[1])
+      .subspan(base::checked_cast<size_t>(real_offset))
+      .copy_prefix_from(buf->first(buf_len));
   if (MockHttpCache::GetTestMode(test_mode_) & TEST_MODE_SYNC_CACHE_WRITE) {
     return buf_len;
   }

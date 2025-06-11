@@ -136,7 +136,7 @@ class MockDiskEntry : public disk_cache::Entry,
   static const int kNumCacheEntryDataIndices = 3;
 
   std::string key_;
-  std::array<std::vector<char>, kNumCacheEntryDataIndices> data_;
+  std::array<std::vector<uint8_t>, kNumCacheEntryDataIndices> data_;
   uint8_t in_memory_data_ = 0;
   int test_mode_;
   int max_file_size_;
