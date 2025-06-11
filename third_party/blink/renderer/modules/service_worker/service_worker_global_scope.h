@@ -633,6 +633,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       const KURL& request_url);
   void RemoveItemFromRaceNetworkRequests(int fetch_event_id);
 
+  void PrepareForEvaluationIfNeeded();
+
   Member<ServiceWorkerClients> clients_;
   Member<ServiceWorkerRegistration> registration_;
   Member<::blink::ServiceWorker> service_worker_;
@@ -751,6 +753,10 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   bool pause_evaluation_ = false;
   // ResumeEvaluation() evaluates the top level script when this flag is true.
   bool global_scope_initialized_ = false;
+
+  // Whether `ScriptController()->PrepareForEvaluation()` should be called after
+  // evaluation is resumed.
+  bool pending_prepare_for_evaluation_ = false;
 
   // Connected by the ServiceWorkerHost in the browser process and by the
   // controllees. |controller_bindings_| should be destroyed before

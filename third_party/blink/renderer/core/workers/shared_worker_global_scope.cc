@@ -113,6 +113,9 @@ void SharedWorkerGlobalScope::Initialize(
 
   OriginTrialContext::AddTokens(this, response_origin_trial_tokens);
 
+  // Allows `ContextFeatureSettings` to update before preparing script engine.
+  ReportingProxy().WillPrepareForEvaluation();
+
   // This should be called after OriginTrialContext::AddTokens() to install
   // origin trial features in JavaScript's global object.
   ScriptController()->PrepareForEvaluation();

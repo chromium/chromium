@@ -1752,7 +1752,7 @@ void ChromeContentRendererClient::
 #endif
 }
 
-void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread(
+void ChromeContentRendererClient::WillPrepareForEvaluationOnWorkerThread(
     blink::WebServiceWorkerContextProxy* context_proxy,
     v8::Local<v8::Context> v8_context,
     int64_t service_worker_version_id,
@@ -1762,9 +1762,17 @@ void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread(
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::ExtensionsRendererClient::Get()
       ->dispatcher()
-      ->WillEvaluateServiceWorkerOnWorkerThread(
+      ->WillPrepareForEvaluationOnWorkerThread(
           context_proxy, v8_context, service_worker_version_id,
           service_worker_scope, script_url, service_worker_token);
+#endif
+}
+
+void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread() {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions::ExtensionsRendererClient::Get()
+      ->dispatcher()
+      ->WillEvaluateServiceWorkerOnWorkerThread();
 #endif
 }
 

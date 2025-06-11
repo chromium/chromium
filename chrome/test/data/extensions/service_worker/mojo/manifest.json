@@ -1,0 +1,12 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA22ThlvdzIV2u5FrtEP9ab+EjrI/nMcrY9NPoBqIannUPKpB4RjcKWNwsjyiHC/n5x1FQ6xNQ2LT9PSgOqk6hn1tIYkdrKYKGzpWHDaIsRqtIDPj0htcV1QvXB1Ct3xzR54Dn1OtZceoxPxtTOOD4po8I8zfos59TSyZk3XKSBlP8/laxo33Lze9gadH2wF6u1crBtbNq4O1Wj6DB5o7YKwu/KjY8MUcL4Eks8cAfvR+GXEgCqS5l4x2nnfAYdu/YhzeVCYKbwqUB+trCeYdtc20zLExOm9ruwJs9moD6wmAOBtgiTBqFb7iN4EpbvoupD0FFB/FWU1MzlkZXm/x+eQIDAQAB",
+  "name": "Test component extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "sw.js"
+  },
+  "permissions": [
+    "mojoPrivate"
+  ]
+}
