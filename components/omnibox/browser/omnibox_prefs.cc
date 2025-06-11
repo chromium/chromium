@@ -21,7 +21,6 @@ namespace omnibox {
 
 namespace {
 constexpr int kAIModeSearchSuggestAllowed = 0;
-constexpr int kAIModeSearchSuggestDisallowed = 1;
 constexpr int kAIModeAllowed = 0;
 }  // namespace
 
@@ -86,9 +85,8 @@ std::string GetUserPreferenceForZeroSuggestCachedResponse(
   return value_ptr ? *value_ptr : std::string();
 }
 
-bool IsMiaDisabledByPolicy(PrefService* prefs) {
-  return prefs->GetInteger(omnibox::kAIModeSearchSuggestSettings) ==
-         omnibox::kAIModeSearchSuggestDisallowed;
+bool IsMiaAllowedByPolicy(PrefService* prefs) {
+  return prefs->GetInteger(omnibox::kAIModeSettings) == omnibox::kAIModeAllowed;
 }
 
 }  // namespace omnibox

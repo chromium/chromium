@@ -20,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search/ntp_features.h"
@@ -487,10 +488,12 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                      ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
   source->AddBoolean("searchboxShowComposeEntrypoint",
                      base::FeatureList::IsEnabled(
-                         ntp_features::kNtpSearchboxComposeEntrypoint));
+                         ntp_features::kNtpSearchboxComposeEntrypoint) &&
+                         omnibox::IsMiaAllowedByPolicy(profile->GetPrefs()));
   source->AddBoolean(
       "searchboxShowComposebox",
-      base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox));
+      base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox) &&
+          omnibox::IsMiaAllowedByPolicy(profile->GetPrefs()));
 }
 
 // static
