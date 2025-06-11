@@ -166,8 +166,9 @@ void LensOverlayNavigationManager::RegisterSubNavigation(
     GURL url,
     const std::u16string& omnibox_text) {
   if (lens_navigation_items_.empty()) {
-    NOTREACHED(kLensOverlayNotFatalUntil)
-        << "Web navigation without lens result is not supported.";
+    // This can happen after lens navigation is cleared with `ClearNavigations`.
+    // Don't register sub navigation without lens navigation.
+    return;
   }
 
   // To prevent dark mode toggles from creating new navigation history entries,
@@ -225,8 +226,8 @@ void LensOverlayNavigationManager::GoToPreviousLensNavigation() {
 
 std::u16string LensOverlayNavigationManager::PreviousOmniboxText() const {
   if (lens_navigation_items_.empty()) {
-    NOTREACHED(kLensOverlayNotFatalUntil)
-        << "Should only be called with an existing LensResultItem.";
+    // This can happen after lens navigation is cleared with `ClearNavigations`.
+    return u"";
   }
   const LensResultItem& current_lens_result = *lens_navigation_items_.back();
   // If there is no previous sub navigation return the omnibox text from the
