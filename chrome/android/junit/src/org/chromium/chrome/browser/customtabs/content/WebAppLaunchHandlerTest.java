@@ -50,6 +50,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /** Tests for {@link WebAppLaunchHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -65,6 +66,7 @@ public class WebAppLaunchHandlerTest {
     public static final String TEST_PACKAGE_NAME = "com.test";
     private FileHandlingData mFileHandlingData;
     private String[] mExpectedFileList = new String[0];
+    private BooleanSupplier mIsPageLoading = () -> true;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock WebContents mWebContentsMock;
@@ -110,7 +112,8 @@ public class WebAppLaunchHandlerTest {
                 mCurrentPageVerifierMock,
                 mNavigationControllerMock,
                 mWebContentsMock,
-                mActivityMock);
+                mActivityMock,
+                mIsPageLoading);
     }
 
     private CustomTabIntentDataProvider createIntentDataProvider(
@@ -407,5 +410,25 @@ public class WebAppLaunchHandlerTest {
         verify(mActivityMock, times(1))
                 .grantUriPermission(
                         eq(TEST_PACKAGE_NAME), eq(mFileHandlingData.uris.get(0)), anyInt());
+    }
+
+    /*
+     * A verification of a target url is asynchronous. So it's possible the url loading finishes
+     * before verification. If so we need to send a launchParams to launchQueue with the filed
+     * startNewNavigation = false. Otherwise the page will not get it because launchQueue will
+     * wait until navigation is finished, page reloading for example.
+     */
+    @Test
+    public void navigationFinishedBeforeVerification() {
+        mIsPageLoading = () -> false;
+        WebAppLaunchHandler launchHandler = createWebAppLaunchHandler();
+
+        CustomTabIntentDataProvider dataProvider =
+                createIntentDataProvider(LaunchHandlerClientMode.FOCUS_EXISTING, INITIAL_URL);
+        launchHandler.handleInitialIntent(dataProvider);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mWebAppLaunchHandlerJniMock, times(1))
+                .notifyLaunchQueue(any(), eq(false), eq(INITIAL_URL), any(), any());
     }
 }

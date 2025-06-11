@@ -69,7 +69,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                             mCurrentPageVerifier,
                             mNavigationController,
                             mTabProvider.getTab().getWebContents(),
-                            mActivity);
+                            mActivity,
+                            () -> mTabProvider.getTab().isLoading());
             launchHandler.handleInitialIntent(intentDataProvider);
         }
     }
@@ -130,7 +131,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                             mCurrentPageVerifier,
                             mNavigationController,
                             mTabProvider.getTab().getWebContents(),
-                            mActivity);
+                            mActivity,
+                            () -> mTabProvider.getTab().isLoading());
             launchHandler.handleNewIntent(intentDataProvider);
         } else {
             loadUrl(intentDataProvider);

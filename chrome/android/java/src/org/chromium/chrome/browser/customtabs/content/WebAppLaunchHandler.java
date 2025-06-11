@@ -36,6 +36,7 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
  * Manages web application launch configurations based on client mode. Provides methods to process
@@ -43,13 +44,14 @@ import java.util.List;
  */
 @JNINamespace("webapps")
 public class WebAppLaunchHandler {
-    private static final String TAG = WebAppLaunchHandler.class.getSimpleName();
+    private static final String TAG = "WebAppLaunchHandler";
     private static final @ClientMode int DEFAULT_CLIENT_MODE = NAVIGATE_EXISTING;
     private final WebContents mWebContents;
     private final CustomTabActivityNavigationController mNavigationController;
     private final Verifier mVerifier;
     private final CurrentPageVerifier mCurrentPageVerifier;
     private final Activity mActivity;
+    private final BooleanSupplier mIsPageLoading;
 
     /**
      * Retrieves the ClientMode enum value from a given AndroidX enum. Defaults to
@@ -75,6 +77,8 @@ public class WebAppLaunchHandler {
      * @param navigationController The {@link CustomTabActivityNavigationController} to handle
      *     navigation within the Custom Tab.
      * @param webContents The {@link WebContents} associated with the tab.
+     * @param activity The {@link Activity} associated with the tab.
+     * @param isPageLoading The {@link BooleanSupplier} that returns if the tab is loading.
      * @return A new {@link WebAppLaunchHandler} instance.
      */
     public static WebAppLaunchHandler create(
@@ -82,9 +86,15 @@ public class WebAppLaunchHandler {
             CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
             WebContents webContents,
-            Activity activity) {
+            Activity activity,
+            BooleanSupplier isPageLoading) {
         return new WebAppLaunchHandler(
-                verifier, currentPageVerifier, navigationController, webContents, activity);
+                verifier,
+                currentPageVerifier,
+                navigationController,
+                webContents,
+                activity,
+                isPageLoading);
     }
 
     private WebAppLaunchHandler(
@@ -92,12 +102,14 @@ public class WebAppLaunchHandler {
             CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
             WebContents webContents,
-            Activity activity) {
+            Activity activity,
+            BooleanSupplier isPageLoading) {
         mWebContents = webContents;
         mNavigationController = navigationController;
         mVerifier = verifier;
         mCurrentPageVerifier = currentPageVerifier;
         mActivity = activity;
+        mIsPageLoading = isPageLoading;
     }
 
     /**
@@ -268,8 +280,18 @@ public class WebAppLaunchHandler {
             if (state == null || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
                 WebAppLaunchHandlerHistogram.logFailureReason(
                         FailureReasonAction.CURRENT_PAGE_VERIFICATION_FAILED);
+                Log.w(TAG, "Current page verification has been failed.");
                 return;
             }
+
+            WebAppLaunchHandlerJni.get()
+                    .notifyLaunchQueue(
+                            mWebContents,
+                            false,
+                            launchParams.targetUrl,
+                            launchParams.packageName,
+                            launchParams.fileUris);
+            return;
         }
 
         mVerifier
@@ -279,12 +301,14 @@ public class WebAppLaunchHandler {
                             if (!verified) {
                                 WebAppLaunchHandlerHistogram.logFailureReason(
                                         FailureReasonAction.TARGET_URL_VERIFICATION_FAILED);
+                                Log.w(TAG, "Target url verification has been failed.");
                                 return;
                             }
+
                             WebAppLaunchHandlerJni.get()
                                     .notifyLaunchQueue(
                                             mWebContents,
-                                            launchParams.newNavigationStarted,
+                                            mIsPageLoading.getAsBoolean(),
                                             launchParams.targetUrl,
                                             launchParams.packageName,
                                             launchParams.fileUris);
