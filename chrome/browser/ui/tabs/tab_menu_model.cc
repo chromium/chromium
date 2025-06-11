@@ -151,14 +151,8 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
         SetElementIdentifierAt(add_to_split_index, kSplitTabsMenuItem);
       }
     } else {
-      arrange_split_view_submenu_ =
-          std::make_unique<SplitTabMenuModel>(tab_strip, index);
-      // The arrange split menu doesn't need the close entry.
-      arrange_split_view_submenu_->RemoveItemAt(
-          arrange_split_view_submenu_
-              ->GetIndexOfCommandId(
-                  static_cast<int>(SplitTabMenuModel::CommandId::kClose))
-              .value());
+      arrange_split_view_submenu_ = std::make_unique<SplitTabMenuModel>(
+          tab_strip, SplitTabMenuModel::CloseTabMenuItem::kNone, index);
       AddSubMenuWithStringId(TabStripModel::CommandArrangeSplit,
                              IDS_TAB_CXMENU_ARRANGE_SPLIT,
                              arrange_split_view_submenu_.get());

@@ -14,7 +14,9 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -26,32 +28,53 @@
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel,
                                       kReversePositionMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kCloseMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel,
+                                      kCloseStartTabMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kCloseEndTabMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kExitSplitMenuItem);
 
 SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
+                                     CloseTabMenuItem close_menu_item,
                                      std::optional<int> split_tab_index)
     : ui::SimpleMenuModel(this),
       tab_strip_model_(tab_strip_model),
       split_tab_index_(split_tab_index) {
   AddItem(static_cast<int>(CommandId::kReversePosition), std::u16string());
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
-  AddItemWithStringIdAndIcon(
-      static_cast<int>(CommandId::kClose), IDS_SPLIT_TAB_CLOSE,
-      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
-                                     ui::kColorMenuIcon,
-                                     ui::SimpleMenuModel::kDefaultIconSize));
+
+  if (close_menu_item == CloseTabMenuItem::kCloseSpecifiedTab) {
+    CHECK(split_tab_index.has_value());
+    AddItemWithStringIdAndIcon(
+        static_cast<int>(CommandId::kCloseSpecifiedTab), IDS_SPLIT_TAB_CLOSE,
+        ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
+                                       ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(static_cast<int>(CommandId::kCloseSpecifiedTab))
+            .value(),
+        kCloseMenuItem);
+  } else if (close_menu_item == CloseTabMenuItem::kCloseStartEndTab) {
+    AddItem(static_cast<int>(CommandId::kCloseStartTab), std::u16string());
+    AddItem(static_cast<int>(CommandId::kCloseEndTab), std::u16string());
+    AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
+
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(static_cast<int>(CommandId::kCloseStartTab))
+            .value(),
+        kCloseStartTabMenuItem);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(static_cast<int>(CommandId::kCloseEndTab)).value(),
+        kCloseEndTabMenuItem);
+  }
+
   AddItemWithStringIdAndIcon(
       static_cast<int>(CommandId::kExitSplit), IDS_SPLIT_TAB_SEPARATE_VIEWS,
       ui::ImageModel::FromVectorIcon(kOpenInFullIcon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize));
-
   SetElementIdentifierAt(
       GetIndexOfCommandId(static_cast<int>(CommandId::kReversePosition))
           .value(),
       kReversePositionMenuItem);
-  SetElementIdentifierAt(
-      GetIndexOfCommandId(static_cast<int>(CommandId::kClose)).value(),
-      kCloseMenuItem);
   SetElementIdentifierAt(
       GetIndexOfCommandId(static_cast<int>(CommandId::kExitSplit)).value(),
       kExitSplitMenuItem);
@@ -61,13 +84,25 @@ SplitTabMenuModel::~SplitTabMenuModel() = default;
 
 bool SplitTabMenuModel::IsItemForCommandIdDynamic(int command_id) const {
   const CommandId id = static_cast<CommandId>(command_id);
-  return id == CommandId::kReversePosition;
+  return id == CommandId::kReversePosition || id == CommandId::kCloseStartTab ||
+         id == CommandId::kCloseEndTab;
 }
 
 std::u16string SplitTabMenuModel::GetLabelForCommandId(int command_id) const {
   const CommandId id = static_cast<CommandId>(command_id);
+
   if (id == CommandId::kReversePosition) {
     return l10n_util::GetStringUTF16(IDS_SPLIT_TAB_REVERSE_VIEWS);
+  } else if (id == CommandId::kCloseStartTab) {
+    return l10n_util::GetStringUTF16(
+        GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+            ? IDS_SPLIT_TAB_CLOSE_LEFT_VIEW
+            : IDS_SPLIT_TAB_CLOSE_TOP_VIEW);
+  } else if (id == CommandId::kCloseEndTab) {
+    return l10n_util::GetStringUTF16(
+        GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+            ? IDS_SPLIT_TAB_CLOSE_RIGHT_VIEW
+            : IDS_SPLIT_TAB_CLOSE_BOTTOM_VIEW);
   } else {
     NOTREACHED() << "There are no other commands that are dynamic so this case "
                     "should not be reached.";
@@ -82,6 +117,14 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
   const gfx::VectorIcon* icon = nullptr;
   if (id == CommandId::kReversePosition) {
     icon = &GetReversePositionIcon(active_split_tab_location);
+  } else if (id == CommandId::kCloseStartTab) {
+    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+               ? &kLeftPanelCloseIcon
+               : &kTopPanelCloseIcon;
+  } else if (id == CommandId::kCloseEndTab) {
+    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+               ? &kRightPanelCloseIcon
+               : &kBottomPanelCloseIcon;
   }
   CHECK(icon);
   return ui::ImageModel::FromVectorIcon(*icon, ui::kColorMenuIcon,
@@ -89,16 +132,23 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
 }
 
 void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  split_tabs::SplitTabId split_id = GetSplitTabId();
+  const split_tabs::SplitTabId split_id = GetSplitTabId();
+  split_tabs::SplitTabData* const split_tab_data =
+      tab_strip_model_->GetSplitData(split_id);
+  std::vector<tabs::TabInterface*> tabs_in_split = split_tab_data->ListTabs();
+  CHECK_EQ(tabs_in_split.size(), 2U);
   switch (static_cast<CommandId>(command_id)) {
     case CommandId::kReversePosition:
       tab_strip_model_->ReverseTabsInSplit(split_id);
       break;
-    case CommandId::kClose:
-      tab_strip_model_->CloseWebContentsAt(
-          tab_strip_model_->active_index(),
-          TabCloseTypes::CLOSE_USER_GESTURE |
-              TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+    case CommandId::kCloseSpecifiedTab:
+      CloseTabAtIndex(split_tab_index_.value());
+      break;
+    case CommandId::kCloseStartTab:
+      CloseTabAtIndex(tab_strip_model_->GetIndexOfTab(tabs_in_split[0]));
+      break;
+    case CommandId::kCloseEndTab:
+      CloseTabAtIndex(tab_strip_model_->GetIndexOfTab(tabs_in_split[1]));
       break;
     case CommandId::kExitSplit:
       tab_strip_model_->RemoveSplit(split_id);
@@ -127,4 +177,16 @@ const gfx::VectorIcon& SplitTabMenuModel::GetReversePositionIcon(
     case split_tabs::SplitTabActiveLocation::kBottom:
       return kSplitSceneUpIcon;
   }
+}
+
+split_tabs::SplitTabLayout SplitTabMenuModel::GetSplitLayout() const {
+  split_tabs::SplitTabVisualData* const visual_data =
+      tab_strip_model_->GetSplitData(GetSplitTabId())->visual_data();
+  return visual_data->split_layout();
+}
+
+void SplitTabMenuModel::CloseTabAtIndex(int index) {
+  tab_strip_model_->CloseWebContentsAt(
+      index, TabCloseTypes::CLOSE_USER_GESTURE |
+                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }

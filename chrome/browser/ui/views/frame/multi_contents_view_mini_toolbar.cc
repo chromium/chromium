@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -83,10 +84,7 @@ ui::ColorId GetAlertStatusColor(tabs::TabAlert alert,
 MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
     BrowserView* browser_view,
     ContentsWebView* web_view)
-    : menu_model_(std::make_unique<SplitTabMenuModel>(
-          browser_view->browser()->tab_strip_model())),
-      browser_view_(browser_view),
-      web_contents_(web_view->web_contents()) {
+    : browser_view_(browser_view), web_contents_(web_view->web_contents()) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -340,6 +338,11 @@ void MultiContentsViewMiniToolbar::UpdateFavicon(TabRendererData tab_data) {
 }
 
 void MultiContentsViewMiniToolbar::OpenSplitViewMenu() {
+  TabStripModel* const model = browser_view_->browser()->tab_strip_model();
+  const int index = model->GetIndexOfWebContents(web_contents_);
+  menu_model_ = std::make_unique<SplitTabMenuModel>(
+      browser_view_->browser()->tab_strip_model(),
+      SplitTabMenuModel::CloseTabMenuItem::kCloseSpecifiedTab, index);
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(menu_button_->GetWidget(),

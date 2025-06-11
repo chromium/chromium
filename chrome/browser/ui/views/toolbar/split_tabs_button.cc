@@ -80,8 +80,9 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
   status_indicator_->SetColorId(kColorToolbarActionItemEngaged,
                                 kColorToolbarButtonIconInactive);
   UpdateButtonVisibility();
-  split_tab_menu_ =
-      std::make_unique<SplitTabMenuModel>(browser->tab_strip_model());
+  split_tab_menu_ = std::make_unique<SplitTabMenuModel>(
+      browser->tab_strip_model(),
+      SplitTabMenuModel::CloseTabMenuItem::kCloseStartEndTab);
   browser->tab_strip_model()->AddObserver(this);
 }
 

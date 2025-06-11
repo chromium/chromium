@@ -25,6 +25,7 @@ struct VectorIcon;
 namespace split_tabs {
 class SplitTabId;
 enum class SplitTabActiveLocation;
+enum class SplitTabLayout;
 }  // namespace split_tabs
 
 class SplitTabMenuModel : public ui::SimpleMenuModel,
@@ -32,13 +33,25 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kReversePositionMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseStartTabMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseEndTabMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitSplitMenuItem);
 
-  explicit SplitTabMenuModel(TabStripModel* tab_strip_model,
-                             std::optional<int> split_tab_index = std::nullopt);
-  ~SplitTabMenuModel() override;
+  // Enum class denoting which close tab menu item the menu should show.
+  enum class CloseTabMenuItem { kNone, kCloseStartEndTab, kCloseSpecifiedTab };
 
-  enum class CommandId { kReversePosition, kClose, kExitSplit };
+  enum class CommandId {
+    kReversePosition,
+    kCloseSpecifiedTab,
+    kCloseStartTab,
+    kCloseEndTab,
+    kExitSplit
+  };
+
+  SplitTabMenuModel(TabStripModel* tab_strip_model,
+                    CloseTabMenuItem close_menu_item,
+                    std::optional<int> split_tab_index = std::nullopt);
+  ~SplitTabMenuModel() override;
 
   // ui::SimpleMenuModel::Delegate override
   bool IsItemForCommandIdDynamic(int command_id) const override;
@@ -51,6 +64,8 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
   split_tabs::SplitTabId GetSplitTabId() const;
   const gfx::VectorIcon& GetReversePositionIcon(
       split_tabs::SplitTabActiveLocation active_split_tab_location) const;
+  split_tabs::SplitTabLayout GetSplitLayout() const;
+  void CloseTabAtIndex(int index);
 
   raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
 
