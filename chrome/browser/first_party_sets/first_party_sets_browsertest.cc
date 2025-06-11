@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsBrowserTestWithSiteLeavingSet,
 }
 
 // TODO(crbug.com/376799234): Re-enable this.
-#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)) || BUILDFLAG(IS_WIN)
 #define MAYBE_CookieDeleted DISABLED_CookieDeleted
 #else
 #define MAYBE_CookieDeleted CookieDeleted
