@@ -4,6 +4,7 @@
 
 #include "content/test/mock_render_input_router.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "components/input/mock_input_router.h"
 
 namespace content {
