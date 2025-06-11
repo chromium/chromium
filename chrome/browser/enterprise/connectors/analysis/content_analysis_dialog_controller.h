@@ -123,9 +123,6 @@ class ContentAnalysisDialogController
   // simply deletes it soon.
   void CancelDialogAndDelete();
 
-  // Returns true if should use dark version of top image.
-  bool ShouldUseDarkTopImage() const;
-
   // Accessors used to validate the views in tests.
   views::ImageView* GetTopImageForTesting() const;
   views::Throbber* GetSideIconSpinnerForTesting() const;

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
-
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
@@ -39,6 +38,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textarea/textarea.h"
@@ -453,7 +453,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
     // The top image is the pending one corresponding to the access point.
     const gfx::ImageSkia& actual_image =
         dialog->GetTopImageForTesting()->GetImage();
-    const bool use_dark = dialog->ShouldUseDarkTopImage();
+    const bool use_dark = ShouldUseDarkTopImage(dialog);
     int expected_image_id =
         use_dark ? IDR_UPLOAD_SCANNING_DARK : IDR_UPLOAD_SCANNING;
     gfx::ImageSkia* expected_image =
@@ -478,7 +478,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
     // point and scan type.
     const gfx::ImageSkia& actual_image =
         dialog->GetTopImageForTesting()->GetImage();
-    const bool use_dark = dialog->ShouldUseDarkTopImage();
+    const bool use_dark = ShouldUseDarkTopImage(dialog);
     int expected_image_id =
         success()
             ? (use_dark ? IDR_UPLOAD_SUCCESS_DARK : IDR_UPLOAD_SUCCESS)
@@ -523,6 +523,12 @@ class ContentAnalysisDialogAppearanceBrowserTest
   }
 
   bool has_custom_rule_message() { return std::get<3>(GetParam()); }
+
+  bool ShouldUseDarkTopImage(ContentAnalysisDialogController* dialog) const {
+    return color_utils::IsDark(
+        dialog->GetContentsView()->GetColorProvider()->GetColor(
+            ui::kColorDialogBackground));
+  }
 };
 
 // Tests the behavior of the dialog in the same way as

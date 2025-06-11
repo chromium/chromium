@@ -31,7 +31,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -401,11 +400,6 @@ std::unique_ptr<views::View> ContentAnalysisDialogController::CreateSideIcon() {
   }
 
   return icon;
-}
-
-bool ContentAnalysisDialogController::ShouldUseDarkTopImage() const {
-  return color_utils::IsDark(
-      contents_view_->GetColorProvider()->GetColor(ui::kColorDialogBackground));
 }
 
 void ContentAnalysisDialogController::CancelDialogAndDelete() {
