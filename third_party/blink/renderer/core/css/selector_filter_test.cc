@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -34,8 +35,9 @@ Vector<uint16_t> CollectIdentifierHashesFromInnerRule(Document& document,
   const StyleScope* style_scope =
       scope_rule ? &scope_rule->GetStyleScope() : nullptr;
 
+  Element::TinyBloomFilter subject_filter;
   SelectorFilter::CollectIdentifierHashes(*inner_style_rule->FirstSelector(),
-                                          style_scope, result);
+                                          style_scope, result, subject_filter);
   return result;
 }
 
@@ -87,6 +89,66 @@ TEST_F(SelectorFilterTest, CollectHashesScopeImplied) {
   EXPECT_NE(0u, hashes[0]);  // .b
   EXPECT_NE(0u, hashes[1]);  // .c
   EXPECT_NE(0u, hashes[2]);  // .a
+}
+
+Element::TinyBloomFilter SubjectFilterForSelector(const char* selector) {
+  HeapVector<CSSSelector> arena;
+  base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
+      MakeGarbageCollected<CSSParserContext>(
+          kHTMLStandardMode, SecureContextMode::kInsecureContext),
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      selector, arena);
+  CSSSelectorList* selectors =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
+
+  Element::TinyBloomFilter subject_filter;
+
+  Vector<uint16_t> selector_hashes;
+  SelectorFilter::CollectIdentifierHashes(*selectors->First(),
+                                          /* style_scope */ nullptr,
+                                          selector_hashes, subject_filter);
+  return subject_filter;
+}
+
+TEST_F(SelectorFilterTest, UniversalSelectorHasNoSubjectBits) {
+  EXPECT_EQ(SubjectFilterForSelector("*"), 0u);
+  EXPECT_EQ(SubjectFilterForSelector("div *"), 0u);
+  EXPECT_EQ(SubjectFilterForSelector("div > *"), 0u);
+}
+
+TEST_F(SelectorFilterTest, ClassHasSubjectBits) {
+  EXPECT_NE(SubjectFilterForSelector(".a"), 0u);
+  EXPECT_EQ(SubjectFilterForSelector(".a"), SubjectFilterForSelector("div .a"));
+  EXPECT_EQ(SubjectFilterForSelector(".a"),
+            SubjectFilterForSelector("div > .a"));
+  EXPECT_EQ(SubjectFilterForSelector(".a"),
+            SubjectFilterForSelector("div + .a"));
+}
+
+TEST_F(SelectorFilterTest, AttributeHasSubjectBits) {
+  EXPECT_NE(SubjectFilterForSelector("[a]"), 0u);
+  // Different due to uppercasing of attributes. (The odds of being equal
+  // by accident are very low.)
+  EXPECT_NE(SubjectFilterForSelector("[a]"), SubjectFilterForSelector(".a"));
+}
+
+TEST_F(SelectorFilterTest, MultipleClassesShouldBeStrictSupersetOfSingle) {
+  EXPECT_NE(SubjectFilterForSelector(".a.b"), SubjectFilterForSelector(".a"));
+  EXPECT_EQ(SubjectFilterForSelector(".a.b") & SubjectFilterForSelector(".a"),
+            SubjectFilterForSelector(".a"));
+}
+
+TEST_F(SelectorFilterTest, IsAndWhere) {
+  EXPECT_EQ(SubjectFilterForSelector(":is(.a)"),
+            SubjectFilterForSelector(".a"));
+  EXPECT_EQ(SubjectFilterForSelector(":is(.a.b)"),
+            SubjectFilterForSelector(".a.b"));
+  EXPECT_EQ(SubjectFilterForSelector(".a:is(.b)"),
+            SubjectFilterForSelector(".a.b"));
+  EXPECT_EQ(SubjectFilterForSelector(":where(.a)"),
+            SubjectFilterForSelector(".a"));
+  EXPECT_EQ(SubjectFilterForSelector(":has(.a)"), 0u);
+  EXPECT_EQ(SubjectFilterForSelector(":is(.a,.b)"), 0u);
 }
 
 }  // namespace blink

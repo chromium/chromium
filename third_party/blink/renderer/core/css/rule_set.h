@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_stack.h"
@@ -162,6 +163,10 @@ class CORE_EXPORT RuleData {
                                Vector<uint16_t>& new_backing,
                                unsigned new_position);
 
+  bool RejectElement(Element::TinyBloomFilter element_filter) const {
+    return (element_filter & subject_filter_) != subject_filter_;
+  }
+
   void Trace(Visitor*) const;
 
   // This number is picked fairly arbitrary. If lowered, be aware that there
@@ -193,6 +198,14 @@ class CORE_EXPORT RuleData {
   // remember to adjust the clamping in ComputeBloomFilterHashes() too.
   unsigned bloom_hash_size_ : 8;
   unsigned bloom_hash_pos_ : 24;
+
+  // A Bloom filter that this selector needs the element to match;
+  // in other words, similar to bloom_hash_{pos_size} but for the element
+  // itself instead of the ancestor chain. This is only really useful
+  // if the selector's subject consists of multiple selectors,
+  // e.g. something like .foo.bar[baz]; otherwise, it will be redundant
+  // with bucketing.
+  Element::TinyBloomFilter subject_filter_ = 0;
 };
 
 }  // namespace blink
@@ -207,6 +220,7 @@ struct SameSizeAsRuleData {
   unsigned b;
   unsigned c;
   unsigned d;
+  unsigned e;
 };
 
 ASSERT_SIZE(RuleData, SameSizeAsRuleData);

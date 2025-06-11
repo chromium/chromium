@@ -170,7 +170,7 @@ static void CollectElementsByClassName(
       DCHECK(!element.HasClassName(class_name))
           << element << " should have contained class " << class_name
           << ", Bloom bits on element are "
-          << element.AttributeOrClassBloomFilterForDebug();
+          << element.AttributeOrClassBloomFilter();
 #endif
       continue;
     }
@@ -320,7 +320,7 @@ static void CollectElementsByAttributeExact(
       DCHECK(element.CouldHaveAttributeWithPrecomputedFilter(filter))
           << element << " should have contained attribute " << selector_attr
           << ", Bloom bits on element are "
-          << element.AttributeOrClassBloomFilterForDebug();
+          << element.AttributeOrClassBloomFilter();
 #endif
 
       if (AttributeValueMatchesExact(attribute_item, selector_value,

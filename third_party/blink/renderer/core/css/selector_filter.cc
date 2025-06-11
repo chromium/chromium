@@ -192,6 +192,59 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
   }
 }
 
+void CollectSubjectIdentifierHashes(const CSSSelector* selector,
+                                    Element::TinyBloomFilter& subject_filter) {
+  for (const CSSSelector* current = selector; current;
+       current = current->NextSimpleSelector()) {
+    switch (current->Match()) {
+      case CSSSelector::kClass:
+        if (!current->Value().empty()) {
+          subject_filter |= Element::FilterForString(current->Value());
+        }
+        break;
+      case CSSSelector::kAttributeExact:
+      case CSSSelector::kAttributeSet:
+      case CSSSelector::kAttributeList:
+      case CSSSelector::kAttributeContain:
+      case CSSSelector::kAttributeBegin:
+      case CSSSelector::kAttributeEnd:
+      case CSSSelector::kAttributeHyphen: {
+        auto attribute_name = current->Attribute().LocalName();
+        if (IsExcludedAttribute(attribute_name)) {
+          break;
+        }
+        subject_filter |= Element::FilterForAttribute(current->Attribute());
+        break;
+      }
+      case CSSSelector::kPseudoClass:
+        switch (current->GetPseudoType()) {
+          case CSSSelector::kPseudoIs:
+          case CSSSelector::kPseudoWhere:
+          case CSSSelector::kPseudoParent: {
+            // If we have a one-element :is(), :where() or &, treat
+            // as if the given list was written out as a normal subject.
+            const CSSSelector* selector_list = current->SelectorListOrParent();
+            if (selector_list &&
+                CSSSelectorList::Next(*selector_list) == nullptr) {
+              CollectSubjectIdentifierHashes(selector_list, subject_filter);
+            }
+            break;
+          }
+          default:
+            break;
+        }
+        break;
+      default:
+        break;
+    }
+
+    // Don't look past the subject.
+    if (current->Relation() != CSSSelector::kSubSelector) {
+      break;
+    }
+  }
+}
+
 }  // namespace
 
 void SelectorFilter::PushAllParentsOf(TreeScope& tree_scope) {
@@ -235,10 +288,13 @@ void SelectorFilter::PushParent(Element& parent) {
 void SelectorFilter::CollectIdentifierHashes(
     const CSSSelector& selector,
     const StyleScope* style_scope,
-    Vector<uint16_t>& bloom_hash_backing) {
+    Vector<uint16_t>& bloom_hash_backing,
+    Element::TinyBloomFilter& subject_filter) {
   CollectDescendantCompoundSelectorIdentifierHashes(
       selector.NextSimpleSelector(), selector.Relation(), style_scope,
       bloom_hash_backing);
+  subject_filter = 0;
+  CollectSubjectIdentifierHashes(&selector, subject_filter);
 }
 
 void SelectorFilter::Trace(Visitor* visitor) const {

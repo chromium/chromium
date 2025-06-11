@@ -1127,7 +1127,7 @@ static bool AnyAttributeMatches(Element& element,
     DCHECK(element.CouldHaveAttribute(selector_attr))
         << element << " should have contained attribute " << selector_attr
         << ", Bloom bits on element are "
-        << element.AttributeOrClassBloomFilterForDebug();
+        << element.AttributeOrClassBloomFilter();
 #endif
 
     if (AttributeValueMatches(attribute_item, match, selector_value,
@@ -1190,7 +1190,7 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
                !element.ClassNames().Contains(selector.Value()))
             << element << " should have matched class " << selector.Value()
             << ", Bloom bits on element are "
-            << element.AttributeOrClassBloomFilterForDebug();
+            << element.AttributeOrClassBloomFilter();
 #endif
         return false;
       }

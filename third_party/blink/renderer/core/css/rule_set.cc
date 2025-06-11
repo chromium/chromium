@@ -214,7 +214,7 @@ void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
   }
   bloom_hash_pos_ = bloom_hash_backing.size();
   SelectorFilter::CollectIdentifierHashes(Selector(), style_scope,
-                                          bloom_hash_backing);
+                                          bloom_hash_backing, subject_filter_);
 
   // The clamp here is purely for safety; a real rule would never have
   // as many as 255 descendant selectors.

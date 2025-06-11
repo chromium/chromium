@@ -786,11 +786,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool CouldHaveClassWithPrecomputedFilter(TinyBloomFilter filter) const {
     return (attribute_or_class_bloom_ & filter) == filter;
   }
-#if DCHECK_IS_ON()
-  TinyBloomFilter AttributeOrClassBloomFilterForDebug() const {
+  // Useful if you are to match the same element against a lot of different
+  // selectors in quick succession.
+  TinyBloomFilter AttributeOrClassBloomFilter() const {
     return attribute_or_class_bloom_;
   }
-#endif
 
   // Step 5 of https://dom.spec.whatwg.org/#concept-node-clone
   virtual void CloneNonAttributePropertiesFrom(const Element&,

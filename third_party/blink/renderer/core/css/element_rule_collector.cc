@@ -556,15 +556,19 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         static_cast<wtf_size_t>(rules.size()));
   }
 
+  const Element::TinyBloomFilter element_filter =
+      context.element->AttributeOrClassBloomFilter();
+
   for (const RuleData& rule_data : rules) {
     if (perf_trace_enabled) {
       selector_statistics_collector.EndCollectionForCurrentRule();
       selector_statistics_collector.BeginCollectionForRule(&rule_data);
     }
-    if (can_use_fast_reject_ &&
-        selector_filter_.FastRejectSelector(
-            rule_data.DescendantSelectorIdentifierHashes(
-                rule_set->BloomHashBacking()))) {
+    if (rule_data.RejectElement(element_filter) ||
+        (can_use_fast_reject_ &&
+         selector_filter_.FastRejectSelector(
+             rule_data.DescendantSelectorIdentifierHashes(
+                 rule_set->BloomHashBacking())))) {
       fast_rejected++;
       if (perf_trace_enabled) {
         selector_statistics_collector.SetWasFastRejected();

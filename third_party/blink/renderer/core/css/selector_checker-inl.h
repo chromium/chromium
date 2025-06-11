@@ -169,7 +169,7 @@ bool EasySelectorChecker::MatchOne(const CSSSelector* selector,
                !element->ClassNames().Contains(selector->Value()))
             << element << " should have matched class " << selector->Value()
             << ", Bloom bits on element are "
-            << element->AttributeOrClassBloomFilterForDebug();
+            << element->AttributeOrClassBloomFilter();
 #endif
         return false;
       }
@@ -231,7 +231,7 @@ bool EasySelectorChecker::AttributeMatches(const Element& element,
       DCHECK(element.CouldHaveAttribute(attr))
           << element << " should have contained attribute " << attr
           << ", Bloom bits on element are "
-          << element.AttributeOrClassBloomFilterForDebug();
+          << element.AttributeOrClassBloomFilter();
 #endif
       return attribute_item.Value() == value ||
              (case_insensitive &&
