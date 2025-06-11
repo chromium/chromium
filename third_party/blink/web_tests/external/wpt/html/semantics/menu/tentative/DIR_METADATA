@@ -1,0 +1,10 @@
+monorail: {
+  component: "Blink>HTML"
+}
+team_email: "dom-dev@google.com"
+wpt: {
+  notify: YES
+}
+buganizer_public: {
+  component_id: 1456848
+}
