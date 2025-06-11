@@ -66,7 +66,6 @@ defaults.set(
     build_numbers = True,
     execution_timeout = 8 * time.hour,
     service_account = "findit-builder@chops-service-accounts.iam.gserviceaccount.com",
-    siso_enabled = True,
 )
 
 # Builders are defined in lexicographic order by name

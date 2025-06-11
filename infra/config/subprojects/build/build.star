@@ -95,7 +95,6 @@ ci.defaults.set(
     resultdb_enable = False,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_configs = [],
-    siso_enabled = True,
     siso_experiments = ["no-fallback"],
 )
 

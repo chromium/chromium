@@ -94,7 +94,6 @@ defaults.set(
     build_numbers = True,
     execution_timeout = 2 * time.hour,
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )

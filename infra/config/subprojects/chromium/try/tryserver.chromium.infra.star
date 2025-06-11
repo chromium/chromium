@@ -14,7 +14,6 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     service_account = "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
-    siso_enabled = True,
 )
 
 consoles.list_view(
