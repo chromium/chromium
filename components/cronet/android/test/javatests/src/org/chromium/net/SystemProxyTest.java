@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
@@ -38,6 +39,11 @@ public final class SystemProxyTest {
      */
     @Test
     @SmallTest
+    // TODO(https://crbug.com/424091659): re-enable
+    @DisabledTest(
+            message =
+                    "Fails in Android Platform and seems non-deterministic/order-dependent, see"
+                        + " https://crbug.com/424091659")
     public void testSystemProxy_cleartextHttpProxy_sendsPathToProxy() {
         var requestHandler =
                 new NativeTestServer.HandleRequestCallback() {
