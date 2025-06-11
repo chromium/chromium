@@ -880,12 +880,8 @@ static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
 
 static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
-  const clang::ASTContext& ast_context = *result.Context;
-  const auto& lang_opts = ast_context.getLangOpts();
   const auto* binary_operation =
       GetNodeOrCrash<clang::Expr>(result, "binary_operation", __FUNCTION__);
-  const auto* binary_op_RHS =
-      GetNodeOrCrash<clang::Expr>(result, "binary_op_rhs", __FUNCTION__);
   const auto* rhs_expr =
       GetNodeOrCrash<clang::Expr>(result, "rhs_expr", __FUNCTION__);
   const std::string key = GetRHS(result);
@@ -903,7 +899,8 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   // a `base::span` of it before calling `.subspan()`.
   //
   // Emit a replacement to that effect:
-  // `base::span( <binary operation lhs> )`
+  // `base::span( <binary operation lhs> `
+  // ...but leave the closing right-parenthesis for the `).subspan()` call.
   const auto* rhs_array_type =
       result.Nodes.getNodeAs<clang::ArrayTypeLoc>("rhs_array_type_loc");
   if (rhs_array_type) {
@@ -912,45 +909,52 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
             result, "binary_operation",
             "C-style array should not involve `CXXOperatorCallExpr` or "
             "`CXXRewrittenBinaryOperator`");
-    const clang::SourceRange opener_range =
-        concrete_binary_operation->getLHS()->getExprLoc();
     EmitReplacement(
         key, GetReplacementDirective(
-                 opener_range,
+                 concrete_binary_operation->getLHS()->getBeginLoc(),
                  llvm::formatv("base::span<{0}>(",
                                GetTypeAsString(rhs_array_type->getInnerType(),
-                                               ast_context)),
+                                               *result.Context)),
                  source_manager, kAdaptBinaryOperationPrecedence));
     // Emit the closing `)` of `base::span(...)` below.
   }
 
-  const auto source_range = clang::SourceRange(
-      GetBinaryOperationOperatorLoc(binary_operation, result),
-      getExprRange(binary_op_RHS, source_manager, lang_opts).getEnd());
-
-  std::string initial_text =
-      clang::Lexer::getSourceText(
-          clang::CharSourceRange::getCharRange(source_range), source_manager,
-          lang_opts)
-          .str();
-
-  // initial_text includes the binary operator as the first character.
-  // We make sure to trim it from the replacement string.
+  // Rather than emit a pure "insertion" replacement (zero-length
+  // range), assume that the binary operation is a single char and
+  // manually construct a `SourceRange` that overwrites exactly that.
+  // `git cl format` later takes care of the errant whitespace. E.g.:
   //
-  // If we wrapped the span-to-be in `base::span(`, emit the closing `)`
-  // now.
+  // a + b
+  //   ^
+  //
+  // becomes
+  //
+  // a .subspan( b
+  const clang::SourceLocation binary_operator_begin =
+      GetBinaryOperationOperatorLoc(binary_operation, result);
   EmitReplacement(
-      key, GetReplacementDirective(
-               source_range,
-               llvm::formatv("{0}.subspan({1})", rhs_array_type ? ")" : "",
-                             initial_text.substr(1)),
-               source_manager, -kAdaptBinaryOperationPrecedence));
+      key,
+      GetReplacementDirective(
+          {binary_operator_begin, binary_operator_begin.getLocWithOffset(1)},
+          llvm::formatv("{0}.subspan(", rhs_array_type ? ")" : ""),
+          source_manager, -kAdaptBinaryOperationPrecedence));
+
+  const auto* binary_op_RHS =
+      GetNodeOrCrash<clang::Expr>(result, "binary_op_rhs", __FUNCTION__);
+  const clang::SourceRange operator_rhs_range = getExprRange(
+      binary_op_RHS, source_manager, result.Context->getLangOpts());
+
+  // Insert the closing right parenthesis.
+  EmitReplacement(key, GetReplacementDirective(
+                           operator_rhs_range.getEnd(), ")", source_manager,
+                           -kAdaptBinaryOperationPrecedence));
 
   // It's possible we emitted a rewrite that creates a temporary but
   // unnamed `base::span` (issue 408018846). This could end up being
   // the only reference in the file, and so it has to carry the
   // `#include` directive itself.
-  EmitReplacement(key, GetIncludeDirective(source_range, source_manager));
+  EmitReplacement(key, GetIncludeDirective(binary_operation->getBeginLoc(),
+                                           source_manager));
 }
 
 static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
