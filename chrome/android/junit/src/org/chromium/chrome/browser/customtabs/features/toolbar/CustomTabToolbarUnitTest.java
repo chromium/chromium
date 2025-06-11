@@ -19,6 +19,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -76,6 +77,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
@@ -655,16 +657,18 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_ADAPTIVE_BUTTON, ChromeFeatureList.SEARCH_IN_CCT})
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testOptionalButton_notEnabledForSearchInCct() {
+        var connection = spy(CustomTabsConnection.getInstance());
+        Mockito.doReturn(true).when(connection).shouldEnableOmniboxForIntent(any());
+        CustomTabsConnection.setInstanceForTesting(connection);
         mToolbar.updateOptionalButton(getDataForTranslateIconButton());
         assertNull(mToolbar.getOptionalButtonCoordinatorForTesting());
         assertEquals(View.GONE, mToolbar.findViewById(R.id.menu_dot).getVisibility());
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_ADAPTIVE_BUTTON})
-    @DisableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testOptionalButton_notEnabledForMultipleDevButtons() {
         mToolbar.addCustomActionButton(
                 AppCompatResources.getDrawable(mActivity, R.drawable.ic_share_white_24dp),

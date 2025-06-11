@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.CustomTabsButtonState;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayCoordinator;
@@ -1401,7 +1402,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()
                     || hasMultipleDevButtons()
-                    || ChromeFeatureList.sSearchInCCT.isEnabled()) {
+                    || CustomTabsConnection.getInstance()
+                            .shouldEnableOmniboxForIntent(mIntentDataProvider)) {
                 // We disable the optional button when omnibox in CCT is on.
                 return false;
             }
@@ -1513,7 +1515,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // Display a (blue) dot on the overflow menu icon for the optional button that cannot be
         // shown on the toolbar to indicate that the action is available through the menu.
         private void maybeShowActionMenuIndicator(@AdaptiveToolbarButtonVariant int buttonVariant) {
-            if (ChromeFeatureList.sSearchInCCT.isEnabled()) return;
+            if (CustomTabsConnection.getInstance()
+                    .shouldEnableOmniboxForIntent(mIntentDataProvider)) {
+                return;
+            }
 
             boolean show = buttonVariant != AdaptiveToolbarButtonVariant.READER_MODE;
             mMenuButton.findViewById(R.id.menu_dot).setVisibility(show ? View.VISIBLE : View.GONE);
