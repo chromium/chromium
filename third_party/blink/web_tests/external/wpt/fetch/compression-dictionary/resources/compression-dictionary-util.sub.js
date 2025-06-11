@@ -1,3 +1,9 @@
+const SAME_ORIGIN = "https://{{host}}:{{ports[https][0]}}";
+const CROSS_ORIGIN = "https://{{hosts[alt][www]}}:{{ports[https][0]}}";
+
+const RESOURCES_PATH = "/fetch/compression-dictionary/resources";
+const SAME_ORIGIN_RESOURCES_URL = SAME_ORIGIN + RESOURCES_PATH;
+const CROSS_ORIGIN_RESOURCES_URL = CROSS_ORIGIN + RESOURCES_PATH;
 
 const kDefaultDictionaryContent = 'This is a test dictionary.\n';
 const kDefaultDictionaryHashBase64 =
@@ -6,8 +12,8 @@ const kRegisterDictionaryPath = './resources/register-dictionary.py';
 const kCompressedDataPath = './resources/compressed-data.py';
 const kExpectedCompressedData =
     `This is compressed test data using a test dictionary`;
-const kCheckAvailableDictionaryHeaderMaxRetry = 10;
-const kCheckAvailableDictionaryHeaderRetryTimeout = 200;
+const kCheckHeaderMaxRetry = 10;
+const kCheckHeaderRetryTimeout = 200;
 const kCheckPreviousRequestHeadersMaxRetry = 5;
 const kCheckPreviousRequestHeadersRetryTimeout = 250;
 
@@ -30,41 +36,60 @@ async function calculateDictionaryHash(dictionary_text) {
 }
 
 // Checks the HTTP request headers which is sent to the server.
-async function checkHeaders(check_remote = false) {
-  let url = './resources/echo-headers.py';
+async function checkHeaders({check_remote = false, use_alt_path = false}) {
+  let url = use_alt_path ? './resources/echo-headers2.py' :
+                           './resources/echo-headers.py';
   if (check_remote) {
     url = getRemoteHostUrl(url);
   }
   return await (await fetch(url)).json();
 }
 
-// Checks the "available-dictionary" header in the HTTP request headers.
-async function checkAvailableDictionaryHeader(check_remote = false) {
-  return (await checkHeaders(check_remote))['available-dictionary'];
+// Checks the specified header in the HTTP request headers.
+async function checkHeader(header, {
+    check_remote = false,
+    use_alt_path = false}) {
+  return (await checkHeaders({check_remote: check_remote, use_alt_path: use_alt_path}))[header];
 }
 
-// Waits until the "available-dictionary" header is available in the HTTP
+// Waits until the specified header is available in the HTTP
 // request headers, and returns the header. If the header is not available after
 // the specified number of retries, returns an error message. If the
 // `expected_header` is specified, this method waits until the header is
 // available and matches the `expected_header`.
-async function waitUntilAvailableDictionaryHeader(test, {
-  max_retry = kCheckAvailableDictionaryHeaderMaxRetry,
+async function waitUntilHeader(test, header, {
+  max_retry = kCheckHeaderMaxRetry,
   expected_header = undefined,
-  check_remote = false
+  check_remote = false,
+  use_alt_path = false
 }) {
   for (let retry_count = 0; retry_count <= max_retry; retry_count++) {
-    const header = await checkAvailableDictionaryHeader(check_remote);
-    if (header) {
-      if (expected_header === undefined || header == expected_header) {
-        return header;
+    const response_header = await checkHeader(header, {check_remote: check_remote,
+                                                       use_alt_path: use_alt_path});
+    if (response_header) {
+      if (expected_header === undefined || response_header == expected_header) {
+        return response_header;
       }
     }
     await new Promise(
         (resolve) => test.step_timeout(
-            resolve, kCheckAvailableDictionaryHeaderRetryTimeout));
+            resolve, kCheckHeaderRetryTimeout));
   }
-  return '"available-dictionary" header is not available';
+  return `"${header}" header is not available`;
+}
+
+async function waitUntilAvailableDictionaryHeader(test, {
+  max_retry = kCheckHeaderMaxRetry,
+  expected_header = undefined,
+  check_remote = false,
+  use_alt_path = false
+}) {
+  return waitUntilHeader(test, 'available-dictionary', {
+    max_retry: max_retry,
+    expected_header: expected_header,
+    check_remote: check_remote,
+    use_alt_path: use_alt_path
+  });
 }
 
 // Checks the HTTP request headers which was sent to the server with `token`
