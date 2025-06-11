@@ -35,6 +35,10 @@
 #include "chrome/common/chrome_version.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include <variant>
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 class GaiaId;
 
 namespace base {

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_LANGUAGE_MODEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_LANGUAGE_MODEL_H_
 
+#include <variant>
+
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"

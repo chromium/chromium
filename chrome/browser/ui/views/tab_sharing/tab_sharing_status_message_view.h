@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_STATUS_MESSAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_STATUS_MESSAGE_VIEW_H_
 
+#include <variant>
+
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar_utils.h"
 #include "ui/views/controls/button/md_text_button.h"

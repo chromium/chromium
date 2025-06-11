@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "ash/ash_export.h"

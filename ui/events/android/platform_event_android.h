@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_ANDROID_PLATFORM_EVENT_ANDROID_H_
 #define UI_EVENTS_ANDROID_PLATFORM_EVENT_ANDROID_H_
 
+#include <variant>
+
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/events_export.h"
 

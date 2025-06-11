@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"

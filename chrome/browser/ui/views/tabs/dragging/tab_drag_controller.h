@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"

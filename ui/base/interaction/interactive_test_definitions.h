@@ -7,6 +7,7 @@
 
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"

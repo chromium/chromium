@@ -11,6 +11,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/enum_set.h"

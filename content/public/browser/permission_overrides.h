@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_OVERRIDES_H_
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"

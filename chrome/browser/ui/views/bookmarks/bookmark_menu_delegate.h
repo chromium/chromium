@@ -7,6 +7,7 @@
 
 #include <map>
 #include <set>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"

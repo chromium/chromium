@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_BLOCK_FLOW_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_BLOCK_FLOW_ITERATOR_H_
 
+#include <variant>
+
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

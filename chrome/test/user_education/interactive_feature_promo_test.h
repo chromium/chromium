@@ -5,6 +5,8 @@
 #ifndef CHROME_TEST_USER_EDUCATION_INTERACTIVE_FEATURE_PROMO_TEST_H_
 #define CHROME_TEST_USER_EDUCATION_INTERACTIVE_FEATURE_PROMO_TEST_H_
 
+#include <variant>
+
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"

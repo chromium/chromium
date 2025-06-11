@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"

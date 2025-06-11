@@ -13,6 +13,10 @@
 #include "crypto/user_verifying_key.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include <variant>
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class WebAuthNDialogController;
 class ActiveSessionAuthController;

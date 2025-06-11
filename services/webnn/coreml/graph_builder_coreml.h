@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
