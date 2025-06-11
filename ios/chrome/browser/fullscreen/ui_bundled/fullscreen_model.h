@@ -256,6 +256,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   // `notify_observers` is true.
   void SetProgress(CGFloat progress);
 
+  // Returns true if the size of the scroll is more than the threshold to begin
+  // entering or exiting fullscreen.
+  bool ScrollThresholdExceeded() const;
+
   // ChromeBroadcastObserverInterface:
   void OnScrollViewSizeBroadcasted(CGSize scroll_view_size) override;
   void OnScrollViewContentSizeBroadcasted(CGSize content_size) override;
@@ -330,6 +334,11 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   std::optional<base::TimeTicks> start_scrolling_time_ = std::nullopt;
   // True is the scrolling time have been recorded.
   bool is_scrolling_time_recorded_ = false;
+  // The minimum scroll amount that will result in beginning to enter or exit
+  // fullscreen.
+  CGFloat scroll_threshold_ = 0.0;
+  // The content offset when the most recent drag event started.
+  CGFloat offset_at_start_of_drag_ = 0;
 
   friend class FullscreenModelTest;
 };

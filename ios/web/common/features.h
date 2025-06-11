@@ -59,6 +59,17 @@ BASE_DECLARE_FEATURE(kEnableWebInspector);
 // viewport adjustment experiment is selected via command line switches.
 BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 
+// Feature flag to enable a scroll threshold before entering or exiting
+// fullscreen.
+BASE_DECLARE_FEATURE(kFullscreenScrollThreshold);
+
+// A flag parameter to set the number of pixels to use as the threshold.
+extern const char kFullscreenScrollThresholdAmount[];
+
+// Returns true if SmoothScrollingDefault is disabled and
+// FullScreenScrollThreshold is enabled.
+bool IsFullscreenScrollThresholdEnabled();
+
 // Feature flag that force the use of the synthesized native WKWebView
 // session instead of the (maybe inexistent) saved native session. The
 // purpose of this flag it to allow to testing this code path.

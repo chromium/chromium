@@ -588,6 +588,11 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
+const char kFullscreenScrollThresholdName[] = "Fullscreen Scroll Threshold";
+const char kFullscreenScrollThresholdDescription[] =
+    "When enabled, scrolling must exceed a small threshold before the web view "
+    "begins to enter or exit fullscreen.";
+
 const char kHomeMemoryImprovementsName[] = "Home Memory Improvements";
 const char kHomeMemoryImprovementsDescription[] =
     "When enabled, uses code that aims to improve the memory footprint in "

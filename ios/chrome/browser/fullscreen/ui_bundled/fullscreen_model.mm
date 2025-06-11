@@ -20,6 +20,11 @@
 #import "ios/web/common/features.h"
 
 namespace {
+
+// Default value of the mount the scroll must exceed to begin entering and
+// exiting fullscreen when the `kFullscreenScrollThreshold` feature is enabled.
+constexpr CGFloat kScrollThresholdDefault = 10;
+
 // Object that increments `counter` by 1 for its lifetime.
 class ScopedIncrementer {
  public:
@@ -35,6 +40,12 @@ class ScopedIncrementer {
 
 FullscreenModel::FullscreenModel() {
   UpdateSpeed();
+  if (web::features::IsFullscreenScrollThresholdEnabled()) {
+    scroll_threshold_ = GetFieldTrialParamByFeatureAsDouble(
+        web::features::kFullscreenScrollThreshold,
+        web::features::kFullscreenScrollThresholdAmount,
+        kScrollThresholdDefault);
+  }
 }
 FullscreenModel::~FullscreenModel() {
   [toolbars_size_ removeObserver:this];
@@ -256,6 +267,7 @@ void FullscreenModel::SetScrollViewIsDragging(bool dragging) {
     SetLastScrollDirection(FullscreenModelScrollDirection::kNone);
     // Update the base offset for each new scroll event.
     UpdateBaseOffset();
+    offset_at_start_of_drag_ = y_content_offset_;
     // Re-rendering events are ignored during scrolls since disabling the model
     // mid-scroll leads to choppy animations.  If the content was re-rendered
     // to be too short to collapse the toolbars, the model should be disabled
@@ -317,10 +329,12 @@ FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(
   // - the sroll view is zooming,
   // - the scroll is triggered from a FullscreenModelObserver callback,
   // - there is no toolbar,
-  // - the scroll offset doesn't change.
+  // - the scroll offset doesn't change,
+  // - the scroll has not exceeded the required threshold.
   if (!enabled() || !scrolling_ || zooming_ || observer_callback_count_ ||
       AreCGFloatsEqual(get_toolbar_height_delta(), 0.0) ||
-      AreCGFloatsEqual(y_content_offset_, from_offset)) {
+      AreCGFloatsEqual(y_content_offset_, from_offset) ||
+      !ScrollThresholdExceeded()) {
     return ScrollAction::kUpdateBaseOffset;
   }
 
@@ -612,4 +626,12 @@ void FullscreenModel::OnTopToolbarHeightChanged() {
 void FullscreenModel::OnBottomToolbarHeightChanged() {
   CHECK(IsRefactorToolbarsSize());
   ToolbarsHeightDidChange();
+}
+
+bool FullscreenModel::ScrollThresholdExceeded() const {
+  if (web::features::IsFullscreenScrollThresholdEnabled()) {
+    return std::abs(y_content_offset_ - offset_at_start_of_drag_) >
+           scroll_threshold_;
+  }
+  return true;
 }

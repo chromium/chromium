@@ -67,6 +67,18 @@ BASE_FEATURE(kSmoothScrollingDefault,
 #endif
 );
 
+BASE_FEATURE(kFullscreenScrollThreshold,
+             "FullScreenScrollThreshold",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kFullscreenScrollThresholdAmount[] =
+    "fullscreen_scroll_threshold_amount";
+
+bool IsFullscreenScrollThresholdEnabled() {
+  return !base::FeatureList::IsEnabled(kSmoothScrollingDefault) &&
+         base::FeatureList::IsEnabled(kFullscreenScrollThreshold);
+}
+
 // This feature will always be disabled and will only be enabled by tests.
 BASE_FEATURE(kForceSynthesizedRestoreSession,
              "ForceSynthesizedRestoreSession",

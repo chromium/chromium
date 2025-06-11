@@ -283,8 +283,12 @@ FullscreenAnimatorStyle FullscreenMediator::AnimatorStyleFromScrollDirection(
     FullscreenModelScrollDirection direction) {
   switch (direction) {
     case FullscreenModelScrollDirection::kUp:
-    case FullscreenModelScrollDirection::kNone:
       return FullscreenAnimatorStyle::EXIT_FULLSCREEN;
+    case FullscreenModelScrollDirection::kNone:
+      // Leave in fullscreen, if still in fullscreen.
+      return AreCGFloatsEqual(model_->progress(), 0.0)
+                 ? FullscreenAnimatorStyle::ENTER_FULLSCREEN
+                 : FullscreenAnimatorStyle::EXIT_FULLSCREEN;
     case FullscreenModelScrollDirection::kDown:
       return FullscreenAnimatorStyle::ENTER_FULLSCREEN;
   }
