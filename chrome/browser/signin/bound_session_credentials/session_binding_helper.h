@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"

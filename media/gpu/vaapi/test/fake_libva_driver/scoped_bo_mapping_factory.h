@@ -6,6 +6,7 @@
 #define MEDIA_GPU_VAAPI_TEST_FAKE_LIBVA_DRIVER_SCOPED_BO_MAPPING_FACTORY_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ref.h"

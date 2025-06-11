@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_SIGNED_WEB_BUNDLES_ECDSA_P256_KEY_PAIR_H_
 #define COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_SIGNED_WEB_BUNDLES_ECDSA_P256_KEY_PAIR_H_
 
+#include <vector>
+
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 
 namespace web_package::test {

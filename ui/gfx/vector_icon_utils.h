@@ -5,6 +5,8 @@
 #ifndef UI_GFX_VECTOR_ICON_UTILS_H_
 #define UI_GFX_VECTOR_ICON_UTILS_H_
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "ui/gfx/vector_icon_types.h"
 

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_SUGGESTIONS_H_
 #define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_SUGGESTIONS_H_
 
+#include <vector>
+
 #include "base/containers/span.h"
 #include "components/autofill/core/common/unique_ids.h"
 

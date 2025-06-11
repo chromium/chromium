@@ -9,6 +9,7 @@
 #include <optional>
 #include <type_traits>
 #include <variant>
+#include <vector>
 
 #include "base/notreached.h"
 #include "base/types/optional_ref.h"

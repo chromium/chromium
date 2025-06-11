@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SPEECH_SPEECH_TIMESTAMP_ESTIMATOR_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/time/time.h"
