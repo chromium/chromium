@@ -17,7 +17,6 @@
 
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
