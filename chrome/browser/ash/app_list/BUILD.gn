@@ -268,6 +268,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/drivefs:test_support",
     "//chromeos/ash/components/drivefs/mojom",
     "//components/account_id",

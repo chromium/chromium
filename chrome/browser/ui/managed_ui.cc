@@ -43,10 +43,10 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "ui/chromeos/devicetype_utils.h"
 #else
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -161,7 +161,7 @@ std::optional<std::string> GetEnterpriseAccountDomain(const Profile& profile) {
 bool ShouldDisplayManagedUi(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Don't show the UI in demo mode.
-  if (ash::DemoSession::IsDeviceInDemoMode()) {
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     return false;
   }
 

@@ -104,6 +104,7 @@ static_library("personalization_app") {
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum_shared",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum_shared_cpp_sources",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/constants",

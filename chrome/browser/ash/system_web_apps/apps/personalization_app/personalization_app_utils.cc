@@ -28,6 +28,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/manta/manta_service.h"
@@ -158,7 +159,7 @@ bool IsAllowedToInstallSeaPen(Profile* profile) {
   }
 
   if (features::IsSeaPenDemoModeEnabled() &&
-      DemoSession::IsDeviceInDemoMode()) {
+      ash::demo_mode::IsDeviceInDemoMode()) {
     DVLOG(1) << __func__ << " demo mode";
     const auto* user = GetUser(profile);
     return DemoSession::Get() && user &&

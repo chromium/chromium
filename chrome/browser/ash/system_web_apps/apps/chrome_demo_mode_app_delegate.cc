@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
 namespace ash {
@@ -16,7 +17,7 @@ ChromeDemoModeAppDelegate::ChromeDemoModeAppDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 
 void ChromeDemoModeAppDelegate::LaunchApp(const std::string& app_id) {
-  if (DemoSession::IsDeviceInDemoMode()) {
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     DemoSession::RecordAppLaunchSource(
         DemoSession::AppLaunchSource::kDemoModeApp);
   }

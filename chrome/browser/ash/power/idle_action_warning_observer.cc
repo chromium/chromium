@@ -11,10 +11,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/power/idle_action_warning_dialog_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -33,7 +33,7 @@ enum class IdleLogoutWarningEvent {
 };
 
 void ReportMetricsForDemoMode(IdleLogoutWarningEvent event) {
-  if (DemoSession::IsDeviceInDemoMode()) {
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     UMA_HISTOGRAM_ENUMERATION("DemoMode.IdleLogoutWarningEvent", event);
   }
 }

@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/input_method",
-  "+chrome/browser/ash/login/demo_mode",
   "+chrome/browser/ash/note_taking",
   "+chrome/browser/ash/printing",
   "+chrome/browser/ash/system",

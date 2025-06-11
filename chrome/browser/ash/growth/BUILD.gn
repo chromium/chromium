@@ -43,6 +43,7 @@ static_library("growth") {
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/web_applications",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/growth:config_provider",
     "//chromeos/ash/components/growth:utils",

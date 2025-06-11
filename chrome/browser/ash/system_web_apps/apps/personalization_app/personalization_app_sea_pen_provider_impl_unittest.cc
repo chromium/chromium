@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
@@ -1024,9 +1025,9 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
       static_cast<int>(ManagedSeaPenSettings::kAllowedWithoutLogging));
 
   // Force device into demo mode.
-  ASSERT_FALSE(::ash::DemoSession::IsDeviceInDemoMode());
+  ASSERT_FALSE(ash::demo_mode::IsDeviceInDemoMode());
   profile()->ScopedCrosSettingsTestHelper()->InstallAttributes()->SetDemoMode();
-  ASSERT_TRUE(::ash::DemoSession::IsDeviceInDemoMode());
+  ASSERT_TRUE(ash::demo_mode::IsDeviceInDemoMode());
 
   // Force demo mode session to start.
   ASSERT_FALSE(::ash::DemoSession::Get());

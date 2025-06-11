@@ -20,13 +20,13 @@
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_enterprise_policy_enums.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
@@ -300,7 +300,7 @@ bool EditorSwitch::IsAllowedForUse() const {
   }
 
   return base::FeatureList::IsEnabled(ash::features::kOrcaSupportDemoMode) &&
-                 ash::DemoSession::IsDeviceInDemoMode()
+                 ash::demo_mode::IsDeviceInDemoMode()
              ? IsAllowedForUseInDemoMode(context_->active_country_code())
              : IsAllowedForUseInNonDemoMode(profile_,
                                             context_->active_country_code());

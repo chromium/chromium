@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -34,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -1372,7 +1372,7 @@ void AddFileManagerFeatureStrings(
     base::Value::Dict* dict) {
   DCHECK(profile);
 
-  dict->Set("HIDE_SPACE_INFO", ash::DemoSession::IsDeviceInDemoMode());
+  dict->Set("HIDE_SPACE_INFO", ash::demo_mode::IsDeviceInDemoMode());
   dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());
   dict->Set("FILES_LOCAL_IMAGE_SEARCH",
             ash::features::IsFilesLocalImageSearchEnabled());

@@ -21,7 +21,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_display_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_keyboard_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_pointer_handler.h"
@@ -33,6 +32,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/user_manager/user_manager.h"
@@ -1107,7 +1107,8 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kDeviceStrings);
 
-  html_source->AddBoolean("isDemoSession", DemoSession::IsDeviceInDemoMode());
+  html_source->AddBoolean("isDemoSession",
+                          ash::demo_mode::IsDeviceInDemoMode());
 
   html_source->AddBoolean("enableInputDeviceSettingsSplit",
                           ash::features::IsInputDeviceSettingsSplitEnabled());

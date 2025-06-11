@@ -95,6 +95,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/account_id/account_id.h"
@@ -1076,7 +1077,7 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,
                        NoDemoModeAppLaunchSourceReported) {
-  EXPECT_FALSE(ash::DemoSession::IsDeviceInDemoMode());
+  EXPECT_FALSE(ash::demo_mode::IsDeviceInDemoMode());
   LaunchChromeAppListItem(app_constants::kChromeAppId);
 
   // Should see 0 apps launched from the Launcher in the histogram when not in
@@ -1086,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,
 
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest, DemoModeAppLaunchSourceReported) {
   ash::test::LockDemoDeviceInstallAttributes();
-  EXPECT_TRUE(ash::DemoSession::IsDeviceInDemoMode());
+  EXPECT_TRUE(ash::demo_mode::IsDeviceInDemoMode());
 
   // Should see 0 apps launched from the Launcher in the histogram at first.
   histogram_tester_->ExpectTotalCount("DemoMode.AppLaunchSource", 0);

@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 
@@ -18,7 +19,7 @@ namespace ash {
 namespace demo_mode {
 
 bool AreDemoDimensionsAccessible() {
-  return DemoSession::IsDeviceInDemoMode() ||
+  return IsDeviceInDemoMode() ||
          DemoSetupController::IsOobeDemoSetupFlowInProgress();
 }
 

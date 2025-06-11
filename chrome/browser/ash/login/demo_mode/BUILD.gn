@@ -45,10 +45,10 @@ static_library("demo_mode") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/app_list",
-    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
@@ -57,7 +57,6 @@ static_library("demo_mode") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/growth",
-    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/idle_detector",
@@ -81,7 +80,6 @@ static_library("demo_mode") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/app_list",
-    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/policy/enrollment",

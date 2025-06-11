@@ -58,7 +58,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/status_collector/enterprise_activity_storage.h"
@@ -79,6 +78,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -2759,7 +2759,7 @@ bool DeviceStatusCollector::GetDeviceBootMode(
 
 bool DeviceStatusCollector::GetDemoModeDimensions(
     em::DeviceStatusReportRequest* status) {
-  bool anything_reported = ash::DemoSession::IsDeviceInDemoMode();
+  bool anything_reported = ash::demo_mode::IsDeviceInDemoMode();
   if (anything_reported) {
     *status->mutable_demo_mode_dimensions() =
         ash::demo_mode::GetDemoModeDimensions();

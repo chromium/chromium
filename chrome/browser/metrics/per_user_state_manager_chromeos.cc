@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
@@ -374,7 +374,7 @@ void PerUserStateManagerChromeOS::WaitForOwnershipStatus() {
 
 bool PerUserStateManagerChromeOS::ShouldUseUserLogStore() const {
   CHECK_GT(state_, State::CONSTRUCTED);
-  return !ash::DemoSession::IsDeviceInDemoMode();
+  return !ash::demo_mode::IsDeviceInDemoMode();
 }
 
 void PerUserStateManagerChromeOS::InitializeProfileMetricsState(

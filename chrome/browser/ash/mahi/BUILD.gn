@@ -18,7 +18,7 @@ static_library("mahi_availability") {
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/login/demo_mode",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/constants",
     "//components/manta",
     "//components/user_manager",

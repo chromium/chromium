@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -816,7 +817,7 @@ bool IsPlayStoreAvailable() {
   }
 
   // Demo Mode is the only public session scenario that can launch Play.
-  return ash::DemoSession::IsDeviceInDemoMode();
+  return ash::demo_mode::IsDeviceInDemoMode();
 }
 
 bool ShouldStartArcSilentlyForManagedProfile(const Profile* profile) {

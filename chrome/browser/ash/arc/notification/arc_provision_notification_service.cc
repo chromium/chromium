@@ -12,13 +12,13 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/account_id/account_id.h"
@@ -152,7 +152,7 @@ void ArcProvisionNotificationService::OnArcStarted() {
   // Show notification only for managed guest sessions (except for Demo Session)
   // when ARC is going to start.
   if (chromeos::IsManagedGuestSession() &&
-      !ash::DemoSession::IsDeviceInDemoMode()) {
+      !ash::demo_mode::IsDeviceInDemoMode()) {
     MaybeShowNotification();
   }
 }

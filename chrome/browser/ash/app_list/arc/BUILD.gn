@@ -74,6 +74,7 @@ static_library("arc") {
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",

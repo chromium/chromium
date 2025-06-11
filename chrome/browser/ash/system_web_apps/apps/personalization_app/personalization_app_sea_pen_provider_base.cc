@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/features.h"
@@ -117,7 +118,7 @@ bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenFeedbackEnabled() {
 
   // Allow Demo Mode public accounts to see and provide feedback.
   if (features::IsSeaPenDemoModeEnabled() &&
-      DemoSession::IsDeviceInDemoMode()) {
+      ash::demo_mode::IsDeviceInDemoMode()) {
     DVLOG(1) << __func__ << " demo mode";
     const auto* user = GetUser(profile_);
     return DemoSession::Get() && user &&

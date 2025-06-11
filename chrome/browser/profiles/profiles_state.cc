@@ -38,8 +38,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #else
 #include <algorithm>
@@ -301,7 +301,7 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
 
 bool IsDemoSession() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return ash::DemoSession::IsDeviceInDemoMode();
+  return ash::demo_mode::IsDeviceInDemoMode();
 #else
   return false;
 #endif

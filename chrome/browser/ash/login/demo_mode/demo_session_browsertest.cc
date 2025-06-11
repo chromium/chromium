@@ -73,16 +73,16 @@ void SetDemoConfigPref(DemoSession::DemoModeConfig demo_config) {
 }
 
 void CheckDemoMode() {
-  EXPECT_TRUE(DemoSession::IsDeviceInDemoMode());
+  EXPECT_TRUE(ash::demo_mode::IsDeviceInDemoMode());
   EXPECT_EQ(DemoSession::DemoModeConfig::kOnline, DemoSession::GetDemoConfig());
 }
 
 void CheckNoDemoMode() {
-  EXPECT_FALSE(DemoSession::IsDeviceInDemoMode());
+  EXPECT_FALSE(ash::demo_mode::IsDeviceInDemoMode());
   EXPECT_EQ(DemoSession::DemoModeConfig::kNone, DemoSession::GetDemoConfig());
 
   SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
-  EXPECT_FALSE(DemoSession::IsDeviceInDemoMode());
+  EXPECT_FALSE(ash::demo_mode::IsDeviceInDemoMode());
   EXPECT_EQ(DemoSession::DemoModeConfig::kNone, DemoSession::GetDemoConfig());
 }
 

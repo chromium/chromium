@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/base/consent_level.h"
@@ -247,11 +248,11 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccountDemoMode) {
                   user_manager::UserType::kPublicAccount);
 
   // Force device into demo mode.
-  ASSERT_FALSE(::ash::DemoSession::IsDeviceInDemoMode());
+  ASSERT_FALSE(ash::demo_mode::IsDeviceInDemoMode());
   managed_profile->ScopedCrosSettingsTestHelper()
       ->InstallAttributes()
       ->SetDemoMode();
-  ASSERT_TRUE(::ash::DemoSession::IsDeviceInDemoMode());
+  ASSERT_TRUE(ash::demo_mode::IsDeviceInDemoMode());
 
   // Force demo mode session to start.
   ASSERT_FALSE(::ash::DemoSession::Get());

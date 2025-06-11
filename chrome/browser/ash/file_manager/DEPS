@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/ash/file_system_provider",
   "+chrome/browser/ash/fusebox",
   "+chrome/browser/ash/guest_os",
-  "+chrome/browser/ash/login/demo_mode",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/core",

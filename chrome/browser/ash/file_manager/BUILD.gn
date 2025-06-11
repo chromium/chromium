@@ -150,7 +150,6 @@ static_library("file_manager") {
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/guest_os/public",
-    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
@@ -168,6 +167,7 @@ static_library("file_manager") {
     "//chrome/common:non_code_constants",
     "//chrome/common/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/install_attributes",
@@ -217,7 +217,6 @@ static_library("file_manager") {
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/guest_os/public",
-    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/smb_client",
   ]

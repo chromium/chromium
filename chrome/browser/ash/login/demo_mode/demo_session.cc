@@ -59,7 +59,6 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_manager_core/pref_names.h"
@@ -304,15 +303,6 @@ std::string DemoSession::DemoConfigToString(
 }
 
 // static
-bool DemoSession::IsDeviceInDemoMode() {
-  if (!InstallAttributes::IsInitialized()) {
-    return false;
-  }
-
-  return InstallAttributes::Get()->IsDeviceInDemoMode();
-}
-
-// static
 DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -342,7 +332,7 @@ DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
     demo_config = static_cast<DemoModeConfig>(demo_config_pref);
   }
 
-  bool is_demo_mode = IsDeviceInDemoMode();
+  bool is_demo_mode = ash::demo_mode::IsDeviceInDemoMode();
   if (is_demo_mode && demo_config == DemoModeConfig::kNone) {
     LOG(WARNING) << "Device mode is demo, but no demo mode config set";
   } else if (!is_demo_mode && demo_config != DemoModeConfig::kNone) {
@@ -364,8 +354,9 @@ void DemoSession::ResetDemoConfigForTesting() {
 
 // static
 DemoSession* DemoSession::StartIfInDemoMode() {
-  if (!IsDeviceInDemoMode())
+  if (!ash::demo_mode::IsDeviceInDemoMode()) {
     return nullptr;
+  }
 
   if (g_demo_session && g_demo_session->started())
     return g_demo_session;
@@ -400,8 +391,9 @@ std::string DemoSession::GetScreensaverAppId() {
 
 // static
 bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
-  if (!IsDeviceInDemoMode())
+  if (!ash::demo_mode::IsDeviceInDemoMode()) {
     return true;
+  }
   return app_id != GetScreensaverAppId() &&
          app_id != extensions::kWebStoreAppId;
 }
@@ -424,7 +416,7 @@ static std::string GetDefaultRegion() {
 
 // static
 bool DemoSession::ShouldShowWebApp(const std::string& app_id) {
-  if (IsDeviceInDemoMode() &&
+  if (ash::demo_mode::IsDeviceInDemoMode() &&
       content::GetNetworkConnectionTracker()->IsOffline()) {
     GURL app_id_as_url(app_id);
     // When offline, return false for web apps that are HTTP(S), return true

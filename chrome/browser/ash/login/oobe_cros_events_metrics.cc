@@ -8,13 +8,13 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
@@ -30,7 +30,7 @@ bool IsFlexFlow() {
 
 bool IsDemoModeFlow() {
   return DemoSetupController::IsOobeDemoSetupFlowInProgress() ||
-         DemoSession::IsDeviceInDemoMode();
+         ash::demo_mode::IsDeviceInDemoMode();
 }
 
 bool IsOwnerUser() {

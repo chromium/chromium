@@ -139,6 +139,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/authenticator_builder.h"
@@ -930,7 +931,7 @@ bool UserSessionManager::RespectLocalePreference(
 
   // In Demo Mode, each sessions uses a new empty User Profile, so we need to
   // rely on the local state set in the browser process.
-  if (DemoSession::IsDeviceInDemoMode() && pref_app_locale.empty()) {
+  if (ash::demo_mode::IsDeviceInDemoMode() && pref_app_locale.empty()) {
     const std::string local_state_locale =
         g_browser_process->local_state()->GetString(
             language::prefs::kApplicationLocale);

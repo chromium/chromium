@@ -10,9 +10,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -117,7 +117,7 @@ void RecordStoredSessionLength() {
   base::UmaHistogramSparse(
       metric_name, GetMinutesToReport(session_length, 10, base::Hours(24)));
 
-  if (DemoSession::IsDeviceInDemoMode()) {
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     // Demo mode sessions will have shorter durations. Report session length
     // rounded down to the nearest minute, up to two hours.
     base::UmaHistogramSparse(

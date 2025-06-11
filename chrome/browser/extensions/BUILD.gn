@@ -1714,9 +1714,9 @@ source_set("chrome_extensions_browser_client") {
 
     if (is_chromeos) {
       deps += [
-        "//chrome/browser/ash/login/demo_mode",
         "//chrome/browser/ash/profiles",
         "//chrome/browser/chromeos/policy/dlp",
+        "//chromeos/ash/components/demo_mode",
         "//chromeos/components/mgs",
       ]
     }

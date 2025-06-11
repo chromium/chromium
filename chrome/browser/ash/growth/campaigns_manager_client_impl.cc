@@ -41,6 +41,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_utils.h"
@@ -120,7 +121,7 @@ void CampaignsManagerClientImpl::AddOnTrackerInitializedCallback(
 }
 
 bool CampaignsManagerClientImpl::IsDeviceInDemoMode() const {
-  return ash::DemoSession::IsDeviceInDemoMode();
+  return ash::demo_mode::IsDeviceInDemoMode();
 }
 
 bool CampaignsManagerClientImpl::IsCloudGamingDevice() const {

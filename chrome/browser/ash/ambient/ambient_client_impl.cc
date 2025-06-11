@@ -12,12 +12,12 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -117,8 +117,9 @@ bool AmbientClientImpl::IsAmbientModeAllowed() {
     return is_allowed_for_testing_.value();
   }
 
-  if (ash::DemoSession::IsDeviceInDemoMode())
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     return false;
+  }
 
   const user_manager::User* const active_user = GetActiveUser();
   if (!active_user || !active_user->HasGaiaAccount())

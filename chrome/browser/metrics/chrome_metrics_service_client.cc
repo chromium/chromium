@@ -157,7 +157,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/arc/vmm/vmm_metrics_provider.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/printing/printer_metrics_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -178,6 +177,7 @@
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_metrics_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -740,7 +740,7 @@ void ChromeMetricsServiceClient::Initialize() {
 
   // Set is_demo_mode_ to true in ukm_consent_state_observer if the device is
   // currently in Demo Mode.
-  SetIsDemoMode(ash::DemoSession::IsDeviceInDemoMode());
+  SetIsDemoMode(ash::demo_mode::IsDeviceInDemoMode());
 
   // Conditionally create the CrOSPreConsentMetricsManager.
   //

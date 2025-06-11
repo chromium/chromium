@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
@@ -276,7 +277,7 @@ void RecordAppLaunchMetrics(Profile* profile,
       GetAppTypeNameV2(profile, app_type, app_id, container));
 
   // TODO(b/356937112): Refactor the metrics DemoMode.AppLaunchSource
-  if (ash::DemoSession::IsDeviceInDemoMode()) {
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     ash::DemoSession::AppLaunchSource source;
     bool will_report = true;
     // Apps launched from the demo mode app has the launch source of
