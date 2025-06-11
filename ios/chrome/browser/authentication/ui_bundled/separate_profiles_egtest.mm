@@ -879,19 +879,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey
       selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
-  // Wait for the enterprise onboarding screen.
-  ConditionBlock enterpriseOnboardingCondition = ^{
-    NSError* error;
-    [[EarlGrey selectElementWithMatcher:ManagedProfileCreationScreenMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout,
-                 enterpriseOnboardingCondition),
-             @"Enterprise onboarding didn't appear.");
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ManagedProfileCreationScreenMatcher()];
   // Confirm the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
@@ -967,19 +956,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey
       selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
-  // Wait for the enterprise onboarding screen.
-  ConditionBlock enterpriseOnboardingCondition = ^{
-    NSError* error;
-    [[EarlGrey selectElementWithMatcher:ManagedProfileCreationScreenMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout,
-                 enterpriseOnboardingCondition),
-             @"Enterprise onboarding didn't appear.");
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ManagedProfileCreationScreenMatcher()];
   // Confirm the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
@@ -1032,19 +1010,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
-  // Wait for the enterprise onboarding screen.
-  ConditionBlock enterpriseOnboardingCondition = ^{
-    NSError* error;
-    [[EarlGrey selectElementWithMatcher:ManagedProfileCreationScreenMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout,
-                 enterpriseOnboardingCondition),
-             @"Enterprise onboarding didn't appear.");
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ManagedProfileCreationScreenMatcher()];
   // Confirm the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
