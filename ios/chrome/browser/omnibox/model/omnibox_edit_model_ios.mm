@@ -275,26 +275,7 @@ void OmniboxEditModelIOS::ClearAdditionalText() {
 }
 
 void OmniboxEditModelIOS::OnSetFocus() {
-  TRACE_EVENT0("omnibox", "OmniboxEditModelIOS::OnSetFocus");
-  text_model_->last_omnibox_focus = base::TimeTicks::Now();
-  text_model_->focus_resulted_in_navigation = false;
-
-  // If the omnibox lost focus while the caret was hidden and then regained
-  // focus, OnSetFocus() is called and should restore visibility. Note that
-  // focus can be regained without an accompanying call to
-  // OmniboxViewIOS::SetFocus(), e.g. by tabbing in.
-  SetFocusState(OMNIBOX_FOCUS_VISIBLE, OMNIBOX_FOCUS_CHANGE_EXPLICIT);
-
-  if (text_model_->user_input_in_progress || !text_model_->in_revert) {
-    controller_->client()->OnInputStateChanged();
-  }
-
-  if (omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
-          Get()
-              .enabled) {
-    controller_->client()->MaybeShowOnFocusHatsSurvey(
-        autocomplete_controller()->autocomplete_provider_client());
-  }
+  text_model_->OnSetFocus();
 }
 
 void OmniboxEditModelIOS::StartZeroSuggestRequest(
@@ -396,7 +377,8 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
   if (state_changes.text_differs || state_changes.selection_differs) {
     // Restore caret visibility whenever the user changes text or selection in
     // the omnibox.
-    SetFocusState(OMNIBOX_FOCUS_VISIBLE, OMNIBOX_FOCUS_CHANGE_TYPING);
+    text_model_->SetFocusState(OMNIBOX_FOCUS_VISIBLE,
+                               OMNIBOX_FOCUS_CHANGE_TYPING);
   }
 
   // If the user text does not need to be changed, return now, so we don't
@@ -773,16 +755,6 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
               alternate_input, alternate_nav_url, false));
     }
   }
-}
-
-void OmniboxEditModelIOS::SetFocusState(OmniboxFocusState state,
-                                        OmniboxFocusChangeReason reason) {
-  if (state == text_model_->focus_state) {
-    return;
-  }
-
-  text_model_->focus_state = state;
-  controller_->client()->OnFocusChanged(text_model_->focus_state, reason);
 }
 
 std::u16string OmniboxEditModelIOS::GetText() const {

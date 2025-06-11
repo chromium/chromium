@@ -10,6 +10,7 @@
 #import "base/time/time.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
 
 enum class OmniboxPasteState {
@@ -27,7 +28,7 @@ struct OmniboxTextState {
 // Manages the Omnibox text state.
 struct OmniboxTextModel {
  public:
-  OmniboxTextModel();
+  OmniboxTextModel(OmniboxClient* client);
   ~OmniboxTextModel();
 
   // Sets the state of user_input_in_progress_. Returns whether said state
@@ -39,6 +40,17 @@ struct OmniboxTextModel {
 
   /// Discards the focus state to None.
   void KillFocus();
+
+  // If focus_state_ does not match `state`, we update it and notify the
+  // InstantController about the change (passing along the `reason` for the
+  // change).
+  void SetFocusState(OmniboxFocusState state, OmniboxFocusChangeReason reason);
+
+  // Called when the view is gaining focus.
+  void OnSetFocus();
+
+  // The Omnibox client.
+  raw_ptr<OmniboxClient> omnibox_client;
 
   // The Omnibox focus state.
   OmniboxFocusState focus_state;

@@ -181,7 +181,7 @@
 
   DCHECK(_client.get());
 
-  _omniboxTextModel = std::make_unique<OmniboxTextModel>();
+  _omniboxTextModel = std::make_unique<OmniboxTextModel>(_client.get());
   OmniboxTextFieldIOS* textField = viewController.textField;
   _omniboxController = std::make_unique<OmniboxControllerIOS>(_client.get());
   _omniboxView = std::make_unique<OmniboxViewIOS>(textField);
@@ -271,8 +271,8 @@
   _omniboxEditModel.reset();
   _omniboxView.reset();
   _omniboxController.reset();
-  _client.reset();
   _omniboxTextModel.reset();
+  _client.reset();
 
   self.viewController = nil;
   self.mediator.templateURLService = nullptr;  // Unregister the observer.

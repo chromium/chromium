@@ -280,11 +280,6 @@ class OmniboxEditModelIOS {
   void GetInfoForCurrentText(AutocompleteMatch* match,
                              GURL* alternate_nav_url) const;
 
-  // If focus_state_ does not match `state`, we update it and notify the
-  // InstantController about the change (passing along the `reason` for the
-  // change).
-  void SetFocusState(OmniboxFocusState state, OmniboxFocusChangeReason reason);
-
   // Returns view text if there is a view. Until the model is made the
   // primary data source, this should not be called when there's no view.
   std::u16string GetText() const;

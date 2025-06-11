@@ -151,10 +151,6 @@ const char kOmniboxFocusResultedInNavigation[] =
                         _omniboxTextModel->focus_resulted_in_navigation);
   if (_omniboxTextModel->HasFocus()) {
     _omniboxTextModel->KillFocus();
-    if (self.client) {
-      self.client->OnFocusChanged(_omniboxTextModel->focus_state,
-                                  OMNIBOX_FOCUS_CHANGE_EXPLICIT);
-    }
   }
 
   [self.textField exitPreEditState];
@@ -316,7 +312,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   }
 
   if (_omniboxEditModel) {
-    _omniboxEditModel->OnSetFocus();
+    _omniboxTextModel->OnSetFocus();
 
     if (_inLensOverlay) {
       if (textField.userText.length) {
