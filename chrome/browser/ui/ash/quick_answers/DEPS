@@ -9,7 +9,6 @@ include_rules = [
   "+chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h",
   "+chrome/browser/ui/ash/editor_menu/utils/focus_search.h",
   "+chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h",
-  "+chrome/browser/ui/views/mahi/mahi_menu_controller.h",
 ]
 
 specific_include_rules = {
@@ -22,11 +21,5 @@ specific_include_rules = {
   ],
   ".*pixeltest\.cc": [
     "+chrome/browser/ui/browser.h",
-  ],
-  "quick_answers_ui_controller\.cc": [
-    "+chrome/browser/ui/browser.h",
-  ],
-  "quick_answers_view\.cc": [
-    "+chrome/browser/ui/color/chrome_color_id.h",
   ],
 }

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
-#include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"

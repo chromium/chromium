@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/typography.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
