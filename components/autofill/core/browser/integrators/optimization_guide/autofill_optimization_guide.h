@@ -47,10 +47,10 @@ class AutofillOptimizationGuide : public KeyedService {
                               const PaymentsDataManager& payments_data_manager);
 
   // Checks if the `url` has an applicable category benefit for the credit card
-  // issuer `issuer_id`. If an optimization is found, returns the applicable
-  // category benefit.
+  // issuer `benefit_source`. If an optimization is found, returns the
+  // applicable category benefit.
   virtual CreditCardCategoryBenefit::BenefitCategory
-  AttemptToGetEligibleCreditCardBenefitCategory(std::string_view issuer_id,
+  AttemptToGetEligibleCreditCardBenefitCategory(std::string_view benefit_source,
                                                 const GURL& url) const;
 
   // Returns whether the URL origin contained in `url` is blocked from
@@ -72,11 +72,10 @@ class AutofillOptimizationGuide : public KeyedService {
   virtual bool ShouldBlockFormFieldSuggestion(const GURL& url,
                                               const CreditCard& card) const;
 
-  // Returns whether autofill benefit suggestion labels for `card` should be
-  // blocked on `url` based on the `card`'s issuer and the `url`'s presence in
-  // its corresponding blocklist.
-  virtual bool ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
-      const CreditCard& card,
+  // Returns whether autofill flat rate benefit suggestion labels should be
+  // blocked on `url` based on if the `url`'s presence in its corresponding
+  // blocklist.
+  virtual bool ShouldBlockFlatRateBenefitSuggestionLabelsForUrl(
       const GURL& url) const;
 
   // Returns whether `url` is eligible for ablation as per `type`.

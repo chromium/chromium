@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -43,6 +44,7 @@ using test::CreateTestCreditCardFormData;
 using test::CreateTestIbanFormData;
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
@@ -62,15 +64,17 @@ class AutofillOptimizationGuideTest : public testing::Test {
       std::string_view network = kVisaCard,
       CreditCard::VirtualCardEnrollmentType virtual_card_enrollment_type =
           CreditCard::VirtualCardEnrollmentType::kNetwork,
-      std::string_view issuer_id = "") {
+      std::string_view issuer_id = "",
+      std::string_view benefit_source = "") {
     CreditCard card = test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
     test_api(card).set_network_for_card(network);
     card.set_virtual_card_enrollment_type(virtual_card_enrollment_type);
     test_api(card).set_issuer_id_for_card(issuer_id);
+    card.set_benefit_source(benefit_source);
     return card;
   }
 
-  void MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
+  void MockFlatRateCreditCardBenefitsBlockedDecisionForUrl(
       const GURL& url,
       optimization_guide::OptimizationGuideDecision decision) {
     ON_CALL(
@@ -78,7 +82,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
         CanApplyOptimization(
             Eq(url),
             Eq(optimization_guide::proto::
-                   CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED),
+                   SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST),
             Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
         .WillByDefault(Return(decision));
   }
@@ -412,12 +416,54 @@ TEST_F(
   EXPECT_FALSE(guide().ShouldBlockFormFieldSuggestion(url, card));
 }
 
+// Test that we block card flat rate benefits suggestions on blocked URLs.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldBlockFlatRateBenefitSuggestionLabelsForUrl_BlockedUrl) {
+  GURL url("https://example.com/");
+
+  MockFlatRateCreditCardBenefitsBlockedDecisionForUrl(
+      url, optimization_guide::OptimizationGuideDecision::kFalse);
+
+  EXPECT_TRUE(guide().ShouldBlockFlatRateBenefitSuggestionLabelsForUrl(url));
+}
+
+// Test that we do not block card flat rate benefits suggestions on unblocked
+// URLs.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldBlockFlatRateBenefitSuggestionLabelsForUrl_UnblockedUrl) {
+  GURL url("https://example.com/");
+
+  MockFlatRateCreditCardBenefitsBlockedDecisionForUrl(
+      url, optimization_guide::OptimizationGuideDecision::kTrue);
+
+  EXPECT_FALSE(guide().ShouldBlockFlatRateBenefitSuggestionLabelsForUrl(url));
+}
+
+// Test that we do not block benefits suggestions when a `kUnknown` decision is
+// returned.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldBlockFlatRateBenefitSuggestionLabelsForUrl_UnknownDecision) {
+  GURL url("https://example.com/");
+  CreditCard card = GetVcnEnrolledCard(
+      kVisaCard, CreditCard::VirtualCardEnrollmentType::kNetwork,
+      kCapitalOneCardIssuerId);
+  payments_data_manager().AddServerCreditCard(card);
+
+  MockFlatRateCreditCardBenefitsBlockedDecisionForUrl(
+      url, optimization_guide::OptimizationGuideDecision::kUnknown);
+
+  EXPECT_FALSE(guide().ShouldBlockFlatRateBenefitSuggestionLabelsForUrl(url));
+}
+
 // Test that the Amex category-benefit optimization types are registered when we
 // have seen a credit card form and the user has an Amex card.
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_AmexCategoryBenefits) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableCardBenefitsSync};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCardBenefitsSync,
+                            features::kAutofillEnableCardBenefitsSourceSync},
+      /*disabled_features=*/{});
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -428,7 +474,8 @@ TEST_F(AutofillOptimizationGuideTest,
       /*network=*/kAmericanExpressCard,
       /*virtual_card_enrollment_type=*/
       CreditCard::VirtualCardEnrollmentType::kNetwork,
-      /*issuer_id=*/kAmexCardIssuerId));
+      /*issuer_id=*/kAmexCardIssuerId,
+      /*benefit_source=*/kAmexCardBenefitSource));
 
   EXPECT_CALL(decider(),
               RegisterOptimizationTypes(UnorderedElementsAre(
@@ -440,6 +487,103 @@ TEST_F(AutofillOptimizationGuideTest,
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
+// Test that the flat rate benefit blocklist optimization type is registered
+// when we have seen a credit card form and the user has a card with a flat rate
+// benefit.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    CreditCardFormFound_FlatRateBenefitBlockList_WithFlatRateBenefit_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCardBenefitsSync,
+                            features::
+                                kAutofillEnableFlatRateCardBenefitsBlocklist},
+      /*disabled_features=*/{});
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  CreditCard card = test::GetMaskedServerCard();
+  payments_data_manager().AddServerCreditCard(card);
+  CreditCardFlatRateBenefit flat_rate_benefit =
+      test::GetActiveCreditCardFlatRateBenefit();
+  test_api(flat_rate_benefit)
+      .SetLinkedCardInstrumentId(
+          CreditCardBenefitBase::LinkedCardInstrumentId(card.instrument_id()));
+  payments_data_manager().AddCreditCardBenefitForTest(
+      std::move(flat_rate_benefit));
+
+  EXPECT_CALL(decider(),
+              RegisterOptimizationTypes(testing::UnorderedElementsAre(
+                  optimization_guide::proto::
+                      SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST)));
+
+  guide().OnDidParseForm(form_structure, payments_data_manager());
+}
+
+// Test that the flat rate benefit blocklist optimization type is not
+// registered when we have seen a credit card form but the user has no card
+// with a flat rate benefit.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    CreditCardFormFound_FlatRateBenefitBlockList_WithoutFlatRateBenefit_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCardBenefitsSync,
+                            features::
+                                kAutofillEnableFlatRateCardBenefitsBlocklist},
+      /*disabled_features=*/{});
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  payments_data_manager().AddServerCreditCard(test::GetMaskedServerCard());
+
+  // The flat rate blocklist optimization type will not be registered if the
+  // no card has a flat rate benefit.
+  EXPECT_CALL(decider(), RegisterOptimizationTypes).Times(0);
+
+  guide().OnDidParseForm(form_structure, payments_data_manager());
+}
+
+// Test that the flat rate benefit blocklist optimization type is not registered
+// when we have seen a credit card form and the user has a card with flat rate
+// benefit, but the flat rate benefit blocklist flag is disabled.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    CreditCardFormFound_FlatRateBenefitBlockList_WithFlatRateBenefit_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCardBenefitsSync},
+      /*disabled_features=*/{
+          features::kAutofillEnableFlatRateCardBenefitsBlocklist});
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  CreditCard card = test::GetMaskedServerCard();
+  payments_data_manager().AddServerCreditCard(card);
+  CreditCardFlatRateBenefit flat_rate_benefit =
+      test::GetActiveCreditCardFlatRateBenefit();
+  test_api(flat_rate_benefit)
+      .SetLinkedCardInstrumentId(
+          CreditCardBenefitBase::LinkedCardInstrumentId(card.instrument_id()));
+  payments_data_manager().AddCreditCardBenefitForTest(
+      std::move(flat_rate_benefit));
+
+  // The flat rate blocklist optimization type will not be registered if the
+  // blocklist flag is disabled.
+  EXPECT_CALL(decider(), RegisterOptimizationTypes).Times(0);
+
+  guide().OnDidParseForm(form_structure, payments_data_manager());
+}
+
 // Test that the BMO category-benefit optimization types are registered when a
 // credit card form is present and the user has an BMO card.
 TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_BmoCategoryBenefits) {
@@ -447,7 +591,8 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_BmoCategoryBenefits) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/
       {features::kAutofillEnableCardBenefitsSync,
-       features::kAutofillEnableAllowlistForBmoCardCategoryBenefits},
+       features::kAutofillEnableAllowlistForBmoCardCategoryBenefits,
+       features::kAutofillEnableCardBenefitsSourceSync},
       /*disabled_features=*/{});
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
@@ -459,7 +604,8 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_BmoCategoryBenefits) {
       /*network=*/kMasterCard,
       /*virtual_card_enrollment_type=*/
       CreditCard::VirtualCardEnrollmentType::kNetwork,
-      /*issuer_id=*/kBmoCardIssuerId));
+      /*issuer_id=*/kBmoCardIssuerId,
+      /*benefit_source=*/kBmoCardBenefitSource));
 
   EXPECT_CALL(
       decider(),
@@ -485,7 +631,9 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_BmoCategoryBenefits) {
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_AmexCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillEnableCardBenefitsSync);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCardBenefitsSourceSync},
+      /*disabled_features=*/{features::kAutofillEnableCardBenefitsSync});
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -496,7 +644,8 @@ TEST_F(AutofillOptimizationGuideTest,
       /*network=*/kAmericanExpressCard,
       /*virtual_card_enrollment_type=*/
       CreditCard::VirtualCardEnrollmentType::kNetwork,
-      /*issuer_id=*/kAmexCardIssuerId));
+      /*issuer_id=*/kAmexCardIssuerId,
+      /*benefit_source=*/kAmexCardBenefitSource));
 
   EXPECT_CALL(decider(),
               RegisterOptimizationTypes(UnorderedElementsAre(
@@ -515,8 +664,10 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_BmoCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableAllowlistForBmoCardCategoryBenefits);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCardBenefitsSourceSync},
+      /*disabled_features=*/{
+          features::kAutofillEnableAllowlistForBmoCardCategoryBenefits});
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -527,7 +678,8 @@ TEST_F(AutofillOptimizationGuideTest,
       /*network=*/kMasterCard,
       /*virtual_card_enrollment_type=*/
       CreditCard::VirtualCardEnrollmentType::kNetwork,
-      /*issuer_id=*/kBmoCardIssuerId));
+      /*issuer_id=*/kBmoCardIssuerId,
+      /*benefit_source=*/kBmoCardBenefitSource));
 
   // Since the experiment is disabled, there should be no benefits-related
   // optimization types registered.
@@ -849,7 +1001,7 @@ TEST_F(AutofillOptimizationGuideTest, AutofillAblation) {
 }
 
 struct BenefitOptimizationToBenefitCategoryTestCase {
-  const std::string issuer_id;
+  const std::string benefit_source;
   const optimization_guide::proto::OptimizationType optimization_type;
   const CreditCardCategoryBenefit::BenefitCategory benefit_category;
 };
@@ -860,6 +1012,7 @@ class BenefitOptimizationToBenefitCategoryTest
           BenefitOptimizationToBenefitCategoryTestCase> {
  public:
   BenefitOptimizationToBenefitCategoryTest() = default;
+
   ~BenefitOptimizationToBenefitCategoryTest() override = default;
 
   optimization_guide::proto::OptimizationType expected_benefit_optimization()
@@ -875,12 +1028,14 @@ class BenefitOptimizationToBenefitCategoryTest
   void SetUp() override {
     AutofillOptimizationGuideTest::SetUp();
     card_ = test::GetMaskedServerCard();
-    card_.set_issuer_id(GetParam().issuer_id);
+    card_.set_benefit_source(GetParam().benefit_source);
     payments_data_manager().AddServerCreditCard(card_);
   }
 
  private:
   CreditCard card_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillEnableCardBenefitsSourceSync};
 };
 
 // Tests that the correct benefit category is returned when a benefit
@@ -896,7 +1051,7 @@ TEST_P(BenefitOptimizationToBenefitCategoryTest,
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
 
   EXPECT_EQ(guide().AttemptToGetEligibleCreditCardBenefitCategory(
-                credit_card().issuer_id(), url),
+                credit_card().benefit_source(), url),
             expected_benefit_category());
 }
 

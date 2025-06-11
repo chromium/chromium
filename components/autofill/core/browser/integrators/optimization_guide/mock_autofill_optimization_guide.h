@@ -36,8 +36,8 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
               (const GURL&, const CreditCard&),
               (const override));
   MOCK_METHOD(bool,
-              ShouldBlockBenefitSuggestionLabelsForCardAndUrl,
-              (const CreditCard& card, const GURL& url),
+              ShouldBlockFlatRateBenefitSuggestionLabelsForUrl,
+              (const GURL& url),
               (const override));
   MOCK_METHOD(bool,
               IsUrlEligibleForBnplIssuer,

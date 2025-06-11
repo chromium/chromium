@@ -185,6 +185,9 @@ std::string GetStringNameForOptimizationType(
       return "GlicPageContextEligibility";
     case proto::OptimizationType::DIGITAL_CREDENTIALS_LOW_FRICTION:
       return "DigitalCredentialsLowFriction";
+    case proto::OptimizationType::
+        SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST:
+      return "SharedCreditCardFlatRateBenefitBlocklist";
   }
 
   // The returned string is used to record histograms for the optimization type.

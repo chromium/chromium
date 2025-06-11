@@ -767,6 +767,7 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="93" label="FEDCM_CLICKTHROUGH_RATE"/>
   <int value="96" label="GLIC_PAGE_CONTEXT_ELIGIBILITY"/>
   <int value="97" label="DIGITAL_CREDENTIALS_LOW_FRICTION"/>
+  <int value="100" label="SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

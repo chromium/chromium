@@ -56,16 +56,18 @@ GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard& card) {
 }
 
 std::vector<optimization_guide::proto::OptimizationType>
-GetCardBenefitsOptimizationTypesForCard(const CreditCard& card) {
+GetCardBenefitsOptimizationTypesForCard(
+    const CreditCard& card,
+    const PaymentsDataManager& payments_data_manager) {
   std::vector<optimization_guide::proto::OptimizationType> optimization_types;
-  if (card.issuer_id() == kAmexCardIssuerId) {
+  if (card.benefit_source() == kAmexCardBenefitSource) {
     optimization_types.push_back(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS);
     optimization_types.push_back(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
-  } else if (card.issuer_id() == kBmoCardIssuerId &&
+  } else if (card.benefit_source() == kBmoCardBenefitSource &&
              base::FeatureList::IsEnabled(
                  features::
                      kAutofillEnableAllowlistForBmoCardCategoryBenefits)) {
@@ -92,14 +94,25 @@ GetCardBenefitsOptimizationTypesForCard(const CreditCard& card) {
     optimization_types.push_back(
         optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS);
   }
+  if (payments_data_manager
+          .GetFlatRateBenefitByInstrumentId(
+              CreditCardBenefitBase::LinkedCardInstrumentId(
+                  card.instrument_id()))
+          .has_value() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableFlatRateCardBenefitsBlocklist)) {
+    optimization_types.push_back(
+        optimization_guide::proto::
+            SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST);
+  }
   return optimization_types;
 }
 
 void AddCreditCardOptimizationTypes(
-    base::span<const CreditCard* const> cards,
+    const PaymentsDataManager& payments_data_manager,
     base::flat_set<optimization_guide::proto::OptimizationType>&
         optimization_types) {
-  for (const CreditCard* card : cards) {
+  for (const CreditCard* card : payments_data_manager.GetServerCreditCards()) {
     auto vcn_merchant_opt_out_optimization_type =
         GetVcnMerchantOptOutOptimizationTypeForCard(*card);
     if (vcn_merchant_opt_out_optimization_type !=
@@ -114,7 +127,7 @@ void AddCreditCardOptimizationTypes(
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCardBenefitsSync)) {
       auto benefits_optimization_types =
-          GetCardBenefitsOptimizationTypesForCard(*card);
+          GetCardBenefitsOptimizationTypesForCard(*card, payments_data_manager);
       if (!benefits_optimization_types.empty()) {
         optimization_types.insert(benefits_optimization_types.begin(),
                                   benefits_optimization_types.end());
@@ -213,10 +226,8 @@ void AutofillOptimizationGuide::OnDidParseForm(
         return field->Type().group() == FieldTypeGroup::kCreditCard;
       });
 
-  std::vector<const CreditCard*> server_cards;
   if (has_credit_card_field) {
-    server_cards = payments_data_manager.GetServerCreditCards();
-    AddCreditCardOptimizationTypes(server_cards, optimization_types);
+    AddCreditCardOptimizationTypes(payments_data_manager, optimization_types);
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -256,18 +267,18 @@ void AutofillOptimizationGuide::OnDidParseForm(
 
 CreditCardCategoryBenefit::BenefitCategory
 AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
-    std::string_view issuer_id,
+    std::string_view benefit_source,
     const GURL& url) const {
   std::vector<optimization_guide::proto::OptimizationType>
       issuer_optimization_types;
-  if (issuer_id == kAmexCardIssuerId) {
+  if (benefit_source == kAmexCardBenefitSource) {
     issuer_optimization_types.push_back(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS);
     issuer_optimization_types.push_back(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
-  } else if (issuer_id == kBmoCardIssuerId &&
+  } else if (benefit_source == kBmoCardBenefitSource &&
              base::FeatureList::IsEnabled(
                  features::
                      kAutofillEnableAllowlistForBmoCardCategoryBenefits)) {
@@ -306,7 +317,7 @@ AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
       return GetBenefitCategoryForOptimizationType(optimization_type);
     }
   }
-  // No applicable category benefit for the 'issuer_id' on the 'url'.
+  // No applicable category benefit for the 'benefit_source' on the 'url'.
   return CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory;
 }
 
@@ -377,27 +388,20 @@ bool AutofillOptimizationGuide::IsEligibleForAblation(
   return decision == optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
-bool AutofillOptimizationGuide::ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
-    const CreditCard& card,
-    const GURL& url) const {
-  if (card.issuer_id() == kCapitalOneCardIssuerId) {
-    optimization_guide::OptimizationGuideDecision decision =
-        decider_->CanApplyOptimization(
-            url,
-            optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED,
-            /*optimization_metadata=*/nullptr);
-    // Since the Capital One benefit suggestions hint uses a blocklist, it will
-    // return kFalse if the `url` is present, meaning when kFalse is returned,
-    // we should block the suggestion from being shown. If the optimization type
-    // was not registered in time before being queried, it will be kUnknown, so
-    // the default functionality in this case will be to not block the
-    // suggestion from being shown.
-    return decision == optimization_guide::OptimizationGuideDecision::kFalse;
-  }
-
-  // No conditions indicating benefits suggestions should be blocked were
-  // encountered, so return that they should not be blocked.
-  return false;
+bool AutofillOptimizationGuide::
+    ShouldBlockFlatRateBenefitSuggestionLabelsForUrl(const GURL& url) const {
+  // Since the flat rate benefit suggestions hint uses a blocklist, it will
+  // return kFalse if the `url` is present, meaning when kFalse is returned,
+  // we should block the suggestion from being shown. If the optimization type
+  // was not registered in time before being queried, it will be kUnknown, so
+  // the default functionality in this case will be to not block the
+  // suggestion from being shown.
+  return decider_->CanApplyOptimization(
+             url,
+             optimization_guide::proto::
+                 SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST,
+             /*optimization_metadata=*/nullptr) ==
+         optimization_guide::OptimizationGuideDecision::kFalse;
 }
 
 bool AutofillOptimizationGuide::IsUrlEligibleForBnplIssuer(

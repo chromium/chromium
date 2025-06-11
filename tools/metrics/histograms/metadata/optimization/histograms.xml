@@ -418,6 +418,10 @@ chromium-metrics-reviews@google.com.
                merchant url is eligible for entertainment credit card
                benefits. Applies to all credit cards that support benefits on
                Chrome"/>
+  <variant name="SharedCreditCardFlatRateBenefitsBlocked"
+      summary="This optimization provides information about whether a
+               merchant url is blocked from flat rate credit card benefits.
+               Applies to all credit cards that support benefits on Chrome"/>
   <variant name="SharedCreditCardFlightBenefits"
       summary="This optimization provides information about whether a
                merchant url is eligible for flight credit card benefits.

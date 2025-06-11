@@ -2835,6 +2835,10 @@ class PaymentsDataManagerShouldBlockBenefitsTest
     ResetPaymentsDataManager(false, app_locale());
   }
   const std::string& app_locale() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillEnableFlatRateCardBenefitsBlocklist};
 };
 
 // Tests that card benefits should be blocked if the app locale is not en-US or
@@ -2843,6 +2847,89 @@ TEST_P(PaymentsDataManagerShouldBlockBenefitsTest, NonSupportedAppLocale) {
   EXPECT_NE(test_api(payments_data_manager())
                 .ShouldBlockCardBenefitSuggestionLabels(),
             app_locale() == "en-US" || app_locale() == "en-GB");
+}
+
+// Tests that card flat rate benefits should be blocked when benefit suggestions
+// are disabled for the given url.
+TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
+       BlockedUrlForFlateRateBenefit) {
+  if (app_locale() != "en-US" && app_locale() != "en-GB") {
+    GTEST_SKIP() << "This test should not run for not supported app locale.";
+  }
+
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example-blocked-url.com/"));
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockFlatRateBenefitSuggestionLabelsForUrl)
+      .WillByDefault(testing::Return(true));
+
+  // Add flat rate benefits and linked card.
+  CreditCardFlatRateBenefit flat_rate_benefit =
+      test::GetActiveCreditCardFlatRateBenefit();
+  CreditCard card = test::GetMaskedServerCard();
+  test_api(flat_rate_benefit)
+      .SetLinkedCardInstrumentId(
+          CreditCardBenefitBase::LinkedCardInstrumentId(card.instrument_id()));
+  test_api(payments_data_manager()).AddServerCreditCard(card);
+  payments_data_manager().AddCreditCardBenefitForTest(
+      std::move(flat_rate_benefit));
+
+  EXPECT_TRUE(payments_data_manager()
+                  .GetApplicableBenefitDescriptionForCardAndOrigin(
+                      test::GetMaskedServerCard(), origin,
+                      autofill_client()->GetAutofillOptimizationGuide())
+                  .empty());
+
+  // Add other benefit.
+  CreditCardMerchantBenefit merchant_benefit =
+      test::GetActiveCreditCardMerchantBenefit();
+  test_api(merchant_benefit)
+      .SetLinkedCardInstrumentId(
+          CreditCardBenefitBase::LinkedCardInstrumentId(card.instrument_id()));
+  test_api(merchant_benefit).SetMerchantDomains({origin});
+  payments_data_manager().AddCreditCardBenefitForTest(merchant_benefit);
+
+  EXPECT_EQ(
+      payments_data_manager().GetApplicableBenefitDescriptionForCardAndOrigin(
+          card, origin, autofill_client()->GetAutofillOptimizationGuide()),
+      merchant_benefit.benefit_description());
+}
+
+// Tests that card flat rate benefits should not be blocked if the given url is
+// on the flat rate benefit blocklist, but the blocklist feature flag is
+// disabled.
+TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
+       BlockedUrlForFlateRateBenefit_BlocklistDisabled) {
+  if (app_locale() != "en-US" && app_locale() != "en-GB") {
+    GTEST_SKIP() << "This test should not run for not supported app locale.";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableFlatRateCardBenefitsBlocklist);
+
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example-blocked-url.com/"));
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockFlatRateBenefitSuggestionLabelsForUrl)
+      .WillByDefault(testing::Return(true));
+
+  // Add flat rate benefits and linked card.
+  CreditCardFlatRateBenefit flat_rate_benefit =
+      test::GetActiveCreditCardFlatRateBenefit();
+  CreditCard card = test::GetMaskedServerCard();
+  test_api(flat_rate_benefit)
+      .SetLinkedCardInstrumentId(
+          CreditCardBenefitBase::LinkedCardInstrumentId(card.instrument_id()));
+  test_api(payments_data_manager()).AddServerCreditCard(card);
+  payments_data_manager().AddCreditCardBenefitForTest(flat_rate_benefit);
+
+  EXPECT_EQ(
+      payments_data_manager().GetApplicableBenefitDescriptionForCardAndOrigin(
+          card, origin, autofill_client()->GetAutofillOptimizationGuide()),
+      flat_rate_benefit.benefit_description());
 }
 
 INSTANTIATE_TEST_SUITE_P(
