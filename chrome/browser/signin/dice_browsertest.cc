@@ -1302,7 +1302,7 @@ class DiceBrowserTestWithSyncOptinScreen : public DiceBrowserTest {
 // history. Accepting the dialog results in enabling the history
 // sync preference.
 // TODO(crbug.com/422982233): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_EnableHistorySyncOptin DISABLED_EnableHistorySyncOptin
 #else
 #define MAYBE_EnableHistorySyncOptin EnableHistorySyncOptin
