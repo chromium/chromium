@@ -100,6 +100,12 @@ class PolicyPrefsTest : public PlatformBrowserTest {
         true /* is_first_policy_load_complete_return */);
     BrowserPolicyConnector::SetPolicyProviderForTesting(
         GetMockPolicyProvider());
+
+#if BUILDFLAG(IS_ANDROID)
+    // Intentionally leak the mock provider on Android. See comment in
+    // GetMockPolicyProvider() for details.
+    ::testing::Mock::AllowLeak(GetMockPolicyProvider());
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void TearDownOnMainThread() override { ClearProviderPolicy(); }
