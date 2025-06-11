@@ -126,6 +126,7 @@
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
@@ -960,36 +961,6 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// Delegate implementation for MultiContentsView. Usually just forwards calls
-// into BrowserView.
-class MultiContentsViewDelegateImpl : public MultiContentsView::Delegate {
- public:
-  explicit MultiContentsViewDelegateImpl(BrowserView* browser_view)
-      : browser_view_(browser_view) {}
-  MultiContentsViewDelegateImpl(const MultiContentsViewDelegateImpl&) = delete;
-  MultiContentsViewDelegateImpl& operator=(
-      const MultiContentsViewDelegateImpl&) = delete;
-  ~MultiContentsViewDelegateImpl() override = default;
-
-  void WebContentsFocused(content::WebContents* contents) override {
-    browser_view_->ActivateWebContents(contents);
-  }
-
-  void ResizeWebContents(double ratio) override {
-    browser_view_->ResizeWebContents(ratio);
-  }
-
-  void ReverseWebContents() override { browser_view_->ReverseWebContents(); }
-
-  void HandleLinkDrop(const std::vector<GURL>& urls) override {
-    browser_view_->OpenInNewSplit(urls);
-  }
-
- private:
-  raw_ptr<BrowserView> browser_view_;
-};
-
-///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
 
 BrowserView::BrowserView(std::unique_ptr<Browser> browser)
@@ -1092,7 +1063,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   views::View* contents_view;
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     auto multi_contents_view = std::make_unique<MultiContentsView>(
-        this, std::make_unique<MultiContentsViewDelegateImpl>(this));
+        this, std::make_unique<MultiContentsViewDelegateImpl>(
+                  *browser_->tab_strip_model()));
     multi_contents_view_ =
         contents_container->AddChildView(std::move(multi_contents_view));
     multi_contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
@@ -4909,54 +4881,6 @@ void BrowserView::MaybeUpdateStoredFocusForWebContents(
   if (focused_view && focused_view->web_contents() != web_contents) {
     focus_helper->SetStoredFocusView(GetContentsView());
   }
-}
-
-void BrowserView::ReverseWebContents() {
-  CHECK(multi_contents_view_);
-  const int active_index = browser_->tab_strip_model()->active_index();
-
-  std::optional<split_tabs::SplitTabId> split_tab_id =
-      browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
-
-  CHECK(split_tab_id.has_value());
-  browser_->tab_strip_model()->ReverseTabsInSplit(split_tab_id.value());
-}
-
-void BrowserView::ResizeWebContents(double start_ratio) {
-  const tabs::TabInterface* active_tab =
-      browser_->tab_strip_model()->GetActiveTab();
-
-  if (active_tab->GetSplit().has_value()) {
-    browser_->tab_strip_model()->UpdateSplitRatio(
-        active_tab->GetSplit().value(), start_ratio);
-  }
-}
-
-void BrowserView::ActivateWebContents(content::WebContents* web_contents) {
-  int tab_index =
-      browser_->tab_strip_model()->GetIndexOfWebContents(web_contents);
-  if (tab_index != TabStripModel::kNoTab) {
-    browser_->tab_strip_model()->ActivateTabAt(tab_index);
-  }
-}
-
-void BrowserView::OpenInNewSplit(const std::vector<GURL>& urls) {
-  CHECK(!urls.empty());
-  CHECK(!IsInSplitView());
-
-  TabStripModel* tab_strip_model = browser_->tab_strip_model();
-  CHECK(tab_strip_model);
-
-  const int new_tab_idx = tab_strip_model->active_index() + 1;
-
-  // We currently only support creating a split with one link; i.e., the first
-  // link in the provided list.
-  chrome::AddTabAt(browser_.get(), urls.front(), new_tab_idx, false);
-
-  // TODO(crbug.com/406792273): Support entrypoint for vertical splits.
-  tab_strip_model->AddToNewSplit(
-      {new_tab_idx},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical));
 }
 
 std::vector<ContentsWebView*> BrowserView::GetAllVisibleContentsWebViews() {

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
@@ -26,8 +27,9 @@
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
                                       kMultiContentsViewElementId);
 
-MultiContentsView::MultiContentsView(BrowserView* browser_view,
-                                     std::unique_ptr<Delegate> delegate)
+MultiContentsView::MultiContentsView(
+    BrowserView* browser_view,
+    std::unique_ptr<MultiContentsViewDelegate> delegate)
     : browser_view_(browser_view),
       delegate_(std::move(delegate)),
       start_contents_view_inset_(

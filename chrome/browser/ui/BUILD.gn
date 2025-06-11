@@ -4034,6 +4034,8 @@ static_library("ui") {
       "views/frame/multi_contents_resize_area.h",
       "views/frame/multi_contents_view.cc",
       "views/frame/multi_contents_view.h",
+      "views/frame/multi_contents_view_delegate.cc",
+      "views/frame/multi_contents_view_delegate.h",
       "views/frame/multi_contents_view_drop_target_controller.cc",
       "views/frame/multi_contents_view_drop_target_controller.h",
       "views/frame/multi_contents_view_mini_toolbar.cc",

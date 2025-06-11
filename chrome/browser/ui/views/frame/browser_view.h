@@ -937,7 +937,6 @@ class BrowserView : public BrowserWindow,
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.
   friend class BrowserViewLayoutDelegateImpl;
-  friend class MultiContentsViewDelegateImpl;
   friend class TopControlsSlideControllerTest;
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
@@ -969,19 +968,6 @@ class BrowserView : public BrowserWindow,
 
   // Updates stored focus for web contents that is being activated.
   void MaybeUpdateStoredFocusForWebContents(content::WebContents*);
-
-  // Reverses the order of the contents in the active split.
-  void ReverseWebContents();
-
-  // Resize the ratio of the contents in the active split.
-  void ResizeWebContents(double start_ratio);
-
-  // Activate the tab containing the given WebContents (if any).
-  void ActivateWebContents(content::WebContents* web_contents);
-
-  // Expects a non-empty list of urls, and opens the first url in a new tab
-  // split.
-  void OpenInNewSplit(const std::vector<GURL>& urls);
 
   // BrowserUserEducationInterface private methods:
   user_education::FeaturePromoControllerCommon* GetFeaturePromoControllerImpl()
