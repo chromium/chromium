@@ -864,15 +864,6 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
   // using SetAutomaticGainControl().
   StartAgc();
 
-  // TODO(https://crbug.com/411452039): Waiting for the first audio sample ready
-  // event to be signaled is only needed for process loopback devices. We need
-  // to do it because, due to a Windows bug, the value returned by
-  // IAudioClient::GetBufferSize() can not be trusted until we get the first
-  // sample.
-  if (!is_process_loopback_capture_) {
-    CreateFifoIfNeeded();
-  }
-
   // Create and start the thread that will drive the capturing by waiting for
   // capture events.
   DCHECK(!capture_thread_.get());
@@ -1081,9 +1072,9 @@ void WASAPIAudioInputStream::
   GetActivateAudioInterfaceAsyncCallback() = callback;
 }
 
-void WASAPIAudioInputStream::CreateFifoIfNeeded() {
+HRESULT WASAPIAudioInputStream::CreateFifoIfNeeded() {
   if (fifo_) {
-    return;
+    return S_OK;
   }
 
   // Retrieve the length of the endpoint buffer shared between the client
@@ -1093,7 +1084,7 @@ void WASAPIAudioInputStream::CreateFifoIfNeeded() {
   uint32_t endpoint_buffer_size_frames = 0;
   HRESULT hr = audio_client_->GetBufferSize(&endpoint_buffer_size_frames);
   if (FAILED(hr)) {
-    return;
+    return hr;
   }
 
   // Allocate a buffer with a size that enables us to take care of cases like:
@@ -1118,6 +1109,7 @@ void WASAPIAudioInputStream::CreateFifoIfNeeded() {
   fifo_ = std::make_unique<AudioBlockFifo>(
       input_format_.Format.nChannels, packet_size_frames_, buffers_required);
   DVLOG(1) << "AudioBlockFifo buffer count: " << buffers_required;
+  return S_OK;
 }
 
 void WASAPIAudioInputStream::Run() {
@@ -1871,6 +1863,19 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
     base::UmaHistogramSparse("Media.Audio.Capture.Win.InitError", hr);
     MaybeReportFormatRelatedInitError(hr);
     return hr;
+  }
+
+  // TODO(https://crbug.com/411452039): Waiting for the first audio sample ready
+  // event to be signaled is only needed for process loopback devices. We need
+  // to do it because, due to a Windows bug, the value returned by
+  // IAudioClient::GetBufferSize() can not be trusted until we get the first
+  // sample.
+  if (!is_process_loopback_capture_) {
+    hr = CreateFifoIfNeeded();
+    if (FAILED(hr)) {
+      open_result_ = OPEN_RESULT_GET_BUFFER_SIZE_FAILED;
+      return hr;
+    }
   }
 
 #ifndef NDEBUG
