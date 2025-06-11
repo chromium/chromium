@@ -569,16 +569,22 @@ WebInputEventResult PointerEventManager::SendTouchPointerEvent(
   if (non_hovering_pointers_canceled_)
     return WebInputEventResult::kNotHandled;
 
-  ProcessCaptureAndPositionOfPointerEvent(pointer_event, target);
+  target = ProcessCaptureAndPositionOfPointerEvent(pointer_event, target);
 
   // Setting the implicit capture for touch
   if (pointer_event->type() == event_type_names::kPointerdown) {
+    // Note: The `ProcessCaptureAndPositionOfPointerEvent` call above does not
+    // modify `target` for this touch pointerdown because the pointer was in
+    // inactive button state hence was uncaptured.
+    //
+    // This is true even if the two pointerid's for a double-tap happen to be
+    // the same.  This is because the first pointerup synchronously calls
+    // `ProcessCaptureAndPositionOfPointerEvent` below to immediately settle the
+    // capture release.
     SetPointerCapture(pointer_event->pointerId(), target);
   }
 
-  WebInputEventResult result = DispatchPointerEvent(
-      GetEffectiveTargetForPointerEvent(target, pointer_event->pointerId()),
-      pointer_event);
+  WebInputEventResult result = DispatchPointerEvent(target, pointer_event);
 
   if (pointer_event->type() == event_type_names::kPointerup ||
       pointer_event->type() == event_type_names::kPointercancel) {
