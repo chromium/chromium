@@ -11,6 +11,6 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:visibility="invisible">
 
-  <include layout="@layout/tab_grid_card_item"/>
+  <include layout="@layout/tab_grid_card_item_layout"/>
 
 </org.chromium.chrome.browser.compositor.overlays.strip.reorder.StripDragShadowView>
