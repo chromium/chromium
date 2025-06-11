@@ -49,15 +49,12 @@ class DiscountBubbleViewBrowserTest : public DialogBrowserTest {
 
     views::View* const anchor_view =
         BrowserView::GetBrowserViewForBrowser(browser())->top_container();
-    // Create the coordinator using the anchor view.
-    // The coordinator manages the bubble's lifecycle.
-    coordinator_ = std::make_unique<DiscountsBubbleCoordinator>(anchor_view);
 
-    coordinator_->Show(web_contents(), discount_info, base::DoNothing());
+    coordinator_.Show(anchor_view, web_contents(), discount_info,
+                      base::DoNothing());
   }
 
   void TearDownOnMainThread() override {
-    coordinator_.reset();
     DialogBrowserTest::TearDownOnMainThread();
   }
 
@@ -65,7 +62,8 @@ class DiscountBubbleViewBrowserTest : public DialogBrowserTest {
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
-  std::unique_ptr<DiscountsBubbleCoordinator> coordinator_;
+
+  DiscountsBubbleCoordinator coordinator_;
 };
 
 IN_PROC_BROWSER_TEST_F(DiscountBubbleViewBrowserTest,

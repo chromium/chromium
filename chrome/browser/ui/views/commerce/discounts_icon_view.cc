@@ -30,8 +30,7 @@ DiscountsIconView::DiscountsIconView(
                          0,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "Discounts"),
-      bubble_coordinator_(this) {
+                         "Discounts") {
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT));
   SetUpForInOutAnimation();
@@ -213,7 +212,7 @@ void DiscountsIconView::MaybeShowBubble(bool from_user) {
     animate_out_timer_.Stop();
   }
 
-  bubble_coordinator_.Show(GetWebContents(), discount_infos[0],
+  bubble_coordinator_.Show(this, GetWebContents(), discount_infos[0],
                            base::BindOnce(&DiscountsIconView::UnpauseAnimation,
                                           weak_ptr_factory_.GetWeakPtr()));
 
