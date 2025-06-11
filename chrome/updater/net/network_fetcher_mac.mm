@@ -39,6 +39,7 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -655,10 +656,14 @@ void OutOfProcessNetworkFetcher::PostRequest(
   for (const auto& [name, value] : post_additional_headers) {
     headers.push_back(mojom::HttpHeader::New(name, value));
   }
+
   remote_->PostRequest(
       url, post_data, content_type, std::move(headers),
-      MakePostRequestObserver(response_started_callback, progress_callback,
-                              std::move(post_request_complete_callback)));
+      MakePostRequestObserver(
+          response_started_callback, progress_callback,
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              std::move(post_request_complete_callback), std::nullopt,
+              kErrorIpcDisconnect, "", "", "", -1)));
 }
 
 base::OnceClosure OutOfProcessNetworkFetcher::DownloadToFile(
@@ -707,11 +712,14 @@ void OutOfProcessNetworkFetcher::DoDownloadFile(
     std::move(download_complete_callback).Run(dial_result, -1);
     return;
   }
+
   VLOG(2) << "OutOfProcessNetworkFetcher invoking DownloadToFile() on remote.";
   remote_->DownloadToFile(
       url, std::move(output),
-      MakeFileDownloadObserver(response_started_callback, progress_callback,
-                               std::move(download_complete_callback)));
+      MakeFileDownloadObserver(
+          response_started_callback, progress_callback,
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              std::move(download_complete_callback), kErrorIpcDisconnect, -1)));
 }
 
 }  // namespace
