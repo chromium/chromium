@@ -480,6 +480,7 @@ class WPTAdapter:
             logger.debug(f'Running WPT tests from {self.tests_root}')
 
             runner_options.run_info = tmp_dir
+            runner_options.deps_path = self.fs.join(tmp_dir, 'deps')
             self._initialize_run_info(tmp_dir, self.tests_root)
             if self.options.wrapper:
                 runner_options.debug_test = True
@@ -497,7 +498,7 @@ class WPTAdapter:
         show_results = self.port.get_option('show_results')
         try:
             with self.test_env() as runner_options:
-                run = _load_entry_point()
+                run = _load_entry_point(runner_options.deps_path)
                 exit_code = 1 if run(**vars(runner_options)) else 0
         except KeyboardInterrupt:
             logger.critical('Harness exited after signal interrupt')
@@ -620,16 +621,22 @@ class WPTAdapter:
         logger.info('Running against upstream wpt@%s', commit)
 
 
-def _load_entry_point():
+def _load_entry_point(deps_path: str):
     """Import and return a callable that runs wptrunner.
+
+    Arguments:
+        deps_path: Scratch directory for installing dependencies. Third-party
+            Python packages are not installed here because vpython already
+            installs them elsewhere. However, in `--stable` mode, other
+            dependencies like `chromedriver` may be downloaded here from Chrome
+            for Testing. Therefore, this directory should not be tracked by
+            `git`.
 
     Returns:
         Callable whose keyword arguments are the namespace corresponding to
         command line options.
     """
-    # vpython, not virtualenv, vends third-party packages in chromium/src.
-    dummy_venv = Virtualenv(path_finder.get_source_dir(),
-                            skip_virtualenv_setup=True)
+    dummy_venv = Virtualenv(deps_path, skip_virtualenv_setup=True)
     return functools.partial(run.run, dummy_venv)
 
 
