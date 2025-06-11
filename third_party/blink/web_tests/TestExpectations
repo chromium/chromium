@@ -9140,8 +9140,6 @@ crbug.com/422174062 [ Win ] external/wpt/css/css-masking/clip-path/clip-path-inl
 crbug.com/415666471 [ Linux ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Pass Timeout ]
 crbug.com/415666471 [ Linux ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Pass Timeout ]
 
-# Gardener 2025-06-09
-crbug.com/423416578 [ Linux ] custom-elements/form-validation-bubble-appearance.html [ Failure Pass ]
-
 # Gardener 2025-06-10
 crbug.com/424009458 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure Pass ]
+crbug.com/423416578 [ Linux ] custom-elements/form-validation-bubble-appearance.html [ Failure Pass Crash ]
