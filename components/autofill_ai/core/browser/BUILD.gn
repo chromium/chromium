@@ -19,8 +19,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "metrics/autofill_ai_logger.h",
       "metrics/autofill_ai_ukm_logger.cc",
       "metrics/autofill_ai_ukm_logger.h",
-      "suggestion/autofill_ai_suggestions.cc",
-      "suggestion/autofill_ai_suggestions.h",
     ]
 
     deps = [
@@ -61,7 +59,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_import_utils_unittest.cc",
       "autofill_ai_manager_unittest.cc",
       "metrics/autofill_ai_logger_unittest.cc",
-      "suggestion/autofill_ai_suggestions_unittest.cc",
     ]
     deps = [
       ":browser",
