@@ -13,6 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace {
 std::string ToString(actor::mojom::JournalEntryType type) {
@@ -29,13 +31,15 @@ std::string ToString(actor::mojom::JournalEntryType type) {
 }  // namespace
 
 ActorInternalsUIHandler::ActorInternalsUIHandler(
-    Profile* profile,
+    content::WebContents* web_contents,
     mojo::PendingRemote<actor_internals::mojom::Page> page,
     mojo::PendingReceiver<actor_internals::mojom::PageHandler> receiver)
-    : profile_(profile),
+    : web_contents_(web_contents),
       remote_(std::move(page)),
       receiver_(this, std::move(receiver)) {
-  auto& journal = actor::ActorKeyedService::Get(profile_)->GetJournal();
+  auto* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto& journal = actor::ActorKeyedService::Get(profile)->GetJournal();
   journal.AddObserver(this);
 
   for (auto it = journal.Items(); it; ++it) {
@@ -44,7 +48,9 @@ ActorInternalsUIHandler::ActorInternalsUIHandler(
 }
 
 ActorInternalsUIHandler::~ActorInternalsUIHandler() {
-  auto& journal = actor::ActorKeyedService::Get(profile_)->GetJournal();
+  auto* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  auto& journal = actor::ActorKeyedService::Get(profile)->GetJournal();
   journal.RemoveObserver(this);
 }
 
@@ -53,4 +59,48 @@ void ActorInternalsUIHandler::WillAddJournalEntry(
   remote_->JournalEntryAdded(actor_internals::mojom::JournalEntry::New(
       entry.url, entry.data->event, ToString(entry.data->type),
       entry.data->details, entry.data->timestamp));
+}
+
+void ActorInternalsUIHandler::StartLogging() {
+  if (select_file_dialog_) {
+    return;  // Currently running, wait for existing save to complete.
+  }
+
+  base::FilePath default_file =
+      base::FilePath().AppendASCII("actor_trace.pftrace");
+  select_file_dialog_ = ui::SelectFileDialog::Create(this, /*policy=*/nullptr);
+  select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+                                  std::u16string(), default_file, nullptr, 0,
+                                  FILE_PATH_LITERAL(".pftrace"),
+                                  web_contents_->GetTopLevelNativeWindow());
+}
+
+void ActorInternalsUIHandler::StopLogging() {
+  select_file_dialog_.reset();
+  trace_logger_.reset();
+}
+
+void ActorInternalsUIHandler::FileSelected(const ui::SelectedFileInfo& file,
+                                           int index) {
+  auto* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  auto& journal = actor::ActorKeyedService::Get(profile)->GetJournal();
+  trace_logger_ =
+      std::make_unique<actor::AggregatedJournalFileSerializer>(journal);
+
+  trace_logger_->Init(
+      file.path(), base::BindOnce(&ActorInternalsUIHandler::TraceFileInitDone,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  select_file_dialog_.reset();
+}
+
+void ActorInternalsUIHandler::TraceFileInitDone(bool success) {
+  if (!success) {
+    trace_logger_.reset();
+  }
+}
+
+void ActorInternalsUIHandler::FileSelectionCanceled() {
+  select_file_dialog_.reset();
+  trace_logger_.reset();
 }

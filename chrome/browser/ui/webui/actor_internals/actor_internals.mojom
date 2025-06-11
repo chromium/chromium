@@ -33,7 +33,11 @@ interface Page {
 
 // Interface that implements page-to-browser events.
 interface PageHandler {
-  // Empty for now.
+  // Start trace logging. This will present a file picker to the user.
+  StartLogging();
+
+  // Stop any active trace logging.
+  StopLogging();
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

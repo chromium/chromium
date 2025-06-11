@@ -1,0 +1,8 @@
+specific_include_rules = {
+  'aggregated_journal.*_serializer\.cc': [
+    "+third_party/perfetto/include/perfetto",
+  ],
+  'aggregated_journal_serializer\.cc': [
+    "+third_party/perfetto/protos/perfetto",
+  ],
+}

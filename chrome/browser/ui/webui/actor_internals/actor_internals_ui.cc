@@ -42,7 +42,5 @@ void ActorInternalsUI::CreatePageHandler(
     mojo::PendingRemote<actor_internals::mojom::Page> page,
     mojo::PendingReceiver<actor_internals::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<ActorInternalsUIHandler>(
-      Profile::FromBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext()),
-      std::move(page), std::move(receiver));
+      web_ui()->GetWebContents(), std::move(page), std::move(receiver));
 }

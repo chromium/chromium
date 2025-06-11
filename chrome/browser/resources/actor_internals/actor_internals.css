@@ -13,3 +13,7 @@ th {
 td {
   background-color: #F0F0F0;
 }
+
+#stop-logging {
+  display: none;
+}

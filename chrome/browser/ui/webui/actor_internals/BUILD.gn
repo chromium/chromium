@@ -35,5 +35,6 @@ source_set("actor_internals") {
     "//chrome/browser/ui/webui/actor_internals:mojo_bindings",
     "//chrome/common",
     "//content/public/browser",
+    "//ui/shell_dialogs",
   ]
 }

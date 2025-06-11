@@ -14,6 +14,17 @@ import {getRequiredElement} from '//resources/js/util.js';
 import type {JournalEntry} from './actor_internals.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 
+function startLogging() {
+  BrowserProxy.getInstance().handler.startLogging();
+  getRequiredElement('start-logging').style.display = 'none';
+  getRequiredElement('stop-logging').style.display = 'inline-block';
+}
+
+function stopLogging() {
+  BrowserProxy.getInstance().handler.stopLogging();
+  getRequiredElement('start-logging').style.display = 'inline-block';
+  getRequiredElement('stop-logging').style.display = 'none';
+}
 
 window.onload = function() {
   const proxy = BrowserProxy.getInstance();
@@ -37,4 +48,7 @@ window.onload = function() {
     tr.appendChild(td);
     table.appendChild(tr);
   });
+
+  getRequiredElement('start-logging').onclick = startLogging;
+  getRequiredElement('stop-logging').onclick = stopLogging;
 };
