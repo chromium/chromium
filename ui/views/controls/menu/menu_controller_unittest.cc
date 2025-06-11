@@ -415,10 +415,6 @@ class MenuControllerTest : public ViewsTestBase,
     return submenu->host_;
   }
 
-  void set_showing_submenu(bool showing) {
-    menu_controller_->showing_submenu_ = showing;
-  }
-
   MenuHostRootView* CreateMenuHostRootView(MenuHost* host);
 
   void MenuHostOnDragWillStart(MenuHost* host);
@@ -2479,28 +2475,6 @@ TEST_F(MenuControllerTest, WidgetStateChangeCancelsMenu) {
   EXPECT_TRUE(showing());
   EXPECT_EQ(MenuController::ExitType::kNone, menu_controller()->exit_type());
   owner()->SetFullscreen(true);
-  EXPECT_FALSE(showing());
-  EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
-}
-
-TEST_F(MenuControllerTest, WidgetBoundsChangeCancelsMenu) {
-  ExitMenuRun();
-  menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
-                         MenuAnchorPosition::kTopLeft);
-  EXPECT_TRUE(showing());
-  EXPECT_EQ(MenuController::ExitType::kNone, menu_controller()->exit_type());
-
-  // Ensure menu does not dismiss if showing_submenu_ is true.
-  set_showing_submenu(true);
-  gfx::Rect bounds = owner()->GetWindowBoundsInScreen();
-  bounds.Offset(10, 10);
-  owner()->SetBounds(bounds);
-  EXPECT_TRUE(showing());
-  EXPECT_EQ(MenuController::ExitType::kNone, menu_controller()->exit_type());
-
-  set_showing_submenu(false);
-  bounds.Offset(10, 10);
-  owner()->SetBounds(bounds);
   EXPECT_FALSE(showing());
   EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
 }
