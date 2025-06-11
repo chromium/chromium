@@ -16,6 +16,8 @@
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/preloading/search_preload/search_preload_service.h"
+#include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/grit/generated_resources.h"
@@ -792,9 +794,16 @@ void SearchboxHandler::OnNavigationLikely(
     // the web UI is referencing a stale match.
     return;
   }
+
   if (auto* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
     search_prefetch_service->OnNavigationLikely(
+        line, *match, navigation_predictor, web_contents_);
+  }
+
+  if (SearchPreloadService* search_preload_service =
+          SearchPreloadServiceFactory::GetForProfile(profile_)) {
+    search_preload_service->OnNavigationLikely(
         line, *match, navigation_predictor, web_contents_);
   }
 }
@@ -820,6 +829,12 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
       if (SearchPrefetchService* search_prefetch_service =
               SearchPrefetchServiceFactory::GetForProfile(profile_)) {
         search_prefetch_service->OnResultChanged(
+            web_contents_, autocomplete_controller()->result());
+      }
+
+      if (SearchPreloadService* search_preload_service =
+              SearchPreloadServiceFactory::GetForProfile(profile_)) {
+        search_preload_service->OnAutocompleteResultChanged(
             web_contents_, autocomplete_controller()->result());
       }
     }

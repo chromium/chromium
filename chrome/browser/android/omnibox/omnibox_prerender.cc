@@ -16,6 +16,8 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/search_preload/search_preload_service.h"
+#include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -90,6 +92,12 @@ void OmniboxPrerender::PrerenderMaybe(
           SearchPrefetchServiceFactory::GetForProfile(profile)) {
     search_prefetch_service->OnResultChanged(web_contents,
                                              *autocomplete_result);
+  }
+
+  if (SearchPreloadService* search_preload_service =
+          SearchPreloadServiceFactory::GetForProfile(profile)) {
+    search_preload_service->OnAutocompleteResultChanged(web_contents,
+                                                        *autocomplete_result);
   }
 
   auto* default_match = autocomplete_result->default_match();
