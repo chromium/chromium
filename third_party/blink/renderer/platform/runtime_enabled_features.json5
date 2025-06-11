@@ -5521,6 +5521,7 @@
       // Launch feature flag for WebGPU Compatibility Mode
       // https://chromestatus.com/feature/6436406437871616
       name: "WebGPUCompatibilityMode",
+      origin_trial_feature_name: "WebGPUCompatibilityMode",
       status: "experimental",
       // Also enabled as part of all experimental WebGPU features.
       implied_by: ["WebGPUExperimentalFeatures"],
@@ -5542,15 +5543,6 @@
       name: "WebGPUExperimentalFeatures",
       status: "experimental",
       public: true,
-    },
-    {
-      // Launch feature flag for GPURequestAdapterOptions featureLevel
-      // https://chromestatus.com/feature/5154347661656064
-      name: "WebGPUFeatureLevel",
-      status: "experimental",
-      // Also enabled as part of all experimental WebGPU features and
-      // as part of Compatibility Mode.
-      implied_by: ["WebGPUExperimentalFeatures", "WebGPUCompatibilityMode"],
     },
     {
       name: "WebHID",

@@ -83,13 +83,15 @@ wgpu::FeatureLevel AsDawnFeatureLevel(const String& feature_level) {
 }
 
 wgpu::RequestAdapterOptions AsDawnType(
-    const GPURequestAdapterOptions* webgpu_options) {
+    const GPURequestAdapterOptions* webgpu_options,
+    const ExecutionContext* execution_context) {
   DCHECK(webgpu_options);
 
   wgpu::RequestAdapterOptions dawn_options;
   dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
 
-  if (RuntimeEnabledFeatures::WebGPUFeatureLevelEnabled()) {
+  if (RuntimeEnabledFeatures::WebGPUCompatibilityModeEnabled(
+          execution_context)) {
     dawn_options.featureLevel =
         AsDawnFeatureLevel(webgpu_options->featureLevel());
   }
@@ -390,7 +392,8 @@ void GPU::RequestAdapterImpl(
 #endif
 
   if (options->featureLevel() == "compatibility" &&
-      !RuntimeEnabledFeatures::WebGPUCompatibilityModeEnabled()) {
+      !RuntimeEnabledFeatures::WebGPUCompatibilityModeEnabled(
+          execution_context)) {
     AddConsoleWarning(
         execution_context,
         "Beware! featureLevel was set to \"compatibility\", but this request "
@@ -400,7 +403,8 @@ void GPU::RequestAdapterImpl(
         "https://github.com/gpuweb/gpuweb/issues/4266");
   }
 
-  wgpu::RequestAdapterOptions dawn_options = AsDawnType(options);
+  wgpu::RequestAdapterOptions dawn_options =
+      AsDawnType(options, execution_context);
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
                     WrapPersistent(script_state), WrapPersistent(options))));
