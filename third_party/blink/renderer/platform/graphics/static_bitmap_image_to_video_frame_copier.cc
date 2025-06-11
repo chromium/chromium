@@ -194,8 +194,9 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
   GrSurfaceOrigin image_origin = shared_image->surface_origin();
   gfx::Point src_point;
   DCHECK(context_provider->RasterInterface());
-  context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
-      image->GetSyncToken().GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      shared_image->BeginRasterAccess(context_provider->RasterInterface(),
+                                      image->GetSyncToken(), /*readonly=*/true);
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(), image_origin,
       image_size, src_point, info,
@@ -204,6 +205,7 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
       WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
                     weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
                     std::move(callback)));
+  gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 }
 
 void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
