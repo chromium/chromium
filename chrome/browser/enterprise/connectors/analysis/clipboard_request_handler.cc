@@ -29,6 +29,7 @@ std::unique_ptr<ClipboardRequestHandler> ClipboardRequestHandler::Create(
     Type type,
     safe_browsing::DeepScanAccessPoint access_point,
     ContentMetaData::CopiedTextSource clipboard_source,
+    std::string source_content_area_email,
     std::string content_transfer_method,
     std::string data,
     CompletionCallback callback) {
@@ -36,14 +37,15 @@ std::unique_ptr<ClipboardRequestHandler> ClipboardRequestHandler::Create(
     return TestFactoryStorage()->Run(content_analysis_info, upload_service,
                                      profile, std::move(url), type,
                                      access_point, std::move(clipboard_source),
+                                     std::move(source_content_area_email),
                                      std::move(content_transfer_method),
                                      std::move(data), std::move(callback));
   }
   return base::WrapUnique(new ClipboardRequestHandler(
       content_analysis_info, upload_service, profile, std::move(url), type,
       access_point, std::move(clipboard_source),
-      std::move(content_transfer_method), std::move(data),
-      std::move(callback)));
+      std::move(source_content_area_email), std::move(content_transfer_method),
+      std::move(data), std::move(callback)));
 }
 
 // static
@@ -66,6 +68,7 @@ ClipboardRequestHandler::ClipboardRequestHandler(
     Type type,
     safe_browsing::DeepScanAccessPoint access_point,
     ContentMetaData::CopiedTextSource clipboard_source,
+    std::string source_content_area_email,
     std::string content_transfer_method,
     std::string data,
     CompletionCallback callback)
@@ -78,6 +81,7 @@ ClipboardRequestHandler::ClipboardRequestHandler(
       data_(std::move(data)),
       content_size_(data_.size()),
       clipboard_source_(std::move(clipboard_source)),
+      source_content_area_email_(std::move(source_content_area_email)),
       content_transfer_method_(std::move(content_transfer_method)),
       callback_(std::move(callback)) {}
 
@@ -127,6 +131,9 @@ bool ClipboardRequestHandler::UploadDataImpl() {
     if (clipboard_source_.has_url()) {
       request->set_clipboard_source_url(clipboard_source_.url());
     }
+  }
+  if (!source_content_area_email_.empty()) {
+    request->set_source_content_area_account_email(source_content_area_email_);
   }
 
   UploadForDeepScanning(std::move(request));

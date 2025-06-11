@@ -9,6 +9,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/clipboard_types.h"
 
 namespace signin {
 class IdentityManager;
@@ -61,6 +62,7 @@ class ContentAnalysisInfo {
 class ContentAreaUserProvider : public ContentAnalysisInfo {
  public:
   static std::string GetUser(Profile* profile, const GURL& tab_url);
+  static std::string GetUser(const content::ClipboardEndpoint& source);
 
  private:
   const AnalysisSettings& settings() const override;

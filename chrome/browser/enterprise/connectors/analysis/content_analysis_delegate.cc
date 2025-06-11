@@ -768,8 +768,8 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
     text_request_handler_ = ClipboardRequestHandler::Create(
         this, GetBinaryUploadService(), profile_, url_,
         ClipboardRequestHandler::Type::kText, access_point_,
-        data_.clipboard_source, GetContentTransferMethod(),
-        std::move(full_text),
+        data_.clipboard_source, data_.source_content_area_email,
+        GetContentTransferMethod(), std::move(full_text),
         base::BindOnce(&ContentAnalysisDelegate::TextRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
@@ -798,7 +798,8 @@ void ContentAnalysisDelegate::PrepareImageRequest() {
     image_request_handler_ = ClipboardRequestHandler::Create(
         this, GetBinaryUploadService(), profile_, url_,
         ClipboardRequestHandler::Type::kImage, access_point_,
-        data_.clipboard_source, GetContentTransferMethod(), data_.image,
+        data_.clipboard_source, data_.source_content_area_email,
+        GetContentTransferMethod(), data_.image,
         base::BindOnce(&ContentAnalysisDelegate::ImageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 

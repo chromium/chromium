@@ -22,6 +22,7 @@ class FakeClipboardRequestHandler : public ClipboardRequestHandler {
       Type type,
       safe_browsing::DeepScanAccessPoint access_point,
       ContentMetaData::CopiedTextSource clipboard_source,
+      std::string source_content_area_email,
       std::string content_transfer_method,
       std::string data,
       CompletionCallback callback);

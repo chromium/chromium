@@ -75,12 +75,14 @@ class TestClipboardRequestHandler
       Type type,
       safe_browsing::DeepScanAccessPoint access_point,
       enterprise_connectors::ContentMetaData::CopiedTextSource clipboard_source,
+      std::string source_content_area_email,
       std::string content_transfer_method,
       std::string data,
       CompletionCallback callback) {
     return base::WrapUnique(new TestClipboardRequestHandler(
         content_analysis_info, upload_service, profile, std::move(url), type,
         access_point, std::move(clipboard_source),
+        std::move(source_content_area_email),
         std::move(content_transfer_method), std::move(data),
         std::move(callback)));
   }

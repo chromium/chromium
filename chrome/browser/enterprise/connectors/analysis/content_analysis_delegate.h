@@ -123,6 +123,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
     // non-clipboard pastes, and clipboard pastes in special cases (ex. OTR).
     ContentMetaData::CopiedTextSource clipboard_source;
 
+    // The email for the content area user of the source of clipboard data.
+    // Only populated for Workspace sites.
+    std::string source_content_area_email;
+
     // The settings to use for the analysis of the data in this struct.
     AnalysisSettings settings;
   };

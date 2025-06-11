@@ -20,14 +20,15 @@ std::unique_ptr<ClipboardRequestHandler> FakeClipboardRequestHandler::Create(
     Type type,
     safe_browsing::DeepScanAccessPoint access_point,
     ContentMetaData::CopiedTextSource clipboard_source,
+    std::string source_content_area_email,
     std::string content_transfer_method,
     std::string data,
     CompletionCallback callback) {
   auto handler = base::WrapUnique(new FakeClipboardRequestHandler(
       content_analysis_info, upload_service, profile, std::move(url), type,
       access_point, std::move(clipboard_source),
-      std::move(content_transfer_method), std::move(data),
-      std::move(callback)));
+      std::move(source_content_area_email), std::move(content_transfer_method),
+      std::move(data), std::move(callback)));
   handler->delegate_ = delegate;
   return handler;
 }

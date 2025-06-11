@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
@@ -154,6 +155,19 @@ std::string ContentAreaUserProvider::GetUser(Profile* profile,
   return ContentAreaUserProvider(IdentityManagerFactory::GetForProfile(profile),
                                  tab_url)
       .GetContentAreaAccountEmail();
+}
+
+// static
+std::string ContentAreaUserProvider::GetUser(
+    const content::ClipboardEndpoint& source) {
+  if (!source.data_transfer_endpoint() ||
+      !source.data_transfer_endpoint()->IsUrlType() ||
+      !source.data_transfer_endpoint()->GetURL() || !source.browser_context()) {
+    return "";
+  }
+
+  return GetUser(Profile::FromBrowserContext(source.browser_context()),
+                 *source.data_transfer_endpoint()->GetURL());
 }
 
 const GURL& ContentAreaUserProvider::tab_url() const {

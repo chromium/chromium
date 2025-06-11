@@ -27,6 +27,7 @@ namespace {
 constexpr char kAnalysisUrl[] = "https://scan.com/";
 constexpr char kUrl[] = "https://bar.com/";
 constexpr char kSourceUrl[] = "https://baz.com/";
+constexpr char kSourceEmail[] = "test-user@gmail.com";
 constexpr char kTabTitle[] = "tab_title";
 constexpr char kMessage[] = "message";
 constexpr char kMethod[] = "METHOD";
@@ -158,8 +159,9 @@ TEST_F(ClipboardRequestHandlerTest, Text) {
   auto handler = ClipboardRequestHandler::Create(
       &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
       ClipboardRequestHandler::Type::kText,
-      safe_browsing::DeepScanAccessPoint::PASTE, GetSource(), kMethod,
-      CreateTestData(kMaxSize), base::BindOnce([](RequestHandlerResult result) {
+      safe_browsing::DeepScanAccessPoint::PASTE, GetSource(), kSourceEmail,
+      kMethod, CreateTestData(kMaxSize),
+      base::BindOnce([](RequestHandlerResult result) {
         EXPECT_EQ(result.final_result, FinalContentAnalysisResult::FAILURE);
         EXPECT_EQ(result.complies, false);
         EXPECT_EQ(result.custom_rule_message.message_segments_size(), 1);
@@ -230,8 +232,9 @@ TEST_F(ClipboardRequestHandlerTest, Image) {
   auto handler = ClipboardRequestHandler::Create(
       &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
       ClipboardRequestHandler::Type::kImage,
-      safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP, GetSource(), kMethod,
-      CreateTestData(kMaxSize), base::BindOnce([](RequestHandlerResult result) {
+      safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP, GetSource(),
+      kSourceEmail, kMethod, CreateTestData(kMaxSize),
+      base::BindOnce([](RequestHandlerResult result) {
         EXPECT_EQ(result.final_result, FinalContentAnalysisResult::FAILURE);
         EXPECT_EQ(result.complies, false);
         EXPECT_EQ(result.custom_rule_message.message_segments_size(), 1);
