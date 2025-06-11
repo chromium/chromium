@@ -1985,6 +1985,7 @@ _CONFIG = [
             'third_party/blink/renderer/modules/ai/',
         ],
         'allowed': [
+            'base::DoNothingWithBoundArgs',
             'base::MakeFixedFlatSet',
         ],
     },
