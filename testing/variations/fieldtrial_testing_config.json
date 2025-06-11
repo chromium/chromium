@@ -12375,7 +12375,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "IOSLensGestureTextSelectionDisabled"
+                        "LensGestureTextSelectionDisabled"
                     ]
                 }
             ]
