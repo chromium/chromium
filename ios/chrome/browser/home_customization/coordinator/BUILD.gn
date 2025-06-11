@@ -47,6 +47,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//skia",
     "//third_party/material_color_utilities",
