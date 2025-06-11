@@ -861,6 +861,44 @@ TEST_F(CreditCardSaveManagerTest, LocalCreditCard_WithNonFocusableField) {
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
+// Tests ShowSaveCreditCardLocally is called with correct number of strikes on
+// the card.
+TEST_F(CreditCardSaveManagerTest, SaveCreditCardLocallyWithNumStrikes) {
+  credit_card_save_manager_->SetCreditCardUploadEnabled(false);
+  TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
+      TestCreditCardSaveStrikeDatabase(&strike_database());
+
+  // Add a single strike for the card to be added.
+  credit_card_save_strike_database.AddStrike("1111");
+  EXPECT_EQ(1, credit_card_save_strike_database.GetStrikes("1111"));
+
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  EXPECT_CALL(payments_client(),
+              ShowSaveCreditCardLocally(
+                  /*card=*/_,
+                  /*options=*/
+                  AllOf(Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::show_prompt,
+                              true),
+                        Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::num_strikes,
+                              1)),
+                  /*callback=*/_));
+
+  FormSubmitted(credit_card_form);
+  EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
+}
+
 // TODO(crbug.com/40947875): Remove duplicate code present between server and
 // local CVC test suites below. Tests that when triggering
 // AttemptToOfferCvcLocalSave function, SaveCard dialog will be triggered with

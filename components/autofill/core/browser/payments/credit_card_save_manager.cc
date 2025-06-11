@@ -760,7 +760,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
             // TODO(crbug.com/40280819): Refactor SaveCreditCardOptions.
             .with_show_prompt(show_save_prompt_.value_or(true))
             .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
-                base::UTF16ToUTF8(upload_request_.card.LastFourDigits())))
+                base::UTF16ToUTF8(card_save_candidate_.LastFourDigits())))
             .with_card_save_type(card_save_type),
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnLocalSave,
                        weak_ptr_factory_.GetWeakPtr()));
