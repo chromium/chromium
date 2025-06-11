@@ -407,8 +407,7 @@ AutofillProfileChecker::~AutofillProfileChecker() {
       ->address_data_manager()
       .RemoveObserver(this);
 }
-bool AutofillProfileChecker::Wait() {
-  DLOG(WARNING) << "AutofillProfileChecker::Wait() started";
+void AutofillProfileChecker::WillStartWaiting() {
   PersonalDataManager* pdm_a =
       autofill_helper::GetPersonalDataManager(profile_a_);
   PersonalDataManager* pdm_b =
@@ -428,9 +427,6 @@ bool AutofillProfileChecker::Wait() {
   WaitForCurrentTasksToComplete(
       GetWebDataService(profile_b_)->GetDBTaskRunner());
   std::move(waiter_b).Wait();
-
-  DLOG(WARNING) << "AutofillProfileChecker::Wait() completed";
-  return StatusChangeChecker::Wait();
 }
 
 bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {

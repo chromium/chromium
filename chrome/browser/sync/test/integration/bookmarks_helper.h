@@ -298,7 +298,9 @@ class BookmarksMatchChecker : public BookmarkModelStatusChangeChecker {
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
-  bool Wait() override;
+
+ protected:
+  void WillStartWaiting() override;
 };
 
 // Base class used for checkers that verify the state of a single BookmarkModel

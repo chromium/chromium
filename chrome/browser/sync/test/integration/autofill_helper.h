@@ -121,11 +121,14 @@ class AutofillProfileChecker : public StatusChangeChecker,
   ~AutofillProfileChecker() override;
 
   // StatusChangeChecker implementation.
-  bool Wait() override;
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // autofill::AddressDataManager::Observer implementation.
   void OnAddressDataChanged() override;
+
+ protected:
+  // StatusChangeChecker overrides.
+  void WillStartWaiting() override;
 
  private:
   const int profile_a_;

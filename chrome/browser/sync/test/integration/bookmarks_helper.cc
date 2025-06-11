@@ -963,11 +963,10 @@ bool BookmarksMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   return AllModelsMatch();
 }
 
-bool BookmarksMatchChecker::Wait() {
+void BookmarksMatchChecker::WillStartWaiting() {
   for (int i = 0; i < sync_datatype_helper::test()->num_clients(); ++i) {
     TriggerAllFaviconLoading(GetBookmarkModel(i));
   }
-  return BookmarkModelStatusChangeChecker::Wait();
 }
 
 SingleBookmarkModelStatusChangeChecker::SingleBookmarkModelStatusChangeChecker(
