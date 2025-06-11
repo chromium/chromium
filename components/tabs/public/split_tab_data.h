@@ -11,13 +11,15 @@
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/gfx/range/range.h"
 
 namespace split_tabs {
+
 // Contains metadata for a split tab collection such as the id and split layout
 // orientation. Also provides a way to access a the list of tabs in the split.
 class SplitTabData {
  public:
-  SplitTabData(tabs::SplitTabCollection* controller,
+  SplitTabData(tabs::SplitTabCollection* collection,
                const split_tabs::SplitTabId& id,
                const SplitTabVisualData& visual_data);
   ~SplitTabData();
@@ -28,8 +30,12 @@ class SplitTabData {
 
   std::vector<tabs::TabInterface*> ListTabs() const;
 
+  // Returns [start, end) where the leftmost tab in the split has index start
+  // and the rightmost tab in the split has index end - 1.
+  gfx::Range GetIndexRange() const;
+
  private:
-  raw_ptr<tabs::SplitTabCollection> controller_;
+  raw_ptr<tabs::SplitTabCollection> collection_;
   SplitTabVisualData visual_data_;
   split_tabs::SplitTabId id_;
 };

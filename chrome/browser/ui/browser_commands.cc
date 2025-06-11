@@ -1258,7 +1258,9 @@ void DuplicateSplit(Browser* browser, split_tabs::SplitTabId split) {
   CHECK(browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP));
 
   TabStripModel* model = browser->tab_strip_model();
-  gfx::Range split_indices_range = model->GetIndexRangeOfSplit(split);
+  split_tabs::SplitTabData* split_data = model->GetSplitData(split);
+  gfx::Range split_indices_range = split_data->GetIndexRange();
+
   std::vector<int> duplicated_tab_indices;
   for (size_t split_index = split_indices_range.GetMin();
        split_index < split_indices_range.GetMax(); split_index++) {

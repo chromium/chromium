@@ -832,10 +832,6 @@ class TabStripModel {
   tabs::TabInterface* GetTabForWebContents(
       const content::WebContents* contents) const;
 
-  // Returns [start, end) where the leftmost tab in the split has index start
-  // and the rightmost tab in the split has index end - 1.
-  gfx::Range GetIndexRangeOfSplit(split_tabs::SplitTabId split_id) const;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
   // Temporary private API.
@@ -1299,6 +1295,10 @@ class TabStripModel {
 
   std::vector<std::pair<tabs::TabInterface*, int>> GetTabsAndIndicesInSplit(
       split_tabs::SplitTabId split_id);
+
+  // Returns [start, end) where the leftmost tab in the split has index start
+  // and the rightmost tab in the split has index end - 1.
+  gfx::Range GetIndexRangeOfSplit(split_tabs::SplitTabId split_id) const;
 
   // If inserting at `index` breaks a split, returns its id, otherwise nullopt.
   std::optional<split_tabs::SplitTabId> InsertionBreaksSplitContiguity(
