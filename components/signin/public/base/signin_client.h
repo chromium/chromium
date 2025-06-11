@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
