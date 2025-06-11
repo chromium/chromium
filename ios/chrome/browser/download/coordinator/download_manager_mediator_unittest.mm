@@ -157,7 +157,7 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
 
 // Tests that consumer is updated right after it's set.
 TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
-  OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(YES);
+  OCMStub([application_ canOpenURL:GetGoogleDriveAppURL()]).andReturn(YES);
 
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
@@ -202,7 +202,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerFailedStateUpdate) {
 // Tests that consumer changes the state to kDownloadManagerStateSucceeded if
 // task competed without an error.
 TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
-  OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(YES);
+  OCMStub([application_ canOpenURL:GetGoogleDriveAppURL()]).andReturn(YES);
 
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
@@ -225,7 +225,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
 // task competed without an error and Google Drive app is not installed.
 TEST_F(DownloadManagerMediatorTest,
        ConsumerSuceededStateUpdateWithoutDriveAppInstalled) {
-  OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(NO);
+  OCMStub([application_ canOpenURL:GetGoogleDriveAppURL()]).andReturn(NO);
 
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
