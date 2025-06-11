@@ -61,7 +61,7 @@ import java.util.List;
 @Config(
         manifest = Config.NONE,
         shadows = {TabbedNavigationBarColorControllerUnitTest.ShadowSemanticColorUtils.class},
-        sdk = 28)
+        sdk = 29)
 @EnableFeatures(ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND)
 public class TabbedNavigationBarColorControllerUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();

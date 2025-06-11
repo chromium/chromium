@@ -64,7 +64,7 @@ public class WindowSystemBarColorHelperUnitTest {
     }
 
     @Test
-    @Config(sdk = 28)
+    @Config(sdk = 29)
     public void testInitialValue() {
         mWindowStatusBarColor = Color.RED;
         mWindowNavBarColor = Color.YELLOW;
@@ -88,7 +88,7 @@ public class WindowSystemBarColorHelperUnitTest {
     }
 
     @Test
-    @Config(sdk = 27)
+    @Config(sdk = 29)
     public void testInitialValue_LowerSdk() {
         mWindowStatusBarColor = Color.RED;
         mWindowNavBarColor = Color.YELLOW;
@@ -139,7 +139,7 @@ public class WindowSystemBarColorHelperUnitTest {
     }
 
     @Test
-    @Config(sdk = 28)
+    @Config(sdk = 29)
     @SuppressLint("NewApi") // Ignore warning for setNavigationBarDividerColor
     public void testSetNavigationBarDividerColor() {
         WindowSystemBarColorHelper helper = new WindowSystemBarColorHelper(mWindow);
@@ -158,23 +158,6 @@ public class WindowSystemBarColorHelperUnitTest {
         // Setting the same color will be ignored.
         helper.setNavigationBarColor(newDividerColor);
         verify(mWindow, times(1)).setNavigationBarDividerColor(newDividerColor);
-    }
-
-    @Test
-    @Config(sdk = 27)
-    public void testSetDividerColorIgnoredOnLowerVersion() {
-        WindowSystemBarColorHelper helper = new WindowSystemBarColorHelper(mWindow);
-        assertEquals(
-                "getNavigationBarDividerColor is transparent on unsupported sdk.",
-                Color.TRANSPARENT,
-                helper.getNavigationBarDividerColor());
-
-        int newDividerColor = Color.BLACK;
-        helper.setNavigationBarDividerColor(newDividerColor);
-        assertEquals(
-                "getStatusBarColor is wrong.",
-                Color.TRANSPARENT,
-                helper.getNavigationBarDividerColor());
     }
 
     @Test

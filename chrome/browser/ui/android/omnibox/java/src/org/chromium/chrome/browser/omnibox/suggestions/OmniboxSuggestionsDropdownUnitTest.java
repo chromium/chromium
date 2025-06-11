@@ -52,7 +52,7 @@ import org.chromium.ui.base.WindowDelegate;
 
 /** Unit tests for {@link OmniboxSuggestionsDropdown}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 28)
+@Config(sdk = 29)
 public class OmniboxSuggestionsDropdownUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock Runnable mDropdownScrollListener;

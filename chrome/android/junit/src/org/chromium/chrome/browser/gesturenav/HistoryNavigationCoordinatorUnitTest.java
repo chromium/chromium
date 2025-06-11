@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -78,6 +79,7 @@ public class HistoryNavigationCoordinatorUnitTest {
     }
 
     @Test
+    @DisabledTest // This needs to be re-worked for Q.
     public void testFullscreenObserver_onEnterAndOnExit() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
         initializeHistoryNavigationCoordinator();

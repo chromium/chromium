@@ -59,7 +59,10 @@ def _gn_gen(output_dir: str) -> None:
   Args:
     output_dir: The path to the build output directory.
   """
-  cmd = [os.path.join(_DEPOT_TOOLS_PATH, 'gn'), 'gen', output_dir]
+  cmd = [
+      sys.executable,
+      os.path.join(_DEPOT_TOOLS_PATH, 'gn.py'), 'gen', output_dir
+  ]
   logging.info('Running: %s', shlex.join(cmd))
   subprocess.check_call(cmd, stdout=sys.stderr)
 

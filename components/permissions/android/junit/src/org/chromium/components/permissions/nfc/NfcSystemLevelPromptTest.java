@@ -78,7 +78,7 @@ public class NfcSystemLevelPromptTest {
                         invocation -> {
                             Object intent = invocation.getArguments()[0];
                             String intentAction = ((Intent) intent).getAction();
-                            Assert.assertEquals(Settings.ACTION_NFC_SETTINGS, intentAction);
+                            Assert.assertEquals(Settings.Panel.ACTION_NFC, intentAction);
 
                             mIntentCallback.notifyCalled();
                             return null;

@@ -617,7 +617,7 @@ public class ChildProcessConnectionTest {
         connection.updateGroupImportance(1, 2);
         assertEquals(1, connection.getGroup());
         assertEquals(2, connection.getImportanceInGroup());
-        assertEquals(3, mMockConnections.size());
+        assertEquals(4, mMockConnections.size());
         // Group should be set on the wavied (last) binding.
         ChildServiceConnectionMock mock = mMockConnections.get(mMockConnections.size() - 1);
         assertEquals(1, mock.getGroup());
@@ -665,7 +665,7 @@ public class ChildProcessConnectionTest {
         assertNotNull(mFirstServiceConnection);
         connection.start(/* useStrongBinding= */ false, mServiceCallback);
 
-        Assert.assertEquals(3, mMockConnections.size());
+        Assert.assertEquals(4, mMockConnections.size());
         boolean anyServiceConnectionBound = false;
         for (ChildServiceConnectionMock serviceConnection : mMockConnections) {
             anyServiceConnectionBound = anyServiceConnectionBound || serviceConnection.isBound();
@@ -694,15 +694,15 @@ public class ChildProcessConnectionTest {
         verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
 
-        Assert.assertEquals(6, mMockConnections.size());
+        Assert.assertEquals(8, mMockConnections.size());
         // First 4 should be unbound now.
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 4; ++i) {
             verify(mMockConnections.get(i), times(1)).retire();
             Assert.assertFalse(mMockConnections.get(i).isBound());
         }
         // New connection for fallback service should be bound.
         ChildServiceConnectionMock boundServiceConnection = null;
-        for (int i = 3; i < 6; ++i) {
+        for (int i = 4; i < 8; ++i) {
             if (mMockConnections.get(i).isBound()) {
                 boundServiceConnection = mMockConnections.get(i);
             }
@@ -742,16 +742,16 @@ public class ChildProcessConnectionTest {
         verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
 
-        Assert.assertEquals(6, mMockConnections.size());
+        Assert.assertEquals(8, mMockConnections.size());
         // First 4 should be unbound now.
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 4; ++i) {
             verify(mMockConnections.get(i), times(1)).retire();
             Assert.assertFalse(mMockConnections.get(i).isBound());
         }
         // New connection for fallback service should be bound.
         ChildServiceConnectionMock boundServiceConnection = null;
         int boundConnectionCount = 0;
-        for (int i = 3; i < 6; ++i) {
+        for (int i = 4; i < 8; ++i) {
             if (mMockConnections.get(i).isBound()) {
                 boundServiceConnection = mMockConnections.get(i);
                 boundConnectionCount++;

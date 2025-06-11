@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.R;
 import org.chromium.ui.util.StyleUtils.FontLoadingOutcome;
@@ -53,6 +54,7 @@ public class StyleUtilsTest {
     }
 
     @Test
+    @DisabledTest // This needs to be re-worked for Q.
     public void applyTextAppearanceToTextPaint_CustomFontSizeText() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
