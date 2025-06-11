@@ -45,6 +45,8 @@ def main():
   parser.add_argument('--input_golden_file',
                       type=str,
                       help='Path to the input golden file.')
+  parser.add_argument('--target_name',
+                      help='Target name that generates the golden file.')
   parser.add_argument('--stamp', type=str, help='Path to touch on success')
   args = parser.parse_args()
   text_diff = CompareGeneratedWithGolden(args.input_generated_file,
@@ -73,7 +75,7 @@ If you wish to build the action locally in generation mode, See the instructions
 #####################################################################
 ./components/cronet/tools/cr_cronet.py -d out/proguard_config gn && \
 REBASELINE_PROGUARD=1 autoninja -C out/proguard_config \
-cronet_combined_proguard_flags_golden_test
+{args.target_name}
 
 This will generate a GN output directory with the appropriate GN\
 flags to run the golden_test in generation mode rather than verification mode.
