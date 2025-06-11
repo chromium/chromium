@@ -130,29 +130,29 @@ void HistogramVerify1QwacResult(Verify1QwacResult result) {
   base::UmaHistogramEnumeration("Net.CertVerifier.Qwac.1Qwac", result);
 }
 
-void HistogramVerify2QwacResult(Verify2QwacResult result) {
-  base::UmaHistogramEnumeration("Net.CertVerifier.Qwac.2Qwac", result);
+void HistogramVerify2QwacResult(Verify2QwacBindingResult result) {
+  base::UmaHistogramEnumeration("Net.CertVerifier.Qwac.2QwacBinding", result);
 }
 
-Verify2QwacResult MapErrorTo2QwacResult(int err) {
+Verify2QwacBindingResult MapErrorTo2QwacResult(int err) {
   switch (err) {
     case ERR_CERT_COMMON_NAME_INVALID:
-      return Verify2QwacResult::kNameInvalid;
+      return Verify2QwacBindingResult::kCertNameInvalid;
     case ERR_CERT_DATE_INVALID:
-      return Verify2QwacResult::kDateInvalid;
+      return Verify2QwacBindingResult::kCertDateInvalid;
     case ERR_CERT_AUTHORITY_INVALID:
-      return Verify2QwacResult::kAuthorityInvalid;
+      return Verify2QwacBindingResult::kCertAuthorityInvalid;
     case ERR_CERT_INVALID:
-      return Verify2QwacResult::kInvalid;
+      return Verify2QwacBindingResult::kCertInvalid;
     case ERR_CERT_WEAK_KEY:
-      return Verify2QwacResult::kWeakKey;
+      return Verify2QwacBindingResult::kCertWeakKey;
     case ERR_CERT_NAME_CONSTRAINT_VIOLATION:
-      return Verify2QwacResult::kNameConstraintViolation;
+      return Verify2QwacBindingResult::kCertNameConstraintViolation;
     default:
       if (IsCertificateError(err)) {
-        return Verify2QwacResult::kOtherCertError;
+        return Verify2QwacBindingResult::kCertOtherError;
       } else {
-        return Verify2QwacResult::kOtherError;
+        return Verify2QwacBindingResult::kOtherError;
       }
   }
 }
@@ -1670,7 +1670,6 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-// TODO(crbug.com/392931070): add histograms
 // TODO(crbug.com/392931070): add netlogs
 scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
     std::string_view binding,
@@ -1679,20 +1678,27 @@ scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
     const NetLogWithSource& net_log) {
   auto parsed_binding = TwoQwacCertBinding::Parse(binding);
   if (!parsed_binding.has_value()) {
+    HistogramVerify2QwacResult(Verify2QwacBindingResult::kBindingParsingError);
     return nullptr;
   }
   if (!parsed_binding->VerifySignature()) {
+    HistogramVerify2QwacResult(
+        Verify2QwacBindingResult::kBindingSignatureInvalid);
     return nullptr;
   }
   CertVerifyResult verify_result;
   int verify_rv = Verify2Qwac(parsed_binding->header().two_qwac_cert.get(),
                               hostname, &verify_result, net_log);
   if (verify_rv != OK) {
+    // Verify2Qwac internally records a histogram result on all failure cases,
+    // so no histogram result is recorded here.
     return nullptr;
   }
   if (!parsed_binding->BindsTlsCert(tls_cert)) {
+    HistogramVerify2QwacResult(Verify2QwacBindingResult::kTlsCertNotBound);
     return nullptr;
   }
+  HistogramVerify2QwacResult(Verify2QwacBindingResult::kValid2QwacBinding);
   return std::move(verify_result.verified_cert);
 }
 
@@ -1739,7 +1745,8 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
       return NetLogCertParams(input_cert->cert_buffer(), parsing_errors);
     });
     if (!target) {
-      HistogramVerify2QwacResult(Verify2QwacResult::kLeafParsingError);
+      HistogramVerify2QwacResult(
+          Verify2QwacBindingResult::kCertLeafParsingError);
       verify_result->cert_status |= CERT_STATUS_INVALID;
       return ERR_CERT_INVALID;
     }
@@ -1770,9 +1777,10 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
     if (policy_status == QwacPoliciesStatus::kNotQwac &&
         qc_statement_status == QwacQcStatementsStatus::kNotQwac &&
         eku_status == QwacEkuStatus::kNotQwac) {
-      HistogramVerify2QwacResult(Verify2QwacResult::kNotQwac);
+      HistogramVerify2QwacResult(Verify2QwacBindingResult::kCertNotQwac);
     } else {
-      HistogramVerify2QwacResult(Verify2QwacResult::kInconsistentBits);
+      HistogramVerify2QwacResult(
+          Verify2QwacBindingResult::kCertInconsistentBits);
     }
     verify_result->cert_status |= CERT_STATUS_INVALID;
     return ERR_CERT_INVALID;
@@ -1803,7 +1811,7 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
                                    &der_verification_system_time)) {
     // This shouldn't be possible.
     // We don't really have a good error code for this type of error.
-    HistogramVerify2QwacResult(Verify2QwacResult::kOtherError);
+    HistogramVerify2QwacResult(Verify2QwacBindingResult::kOtherError);
     verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
     return ERR_CERT_AUTHORITY_INVALID;
   }
@@ -1870,7 +1878,10 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
   // TODO(crbug.com/392931070): is there any point in setting this? This method
   // only ever returns OK if it is a valid 2-qwac anyway.
   verify_result->cert_status |= CERT_STATUS_IS_QWAC;
-  HistogramVerify2QwacResult(Verify2QwacResult::kValid2Qwac);
+
+  // No histogram result is recorded in the success case, as it is assumed
+  // Verify2Qwac is only called by Verify2QwacBinding, which will record the
+  // histogram result if Verify2Qwac succeeds.
   return OK;
 }
 

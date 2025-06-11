@@ -1377,13 +1377,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CertVerifier.Qwac.2Qwac" enum="NetCertVerifier2QwacResult"
-    expires_after="2026-03-18">
+<histogram name="Net.CertVerifier.Qwac.2QwacBinding"
+    enum="NetCertVerifier2QwacBindingResult" expires_after="2026-03-18">
   <owner>mattm@chromium.org</owner>
   <owner>nharper@chromium.org</owner>
   <summary>
-    Result of attempting to verify if a certificate is a valid 2-QWAC (EU
-    qualified website authentication certificate).
+    Result of attempting to verify if a 2-QWAC (EU qualified website
+    authentication certificate) binding is valid and binds the specified TLS
+    certificate.
 
     This will be emitted only when the VerifyQWACs feature flag is enabled,
     Chrome Root Store is being used, the site's TLS certificate validates

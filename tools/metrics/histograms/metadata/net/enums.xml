@@ -677,26 +677,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/cert/cert_verify_proc_builtin.h:NetCertVerifier1QwacResult) -->
 
-<!-- LINT.IfChange(NetCertVerifier2QwacResult) -->
+<!-- LINT.IfChange(NetCertVerifier2QwacBindingResult) -->
 
-<enum name="NetCertVerifier2QwacResult">
-  <int value="0" label="error parsing 2-QWAC leaf certificate"/>
-  <int value="1" label="certificate does not have 2-QWAC indicators"/>
-  <int value="2"
-      label="Has some QWAC-like indicators, but they are inconsistent or
-             incomplete"/>
-  <int value="3" label="2-QWAC verification succeeded"/>
-  <int value="4" label="certificate name invalid"/>
-  <int value="5" label="certificate date invalid"/>
-  <int value="6" label="authority invalid"/>
-  <int value="7" label="invalid"/>
-  <int value="8" label="weak key"/>
-  <int value="9" label="name constraint violation"/>
-  <int value="10" label="other certificate error"/>
-  <int value="11" label="other error"/>
+<enum name="NetCertVerifier2QwacBindingResult">
+  <int value="0" label="other error"/>
+  <int value="1" label="binding verification succeeded"/>
+  <int value="2" label="binding parsing error"/>
+  <int value="3" label="binding signature invalid"/>
+  <int value="4" label="TLS certificate not bound"/>
+  <int value="5" label="error parsing 2-QWAC leaf certificate"/>
+  <int value="6" label="2-QWAC certificate does not have 2-QWAC indicators"/>
+  <int value="7"
+      label="2-QWAC certificate has some QWAC-like indicators, but they are
+             inconsistent or incomplete"/>
+  <int value="8" label="2-QWAC certificate name invalid"/>
+  <int value="9" label="2-QWAC certificate date invalid"/>
+  <int value="10" label="2-QWAC certificate authority invalid"/>
+  <int value="11" label="2-QWAC certificate invalid"/>
+  <int value="12" label="2-QWAC certificate weak key"/>
+  <int value="13" label="2-QWAC certificate name constraint violation"/>
+  <int value="14" label="other 2-QWAC certificate error"/>
 </enum>
 
-<!-- LINT.ThenChange(//net/cert/cert_verify_proc_builtin.h:NetCertVerifier2QwacResult) -->
+<!-- LINT.ThenChange(//net/cert/cert_verify_proc_builtin.h:NetCertVerifier2QwacBindingResult) -->
 
 <enum name="NetErrorPageEvents">
   <int value="0" label="Error Page Shown">
