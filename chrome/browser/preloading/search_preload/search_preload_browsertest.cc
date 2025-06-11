@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <limits>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -435,7 +436,9 @@ class SearchPreloadBrowserTest : public SearchPreloadBrowserTestBase {
             },
             {
                 features::kDsePreload2,
-                {},
+                {
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
+                },
             },
             {
                 features::kDsePreload2OnPress,
@@ -946,6 +949,41 @@ IN_PROC_BROWSER_TEST_F(
             ParseNoVarySearchData(R"(key-order, params, except=("q"))"));
 }
 
+class SearchPreloadBrowserTest_DeviceMemoryThreshold
+    : public SearchPreloadBrowserTestBase {
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            {
+                features::kPrefetchPrerenderIntegration,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2DeviceMemoryThresholdMiB",
+                     base::NumberToString(std::numeric_limits<int>::max())},
+                },
+            },
+            {
+                features::kDsePreload2OnPress,
+                {
+                    {"kDsePreload2OnPressMouseDown", "true"},
+                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
+                    {"kDsePreload2OnPressTouchDown", "true"},
+                },
+            },
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_DeviceMemoryThreshold,
+                       FeatureIsDisabledIfDeviceMemoryIsSmallerThanThreshold) {
+  ASSERT_FALSE(features::IsDsePreload2Enabled());
+}
+
 class SearchPreloadBrowserTest_Limit : public SearchPreloadBrowserTestBase {
   void InitFeatures(
       base::test::ScopedFeatureList& scoped_feature_list) override {
@@ -958,6 +996,7 @@ class SearchPreloadBrowserTest_Limit : public SearchPreloadBrowserTestBase {
             {
                 features::kDsePreload2,
                 {
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
                     {"kDsePreload2MaxPrefetch", "2"},
                 },
             },
@@ -1139,6 +1178,7 @@ class SearchPreloadBrowserTest_Ttl : public SearchPreloadBrowserTestBase {
             {
                 features::kDsePreload2,
                 {
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
                     {"kDsePreload2MaxPrefetch", "2"},
                     {"kDsePreload2PrefetchTtl", "1000ms"},
                 },
@@ -1303,6 +1343,7 @@ class SearchPreloadBrowserTest_SharedDictionary
             {
                 features::kDsePreload2,
                 {
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
                     {"kDsePreload2OnSuggestSharedDictionaryTtl", "10ms"},
                 },
             },
