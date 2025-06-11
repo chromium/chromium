@@ -1162,11 +1162,11 @@ try_.orchestrator_builder(
     name = "android-x86-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
-        "ci/android-oreo-x86-rel",
+        "ci/android-10-x86-rel",
     ],
     gn_args = gn_args.config(
         configs = [
-            "ci/android-oreo-x86-rel",
+            "ci/android-10-x86-rel",
             "release_try_builder",
             "use_clang_coverage",
             "use_java_coverage",
