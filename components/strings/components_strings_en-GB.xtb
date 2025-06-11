@@ -522,6 +522,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1863257867908022953">Tray 12</translation>
 <translation id="1864927262126810325">From <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Cable and Satellite Providers</translation>
+<translation id="1866757068250903512">Control authentication devices named <ph name="READERNAME" /> and smart cards used with them</translation>
 <translation id="1870473978371099486">Private Tutoring Services</translation>
 <translation id="1871208020102129563">Proxy is set to use fixed proxy servers, not a .pac script URL.</translation>
 <translation id="1871284979644508959">Required field</translation>
@@ -1045,6 +1046,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2743934314332613923">Update driving licence?</translation>
 <translation id="2759299890026163685">Make sure that you have a stable Internet connection before trying again</translation>
 <translation id="2759825833388495838">fill in your password on <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">MM / YY</translation>
 <translation id="2764001903315068341">Comics</translation>
 <translation id="2765217105034171413">Small</translation>
 <translation id="2768397283109119044">You attempted to reach <ph name="DOMAIN" />, but the server presented an invalid certificate issued to that name. The name is a reserved IP address or internal hostname.</translation>
@@ -1385,6 +1387,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3362968246557010467">This policy was automatically copied from the deprecated <ph name="OLD_POLICY" /> policy. You should use this policy instead.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> wants to use your virtual reality device and data</translation>
 <translation id="3369192424181595722">Clock error</translation>
+<translation id="3370855919511944393">Wallet settings</translation>
 <translation id="3371064404604898522">Set Chrome as the default browser</translation>
 <translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> added</translation>
 <translation id="337363190475750230">Deprovisioned</translation>

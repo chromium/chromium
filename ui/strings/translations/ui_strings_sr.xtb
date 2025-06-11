@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{Пре 1 дан}one{Пре # дан}few{Пре # данa}other{Пре # данa}}</translation>
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1243314992276662751">Отпреми</translation>
+<translation id="1253734725326687145">Мета за додир је премештена у горњи десни угао. Додирните овде.</translation>
 <translation id="1266864766717917324">Није успело дељење: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Пробајте да делите текст у мањим деловима.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="24452542372838207">Прошири обавештење</translation>
 <translation id="2445449901874883781">Користи високу густину</translation>
+<translation id="2448407890032181691">Мета за додир је премештена у доњи десни угао. Додирните овде.</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2497284189126895209">Све датотеке</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Картица</translation>
 <translation id="5613020302032141669">Стрелица налево</translation>
 <translation id="5633029987065897167">Празно</translation>
+<translation id="5651438382973553530">Мета за додир је премештена у доњи леви угао. Додирните овде.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}one{# мин}few{# мин}other{# мин}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Последња активност: данас}=1{Последња активност: пре 1 дан}one{Последња активност: пре # дан}few{Последња активност: пре # дана}other{Последња активност: пре # дана}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 дан и }one{# дан и }few{# дана и }other{# дана и }}</translation>

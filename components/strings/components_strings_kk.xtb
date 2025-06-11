@@ -522,6 +522,7 @@
 <translation id="1863257867908022953">12-науа</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> дереккөзінен</translation>
 <translation id="186539747722034544">Кабельдік және жерсеріктік провайдерлер</translation>
+<translation id="1866757068250903512"><ph name="READERNAME" /> деп аталатын аутентификация құрылғыларын және олармен бірге қолданылатын смарт карталарды басқару</translation>
 <translation id="1870473978371099486">Жеке сабақ беру қызметтері</translation>
 <translation id="1871208020102129563">Прокси .pac сценарий URL мекенжайын емес, бекітілген прокси серверлерін пайдалануға орнатылған.</translation>
 <translation id="1871284979644508959">Міндетті өріс</translation>
@@ -1045,6 +1046,7 @@
 <translation id="2743934314332613923">Жүргізуші куәлігін жаңарту керек пе?</translation>
 <translation id="2759299890026163685">Әрекетті қайталамас бұрын, интернет байланысының тұрақты екеніне көз жеткізіңіз.</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> қолданбасында құпия сөздеріңізді толтырмақ</translation>
+<translation id="2760805590727089264">АА/ЖЖ</translation>
 <translation id="2764001903315068341">Комикс</translation>
 <translation id="2765217105034171413">Кіші</translation>
 <translation id="2768397283109119044"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сол атқа жарамсыз сертификат ұсынды. Бұл ат — резервтелген IP мекенжайы немесе ішкі хост атауы.</translation>
@@ -1384,6 +1386,7 @@
 <translation id="3362968246557010467">Бұл саясат ескі <ph name="OLD_POLICY" /> саясатынан автоматты түрде көшірілді. Орнына осы саясатты пайдаланғаныңыз жөн.</translation>
 <translation id="3364869320075768271">Сайт (<ph name="URL" />) виртуалдық шындық құрылғысын және деректерді пайдалануға рұқсат сұрайды.</translation>
 <translation id="3369192424181595722">Сағат қатесі</translation>
+<translation id="3370855919511944393">Wallet параметрлері</translation>
 <translation id="3371064404604898522">Chrome-ды әдепкі браузер етіп орнату</translation>
 <translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> қосылды</translation>
 <translation id="337363190475750230">Өшірілді</translation>

@@ -331,6 +331,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2524132927880411790">Go to Google app voice search</translation>
 <translation id="2527209463677295330">By including more of a page’s text, you might see better results</translation>
 <translation id="2527779675047087889">Hide clipboard contents</translation>
+<translation id="2531209299761896527">Pinch, hold and drag to open tabs in a new window</translation>
 <translation id="2532336938189706096">Web View</translation>
 <translation id="253498598929009420">The site will be able to see the contents of your screen</translation>
 <translation id="2535807170289627159">All tabs</translation>
@@ -1628,7 +1629,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8137562778192957619">You won’t need to remember this password. It will be saved to Google Password Manager.</translation>
 <translation id="8152331954420209374">Go to Lens</translation>
 <translation id="8163820386638255770">To use and save passwords in your Google Account, verify that it's you</translation>
-<translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
 <translation id="8190358571722158785">1 day left</translation>
 <translation id="8192765420340770300">Sign-in bottom sheet opened at full height</translation>

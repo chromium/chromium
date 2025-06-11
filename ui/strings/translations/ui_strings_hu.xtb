@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 napja}other{# napja}}</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1243314992276662751">Feltöltés</translation>
+<translation id="1253734725326687145">Az érinthető terület a jobb felső sarokba lett áthelyezve. Koppintson ide.</translation>
 <translation id="1266864766717917324">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Próbálja meg kisebb részletekben megosztani a szöveget.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
 <translation id="24452542372838207">Értesítés kibontása</translation>
 <translation id="2445449901874883781">Magas sűrűség használata</translation>
+<translation id="2448407890032181691">Az érinthető terület a jobb alsó sarokba lett áthelyezve. Koppintson ide.</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2497284189126895209">Minden fájl</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Bal nyíl</translation>
 <translation id="5633029987065897167">Üres</translation>
+<translation id="5651438382973553530">Az érinthető terület a bal alsó sarokba lett áthelyezve. Koppintson ide.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 perc}other{# perc}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Ma volt aktív}=1{1 napja volt aktív}other{# napja volt aktív}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 nap és }other{# nap és }}</translation>

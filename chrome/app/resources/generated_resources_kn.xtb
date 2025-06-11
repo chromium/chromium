@@ -138,7 +138,7 @@
 <translation id="1084288067399862432">ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬದಲಾಯಿಸಲಾಗಿದೆ.
 
 ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="GOOGLE_PASSWORD_MANAGER" /> ನಲ್ಲಿ ಪರಿಶೀಲಿಸಿ.</translation>
-<translation id="1084824384139382525">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="1084824384139382525">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1085064499066015002">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="1085558727130096638"><ph name="OWNER_FIRST_NAME" /> ಮತ್ತು ಇತರ <ph name="NUM_OTHER_MEMBERS" /> ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿಲ್ಲ. <ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />. ಆಯ್ಕೆಮಾಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
@@ -1017,7 +1017,7 @@
 <translation id="1688935057616748272">ಅಕ್ಷರವನ್ನು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="1689333818294560261">ಅಡ್ಡಹೆಸರು</translation>
 <translation id="168991973552362966">ಸಮೀಪದಲ್ಲಿರುವ ಪ್ರಿಂಟರ್‌ ಸೇರಿಸಿ</translation>
-<translation id="1689945336726856614">&amp;URL ನಕಲಿಸಿ</translation>
+<translation id="1689945336726856614">&amp;URL ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1690068335127678634">ಸ್ಪ್ಲಿಟ್ ಸ್ಕ್ರೀನ್ ಸೆಟಪ್</translation>
 <translation id="1692115862433274081">ಬೇರೊಂದು ಖಾತೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="1692118695553449118">ಸಿಂಕ್‌ ಆನ್‌ ಆಗಿದೆ</translation>
@@ -2330,7 +2330,6 @@
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> ನಿಂದ ಸಾಧನಗಳು</translation>
 <translation id="2589658397149952302">Drive ಫೈಲ್‌ಗಳನ್ನು ಎಂದಿಗೂ ತೋರಿಸಬೇಡಿ</translation>
 <translation id="2593499352046705383">ಪ್ರಾರಂಭಿಸುವ ಮೊದಲು, ನಿಮ್ಮ ಡೇಟಾದ ಬ್ಯಾಕಪ್ ನಿಮ್ಮ ಬಳಿ ಇದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. <ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಹಾರ್ಡ್ ಡ್ರೈವ್ ಓವರ್‌ರೈಟ್ ಆಗುತ್ತದೆ. g.co/flex/InstallGuide ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
-<translation id="2594832159966169099">V8 ಭದ್ರತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2597073208962000830">ಸಮೀಪದಲ್ಲಿರುವ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲು, ಬ್ಲೂಟೂತ್ ಸ್ಕ್ಯಾನಿಂಗ್ ಅನ್ನು Nearby ಶೇರ್ ಬಳಸಿಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="2598136842498757793">ಟೂಲ್‌ಬಾರ್ ಬಟನ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="2598710988533271874">ಹೊಸ Chrome ಲಭ್ಯವಿದೆ</translation>
@@ -3604,7 +3603,7 @@
 <translation id="3509379002674019679">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ, ಸೇವ್ ಮಾಡಿ ಹಾಗೂ ನಿರ್ವಹಿಸಿ. ಇದರಿಂದ ನೀವು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3510471875518562537">ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಈ ವಿಳಾಸವನ್ನು ಬಳಸಿ</translation>
 <translation id="3511200754045804813">ಮರು-ಸ್ಕ್ಯಾನ್</translation>
-<translation id="3511307672085573050">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="3511307672085573050">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="3511358375261756531"><ph name="HEADER" /> ವಿಸ್ತರಿಸಿ</translation>
 <translation id="351152300840026870">ಸ್ಥಿರ-ಅಗಲ ಫಾಂಟ್</translation>
 <translation id="3511528412952710609">ಶಾರ್ಟ್‌</translation>
@@ -4391,7 +4390,7 @@
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">ತಲೆಯನ್ನು ಕೊಂಚ ಮೂವ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ ಕರ್ಸರ್ ಜಂಪ್ ಆಗುವುದನ್ನು ನೀವು ತಡೆಯಬಹುದು, ಆದರೆ ಸ್ವಲ್ಪ ವಿಳಂಬವಾಗುತ್ತದೆ.</translation>
 <translation id="402184264550408568">(TCP)</translation>
-<translation id="4021909830315618592">ಬಿಲ್ಡ್ ವಿವರಗಳನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="4021909830315618592">ಬಿಲ್ಡ್ ವಿವರಗಳನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="4021941025609472374">ಎಡಬದಿಯಲ್ಲಿರುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="4022426551683927403">ನಿಘಂಟಿಗೆ &amp;ಸೇರಿಸಿ</translation>
 <translation id="4023048917751563912"><ph name="APP_NAME" /> <ph name="PAGE_NUMBER" /> ಪುಟಗಳನ್ನು <ph name="PRINTER_NAME" /> ಗೆ ಮುದ್ರಿಸುತ್ತಿದೆ</translation>

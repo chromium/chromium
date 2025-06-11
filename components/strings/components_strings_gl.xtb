@@ -522,6 +522,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1863257867908022953">Bandexa 12</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Provedores de cable e satélite</translation>
+<translation id="1866757068250903512">Controla os dispositivos autenticados co nome <ph name="READERNAME" /> e as tarxetas intelixentes que se usen con eles</translation>
 <translation id="1870473978371099486">Clases particulares</translation>
 <translation id="1871208020102129563">O proxy está configurado para utilizar servidores proxy fixos, non un URL de script .pac.</translation>
 <translation id="1871284979644508959">O campo é obrigatorio</translation>
@@ -1045,6 +1046,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2743934314332613923">Queres actualizar o permiso de conducir?</translation>
 <translation id="2759299890026163685">Debes ter unha conexión estable a Internet antes de tentalo de novo</translation>
 <translation id="2759825833388495838">poñer o teu contrasinal en <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">MM/AA</translation>
 <translation id="2764001903315068341">Cómics</translation>
 <translation id="2765217105034171413">Pequeno</translation>
 <translation id="2768397283109119044">Tentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado non válido emitido para ese nome. O nome é un enderezo IP reservado ou un nome do host interno.</translation>
@@ -1385,6 +1387,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3362968246557010467">Esta política copiouse automaticamente desde unha política <ph name="OLD_POLICY" /> obsoleta. Debes utilizar esta política e non a antiga.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> quere utilizar os teus datos e o teu dispositivo de realidade virtual</translation>
 <translation id="3369192424181595722">Erro do reloxo</translation>
+<translation id="3370855919511944393">Configuración de Wallet</translation>
 <translation id="3371064404604898522">Establecer Chrome como navegador predeterminado</translation>
 <translation id="3371186787117738282">Atributo engadido: <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="337363190475750230">Desaprovisionado</translation>

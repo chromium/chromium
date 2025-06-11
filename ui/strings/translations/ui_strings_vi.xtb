@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 ngày trước}other{# ngày trước}}</translation>
 <translation id="1181037720776840403">Xoá</translation>
 <translation id="1243314992276662751">Tải lên</translation>
+<translation id="1253734725326687145">Đã di chuyển đích chạm lên trên cùng bên phải. Nhấn vào đây.</translation>
 <translation id="1266864766717917324">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Phím Win</translation>
 <translation id="1291104554099683393">Hãy thử chia sẻ văn bản theo các đoạn nhỏ hơn.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
 <translation id="24452542372838207">Mở rộng thông báo</translation>
 <translation id="2445449901874883781">Sử dụng mật độ cao</translation>
+<translation id="2448407890032181691">Đã di chuyển đích chạm xuống dưới cùng bên phải. Nhấn vào đây.</translation>
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2497284189126895209">Tất cả Tệp tin</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Phím Tab</translation>
 <translation id="5613020302032141669">Mũi tên trái</translation>
 <translation id="5633029987065897167">Trống</translation>
+<translation id="5651438382973553530">Đã di chuyển đích chạm xuống dưới cùng bên trái. Nhấn vào đây.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 phút}other{# phút}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Hoạt động hôm nay}=1{Hoạt động 1 ngày trước}other{Hoạt động # ngày trước}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ngày và }other{# ngày và }}</translation>

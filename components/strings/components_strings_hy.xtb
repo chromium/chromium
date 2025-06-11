@@ -526,6 +526,7 @@
 <translation id="1863257867908022953">Դարակ 12</translation>
 <translation id="1864927262126810325">Աղբյուրը՝ <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Մալուխային և արբանյակային հեռուստատեսության մատակարարներ</translation>
+<translation id="1866757068250903512">Կառավարեք <ph name="READERNAME" /> անվանումով իսկորոշման սարքերը և դրանց հետ օգտագործվող խելացի քարտերը</translation>
 <translation id="1870473978371099486">Անհատական պարապմունքներ</translation>
 <translation id="1871208020102129563">Ընտրված է ֆիքսված պրոքսի-սերվերների, այլ ոչ PAC սկրիպտի URL-ի օգտագործումը:</translation>
 <translation id="1871284979644508959">Պարտադիր դաշտ</translation>
@@ -1049,6 +1050,7 @@
 <translation id="2743934314332613923">Թարմացնե՞լ վարորդական վկայականը</translation>
 <translation id="2759299890026163685">Նախքան նորից փորձելը, համոզվեք, որ ունեք կայուն ինտերնետ կապ</translation>
 <translation id="2759825833388495838">լրացրեք ձեր գաղտնաբառը <ph name="APP_NAME" /> հավելվածում</translation>
+<translation id="2760805590727089264">ԱԱ/ՏՏ</translation>
 <translation id="2764001903315068341">Կոմիքսներ</translation>
 <translation id="2765217105034171413">Փոքր</translation>
 <translation id="2768397283109119044">Դուք փորձել եք բացել <ph name="DOMAIN" /> հասցեն, սակայն սերվերը ներկայացրել է այդ անվանման համար թողարկված սխալ վկայագիր։ Անվանումը պահված IP հասցե կամ ներքին խնամորդ է։</translation>

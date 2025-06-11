@@ -1046,6 +1046,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2743934314332613923">¿Quieres actualizar la licencia de conducir?</translation>
 <translation id="2759299890026163685">Asegúrate de tener una conexión a Internet estable antes de volver a intentarlo</translation>
 <translation id="2759825833388495838">completar tu contraseña en <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">MM/AA</translation>
 <translation id="2764001903315068341">Cómics</translation>
 <translation id="2765217105034171413">Pequeño</translation>
 <translation id="2768397283109119044">Intentaste acceder a <ph name="DOMAIN" />, pero el servidor presentó un certificado no válido emitido con ese nombre. El nombre es una dirección IP reservada o un nombre de host interno.</translation>

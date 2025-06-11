@@ -522,6 +522,7 @@
 <translation id="1863257867908022953">트레이 12</translation>
 <translation id="1864927262126810325">출처: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">케이블 및 위성 사업자</translation>
+<translation id="1866757068250903512">이름이 <ph name="READERNAME" />인 인증 기기 및 해당 기기와 함께 사용되는 스마트 카드를 제어합니다.</translation>
 <translation id="1870473978371099486">개인 교습 서비스</translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
 <translation id="1871284979644508959">필수 입력란</translation>
@@ -1045,6 +1046,7 @@
 <translation id="2743934314332613923">운전면허증을 업데이트하시겠습니까?</translation>
 <translation id="2759299890026163685">다시 시도하기 전에 인터넷 연결이 안정적인지 확인하세요.</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />에 비밀번호 입력</translation>
+<translation id="2760805590727089264">MM/YY</translation>
 <translation id="2764001903315068341">만화</translation>
 <translation id="2765217105034171413">작게</translation>
 <translation id="2768397283109119044"><ph name="DOMAIN" />에 접속하려 했으나 서버가 해당 이름에 발급된 잘못된 인증서를 제시했습니다. 이름이 예약된 IP 주소 또는 내부 호스트 이름입니다.</translation>
@@ -1385,6 +1387,7 @@
 <translation id="3362968246557010467">이 정책은 지원 중단된 <ph name="OLD_POLICY" /> 정책에서 자동으로 복사되었습니다. 이 정책을 대신 사용해야 합니다.</translation>
 <translation id="3364869320075768271"><ph name="URL" />에서 가상 현실 기기 및 데이터를 사용하려고 합니다.</translation>
 <translation id="3369192424181595722">시계 오류</translation>
+<translation id="3370855919511944393">월렛 설정</translation>
 <translation id="3371064404604898522">Chrome을 기본 브라우저로 설정</translation>
 <translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> 추가됨</translation>
 <translation id="337363190475750230">사용 중단됨</translation>

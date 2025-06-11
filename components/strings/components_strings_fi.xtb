@@ -522,6 +522,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1863257867908022953">Lokero 12</translation>
 <translation id="1864927262126810325">Lähde: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Kaapeli- ja satelliittipalveluntarjoajat</translation>
+<translation id="1866757068250903512">Hallitse todennuslaitteita, joiden nimi on <ph name="READERNAME" />, ja niissä käytettäviä älykortteja</translation>
 <translation id="1870473978371099486">Henkilökohtaiset kouluavustajapalvelut</translation>
 <translation id="1871208020102129563">Välityspalvelin on asetettu käyttämään kiinteitä välityspalvelimia, ei .pac-URL-osoitetta.</translation>
 <translation id="1871284979644508959">Pakollinen tieto</translation>
@@ -1045,6 +1046,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2743934314332613923">Päivitetäänkö ajokortti?</translation>
 <translation id="2759299890026163685">Varmista, että sinulla on vakaa internetyhteys, ennen kuin yrität uudelleen</translation>
 <translation id="2759825833388495838">täyttää salasanojasi sovelluksessa: <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">KK/VV</translation>
 <translation id="2764001903315068341">Sarjakuvat</translation>
 <translation id="2765217105034171413">Pieni</translation>
 <translation id="2768397283109119044">Yritit muodostaa yhteyden verkkotunnukseen <ph name="DOMAIN" />, mutta palvelin esitti nimelle myönnetyn virheellisen varmenteen. Nimi on varattu IP-osoite tai sisäinen isäntänimi.</translation>
@@ -1386,6 +1388,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3362968246557010467">Tämä käytäntö kopioitiin automaattisesti vanhentuneesta <ph name="OLD_POLICY" /> ‑käytännöstä. Käytä tätä käytäntöä sen sijaan.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> haluaa käyttää virtuaalitodellisuuslaitteitasi ja ‑dataasi</translation>
 <translation id="3369192424181595722">Väärä kellonaika</translation>
+<translation id="3370855919511944393">Wallet-asetukset</translation>
 <translation id="3371064404604898522">Valitse Chrome oletusselaimeksi</translation>
 <translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> lisätty</translation>
 <translation id="337363190475750230">Poistettu käytöstä</translation>

@@ -522,6 +522,7 @@
 <translation id="1863257867908022953">Qab 12</translation>
 <translation id="1864927262126810325">Mənbə: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Kabel və peyk provayderləri</translation>
+<translation id="1866757068250903512"><ph name="READERNAME" /> adlı identifikasiya cihazlarını və onlarla birlikdə istifadə olunan smart kartları idarə edin</translation>
 <translation id="1870473978371099486">Fərdi repetitorluq xidmətləri</translation>
 <translation id="1871208020102129563">Proksi .pac skript URL deyil sabit proksi serverlər istifadə etmək üçün ayarlanıb.</translation>
 <translation id="1871284979644508959">Tələb olunan sahə</translation>
@@ -1045,6 +1046,7 @@
 <translation id="2743934314332613923">Sürücülük vəsiqəsi güncəllənsin?</translation>
 <translation id="2759299890026163685">Yenidən cəhd etməzdən əvvəl sabit internet bağlantısı olduğundan əmin olun</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> tətbiqində parolunuzu daxil edin</translation>
+<translation id="2760805590727089264">AA/İİ</translation>
 <translation id="2764001903315068341">Komiks</translation>
 <translation id="2765217105034171413">Kiçik</translation>
 <translation id="2768397283109119044"><ph name="DOMAIN" /> domeninə giriş cəhdi etdiniz, amma server həmin ada təyin edilmiş yanlış sertifikat təqdim etdi. Ad qorunan IP ünvanı və ya daxili host adıdır.</translation>
@@ -1383,6 +1385,7 @@
 <translation id="3362968246557010467">Bu siyasət ləğv edilmiş <ph name="OLD_POLICY" /> siyasətindən avtomatik kopyalanıb. Əvəzinə bu siyasətdən istifadə etməlisiniz.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> virtual reallıq cihazınız və datanızı istifadə etmək istəyir</translation>
 <translation id="3369192424181595722">Saat xətası</translation>
+<translation id="3370855919511944393">Pulqabı ayarları</translation>
 <translation id="3371064404604898522">Chrome'u defolt brauzer kimi ayarlayın</translation>
 <translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> əlavə edildi</translation>
 <translation id="337363190475750230">Nəzərdə tutulmayıb</translation>

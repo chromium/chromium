@@ -522,6 +522,7 @@
 <translation id="1863257867908022953">Фиока 12</translation>
 <translation id="1864927262126810325">Од <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Кабелски и сателитски оператори</translation>
+<translation id="1866757068250903512">Контролирајте ги уредите за автентикација со име <ph name="READERNAME" /> и паметните картички што се користат со нив</translation>
 <translation id="1870473978371099486">Услуги за приватно подучување</translation>
 <translation id="1871208020102129563">Прокси е поставен да користи фиксни прокси-сервери, а не ПАК-скрипта на URL.</translation>
 <translation id="1871284979644508959">Задолжително поле</translation>
@@ -1045,6 +1046,7 @@
 <translation id="2743934314332613923">Да се ажурира возачката дозвола?</translation>
 <translation id="2759299890026163685">Пред да се обидете повторно, погрижете се да имате стабилна интернет-врска</translation>
 <translation id="2759825833388495838">пополнете ја лозинката на <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">ММ/ГГ</translation>
 <translation id="2764001903315068341">Стрипови</translation>
 <translation id="2765217105034171413">Мало</translation>
 <translation id="2768397283109119044">Се обидовте да пристапите до <ph name="DOMAIN" />, но серверот прикажа неважечки сертификат издаден на тоа име. Името е резервирана IP-адреса или внатрешно име на хост.</translation>
@@ -1385,6 +1387,7 @@
 <translation id="3362968246557010467">Правилово беше автоматски копирано од неподдржаното правило <ph name="OLD_POLICY" />. Наместо него, треба да го користите ова правило.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> сака да ги користи уредот и податоците за виртуелна реалност</translation>
 <translation id="3369192424181595722">Грешка на часовникот</translation>
+<translation id="3370855919511944393">Поставки за Wallet</translation>
 <translation id="3371064404604898522">Постави го Chrome како стандарден прелистувач</translation>
 <translation id="3371186787117738282">Додаден е атрибутот <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="337363190475750230">Со оневозможен пристап</translation>

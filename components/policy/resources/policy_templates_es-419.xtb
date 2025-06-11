@@ -516,11 +516,6 @@ Cuando la estableces como PromptInTab, cuando vence la autenticación del usuari
       Esto se aplica al descarte de la presión de memoria y del modo de alta eficiencia.
       Si se descarta una página, se descargará y se recuperarán todos sus recursos. La pestaña a la que está asociada permanece en la barra de pestañas, pero se activa una recarga completa si la haces visible.
       </translation>
-<translation id="1385786866699557535">Una URL a una imagen que se usará como insignia de la empresa para un navegador administrado. La URL debe dirigir a una imagen.
-
-Se recomienda usar el ícono de página (por ejemplo, https://www.google.com/favicon.ico) o un ícono de al menos 48 × 48 px.
-
-Ten en cuenta que esta política solo se aplica a los navegadores administrados, por lo que no tendrá efecto en los usuarios administrados en navegadores no administrados.</translation>
 <translation id="1386369130542976774">Especifica los intervalos semanales en los que no se pueden usar los dispositivos ChromeOS</translation>
 <translation id="138847842893090358">Informa el estado de la actualización del SO</translation>
 <translation id="1389138080311956934">Ahorro de memoria máximo.</translation>
@@ -4262,11 +4257,6 @@ se pueden enviar informes de la empresa.
 [1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
 <translation id="398294729592983401">Permitir que los usuarios activen o desactiven el parámetro de configuración Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
 <translation id="3983162212222338509">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red, o bien parcialmente dentro y parcialmente fuera, según la configuración del sistema y las marcas de función</translation>
-<translation id="3986500787181481802">Esta política controla una etiqueta personalizada que se usa para indicar un navegador administrado. En el caso de los navegadores administrados, esta etiqueta se mostrará en una cláusula de exención de responsabilidad de administración en el pie de página de la página Nueva pestaña. No se traducirá la etiqueta personalizada.
-
-Cuando se aplica esta política, las cadenas que superen los 16 caracteres se truncarán con un “…”. No uses nombres extendidos.
-
-Ten en cuenta que esta política solo se aplica a los navegadores administrados, por lo que no tendrá efecto en los usuarios administrados en navegadores no administrados.</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen los procesos con el Administrador de tareas de Chrome</translation>
 <translation id="398884292557092447">Si estableces la política como verdadera o no la estableces, los usuarios podrán controlar las sugerencias de Autocompletar para las tarjetas de crédito en la IU.
 

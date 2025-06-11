@@ -700,7 +700,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3955740319737378355">Done</translation>
 <translation id="3955822496205734389">You have weak passwords.</translation>
 <translation id="3958312024468322930">Drag it to the dock at the bottom of your Home screen</translation>
-<translation id="3960218941754097036">Search anything on your screen with Google Lens</translation>
 <translation id="3962326069546168954">Save</translation>
 <translation id="3967327056943561740">Bookmarks</translation>
 <translation id="3967822245660637423">Download complete</translation>
@@ -796,7 +795,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4309403553630140242">Double-tap for more information</translation>
 <translation id="4320848494125124980">Recent</translation>
-<translation id="4322394346347055525">Close Other Tabs</translation>
+<translation id="4322394346347055525">Close other tabs</translation>
 <translation id="4324735664183300693">Turn on notifications</translation>
 <translation id="4326912346867677256">Tap 'Use password' to sign in securely.</translation>
 <translation id="4327017157997423717">Track price on <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1446,6 +1445,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>
 <translation id="6851516051005285358">Request desktop site</translation>
+<translation id="6857446173140146664">Delete background</translation>
 <translation id="6858718102216837409">Add language…</translation>
 <translation id="6858855187367714033">Scanned</translation>
 <translation id="6859944681507688231">To scan a QR code or credit card, enable the camera from settings.</translation>
@@ -1477,7 +1477,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6945221475159498467">Select</translation>
 <translation id="6950522403736391608">Hidden</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> currently selected. Choose an account.</translation>
-<translation id="6964760285928603117">Remove From Group</translation>
+<translation id="6964760285928603117">Remove from group</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Folders</translation>
 <translation id="69739764870135975">If Google is also your default search engine, you'll see better, contextually relevant suggestions</translation>

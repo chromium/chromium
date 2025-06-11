@@ -522,6 +522,7 @@
 <translation id="1863257867908022953">Bac 12</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Fournisseurs de télévision par câble et par satellite</translation>
+<translation id="1866757068250903512">Contrôlez les appareils d'authentification nommés <ph name="READERNAME" /> et les cartes à puce utilisées avec ceux-ci</translation>
 <translation id="1870473978371099486">Services de tutorat privé</translation>
 <translation id="1871208020102129563">Le mandataire est configuré pour utiliser des serveurs mandataires fixes et non une adresse URL de script .pac.</translation>
 <translation id="1871284979644508959">Champ obligatoire</translation>
@@ -1045,6 +1046,7 @@
 <translation id="2743934314332613923">Mettre à jour le permis de conduire?</translation>
 <translation id="2759299890026163685">Assurez-vous d'avoir une connexion Internet stable avant de réessayer</translation>
 <translation id="2759825833388495838">remplissez votre mot de passe dans <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">MM/AA</translation>
 <translation id="2764001903315068341">Bandes dessinées</translation>
 <translation id="2765217105034171413">Petit</translation>
 <translation id="2768397283109119044">Vous avez essayé d'atteindre <ph name="DOMAIN" />, mais le serveur a présenté un certificat non valide émis pour ce nom. Le nom est une adresse IP réservée ou un nom d'hôte interne.</translation>
@@ -1385,6 +1387,7 @@
 <translation id="3362968246557010467">Cette politique a été automatiquement copiée à partir de la politique obsolète <ph name="OLD_POLICY" />. Vous devriez utiliser cette politique à la place.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> souhaite utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="3369192424181595722">Erreur d'horloge</translation>
+<translation id="3370855919511944393">Paramètres de Portefeuille</translation>
 <translation id="3371064404604898522">Définir Chrome comme navigateur par défaut</translation>
 <translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> ajouté</translation>
 <translation id="337363190475750230">Révoqué</translation>

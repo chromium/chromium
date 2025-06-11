@@ -522,6 +522,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1863257867908022953">Lade 12</translation>
 <translation id="1864927262126810325">Van <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Kabel- en schotelaanbieders</translation>
+<translation id="1866757068250903512">Verificatie-apparaten met de naam <ph name="READERNAME" /> en de smartcards die ermee worden gebruikt, beheren</translation>
 <translation id="1870473978371099486">Privélessen</translation>
 <translation id="1871208020102129563">Proxy is ingesteld op het gebruik van vaste proxyservers, niet op een script-URL van het PAC-type.</translation>
 <translation id="1871284979644508959">Verplicht veld</translation>
@@ -1045,6 +1046,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2743934314332613923">Rijbewijs updaten?</translation>
 <translation id="2759299890026163685">Zorg dat je een stabiele internetverbinding hebt voordat je het opnieuw probeert</translation>
 <translation id="2759825833388495838">je wachtwoord in te vullen in <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">MM/JJ</translation>
 <translation id="2764001903315068341">Strips</translation>
 <translation id="2765217105034171413">Klein</translation>
 <translation id="2768397283109119044">Je probeert <ph name="DOMAIN" /> te bereiken, maar de server heeft een ongeldig certificaat geretourneerd dat aan die naam is uitgegeven. De naam is een gereserveerd IP-adres of interne hostnaam.</translation>
@@ -1382,6 +1384,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3362968246557010467">Dit beleid is automatisch gekopieerd uit het beëindigde beleid: <ph name="OLD_POLICY" />. Gebruik dit beleid in plaats van het oude.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> wil je virtualreality-apparaat en -gegevens gebruiken</translation>
 <translation id="3369192424181595722">Klokfout</translation>
+<translation id="3370855919511944393">Instellingen voor Wallet</translation>
 <translation id="3371064404604898522">Chrome instellen als standaardbrowser</translation>
 <translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> toegevoegd</translation>
 <translation id="337363190475750230">Uitgeschreven</translation>
