@@ -48,5 +48,5 @@
                                                                                 optional IDBCursorDirection direction = "next");
 
     [RuntimeEnabled=IndexedDbGetAllRecords, NewObject, CallWith=ScriptState, RaisesException]
-    IDBRequest getAllRecords(optional IDBGetAllRecordsOptions options = {});
+    IDBRequest getAllRecords(optional IDBGetAllOptions options = {});
 };

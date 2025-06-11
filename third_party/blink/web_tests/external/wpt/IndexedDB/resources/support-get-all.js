@@ -199,10 +199,8 @@ function index_get_all_test_setup(storeName, callback, testDescription) {
 // `optionalIndexName` with the given `options`.
 //  - `getAllFunctionName` is name of the function to test, which must be
 //     `getAll`, `getAllKeys` or `getAllRecords`.
-//  - `options` is an `IDBGetAllRecordsOptions ` dictionary that may contain a
-//    `query`, `direction` and `count`.  Use `direction` to test
-//    `getAllRecords()` only.  `getAll()` and `getAllKeys()` do not support
-//    `direction`.
+//  - `options` is an `IDBGetAllOptions` dictionary that may contain a  `query`,
+//    `direction` and `count`.
 function get_all_test(
     getAllFunctionName, storeName, optionalIndexName, options,
     testDescription) {

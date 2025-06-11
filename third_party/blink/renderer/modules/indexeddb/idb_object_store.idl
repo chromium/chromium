@@ -66,7 +66,7 @@
                           optional [EnforceRange] unsigned long count);
 
     [RuntimeEnabled=IndexedDbGetAllRecords, CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
-    IDBRequest getAllRecords(optional IDBGetAllRecordsOptions options = {});
+    IDBRequest getAllRecords(optional IDBGetAllOptions options = {});
 
     [CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
     IDBRequest count(optional any key = null);

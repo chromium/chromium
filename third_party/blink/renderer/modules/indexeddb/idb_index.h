@@ -39,7 +39,7 @@
 namespace blink {
 
 class ExceptionState;
-class IDBGetAllRecordsOptions;
+class IDBGetAllOptions;
 class IDBObjectStore;
 
 class IDBIndex final : public ScriptWrappable {
@@ -90,7 +90,7 @@ class IDBIndex final : public ScriptWrappable {
                          uint32_t max_count,
                          ExceptionState&);
   IDBRequest* getAllRecords(ScriptState*,
-                            const IDBGetAllRecordsOptions* options,
+                            const IDBGetAllOptions* options,
                             ExceptionState&);
 
   void MarkDeleted() {

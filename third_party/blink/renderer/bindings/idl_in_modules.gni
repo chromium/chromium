@@ -386,7 +386,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/indexeddb/idb_database.idl",
   "//third_party/blink/renderer/modules/indexeddb/idb_database_info.idl",
   "//third_party/blink/renderer/modules/indexeddb/idb_factory.idl",
-  "//third_party/blink/renderer/modules/indexeddb/idb_get_all_records_options.idl",
+  "//third_party/blink/renderer/modules/indexeddb/idb_get_all_options.idl",
   "//third_party/blink/renderer/modules/indexeddb/idb_index.idl",
   "//third_party/blink/renderer/modules/indexeddb/idb_index_parameters.idl",
   "//third_party/blink/renderer/modules/indexeddb/idb_key_range.idl",

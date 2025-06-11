@@ -31,7 +31,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_get_all_records_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_get_all_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
@@ -285,7 +285,7 @@ IDBRequest* IDBIndex::getAllKeys(ScriptState* script_state,
 }
 
 IDBRequest* IDBIndex::getAllRecords(ScriptState* script_state,
-                                    const IDBGetAllRecordsOptions* options,
+                                    const IDBGetAllOptions* options,
                                     ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBIndex::getAllRecords", "index_name",
                metadata_->name.Utf8());
