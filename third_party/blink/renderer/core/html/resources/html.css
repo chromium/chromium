@@ -2094,3 +2094,121 @@ dialog:where(:modal) {
     display: block;
   }
 }
+
+/* TODO choose appearance:auto styles and set them in here with !important */
+/* Most of these rules are copied from CustomizableSelect styles but without
+ * [multiple] in the selector. */
+@supports blink-feature(CustomizableSelectMultiplePopup) {
+  select:not(:-internal-list-box) {
+    font: -internal-auto-base(-webkit-small-control, inherit);
+    text-shadow: -internal-auto-base(none, inherit);
+    text-transform: -internal-auto-base(none, initial);
+    text-rendering: -internal-auto-base(auto, inherit);
+    letter-spacing: -internal-auto-base(normal, inherit);
+    word-spacing: -internal-auto-base(normal, inherit);
+    text-align: -internal-auto-base(start, initial);
+    text-indent: -internal-auto-base(0px, initial);
+    -webkit-rtl-ordering: -internal-auto-base(logical, inherit);
+    cursor: -internal-auto-base(default, inherit);
+    white-space: -internal-auto-base(pre, inherit);
+    text-autospace: -internal-auto-base(no-autospace !important, inherit);
+    color: -internal-auto-base(FieldText, inherit);
+    background-color: -internal-auto-base(Field, transparent);
+    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
+    padding-block: -internal-auto-base(0, 0.25em);
+    padding-inline: -internal-auto-base(0, 0.5em);
+    min-inline-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px)));
+    min-block-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px, 1lh)));
+    display: -internal-auto-base(inline-block, inline-flex);
+    gap: -internal-auto-base(initial, 0.5em);
+    border-radius: -internal-auto-base(0, 0.5em);
+    align-items: -internal-auto-base(center, unset);
+    user-select: -internal-auto-base(auto, none);
+  }
+  select:not(:-internal-list-box) > button:first-child {
+    all: unset;
+    display: contents;
+    interactivity: inert;
+  }
+  select:not(:-internal-list-box):enabled:hover {
+    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 10%, transparent));
+  }
+  select:not(:-internal-list-box):enabled:active {
+    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 20%, transparent));
+  }
+  select:not(:-internal-list-box):disabled {
+    opacity: -internal-auto-base(0.7, unset);
+    color: -internal-auto-base(light-dark(GrayText, #aaa), color-mix(in srgb, currentColor 50%, transparent));
+    border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), inherit);
+  }
+  select:not(:-internal-list-box) > button:first-child,
+  select::picker(select) {
+    white-space: normal;
+  }
+  select:not(:-internal-list-box)::picker(select) {
+    box-sizing: border-box;
+    border: 1px solid;
+    padding: 0;
+    color: -internal-auto-base(inherit, CanvasText);
+    background-color: Canvas;
+    margin: 0;
+    inset: auto;
+    min-inline-size: anchor-size(self-inline);
+    min-block-size: -internal-auto-base(0, 1lh);
+    max-block-size: -webkit-fill-available;
+    max-block-size: stretch;
+    overflow: auto;
+    position-area: block-end span-inline-end;
+    position-try-order: most-block-size;
+    position-try-fallbacks:
+      block-start span-inline-end,
+      block-end span-inline-start,
+      block-start span-inline-start;
+  }
+  select:not(:-internal-list-box) option {
+    /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
+     * https://github.com/openui/open-ui/issues/1026
+     * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
+    /* TODO(crbug.com/41483940): This might be able to be combined with the
+     * default select option rules at some point. This should be re-evaluted
+     * before CustomizableSelect is shipped. */
+    min-inline-size: 24px;
+    /* TODO(crbug.com/409942762): Consider removing -internal-auto-base() here
+     * if underlying performance issues with lh units are fixed. */
+    min-block-size: -internal-auto-base(24px, max(24px, 1lh));
+    font-weight: -internal-auto-base(normal, inherit);
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    padding-block-end: -internal-auto-base(1px, 0);
+    display: -internal-auto-base(block, flex);
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  select:not(:-internal-list-box) option:enabled:hover {
+    background-color: color-mix(in lab, currentColor 10%, transparent);
+  }
+  select:not(:-internal-list-box) option:enabled:active {
+    background-color: color-mix(in lab, currentColor 20%, transparent);
+  }
+  select:not(:-internal-list-box) option:disabled {
+    color: -internal-auto-base(inherit, color-mix(in lab, currentColor 50%, transparent));
+  }
+  select:not(:-internal-list-box)::picker-icon {
+    content: -internal-auto-base(none, counter(fake-counter-name, disclosure-open));
+    display: block;
+    margin-inline-start: auto;
+  }
+  select:not(:-internal-list-box) optgroup option {
+    padding-inline-start: -internal-auto-base(20px, 0.5em);
+    font-weight: normal;
+  }
+  select:not(:-internal-list-box) optgroup::-internal-optgroup-label {
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    padding-block: -internal-auto-base(0 1px, 0);
+    min-height: -internal-auto-base(1.2em, 0);
+  }
+  select:not(:-internal-list-box) optgroup legend {
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    min-block-size: -internal-auto-base(initial, 1lh);
+  }
+}

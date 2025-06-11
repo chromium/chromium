@@ -138,7 +138,7 @@ FocusableState HTMLOptionElement::SupportsFocus(
   FocusableState superclass_focusable =
       HTMLElement::SupportsFocus(update_behavior);
   if (auto* select = OwnerSelectElement()) {
-    auto* popover = select->PopoverForAppearanceBase();
+    auto* popover = select->PopoverPickerElement();
     bool base_with_picker =
         select->UsesMenuList() && popover && popover->popoverOpen();
     bool base_in_page =
@@ -656,7 +656,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
 namespace {
 bool OptionIsVisible(HTMLOptionElement& option) {
   PhysicalRect popover_rect =
-      option.OwnerSelectElement()->PopoverForAppearanceBase()->BoundingBox();
+      option.OwnerSelectElement()->PopoverPickerElement()->BoundingBox();
   PhysicalRect option_rect = option.BoundingBox();
   LayoutUnit popover_top = popover_rect.Y();
   LayoutUnit option_top = option_rect.Y();
@@ -667,15 +667,21 @@ bool OptionIsVisible(HTMLOptionElement& option) {
 
 void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   auto* select = OwnerSelectElement();
+  if (!select) {
+    return;
+  }
+
   const bool appearance_base_in_page =
-      RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() && select &&
+      RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
       !select->UsesMenuList() && select->IsAppearanceBase();
 
-  if (!appearance_base_in_page &&
-      (!select || !select->IsAppearanceBasePicker())) {
-    // Customizable selects do most of their event handling here.
-    // appearance:auto selects do all of their event handling in
-    // HTMLSelectElement::DefaultEventHandler.
+  if (!appearance_base_in_page && !select->PickerIsPopover()) {
+    // Select elements use this code for event handling on their options in
+    // these cases:
+    // - <select> with appearance:base-select on itself and its ::picker(select)
+    // - <select size={not 1}> with appearance:base-select
+    // - <select size=1 multiple> on platforms which don't delegate MenuList
+    //   rendering (only Android currently delegates MenuList rendering)
     return;
   }
 
@@ -838,8 +844,6 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   }
 }
 
-// TODO(crbug.com/357649033): This method has a lot of duplicated logic with
-// HTMLSelectElement::SelectOption. These two methods should probably be merged.
 void HTMLOptionElement::ChooseOption(Event& event) {
   HTMLSelectElement* select = OwnerSelectElement();
   CHECK(select);
@@ -847,30 +851,9 @@ void HTMLOptionElement::ChooseOption(Event& event) {
     return;
   }
   CHECK(HTMLSelectElement::CustomizableSelectEnabled(this));
-  CHECK(select->IsAppearanceBase());
-  if (!select->UsesMenuList()) {
-    CHECK(RuntimeEnabledFeatures::CustomizableSelectInPageEnabled());
-    SetSelectedState(!Selected());
-    SetDirty(true);
-    if (!select->IsMultiple()) {
-      // TODO(crbug.com/357649033): Consider using last_on_change_option_ in
-      // HTMLSelectElement to avoid needing to iterate options here. It
-      // currently only works for MenuList selects. Also consider using
-      // DeselectItemsWithoutValidation() from HTMLSelectElement.
-      for (HTMLOptionElement& option : select->GetOptionList()) {
-        if (option != this) {
-          option.SetSelectedState(false);
-        }
-      }
-    }
-    select->DispatchInputEvent();
-    select->DispatchChangeEvent();
-    event.SetDefaultHandled();
-  } else {
-    select->SelectOptionByPopup(this);
-    select->HidePopup(SelectPopupHideBehavior::kNormal);
-    event.SetDefaultHandled();
-  }
+  CHECK(select->IsAppearanceBase() || select->PickerIsPopover());
+  select->SelectOptionFromPopoverPickerOrBaseListbox(this);
+  event.SetDefaultHandled();
 }
 
 void HTMLOptionElement::FinishParsingChildren() {

@@ -302,9 +302,10 @@ class MenuListSelectType final : public SelectType {
   void CreateShadowSubtree(ShadowRoot& root) override;
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
-  HTMLElement* PopoverForAppearanceBase() const override;
+  HTMLElement* PopoverPickerElement() const override;
   bool IsAppearanceBase() const override;
   bool IsAppearanceBasePicker() const override;
+  bool PickerIsPopover() const override;
   void SetIsAppearanceBasePickerForDisplayNone(bool) override;
   HTMLSelectElement::SelectAutofillPreviewElement* GetAutofillPreviewElement()
       const override;
@@ -476,7 +477,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
 
   // We shouldn't run this code when the base appearance picker is open,
   // otherwise interactive elements inside it will be unusable.
-  bool base_picker_open = IsAppearanceBasePicker() && PopupIsVisible();
+  bool base_picker_open = PickerIsPopover() && PopupIsVisible();
   const auto* mouse_event = DynamicTo<MouseEvent>(event);
   if (event.type() == event_type_names::kMousedown && mouse_event &&
       mouse_event->button() ==
@@ -487,7 +488,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
             .domWindow()
             ->GetInputDeviceCapabilities()
             ->FiresTouchEvents(mouse_event->FromTouch());
-    if (IsAppearanceBasePicker()) {
+    if (PickerIsPopover()) {
       // Don't focus the select when the picker is in base appearance mode,
       // otherwise any click inside the picker would focus the button. Calling
       // SetLastFocusType prevents us from matching :focus-visible when
@@ -512,7 +513,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
         // TODO(lanwei): Will check if we need to add
         // InputDeviceCapabilities here when select menu list gets
         // focus, see https://crbug.com/476530.
-        if (IsAppearanceBasePicker() && !mouse_event->FromTouch()) {
+        if (PickerIsPopover() && !mouse_event->FromTouch()) {
           // If the popover is shown before pointerup, then popover light
           // dismiss will close the popover when the user releases/lifts the
           // pointer unless we change the pointerdown target like this.
@@ -535,7 +536,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
   if (event.type() == event_type_names::kMouseup && mouse_event &&
       mouse_event->button() ==
           static_cast<int16_t>(WebPointerProperties::Button::kLeft) &&
-      IsAppearanceBasePicker() && !mouse_event->FromTouch()) {
+      PickerIsPopover() && !mouse_event->FromTouch()) {
     select_->GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
   }
   return false;
@@ -686,7 +687,7 @@ HTMLButtonElement* MenuListSelectType::SlottedButton() const {
   return DynamicTo<HTMLButtonElement>(select_->firstElementChild());
 }
 
-HTMLElement* MenuListSelectType::PopoverForAppearanceBase() const {
+HTMLElement* MenuListSelectType::PopoverPickerElement() const {
   CHECK(HTMLSelectElement::CustomizableSelectEnabled(select_) || !popover_);
   return popover_;
 }
@@ -721,6 +722,25 @@ bool MenuListSelectType::IsAppearanceBasePicker() const {
   return is_appearance_base_picker_for_display_none_;
 }
 
+bool MenuListSelectType::PickerIsPopover() const {
+  if (!HTMLSelectElement::CustomizableSelectEnabled(select_)) {
+    return false;
+  }
+  if (select_->IsMultiple()) {
+    if (!RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
+      return false;
+    }
+    if (IsAppearanceBasePicker()) {
+      return true;
+    }
+    // In appearance:auto/none mode, we use the native <select multiple> popup
+    // if available (only on Android right now). Otherwise, we keep using the
+    // popover.
+    return !LayoutTheme::GetTheme().DelegatesMenuListRendering();
+  }
+  return IsAppearanceBasePicker();
+}
+
 void MenuListSelectType::SetIsAppearanceBasePickerForDisplayNone(bool value) {
   if (value) {
     UseCounter::Count(select_->GetDocument(),
@@ -753,16 +773,20 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
     return;
   }
 
-  if (IsAppearanceBasePicker()) {
+  if (PickerIsPopover()) {
     popover_->ShowPopoverInternal(select_, /*exception_state=*/nullptr);
-    if (!IsAppearanceBasePicker()) {
+    if (!PickerIsPopover()) {
       // The picker, as the result of CSS, changed `appearance` values upon
       // opening. Per spec, we close it in that case, to avoid circularity.
       PostChangingAppearanceConsoleWarning(*select_);
-      popover_->HidePopoverInternal(
-          /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,
-          HidePopoverTransitionBehavior::kNoEventsNoWaiting,
-          /*exception_state=*/nullptr);
+      // We need to check if the popover is open again because script running in
+      // ShowPopoverInternal may have closed the popover.
+      if (popover_->popoverOpen()) {
+        popover_->HidePopoverInternal(
+            /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,
+            HidePopoverTransitionBehavior::kNoEventsNoWaiting,
+            /*exception_state=*/nullptr);
+      }
     }
     return;
   }
@@ -1242,9 +1266,10 @@ class ListBoxSelectType final : public SelectType {
   void CreateShadowSubtree(ShadowRoot&) override;
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
-  HTMLElement* PopoverForAppearanceBase() const override;
+  HTMLElement* PopoverPickerElement() const override;
   bool IsAppearanceBase() const override;
   bool IsAppearanceBasePicker() const override;
+  bool PickerIsPopover() const override;
   void SetIsAppearanceBasePickerForDisplayNone(bool) override;
   HTMLSelectElement::SelectAutofillPreviewElement* GetAutofillPreviewElement()
       const override;
@@ -1917,7 +1942,7 @@ HTMLButtonElement* ListBoxSelectType::SlottedButton() const {
   return nullptr;
 }
 
-HTMLElement* ListBoxSelectType::PopoverForAppearanceBase() const {
+HTMLElement* ListBoxSelectType::PopoverPickerElement() const {
   return nullptr;
 }
 
@@ -1933,6 +1958,10 @@ bool ListBoxSelectType::IsAppearanceBase() const {
 }
 
 bool ListBoxSelectType::IsAppearanceBasePicker() const {
+  return false;
+}
+
+bool ListBoxSelectType::PickerIsPopover() const {
   return false;
 }
 

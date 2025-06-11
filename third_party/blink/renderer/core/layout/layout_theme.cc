@@ -212,7 +212,7 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
         base_appearance_allowed =
             !select->IsMultiple() ||
             RuntimeEnabledFeatures::CustomizableSelectInPageEnabled();
-      } else if (HTMLSelectElement::IsPopoverForAppearanceBase(element)) {
+      } else if (HTMLSelectElement::IsPopoverPickerElement(element)) {
         base_appearance_allowed = true;
       }
       return base_appearance_allowed ? appearance : auto_appearance;

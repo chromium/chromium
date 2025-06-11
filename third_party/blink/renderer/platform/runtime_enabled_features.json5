@@ -1639,6 +1639,12 @@
       depends_on: ["CustomizableSelect"],
     },
     {
+      // appearance:base-select for <select multiple size=1> with a picker.
+      name: "CustomizableSelectMultiplePopup",
+      status: "experimental",
+      depends_on: ["CustomizableSelectInPage"],
+    },
+    {
       // Replaces \r\n and \r with \n in setCustomValidity.
       // https://github.com/whatwg/html/pull/10350
       // https://issues.chromium.org/issues/340814283

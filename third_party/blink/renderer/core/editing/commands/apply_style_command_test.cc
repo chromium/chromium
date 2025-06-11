@@ -180,7 +180,7 @@ TEST_F(ApplyStyleCommandTest, StyledInlineElementIsActuallyABlock) {
 // This is a regression test for https://crbug.com/1239729
 TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
   GetDocument().setDesignMode("on");
-  SetBodyContent("a<select multiple><option></option></select>b");
+  SetBodyContent("a<select multiple size=4><option></option></select>b");
 
   Element* body = GetDocument().body();
   Element* select = QuerySelector("select");
@@ -204,13 +204,8 @@ TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
       InputEvent::InputType::kFormatItalic)
       ->Apply();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_EQ("|a<select multiple><option></option></select>b",
+  EXPECT_EQ("<i>^a<select multiple size=\"4\"><option>|</option></select></i>b",
             GetSelectionTextFromBody());
-#else
-  EXPECT_EQ("<i>^a<select multiple><option>|</option></select></i>b",
-            GetSelectionTextFromBody());
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 // This is a regression test for https://crbug.com/1246190

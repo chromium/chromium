@@ -1481,7 +1481,7 @@ TEST_P(LayoutBoxModelObjectTest, UpdateStackingContextForOption) {
         animation: op 0.001s;
       }
     </style>
-    <select multiple size=1>
+    <select multiple size=4>
       <option id=opt>PASS</option>
     </select>
   )HTML");

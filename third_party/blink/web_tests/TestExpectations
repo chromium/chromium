@@ -6261,6 +6261,17 @@ crbug.com/357649033 virtual/select-parser-relaxation-opt-out/external/wpt/html/s
 crbug.com/357649033 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/customizable-select-in-page-mouse-behavior.tentative.html [ Failure ]
 crbug.com/357649033 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/select-in-page-typeahead.tentative.html [ Failure ]
 
+# CustomizableSelectMultiplePopup
+crbug.com/357649033 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-appearance.tentative.html [ Failure ]
+crbug.com/357649033 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-appearance.tentative.html [ Failure ]
+crbug.com/357649033 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-appearance.tentative.html [ Failure ]
+crbug.com/357649033 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-keyboard-behavior.tentative.html [ Failure ]
+crbug.com/357649033 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-keyboard-behavior.tentative.html [ Failure ]
+crbug.com/357649033 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-keyboard-behavior.tentative.html [ Failure ]
+crbug.com/357649033 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-mouse-behavior.tentative.html [ Failure ]
+crbug.com/357649033 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-mouse-behavior.tentative.html [ Failure ]
+crbug.com/357649033 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-mouse-behavior.tentative.html [ Failure ]
+
 # Appearance (and other failing) tests for the virtual suite that tests the select parser relaxation opt out
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/border-rendering.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/closed-listbox-rendering.tentative.html [ Failure ]

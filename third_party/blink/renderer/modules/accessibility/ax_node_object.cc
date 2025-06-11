@@ -2348,7 +2348,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (ParentObjectIfPresent() && ParentObjectIfPresent()->RoleValue() ==
                                      ax::mojom::blink::Role::kComboBoxSelect) {
     if (!RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
-        HTMLSelectElement::IsPopoverForAppearanceBase(GetNode())) {
+        HTMLSelectElement::IsPopoverPickerElement(GetNode())) {
       return ax::mojom::blink::Role::kMenuListPopup;
     }
   }
@@ -4458,7 +4458,7 @@ AXObject* AXNodeObject::ChooserPopup() const {
     if (auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
       if (input->IsTextField()) {
         if (auto* select = input->FirstAncestorSelectElement()) {
-          if (auto* popover = select->PopoverForAppearanceBase()) {
+          if (auto* popover = select->PopoverPickerElement()) {
             if (auto* axobject = AXObjectCache().Get(popover)) {
               return axobject;
             }

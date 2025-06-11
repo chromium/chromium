@@ -8807,7 +8807,7 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   //   not in order to make changes in the accessibility tree among many other
   //   things. In order to do this, we set a bit on the select while we still
   //   have access to the computed style here.
-  if (HTMLSelectElement::IsPopoverForAppearanceBase(this)) {
+  if (HTMLSelectElement::IsPopoverPickerElement(this)) {
     HTMLSelectElement* select = To<HTMLSelectElement>(OwnerShadowHost());
     if (const ComputedStyle* select_style = select->GetComputedStyle()) {
       // The picker isn't allowed to have appearance:base-select unless the
@@ -9564,7 +9564,7 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
       if (const auto* option = DynamicTo<HTMLOptionElement>(e)) {
         if (const HTMLSelectElement* select = option->OwnerSelectElement()) {
           if (select->UsesMenuList()) {
-            return select->IsAppearanceBasePicker();
+            return select->PickerIsPopover();
           } else {
             return select->IsAppearanceBase();
           }

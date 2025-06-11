@@ -219,6 +219,15 @@ class CORE_EXPORT HTMLSelectElement final
   void SelectOptionByPopup(int list_index);
   void SelectOptionByPopup(HTMLOptionElement* option);
   void SelectMultipleOptionsByPopup(const Vector<int>& list_indices);
+  // SelectOptionFromPopoverPickerOrBaseListbox is called when an option element
+  // is clicked in the following modes:
+  // - When UsesPopoverPickerElement() returns true
+  // - When ListBoxSelectType is being used and appearance:base-select is
+  // applied
+  // TODO(crbug.com/357649033): This method has a lot of duplicated logic with
+  // HTMLSelectElement::SelectOption. These two methods should probably be
+  // merged.
+  void SelectOptionFromPopoverPickerOrBaseListbox(HTMLOptionElement* option);
   // A popup is canceled when the popup was hidden without selecting an item.
   void PopupDidCancel();
   // Provisional selection is a selection made using arrow keys or type ahead.
@@ -275,16 +284,18 @@ class CORE_EXPORT HTMLSelectElement final
   // Returns true if the provided node is some select element's SlottedButton.
   static bool IsSlottedButton(const Node*);
 
-  // This method returns the UA popover element which is used for
-  // appearance:base-select. If this select is rendering in a mode which doesn't
-  // use the UA popover, such as appearance:auto/none or size=2/multiple, then
-  // this will return null.
-  HTMLElement* PopoverForAppearanceBase() const;
+  // This method returns the UA popover element which is used to render the
+  // picker of options when PickerIsPopover() returns true. If
+  // PickerIsPopover() returns false, then this method will return null.
+  HTMLElement* PopoverPickerElement() const;
 
   // Returns true if the provided element is some select element's
-  // PopoverForAppearanceBase.
-  static bool IsPopoverForAppearanceBase(const Node*);
-  static bool IsPopoverForAppearanceBase(const Element*);
+  // PopoverPickerElement. There are overrides for Node and Element because some
+  // callers already have an Element instead of a Node, and if we only had the
+  // Node version then there would be an extra call to DynamicTo<Element> every
+  // time.
+  static bool IsPopoverPickerElement(const Node*);
+  static bool IsPopoverPickerElement(const Element*);
 
   // <select> supports appearance:base-select on both the main element and
   // ::picker(select). IsAppearanceBase returns true if the main element has
@@ -306,6 +317,12 @@ class CORE_EXPORT HTMLSelectElement final
   // popup that shows options.
   bool IsAppearanceBase() const;
   bool IsAppearanceBasePicker() const;
+
+  // Depending on the HTML and CSS set on this element, as well as the
+  // platform, a popover in the UA shadowroot of this element will be used to
+  // render the picker. If a popover is going to be used, then this method
+  // returns true, otherwise false.
+  bool PickerIsPopover() const;
 
   // SetIsAppearanceBasePickerForDisplayNone is called during style recalc for
   // the case where the picker is closed and is therefore display:none and

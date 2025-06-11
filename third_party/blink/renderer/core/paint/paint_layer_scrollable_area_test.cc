@@ -374,12 +374,7 @@ TEST_P(PaintLayerScrollableAreaTest, SelectElementPromotionTest) {
   element->setAttribute(html_names::kClassAttr, AtomicString("composited"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(HasDirectCompositingReasons(element->GetLayoutBox()));
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // <select> implementation is different and not scrollable on Android and iOS.
-  EXPECT_FALSE(UsesCompositedScrolling(element->GetLayoutBox()));
-#else
   EXPECT_TRUE(UsesCompositedScrolling(element->GetLayoutBox()));
-#endif
 }
 
 // Ensure OverlayScrollbarColorTheme get updated when page load

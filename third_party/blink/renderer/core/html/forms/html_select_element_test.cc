@@ -559,14 +559,14 @@ TEST_F(HTMLSelectElementTest, SelectMultipleOptionsByPopup) {
   // Select the same set of options.
   {
     SetHtmlInnerHTML(
-        "<select multiple onchange='this.remove();'>"
+        "<select multiple size=1 onchange='this.remove();'>"
         "<option>o0</option><option>o1</option></select>");
     EXPECT_TRUE(FirstSelectIsConnectedAfterSelectMultiple(Vector<int>{}))
         << "Onchange handler should not be executed.";
   }
   {
     SetHtmlInnerHTML(
-        "<select multiple onchange='this.remove();'>"
+        "<select multiple size=1 onchange='this.remove();'>"
         "<option>o0</option><option selected>o1</option></select>");
     EXPECT_TRUE(FirstSelectIsConnectedAfterSelectMultiple(Vector<int>{1}))
         << "Onchange handler should not be executed.";
@@ -575,7 +575,7 @@ TEST_F(HTMLSelectElementTest, SelectMultipleOptionsByPopup) {
   // 0 old selected options -> 1+ selected options
   {
     SetHtmlInnerHTML(
-        "<select multiple onchange='this.remove();'>"
+        "<select multiple size=1 onchange='this.remove();'>"
         "<option>o0</option><option>o1</option></select>");
     EXPECT_FALSE(FirstSelectIsConnectedAfterSelectMultiple(Vector<int>{0}))
         << "Onchange handler should be executed.";
@@ -584,7 +584,7 @@ TEST_F(HTMLSelectElementTest, SelectMultipleOptionsByPopup) {
   // 1+ old selected options -> more selected options
   {
     SetHtmlInnerHTML(
-        "<select multiple onchange='this.remove();'>"
+        "<select multiple size=1 onchange='this.remove();'>"
         "<option>o0</option><option selected>o1</option></select>");
     EXPECT_FALSE(FirstSelectIsConnectedAfterSelectMultiple(Vector<int>{0, 1}))
         << "Onchange handler should be executed.";
@@ -593,7 +593,7 @@ TEST_F(HTMLSelectElementTest, SelectMultipleOptionsByPopup) {
   // 1+ old selected options -> 0 selected options
   {
     SetHtmlInnerHTML(
-        "<select multiple onchange='this.remove();'>"
+        "<select multiple size=1 onchange='this.remove();'>"
         "<option>o0</option><option selected>o1</option></select>");
     EXPECT_FALSE(FirstSelectIsConnectedAfterSelectMultiple(Vector<int>{}))
         << "Onchange handler should be executed.";
@@ -602,7 +602,7 @@ TEST_F(HTMLSelectElementTest, SelectMultipleOptionsByPopup) {
   // Multiple old selected options -> less selected options
   {
     SetHtmlInnerHTML(
-        "<select multiple onchange='this.remove();'>"
+        "<select multiple size=1 onchange='this.remove();'>"
         "<option selected>o0</option><option selected>o1</option></select>");
     EXPECT_FALSE(FirstSelectIsConnectedAfterSelectMultiple(Vector<int>{1}))
         << "Onchange handler should be executed.";
@@ -611,8 +611,9 @@ TEST_F(HTMLSelectElementTest, SelectMultipleOptionsByPopup) {
   // Check if the label is correctly updated.
   {
     SetHtmlInnerHTML(
-        "<select multiple>"
-        "<option selected>o0</option><option selected>o1</option></select>");
+        "<select multiple size=1>"
+        "<option selected size=1>o0</option><option "
+        "selected>o1</option></select>");
     EXPECT_EQ("2 selected", MenuListLabel());
     EXPECT_TRUE(FirstSelectIsConnectedAfterSelectMultiple(Vector<int>{1}));
     EXPECT_EQ("o1", MenuListLabel());

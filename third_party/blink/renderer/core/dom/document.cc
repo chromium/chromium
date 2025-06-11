@@ -5515,7 +5515,7 @@ class FlatTreeTraversalParentElementExceptSelectPopover {
   using TraversalNodeType = Element;
   static TraversalNodeType* Next(const TraversalNodeType& node) {
     if (HTMLSelectElement::CustomizableSelectEnabled(&node) &&
-        HTMLSelectElement::IsPopoverForAppearanceBase(&node)) {
+        HTMLSelectElement::IsPopoverPickerElement(&node)) {
       return nullptr;
     }
     return Traversal::ParentElement(node);

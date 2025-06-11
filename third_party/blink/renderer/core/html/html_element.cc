@@ -1620,7 +1620,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   SetImplicitAnchor(invoker);
 
   PseudoStateChanged(CSSSelector::kPseudoPopoverOpen);
-  if (HTMLSelectElement::IsPopoverForAppearanceBase(this)) {
+  if (HTMLSelectElement::IsPopoverPickerElement(this)) {
     // If this element is the ::picker(select) popover, then we need to
     // invalidate the select element's :open pseudo-class at the same time as
     // :popover-open https://issues.chromium.org/issues/375004874
@@ -1978,7 +1978,7 @@ void HTMLElement::HidePopoverInternal(
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kHidden);
 
   PseudoStateChanged(CSSSelector::kPseudoPopoverOpen);
-  if (HTMLSelectElement::IsPopoverForAppearanceBase(this)) {
+  if (HTMLSelectElement::IsPopoverPickerElement(this)) {
     // If this element is the ::picker(select) popover, then we need to
     // invalidate the select element's :open pseudo-class at the same time as
     // :popover-open https://issues.chromium.org/issues/375004874

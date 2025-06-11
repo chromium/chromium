@@ -220,6 +220,20 @@ unsigned HTMLSelectElement::ListBoxSize() const {
 }
 
 void HTMLSelectElement::UpdateUsesMenuList() {
+  // If the author explicitly sets the size attribute, then we allow that to
+  // control whether we actually delegate menulist rendering.
+  if (RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
+    if (is_multiple_) {
+      // <select multiple> does not use MenuList by default. The author must
+      // specify <select multiple size=1> to get MenuList.
+      uses_menu_list_ =
+          FastHasAttribute(html_names::kSizeAttr) ? size_ == 1 : false;
+    } else {
+      uses_menu_list_ = size_ == 1;
+    }
+    return;
+  }
+
   if (LayoutTheme::GetTheme().DelegatesMenuListRendering())
     uses_menu_list_ = true;
   else
@@ -1034,6 +1048,32 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
 }
 
+void HTMLSelectElement::SelectOptionFromPopoverPickerOrBaseListbox(
+    HTMLOptionElement* option) {
+  if (!UsesMenuList() || IsMultiple()) {
+    CHECK(RuntimeEnabledFeatures::CustomizableSelectInPageEnabled());
+    option->SetSelectedState(!option->Selected());
+    option->SetDirty(true);
+    if (!IsMultiple()) {
+      // TODO(crbug.com/357649033): Consider using last_on_change_option_ to
+      // avoid needing to iterate options here. It currently only works for
+      // MenuList selects. Also consider using DeselectItemsWithoutValidation().
+      for (HTMLOptionElement& option_from_list : GetOptionList()) {
+        if (option != option_from_list) {
+          option_from_list.SetSelectedState(false);
+        }
+      }
+    }
+    DispatchInputEvent();
+    DispatchChangeEvent();
+    // TODO call UpdateAllSelectedcontents()
+    select_type_->UpdateTextStyleAndContent();
+  } else {
+    SelectOptionByPopup(option);
+    HidePopup(SelectPopupHideBehavior::kNormal);
+  }
+}
+
 bool HTMLSelectElement::DispatchFocusEvent(
     Element* old_focused_element,
     mojom::blink::FocusType type,
@@ -1784,20 +1824,20 @@ bool HTMLSelectElement::IsSlottedButton(const Node* node) {
   return false;
 }
 
-HTMLElement* HTMLSelectElement::PopoverForAppearanceBase() const {
-  return select_type_->PopoverForAppearanceBase();
+HTMLElement* HTMLSelectElement::PopoverPickerElement() const {
+  return select_type_->PopoverPickerElement();
 }
 
 // static
-bool HTMLSelectElement::IsPopoverForAppearanceBase(const Node* node) {
+bool HTMLSelectElement::IsPopoverPickerElement(const Node* node) {
   if (auto* element = DynamicTo<Element>(node)) {
-    return IsPopoverForAppearanceBase(element);
+    return IsPopoverPickerElement(element);
   }
   return false;
 }
 
 // static
-bool HTMLSelectElement::IsPopoverForAppearanceBase(const Element* element) {
+bool HTMLSelectElement::IsPopoverPickerElement(const Element* element) {
   if (auto* root = DynamicTo<ShadowRoot>(element->parentNode())) {
     return IsA<HTMLSelectElement>(root->host()) &&
            element->ShadowPseudoId() == shadow_element_names::kPickerSelect;
@@ -1811,6 +1851,10 @@ bool HTMLSelectElement::IsAppearanceBase() const {
 
 bool HTMLSelectElement::IsAppearanceBasePicker() const {
   return select_type_->IsAppearanceBasePicker();
+}
+
+bool HTMLSelectElement::PickerIsPopover() const {
+  return select_type_->PickerIsPopover();
 }
 
 void HTMLSelectElement::SetIsAppearanceBasePickerForDisplayNone(bool value) {
