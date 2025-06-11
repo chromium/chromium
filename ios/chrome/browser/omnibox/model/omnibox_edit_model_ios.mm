@@ -140,7 +140,7 @@ std::u16string OmniboxEditModelIOS::GetPermanentDisplayText() const {
 
 void OmniboxEditModelIOS::SetUserText(const std::u16string& text) {
   SetInputInProgress(true);
-  InternalSetUserText(text);
+  text_model_->UpdateUserText(text);
   GetInfoForCurrentText(&current_match_, nullptr);
   text_model_->paste_state = OmniboxPasteState::kNone;
 }
@@ -192,7 +192,7 @@ void OmniboxEditModelIOS::Revert() {
   SetInputInProgress(false);
   text_model_->input.Clear();
   text_model_->paste_state = OmniboxPasteState::kNone;
-  InternalSetUserText(std::u16string());
+  text_model_->UpdateUserText(std::u16string());
   size_t start, end;
   if (view_) {
     view_->GetSelectionBounds(&start, &end);
@@ -391,7 +391,7 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
     return false;
   }
 
-  InternalSetUserText(*state_changes.new_text);
+  text_model_->UpdateUserText(*state_changes.new_text);
   text_model_->just_deleted_text = state_changes.just_deleted_text;
 
   if (view_) {
@@ -404,12 +404,6 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
 // static
 const char OmniboxEditModelIOS::kCutOrCopyAllTextHistogram[] =
     "Omnibox.CutOrCopyAllText";
-
-void OmniboxEditModelIOS::InternalSetUserText(const std::u16string& text) {
-  text_model_->user_text = text;
-  text_model_->just_deleted_text = false;
-  text_model_->inline_autocompletion.clear();
-}
 
 void OmniboxEditModelIOS::GetInfoForCurrentText(AutocompleteMatch* match,
                                                 GURL* alternate_nav_url) const {

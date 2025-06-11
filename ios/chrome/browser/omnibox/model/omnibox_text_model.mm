@@ -70,3 +70,9 @@ void OmniboxTextModel::SetFocusState(OmniboxFocusState state,
   focus_state = state;
   omnibox_client->OnFocusChanged(focus_state, reason);
 }
+
+void OmniboxTextModel::UpdateUserText(const std::u16string& text) {
+  user_text = text;
+  just_deleted_text = false;
+  inline_autocompletion.clear();
+}

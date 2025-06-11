@@ -49,6 +49,9 @@ struct OmniboxTextModel {
   // Called when the view is gaining focus.
   void OnSetFocus();
 
+  // Updates the user text state.
+  void UpdateUserText(const std::u16string& text);
+
   // The Omnibox client.
   raw_ptr<OmniboxClient> omnibox_client;
 
