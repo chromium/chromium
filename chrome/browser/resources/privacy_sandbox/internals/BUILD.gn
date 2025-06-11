@@ -15,8 +15,8 @@ build_webui("build") {
     "mojo_timestamp.ts",
     "pref_display.ts",
     "value_display.ts",
+    "internals_page.ts",
   ]
-  ts_files = [ "index.ts" ]
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings_ts__generator",

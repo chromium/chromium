@@ -5,12 +5,64 @@ import 'chrome://privacy-sandbox-internals/mojo_timestamp.js';
 import 'chrome://privacy-sandbox-internals/mojo_timedelta.js';
 import 'chrome://privacy-sandbox-internals/value_display.js';
 import 'chrome://privacy-sandbox-internals/pref_display.js';
+import 'chrome://privacy-sandbox-internals/internals_page.js';
 
+import type {InternalsPage} from 'chrome://privacy-sandbox-internals/internals_page.js';
 import type {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
 import type {ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {timestampLogicalFn} from 'chrome://privacy-sandbox-internals/value_display.js';
 import type {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+// Test the <internals-page> element with the real PageHandler.
+suite('InternalsPageTest', function() {
+  let internalsPage: InternalsPage;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    internalsPage = document.createElement('internals-page');
+    document.body.appendChild(internalsPage);
+  });
+
+  const waitForElement = (selector: string): Promise<HTMLElement> => {
+    return new Promise(resolve => {
+      const check = () => {
+        const element =
+            internalsPage.shadowRoot!.querySelector<HTMLElement>(selector);
+        if (element) {
+          resolve(element);
+        } else {
+          requestAnimationFrame(check);
+        }
+      };
+      check();
+    });
+  };
+
+  test('rendersAdvertisingPrefs', async () => {
+    const firstPrefElement =
+        await waitForElement('#advertising-prefs > pref-display');
+    assertTrue(
+        !!firstPrefElement,
+        'A <pref-display> element should be displayed for Advertising Prefs.');
+  });
+
+  test('rendersTrackingProtectionPrefs', async () => {
+    const firstPrefElement =
+        await waitForElement('#tracking-protection-prefs > pref-display');
+    assertTrue(
+        !!firstPrefElement,
+        'A <pref-display> element should be displayed for Tracking Protection Prefs.');
+  });
+
+  test('rendersTpcdExperimentPrefs', async () => {
+    const firstPrefElement =
+        await waitForElement('#tpcd-experiment-prefs > pref-display');
+    assertTrue(
+        !!firstPrefElement,
+        'A <pref-display> element should be displayed for TPCD Experiment Prefs.');
+  });
+});
 
 // Test that the <mojo-timestamp> CustomElement renders the correct time.
 suite('MojoTimestampElementTest', function() {

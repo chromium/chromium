@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './content_setting_pattern_source.js';
@@ -7,7 +7,10 @@ import './mojo_timedelta.js';
 import './cr_frame_list.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
+
 import {ContentSettingsType} from './content_settings_types.mojom-webui.js';
+import {getTemplate} from './internals_page.html.js';
 import type {PageHandlerRemote} from './privacy_sandbox_internals.mojom-webui.js';
 import {PageHandler} from './privacy_sandbox_internals.mojom-webui.js';
 import type {LogicalFn} from './value_display.js';
@@ -121,11 +124,28 @@ function getPrefLogicalFn(prefName: string) {
   return defaultLogicalFn;
 }
 
-class DataLoader {
+export class InternalsPage extends CustomElement {
   pageHandler: PageHandlerRemote;
 
-  constructor(handler: PageHandlerRemote) {
-    this.pageHandler = handler;
+  static get is() {
+    return 'internals-page';
+  }
+
+  static override get template() {
+    return getTemplate();
+  }
+
+  constructor() {
+    super();
+    this.pageHandler = PageHandler.getRemote();
+  }
+
+  connectedCallback() {
+    if (!this.pageHandler) {
+      console.error('PageHandler not initialized. Aborting load.');
+      return;
+    }
+    this.load();
   }
 
   maybeAddPrefsToDom(parentElement: HTMLElement|null, prefNameList: string[]) {
@@ -148,17 +168,19 @@ class DataLoader {
 
   async load() {
     this.maybeAddPrefsToDom(
-        document.querySelector<HTMLElement>('#advertising-prefs'),
+        this.shadowRoot!.querySelector<HTMLElement>('#advertising-prefs'),
         [...advertisingPrefNames.keys()]);
     this.maybeAddPrefsToDom(
-        document.querySelector<HTMLElement>('#tracking-protection-prefs'),
+        this.shadowRoot!.querySelector<HTMLElement>(
+            '#tracking-protection-prefs'),
         [...trackingProtectionPrefNames.keys()]);
     this.maybeAddPrefsToDom(
-        document.querySelector<HTMLElement>('#tpcd-experiment-prefs'),
+        this.shadowRoot!.querySelector<HTMLElement>('#tpcd-experiment-prefs'),
         [...tpcdExperimentPrefs.keys()]);
 
 
-    const tabBox = document.querySelector<HTMLSelectElement>('#ps-page')!;
+    const tabBox =
+        this.shadowRoot!.querySelector<HTMLSelectElement>('#ps-page')!;
     const csPanels = new Map<string, HTMLElement>();
     for (let i = ContentSettingsType.MIN_VALUE;
          i <= ContentSettingsType.MAX_VALUE; i++) {
@@ -199,7 +221,9 @@ class DataLoader {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const loader = new DataLoader(PageHandler.getRemote());
-  loader.load();
-});
+declare global {
+  interface HTMLElementTagNameMap {
+    'internals-page': InternalsPage;
+  }
+}
+customElements.define('internals-page', InternalsPage);
