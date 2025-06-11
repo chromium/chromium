@@ -30,6 +30,10 @@ bool TestNearbyShareDelegate::IsHighVisibilityOn() {
   return is_high_visibility_on_;
 }
 
+bool TestNearbyShareDelegate::IsOnboardingComplete() {
+  return is_onboarding_complete_;
+}
+
 bool TestNearbyShareDelegate::IsEnableHighVisibilityRequestActive() const {
   return is_enable_high_visibility_request_active_;
 }
@@ -47,6 +51,8 @@ void TestNearbyShareDelegate::DisableHighVisibility() {
 }
 
 void TestNearbyShareDelegate::ShowNearbyShareSettings() const {}
+
+void TestNearbyShareDelegate::ShowOnboardingPage() const {}
 
 const gfx::VectorIcon& TestNearbyShareDelegate::GetIcon(bool on_icon) const {
   return gfx::VectorIcon::EmptyIcon();

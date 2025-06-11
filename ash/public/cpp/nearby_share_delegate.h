@@ -39,6 +39,9 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // Gets the current high visibility state from the NearbySharingService.
   virtual bool IsHighVisibilityOn() = 0;
 
+  // Gets onboarding state from nearby share settings.
+  virtual bool IsOnboardingComplete() = 0;
+
   // Returns true if EnableHighVisibility() has been called but
   // NearbyShareDelegate has not yet been informed that the request has
   // concluded.
@@ -58,6 +61,9 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // Open the settings page for Nearby Share, Used when the user clicks on the
   // label under the pod button.
   virtual void ShowNearbyShareSettings() const = 0;
+
+  // Open Nearby Share onboarding page in settings app.
+  virtual void ShowOnboardingPage() const = 0;
 
   // Returns the icon for Nearby Share. Used by the pod button to
   // display the icon, where `on_icon`=false will return the alternative icon

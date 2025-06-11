@@ -80,6 +80,11 @@ bool NearbyShareDelegateImpl::IsHighVisibilityOn() {
   return nearby_share_service_ && nearby_share_service_->IsInHighVisibility();
 }
 
+bool NearbyShareDelegateImpl::IsOnboardingComplete() {
+  DCHECK(nearby_share_settings_);
+  return nearby_share_settings_->IsOnboardingComplete();
+}
+
 bool NearbyShareDelegateImpl::IsEnableHighVisibilityRequestActive() const {
   return is_enable_high_visibility_request_active_;
 }
@@ -211,6 +216,11 @@ void NearbyShareDelegateImpl::ShowNearbyShareSettings() const {
           ? std::string()  // Show settings subpage without dialog.
           : kStartOnboardingQueryParam;  // Show onboarding dialog.
   settings_opener_->ShowSettingsPage(query_param);
+}
+
+void NearbyShareDelegateImpl::ShowOnboardingPage() const {
+  DCHECK(settings_opener_);
+  settings_opener_->ShowSettingsPage(kStartOnboardingQueryParam);
 }
 
 void NearbyShareDelegateImpl::SettingsOpener::ShowSettingsPage(

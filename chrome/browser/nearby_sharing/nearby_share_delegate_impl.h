@@ -59,11 +59,13 @@ class NearbyShareDelegateImpl
   void SetEnabled(bool enabled) override;
   bool IsPodButtonVisible() override;
   bool IsHighVisibilityOn() override;
+  bool IsOnboardingComplete() override;
   bool IsEnableHighVisibilityRequestActive() const override;
   base::TimeTicks HighVisibilityShutoffTime() const override;
   void EnableHighVisibility() override;
   void DisableHighVisibility() override;
   void ShowNearbyShareSettings() const override;
+  void ShowOnboardingPage() const override;
   const gfx::VectorIcon& GetIcon(bool on_icon) const override;
   std::u16string GetPlaceholderFeatureName() const override;
   ::nearby_share::mojom::Visibility GetVisibility() const override;

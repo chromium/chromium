@@ -30,11 +30,13 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
   void SetEnabled(bool enabled) override;
   bool IsPodButtonVisible() override;
   bool IsHighVisibilityOn() override;
+  bool IsOnboardingComplete() override;
   bool IsEnableHighVisibilityRequestActive() const override;
   base::TimeTicks HighVisibilityShutoffTime() const override;
   void EnableHighVisibility() override;
   void DisableHighVisibility() override;
   void ShowNearbyShareSettings() const override;
+  void ShowOnboardingPage() const override;
   const gfx::VectorIcon& GetIcon(bool on_icon) const override;
   std::u16string GetPlaceholderFeatureName() const override;
   ::nearby_share::mojom::Visibility GetVisibility() const override;
@@ -62,6 +64,10 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
     visibility_ = visibility;
   }
 
+  void set_is_onboarding_complete(bool is_onboarding_complete) {
+    is_onboarding_complete_ = is_onboarding_complete;
+  }
+
   std::vector<Method>& method_calls() { return method_calls_; }
 
  private:
@@ -69,6 +75,7 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
   bool is_pod_button_visible_ = false;
   bool is_enable_high_visibility_request_active_ = false;
   bool is_high_visibility_on_ = false;
+  bool is_onboarding_complete_ = true;
   base::TimeTicks high_visibility_shutoff_time_;
   std::vector<Method> method_calls_;
   ::nearby_share::mojom::Visibility visibility_ =
