@@ -4,7 +4,9 @@
 
 #include "chromeos/ash/components/sync_wifi/local_network_collector_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -225,13 +227,15 @@ void LocalNetworkCollectorImpl::OnGetManagedPropertiesResult(
   // TODO(crbug/1128692): Restore support for the metered property when mojo
   // networks track the "Automatic" state.
 
-  bool is_proxy_modified =
-      network_metadata_store_->GetIsFieldExternallyModified(
-          properties->guid, shill::kProxyConfigProperty);
-  sync_pb::WifiConfigurationSpecifics_ProxyConfiguration proxy_config =
-      ProxyConfigurationProtoFromMojo(properties->proxy_settings,
-                                      /*is_unspecified=*/is_proxy_modified);
-  proto.mutable_proxy_configuration()->CopyFrom(proxy_config);
+  if (base::FeatureList::IsEnabled(features::kWifiSyncUploadProxyConfigs)) {
+    bool is_proxy_modified =
+        network_metadata_store_->GetIsFieldExternallyModified(
+            properties->guid, shill::kProxyConfigProperty);
+    sync_pb::WifiConfigurationSpecifics_ProxyConfiguration proxy_config =
+        ProxyConfigurationProtoFromMojo(properties->proxy_settings,
+                                        /*is_unspecified=*/is_proxy_modified);
+    proto.mutable_proxy_configuration()->CopyFrom(proxy_config);
+  }
 
   bool is_dns_externally_modified =
       network_metadata_store_->GetIsFieldExternallyModified(

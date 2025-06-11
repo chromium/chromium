@@ -7,12 +7,14 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -157,6 +159,32 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_OneNetwork) {
       NetworkHandler::Get()->network_metadata_store()->GetIsConfiguredBySync(
           network->guid()));
   histogram_tester.ExpectBucketCount(kApplyResultHistogram, true, 1);
+}
+
+TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_HasProxy_DoesntApply) {
+  sync_pb::WifiConfigurationSpecifics specifics = GenerateTestWifiSpecifics(
+      fred_network_id(), "passphrase", /*timestamp=*/1, /*has_proxy*/ true);
+  NetworkIdentifier id = NetworkIdentifier::FromProto(specifics);
+
+  updater()->AddOrUpdateNetwork(specifics);
+  base::RunLoop().RunUntilIdle();
+
+  const NetworkState* network = FindLocalNetworkById(id);
+  EXPECT_FALSE(network->proxy_config());
+}
+
+TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_HasProxy_Applies) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWifiSyncApplyProxyConfigs);
+  sync_pb::WifiConfigurationSpecifics specifics = GenerateTestWifiSpecifics(
+      fred_network_id(), "passphrase", /*timestamp=*/1, /*has_proxy*/ true);
+  NetworkIdentifier id = NetworkIdentifier::FromProto(specifics);
+
+  updater()->AddOrUpdateNetwork(specifics);
+  base::RunLoop().RunUntilIdle();
+
+  const NetworkState* network = FindLocalNetworkById(id);
+  EXPECT_TRUE(network->proxy_config());
 }
 
 TEST_F(SyncedNetworkUpdaterImplTest, TestUpdate_UnsetFields) {

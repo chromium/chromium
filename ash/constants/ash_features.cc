@@ -3208,6 +3208,18 @@ BASE_FEATURE(kWifiSyncAndroid,
              "WifiSyncAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to enable syncing of proxy configurations on
+// Wi-Fi networks that are uploaded to Chrome Sync.
+BASE_FEATURE(kWifiSyncUploadProxyConfigs,
+             "WifiSyncUploadProxyConfigs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether to enable syncing of proxy configurations on
+// Wi-Fi networks that are received from Chrome Sync.
+BASE_FEATURE(kWifiSyncApplyProxyConfigs,
+             "WifiSyncApplyProxyConfigs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to apply incoming Wi-Fi configuration delete events from
 // the Chrome Sync server.
 BASE_FEATURE(kWifiSyncApplyDeletes,

@@ -48,7 +48,8 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
                                    bool configured_by_sync = false,
                                    bool is_from_policy = false,
                                    bool is_hidden = false,
-                                   bool auto_connect = true);
+                                   bool auto_connect = true,
+                                   bool has_proxy = false);
 
   NetworkStateTestHelper* network_state_test_helper();
 

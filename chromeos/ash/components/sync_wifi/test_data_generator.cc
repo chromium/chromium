@@ -21,7 +21,8 @@ NetworkIdentifier GenerateInvalidPskNetworkId(const std::string& ssid) {
 sync_pb::WifiConfigurationSpecifics GenerateTestWifiSpecifics(
     const NetworkIdentifier& id,
     const std::string& passphrase = "passphrase",
-    double timestamp = 1) {
+    double timestamp = 1,
+    bool has_proxy = false) {
   sync_pb::WifiConfigurationSpecifics specifics;
   specifics.set_hex_ssid(id.hex_ssid());
 
@@ -42,9 +43,17 @@ sync_pb::WifiConfigurationSpecifics GenerateTestWifiSpecifics(
       sync_pb::WifiConfigurationSpecifics::IS_PREFERRED_ENABLED);
   specifics.set_metered(
       sync_pb::WifiConfigurationSpecifics::METERED_OPTION_AUTO);
-  specifics.mutable_proxy_configuration()->set_proxy_option(
-      sync_pb::WifiConfigurationSpecifics::ProxyConfiguration::
-          PROXY_OPTION_DISABLED);
+  if (has_proxy) {
+    specifics.mutable_proxy_configuration()->set_proxy_option(
+        sync_pb::WifiConfigurationSpecifics::ProxyConfiguration::
+            PROXY_OPTION_AUTOMATIC);
+    specifics.mutable_proxy_configuration()->set_autoconfiguration_url(
+        "https://proxy.test.com/PAC");
+  } else {
+    specifics.mutable_proxy_configuration()->set_proxy_option(
+        sync_pb::WifiConfigurationSpecifics::ProxyConfiguration::
+            PROXY_OPTION_DISABLED);
+  }
   return specifics;
 }
 

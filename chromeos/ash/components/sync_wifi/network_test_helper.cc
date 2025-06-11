@@ -124,7 +124,8 @@ std::string NetworkTestHelper::ConfigureWiFiNetwork(
     bool configured_by_sync,
     bool is_from_policy,
     bool is_hidden,
-    bool auto_connect) {
+    bool auto_connect,
+    bool has_proxy) {
   std::string security_entry =
       is_secured ? R"("SecurityClass": "psk", "Passphrase": "secretsauce", )"
                  : R"("SecurityClass": "none", )";
@@ -135,25 +136,32 @@ std::string NetworkTestHelper::ConfigureWiFiNetwork(
                  .AsUTF8Unsafe()
                  .c_str()
            : "/profile/default");
-  std::string ui_data = "";
+  std::string ui_data;
   if (is_from_policy) {
     ui_data = base::StringPrintf(R"(, "UIData": "{\"onc_source\": \"%s\"}")",
                                  user ? "user_policy" : "device_policy");
   }
 
-  std::string hidden = "";
+  std::string hidden;
   if (is_hidden) {
     hidden = R"(, "WiFi.HiddenSSID": true)";
   }
+
+  std::string proxy_config;
+  if (has_proxy) {
+    proxy_config =
+        R"(, "ProxyConfig": "{\"mode\":\"pac_script\",\"pac_mandatory\":false,\"pac_url\":\"https://proxy.test.com/PROXY_PAC\"}",)";
+  }
+
   std::string guid = base::StringPrintf("%s_guid", ssid.c_str());
   std::string service_path =
       network_state_helper_.ConfigureService(base::StringPrintf(
           R"({"GUID": "%s", "Type": "wifi", "SSID": "%s",
             %s "State": "ready", "Strength": 100,
-            %s "AutoConnect": %s, "Connectable": true%s%s})",
+            %s "AutoConnect": %s, "Connectable": true%s%s%s})",
           guid.c_str(), ssid.c_str(), security_entry.c_str(),
           profile_entry.c_str(), auto_connect ? "true" : "false",
-          ui_data.c_str(), hidden.c_str()));
+          ui_data.c_str(), hidden.c_str(), proxy_config.c_str()));
 
   base::RunLoop().RunUntilIdle();
 
