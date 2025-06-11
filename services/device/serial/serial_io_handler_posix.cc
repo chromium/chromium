@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
+#include "services/device/public/cpp/device_features.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <asm-generic/ioctls.h>
@@ -470,34 +471,65 @@ mojom::SerialPortControlSignalsPtr SerialIoHandlerPosix::GetControlSignals()
 
 bool SerialIoHandlerPosix::SetControlSignals(
     const mojom::SerialHostControlSignals& signals) {
-  // Collect signals that need to be set or cleared on the port.
-  int set = 0;
-  int clear = 0;
-
-  if (signals.has_dtr) {
-    if (signals.dtr) {
-      set |= TIOCM_DTR;
-    } else {
-      clear |= TIOCM_DTR;
+  if (base::FeatureList::IsEnabled(features::kSerialSplitDtrAndRts)) {
+    // The order these signals are set is defined by
+    // https://wicg.github.io/serial/#dom-serialport-setsignals.
+    if (signals.has_dtr) {
+      if (signals.dtr) {
+        if (ioctl(file().GetPlatformFile(), TIOCMBIS, TIOCM_DTR) != 0) {
+          SERIAL_PLOG(DEBUG) << "Failed to set dataTerminalReady";
+          return false;
+        }
+      } else {
+        if (ioctl(file().GetPlatformFile(), TIOCMBIC, TIOCM_DTR) != 0) {
+          SERIAL_PLOG(DEBUG) << "Failed to clear dataTerminalReady";
+          return false;
+        }
+      }
     }
-  }
-
-  if (signals.has_rts) {
-    if (signals.rts) {
-      set |= TIOCM_RTS;
-    } else {
-      clear |= TIOCM_RTS;
+    if (signals.has_rts) {
+      if (signals.rts) {
+        if (ioctl(file().GetPlatformFile(), TIOCMBIS, TIOCM_RTS) != 0) {
+          SERIAL_PLOG(DEBUG) << "Failed to set requestToSend";
+          return false;
+        }
+      } else {
+        if (ioctl(file().GetPlatformFile(), TIOCMBIC, TIOCM_RTS) != 0) {
+          SERIAL_PLOG(DEBUG) << "Failed to clear requestToSend";
+          return false;
+        }
+      }
     }
-  }
+  } else {
+    // Collect signals that need to be set or cleared on the port.
+    int set = 0;
+    int clear = 0;
 
-  if (set && ioctl(file().GetPlatformFile(), TIOCMBIS, &set) != 0) {
-    SERIAL_PLOG(DEBUG) << "Failed to set port control signals";
-    return false;
-  }
+    if (signals.has_dtr) {
+      if (signals.dtr) {
+        set |= TIOCM_DTR;
+      } else {
+        clear |= TIOCM_DTR;
+      }
+    }
 
-  if (clear && ioctl(file().GetPlatformFile(), TIOCMBIC, &clear) != 0) {
-    SERIAL_PLOG(DEBUG) << "Failed to clear port control signals";
-    return false;
+    if (signals.has_rts) {
+      if (signals.rts) {
+        set |= TIOCM_RTS;
+      } else {
+        clear |= TIOCM_RTS;
+      }
+    }
+
+    if (set && ioctl(file().GetPlatformFile(), TIOCMBIS, &set) != 0) {
+      SERIAL_PLOG(DEBUG) << "Failed to set port control signals";
+      return false;
+    }
+
+    if (clear && ioctl(file().GetPlatformFile(), TIOCMBIC, &clear) != 0) {
+      SERIAL_PLOG(DEBUG) << "Failed to clear port control signals";
+      return false;
+    }
   }
 
   if (signals.has_brk) {
