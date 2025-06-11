@@ -275,9 +275,17 @@ void TranslationManagerImpl::CreateTranslator(
       GetBestFitLanguageCode(options->target_lang->code);
 
   // TranslationAvailable should have been called on these language codes which
-  // has already verified that a best fit language code exists.
-  CHECK(maybe_source_language.has_value());
-  CHECK(maybe_target_language.has_value());
+  // has already verified that a best fit language code exists, but if the
+  // renderer is compromised, the CreateTranslator mojo function could be called
+  // directly with invalid values.
+  if (!maybe_source_language.has_value() ||
+      !maybe_target_language.has_value()) {
+    mojo::Remote(std::move(client))
+        ->OnResult(CreateTranslatorResult::NewError(
+                       CreateTranslatorError::kFailedToCreateTranslator),
+                   nullptr, nullptr);
+    return;
+  }
 
   std::string source_language = *std::move(maybe_source_language);
   std::string target_language = *std::move(maybe_target_language);
