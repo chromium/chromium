@@ -70,26 +70,6 @@ class LoginFeedbackTest : public LoginManagerTest {
   LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
-class LoginOsFeedbackDialogTest : public LoginFeedbackTest {
- public:
-  LoginOsFeedbackDialogTest() : LoginFeedbackTest() {
-    feature_list_.InitAndEnableFeature(features::kOsFeedbackDialog);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class OobeOsFeedbackDialogTest : public OobeBaseTest {
- public:
-  OobeOsFeedbackDialogTest() : OobeBaseTest() {
-    feature_list_.InitAndEnableFeature(features::kOsFeedbackDialog);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 void EnsureFeedbackAppUIShown(FeedbackDialog* feedback_dialog,
                               base::OnceClosure callback) {
   auto* widget = feedback_dialog->GetWidget();
@@ -105,59 +85,15 @@ void EnsureFeedbackAppUIShown(FeedbackDialog* feedback_dialog,
   }
 }
 
-void TestFeedback() {
-  // TODO(http://b/309467654): clean up obsolete code.
-  if (ash::features::IsOsFeedbackDialogEnabled()) {
-    GTEST_SKIP();
-  }
-  Profile* const profile = ProfileHelper::GetSigninProfile();
-  auto login_feedback = std::make_unique<ash::LoginFeedback>(profile);
-
-  base::RunLoop run_loop;
-  // Test that none feedback dialog exists.
-  ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
-
-  login_feedback->Request("Test feedback");
-  FeedbackDialog* feedback_dialog = FeedbackDialog::GetInstanceForTest();
-  // Test that a feedback dialog object has been created.
-  ASSERT_NE(nullptr, feedback_dialog);
-
-  // The feedback app starts invisible until after a screenshot has been taken
-  // via JS on the UI side. Afterward, JS will send a request to show the app
-  // window via a message handler.
-  EnsureFeedbackAppUIShown(feedback_dialog, run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Test that the feedback app is visible now.
-  EXPECT_TRUE(feedback_dialog->GetWidget()->IsVisible());
-  // Test that the feedback app window is modal.
-  EXPECT_TRUE(feedback_dialog->GetWidget()->IsModal());
-
-  // Close the feedback dialog.
-  feedback_dialog->GetWidget()->Close();
-}
-
 }  // namespace
 
-// Test feedback UI shows up and is active on the Login Screen
+// Test feedback UI shows up and is active on the Login Screen.
 IN_PROC_BROWSER_TEST_F(LoginFeedbackTest, Basic) {
-  TestFeedback();
-}
-
-// Test feedback UI shows up and is active in OOBE
-IN_PROC_BROWSER_TEST_F(OobeBaseTest, FeedbackBasic) {
-  TestFeedback();
-}
-
-// Test feedback UI shows up and is active on the Login Screen when the
-// feature flag OsFeedbackDialog is enabled.
-IN_PROC_BROWSER_TEST_F(LoginOsFeedbackDialogTest, Basic) {
   TestOpenOsFeedbackDialog();
 }
 
-// Test feedback UI shows up and is active in OOBE when the feature flag
-// OsFeedbackDialog is enabled.
-IN_PROC_BROWSER_TEST_F(OobeOsFeedbackDialogTest, Basic) {
+// Test feedback UI shows up and is active in OOBE.
+IN_PROC_BROWSER_TEST_F(OobeBaseTest, Basic) {
   TestOpenOsFeedbackDialog();
 }
 

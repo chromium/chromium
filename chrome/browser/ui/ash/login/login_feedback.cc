@@ -45,11 +45,7 @@ void LoginFeedback::Request(const std::string& description,
       /*autofill_metadata=*/base::Value::Dict(),
       /*ai_metadata=*/base::Value::Dict());
 
-  if (ash::features::IsOsFeedbackDialogEnabled()) {
-    OsFeedbackDialog::ShowDialogAsync(profile_, *info, std::move(callback));
-  } else {
-    FeedbackDialog::CreateOrShow(profile_, *info);
-  }
+  OsFeedbackDialog::ShowDialogAsync(profile_, *info, std::move(callback));
 }
 
 }  // namespace ash

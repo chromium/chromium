@@ -1851,9 +1851,6 @@ extern const char kOptimizationGuidePushNotificationDescription[];
 extern const char kOrcaKeyName[];
 extern const char kOrcaKeyDescription[];
 
-extern const char kOsFeedbackDialogName[];
-extern const char kOsFeedbackDialogDescription[];
-
 extern const char kOverlayScrollbarsName[];
 extern const char kOverlayScrollbarsDescription[];
 

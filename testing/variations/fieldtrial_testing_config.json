@@ -16209,21 +16209,6 @@
             ]
         }
     ],
-    "OsFeedbackDialog": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OsFeedbackDialog"
-                    ]
-                }
-            ]
-        }
-    ],
     "OutOfProcessPrintDriversPrint": [
         {
             "platforms": [

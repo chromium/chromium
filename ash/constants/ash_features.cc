@@ -2365,12 +2365,6 @@ BASE_FEATURE(kOsSyncConsentRevamp,
              "OsSyncConsentRevamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the os feedback dialog will be used on OOBE and the login
-// screeen.
-BASE_FEATURE(kOsFeedbackDialog,
-             "OsFeedbackDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Jelly colors and components to appear in the Parent Access Widget
 // if jelly-colors is also enabled.
 BASE_FEATURE(kParentAccessJelly,
@@ -4345,10 +4339,6 @@ bool IsOobeInputMethodsEnabled() {
 
 bool IsOobeSplitModifierKeyboardInfoEnabled() {
   return base::FeatureList::IsEnabled(kOobeSplitModifierKeyboardInfo);
-}
-
-bool IsOsFeedbackDialogEnabled() {
-  return base::FeatureList::IsEnabled(kOsFeedbackDialog);
 }
 
 bool IsOsSyncConsentRevampEnabled() {

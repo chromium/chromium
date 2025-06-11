@@ -7616,11 +7616,6 @@ const char kOrcaKeyName[] = "Secret key for Orca feature";
 const char kOrcaKeyDescription[] =
     "Secret key for Orca feature. Incorrect values will cause chrome crashes.";
 
-const char kOsFeedbackDialogName[] =
-    "OS Feedback dialog on OOBE and login screen";
-const char kOsFeedbackDialogDescription[] =
-    "Enable the OS Feedback dialog on OOBE and login screen.";
-
 const char kPcieBillboardNotificationName[] = "PCIe billboard notification";
 const char kPcieBillboardNotificationDescription[] =
     "Enable PCIe peripheral billboard notification.";
