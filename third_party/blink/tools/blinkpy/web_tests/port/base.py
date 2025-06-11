@@ -45,6 +45,7 @@ from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
 from typing import (
+    ByteString,
     Collection,
     Iterator,
     List,
@@ -2938,7 +2939,13 @@ class Port(object):
             return True
         return False
 
-    def _get_crash_log(self, name, pid, stdout, stderr, newer_than):
+    def get_crash_log(
+        self,
+        name: Optional[str],
+        pid: Optional[str],
+        stdout: ByteString,
+        stderr: ByteString,
+    ) -> Tuple[ByteString, str, Optional[str]]:
         if self.output_contains_sanitizer_messages(stderr):
             # Running the symbolizer script can take a lot of memory, so we need to
             # serialize access to it across all the concurrently running drivers.

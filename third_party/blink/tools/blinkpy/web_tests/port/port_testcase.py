@@ -259,8 +259,8 @@ class PortTestCase(LoggingTestCase):
 
     def test_get_crash_log_all_none(self):
         port = self.make_port()
-        stderr, details, crash_site = port._get_crash_log(
-            None, None, None, None, newer_than=None)
+        stderr, details, crash_site = port.get_crash_log(
+            None, None, None, None)
         self.assertIsNone(stderr)
         self.assertEqual(
             details, b'crash log for <unknown process name> (pid <unknown>):\n'
@@ -270,12 +270,8 @@ class PortTestCase(LoggingTestCase):
 
     def test_get_crash_log_simple(self):
         port = self.make_port()
-        stderr, details, crash_site = port._get_crash_log(
-            'foo',
-            1234,
-            b'out bar\nout baz',
-            b'err bar\nerr baz\n',
-            newer_than=None)
+        stderr, details, crash_site = port.get_crash_log(
+            'foo', 1234, b'out bar\nout baz', b'err bar\nerr baz\n')
         self.assertEqual(stderr, b'err bar\nerr baz\n')
         self.assertEqual(
             details, b'crash log for foo (pid 1234):\n'
@@ -287,11 +283,8 @@ class PortTestCase(LoggingTestCase):
 
     def test_get_crash_log_non_ascii(self):
         port = self.make_port()
-        stderr, details, crash_site = port._get_crash_log('foo',
-                                                          1234,
-                                                          b'foo\xa6bar',
-                                                          b'foo\xa6bar',
-                                                          newer_than=None)
+        stderr, details, crash_site = port.get_crash_log(
+            'foo', 1234, b'foo\xa6bar', b'foo\xa6bar')
         self.assertEqual(stderr, b'foo\xa6bar')
         self.assertEqual(
             details.decode('utf8', 'replace'),
@@ -302,11 +295,8 @@ class PortTestCase(LoggingTestCase):
 
     def test_get_crash_log_newer_than(self):
         port = self.make_port()
-        stderr, details, crash_site = port._get_crash_log('foo',
-                                                          1234,
-                                                          b'foo\xa6bar',
-                                                          b'foo\xa6bar',
-                                                          newer_than=1.0)
+        stderr, details, crash_site = port.get_crash_log(
+            'foo', 1234, b'foo\xa6bar', b'foo\xa6bar')
         self.assertEqual(stderr, b'foo\xa6bar')
         self.assertEqual(
             details.decode('utf8', 'replace'),
@@ -317,12 +307,9 @@ class PortTestCase(LoggingTestCase):
 
     def test_get_crash_log_crash_site(self):
         port = self.make_port()
-        stderr, details, crash_site = port._get_crash_log(
-            'foo',
-            1234,
-            b'out bar',
-            b'[1:2:3:4:FATAL:example.cc(567)] Check failed.',
-            newer_than=None)
+        stderr, details, crash_site = port.get_crash_log(
+            'foo', 1234, b'out bar',
+            b'[1:2:3:4:FATAL:example.cc(567)] Check failed.')
         self.assertEqual(stderr,
                          b'[1:2:3:4:FATAL:example.cc(567)] Check failed.')
         self.assertEqual(
