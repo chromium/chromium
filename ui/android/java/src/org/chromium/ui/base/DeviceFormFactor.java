@@ -48,9 +48,6 @@ public class DeviceFormFactor {
      */
     public static final String ONLY_TABLET = "Tablet";
 
-    // TODO(crbug.com/415126396): Left behind to avoid bad merges, clean this up.
-    @Deprecated public static final String TABLET = ONLY_TABLET;
-
     /**
      * Tablet or desktop form factor, including {@code #LARGETABLET} below.
      *
