@@ -15,4 +15,7 @@ found in the LICENSE file.
   <color name="incognito_tab_bg_selected_color">@color/baseline_primary_80</color>
 
   <color name="incognito_tab_tile_number_color">@color/baseline_neutral_90</color>
+  <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_20</color>
+
+  <color name="incognito_tab_action_button_selected_color">@color/baseline_primary_20</color>
 </resources>

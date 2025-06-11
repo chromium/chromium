@@ -30,9 +30,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
-import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
@@ -259,7 +259,7 @@ class TabGridViewBinder {
                 || TabProperties.TAB_GROUP_CARD_COLOR == propertyKey) {
             ((TabGridView) view)
                     .setTabActionButtonTint(
-                            TabUiThemeProvider.getActionButtonTintList(
+                            TabCardThemeUtil.getActionButtonTintList(
                                     view.getContext(),
                                     model.get(TabProperties.IS_INCOGNITO),
                                     model.get(TabProperties.IS_SELECTED),
@@ -548,12 +548,12 @@ class TabGridViewBinder {
 
         cardView.getBackground().mutate();
         final @ColorInt int backgroundColor =
-                TabUiThemeUtils.getCardViewBackgroundColor(
+                TabCardThemeUtil.getCardViewBackgroundColor(
                         cardView.getContext(), isIncognito, isSelected, colorId);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
         titleView.setTextColor(
-                TabUiThemeUtils.getTitleTextColor(
+                TabCardThemeUtil.getTitleTextColor(
                         titleView.getContext(), isIncognito, isSelected, colorId));
 
         thumbnail.updateThumbnailPlaceholder(isIncognito, isSelected, colorId);
@@ -575,7 +575,7 @@ class TabGridViewBinder {
                 .setLevel(TabCardViewBinderUtils.getCheckmarkLevel(res, isSelected));
         DrawableCompat.setTintList(
                 actionButton.getBackground().mutate(),
-                TabUiThemeProvider.getToggleActionButtonBackgroundTintList(
+                TabCardThemeUtil.getToggleActionButtonBackgroundTintList(
                         context, isIncognito, isSelected));
 
         // The check should be invisible if not selected.

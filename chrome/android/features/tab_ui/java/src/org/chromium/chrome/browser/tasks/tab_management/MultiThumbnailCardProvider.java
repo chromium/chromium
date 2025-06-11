@@ -35,10 +35,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
-import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
@@ -142,10 +142,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 actualColorId = filter.getTabGroupColorWithFallback(initialTab.getRootId());
             }
             mResolvedEmptyPlaceholderColor =
-                    TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
+                    TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                             mContext, isIncognito, mIsTabSelected, actualColorId);
             mResolvedTextColor =
-                    TabUiThemeUtils.getTitleTextColor(
+                    TabCardThemeUtil.getTitleTextColor(
                             mContext, isIncognito, mIsTabSelected, actualColorId);
         }
 
@@ -390,12 +390,12 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mEmptyThumbnailPaint.setStyle(Paint.Style.FILL);
         mEmptyThumbnailPaint.setAntiAlias(true);
         mEmptyThumbnailPaint.setColor(
-                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
+                TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                         context, false, false, /* colorId */ null));
 
         mSelectedEmptyThumbnailPaint = new Paint(mEmptyThumbnailPaint);
         mSelectedEmptyThumbnailPaint.setColor(
-                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
+                TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                         context, false, true, /* colorId */ null));
 
         mColordEmptyThumbnailPaint = new Paint(mEmptyThumbnailPaint);
@@ -421,12 +421,12 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setColor(
-                TabUiThemeProvider.getTabGroupNumberTextColor(
+                TabCardThemeUtil.getTabGroupNumberTextColor(
                         context, false, false, /* colorId */ null));
 
         mSelectedTextPaint = new Paint(mTextPaint);
         mSelectedTextPaint.setColor(
-                TabUiThemeProvider.getTabGroupNumberTextColor(
+                TabCardThemeUtil.getTabGroupNumberTextColor(
                         context, false, true, /* colorId */ null));
 
         mFaviconBackgroundPaintColor = context.getColor(R.color.favicon_background_color);
@@ -454,13 +454,13 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         assert filter != null;
         boolean isIncognito = filter.getTabModel().isIncognitoBranded();
         mMiniThumbnailPlaceholderColor =
-                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
+                TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                         mContext, isIncognito, false, /* colorId */ null);
         if (mGroupTintedMiniThumbnailPlaceholderColor == null) {
             mEmptyThumbnailPaint.setColor(mMiniThumbnailPlaceholderColor);
         }
         mTextPaint.setColor(
-                TabUiThemeProvider.getTabGroupNumberTextColor(
+                TabCardThemeUtil.getTabGroupNumberTextColor(
                         mContext, isIncognito, false, /* colorId */ null));
         mThumbnailFramePaint.setColor(
                 TabUiThemeProvider.getMiniThumbnailFrameColor(mContext, isIncognito));
@@ -468,10 +468,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 TabUiThemeProvider.getFaviconBackgroundColor(mContext, isIncognito));
 
         mSelectedEmptyThumbnailPaint.setColor(
-                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
+                TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                         mContext, isIncognito, true, /* colorId */ null));
         mSelectedTextPaint.setColor(
-                TabUiThemeProvider.getTabGroupNumberTextColor(
+                TabCardThemeUtil.getTabGroupNumberTextColor(
                         mContext, isIncognito, true, /* colorId */ null));
     }
 

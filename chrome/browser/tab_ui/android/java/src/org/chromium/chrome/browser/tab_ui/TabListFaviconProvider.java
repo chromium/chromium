@@ -271,13 +271,13 @@ public class TabListFaviconProvider {
 
         @ColorInt
         int defaultIconColor =
-                TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, false, false);
-        mSelectedIconColor = TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, false, true);
+                TabCardThemeUtil.getChromeOwnedFaviconTintColor(context, false, false);
+        mSelectedIconColor = TabCardThemeUtil.getChromeOwnedFaviconTintColor(context, false, true);
         @ColorInt
         int incognitoIconColor =
-                TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, true, false);
+                TabCardThemeUtil.getChromeOwnedFaviconTintColor(context, true, false);
         mIncognitoSelectedIconColor =
-                TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, true, true);
+                TabCardThemeUtil.getChromeOwnedFaviconTintColor(context, true, true);
         maybeSetUpLazyTabFaviconResolvers(
                 defaultIconColor,
                 mSelectedIconColor,
@@ -595,13 +595,13 @@ public class TabListFaviconProvider {
     private TabFavicon colorFaviconWithTheme(TabFavicon favicon) {
         assert favicon.isRecolorAllowed();
 
-        int colorDefault = TabUiThemeUtils.getChromeOwnedFaviconTintColor(mContext, false, false);
+        int colorDefault = TabCardThemeUtil.getChromeOwnedFaviconTintColor(mContext, false, false);
         favicon.getDefaultDrawable()
                 .setColorFilter(new PorterDuffColorFilter(colorDefault, PorterDuff.Mode.SRC_IN));
 
         if (favicon.hasSelectedState()) {
             int colorSelected =
-                    TabUiThemeUtils.getChromeOwnedFaviconTintColor(mContext, false, true);
+                    TabCardThemeUtil.getChromeOwnedFaviconTintColor(mContext, false, true);
             favicon.getSelectedDrawable()
                     .setColorFilter(
                             new PorterDuffColorFilter(colorSelected, PorterDuff.Mode.SRC_IN));

@@ -17,12 +17,9 @@ found in the LICENSE file.
 
     <!-- Incognito colors for theme refactor 2021. -->
     <!-- TODO(crbug.com/40774932): Use semantic colors for incognito. -->
-    <color name="incognito_tab_action_button_selected_color">@color/baseline_primary_20</color>
 
     <color name="incognito_tab_group_hovered_bg_color">@color/default_bg_color_dark_elev_1_baseline</color>
     <color name="incognito_tab_group_hovered_bg_selected_color">@color/baseline_primary_80_alpha_10</color>
-
-    <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_20</color>
 
     <color name="incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color">@color/baseline_primary_80</color>
 

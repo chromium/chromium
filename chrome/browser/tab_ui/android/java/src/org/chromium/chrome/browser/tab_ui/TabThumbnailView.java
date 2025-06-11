@@ -232,11 +232,11 @@ public class TabThumbnailView extends ImageView {
             boolean isIncognito, boolean isSelected, @Nullable @TabGroupColorId Integer colorId) {
         // Step 1: Background color.
         mBackgroundDrawable.setColor(
-                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
+                TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                         getContext(), isIncognito, isSelected, colorId));
         final int oldColor = mPaint.getColor();
         final int newColor =
-                TabUiThemeUtils.getCardViewBackgroundColor(
+                TabCardThemeUtil.getCardViewBackgroundColor(
                         getContext(), isIncognito, isSelected, colorId);
         mPaint.setColor(newColor);
 

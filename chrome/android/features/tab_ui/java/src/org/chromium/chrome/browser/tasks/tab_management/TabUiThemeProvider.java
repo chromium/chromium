@@ -15,12 +15,10 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** Utility class that provides theme related attributes for Tab UI. */
 @NullMarked
@@ -34,68 +32,6 @@ public class TabUiThemeProvider {
      */
     public static @ColorInt int getDefaultNtbContainerColor(Context context) {
         return MaterialColors.getColor(context, R.attr.colorPrimaryContainer, TAG);
-    }
-
-    /**
-     * Returns the text color for the number used on the tab group cards based on the incognito
-     * mode.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @param isSelected Whether the tab is currently selected.
-     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
-     * @return The text color for the number used on the tab group cards.
-     */
-    public static @ColorInt int getTabGroupNumberTextColor(
-            Context context,
-            boolean isIncognito,
-            boolean isSelected,
-            @Nullable @TabGroupColorId Integer colorId) {
-        if (isSelected) {
-            return isIncognito
-                    ? context.getColor(R.color.incognito_tab_tile_number_selected_color)
-                    : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG);
-        }
-        return SurfaceColorUpdateUtils.getCardViewGroupNumberTextColor(
-                context, isIncognito, colorId);
-    }
-
-    /**
-     * Returns the {@link ColorStateList} to use for the tab grid card action button based on
-     * incognito mode.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @param isSelected Whether the tab is currently selected.
-     * @return The {@link ColorStateList} for tab grid card action button.
-     */
-    public static ColorStateList getActionButtonTintList(
-            Context context,
-            boolean isIncognito,
-            boolean isSelected,
-            @Nullable @TabGroupColorId Integer colorId) {
-        if (isSelected) {
-            return isIncognito
-                    ? AppCompatResources.getColorStateList(
-                            context, R.color.incognito_tab_action_button_selected_color)
-                    : ColorStateList.valueOf(
-                            MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG));
-        }
-        return SurfaceColorUpdateUtils.getCardViewActionButtonColor(context, isIncognito, colorId);
-    }
-
-    /**
-     * Returns the {@link ColorStateList} to use for the selectable tab grid card toggle button
-     * based on incognito mode.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @param isSelected Whether the tab is currently selected.
-     * @return The {@link ColorStateList} for selectable tab grid card toggle button.
-     */
-    public static ColorStateList getToggleActionButtonBackgroundTintList(
-            Context context, boolean isIncognito, boolean isSelected) {
-        return getActionButtonTintList(context, isIncognito, isSelected, /* colorId */ null);
     }
 
     /**

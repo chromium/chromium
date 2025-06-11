@@ -36,8 +36,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
-import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -223,14 +223,14 @@ public class TabThumbnailViewRenderTest {
         View cardView = mTabCard.findViewById(R.id.card_view);
         cardView.getBackground().mutate();
         final @ColorInt int backgroundColor =
-                TabUiThemeUtils.getCardViewBackgroundColor(
+                TabCardThemeUtil.getCardViewBackgroundColor(
                         cardView.getContext(), isIncognito, isSelected, /* colorId */ null);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
         mTabThumbnailView.updateThumbnailPlaceholder(isIncognito, isSelected, /* colorId */ null);
 
         mTabCard.setTabActionButtonTint(
-                TabUiThemeProvider.getActionButtonTintList(
+                TabCardThemeUtil.getActionButtonTintList(
                         mTabCard.getContext(), isIncognito, isSelected, /* colorId */ null));
     }
 }
