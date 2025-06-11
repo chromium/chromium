@@ -550,11 +550,11 @@ void CrostiniHandler::HandleAddCrostiniPortForward(
     const base::Value::List& args) {
   CHECK_EQ(5U, args.size());
 
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   guest_os::GuestId container_id(args[1]);
   int port_number = args[2].GetInt();
   int protocol_type = args[3].GetInt();
-  std::string label = args[4].GetString();
+  const std::string& label = args[4].GetString();
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     OnPortForwardComplete(callback_id, false);
@@ -564,10 +564,9 @@ void CrostiniHandler::HandleAddCrostiniPortForward(
   crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)->AddPort(
       container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
-      std::move(label),
+      label,
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
-                     callback_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_id)));
+                     callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void CrostiniHandler::HandleRemoveCrostiniPortForward(
@@ -575,7 +574,7 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
   const auto& list = args;
   CHECK_EQ(4U, list.size());
 
-  std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
   guest_os::GuestId container_id(list[1]);
   int port_number = list[2].GetInt();
   int protocol_type = list[3].GetInt();
@@ -589,8 +588,7 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
       container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
-                     callback_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_id)));
+                     callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
@@ -610,7 +608,7 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
   const auto& list = args;
   CHECK_EQ(4U, list.size());
 
-  std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
   guest_os::GuestId container_id(list[1]);
   int port_number = list[2].GetInt();
   int protocol_type = list[3].GetInt();
@@ -624,8 +622,7 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
       container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
-                     callback_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_id)));
+                     callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void CrostiniHandler::HandleDeactivateCrostiniPortForward(
@@ -633,7 +630,7 @@ void CrostiniHandler::HandleDeactivateCrostiniPortForward(
   const auto& list = args;
   CHECK_EQ(4U, list.size());
 
-  std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
   guest_os::GuestId container_id(list[1]);
   int port_number = list[2].GetInt();
   int protocol_type = list[3].GetInt();
@@ -648,17 +645,17 @@ void CrostiniHandler::HandleDeactivateCrostiniPortForward(
           container_id, port_number,
           static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
           base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
-                         callback_weak_ptr_factory_.GetWeakPtr(),
-                         std::move(callback_id)));
+                         callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void CrostiniHandler::OnPortForwardComplete(std::string callback_id,
                                             bool success) {
-  ResolveJavascriptCallback(base::Value(callback_id), base::Value(success));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id)),
+                            base::Value(success));
 }
 
 void CrostiniHandler::ResolveGetCrostiniDiskInfoCallback(
-    const std::string& callback_id,
+    std::string callback_id,
     std::unique_ptr<crostini::CrostiniDiskInfo> disk_info) {
   ResolveJavascriptCallback(base::Value(std::move(callback_id)),
                             CrostiniDiskInfoToValue(std::move(disk_info)));
@@ -667,31 +664,28 @@ void CrostiniHandler::ResolveGetCrostiniDiskInfoCallback(
 void CrostiniHandler::HandleGetCrostiniDiskInfo(const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(3U, args.size());
-  std::string callback_id = args[0].GetString();
-  std::string vm_name = args[1].GetString();
+  const std::string& callback_id = args[0].GetString();
+  const std::string& vm_name = args[1].GetString();
   bool full_info = args[2].GetBool();
   crostini::disk::GetDiskInfo(
       base::BindOnce(&CrostiniHandler::ResolveGetCrostiniDiskInfoCallback,
-                     callback_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_id)),
-      profile_, std::move(vm_name), full_info);
+                     callback_weak_ptr_factory_.GetWeakPtr(), callback_id),
+      profile_, vm_name, full_info);
 }
 
 void CrostiniHandler::HandleResizeCrostiniDisk(const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
-  std::string callback_id = args[0].GetString();
-  std::string vm_name = args[1].GetString();
+  const std::string& callback_id = args[0].GetString();
+  const std::string& vm_name = args[1].GetString();
   double bytes = args[2].GetDouble();
   crostini::disk::ResizeCrostiniDisk(
-      profile_, std::move(vm_name), bytes,
+      profile_, vm_name, bytes,
       base::BindOnce(&CrostiniHandler::ResolveResizeCrostiniDiskCallback,
-                     callback_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_id)));
+                     callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
-void CrostiniHandler::ResolveResizeCrostiniDiskCallback(
-    const std::string& callback_id,
-    bool succeeded) {
+void CrostiniHandler::ResolveResizeCrostiniDiskCallback(std::string callback_id,
+                                                        bool succeeded) {
   ResolveJavascriptCallback(base::Value(std::move(callback_id)),
                             base::Value(succeeded));
 }
@@ -701,7 +695,7 @@ void CrostiniHandler::HandleGetCrostiniActivePorts(
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   ResolveJavascriptCallback(
       base::Value(callback_id),
@@ -714,7 +708,7 @@ void CrostiniHandler::HandleGetCrostiniActiveNetworkInfo(
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   ResolveJavascriptCallback(
       base::Value(callback_id),
       crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
@@ -726,7 +720,7 @@ void CrostiniHandler::HandleCheckCrostiniIsRunning(
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(crostini::IsCrostiniRunning(profile_)));
@@ -737,7 +731,7 @@ void CrostiniHandler::HandleCheckBruschettaIsRunning(
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   ResolveJavascriptCallback(
       base::Value(callback_id),
@@ -786,7 +780,7 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
   CHECK_EQ(4U, args.size());
   guest_os::GuestId container_id(args[0]);
   GURL image_server_url(args[1].GetString());
-  std::string image_alias(args[2].GetString());
+  const std::string& image_alias(args[2].GetString());
   base::FilePath container_file(args[3].GetString());
 
   if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
@@ -958,10 +952,10 @@ void CrostiniHandler::HandleOpenContainerFileSelector(
       base::DoNothing());
 }
 
-void CrostiniHandler::OnContainerFileSelected(const std::string& callback_id,
+void CrostiniHandler::OnContainerFileSelected(std::string callback_id,
                                               const base::FilePath& path) {
-  base::Value filePath(path.value());
-  ResolveJavascriptCallback(base::Value(callback_id), filePath);
+  base::Value file_path(path.value());
+  ResolveJavascriptCallback(base::Value(std::move(callback_id)), file_path);
 }
 
 void CrostiniHandler::HandleRequestSharedVmDevices(
@@ -1016,10 +1010,10 @@ void CrostiniHandler::HandleSetVmDeviceShared(const base::Value::List& args) {
           container_id, vm_device, shared,
           base::BindOnce(
               [](base::WeakPtr<CrostiniHandler> weak_this,
-                 const std::string callback_id, bool was_applied) {
+                 std::string callback_id, bool was_applied) {
                 if (weak_this) {
-                  weak_this->ResolveJavascriptCallback(base::Value(callback_id),
-                                                       was_applied);
+                  weak_this->ResolveJavascriptCallback(
+                      base::Value(std::move(callback_id)), was_applied);
                 }
               },
               callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
