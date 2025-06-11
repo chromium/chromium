@@ -79,10 +79,11 @@ class SaveOrUpdateAutofillAiDataController {
   // Shows a save or update Autofill AI data bubble which the user can accept or
   // decline. `old_entity` is used in the update case to give users an overview
   // of what was changed.
-  virtual void ShowPrompt(autofill::EntityInstance new_entity,
-                          std::optional<autofill::EntityInstance> old_entity,
-                          AutofillAiClient::SaveOrUpdatePromptResultCallback
-                              save_prompt_acceptance_callback) = 0;
+  virtual void ShowPrompt(
+      autofill::EntityInstance new_entity,
+      std::optional<autofill::EntityInstance> old_entity,
+      AutofillAiClient::EntitySaveOrUpdatePromptResultCallback
+          save_prompt_acceptance_callback) = 0;
 
   // Called when the user accepts to save or update Autofill AI data.
   virtual void OnSaveButtonClicked() = 0;

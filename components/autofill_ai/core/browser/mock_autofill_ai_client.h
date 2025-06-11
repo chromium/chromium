@@ -32,12 +32,13 @@ class MockAutofillAiClient : public AutofillAiClient {
               GetMqlsUploadService,
               (),
               (override));
-  MOCK_METHOD(void,
-              ShowSaveOrUpdateBubble,
-              (autofill::EntityInstance entity,
-               std::optional<autofill::EntityInstance> old_entity,
-               SaveOrUpdatePromptResultCallback prompt_acceptance_callback),
-              (override));
+  MOCK_METHOD(
+      void,
+      ShowSaveOrUpdateBubble,
+      (autofill::EntityInstance entity,
+       std::optional<autofill::EntityInstance> old_entity,
+       EntitySaveOrUpdatePromptResultCallback prompt_acceptance_callback),
+      (override));
 };
 
 }  // namespace autofill_ai

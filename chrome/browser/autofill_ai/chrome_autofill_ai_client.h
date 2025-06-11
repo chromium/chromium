@@ -41,7 +41,7 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   void ShowSaveOrUpdateBubble(
       autofill::EntityInstance new_entity,
       std::optional<autofill::EntityInstance> old_entity,
-      SaveOrUpdatePromptResultCallback save_prompt_acceptance_callback)
+      EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback)
       override;
 
  private:

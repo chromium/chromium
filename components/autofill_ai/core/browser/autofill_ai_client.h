@@ -30,15 +30,17 @@ class AutofillAiClient {
  public:
   // Contains the result of a user interaction with the save/update AutofillAi
   // prompt.
-  struct SaveOrUpdatePromptResult final {
-    SaveOrUpdatePromptResult();
-    SaveOrUpdatePromptResult(bool did_user_decline,
-                             std::optional<autofill::EntityInstance> entity);
-    SaveOrUpdatePromptResult(const SaveOrUpdatePromptResult&);
-    SaveOrUpdatePromptResult(SaveOrUpdatePromptResult&&);
-    SaveOrUpdatePromptResult& operator=(const SaveOrUpdatePromptResult&);
-    SaveOrUpdatePromptResult& operator=(SaveOrUpdatePromptResult&&);
-    ~SaveOrUpdatePromptResult();
+  struct EntitySaveOrUpdatePromptResult final {
+    EntitySaveOrUpdatePromptResult();
+    EntitySaveOrUpdatePromptResult(
+        bool did_user_decline,
+        std::optional<autofill::EntityInstance> entity);
+    EntitySaveOrUpdatePromptResult(const EntitySaveOrUpdatePromptResult&);
+    EntitySaveOrUpdatePromptResult(EntitySaveOrUpdatePromptResult&&);
+    EntitySaveOrUpdatePromptResult& operator=(
+        const EntitySaveOrUpdatePromptResult&);
+    EntitySaveOrUpdatePromptResult& operator=(EntitySaveOrUpdatePromptResult&&);
+    ~EntitySaveOrUpdatePromptResult();
 
     // Whether the user explicitly declined the dialog.
     bool did_user_decline = false;
@@ -46,8 +48,8 @@ class AutofillAiClient {
     // Non-empty iff the prompt was accepted.
     std::optional<autofill::EntityInstance> entity;
   };
-  using SaveOrUpdatePromptResultCallback =
-      base::OnceCallback<void(SaveOrUpdatePromptResult result)>;
+  using EntitySaveOrUpdatePromptResultCallback =
+      base::OnceCallback<void(EntitySaveOrUpdatePromptResult result)>;
 
   virtual ~AutofillAiClient() = default;
 
@@ -83,7 +85,8 @@ class AutofillAiClient {
   virtual void ShowSaveOrUpdateBubble(
       autofill::EntityInstance new_entity,
       std::optional<autofill::EntityInstance> old_entity,
-      SaveOrUpdatePromptResultCallback save_prompt_acceptance_callback) = 0;
+      EntitySaveOrUpdatePromptResultCallback
+          save_prompt_acceptance_callback) = 0;
 };
 
 }  // namespace autofill_ai

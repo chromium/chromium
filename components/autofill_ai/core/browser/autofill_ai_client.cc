@@ -11,29 +11,32 @@
 
 namespace autofill_ai {
 
-AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult(
-    bool did_user_decline,
-    std::optional<autofill::EntityInstance> entity)
+AutofillAiClient::EntitySaveOrUpdatePromptResult::
+    EntitySaveOrUpdatePromptResult(
+        bool did_user_decline,
+        std::optional<autofill::EntityInstance> entity)
     : did_user_decline(did_user_decline), entity(std::move(entity)) {}
 
-AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult() =
-    default;
+AutofillAiClient::EntitySaveOrUpdatePromptResult::
+    EntitySaveOrUpdatePromptResult() = default;
 
-AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult(
-    const AutofillAiClient::SaveOrUpdatePromptResult&) = default;
+AutofillAiClient::EntitySaveOrUpdatePromptResult::
+    EntitySaveOrUpdatePromptResult(
+        const AutofillAiClient::EntitySaveOrUpdatePromptResult&) = default;
 
-AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult(
-    AutofillAiClient::SaveOrUpdatePromptResult&&) = default;
+AutofillAiClient::EntitySaveOrUpdatePromptResult::
+    EntitySaveOrUpdatePromptResult(
+        AutofillAiClient::EntitySaveOrUpdatePromptResult&&) = default;
 
-AutofillAiClient::SaveOrUpdatePromptResult&
-AutofillAiClient::SaveOrUpdatePromptResult::operator=(
-    const AutofillAiClient::SaveOrUpdatePromptResult&) = default;
+AutofillAiClient::EntitySaveOrUpdatePromptResult&
+AutofillAiClient::EntitySaveOrUpdatePromptResult::operator=(
+    const AutofillAiClient::EntitySaveOrUpdatePromptResult&) = default;
 
-AutofillAiClient::SaveOrUpdatePromptResult&
-AutofillAiClient::SaveOrUpdatePromptResult::operator=(
-    AutofillAiClient::SaveOrUpdatePromptResult&&) = default;
+AutofillAiClient::EntitySaveOrUpdatePromptResult&
+AutofillAiClient::EntitySaveOrUpdatePromptResult::operator=(
+    AutofillAiClient::EntitySaveOrUpdatePromptResult&&) = default;
 
-AutofillAiClient::SaveOrUpdatePromptResult::~SaveOrUpdatePromptResult() =
-    default;
+AutofillAiClient::EntitySaveOrUpdatePromptResult::
+    ~EntitySaveOrUpdatePromptResult() = default;
 
 }  // namespace autofill_ai

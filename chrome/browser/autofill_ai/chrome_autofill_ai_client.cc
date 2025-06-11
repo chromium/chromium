@@ -74,7 +74,7 @@ autofill::EntityDataManager* ChromeAutofillAiClient::GetEntityDataManager() {
 void ChromeAutofillAiClient::ShowSaveOrUpdateBubble(
     autofill::EntityInstance new_entity,
     std::optional<autofill::EntityInstance> old_entity,
-    SaveOrUpdatePromptResultCallback prompt_acceptance_callback) {
+    EntitySaveOrUpdatePromptResultCallback prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* controller =
           autofill_ai::SaveOrUpdateAutofillAiDataController::GetOrCreate(
@@ -84,7 +84,7 @@ void ChromeAutofillAiClient::ShowSaveOrUpdateBubble(
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-  std::move(prompt_acceptance_callback).Run(SaveOrUpdatePromptResult());
+  std::move(prompt_acceptance_callback).Run(EntitySaveOrUpdatePromptResult());
 }
 
 autofill::FormStructure* ChromeAutofillAiClient::GetCachedFormStructure(

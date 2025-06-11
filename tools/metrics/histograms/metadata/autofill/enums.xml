@@ -161,16 +161,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FFR was accepted"/>
 </enum>
 
-<enum name="AutofillAiSaveOrUpdatePromptResult">
-  <int value="0" label="The prompt was for closed due to an unknown reason"/>
-  <int value="1" label="The prompt was accepted"/>
-  <int value="2" label="The user clicked the cancel button"/>
-  <int value="3"
-      label="The user closed the prompt (via the close button or the ESC)"/>
-  <int value="4" label="The user did not interact with the prompt"/>
-  <int value="5" label="The prompt was closed due to losing focus"/>
-</enum>
-
 <enum name="AutofillAlternativeNameFieldValueCharacterSet">
   <int value="0" label="Katakana"/>
   <int value="1" label="Hiragana"/>
@@ -3301,6 +3291,16 @@ Called by update_autofill_enums.py.-->
   <int value="3"
       label="FalseNegative: overall_type=not email, submitted text matches
              email"/>
+</enum>
+
+<enum name="EntitySaveOrUpdatePromptResult">
+  <int value="0" label="The prompt was for closed due to an unknown reason"/>
+  <int value="1" label="The prompt was accepted"/>
+  <int value="2" label="The user clicked the cancel button"/>
+  <int value="3"
+      label="The user closed the prompt (via the close button or the ESC)"/>
+  <int value="4" label="The user did not interact with the prompt"/>
+  <int value="5" label="The prompt was closed due to losing focus"/>
 </enum>
 
 <enum name="FastCheckoutCacheStateForIsTriggerFormSupported">

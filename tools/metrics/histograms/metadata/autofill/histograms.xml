@@ -1188,7 +1188,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Ai.{PromptType}.AllEntities"
-    enum="AutofillAiSaveOrUpdatePromptResult" expires_after="2025-12-12">
+    enum="EntitySaveOrUpdatePromptResult" expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1200,7 +1200,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Ai.{PromptType}{EntityType}"
-    enum="AutofillAiSaveOrUpdatePromptResult" expires_after="2025-12-12">
+    enum="EntitySaveOrUpdatePromptResult" expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

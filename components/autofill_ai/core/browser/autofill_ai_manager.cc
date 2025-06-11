@@ -329,7 +329,7 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
 void AutofillAiManager::HandleSavePromptResult(
     const GURL& form_url,
     const autofill::EntityInstance& entity,
-    AutofillAiClient::SaveOrUpdatePromptResult result) {
+    AutofillAiClient::EntitySaveOrUpdatePromptResult result) {
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForSaveAttempt(form_url, entity);
@@ -348,7 +348,7 @@ void AutofillAiManager::HandleSavePromptResult(
 
 void AutofillAiManager::HandleUpdatePromptResult(
     const base::Uuid& entity_uuid,
-    AutofillAiClient::SaveOrUpdatePromptResult result) {
+    AutofillAiClient::EntitySaveOrUpdatePromptResult result) {
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForUpdateAttempt(entity_uuid);
