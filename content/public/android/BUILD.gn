@@ -709,6 +709,7 @@ android_library("content_javatests") {
 robolectric_binary("content_junit_tests") {
   resources_package = "org.chromium.content"
   sources = [
+    "java/src/org/chromium/content/browser/input/ImeAdapterImplUnitTest.java",
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessConnectionMetricsUnitTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessRankingTest.java",
@@ -760,6 +761,7 @@ robolectric_binary("content_junit_tests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
     "//ui/base/mojom:ui_base_types_java",
     "//ui/gfx/geometry/mojom:mojom_java",
   ]
