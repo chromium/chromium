@@ -26,6 +26,10 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
     NOT_DESTROYED();
     return true;
   }
+
+  // TODO(almaher): There are a bunch of helpers we are missing that are in
+  // LayoutGrid. Do we need those, too, or should we be based on LayoutGrid
+  // instead of LayoutBlock?
 };
 
 // wtf/casting.h helper.

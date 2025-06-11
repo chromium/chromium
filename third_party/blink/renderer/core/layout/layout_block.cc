@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_masonry.h"
 #include "third_party/blink/renderer/core/layout/mathml/layout_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
@@ -773,6 +774,10 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
     case EDisplay::kInlineGrid:
       new_display = EDisplay::kGrid;
       break;
+    case EDisplay::kMasonry:
+    case EDisplay::kInlineMasonry:
+      new_display = EDisplay::kMasonry;
+      break;
     case EDisplay::kFlowRoot:
       new_display = EDisplay::kFlowRoot;
       break;
@@ -794,13 +799,13 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
 
   LayoutBlock* layout_block;
   if (new_display == EDisplay::kFlex) {
-    layout_block =
-        MakeGarbageCollected<LayoutFlexibleBox>(/* element */ nullptr);
+    layout_block = MakeGarbageCollected<LayoutFlexibleBox>(/*element=*/nullptr);
   } else if (new_display == EDisplay::kGrid) {
-    layout_block = MakeGarbageCollected<LayoutGrid>(/* element */ nullptr);
+    layout_block = MakeGarbageCollected<LayoutGrid>(/*element=*/nullptr);
+  } else if (new_display == EDisplay::kMasonry) {
+    layout_block = MakeGarbageCollected<LayoutMasonry>(/*element=*/nullptr);
   } else if (new_display == EDisplay::kBlockMath) {
-    layout_block =
-        MakeGarbageCollected<LayoutMathMLBlock>(/* element */ nullptr);
+    layout_block = MakeGarbageCollected<LayoutMathMLBlock>(/*element=*/nullptr);
   } else {
     DCHECK(new_display == EDisplay::kBlock ||
            new_display == EDisplay::kFlowRoot);

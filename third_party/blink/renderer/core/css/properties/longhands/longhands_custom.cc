@@ -3653,6 +3653,7 @@ void AdjustDisplayKeywords(DisplayValidationResult& result) {
     case CSSValueID::kFlex:
     case CSSValueID::kFlowRoot:
     case CSSValueID::kGrid:
+    case CSSValueID::kMasonry:
     case CSSValueID::kTable:
       if (outside == CSSValueID::kBlock) {
         result.outside = nullptr;
@@ -3663,6 +3664,8 @@ void AdjustDisplayKeywords(DisplayValidationResult& result) {
         } else if (inside == CSSValueID::kFlowRoot) {
           new_id = CSSValueID::kInlineBlock;
         } else if (inside == CSSValueID::kGrid) {
+          new_id = CSSValueID::kInlineGrid;
+        } else if (inside == CSSValueID::kMasonry) {
           new_id = CSSValueID::kInlineGrid;
         } else if (inside == CSSValueID::kTable) {
           new_id = CSSValueID::kInlineTable;
@@ -3908,6 +3911,9 @@ void Display::ApplyValue(StyleResolverState& state,
       builder.SetDisplay(is_block ? EDisplay::kFlex : EDisplay::kInlineFlex);
     } else if (inside == CSSValueID::kGrid) {
       builder.SetDisplay(is_block ? EDisplay::kGrid : EDisplay::kInlineGrid);
+    } else if (inside == CSSValueID::kMasonry) {
+      builder.SetDisplay(is_block ? EDisplay::kMasonry
+                                  : EDisplay::kInlineMasonry);
     } else if (inside == CSSValueID::kMath) {
       builder.SetDisplay(is_block ? EDisplay::kBlockMath : EDisplay::kMath);
     } else if (inside == CSSValueID::kRuby) {

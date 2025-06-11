@@ -253,7 +253,7 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
   // "grid-template-columns: repeat(auto-fill, 50px); min-width: 50%;"
   // In this specific case our min/max sizes are now dependent on what
   // "min-width" resolves to - which is unique to grid.
-  if (node.IsGrid()) {
+  if (node.IsGrid() || node.IsMasonry()) {
     if (style.LogicalMinWidth().HasPercentOrStretch() ||
         style.LogicalMaxWidth().HasPercentOrStretch()) {
       return false;
@@ -970,11 +970,12 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   };
 
   const bool is_in_perform_layout = box_->GetFrameView()->IsInPerformLayout();
-  // In some scenarios, GridNG and FlexNG will run layout on their items during
-  // MinMaxSizes computation. Instead of running (and possible caching incorrect
-  // results), when we're not performing layout, just use border + padding.
+  // In some scenarios, Grid, Masonry and Flex will run layout on their items
+  // during MinMaxSizes computation. Instead of running (and possible caching
+  // incorrect results), when we're not performing layout, just use border +
+  // padding.
   if (!is_in_perform_layout &&
-      (IsGrid() ||
+      (IsGrid() || IsMasonry() ||
        (IsFlexibleBox() && Style().ResolvedIsColumnFlexDirection()))) {
     const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =

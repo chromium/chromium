@@ -158,6 +158,7 @@ InterpolationValue CSSDisplayInterpolationType::MaybeConvertValue(
     case CSSValueID::kInlineFlex:
     case CSSValueID::kInlineGrid:
     case CSSValueID::kListItem:
+    case CSSValueID::kMasonry:
     case CSSValueID::kNone:
     case CSSValueID::kTable:
     case CSSValueID::kTableRow:

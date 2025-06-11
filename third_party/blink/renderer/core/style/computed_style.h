@@ -1688,8 +1688,8 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsDisplayMathType() const { return IsDisplayMathBox(Display()); }
 
   bool BlockifiesChildren() const {
-    return IsDisplayFlexibleOrGridBox() || IsDisplayMathType() ||
-           IsDisplayLayoutCustomBox() ||
+    return IsDisplayFlexibleOrGridBox() || IsDisplayMasonryBox() ||
+           IsDisplayMathType() || IsDisplayLayoutCustomBox() ||
            (Display() == EDisplay::kContents && IsInBlockifyingDisplay());
   }
 

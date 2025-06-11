@@ -383,7 +383,8 @@ static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
 
 static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
     const ComputedStyle& layout_parent_style) {
-  return layout_parent_style.IsDisplayFlexibleOrGridBox();
+  return layout_parent_style.IsDisplayFlexibleOrGridBox() ||
+         layout_parent_style.IsDisplayMasonryBox();
 }
 
 void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder,
@@ -733,6 +734,7 @@ void StyleAdjuster::AdjustStyleForDisplay(
       }
     }
     if (layout_parent_style.IsDisplayFlexibleOrGridBox() ||
+        layout_parent_style.IsDisplayMasonryBox() ||
         layout_parent_style.IsDisplayMathType() || is_canvas_draw_element) {
       builder.SetIsInsideDisplayIgnoringFloatingChildren();
     }

@@ -216,9 +216,9 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       intrinsic_block_size = layout_result.IntrinsicBlockSize();
     }
 
-    // Grid/flex/fieldset can have their children calculate their size based on
-    // their parent's final block-size. E.g.
-    // <div style="display: flex;">
+    // Grid/flex/fieldset/masonry can have their children calculate their size
+    // based on their parent's final block-size. E.g. <div style="display:
+    // flex;">
     //   <div style="display: flex;"> <!-- or "display: grid;" -->
     //     <!-- Child will stretch to the parent's block-size -->
     //     <div></div>
@@ -245,16 +245,19 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (old_space.IsFixedBlockSize() ||
         (old_space.IsBlockAutoBehaviorStretch() &&
          style.LogicalHeight().HasAuto())) {
-      if (node.IsFlexibleBox() || node.IsGrid() || node.IsFieldsetContainer())
+      if (node.IsFlexibleBox() || node.IsGrid() || node.IsMasonry() ||
+          node.IsFieldsetContainer()) {
         intrinsic_block_size = kIndefiniteSize;
+      }
     }
 
-    // Grid/flex can have their intrinsic block-size depend on the
+    // Grid/flex/masonry can have their intrinsic block-size depend on the
     // %-block-size. This occurs when:
     //  - A column flex-box has "max-height: 100%" (or similar) on itself.
     //  - A row flex-box has "height: 100%" (or similar) and children which
     //    stretch to this size.
-    //  - A grid with "grid-template-rows: repeat(auto-fill, 50px)" or similar.
+    //  - A grid/masonry with "grid-template-rows: repeat(auto-fill, 50px)" or
+    //  similar.
     //
     // Similar to above we can't use the |intrinsic_block_size| for determining
     // the new block-size.
@@ -264,8 +267,9 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (physical_fragment.DependsOnPercentageBlockSize() &&
         new_space.PercentageResolutionBlockSize() !=
             old_space.PercentageResolutionBlockSize()) {
-      if (node.IsFlexibleBox() || node.IsGrid())
+      if (node.IsFlexibleBox() || node.IsGrid() || node.IsMasonry()) {
         intrinsic_block_size = kIndefiniteSize;
+      }
     }
 
     block_size = ComputeBlockSizeForFragment(
@@ -319,15 +323,17 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   // Miss the cache if the initial block-size change from indefinite to
   // definite (or visa-versa), and:
   //  - We have a descendant which depends on the %-block-size.
-  //  - We are a grid.
+  //  - We are a grid/masonry.
   //
-  // TODO(ikilpatrick): There is an "optimization" for grid which would involve
-  // *always* setting the initial block-size for grid as indefinite, then
-  // re-running computing the grid if we have any "auto" tracks etc.
+  // TODO(ikilpatrick): There is an "optimization" for grid/masonry which would
+  // involve *always* setting the initial block-size for grid as indefinite,
+  // then re-running computing the grid if we have any "auto" tracks etc.
   if (is_old_initial_block_size_indefinite !=
       is_initial_block_size_indefinite) {
-    if (node.IsGrid() || has_descendant_that_depends_on_percentage_block_size)
+    if (node.IsGrid() || node.IsMasonry() ||
+        has_descendant_that_depends_on_percentage_block_size) {
       return LayoutCacheStatus::kNeedsLayout;
+    }
   }
 
   if (has_descendant_that_depends_on_percentage_block_size) {
