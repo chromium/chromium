@@ -874,6 +874,9 @@ BASE_FEATURE(kLogSodaLoadFailures,
 // a Chromium prompt through which they choose which tab/window/screen
 // to share. If this flag is enabled, then when the user chooses to
 // share, transient activation is conferred on the capturing Web application.
+//
+// TODO(crbug.com/420406085): Remove after January 2028.
+// Keep this flag around at least until that date.
 BASE_FEATURE(kGetDisplayMediaConfersActivation,
              "GetDisplayMediaConfersActivation",
              base::FEATURE_DISABLED_BY_DEFAULT);
