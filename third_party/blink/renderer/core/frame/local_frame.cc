@@ -76,6 +76,7 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/interface_registry.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
@@ -198,6 +199,7 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
@@ -957,6 +959,8 @@ void LocalFrame::DidAttachDocument() {
   GetEventHandler().Clear();
   Selection().DidAttachDocument(document);
   notified_color_scheme_ = false;
+  notified_initial_network_almost_idle_ = false;
+  notified_initial_network_idle_ = false;
 
 #if !BUILDFLAG(IS_ANDROID)
   // For PWAs with display_override "window-controls-overlay", titlebar area
@@ -1276,6 +1280,52 @@ bool LocalFrame::BubbleLogicalScrollFromChildFrame(
 
   return GetEventHandler().BubblingScroll(direction, granularity,
                                           owner_element);
+}
+
+void LocalFrame::NetworkBecameAlmostIdle(
+    base::TimeDelta almost_idle_start_time) {
+  if (notified_initial_network_almost_idle_) {
+    return;
+  }
+  notified_initial_network_almost_idle_ = true;
+
+  DocumentLoader* loader = Loader().GetDocumentLoader();
+  probe::LifecycleEvent(this, loader, "networkAlmostIdle",
+                        almost_idle_start_time.InSecondsF());
+  DCHECK(GetDocument());
+  if (auto* document_resource_coordinator =
+          GetDocument()->GetResourceCoordinator()) {
+    document_resource_coordinator->SetNetworkAlmostIdle();
+  }
+  if (WebServiceWorkerNetworkProvider* service_worker_network_provider =
+          loader->GetServiceWorkerNetworkProvider()) {
+    service_worker_network_provider->DispatchNetworkQuiet();
+  }
+  FirstMeaningfulPaintDetector::From(*GetDocument()).OnNetwork2Quiet();
+}
+
+void LocalFrame::NetworkBecameIdle(base::TimeDelta idle_start_time) {
+  if (!notified_initial_network_idle_) {
+    DocumentLoader* loader = Loader().GetDocumentLoader();
+    probe::LifecycleEvent(this, loader, "networkIdle",
+                          idle_start_time.InSecondsF());
+    notified_initial_network_idle_ = true;
+  }
+
+  if (network_idle_callback_) {
+    std::move(network_idle_callback_).Run();
+  }
+}
+
+void LocalFrame::RequestNetworkIdleCallback(base::OnceClosure callback) {
+  if (network_idle_callback_) {
+    // RequestNetworkIdleCallback only supports a single callback at this time
+    // because of how it's used. If there are multiple clients this could be
+    // changed to a Vector of callbacks.
+    std::move(network_idle_callback_).Run();
+  }
+  network_idle_callback_ = std::move(callback);
+  idleness_detector_->StartIfNeeded();
 }
 
 mojom::blink::SuddenTerminationDisablerType

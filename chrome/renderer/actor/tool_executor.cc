@@ -22,8 +22,10 @@
 #include "chrome/renderer/actor/tool_utils.h"
 #include "chrome/renderer/actor/type_tool.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 
+using blink::WebLocalFrame;
 using content::RenderFrame;
 
 namespace actor {
@@ -36,6 +38,20 @@ ToolExecutor::~ToolExecutor() = default;
 void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
                               ToolExecutorCallback callback) {
   CHECK(!completion_callback_);
+  completion_callback_ = std::move(callback);
+
+  // TODO(bokan): Each individual has this condition. Replace in each tool with
+  // a CHECK.
+  WebLocalFrame* web_frame = frame_->GetWebFrame();
+  if (!web_frame || !web_frame->FrameWidget()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ToolExecutor::ToolFinished,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MakeResult(mojom::ActionResultCode::kFrameWentAway)));
+    return;
+  }
+
   std::unique_ptr<ToolBase> tool;
   switch (request->action->which()) {
     case actor::mojom::ToolAction::Tag::kClick: {
@@ -87,10 +103,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
 
   journal_->Log(request->task_id, "Renderer InvokeTool", tool->DebugString());
 
-  completion_callback_ = std::move(callback);
-
-  page_stability_monitor_ =
-      std::make_unique<PageStabilityMonitor>(frame_.get());
+  page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(*frame_);
 
   mojom::ActionResultPtr result = tool->Execute();
 

@@ -10,6 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -1676,6 +1677,14 @@ void WidgetBase::RequestAnimationAfterDelayTimerFired(TimerBase*) {
 
 float WidgetBase::GetOriginalDeviceScaleFactor() const {
   return client_->GetOriginalScreenInfos().current().device_scale_factor;
+}
+
+bool WidgetBase::InsertVisualStateRequest(base::OnceClosure callback) {
+  if (!widget_compositor_) {
+    return false;
+  }
+  widget_compositor_->MainThreadVisualStateRequest(std::move(callback));
+  return true;
 }
 
 void WidgetBase::UpdateSurfaceAndScreenInfo(

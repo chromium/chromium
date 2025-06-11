@@ -204,6 +204,10 @@ class BLINK_EXPORT WebDocument : public WebNode {
       ui::AXMode mode,
       std::set<ui::AXSerializationErrorFlag>* out_error);
 
+  // Returns the number of active resource requests that are being loaded by the
+  // document's ResourceFetcher.
+  size_t ActiveResourceRequestCount() const;
+
 #if INSIDE_BLINK
   WebDocument(Document*);
   WebDocument& operator=(Document*);

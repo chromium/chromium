@@ -5233,6 +5233,10 @@ void WebFrameWidgetImpl::ApplyLocalSurfaceIdUpdate(
   widget_base_->LayerTreeHost()->SetLocalSurfaceIdFromParent(id);
 }
 
+bool WebFrameWidgetImpl::InsertVisualStateRequest(base::OnceClosure callback) {
+  return widget_base_->InsertVisualStateRequest(std::move(callback));
+}
+
 void WebFrameWidgetImpl::SetMayThrottleIfUndrawnFrames(
     bool may_throttle_if_undrawn_frames) {
   if (!View()->does_composite())

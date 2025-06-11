@@ -157,6 +157,7 @@ source_set("browser_tests") {
   if (enable_glic) {
     sources += [
       "execution_engine_browsertest.cc",
+      "tools/page_stability_browsertest.cc",
       "tools/tools_browsertest.cc",
     ]
     deps += [ "//chrome/browser/glic:glic" ]

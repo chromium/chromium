@@ -405,6 +405,10 @@ class CORE_EXPORT LocalFrame final
       ui::ScrollGranularity granularity,
       Frame* child);
 
+  void NetworkBecameAlmostIdle(base::TimeDelta almost_idle_start_time);
+  void NetworkBecameIdle(base::TimeDelta idle_start_time);
+  void RequestNetworkIdleCallback(base::OnceClosure callback);
+
   // =========================================================================
   // All public functions below this point are candidates to move out of
   // LocalFrame into another class.
@@ -1120,6 +1124,7 @@ class CORE_EXPORT LocalFrame final
 
   Member<AdTracker> ad_tracker_;
   Member<IdlenessDetector> idleness_detector_;
+  base::OnceClosure network_idle_callback_;
   Member<AttributionSrcLoader> attribution_src_loader_;
   Member<InspectorIssueReporter> inspector_issue_reporter_;
   Member<InspectorTraceEvents> inspector_trace_events_;
@@ -1237,6 +1242,11 @@ class CORE_EXPORT LocalFrame final
   // frame). Calculated browser-side and used to help determine if this frame
   // is allowed to load a new child opaque-ads fenced frame.
   bool ancestor_or_self_has_cspee_ = false;
+
+  // Used to prevent signaling idle network notifications more than once for a
+  // given document. Reset when a new document is committed.
+  bool notified_initial_network_almost_idle_ = false;
+  bool notified_initial_network_idle_ = false;
 
   // Reduced accept language for top-level frame.
   AtomicString reduced_accept_language_;

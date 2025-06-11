@@ -226,9 +226,10 @@ BrowserAction MakeWait() {
 }
 
 base::FieldTrialParams GetDefaultActorParamsForTesting() {
-  // TODO(crbug.com/409564704): Mock the delay so that tests can run at
-  // reasonable speed. Remove once there is a more permanent approach.
-  return {{"glic-actor-observation-delay", "10ms"}};
+  // TODO(crbug.com/414662842): Remove in followup as we now use
+  // PageStabilityMonitor.
+  return {{"glic-actor-observation-delay", "10ms"},
+          {"glic-actor-page-stability-timeout", "10s"}};
 }
 
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {

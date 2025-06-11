@@ -392,6 +392,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
   void PrepareForFinalLifecyclUpdateForTesting() override;
   void ApplyLocalSurfaceIdUpdate(const viz::LocalSurfaceId& id) override;
+  bool InsertVisualStateRequest(base::OnceClosure callback) override;
 
   // Called when a drag-n-drop operation should begin.
   virtual void StartDragging(LocalFrame* source_frame,

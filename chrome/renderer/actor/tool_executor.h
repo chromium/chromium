@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/renderer/actor/page_stability_monitor.h"
@@ -46,6 +47,8 @@ class ToolExecutor {
   base::raw_ref<Journal> journal_;
   std::unique_ptr<PageStabilityMonitor> page_stability_monitor_;
   ToolExecutorCallback completion_callback_;
+
+  base::WeakPtrFactory<ToolExecutor> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

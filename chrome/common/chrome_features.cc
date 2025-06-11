@@ -336,8 +336,16 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the actor component of Glic is enabled.
 BASE_FEATURE(kGlicActor, "GlicActor", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls renderer tool observation timeout when waiting on local
+// (non-network) work.
+// TODO(bokan): Rename to more accurately reflect its usage.
 const base::FeatureParam<base::TimeDelta> kGlicActorActorObservationDelay{
     &kGlicActor, "glic-actor-observation-delay", base::Seconds(3)};
+
+// The overall observation timeout when waiting on a renderer tool to complete.
+const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
+    &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(10)};
 
 #if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.

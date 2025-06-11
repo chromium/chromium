@@ -19,9 +19,9 @@ namespace actor {
 // Observes a page during tool-use and determines when the page has settled
 // after an action and is ready for for an observation.
 //
-// When using the kWatchForLoad type, this class will watch for any document
-// loads in the web contents. When the tool completes, this class delays until
-// the load also finishes and then a new frame is generated and presented.
+// This class will watch for any document loads in the web contents. When the
+// tool completes, this class delays until the load also finishes and then a new
+// frame is generated and presented.
 class ObservationDelayController : public content::WebContentsObserver {
  public:
   using ReadyCallback = base::OnceClosure;

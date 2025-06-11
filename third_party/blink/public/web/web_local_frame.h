@@ -765,6 +765,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // used on a regular basis.
   virtual void DeprecatedStopLoading() = 0;
 
+  // Invokes the given callback when the Blink determines it is in an idle
+  // period of network resource requests. Only one callback is currently
+  // supported at a time.
+  virtual void RequestNetworkIdleCallback(base::OnceClosure callback) = 0;
+
   // Geometry -----------------------------------------------------------------
 
   // NOTE: These routines do not force page layout so their results may

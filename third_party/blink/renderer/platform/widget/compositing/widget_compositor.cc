@@ -85,6 +85,27 @@ void WidgetCompositor::VisualStateRequest(VisualStateRequestCallback callback) {
   }
 }
 
+void WidgetCompositor::MainThreadVisualStateRequest(
+    VisualStateRequestCallback callback) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  auto drain_callback =
+      base::BindOnce(&WidgetCompositor::DrainQueue, base::RetainedRef(this));
+  auto swap_callback = base::BindOnce(&WidgetCompositor::VisualStateResponse,
+                                      base::RetainedRef(this));
+
+  // Ensure the given callback is invoked on the main thread.
+  auto compositor_callback = base::BindOnce(
+      [](scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+         VisualStateRequestCallback callback) {
+        main_task_runner->PostTask(FROM_HERE, std::move(callback));
+      },
+      main_task_runner_, std::move(callback));
+
+  CreateQueueSwapPromise(std::move(drain_callback), std::move(swap_callback),
+                         std::move(compositor_callback));
+}
+
 cc::LayerTreeHost* WidgetCompositor::LayerTreeHost() const {
   return widget_base_->LayerTreeHost();
 }

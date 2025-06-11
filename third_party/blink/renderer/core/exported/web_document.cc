@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/accessibility/ax_mode.h"
@@ -398,6 +399,10 @@ void WebDocument::SnapshotAccessibilityTree(
   Member<blink::AXObjectCache> cache =
       blink::AXObjectCache::CreateSnapshotter(*Unwrap<Document>(), mode);
   cache->SerializeEntireTreeAndDispose(max_nodes, timeout, response, out_error);
+}
+
+size_t WebDocument::ActiveResourceRequestCount() const {
+  return ConstUnwrap<Document>()->Fetcher()->ActiveRequestCount();
 }
 
 }  // namespace blink

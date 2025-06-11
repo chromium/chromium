@@ -407,6 +407,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Helper to get the non-emulated device scale factor.
   float GetOriginalDeviceScaleFactor() const;
 
+  // Requests that the callback be invoked after the next frame is generated and
+  // presented in the display compositor. Returns true if the callback was
+  // queued, false if the widget doesn't have a compositor and the callback is
+  // dropped without being invoked.
+  bool InsertVisualStateRequest(base::OnceClosure callback);
+
  private:
   static void AssertAreCompatible(const WidgetBase& a, const WidgetBase& b);
 

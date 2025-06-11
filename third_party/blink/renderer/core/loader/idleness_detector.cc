@@ -6,17 +6,13 @@
 
 #include "base/check.h"
 #include "base/time/default_tick_clock.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
-#include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
@@ -48,6 +44,12 @@ void IdlenessDetector::DidDropNavigation() {
   // started yet, that is, not currently active and not finished.
   if (!task_observer_added_ && network_2_quiet_start_time_.is_null() &&
       network_0_quiet_start_time_.is_null()) {
+    Start();
+  }
+}
+
+void IdlenessDetector::StartIfNeeded() {
+  if (!task_observer_added_) {
     Start();
   }
 }
@@ -146,32 +148,17 @@ base::TimeTicks IdlenessDetector::GetNetworkIdleTime() {
 void IdlenessDetector::WillProcessTask(base::TimeTicks start_time) {
   // If we have idle time and we are network_quiet_window_ seconds past it, emit
   // idle signals.
-  DocumentLoader* loader = local_frame_->Loader().GetDocumentLoader();
   if (in_network_2_quiet_period_ && !network_2_quiet_.is_null() &&
       start_time - network_2_quiet_ > network_quiet_window_) {
-    probe::LifecycleEvent(
-        local_frame_, loader, "networkAlmostIdle",
-        network_2_quiet_start_time_.since_origin().InSecondsF());
-    DCHECK(local_frame_->GetDocument());
-    if (auto* document_resource_coordinator =
-            local_frame_->GetDocument()->GetResourceCoordinator()) {
-      document_resource_coordinator->SetNetworkAlmostIdle();
-    }
-    if (WebServiceWorkerNetworkProvider* service_worker_network_provider =
-            loader->GetServiceWorkerNetworkProvider()) {
-      service_worker_network_provider->DispatchNetworkQuiet();
-    }
-    FirstMeaningfulPaintDetector::From(*local_frame_->GetDocument())
-        .OnNetwork2Quiet();
+    local_frame_->NetworkBecameAlmostIdle(
+        network_2_quiet_start_time_.since_origin());
     in_network_2_quiet_period_ = false;
     network_2_quiet_ = base::TimeTicks();
   }
 
   if (in_network_0_quiet_period_ && !network_0_quiet_.is_null() &&
       start_time - network_0_quiet_ > network_quiet_window_) {
-    probe::LifecycleEvent(
-        local_frame_, loader, "networkIdle",
-        network_0_quiet_start_time_.since_origin().InSecondsF());
+    local_frame_->NetworkBecameIdle(network_0_quiet_start_time_.since_origin());
     in_network_0_quiet_period_ = false;
     network_0_quiet_ = base::TimeTicks();
   }
