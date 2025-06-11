@@ -54,6 +54,22 @@ enum class CardMetadataLoggingEvent {
   kMaxValue = kSubmitted,
 };
 
+// LINT.IfChange(CardBenefitFormEvent)
+
+// All server cards with card benefit available Form Events are logged once per
+// page load. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class CardBenefitFormEvent {
+  // TODO(crbug.com/417228483): "0" is reserved for `kBenefitSuggestionShown`.
+  // Suggestions containing cards with a benefit available were shown when the
+  // user had two or more server cards.
+  kBenefitSuggestionShownWithMultipleServerCards = 1,
+
+  kMaxValue = kBenefitSuggestionShownWithMultipleServerCards
+};
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:CardBenefitFormEvent)
+
 using HasBeenLogged = base::StrongAlias<class HasBeenLoggedTag, bool>;
 
 // Struct that groups metadata-related information together for some
@@ -118,6 +134,9 @@ struct CardMetadataLoggingContext {
 
   // Keeps record of the selected card instrument id for later events logging.
   int64_t selected_card_instrument_id;
+
+  // Keeps record of the number of masked server card suggestions.
+  uint8_t masked_server_card_count = 0;
 };
 
 // Get histogram suffix based on a given card issuer id or network.
@@ -139,8 +158,8 @@ void LogCardWithMetadataFormEventMetric(
     const CardMetadataLoggingContext& context,
     HasBeenLogged has_been_logged);
 
-// Log the suggestion event for card benefits on an issuer level. Metrics are
-// only logged once per page load.
+// Log the suggestion event for card benefits on a credit card level and benefit
+// or issuer level. Metrics are only logged once per page load.
 void LogCardWithBenefitFormEventMetric(
     CardMetadataLoggingEvent event,
     const CardMetadataLoggingContext& context);
@@ -154,6 +173,14 @@ void LogAcceptanceLatency(base::TimeDelta latency,
 
 // Logs if credit card benefits are enabled when a new profile is launched.
 void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled);
+
+// Log the given `event` to the general benefit histogram, as well as to the
+// benefit-source-specific subhistogram for all benefit sources present in the
+// suggestion list.
+void LogBenefitFormEventToAllBenefitHistograms(
+    const base::flat_map<int64_t, std::string>&
+        instrument_ids_to_available_benefit_sources,
+    CardBenefitFormEvent event);
 
 // Log the given `event` for card benefits on a benefit source level.
 // TODO(crbug.com/417228483): Remove this function after adding benefit form

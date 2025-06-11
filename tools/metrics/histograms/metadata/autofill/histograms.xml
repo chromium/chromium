@@ -3202,6 +3202,35 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormEvents.CreditCard.Benefits"
+    enum="CardBenefitFormEvent" expires_after="2026-06-01">
+  <owner>ferny@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Autofill form events for credit card forms that contain at least one
+    suggestion where a card benefit is available. This includes logging for when
+    card suggestions with benefits are shown, selected, filled, and submitted,
+    and logs at each of those times. Log emission pertains to all credit cards
+    with card benefits available. Each CardBenefitFormEvent metric can be
+    recorded once per page load.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FormEvents.CreditCard.Benefits.{CardBenefitSource}"
+    enum="CardBenefitFormEvent" expires_after="2026-06-01">
+  <owner>ferny@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Autofill form events for credit card forms that contain at least one
+    suggestion where a card benefit is available. This includes logging for when
+    card suggestions with benefits are shown, selected, filled, and submitted,
+    and logs at each of those times. Log emission pertains to credit cards where
+    the benefit source is {CardBenefitSource}. Each CardBenefitFormEvent metric
+    can be recorded once per page load.
+  </summary>
+  <token key="CardBenefitSource" variants="Autofill.CreditCardBenefitSource"/>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.Bnpl" enum="BnplFormEvent"
     expires_after="2026-06-01">
   <owner>yiwenqian@google.com</owner>
