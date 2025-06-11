@@ -73,7 +73,8 @@ enum class IsolatedWebAppUpdateError {
   kBundleDownloadError = 8,
   kUpdateDryRunFailed = 9,
   kUpdateApplyFailed = 10,
-  kMaxValue = kUpdateApplyFailed
+  kSystemShutdown = 11,
+  kMaxValue = kSystemShutdown
 };
 
 struct IsolatedWebAppUpdateOptions {

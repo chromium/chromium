@@ -80,7 +80,9 @@ class IsolatedWebAppUpdateDiscoveryTask {
     kBundleDownloadError,
 
     // Update dry run errors
-    kUpdateDryRunFailed
+    kUpdateDryRunFailed,
+
+    kSystemShutdown,
   };
 
   static std::string SuccessToString(Success success);
@@ -94,8 +96,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
       WebAppCommandScheduler& command_scheduler,
       WebAppRegistrar& registrar,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive);
+      Profile& profile);
   ~IsolatedWebAppUpdateDiscoveryTask();
 
   IsolatedWebAppUpdateDiscoveryTask(const IsolatedWebAppUpdateDiscoveryTask&) =
@@ -146,8 +147,10 @@ class IsolatedWebAppUpdateDiscoveryTask {
   raw_ref<WebAppCommandScheduler> command_scheduler_;
   raw_ref<WebAppRegistrar> registrar_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
-  std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
+  // Set on Start:
+  std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+  const raw_ref<Profile> profile_;
 
   ScopedTempWebBundleFile bundle_;
 

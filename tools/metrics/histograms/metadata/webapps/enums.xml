@@ -223,6 +223,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Bundle download error"/>
   <int value="9" label="Update dry run failed"/>
   <int value="10" label="Update apply failed"/>
+  <int value="11" label="System shutdown"/>
 </enum>
 
 <enum name="IwaComponentUpdateError">

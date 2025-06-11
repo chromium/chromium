@@ -50,7 +50,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -478,25 +477,12 @@ void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
     bool allow_downgrades,
     const std::optional<base::Version>& pinned_version,
     bool dev_mode) {
-  if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
-    return;
-  }
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
-      KeepAliveRestartOption::DISABLED);
-  auto profile_keep_alive =
-      profile_->IsOffTheRecord()
-          ? nullptr
-          : std::make_unique<ScopedProfileKeepAlive>(
-                &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
-
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
       IwaUpdateDiscoveryTaskParams(update_manifest_url, update_channel,
                                    allow_downgrades, pinned_version, url_info,
                                    dev_mode),
       provider_->scheduler(), provider_->registrar_unsafe(),
-      profile_->GetURLLoaderFactory(), std::move(keep_alive),
-      std::move(profile_keep_alive)));
+      profile_->GetURLLoaderFactory(), *profile_));
 
   task_queue_.MaybeStartNextTask();
 }
@@ -1059,6 +1045,8 @@ IsolatedWebAppUpdateError IsolatedWebAppUpdateManager::FromDiscoveryTaskError(
       return IsolatedWebAppUpdateError::kBundleDownloadError;
     case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateDryRunFailed:
       return IsolatedWebAppUpdateError::kUpdateDryRunFailed;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kSystemShutdown:
+      return IsolatedWebAppUpdateError::kSystemShutdown;
   }
 }
 

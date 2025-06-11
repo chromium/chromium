@@ -27,6 +27,9 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/version.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
@@ -37,6 +40,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/update_channel.h"
@@ -159,6 +163,8 @@ std::string IsolatedWebAppUpdateDiscoveryTask::ErrorToString(Error error) {
       return "Error::kDownloadPathCreationFailed";
     case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateDryRunFailed:
       return "Error::kUpdateDryRunFailed";
+    case Error::kSystemShutdown:
+      return "Error::kSystemShutdown";
   }
 }
 
@@ -167,14 +173,12 @@ IsolatedWebAppUpdateDiscoveryTask::IsolatedWebAppUpdateDiscoveryTask(
     WebAppCommandScheduler& command_scheduler,
     WebAppRegistrar& registrar,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive)
+    Profile& profile)
     : task_params_(std::move(task_params)),
       command_scheduler_(command_scheduler),
       registrar_(registrar),
       url_loader_factory_(std::move(url_loader_factory)),
-      optional_keep_alive_(std::move(optional_keep_alive)),
-      optional_profile_keep_alive_(std::move(optional_profile_keep_alive)) {
+      profile_(profile) {
   CHECK(url_loader_factory_);
   debug_log_ =
       base::Value::Dict()
@@ -194,6 +198,20 @@ IsolatedWebAppUpdateDiscoveryTask::~IsolatedWebAppUpdateDiscoveryTask() =
     default;
 
 void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
+  if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+    FailWith(Error::kSystemShutdown);
+    return;
+  }
+
+  keep_alive_ = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
+      KeepAliveRestartOption::DISABLED);
+  profile_keep_alive_ =
+      profile_->IsOffTheRecord()
+          ? nullptr
+          : std::make_unique<ScopedProfileKeepAlive>(
+                &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
+
   CHECK(!has_started_);
   has_started_ = true;
   callback_ = std::move(callback);
@@ -394,8 +412,8 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
                 expected_version, task_params_.allow_downgrades());
 
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
-      update_info, task_params_.url_info(), std::move(optional_keep_alive_),
-      std::move(optional_profile_keep_alive_),
+      update_info, task_params_.url_info(), std::move(keep_alive_),
+      std::move(profile_keep_alive_),
       base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnUpdateDryRunDone,
                      weak_factory_.GetWeakPtr()));
 }
