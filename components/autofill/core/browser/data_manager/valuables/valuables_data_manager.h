@@ -60,6 +60,10 @@ class ValuablesDataManager : public KeyedService,
   // Returns the cached loyalty cards to suggest, sorted by merchant name.
   std::vector<LoyaltyCard> GetLoyaltyCardsToSuggest() const;
 
+  // Returns the loyalty card with the specified `id`, or `nullopt` if there is
+  // no such loyaty card.
+  std::optional<LoyaltyCard> GetLoyaltyCardById(const ValuableId& id) const;
+
   // Returns if there are any pending queries to the web database.
   bool HasPendingQueries() const;
 

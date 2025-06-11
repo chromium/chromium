@@ -134,6 +134,25 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCardsToSuggest) {
                                      1);
 }
 
+// Tests that loyalty cards can be fetched by ID.
+TEST_F(ValuablesDataManagerTest, GetLoyaltyCardById) {
+  const LoyaltyCard card1 = test::CreateLoyaltyCard();
+  const LoyaltyCard card2 = test::CreateLoyaltyCard2();
+  valuables_table().SetLoyaltyCards({card1, card2});
+
+  ValuablesDataManager valuables_data_manager(&webdata_service(),
+                                              &image_fetcher());
+  EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(), IsEmpty());
+  helper().WaitUntilIdle();
+  EXPECT_THAT(valuables_data_manager.GetLoyaltyCardById(card1.id()),
+              testing::Optional(card1));
+  EXPECT_THAT(valuables_data_manager.GetLoyaltyCardById(card2.id()),
+              testing::Optional(card2));
+  EXPECT_THAT(
+      valuables_data_manager.GetLoyaltyCardById(ValuableId("invalid_id")),
+      testing::Eq(std::nullopt));
+}
+
 // Verify that the `ValuablesDataManager` correctly updates the list of loyalty
 // cards when the Chrome Sync writes them to the database.
 TEST_F(ValuablesDataManagerTest, DataChangedBySync) {

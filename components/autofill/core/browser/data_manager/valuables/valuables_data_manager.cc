@@ -52,6 +52,16 @@ std::vector<LoyaltyCard> ValuablesDataManager::GetLoyaltyCardsToSuggest()
   return loyalty_cards;
 }
 
+std::optional<LoyaltyCard> ValuablesDataManager::GetLoyaltyCardById(
+    const ValuableId& id) const {
+  auto it = std::ranges::find(
+      loyalty_cards_, id, [](const LoyaltyCard& card) { return card.id(); });
+  if (it != loyalty_cards_.end()) {
+    return *it;
+  }
+  return std::nullopt;
+}
+
 const gfx::Image* ValuablesDataManager::GetCachedValuableImageForUrl(
     const GURL& image_url) const {
   if (!image_url.is_valid()) {
