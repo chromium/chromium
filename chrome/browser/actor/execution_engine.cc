@@ -381,18 +381,22 @@ void ExecutionEngine::CompleteActionsV2(mojom::ActionResultPtr result) {
 
 void ExecutionEngine::OnTabWillDetach(tabs::TabInterface* tab,
                                       tabs::TabInterface::DetachReason reason) {
-  if (reason == tabs::TabInterface::DetachReason::kDelete) {
-    CHECK_EQ(tab, tab_);
-    tab_ = nullptr;
+  if (reason != tabs::TabInterface::DetachReason::kDelete) {
+    return;
+  }
+  if (!tab_) {
+    return;
+  }
+  CHECK_EQ(tab, tab_);
+  tab_ = nullptr;
 
-    // actions_v2_ never uses tab-scoped tasks.
-    if (tab_scoped_actions_deprecated_ && actions_v1_) {
-      journal_->Log(LastCommittedURLOfCurrentTask(),
-                    TaskId(actions_v1_->proto.task_id()), "Act Failed",
-                    "The tab is no longer present");
-      CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
-                                 "The tab is no longer present."));
-    }
+  // actions_v2_ never uses tab-scoped tasks.
+  if (tab_scoped_actions_deprecated_ && actions_v1_) {
+    journal_->Log(LastCommittedURLOfCurrentTask(),
+                  TaskId(actions_v1_->proto.task_id()), "Act Failed",
+                  "The tab is no longer present");
+    CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                               "The tab is no longer present."));
   }
 }
 
