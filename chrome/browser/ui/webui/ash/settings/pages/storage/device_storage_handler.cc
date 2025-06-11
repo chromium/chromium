@@ -163,18 +163,17 @@ void StorageHandler::HandleUpdateStorageInfo(const base::Value::List& args) {
 void StorageHandler::HandleGetStorageEncryption(const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   ::user_data_auth::GetVaultPropertiesRequest request;
   request.set_username(
       user_manager::CanonicalizeUserID(profile_->GetProfileUserName()));
   UserDataAuthClient::Get()->GetVaultProperties(
-      request,
-      base::BindOnce(&StorageHandler::OnGetVaultProperties,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+      request, base::BindOnce(&StorageHandler::OnGetVaultProperties,
+                              weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void StorageHandler::OnGetVaultProperties(
-    const std::string& callback_id,
+    std::string callback_id,
     std::optional<user_data_auth::GetVaultPropertiesReply> reply) {
   // Default is Unknown.
   std::u16string encryption_type =
@@ -197,7 +196,7 @@ void StorageHandler::OnGetVaultProperties(
   }
 
   ResolveJavascriptCallback(base::Value(std::move(callback_id)),
-                            base::Value(encryption_type.c_str()));
+                            base::Value(encryption_type));
 }
 
 void StorageHandler::HandleOpenMyFiles(const base::Value::List& unused_args) {

@@ -105,7 +105,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
 
   // Update encryption type whenever it is fetched.
   void OnGetVaultProperties(
-      const std::string& callback_id,
+      std::string callback_id,
       std::optional<user_data_auth::GetVaultPropertiesReply> reply);
 
   // Instances calculating the size of each storage items.
