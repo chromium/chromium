@@ -2237,19 +2237,6 @@ BASE_FEATURE_PARAM(bool,
                    "rest",
                    false);
 
-BASE_FEATURE(kProduceCompileHints2,
-             "ProduceCompileHints2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kProduceCompileHintsNoiseLevel,
-                   &kProduceCompileHints2,
-                   "noise-probability",
-                   0.5);
-BASE_FEATURE_PARAM(double,
-                   kProduceCompileHintsDataProductionLevel,
-                   &kProduceCompileHints2,
-                   "data-production-probability",
-                   0.005);
 BASE_FEATURE(kForceProduceCompileHints,
              "ForceProduceCompileHints",
              base::FEATURE_DISABLED_BY_DEFAULT);

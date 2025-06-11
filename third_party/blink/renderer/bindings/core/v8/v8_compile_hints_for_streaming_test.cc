@@ -21,11 +21,7 @@ namespace blink::v8_compile_hints {
 
 class CompileHintsForStreamingTest : public ::testing::Test {
  public:
-  ~CompileHintsForStreamingTest() override {
-    // Disable kProduceCompileHints2 not to randomly produce compile hints.
-    scoped_feature_list_.InitAndDisableFeature(features::kProduceCompileHints2);
-  }
-
+  ~CompileHintsForStreamingTest() override = default;
   CompileHintsForStreamingTest(const CompileHintsForStreamingTest&) = delete;
   CompileHintsForStreamingTest& operator=(const CompileHintsForStreamingTest&) =
       delete;
@@ -34,7 +30,6 @@ class CompileHintsForStreamingTest : public ::testing::Test {
   CompileHintsForStreamingTest() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   test::TaskEnvironment task_environment_;
 };
 

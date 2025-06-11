@@ -8,6 +8,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
@@ -414,12 +416,15 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
 TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
   // If we notice before streaming that there is a compile hints cache, we use
   // it for eager compilation.
-
-  // Disable features::kProduceCompileHints2 forcefully, because local compile
-  // hints are not used when producing crowdsourced compile hints.
   base::test::ScopedFeatureList features;
-  features.InitWithFeatureStates({{features::kLocalCompileHints, true},
-                                  {features::kProduceCompileHints2, false}});
+  features.InitWithFeatureStates({{features::kLocalCompileHints, true}});
+
+  // Disable compile hints production forcefully, because local compile
+  // hints are not used when producing crowdsourced compile hints.
+  base::AutoReset<bool> force_disable_compile_hints(
+      &v8_compile_hints::V8CrowdsourcedCompileHintsProducer::
+          DisableCompileHintsForTesting(),
+      true);
 
   V8TestingScope scope;
   Init(scope.GetIsolate());

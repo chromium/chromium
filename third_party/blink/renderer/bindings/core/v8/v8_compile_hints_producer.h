@@ -10,6 +10,7 @@
 
 #if BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -31,7 +32,7 @@ are compiled and uploads it to UKM. On the server side, we construct a model
 from this data and deliver it back to the users via OptimizationGuide (not yet
 implemented).
 */
-class V8CrowdsourcedCompileHintsProducer
+class CORE_EXPORT V8CrowdsourcedCompileHintsProducer
     : public GarbageCollected<V8CrowdsourcedCompileHintsProducer> {
  public:
   explicit V8CrowdsourcedCompileHintsProducer(Page* page);
@@ -40,6 +41,8 @@ class V8CrowdsourcedCompileHintsProducer
       const V8CrowdsourcedCompileHintsProducer&) = delete;
   V8CrowdsourcedCompileHintsProducer& operator=(
       const V8CrowdsourcedCompileHintsProducer&) = delete;
+
+  static bool& DisableCompileHintsForTesting();
 
   // Notifies V8CrowdsourcedCompileHintsProducer of the existence of `script`
   void RecordScript(Frame* frame,
@@ -109,6 +112,11 @@ class V8CrowdsourcedCompileHintsProducer
       const V8CrowdsourcedCompileHintsProducer&) = delete;
   V8CrowdsourcedCompileHintsProducer& operator=(
       const V8CrowdsourcedCompileHintsProducer&) = delete;
+
+  static bool& DisableCompileHintsForTesting() {
+    static bool disable = true;
+    return disable;
+  }
 
   void GenerateData() {}
 

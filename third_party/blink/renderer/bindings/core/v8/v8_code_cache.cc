@@ -372,8 +372,6 @@ V8CodeCache::GetCompileOptionsInternal(
   auto no_code_cache_compile_options = v8::ScriptCompiler::kNoCompileOptions;
 
   if (might_generate_crowdsourced_compile_hints) {
-    DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints2));
-
     // If we end up compiling the script without forced eager compilation, we'll
     // also produce compile hints. This is orthogonal to producing the code
     // cache: if we don't want to create a code cache for some reason

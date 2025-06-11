@@ -28,22 +28,19 @@ std::atomic<bool>
 
 namespace {
 
+constexpr double kProduceCompileHintsNoiseLevel = 0.5;
+#if BUILDFLAG(IS_WIN)
+constexpr float kProduceCompileHintsDataProductionLevel = 0.005;
+#endif  // BUILDFLAG(IS_WIN)
+
 bool RandomlySelectedToGenerateData() {
   // Data collection is only enabled on Windows. TODO(chromium:1406506): enable
   // on more platforms.
 #if BUILDFLAG(IS_WIN)
-  bool compile_hints_enabled =
-      base::FeatureList::IsEnabled(features::kProduceCompileHints2);
-  if (!compile_hints_enabled) {
-    return false;
-  }
-
   // Decide whether we collect the data based on client-side randomization.
   // This is further subject to UKM restrictions: whether the user has enabled
-  // the data collection + downsampling. See crbug.com/1483975 .
-  double data_production_level =
-      features::kProduceCompileHintsDataProductionLevel.Get();
-  return base::RandDouble() < data_production_level;
+  // the data collection + downsampling. See crbug.com/1483975.
+  return base::RandDouble() < kProduceCompileHintsDataProductionLevel;
 #else   //  BUILDFLAG(IS_WIN)
   return false;
 #endif  //  BUILDFLAG(IS_WIN)
@@ -68,6 +65,12 @@ V8CrowdsourcedCompileHintsProducer::V8CrowdsourcedCompileHintsProducer(
   if (should_generate_data && !data_generated_for_this_process_) {
     state_ = State::kCollectingData;
   }
+}
+
+// static
+bool& V8CrowdsourcedCompileHintsProducer::DisableCompileHintsForTesting() {
+  static bool disable = false;
+  return disable;
 }
 
 void V8CrowdsourcedCompileHintsProducer::RecordScript(
@@ -148,6 +151,11 @@ void V8CrowdsourcedCompileHintsProducer::ScheduleDataDeletionTask(
 }
 
 bool V8CrowdsourcedCompileHintsProducer::MightGenerateData() {
+  // Force disable compile hints generation for testing.
+  if (DisableCompileHintsForTesting()) {
+    return false;
+  }
+
   if (state_ != State::kCollectingData || data_generated_for_this_process_) {
     return false;
   }
@@ -1269,13 +1277,12 @@ void V8CrowdsourcedCompileHintsProducer::AddNoise(unsigned* data) {
   unsigned mask = 0;
 
   constexpr int bitsInUnsigned = sizeof(unsigned) * 8;
-  double noiseLevel = features::kProduceCompileHintsNoiseLevel.Get();
   for (int i = 0; i < bitsInUnsigned; ++i) {
     if (i > 0) {
       mask <<= 1;
     }
     double random = base::RandDouble();
-    if (random < noiseLevel / 2) {
+    if (random < kProduceCompileHintsNoiseLevel / 2) {
       // Change this bit.
       mask |= 1;
     }
