@@ -5,7 +5,6 @@
 #include "components/user_data_importer/utility/safari_data_importer.h"
 
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
@@ -117,11 +116,8 @@ class SafariDataImporterTest : public testing::Test {
 
   void ImportBookmarks(std::string html_data) {
     bookmarks_callback_called_ = false;
-    base::ScopedTempFile file;
-    ASSERT_TRUE(file.Create());
-    base::WriteFile(file.path(), html_data);
     importer_.ImportBookmarks(
-        std::move(file),
+        std::move(html_data),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 
-#include "base/files/scoped_temp_file.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
@@ -85,7 +84,7 @@ class SafariDataImporter {
 
   // Attempts to import bookmarks by parsing the provided HTML data.
   // Calls "bookmarks_callback" when done.
-  void ImportBookmarks(base::ScopedTempFile&& bookmarks_html,
+  void ImportBookmarks(std::string html_data,
                        ImportCallback bookmarks_callback);
 
   // Calls "history_callback" with an approximation of the number of URLs
