@@ -24,28 +24,13 @@ class PerformanceManagerObserver : public base::CheckedObserver {
   // will be destroyed when |web_contents| is destroyed or when the
   // PerformanceManagerRegistry is destroyed, whichever comes first.
   virtual void OnPageNodeCreatedForWebContents(
-      content::WebContents* web_contents) = 0;
+      content::WebContents* web_contents) {}
 
   // Invoked before the PM is torn down on the main thread.
-  virtual void OnBeforePerformanceManagerDestroyed() = 0;
+  virtual void OnBeforePerformanceManagerDestroyed() {}
 
  protected:
   PerformanceManagerObserver() = default;
-};
-
-// A default implementation of the observer, with all methods stubbed out.
-class PerformanceManagerObserverDefaultImpl
-    : public PerformanceManagerObserver {
- public:
-  ~PerformanceManagerObserverDefaultImpl() override = default;
-
-  // PerformanceManagerObserver implementation:
-  void OnPageNodeCreatedForWebContents(
-      content::WebContents* web_contents) override {}
-  void OnBeforePerformanceManagerDestroyed() override {}
-
- protected:
-  PerformanceManagerObserverDefaultImpl() = default;
 };
 
 }  // namespace performance_manager

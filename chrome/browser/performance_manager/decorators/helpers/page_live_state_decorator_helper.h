@@ -19,7 +19,7 @@ class ActiveTabObserver;
 
 class PageLiveStateDecoratorHelper
     : public MediaStreamCaptureIndicator::Observer,
-      public PerformanceManagerObserverDefaultImpl,
+      public PerformanceManagerObserver,
       public content::DevToolsAgentHostObserver {
  public:
   PageLiveStateDecoratorHelper();

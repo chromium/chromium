@@ -43,7 +43,7 @@ enum class LoadType {
 
 // PageLoadMetricsObserver records detailed metrics to explain what is included
 // in the "Total Pageloads" presented on stability dashboards.
-class PageLoadMetricsObserver : public PerformanceManagerObserverDefaultImpl {
+class PageLoadMetricsObserver : public PerformanceManagerObserver {
  public:
   PageLoadMetricsObserver();
   ~PageLoadMetricsObserver() override;
