@@ -207,10 +207,8 @@ class ImportNotifierTest(unittest.TestCase):
 
     def _setup_import_cl(self, messages: List[str]):
         gerrit_query = (
-            'https://chromium-review.googlesource.com/changes/'
-            '?q=owner:wpt-autoroller%40chops-service-accounts.'
-            'iam.gserviceaccount.com'
-            f'+prefixsubject:"Import+wpt%40{"f" * 40}"+status:merged'
+            'https://chromium-review.googlesource.com/changes/?q='
+            f'prefixsubject:"Import+wpt%40{"f" * 40}"+status:merged'
             '&n=1&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
             '&o=DETAILED_ACCOUNTS&o=MESSAGES')
         payload = {

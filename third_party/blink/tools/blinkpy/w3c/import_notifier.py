@@ -47,7 +47,6 @@ from blinkpy.w3c.buganizer import (
     BuganizerIssue,
 )
 from blinkpy.w3c.common import (
-    AUTOROLLER_EMAIL,
     WPT_GH_URL,
     WPT_GH_RANGE_URL_TEMPLATE,
 )
@@ -435,7 +434,6 @@ class ImportNotifier:
 
     def _cl_for_wpt_revision(self, wpt_revision: str) -> GerritCL:
         query = ' '.join([
-            f'owner:{AUTOROLLER_EMAIL}',
             f'prefixsubject:"{self.IMPORT_SUBJECT_PREFIX}{wpt_revision}"',
             'status:merged',
         ])
