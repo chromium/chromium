@@ -116,8 +116,7 @@ WebMouseEvent TransformWebMouseEvent(LocalFrameView* frame_view,
   // without proper event modifiers!  And then mouse events on DevTools overlay
   // bypasses the fix below!!
   if (event.GetType() == WebInputEvent::Type::kMouseUp ||
-      (RuntimeEnabledFeatures::ClickToCapturedPointerEnabled() &&
-       event.GetType() == WebInputEvent::Type::kMouseDown)) {
+      event.GetType() == WebInputEvent::Type::kMouseDown) {
     result.UpdateEventModifiersToMatchButton();
   }
 

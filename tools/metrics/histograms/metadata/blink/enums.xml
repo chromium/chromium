@@ -4394,7 +4394,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3939" label="XRFrameFillJointRadii"/>
   <int value="3940" label="XRFrameFillPoses"/>
   <int value="3941" label="OBSOLETE_kWindowOpenNewPopupBehaviorMismatch"/>
-  <int value="3942" label="ExplicitPointerCaptureClickTargetDiff"/>
+  <int value="3942" label="OBSOLETE_kExplicitPointerCaptureClickTargetDiff"/>
   <int value="3943" label="ControlledNonBlobURLWorkerWillBeUncontrolled"/>
   <int value="3944" label="MediaMetaThemeColor"/>
   <int value="3945" label="ClientHintsUABitness"/>
