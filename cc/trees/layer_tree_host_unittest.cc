@@ -37,6 +37,7 @@
 #include "cc/layers/view_transition_content_layer.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
+#include "cc/metrics/ukm_dropped_frames_data.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/image_animation_count.h"
 #include "cc/resources/ui_resource_manager.h"
@@ -9734,7 +9735,13 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
     EXPECT_GT(smoothness->data.avg_smoothness, 0);
 
     ASSERT_TRUE(shmem_region_dropped_frames_.IsValid());
-    // TODO(crbug.com/395868899): Test that values are exported here.
+    auto mapping_dropped_frames = shmem_region_dropped_frames_.Map();
+    auto* smoothness_dropped_frames =
+        mapping.GetMemoryAs<UkmDroppedFramesDataShared>();
+    ASSERT_TRUE(smoothness_dropped_frames);
+    // It is not always possible to guarantee an exact number of dropped frames.
+    // So validate that there are non-zero dropped frames.
+    EXPECT_GT(smoothness_dropped_frames->data.percent_dropped_frames, 0);
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
