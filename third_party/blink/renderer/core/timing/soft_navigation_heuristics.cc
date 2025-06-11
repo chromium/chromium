@@ -177,10 +177,29 @@ EventScopeTypeFromEvent(const Event& event) {
   return std::nullopt;
 }
 
+features::SoftNavigationHeuristicsMode GetPaintAttributionMode(
+    const FeatureContext* context) {
+  // If the feature flag for SoftNavigationHeuristics is enabled, prefer the
+  // feature param to determine whether to enable advanced paint attribution.
+  // This allows users to select the mode via about://flags.
+  if (base::FeatureList::IsEnabled(features::kSoftNavigationHeuristics)) {
+    return features::kSoftNavigationHeuristicsModeParam.Get();
+  }
+  // Without the feature flag enabled, query the runtime enabled feature
+  // directly. This allows the finch experiment to control the feature; it
+  // also enables the feature for tests (since it's 'experimental').
+  if (RuntimeEnabledFeatures::
+          SoftNavigationDetectionAdvancedPaintAttributionEnabled(context)) {
+    return features::SoftNavigationHeuristicsMode::kAdvancedPaintAttribution;
+  }
+  return features::SoftNavigationHeuristicsMode::kBasic;
+}
+
 }  // namespace
 
 SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
     : window_(window),
+      paint_attribution_mode_(GetPaintAttributionMode(window)),
       task_attribution_tracker_(
           scheduler::TaskAttributionTracker::From(window->GetIsolate())) {
   LocalFrame* frame = window->GetFrame();
@@ -553,29 +572,6 @@ LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfOutermostAndNotDetached()
   return frame;
 }
 
-namespace {
-bool ShouldEnableAdvancedPaintAttribution(const FeatureContext* context) {
-  // If the feature flag for SoftNavigationHeuristics is enabled, prefer the
-  // feature param to determine whether to enable advanced paint attribution.
-  // This allows users to select the mode via about://flags.
-  if (base::FeatureList::IsEnabled(features::kSoftNavigationHeuristics)) {
-    features::SoftNavigationHeuristicsMode mode =
-        features::kSoftNavigationHeuristicsModeParam.Get();
-    switch (mode) {
-      case features::SoftNavigationHeuristicsMode::kBasic:
-        return false;
-      case features::SoftNavigationHeuristicsMode::kAdvancedPaintAttribution:
-        return true;
-    }
-  }
-  // Without the feature flag enabled, query the runtime enabled feature
-  // directly. This allows the finch experiment to control the feature; it
-  // also enables the feature for tests (since it's 'experimental').
-  return RuntimeEnabledFeatures::
-      SoftNavigationDetectionAdvancedPaintAttributionEnabled(context);
-}
-}  // namespace
-
 SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     EventScope::Type type,
     ScriptState* script_state) {
@@ -594,8 +590,8 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     // "new interaction" (i.e. keydown), but will create a new one if that has
     // been cleared, which can happen in tests.
     if (IsInteractionStart(type) || !active_interaction_context_) {
-      active_interaction_context_ = MakeGarbageCollected<SoftNavigationContext>(
-          ShouldEnableAdvancedPaintAttribution(window_));
+      active_interaction_context_ =
+          MakeGarbageCollected<SoftNavigationContext>(paint_attribution_mode_);
       potential_soft_navigations_.push_back(active_interaction_context_);
       TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
                           "SoftNavigationHeuristics::CreateNewContext",

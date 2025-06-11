@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -23,7 +24,7 @@ class CORE_EXPORT SoftNavigationContext
   static uint64_t last_context_id_;
 
  public:
-  explicit SoftNavigationContext(bool advanced_paint_attribution_enabled);
+  explicit SoftNavigationContext(features::SoftNavigationHeuristicsMode);
 
   bool IsMostRecentlyCreatedContext() const {
     return context_id_ == last_context_id_;
@@ -78,12 +79,11 @@ class CORE_EXPORT SoftNavigationContext
   // largest value and can be used to identify the most recent context.
   const uint64_t context_id_ = ++last_context_id_;
 
-  bool advanced_paint_attribution_enabled_;
-
   base::TimeTicks user_interaction_timestamp_;
   String initial_url_;
   String most_recent_url_;
   bool was_emitted_ = false;
+  const features::SoftNavigationHeuristicsMode paint_attribution_mode_;
 
   blink::HeapHashSet<WeakMember<Node>> modified_nodes_;
   blink::HeapHashSet<WeakMember<Node>> already_painted_modified_nodes_;

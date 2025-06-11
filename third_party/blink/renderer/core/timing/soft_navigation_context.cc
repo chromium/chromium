@@ -14,8 +14,8 @@ namespace blink {
 uint64_t SoftNavigationContext::last_context_id_ = 0;
 
 SoftNavigationContext::SoftNavigationContext(
-    bool advanced_paint_attribution_enabled)
-    : advanced_paint_attribution_enabled_(advanced_paint_attribution_enabled) {}
+    features::SoftNavigationHeuristicsMode mode)
+    : paint_attribution_mode_(mode) {}
 
 void SoftNavigationContext::AddModifiedNode(Node* node) {
   node->SetIsModifiedBySoftNavigation();
@@ -77,8 +77,9 @@ bool SoftNavigationContext::AddPaintedArea(Node* node,
       return true;
     }
 
-    // For now, do not "tree walk" unless this flag is enabled.
-    if (!advanced_paint_attribution_enabled_) {
+    // For now, do not "tree walk" when in basic mode.
+    if (paint_attribution_mode_ ==
+        features::SoftNavigationHeuristicsMode::kBasic) {
       break;
     }
   }

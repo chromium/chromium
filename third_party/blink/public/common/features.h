@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FEATURES_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/feature_list.h"
@@ -1688,7 +1690,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kServiceWorkerSyntheticResponseAllowedUrls);
 
 // 'Mode' parameter for blink::features::kSoftNavigationHeuristics.
-enum class SoftNavigationHeuristicsMode {
+enum class SoftNavigationHeuristicsMode : uint8_t {
   kBasic,
   kAdvancedPaintAttribution,
 };
