@@ -64,7 +64,7 @@ class StorageServiceRestartBrowserTest : public ContentBrowserTest {
 
   mojo::Remote<storage::mojom::TestApi>& GetTestApi() {
     if (!test_api_) {
-      StoragePartitionImpl::GetStorageServiceForTesting()->BindTestApi(
+      StoragePartitionImpl::GetStorageService()->BindTestApi(
           test_api_.BindNewPipeAndPassReceiver().PassPipe());
     }
     return test_api_;
@@ -72,7 +72,7 @@ class StorageServiceRestartBrowserTest : public ContentBrowserTest {
 
   void CrashStorageServiceAndWaitForRestart() {
     mojo::Remote<storage::mojom::StorageService>& service =
-        StoragePartitionImpl::GetStorageServiceForTesting();
+        StoragePartitionImpl::GetStorageService();
     base::RunLoop loop;
     service.set_disconnect_handler(base::BindLambdaForTesting([&] {
       loop.Quit();

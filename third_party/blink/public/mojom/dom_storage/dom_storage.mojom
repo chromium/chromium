@@ -43,19 +43,21 @@ interface DomStorage {
   // ensure the renderer is allowed to access that StorageKey's data. The
   // RenderFrameHost identified by `local_frame_token` must be validated
   // against `storage_key` as well.
-  BindSessionStorageArea(
-      blink.mojom.StorageKey storage_key,
-      blink.mojom.LocalFrameToken local_frame_token,
-      string namespace_id,
-      pending_receiver<StorageArea> session_namespace);
+  BindSessionStorageArea(blink.mojom.StorageKey storage_key,
+                         blink.mojom.LocalFrameToken local_frame_token,
+                         string namespace_id,
+                         pending_receiver<StorageArea> session_namespace);
 };
 
 // The main client interface that the browser's DOM Storage implementation can
 // use to push notifications to renderers.
 interface DomStorageClient {
-  // Notifies the client that any of its existing StorageArea and
+  // Notifies the client that any of its existing SessionStorage StorageArea and
   // SessionStorageNamespace connections will no longer function properly (e.g.
   // due to a backend crash and recovery) and they should be re-established by
   // the client.
-  ResetStorageAreaAndNamespaceConnections();
+  ResetSessionStorageConnections();
+
+  // Same as the above, but for LocalStorage.
+  ResetLocalStorageConnections();
 };

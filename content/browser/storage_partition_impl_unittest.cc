@@ -50,7 +50,6 @@
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
-#include "components/services/storage/public/mojom/partition.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/async_shared_storage_database_impl.h"
@@ -2284,7 +2283,6 @@ TEST_F(StoragePartitionImplTest, RemovePrivateAggregationData) {
 // that it can be safely destroyed when the thread terminates.
 TEST(StorageServiceImplOnSequenceLocalStorage, ThreadDestructionDoesNotFail) {
   mojo::Remote<storage::mojom::StorageService> remote_service;
-  mojo::Remote<storage::mojom::Partition> persistent_partition;
   mojo::Remote<storage::mojom::LocalStorageControl> storage_control;
   // These remotes must outlive the thread, otherwise PartitionImpl cleanup will
   // not happen in the ~StorageServiceImpl but on the mojo error handler.
@@ -2312,11 +2310,8 @@ TEST(StorageServiceImplOnSequenceLocalStorage, ThreadDestructionDoesNotFail) {
     // Make sure PartitionImpl gets to destroy a LocalStorageImpl object.
     base::ScopedTempDir temp_dir;
     CHECK(temp_dir.CreateUniqueTempDir());
-    remote_service->BindPartition(
-        temp_dir.GetPath(), persistent_partition.BindNewPipeAndPassReceiver());
-    persistent_partition->BindLocalStorageControl(
-        storage::mojom::LocalStorageLifecycle::kInitializing,
-        storage_control.BindNewPipeAndPassReceiver());
+    remote_service->BindLocalStorageControl(
+        temp_dir.GetPath(), storage_control.BindNewPipeAndPassReceiver());
     storage_control.FlushForTesting();
   }
 }

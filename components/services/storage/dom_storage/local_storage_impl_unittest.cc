@@ -29,7 +29,9 @@
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
+#include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
+#include "components/services/storage/storage_service_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,7 +140,8 @@ class LocalStorageImplTest : public testing::Test {
   void InitializeStorage(const base::FilePath& path) {
     DCHECK(!storage_);
     storage_ = std::make_unique<LocalStorageImpl>(
-        path, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        storage_service_, path,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         /*receiver=*/mojo::NullReceiver());
   }
 
@@ -296,6 +299,10 @@ class LocalStorageImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::StorageService> remote_service_;
+  StorageServiceImpl storage_service_{
+      remote_service_.BindNewPipeAndPassReceiver(),
+      /*io_task_runner=*/nullptr};
   base::ScopedTempDir temp_path_;
 
   std::unique_ptr<LocalStorageImpl> storage_;

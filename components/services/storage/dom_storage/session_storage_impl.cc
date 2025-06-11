@@ -26,6 +26,7 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/session_storage_area_impl.h"
+#include "components/services/storage/storage_service_impl.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -94,13 +95,15 @@ void SessionStorageErrorResponse(base::OnceClosure callback,
 }  // namespace
 
 SessionStorageImpl::SessionStorageImpl(
+    StorageServiceImpl& service,
     const base::FilePath& partition_directory,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     scoped_refptr<base::SequencedTaskRunner> memory_dump_task_runner,
     BackingMode backing_mode,
     std::string database_name,
     mojo::PendingReceiver<mojom::SessionStorageControl> receiver)
-    : backing_mode_(backing_mode),
+    : service_(service),
+      backing_mode_(backing_mode),
       database_name_(std::move(database_name)),
       partition_directory_(partition_directory),
       database_task_runner_(std::move(blocking_task_runner)),
@@ -113,6 +116,9 @@ SessionStorageImpl::SessionStorageImpl(
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "SessionStorage", std::move(memory_dump_task_runner),
           base::trace_event::MemoryDumpProvider::Options());
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&SessionStorageImpl::OnReceiverDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 SessionStorageImpl::~SessionStorageImpl() {
@@ -1071,6 +1077,11 @@ void SessionStorageImpl::LogDatabaseOpenResult(OpenResult result) {
   if (open_result_histogram_) {
     base::UmaHistogramEnumeration(open_result_histogram_, result);
   }
+}
+
+void SessionStorageImpl::OnReceiverDisconnected() {
+  ShutDown(base::DoNothing());
+  service_->RemoveSessionStorage(this);
 }
 
 }  // namespace storage

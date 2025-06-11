@@ -15,6 +15,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -37,9 +38,11 @@ class StorageKey;
 
 namespace storage {
 
+class StorageServiceImpl;
 // The Local Storage implementation. An instance of this class exists for each
-// storage partition using Local Storage, managing storage for all StorageKeys
-// within the partition.
+// profile directory (within the user data directory) that is using Local
+// Storage. It manages storage for all StorageKeys and namespaces within that
+// partition.
 class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                          public mojom::LocalStorageControl {
  public:
@@ -49,7 +52,8 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // |legacy_task_runner| must support blocking operations and its tasks must
   // be able to block shutdown. If valid, |receiver| will be bound to this
   // object to allow for remote control via the LocalStorageControl interface.
-  LocalStorageImpl(const base::FilePath& storage_root,
+  LocalStorageImpl(StorageServiceImpl& service,
+                   const base::FilePath& storage_root,
                    scoped_refptr<base::SequencedTaskRunner> task_runner,
                    mojo::PendingReceiver<mojom::LocalStorageControl> receiver);
   ~LocalStorageImpl() override;
@@ -90,6 +94,8 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
+
+  base::FilePath GetStoragePath() const;
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.
@@ -151,7 +157,10 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void DeleteStaleStorageAreas();
   void OnGotMetaDataToDeleteStaleStorageAreas(
       std::vector<DomStorageDatabase::KeyValuePair> data);
+  void OnReceiverDisconnected();
 
+  // The StorageServiceImpl that owns this object.
+  const raw_ref<StorageServiceImpl> service_;
   const base::FilePath directory_;
 
   enum ConnectionState {

@@ -28,6 +28,8 @@
 #include "base/uuid.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/dom_storage/testing_legacy_session_storage_database.h"
+#include "components/services/storage/public/mojom/storage_service.mojom.h"
+#include "components/services/storage/storage_service_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,7 +88,7 @@ class SessionStorageImplTest : public testing::Test {
     if (!session_storage_) {
       remote_session_storage_.reset();
       session_storage_ = std::make_unique<SessionStorageImpl>(
-          temp_path(), blocking_task_runner_,
+          storage_service_, temp_path(), blocking_task_runner_,
           base::SequencedTaskRunner::GetCurrentDefault(), backing_mode_,
           kSessionStorageDirectory,
           remote_session_storage_.BindNewPipeAndPassReceiver());
@@ -157,6 +159,10 @@ class SessionStorageImplTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::StorageService> remote_service_;
+  StorageServiceImpl storage_service_{
+      remote_service_.BindNewPipeAndPassReceiver(),
+      /*io_task_runner=*/nullptr};
   base::ScopedTempDir temp_dir_;
   SessionStorageImpl::BackingMode backing_mode_ =
       SessionStorageImpl::BackingMode::kRestoreDiskState;

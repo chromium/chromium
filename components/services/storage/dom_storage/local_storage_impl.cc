@@ -41,6 +41,7 @@
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/services/storage/public/cpp/constants.h"
+#include "components/services/storage/storage_service_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -335,10 +336,12 @@ class LocalStorageImpl::StorageAreaHolder final
 };
 
 LocalStorageImpl::LocalStorageImpl(
+    StorageServiceImpl& service,
     const base::FilePath& storage_root,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PendingReceiver<mojom::LocalStorageControl> receiver)
-    : directory_(storage_root.empty() ? storage_root
+    : service_(service),
+      directory_(storage_root.empty() ? storage_root
                                       : storage_root.Append(kLocalStoragePath)),
       database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
@@ -350,8 +353,12 @@ LocalStorageImpl::LocalStorageImpl(
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "LocalStorage", task_runner, MemoryDumpProvider::Options());
 
-  if (receiver)
+  if (receiver) {
     control_receiver_.Bind(std::move(receiver));
+    control_receiver_.set_disconnect_handler(
+        base::BindOnce(&LocalStorageImpl::OnReceiverDisconnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void LocalStorageImpl::BindStorageArea(
@@ -586,6 +593,13 @@ bool LocalStorageImpl::OnMemoryDump(
     it.second->storage_area()->OnMemoryDump(area_dump_name, pmd);
   }
   return true;
+}
+
+base::FilePath LocalStorageImpl::GetStoragePath() const {
+  if (directory_.empty()) {
+    return directory_;
+  }
+  return directory_.DirName();
 }
 
 void LocalStorageImpl::SetDatabaseOpenCallbackForTesting(
@@ -1092,6 +1106,11 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
             }
           },
           stale_storage_keys.size()));
+}
+
+void LocalStorageImpl::OnReceiverDisconnected() {
+  ShutDown(base::DoNothing());
+  service_->RemoveLocalStorage(this);
 }
 
 }  // namespace storage

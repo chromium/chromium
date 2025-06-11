@@ -17,7 +17,6 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
-#include "components/services/storage/public/mojom/partition.mojom.h"
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -37,9 +36,6 @@ class StorageKey;
 
 namespace storage {
 class SpecialStoragePolicy;
-namespace mojom {
-class Partition;
-}  // namespace mojom
 }  // namespace storage
 
 namespace content {
@@ -131,7 +127,9 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // Pushes information about known Session Storage namespaces down to the
   // Storage Service instance after a crash. This in turn allows renderer
   // clients to re-establish working connections.
-  void RecoverFromStorageServiceCrash();
+  void OnSessionStorageDisconnected();
+  // Resets LocalStorage related StorageAreas after disconnection.
+  void OnLocalStorageDisconnected();
 
  private:
   friend class DOMStorageContextWrapperTest;
@@ -141,8 +139,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   ~DOMStorageContextWrapper() override;
 
   void MaybeBindSessionStorageControl();
-  void MaybeBindLocalStorageControl(
-      storage::mojom::LocalStorageLifecycle lifecycle);
+  void MaybeBindLocalStorageControl();
   scoped_refptr<SessionStorageNamespaceImpl> MaybeGetExistingNamespace(
       const std::string& namespace_id) const;
 

@@ -43,9 +43,11 @@ class StorageKey;
 
 namespace storage {
 
+class StorageServiceImpl;
 // The Session Storage implementation. An instance of this class exists for each
-// storage partition using Session Storage, managing storage for all StorageKeys
-// and namespaces within the partition.
+// profile directory (within the user data directory) that is using Session
+// Storage. It manages storage for all StorageKeys and namespaces within that
+// partition.
 class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
                            public mojom::SessionStorageControl,
                            public SessionStorageDataMap::Listener,
@@ -66,6 +68,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   };
 
   SessionStorageImpl(
+      StorageServiceImpl& service,
       const base::FilePath& partition_directory,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       scoped_refptr<base::SequencedTaskRunner> memory_dump_task_runner,
@@ -114,6 +117,8 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
+
+  const base::FilePath& GetStoragePath() const { return partition_directory_; }
 
   void PretendToConnectForTesting();
 
@@ -236,6 +241,10 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   void LogDatabaseOpenResult(OpenResult result);
 
+  void OnReceiverDisconnected();
+
+  // The StorageServiceImpl that owns this object.
+  const raw_ref<StorageServiceImpl> service_;
   // Since the session storage object hierarchy references iterators owned by
   // the metadata, make sure it is destroyed last on destruction.
   SessionStorageMetadata metadata_;

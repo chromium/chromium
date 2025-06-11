@@ -10245,14 +10245,14 @@ class PrerenderRestartStorageServiceBrowserTest : public PrerenderBrowserTest {
  protected:
   void CrashStorageServiceAndWaitForRestart() {
     mojo::Remote<storage::mojom::StorageService>& service =
-        StoragePartitionImpl::GetStorageServiceForTesting();
+        StoragePartitionImpl::GetStorageService();
     base::RunLoop loop;
     service.set_disconnect_handler(base::BindLambdaForTesting([&] {
       loop.Quit();
       service.reset();
     }));
     mojo::Remote<storage::mojom::TestApi> test_api;
-    StoragePartitionImpl::GetStorageServiceForTesting()->BindTestApi(
+    StoragePartitionImpl::GetStorageService()->BindTestApi(
         test_api.BindNewPipeAndPassReceiver().PassPipe());
     // On x86 and x86_64 Android, base::ImmediateCrash() macro used in
     // CrashNow() does not seem to work as expected. (See

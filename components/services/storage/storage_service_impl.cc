@@ -6,10 +6,12 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/services/storage/dom_storage/local_storage_impl.h"
+#include "components/services/storage/dom_storage/session_storage_impl.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
-#include "components/services/storage/partition_impl.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/sandboxed_vfs_delegate.h"
 #include "components/services/storage/test_api_stubs.h"
@@ -21,6 +23,8 @@
 namespace storage {
 
 namespace {
+
+const char kSessionStorageDirectory[] = "Session Storage";
 
 // We don't use out-of-process Storage Service on Android, so we can avoid
 // pulling all the related code (including Directory mojom) into the build.
@@ -54,7 +58,15 @@ StorageServiceImpl::StorageServiceImpl(
     : receiver_(this, std::move(receiver)),
       io_task_runner_(std::move(io_task_runner)) {}
 
-StorageServiceImpl::~StorageServiceImpl() = default;
+StorageServiceImpl::~StorageServiceImpl() {
+  // Shut down storages before we destroy the service.
+  for (const auto& local_storage : local_storages_) {
+    local_storage->ShutDown(base::DoNothing());
+  }
+  for (const auto& session_storage : session_storages_) {
+    session_storage->ShutDown(base::DoNothing());
+  }
+}
 
 void StorageServiceImpl::EnableAggressiveDomStorageFlushing() {
   StorageAreaImpl::EnableAggressiveCommitDelay();
@@ -86,29 +98,65 @@ void StorageServiceImpl::SetDataDirectory(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void StorageServiceImpl::BindPartition(
+void StorageServiceImpl::BindLocalStorageControl(
     const std::optional<base::FilePath>& path,
-    mojo::PendingReceiver<mojom::Partition> receiver) {
+    mojo::PendingReceiver<mojom::LocalStorageControl> receiver) {
   if (path.has_value()) {
     if (!path->IsAbsolute()) {
-      // Refuse to bind Partitions for relative paths.
+      // Refuse to bind LocalStorage for relative paths.
       return;
     }
 
-    // If this is a persistent partition that already exists, bind to it and
-    // we're done.
-    auto iter = persistent_partition_map_.find(*path);
-    if (iter != persistent_partition_map_.end()) {
-      iter->second->BindReceiver(std::move(receiver));
-      return;
-    }
+    // The map shouldn't contain an entry for this path. We should only bind a
+    // LocalStorage mojom::Receiver once.
+    auto iter = persistent_local_storage_map_.find(*path);
+    CHECK(iter == persistent_local_storage_map_.end());
   }
 
-  auto new_partition = std::make_unique<PartitionImpl>(this, path);
-  new_partition->BindReceiver(std::move(receiver));
-  if (path.has_value())
-    persistent_partition_map_[*path] = new_partition.get();
-  partitions_.insert(std::move(new_partition));
+  auto new_local_storage = std::make_unique<LocalStorageImpl>(
+      *this, path.value_or(base::FilePath()),
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(receiver));
+  if (path.has_value()) {
+    persistent_local_storage_map_[*path] = new_local_storage.get();
+  }
+  local_storages_.insert(std::move(new_local_storage));
+}
+
+void StorageServiceImpl::BindSessionStorageControl(
+    const std::optional<base::FilePath>& path,
+    mojo::PendingReceiver<mojom::SessionStorageControl> receiver) {
+  if (path.has_value()) {
+    if (!path->IsAbsolute()) {
+      // Refuse to bind SessionStorage for relative paths.
+      return;
+    }
+
+    // The map shouldn't contain an entry for this path. We should only bind to
+    // a SessionStorage mojom::Receiver once.
+    auto iter = persistent_session_storage_map_.find(*path);
+    CHECK(iter == persistent_session_storage_map_.end());
+  }
+
+  auto new_session_storage = std::make_unique<SessionStorageImpl>(
+      *this, path.value_or(base::FilePath()),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::WithBaseSyncPrimitives(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      base::SequencedTaskRunner::GetCurrentDefault(),
+#if BUILDFLAG(IS_ANDROID)
+      // On Android there is no support for session storage restoring, and since
+      // the restoring code is responsible for database cleanup, we must
+      // manually delete the old database here before we open a new one.
+      SessionStorageImpl::BackingMode::kClearDiskStateOnOpen,
+#else
+      path.has_value() ? SessionStorageImpl::BackingMode::kRestoreDiskState
+                       : SessionStorageImpl::BackingMode::kNoDisk,
+#endif
+      std::string(kSessionStorageDirectory), std::move(receiver));
+  if (path.has_value()) {
+    persistent_session_storage_map_[*path] = new_session_storage.get();
+  }
+  session_storages_.insert(std::move(new_session_storage));
 }
 
 void StorageServiceImpl::BindTestApi(
@@ -116,13 +164,26 @@ void StorageServiceImpl::BindTestApi(
   GetTestApiBinderForTesting().Run(std::move(test_api_receiver));
 }
 
-void StorageServiceImpl::RemovePartition(PartitionImpl* partition) {
-  if (partition->path().has_value())
-    persistent_partition_map_.erase(partition->path().value());
+void StorageServiceImpl::RemoveSessionStorage(SessionStorageImpl* storage) {
+  if (!storage->GetStoragePath().empty()) {
+    persistent_session_storage_map_.erase(storage->GetStoragePath());
+  }
 
-  auto iter = partitions_.find(partition);
-  if (iter != partitions_.end())
-    partitions_.erase(iter);
+  auto it = session_storages_.find(storage);
+  if (it != session_storages_.end()) {
+    session_storages_.erase(it);
+  }
+}
+
+void StorageServiceImpl::RemoveLocalStorage(LocalStorageImpl* storage) {
+  if (!storage->GetStoragePath().empty()) {
+    persistent_local_storage_map_.erase(storage->GetStoragePath());
+  }
+
+  auto it = local_storages_.find(storage);
+  if (it != local_storages_.end()) {
+    local_storages_.erase(it);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

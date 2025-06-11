@@ -8,8 +8,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/partition_impl.h"
-#include "components/services/storage/public/mojom/partition.mojom.h"
+#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,99 +35,35 @@ class StorageServiceImplTest : public testing::Test {
                               /*io_task_runner=*/nullptr};
 };
 
-TEST_F(StorageServiceImplTest, UniqueInMemoryPartitions) {
-  // Verifies that every partition client bound without a path is bound to a
-  // unique partition instance.
-
-  mojo::Remote<mojom::Partition> in_memory_partition1;
-  remote_service()->BindPartition(
-      /*path=*/std::nullopt, in_memory_partition1.BindNewPipeAndPassReceiver());
-  in_memory_partition1.FlushForTesting();
-
-  EXPECT_EQ(1u, service_impl().partitions().size());
-
-  mojo::Remote<mojom::Partition> in_memory_partition2;
-  remote_service()->BindPartition(
-      std::nullopt /* path */,
-      in_memory_partition2.BindNewPipeAndPassReceiver());
-  in_memory_partition2.FlushForTesting();
-
-  EXPECT_EQ(2u, service_impl().partitions().size());
-
-  // Also verify that a new client with a provided path is unique from the above
-  // partitions.
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-
-  mojo::Remote<mojom::Partition> persistent_partition;
-  remote_service()->BindPartition(
-      temp_dir.GetPath(), persistent_partition.BindNewPipeAndPassReceiver());
-  persistent_partition.FlushForTesting();
-
-  EXPECT_EQ(3u, service_impl().partitions().size());
-}
-
-TEST_F(StorageServiceImplTest, SharedPersistentPartition) {
-  // Verifies that multiple clients can share the same persistent partition
-  // instance.
-
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-
-  mojo::Remote<mojom::Partition> client1;
-  remote_service()->BindPartition(temp_dir.GetPath(),
-                                  client1.BindNewPipeAndPassReceiver());
-  client1.FlushForTesting();
-
-  EXPECT_EQ(1u, service_impl().partitions().size());
-
-  mojo::Remote<mojom::Partition> client2;
-  remote_service()->BindPartition(temp_dir.GetPath(),
-                                  client2.BindNewPipeAndPassReceiver());
-  client2.FlushForTesting();
-
-  EXPECT_EQ(1u, service_impl().partitions().size());
-  EXPECT_TRUE(client1.is_connected());
-  EXPECT_TRUE(client2.is_connected());
-}
-
-TEST_F(StorageServiceImplTest, PartitionDestroyedOnLastClientDisconnect) {
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-
-  mojo::Remote<mojom::Partition> client1;
-  remote_service()->BindPartition(temp_dir.GetPath(),
-                                  client1.BindNewPipeAndPassReceiver());
-  client1.FlushForTesting();
-
-  mojo::Remote<mojom::Partition> client2;
-  remote_service()->BindPartition(temp_dir.GetPath(),
-                                  client2.BindNewPipeAndPassReceiver());
-  client2.FlushForTesting();
-
-  EXPECT_EQ(1u, service_impl().partitions().size());
-
-  client1.reset();
-  client2.reset();
-
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(0u, service_impl().partitions().size());
-}
-
-TEST_F(StorageServiceImplTest, PersistentPartitionRequiresAbsolutePath) {
-  mojo::Remote<mojom::Partition> client;
+TEST_F(StorageServiceImplTest, BindingLocalStorageControlRequiresAbsolutePath) {
+  mojo::Remote<storage::mojom::LocalStorageControl> storage_control;
   const base::FilePath kTestRelativePath{FILE_PATH_LITERAL("invalid")};
-  remote_service()->BindPartition(kTestRelativePath,
-                                  client.BindNewPipeAndPassReceiver());
+  remote_service()->BindLocalStorageControl(
+      kTestRelativePath, storage_control.BindNewPipeAndPassReceiver());
 
-  // We should be imminently disconnected because the BindPartition request
-  // should be ignored by the service.
+  // The BindLocalStorageControl request should be ignored by the service,
+  // resulting in disconnection.
   base::RunLoop loop;
-  client.set_disconnect_handler(loop.QuitClosure());
+  storage_control.set_disconnect_handler(loop.QuitClosure());
   loop.Run();
 
-  EXPECT_FALSE(client.is_connected());
+  EXPECT_FALSE(storage_control.is_connected());
+}
+
+TEST_F(StorageServiceImplTest,
+       BindingSessionStorageControlRequiresAbsolutePath) {
+  mojo::Remote<storage::mojom::SessionStorageControl> storage_control;
+  const base::FilePath kTestRelativePath{FILE_PATH_LITERAL("invalid")};
+  remote_service()->BindSessionStorageControl(
+      kTestRelativePath, storage_control.BindNewPipeAndPassReceiver());
+
+  // The BindSessionStorageControl request should be ignored by the service,
+  // resulting in disconnection.
+  base::RunLoop loop;
+  storage_control.set_disconnect_handler(loop.QuitClosure());
+  loop.Run();
+
+  EXPECT_FALSE(storage_control.is_connected());
 }
 
 }  // namespace storage

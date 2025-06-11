@@ -141,13 +141,18 @@ void StorageController::EnsureLocalStorageNamespaceCreated() {
   local_storage_namespace_ = MakeGarbageCollected<StorageNamespace>(this);
 }
 
-void StorageController::ResetStorageAreaAndNamespaceConnections() {
+void StorageController::ResetSessionStorageConnections() {
   for (auto& ns : *namespaces_) {
-    if (ns.value)
+    if (ns.value) {
       ns.value->ResetStorageAreaAndNamespaceConnections();
+    }
   }
-  if (local_storage_namespace_)
+}
+
+void StorageController::ResetLocalStorageConnections() {
+  if (local_storage_namespace_) {
     local_storage_namespace_->ResetStorageAreaAndNamespaceConnections();
+  }
 }
 
 }  // namespace blink
