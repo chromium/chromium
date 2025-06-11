@@ -1014,6 +1014,36 @@ TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveScrollableArea) {
   EXPECT_EQ(child->GetLayoutObject().GetNode(), HitTest(99, 99));
 }
 
+// If a visibility: hidden child has been omitted from z-index lists due to
+// visibility: hidden, the child should also be ignored for reordering overlay
+// overflow controls.
+TEST_P(ReorderOverlayOverflowControlsTest, VisibilityHiddenChild) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #parent {
+        position: relative;
+        width: 100px;
+        height: 100px;
+      }
+      #child {
+        position: relative;
+        visibility: hidden;
+        height: 300px;
+      }
+    </style>
+    <div id='parent'>
+      <div id='child'></div>
+      content
+    </div>
+  )HTML");
+
+  InitOverflowStyle("parent");
+  auto* parent = GetPaintLayerByElementId("parent");
+  EXPECT_TRUE(parent->GetScrollableArea());
+  EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
+}
+
 TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveStackedChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
