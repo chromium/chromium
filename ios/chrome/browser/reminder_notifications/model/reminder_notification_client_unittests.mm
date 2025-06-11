@@ -11,8 +11,10 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_mediator.h"
 #import "ios/chrome/browser/reminder_notifications/model/reminder_notification_builder.h"
@@ -112,6 +114,14 @@ class ReminderNotificationClientTest : public PlatformTest {
     task_environment_.RunUntilIdle();
   }
 
+  // Helper to set the reminder permission.
+  void SetReminderPermission(bool enabled) {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kFeaturePushNotificationPermissions);
+    update->Set(kReminderNotificationKey, enabled);
+    task_environment_.RunUntilIdle();
+  }
+
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
@@ -149,6 +159,7 @@ TEST_F(ReminderNotificationClientTest, Builder) {
 // Test scheduling a single notification from prefs.
 TEST_F(ReminderNotificationClientTest, OneReminderInPrefs) {
   SetupMockNotificationCenter();
+  SetReminderPermission(true);
   GURL url("http://example.com/page1");
   base::Time reminder_time = base::Time::Now() + base::Minutes(10);
   base::Value::Dict reminder_details;
@@ -166,6 +177,7 @@ TEST_F(ReminderNotificationClientTest, OneReminderInPrefs) {
 // Test scheduling multiple notifications from prefs.
 TEST_F(ReminderNotificationClientTest, MultipleRemindersInPrefs) {
   SetupMockNotificationCenter();
+  SetReminderPermission(true);
   GURL url1("http://example.com/page1");
   GURL url2("http://example.org/anotherpage");
   base::Time reminder_time1 = base::Time::Now() + base::Minutes(10);
@@ -185,6 +197,25 @@ TEST_F(ReminderNotificationClientTest, MultipleRemindersInPrefs) {
   StubGetPendingRequests(nil);
   ExpectAddNotificationRequest(url1);
   ExpectAddNotificationRequest(url2);
+  SetReminderPrefs(reminders);
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Test that no notification is scheduled when not permitted.
+TEST_F(ReminderNotificationClientTest, NoScheduleWhenNotPermitted) {
+  SetupMockNotificationCenter();
+  SetReminderPermission(false);
+  GURL url("http://example.com/page1");
+  base::Time reminder_time = base::Time::Now() + base::Minutes(10);
+  base::Value::Dict reminder_details;
+  reminder_details.Set(kReminderNotificationsTimeKey,
+                       base::TimeToValue(reminder_time));
+  base::Value::Dict reminders;
+  reminders.Set(url.spec(), std::move(reminder_details));
+
+  StubGetPendingRequests(nil);
+  OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
+                                        withCompletionHandler:[OCMArg any]]);
   SetReminderPrefs(reminders);
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }

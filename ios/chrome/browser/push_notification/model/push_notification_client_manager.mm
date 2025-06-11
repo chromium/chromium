@@ -153,6 +153,9 @@ PushNotificationClientManager::GetClients() {
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     client_ids.push_back(PushNotificationClientId::kSendTab);
   }
+  if (IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+    client_ids.push_back(PushNotificationClientId::kReminders);
+  }
   return client_ids;
 }
 

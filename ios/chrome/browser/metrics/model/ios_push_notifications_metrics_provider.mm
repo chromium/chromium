@@ -62,6 +62,11 @@ constexpr PushNotificationReportInfo kPushNotificationReportInfos[] = {
         .client_id = PushNotificationClientId::kCommerce,
         .requires_signed_in_identity = true,
     },
+    {
+        .histogram_name = kRemindersClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kReminders,
+        .requires_signed_in_identity = false,
+    },
 };
 
 // Records for histogram for `info` for an user signed-in with `gaia_id`.

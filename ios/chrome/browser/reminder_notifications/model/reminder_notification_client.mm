@@ -16,6 +16,7 @@
 #import "base/values.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_mediator.h"
 #import "ios/chrome/browser/reminder_notifications/model/reminder_notification_builder.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -27,6 +28,8 @@
 
 ReminderNotificationClient::ReminderNotificationClient(ProfileIOS* profile)
     : PushNotificationClient(PushNotificationClientId::kReminders, profile) {
+  CHECK(profile);
+
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
 
   PrefService* prefs = profile->GetPrefs();
@@ -35,7 +38,13 @@ ReminderNotificationClient::ReminderNotificationClient(ProfileIOS* profile)
 
   pref_change_registrar_->Add(
       prefs::kReminderNotifications,
-      base::BindRepeating(&ReminderNotificationClient::OnPrefsChanged,
+      base::BindRepeating(
+          &ReminderNotificationClient::OnReminderDataPrefChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  pref_change_registrar_->Add(
+      prefs::kFeaturePushNotificationPermissions,
+      base::BindRepeating(&ReminderNotificationClient::OnPermissionsPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -78,11 +87,33 @@ void ReminderNotificationClient::OnSceneActiveForegroundBrowserReady(
   std::move(closure).Run();
 }
 
-void ReminderNotificationClient::OnPrefsChanged() {
+bool ReminderNotificationClient::IsPermitted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ProfileIOS* current_profile = GetProfile();
+
+  return current_profile->GetPrefs()
+      ->GetDict(prefs::kFeaturePushNotificationPermissions)
+      .FindBool(kReminderNotificationKey)
+      .value_or(false);
+}
+
+void ReminderNotificationClient::OnReminderDataPrefChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Schedule notifications based on Pref changes. Cancel existing notifications
   // first, then schedule new ones based on current prefs.
+  CancelAllNotifications(base::BindOnce(
+      &ReminderNotificationClient::ScheduleNotificationsFromPrefs,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ReminderNotificationClient::OnPermissionsPrefChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // When permissions changes, re-evaluate scheduling.
+  // Cancel existing notifications first, then attempt to reschedule.
+  // `ScheduleNotificationsFromPrefs()` will check the new permission state.
   CancelAllNotifications(base::BindOnce(
       &ReminderNotificationClient::ScheduleNotificationsFromPrefs,
       weak_ptr_factory_.GetWeakPtr()));
@@ -126,11 +157,12 @@ void ReminderNotificationClient::OnGetPendingNotificationsForCancellation(
 void ReminderNotificationClient::ScheduleNotificationsFromPrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/422761719): Add `IsPermitted()` to check if the client can
-  // schedule notifications.
+  // Do not schedule notifications if not permitted.
+  if (!IsPermitted()) {
+    return;
+  }
 
   ProfileIOS* current_profile = GetProfile();
-  CHECK(current_profile);
 
   PrefService* prefs = current_profile->GetPrefs();
 

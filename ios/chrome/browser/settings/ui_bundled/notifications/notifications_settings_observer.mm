@@ -46,6 +46,9 @@
 
   // Yes if Safety Check notifications are enabled.
   BOOL _safetyCheckNotificationsEnabled;
+
+  // Yes if Reminder notifications are enabled.
+  BOOL _reminderNotificationEnabled;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
@@ -77,6 +80,10 @@
     _sendTabNotificationEnabled =
         _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
             .FindBool(kSendTabNotificationKey)
+            .value_or(false);
+    _reminderNotificationEnabled =
+        _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+            .FindBool(kReminderNotificationKey)
             .value_or(false);
 
     _localStatePrefChangeRegistrar.Init(localState);
@@ -130,6 +137,11 @@
         _prefService->SetBoolean(prefs::kSendTabNotificationsPreviouslyDisabled,
                                  true);
       }
+    } else if (_reminderNotificationEnabled !=
+               [self isReminderNotificationEnabled]) {
+      _reminderNotificationEnabled = [self isReminderNotificationEnabled];
+      [self.delegate notificationsSettingsDidChangeForClient:
+                         PushNotificationClientId::kReminders];
     }
   } else if (preferenceName == prefs::kAppLevelPushNotificationPermissions) {
     if (_tipsNotificationEnabled != [self isTipsNotificationEnabled]) {
@@ -189,6 +201,12 @@
 - (BOOL)isSafetyCheckNotificationsEnabled {
   return _localState->GetDict(prefs::kAppLevelPushNotificationPermissions)
       .FindBool(kSafetyCheckNotificationKey)
+      .value_or(false);
+}
+
+- (BOOL)isReminderNotificationEnabled {
+  return _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+      .FindBool(kReminderNotificationKey)
       .value_or(false);
 }
 

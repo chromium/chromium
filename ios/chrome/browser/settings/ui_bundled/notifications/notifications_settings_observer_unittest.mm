@@ -97,4 +97,9 @@ TEST_F(NotificationsSettingsObserverTest,
       notificationsSettingsDidChangeForClient:PushNotificationClientId::kTips]);
   TurnOnAppLevelNotificationForKey(kTipsNotificationKey);
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
+
+  OCMExpect([mock_delegate_ notificationsSettingsDidChangeForClient:
+                                PushNotificationClientId::kReminders]);
+  TurnOnNotificationForKey(kReminderNotificationKey);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }

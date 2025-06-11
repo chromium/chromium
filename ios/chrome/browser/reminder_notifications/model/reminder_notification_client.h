@@ -17,8 +17,8 @@
 class PrefChangeRegistrar;
 class ProfileIOS;
 
-// A notification client responsible for scheduling reminder notification
-// requests and handling user interactions with reminders.
+// A Profile-based notification client responsible for scheduling reminder
+// notification requests and handling user interactions with reminders.
 class ReminderNotificationClient : public PushNotificationClient {
  public:
   explicit ReminderNotificationClient(ProfileIOS* profile);
@@ -38,9 +38,14 @@ class ReminderNotificationClient : public PushNotificationClient {
   void OnSceneActiveForegroundBrowserReady(base::OnceClosure closure);
 
  private:
-  // Called when the relevant Reminder Notifications Prefs change for the
-  // Profile associated with this client.
-  void OnPrefsChanged();
+  // Returns true if the client is permitted to schedule notifications.
+  bool IsPermitted();
+
+  // Called when the relevant Reminder Notifications Pref changes.
+  void OnReminderDataPrefChanged();
+
+  // Called when the relevant permissions Pref changes.
+  void OnPermissionsPrefChanged();
 
   // Cancels all pending reminder notifications.
   void CancelAllNotifications(base::OnceClosure completion_handler);
