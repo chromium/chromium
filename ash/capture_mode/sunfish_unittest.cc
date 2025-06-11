@@ -2747,13 +2747,13 @@ TEST_F(SunfishTest, PanelCreationWithMenuObserved) {
 
 using SunfishDisplayMetricsTest = SunfishTest;
 
-// TODO(crbug.com/388564694): Enable after resolving flakiness.
-TEST_F(SunfishDisplayMetricsTest, DISABLED_RefreshPanelBoundsInDefaultMode) {
+TEST_F(SunfishDisplayMetricsTest, RefreshPanelBoundsInDefaultMode) {
   // Start default mode, select a region and press "Search" to show the panel.
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   auto* search_button = session_test_api.GetActionButtonByViewId(
