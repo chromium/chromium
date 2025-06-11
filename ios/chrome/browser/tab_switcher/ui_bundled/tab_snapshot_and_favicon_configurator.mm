@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon_configurator.h"
 
-#import "base/task/sequenced_task_runner.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -36,7 +37,106 @@ NSValue* TabGroupIdentifierKeyforTabGroupItem(TabGroupItem* group_item) {
   return [NSValue valueWithPointer:group_item.tabGroupIdentifier];
 }
 
+// Wrapper that is used to convert `completion` so that it can be used
+// as a callback for FaviconLoader.
+void OnFaviconFetched(TabSnapshotAndFavicon* tab_snapshot_and_favicon,
+                      UIImageConfiguration* configuration,
+                      TabSnapshotAndFaviconConfigurator::Completion completion,
+                      FaviconAttributes* attributes) {
+  // Nothing to do if the favicon returned is the default favicon.
+  if (attributes.usesDefaultImage) {
+    return;
+  }
+
+  tab_snapshot_and_favicon.favicon =
+      attributes.faviconImage
+          ?: DefaultSymbolWithConfiguration(kGlobeAmericasSymbol,
+                                            configuration);
+
+  completion(tab_snapshot_and_favicon);
+}
+
+// Wraps `block` into another block that ignores the first `IgnoredArgs...`.
+template <typename... IgnoredArgs, typename... Args>
+auto IgnoreArgs(void (^block)(Args...)) -> void (^)(IgnoredArgs..., Args...) {
+  return ^(IgnoredArgs..., Args... args) {
+    block(args...);
+  };
+}
+
 }  // namespace
+
+class TabSnapshotAndFaviconConfigurator::RequestInfo {
+ public:
+  RequestInfo(web::WebState* web_state) : web_state_(web_state) {}
+
+  RequestInfo(const RequestInfo&) = delete;
+  RequestInfo& operator=(const RequestInfo&) = delete;
+
+  virtual ~RequestInfo() = default;
+
+  // Returns the WebState to use for this request.
+  web::WebState* web_state() const { return web_state_; }
+
+  // Returns whether the snapshot should be fetched or not.
+  virtual bool ShouldFetchSnapshot() const = 0;
+
+  // Returns the favicon to use for NTP (can use `configuration` if
+  // the favicon uses a symbol).
+  virtual UIImage* GetNTPFavicon(UIImageConfiguration* configuration) const = 0;
+
+ private:
+  const raw_ptr<web::WebState> web_state_;
+};
+
+class TabSnapshotAndFaviconConfigurator::TabGroupItemRequestInfo
+    : public TabSnapshotAndFaviconConfigurator::RequestInfo {
+ public:
+  explicit TabGroupItemRequestInfo(web::WebState* web_state,
+                                   TabGroupItem* group_item,
+                                   NSInteger request_index)
+      : RequestInfo(web_state),
+        group_item_(group_item),
+        request_index_(request_index) {}
+
+  bool ShouldFetchSnapshot() const override {
+    const TabGroup* tab_group = group_item_.tabGroup;
+    if (!tab_group) {
+      return true;
+    }
+
+    return ShouldFetchSnapshotForTabInGroup(request_index_,
+                                            tab_group->range().count());
+  }
+
+  UIImage* GetNTPFavicon(UIImageConfiguration* configuration) const override {
+    return CustomSymbolWithConfiguration(kChromeProductSymbol, configuration);
+  }
+
+ private:
+  TabGroupItem* const group_item_;
+  const NSInteger request_index_;
+};
+
+class TabSnapshotAndFaviconConfigurator::TabSwitcherItemRequestInfo
+    : public TabSnapshotAndFaviconConfigurator::RequestInfo {
+ public:
+  TabSwitcherItemRequestInfo(WebStateTabSwitcherItem* tab_item,
+                             bool fetch_snapshot)
+      : RequestInfo(tab_item.webState),
+        tab_item_(tab_item),
+        fetch_snapshot_(fetch_snapshot) {}
+
+  bool ShouldFetchSnapshot() const override { return fetch_snapshot_; }
+
+  UIImage* GetNTPFavicon(UIImageConfiguration* configuration) const override {
+    return tab_item_.NTPFavicon;
+  }
+
+ private:
+  WebStateTabSwitcherItem* const tab_item_;
+  const bool fetch_snapshot_;
+};
 
 TabSnapshotAndFaviconConfigurator::TabSnapshotAndFaviconConfigurator(
     FaviconLoader* favicon_loader)
@@ -49,9 +149,7 @@ TabSnapshotAndFaviconConfigurator::~TabSnapshotAndFaviconConfigurator() {}
 void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconForTabGroupItem(
     TabGroupItem* group_item,
     WebStateList* web_state_list,
-    void (^completion)(TabGroupItem* item,
-                       NSInteger tabIndex,
-                       TabSnapshotAndFavicon* tabSnapshotAndFavicon)) {
+    CompletionWithTabGroupItem completion) {
   const TabGroup* tab_group = group_item.tabGroup;
   if (!tab_group || !web_state_list) {
     return;
@@ -79,32 +177,25 @@ void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconForTabGroupItem(
 }
 
 void TabSnapshotAndFaviconConfigurator::
-    FetchSingleSnapshotAndFaviconFromWebState(
-        web::WebState* web_state,
-        void (^completion)(TabSnapshotAndFavicon* tab_snapshot_and_favicon)) {
-  auto inner_completion = ^(TabGroupItem* item, NSInteger tabIndex,
-                            TabSnapshotAndFavicon* tabSnapshotAndFavicon) {
-    completion(tabSnapshotAndFavicon);
-  };
-
+    FetchSingleSnapshotAndFaviconFromWebState(web::WebState* web_state,
+                                              Completion completion) {
   FetchSnapshotAndFaviconFromWebState(
       /*group_item=*/nil, web_state,
-      /*request_index=*/0, /*request_id=*/nil, inner_completion);
+      /*request_index=*/0, /*request_id=*/nil,
+      IgnoreArgs<TabGroupItem*, NSInteger>(completion));
 }
 
 void TabSnapshotAndFaviconConfigurator::
     FetchSnapshotAndFaviconForTabSwitcherItem(
         WebStateTabSwitcherItem* tab_item,
-        void (^completion)(WebStateTabSwitcherItem* item,
-                           TabSnapshotAndFavicon* tab_snapshot_and_favicon)) {
+        CompletionWithTabSwitcherItem completion) {
   FetchSnapshotAndFaviconForTabSwitcherItem(tab_item, /*fetch_snapshot=*/true,
                                             completion);
 }
 
 void TabSnapshotAndFaviconConfigurator::FetchFaviconForTabSwitcherItem(
     WebStateTabSwitcherItem* tab_item,
-    void (^completion)(WebStateTabSwitcherItem* item,
-                       TabSnapshotAndFavicon* tab_snapshot)) {
+    CompletionWithTabSwitcherItem completion) {
   FetchSnapshotAndFaviconForTabSwitcherItem(tab_item, /*fetch_snapshot=*/false,
                                             completion);
 }
@@ -116,26 +207,45 @@ void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconFromWebState(
     web::WebState* web_state,
     NSInteger request_index,
     NSUUID* request_id,
-    void (^completion)(TabGroupItem* item,
-                       NSInteger tabIndex,
-                       TabSnapshotAndFavicon* tabSnapshotAndFavicon)) {
+    CompletionWithTabGroupItem completion) {
+  FetchSnapshotAndFaviconInternal(
+      TabGroupItemRequestInfo(web_state, group_item, request_index),
+      base::CallbackToBlock(
+          base::BindRepeating(&TabSnapshotAndFaviconConfigurator::
+                                  OnSnapshotAndFaviconFromWebStateFetched,
+                              weak_factory_.GetWeakPtr(), group_item,
+                              request_index, request_id, completion)));
+}
+
+void TabSnapshotAndFaviconConfigurator::
+    FetchSnapshotAndFaviconForTabSwitcherItem(
+        WebStateTabSwitcherItem* tab_item,
+        bool fetch_snapshot,
+        CompletionWithTabSwitcherItem completion) {
+  if (!tab_item.webState) {
+    completion(tab_item, nil);
+    return;
+  }
+
+  FetchSnapshotAndFaviconInternal(
+      TabSwitcherItemRequestInfo(tab_item, fetch_snapshot),
+      base::CallbackToBlock(base::BindRepeating(completion, tab_item)));
+}
+
+void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconInternal(
+    const RequestInfo& request_info,
+    Completion completion) {
+  web::WebState* web_state = request_info.web_state();
+  CHECK(web_state);
+
   TabSnapshotAndFavicon* tab_snapshot_and_favicon =
       [[TabSnapshotAndFavicon alloc] init];
 
-  // Fetch the snapshot.
-  bool shouldFetchSnapshot = true;
-  const TabGroup* tab_group = group_item.tabGroup;
-  if (tab_group) {
-    shouldFetchSnapshot = ShouldFetchSnapshotForTabInGroup(
-        request_index, tab_group->range().count());
-  }
-  if (shouldFetchSnapshot) {
+  if (request_info.ShouldFetchSnapshot()) {
     SnapshotTabHelper::FromWebState(web_state)->RetrieveColorSnapshot(
         ^(UIImage* snapshot) {
           tab_snapshot_and_favicon.snapshot = snapshot;
-          OnSnapshotAndFaviconFromWebStateFetched(
-              group_item, tab_snapshot_and_favicon, request_index, request_id,
-              completion);
+          completion(tab_snapshot_and_favicon);
         });
   }
 
@@ -143,71 +253,50 @@ void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconFromWebState(
       configurationWithPointSize:kFaviconSize
                           weight:UIImageSymbolWeightBold
                            scale:UIImageSymbolScaleMedium];
-  const GURL& url = web_state->GetVisibleURL();
 
-  // Set the NTP favicon.
+  // NTP favicon does not need to be fetched.
+  const GURL& url = web_state->GetVisibleURL();
   if (IsUrlNtp(url)) {
     tab_snapshot_and_favicon.favicon =
-        CustomSymbolWithConfiguration(kChromeProductSymbol, configuration);
-    OnSnapshotAndFaviconFromWebStateFetched(
-        group_item, tab_snapshot_and_favicon, request_index, request_id,
-        completion);
+        request_info.GetNTPFavicon(configuration);
+    completion(tab_snapshot_and_favicon);
     return;
   }
 
-  // Use the favicon driver.
-  favicon::FaviconDriver* favicon_driver =
-      favicon::WebFaviconDriver::FromWebState(web_state);
-  if (favicon_driver) {
+  // Check whether the favicon is cached by the favicon driver.
+  if (favicon::FaviconDriver* favicon_driver =
+          favicon::WebFaviconDriver::FromWebState(web_state)) {
     gfx::Image favicon = favicon_driver->GetFavicon();
     if (!favicon.IsEmpty()) {
       tab_snapshot_and_favicon.favicon = favicon.ToUIImage();
-      OnSnapshotAndFaviconFromWebStateFetched(
-          group_item, tab_snapshot_and_favicon, request_index, request_id,
-          completion);
+      completion(tab_snapshot_and_favicon);
       return;
     }
   }
 
-  // Set the default favicon.
-  UIImage* default_favicon =
-      DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
+  // If the favicon loader is not available, use a default favicon.
   if (!favicon_loader_) {
-    tab_snapshot_and_favicon.favicon = default_favicon;
-    OnSnapshotAndFaviconFromWebStateFetched(
-        group_item, tab_snapshot_and_favicon, request_index, request_id,
-        completion);
+    tab_snapshot_and_favicon.favicon =
+        DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
+    completion(tab_snapshot_and_favicon);
     return;
   }
 
-  // Fetch the favicon.
+  // Fetch the favicon asynchronously.
+  const bool fallback_to_google_server = true;
   favicon_loader_->FaviconForPageUrl(
-      url, kFaviconSize, kFaviconMinimumSize,
-      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
-        // Synchronously returned default favicon.
-        if (attributes.usesDefaultImage) {
-          return;
-        }
-        // Asynchronously returned favicon.
-        if (attributes.faviconImage) {
-          tab_snapshot_and_favicon.favicon = attributes.faviconImage;
-        } else {
-          tab_snapshot_and_favicon.favicon = default_favicon;
-        }
-        OnSnapshotAndFaviconFromWebStateFetched(
-            group_item, tab_snapshot_and_favicon, request_index, request_id,
-            completion);
-      });
+      url, kFaviconSize, kFaviconMinimumSize, fallback_to_google_server,
+      base::CallbackToBlock(base::BindRepeating(&OnFaviconFetched,
+                                                tab_snapshot_and_favicon,
+                                                configuration, completion)));
 }
 
 void TabSnapshotAndFaviconConfigurator::OnSnapshotAndFaviconFromWebStateFetched(
     TabGroupItem* group_item,
-    TabSnapshotAndFavicon* tab_snapshot_and_favicon,
     NSInteger request_index,
     NSUUID* request_id,
-    void (^completion)(TabGroupItem* item,
-                       NSInteger tabIndex,
-                       TabSnapshotAndFavicon* tabSnapshotAndFavicon)) {
+    CompletionWithTabGroupItem completion,
+    TabSnapshotAndFavicon* tab_snapshot_and_favicon) {
   if (!group_item) {
     completion(nil, request_index, tab_snapshot_and_favicon);
     return;
@@ -220,6 +309,7 @@ void TabSnapshotAndFaviconConfigurator::OnSnapshotAndFaviconFromWebStateFetched(
   if (![current_fetch_info.requestID isEqual:request_id]) {
     return;
   }
+
   [current_fetch_info decrementRemainingFetches];
 
   // If all fetches are completed, remove the `current_fetch_info` from
@@ -227,89 +317,11 @@ void TabSnapshotAndFaviconConfigurator::OnSnapshotAndFaviconFromWebStateFetched(
   if ([current_fetch_info currentRemainingFetches] == 0) {
     [group_item_fetches_ removeObjectForKey:group_key];
   }
+
   // Check that the group still exists.
   if (!group_item.tabGroup) {
     return;
   }
 
   completion(group_item, request_index, tab_snapshot_and_favicon);
-}
-
-void TabSnapshotAndFaviconConfigurator::
-    FetchSnapshotAndFaviconForTabSwitcherItem(
-        WebStateTabSwitcherItem* tab_item,
-        bool fetch_snapshot,
-        void (^completion)(WebStateTabSwitcherItem* item,
-                           TabSnapshotAndFavicon* tab_snapshot_and_favicon)) {
-  if (!tab_item.webState) {
-    completion(tab_item, nil);
-    return;
-  }
-
-  TabSnapshotAndFavicon* tab_snapshot_and_favicon =
-      [[TabSnapshotAndFavicon alloc] init];
-
-  // Fetch the snapshot.
-  if (fetch_snapshot) {
-    SnapshotTabHelper::FromWebState(tab_item.webState)
-        ->RetrieveColorSnapshot(^(UIImage* snapshot) {
-          // If there is no available snapshot, configure the snapshot to be an
-          // empty image in order to pass
-          // `OnSnapshotAndFaviconForTabSwitcherItemFetched` checks.
-          tab_snapshot_and_favicon.snapshot = snapshot;
-          completion(tab_item, tab_snapshot_and_favicon);
-        });
-  }
-
-  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kFaviconSize
-                          weight:UIImageSymbolWeightBold
-                           scale:UIImageSymbolScaleMedium];
-  const GURL& url = tab_item.webState->GetVisibleURL();
-
-  // Set the NTP favicon.
-  if (IsUrlNtp(url)) {
-    // Each WebStateTabSwitcherItem subclass provides its own NTPFavicon.
-    tab_snapshot_and_favicon.favicon = tab_item.NTPFavicon;
-    completion(tab_item, tab_snapshot_and_favicon);
-    return;
-  }
-
-  // Use the favicon driver.
-  favicon::FaviconDriver* favicon_driver =
-      favicon::WebFaviconDriver::FromWebState(tab_item.webState);
-  if (favicon_driver) {
-    gfx::Image favicon = favicon_driver->GetFavicon();
-    if (!favicon.IsEmpty()) {
-      tab_snapshot_and_favicon.favicon = favicon.ToUIImage();
-      completion(tab_item, tab_snapshot_and_favicon);
-      return;
-    }
-  }
-
-  // Set the default favicon.
-  UIImage* default_favicon =
-      DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
-  if (!favicon_loader_) {
-    tab_snapshot_and_favicon.favicon = default_favicon;
-    completion(tab_item, tab_snapshot_and_favicon);
-    return;
-  }
-
-  // Fetch the favicon.
-  favicon_loader_->FaviconForPageUrl(
-      url, kFaviconSize, kFaviconMinimumSize,
-      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
-        // Synchronously returned default favicon.
-        if (attributes.usesDefaultImage) {
-          return;
-        }
-        // Asynchronously returned favicon.
-        if (attributes.faviconImage) {
-          tab_snapshot_and_favicon.favicon = attributes.faviconImage;
-        } else {
-          tab_snapshot_and_favicon.favicon = default_favicon;
-        }
-        completion(tab_item, tab_snapshot_and_favicon);
-      });
 }
