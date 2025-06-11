@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      function clickHandler() {
+        const greeting = document.createElement("div");
+        greeting.textContent = "Hello, World.";
+        document.body.appendChild(greeting);
+        history.pushState({}, "", "/greeting");
+      }
+    </script>
+  </head>
+  <body>
+    <div id="click-target" onclick="clickHandler()">Click this!</div>
+  </body>
+</html>

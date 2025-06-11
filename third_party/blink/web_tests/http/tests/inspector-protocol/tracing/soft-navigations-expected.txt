@@ -1,0 +1,36 @@
+Tests trace events for soft navigations.
+
+PerformanceObserver supports "soft-navigation": true
+
+Waited for LCP element with id=click-target
+Recording started
+
+Got soft navigation performance entry: http://127.0.0.1:8000/greeting
+Tracing complete
+
+Got SoftNavigation event:
+Object: {
+	args: {
+		context: {
+			domModifications: number
+			initialURL: string
+			interactionTimestamp: number
+			mostRecentURL: string
+			paintedArea: number
+			repaintedArea: number
+			softNavContextId: number
+			unattributedPaintedArea: number
+			wasEmitted: boolean
+		}
+		frame: string
+		navigationId: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+
