@@ -136,6 +136,7 @@ PlusAddressPreallocator::AllocatePlusAddressSynchronously(
     return std::nullopt;
   }
 
+  MaybeRequestNewPreallocatedPlusAddresses(/*is_user_triggered=*/true);
   if (std::optional<PlusAddress> address = GetFirstAvailablePlusAddress(mode)) {
     return std::make_optional<PlusProfile>(
         /*profile_id=*/std::nullopt,
