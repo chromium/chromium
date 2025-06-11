@@ -52,13 +52,15 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
-#else
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
 #include "base/check.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -149,15 +151,15 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
   }
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
 // ActivityType that doesn't restore tabs on cold start. Any type other than
 // kTabbed is fine.
 const auto kTestActivityType = chrome::android::ActivityType::kCustomTab;
-#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
 // TestTabModel provides a means of creating a tab associated with a given
 // profile. The new tab can then be added to Android's TabModelList.
 class ExtensionBrowserTest::TestTabModel : public TabModel {
@@ -228,7 +230,7 @@ class ExtensionBrowserTest::TestTabModel : public TabModel {
   // The WebContents associated with this tab's profile.
   std::unique_ptr<content::WebContents> web_contents_;
 };
-#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
     : context_type_(context_type),
@@ -359,7 +361,7 @@ void ExtensionBrowserTest::TearDown() {
 void ExtensionBrowserTest::TearDownOnMainThread() {
   TearDownTestProtocolHandler();
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
   if (tab_model_) {
     TabModelList::RemoveTabModel(tab_model_.get());
     tab_model_.reset();
@@ -787,7 +789,7 @@ Profile* ExtensionBrowserTest::GetOrCreateIncognitoProfile() {
   Profile* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
   // Ensure ExtensionSystem is properly initialized for `incognito_profile`
   // in split mode.
   // TODO(crbug.com/356905053): Remove this workaround when the proper
@@ -886,7 +888,7 @@ bool ExtensionBrowserTest::GetCurrentTabTitle(std::u16string* title) {
 content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(
     Profile* profile,
     const GURL& url) {
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
   // Android doesn't have an OpenURLOffTheRecord() helper so we roll our own.
   Profile* incognito_profile =
       this->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
@@ -911,7 +913,7 @@ content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(
 
 content::RenderFrameHost* ExtensionBrowserTest::NavigateToURLInNewTab(
     const GURL& url) {
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
   // Navigate and block until navigation finishes.
   android_ui_test_utils::OpenUrlInNewTab(profile(), GetActiveWebContents(),
                                          url);
@@ -999,7 +1001,7 @@ content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext(
 }
 
 int ExtensionBrowserTest::GetTabCount() {
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
   TabModel* tab_model =
       TabModelList::GetTabModelForWebContents(GetActiveWebContents());
   return tab_model->GetTabCount();
@@ -1009,7 +1011,7 @@ int ExtensionBrowserTest::GetTabCount() {
 }
 
 bool ExtensionBrowserTest::IsTabSelected(int index) {
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
   TabModel* tab_model =
       TabModelList::GetTabModelForWebContents(GetActiveWebContents());
   return tab_model->GetActiveIndex() == index;
@@ -1020,7 +1022,7 @@ bool ExtensionBrowserTest::IsTabSelected(int index) {
 
 void ExtensionBrowserTest::CloseTabForWebContents(
     content::WebContents* web_contents) {
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
   CHECK(tab_model);
   for (int index = 0; index < tab_model->GetTabCount(); ++index) {
