@@ -271,8 +271,11 @@ into the product and does any of the following:
 
 **Update Mechanism** {#update-mechanism}
 
-We aim to autoroll as many dependencies as is feasible, and track those
-that can't with an exception.
+We aim to eventually autoroll as many dependencies as is feasible, and track those
+that can't with an [exception](https://issues.chromium.org/issues/new?component=1801247&template=2135097).
+
+> We are currently only enforcing exceptions for **'Static'** dependencies.
+> New dependencies pulled in via DEPS should be set to **'Manual'**.
 
 The `Update Mechanism:` field specifies how this dependency is kept
 up-to-date. You will use one of the exact string formats listed below,
