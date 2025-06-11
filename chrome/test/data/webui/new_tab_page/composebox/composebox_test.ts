@@ -18,7 +18,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('upload image', async () => {
     // Assert no files.
-    assertEquals(composeboxElement.files.length, 0);
+    assertEquals(composeboxElement.$.carousel.files.length, 0);
 
     // Act.
     const dataTransfer = new DataTransfer();
@@ -28,17 +28,18 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert one image file.
-    assertEquals(composeboxElement.files.length, 1);
-    assertEquals(composeboxElement.files[0]!.type, 'image/jpeg');
-    assertEquals(composeboxElement.files[0]!.name, 'foo.jpg');
-    assertTrue(!!composeboxElement.files[0]!.objectUrl);
+    const files = composeboxElement.$.carousel.files;
+    assertEquals(files.length, 1);
+    assertEquals(files[0]!.type, 'image/jpeg');
+    assertEquals(files[0]!.name, 'foo.jpg');
+    assertTrue(!!files[0]!.objectUrl);
   });
 
   test('upload pdf', async () => {
     // Assert no files.
-    assertEquals(composeboxElement.files.length, 0);
+    assertEquals(composeboxElement.$.carousel.files.length, 0);
 
-    // Act.
+    // Arrange.
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(
         new File(['foo'], 'foo.pdf', {type: 'application/pdf'}));
@@ -47,9 +48,38 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert one pdf file.
-    assertEquals(composeboxElement.files.length, 1);
-    assertEquals(composeboxElement.files[0]!.type, 'application/pdf');
-    assertEquals(composeboxElement.files[0]!.name, 'foo.pdf');
-    assertFalse(!!composeboxElement.files[0]!.objectUrl);
+    const files = composeboxElement.$.carousel.files;
+    assertEquals(files.length, 1);
+    assertEquals(files[0]!.type, 'application/pdf');
+    assertEquals(files[0]!.name, 'foo.pdf');
+    assertFalse(!!files[0]!.objectUrl);
+  });
+
+  test('delete file', async () => {
+    // Arrange.
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(
+        new File(['foo1'], 'foo1.pdf', {type: 'application/pdf'}));
+    dataTransfer.items.add(
+        new File(['foo2'], 'foo2.pdf', {type: 'application/pdf'}));
+    composeboxElement.$.attachmentUploader.files = dataTransfer.files;
+    composeboxElement.$.attachmentUploader.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+
+    // Assert two files.
+    assertEquals(composeboxElement.$.carousel.files.length, 2);
+
+    // Act.
+    composeboxElement.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
+      detail: {
+        uuid: composeboxElement.$.carousel.files[0]!.uuid,
+      },
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(composeboxElement.$.carousel.files.length, 1);
   });
 });

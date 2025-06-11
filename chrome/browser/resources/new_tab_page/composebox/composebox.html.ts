@@ -16,7 +16,10 @@ export function getHtml(this: ComposeboxElement) {
       <div id="imageUpload"></div>
     </div>
   </div>
-  <ntp-composebox-file-carousel id="carousel" .files=${this.files}>
+  <ntp-composebox-file-carousel
+      id="carousel"
+      .files=${this.files_}
+      @delete-file=${this.onDeleteFile_}>
   </ntp-composebox-file-carousel>
   <!-- TODO(crbug.com/422561574): Style inputs. -->
   <label for="imageUploader" hidden>Image Upload</label>

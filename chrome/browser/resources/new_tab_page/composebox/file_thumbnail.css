@@ -7,7 +7,8 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-:host {
-  display: flex;
-  width: 100%;
+/* TODO(crbug.com/420938297): Replace with styles to spec. */
+.thumbnail {
+  height: 50px;
+  width: 50px;
 }

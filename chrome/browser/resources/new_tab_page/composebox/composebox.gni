@@ -8,9 +8,12 @@ composebox_ts_files = [
   "composebox/composebox.ts",
   "composebox/file_carousel.html.ts",
   "composebox/file_carousel.ts",
+  "composebox/file_thumbnail.ts",
+  "composebox/file_thumbnail.html.ts",
 ]
 
 composebox_css_files = [
   "composebox/composebox.css",
   "composebox/file_carousel.css",
+  "composebox/file_thumbnail.css",
 ]

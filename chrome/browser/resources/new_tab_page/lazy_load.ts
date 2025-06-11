@@ -21,6 +21,7 @@ export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 export {ComposeboxFile} from './composebox/common.js';
 export {ComposeboxElement} from './composebox/composebox.js';
 export {ComposeboxFileCarouselElement} from './composebox/file_carousel.js';
+export {ComposeboxFileThumbnailElement} from './composebox/file_thumbnail.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';

@@ -10,13 +10,9 @@ export function getHtml(this: ComposeboxFileCarouselElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 ${this.files.map((item) => {
-  if (item.objectUrl) {
-    return html`<img class="file"
-                    id="${item.uuid}"
-                    src="${item.objectUrl}">
-                </img>`;
-  }
-  return html`<p class="file" id="${item.uuid}">${item.name}</p>`;
+  return html`
+    <ntp-composebox-file-thumbnail .file="${item}">
+    </ntp-composebox-file-thumbnail>`;
 })}
 <!--_html_template_end_-->`;
   // clang-format on

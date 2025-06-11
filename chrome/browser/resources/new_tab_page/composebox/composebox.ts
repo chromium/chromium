@@ -36,23 +36,30 @@ export class ComposeboxElement extends CrLitElement {
   static override get properties() {
     return {
       attachmentFileTypes_: {type: String},
-      files: {type: Array},
+      files_: {type: Array},
       imageFileTypes_: {type: String},
     };
   }
 
-  accessor files: ComposeboxFile[] = [];
-
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
+  protected accessor files_: ComposeboxFile[] = [];
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
 
   private maxFileSize_: number =
       loadTimeData.getInteger('composeboxFileMaxSize');
 
+  protected onDeleteFile_(e: CustomEvent) {
+    if (!e.detail.uuid) {
+      return;
+    }
+    this.files_ = this.files_.filter((file) => file.uuid !== e.detail.uuid);
+  }
+
   protected onFileChange_(e: Event) {
-    const files = (e.target as HTMLInputElement).files;
+    const input = e.target as HTMLInputElement;
+    const files = input.files;
     if (!files || files.length === 0) {
       return;
     }
@@ -73,7 +80,9 @@ export class ComposeboxElement extends CrLitElement {
         // TODO(crbug.com/422559977): Upload the file.
       }
     }
-    this.files = this.files.concat(newFiles);
+    this.files_ = this.files_.concat(newFiles);
+    // Clear the file input.
+    input.value = '';
   }
 
   private createUuid(): string {

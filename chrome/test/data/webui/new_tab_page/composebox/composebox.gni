@@ -5,4 +5,6 @@
 composebox_test_files = [
   "composebox/composebox_test.ts",
   "composebox/file_carousel_test.ts",
+  "composebox/file_thumbnail_test.ts",
+  "composebox/test_support.ts",
 ]
