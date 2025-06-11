@@ -817,50 +817,6 @@ bool D3DImageBackingFactory::SupportsBGRA8UnormStorage() {
   return supports_bgra8unorm_storage_.value();
 }
 
-bool D3DImageBackingFactory::CanCreateNV12Texture(const gfx::Size& size) {
-  // Without D3D11, we cannot do shared images. This will happen if we're
-  // running with Vulkan, D3D12, D3D9, GL or with the non-passthrough command
-  // decoder in tests.
-  if (!d3d11_device_) {
-    LOG(ERROR) << "D3D11 device is not supported!";
-    return false;
-  }
-
-  UINT format_support;
-  DXGI_FORMAT dxgi_format = DXGI_FORMAT_NV12;
-  HRESULT hr = d3d11_device_->CheckFormatSupport(dxgi_format, &format_support);
-  constexpr auto kRequiredUsage = D3D11_FORMAT_SUPPORT_TEXTURE2D |
-                                  D3D11_FORMAT_SUPPORT_SHADER_SAMPLE |
-                                  D3D11_FORMAT_SUPPORT_RENDER_TARGET;
-  bool has_required_format_support =
-      (format_support & kRequiredUsage) == kRequiredUsage;
-  if (!SUCCEEDED(hr)) {
-    LOG(ERROR) << "D3D device does not support NV12 texture creation with "
-                  "format usage="
-               << format_support;
-    return false;
-  }
-  if (!has_required_format_support) {
-    LOG(ERROR) << "D3D device does not support NV12 texture with format usage="
-               << format_support;
-    return false;
-  }
-
-  // We know current size width and height must be within
-  // `max_nv12_dim_supported_` as nv12 creation is supported for
-  // `max_nv12_dim_supported_`.
-  if (size.width() > max_nv12_dim_supported_ ||
-      size.height() > max_nv12_dim_supported_) {
-    LOG(ERROR)
-        << "Provided size=" << size.ToString()
-        << "is not supported by d3d device, with max supported dimensions="
-        << max_nv12_dim_supported_;
-    return false;
-  }
-
-  return true;
-}
-
 bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
                                          viz::SharedImageFormat format,
                                          const gfx::Size& size,
@@ -904,9 +860,18 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
   if (format == viz::MultiPlaneFormat::kNV12) {
     // Return early if d3d11 cannot support nv12 formats.
     if (!d3d11_supports_nv12_) {
+      LOG(ERROR) << "D3D device does not support NV12 texture creation";
       return false;
     }
-    if (!CanCreateNV12Texture(size)) {
+    // We know current size width and height must be within
+    // `max_nv12_dim_supported_` as nv12 creation is supported for
+    // `max_nv12_dim_supported_`.
+    if (size.width() > max_nv12_dim_supported_ ||
+        size.height() > max_nv12_dim_supported_) {
+      LOG(ERROR)
+          << "Provided size=" << size.ToString()
+          << "is not supported by d3d device, with max supported dimensions="
+          << max_nv12_dim_supported_;
       return false;
     }
   }

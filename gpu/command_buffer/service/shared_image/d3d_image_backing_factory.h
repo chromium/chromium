@@ -142,9 +142,6 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
 
   bool SupportsBGRA8UnormStorage();
 
-  // Checks if d3d11 device supports creating nv12 texture with the given size.
-  bool CanCreateNV12Texture(const gfx::Size& size);
-
   // D3D11 device used for creating textures. This is also Skia's D3D11 device.
   // Can be different from |angle_d3d11_device_| when using Graphite.
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
