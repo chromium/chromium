@@ -17,6 +17,8 @@ namespace internal {
 constexpr DenseSet<FormType> kAddressFormTypes = {FormType::kAddressForm};
 constexpr DenseSet<FormType> kCreditCardFormTypes = {
     FormType::kCreditCardForm, FormType::kStandaloneCvcForm};
+constexpr DenseSet<FormType> kLoyaltyCardFormTypes = {
+    FormType::kLoyaltyCardForm};
 constexpr DenseSet<FieldType> kFieldTypesOfATypicalStoreLocatorForm = {
     ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP};
 
@@ -89,6 +91,9 @@ DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
         break;
       case FormType::kStandaloneCvcForm:
         form_types.insert(FormTypeNameForLogging::kStandaloneCvcForm);
+        break;
+      case FormType::kLoyaltyCardForm:
+        form_types.insert(FormTypeNameForLogging::kLoyaltyCardForm);
         break;
       case FormType::kPasswordForm:
       case FormType::kUnknownFormType:
@@ -185,6 +190,12 @@ DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
 DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
     const FormStructure& form) {
   return internal::GetFormTypesForLogging(form, internal::kAddressFormTypes);
+}
+
+DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
+    const FormStructure& form) {
+  return internal::GetFormTypesForLogging(form,
+                                          internal::kLoyaltyCardFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(

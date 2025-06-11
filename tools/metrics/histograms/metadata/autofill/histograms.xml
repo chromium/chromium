@@ -612,6 +612,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="Address" summary="Address form"/>
   <variant name="CreditCard" summary="Credit card form"/>
   <variant name="EmailOnly" summary="Email-only form"/>
+  <variant name="LoyaltyCard" summary="Loyalty card form"/>
   <variant name="PostalAddress" summary="Postal address form"/>
   <variant name="StandaloneCvc"
       summary="Standalone CVC form for a card saved on file"/>

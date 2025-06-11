@@ -26,12 +26,13 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
       return FormType::kPasswordForm;
     case FieldTypeGroup::kStandaloneCvcField:
       return FormType::kStandaloneCvcForm;
+    case FieldTypeGroup::kLoyaltyCard:
+      return FormType::kLoyaltyCardForm;
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kUnfillable:
     case FieldTypeGroup::kAutofillAi:
-    case FieldTypeGroup::kLoyaltyCard:
       return FormType::kUnknownFormType;
   }
 }
@@ -48,6 +49,8 @@ std::string_view FormTypeToStringView(FormType form_type) {
       return "Unknown";
     case FormType::kStandaloneCvcForm:
       return "StandaloneCvc";
+    case FormType::kLoyaltyCardForm:
+      return "LoyaltyCard";
   }
 
   NOTREACHED();
@@ -73,6 +76,8 @@ std::string_view FormTypeNameForLoggingToStringView(
       return "EmailOnly";
     case FormTypeNameForLogging::kPostalAddressForm:
       return "PostalAddress";
+    case FormTypeNameForLogging::kLoyaltyCardForm:
+      return "LoyaltyCard";
   }
 
   NOTREACHED();

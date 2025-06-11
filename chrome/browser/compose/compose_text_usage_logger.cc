@@ -141,6 +141,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
     case autofill::FormType::kUnknownFormType:
       break;
     case autofill::FormType::kAddressForm:
+    case autofill::FormType::kLoyaltyCardForm:
       metrics.is_autofill_field_type = true;
       break;
     case autofill::FormType::kStandaloneCvcForm:

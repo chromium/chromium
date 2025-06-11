@@ -96,6 +96,11 @@ DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
     const FormStructure& form);
 
 // Returns GetFormTypesForLogging() where entries need to correspond to
+// `FormType::kLoyaltyCardForm`.
+DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
+    const FormStructure& form);
+
+// Returns GetFormTypesForLogging() where entries need to correspond to
 // `FormType::kCreditCardForm` or `FormType::kStandaloneCvcForm`.
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
     const FormStructure& form);

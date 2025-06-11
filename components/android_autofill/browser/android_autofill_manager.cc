@@ -46,6 +46,7 @@ void AndroidAutofillManager::OnFormSubmittedImpl(
     const FormData& form,
     mojom::SubmissionSource source) {
   address_logger_->OnWillSubmitForm();
+  loyalty_card_logger_->OnWillSubmitForm();
   payments_logger_->OnWillSubmitForm();
   password_logger_->OnWillSubmitForm();
   if (auto* provider = GetAutofillProvider())
@@ -245,6 +246,8 @@ void AndroidAutofillManager::FillOrPreviewForm(
 
 void AndroidAutofillManager::StartNewLoggingSession() {
   address_logger_ = std::make_unique<AndroidFormEventLogger>("Address");
+  loyalty_card_logger_ =
+      std::make_unique<AndroidFormEventLogger>("LoyaltyCard");
   payments_logger_ = std::make_unique<AndroidFormEventLogger>("CreditCard");
   password_logger_ = std::make_unique<AndroidFormEventLogger>("Password");
 }
@@ -265,6 +268,8 @@ AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
   switch (form_type) {
     case FormType::kAddressForm:
       return address_logger_.get();
+    case FormType::kLoyaltyCardForm:
+      return loyalty_card_logger_.get();
     case FormType::kCreditCardForm:
     case FormType::kStandaloneCvcForm:
       return payments_logger_.get();

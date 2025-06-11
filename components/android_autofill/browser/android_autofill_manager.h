@@ -141,6 +141,7 @@ class AndroidAutofillManager : public AutofillManager,
   // The forms that have received server predictions.
   base::flat_set<FormGlobalId> forms_with_server_predictions_;
   std::unique_ptr<AndroidFormEventLogger> address_logger_;
+  std::unique_ptr<AndroidFormEventLogger> loyalty_card_logger_;
   std::unique_ptr<AndroidFormEventLogger> payments_logger_;
   std::unique_ptr<AndroidFormEventLogger> password_logger_;
 

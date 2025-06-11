@@ -3205,6 +3205,7 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
     case FormType::kCreditCardForm:
     case FormType::kStandaloneCvcForm:
       return &metrics_->credit_card_form_event_logger;
+    case FormType::kLoyaltyCardForm:
     case FormType::kPasswordForm:
     case FormType::kUnknownFormType:
       return nullptr;
@@ -3384,6 +3385,7 @@ void BrowserAutofillManager::SetFastCheckoutRunId(
     case FormType::kStandaloneCvcForm:
       metrics_->credit_card_form_event_logger.SetFastCheckoutRunId(run_id);
       break;
+    case FormType::kLoyaltyCardForm:
     case FormType::kPasswordForm:
     case FormType::kUnknownFormType:
       // FastCheckout only supports address and credit card forms.
