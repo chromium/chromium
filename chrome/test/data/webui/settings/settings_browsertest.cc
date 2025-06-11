@@ -1013,13 +1013,8 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_3pcdOff) {
 }
 
 // Privacy guide integration tests.
-// TODO(crbug.com/40899379): Re-enable when no longer flaky.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
-#define MAYBE_Integration DISABLED_Integration
-#else
-#define MAYBE_Integration Integration
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, MAYBE_Integration) {
+// TODO(crbug.com/424171352); Re-enable this test.
+IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, DISABLED_Integration) {
   RunTest("settings/privacy_guide_integration_test.js", "mocha.run()");
 }
 
