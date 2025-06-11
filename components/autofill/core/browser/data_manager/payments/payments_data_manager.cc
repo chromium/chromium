@@ -2011,6 +2011,11 @@ bool PaymentsDataManager::IsFacilitatedPaymentsPixUserPrefEnabled() const {
   return prefs::IsFacilitatedPaymentsPixEnabled(pref_service_);
 }
 
+void PaymentsDataManager::SetFacilitatedPaymentsPixAccountLinkingUserPref(
+    bool enabled) {
+  prefs::SetFacilitatedPaymentsPixAccountLinking(pref_service_, enabled);
+}
+
 bool PaymentsDataManager::
     IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled() const {
   return prefs::IsFacilitatedPaymentsPixAccountLinkingEnabled(pref_service_);

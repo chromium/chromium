@@ -49,7 +49,8 @@ void PixAccountLinkingManager::OnAccepted() {
 
 void PixAccountLinkingManager::OnDeclined() {
   // TODO(crbug.com/419108993): Add metrics.
-  // TODO(crbug.com/419682918): Update pref.
+  client_->GetPaymentsDataManager()
+      ->SetFacilitatedPaymentsPixAccountLinkingUserPref(/* enabled= */ false);
 }
 
 void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {

@@ -506,6 +506,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns the value of the FacilitatedPaymentsPix user pref.
   bool IsFacilitatedPaymentsPixUserPrefEnabled() const;
 
+  // Sets the FacilitatedPaymentsPixAccountLinking user pref value to `enabled`.
+  void SetFacilitatedPaymentsPixAccountLinkingUserPref(bool enabled);
+
   // Returns the value of the FacilitatedPaymentsPixAccountLinking user pref.
   bool IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled() const;
 

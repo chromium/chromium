@@ -24,6 +24,7 @@ class PixAccountLinkingManagerTestApi {
 
   // Calls the underlying PixAccountLinkingManager's private methods.
   void OnAccepted() { manager_->OnAccepted(); }
+  void OnDeclined() { manager_->OnDeclined(); }
 
  private:
   const raw_ref<PixAccountLinkingManager> manager_;
