@@ -401,13 +401,6 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
                         handler:showDetailsButtonTapHandler];
 }
 
-// Returns the accessibility label for the given cell.
-- (NSString*)cellAccessibilityLabel:(TableViewURLCell*)cell {
-  return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
-                                 base::SysNSStringToUTF16(cell.titleLabel.text),
-                                 base::SysNSStringToUTF16(_domain));
-}
-
 // Returns the accessibility value for the cell at the provided index path.
 - (NSString*)cellAccessibilityValueAtIndexPath:(NSIndexPath*)indexPath {
   return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
@@ -439,7 +432,6 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
         IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL);
     cell.thirdRowLabel.hidden = NO;
   }
-  cell.accessibilityLabel = [self cellAccessibilityLabel:cell];
   cell.accessibilityValue = [self cellAccessibilityValueAtIndexPath:indexPath];
   cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
                                                   atIndexPath:indexPath];

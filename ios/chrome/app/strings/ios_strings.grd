@@ -1038,11 +1038,11 @@
       <message name="IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON" desc="Text for the BWG Consent primary button.">
         Yes, I'm in
       </message>
-      <message name="IDS_IOS_BWG_IPH_TEXT" desc="Text for the BWG In-Product Help bubble.">
-        You can open Gemini here
-      </message>
       <message name="IDS_IOS_BWG_FIRST_RUN_SECONDARY_BUTTON" desc="Text for the BWG First Run secondary button.">
         No thanks
+      </message>
+      <message name="IDS_IOS_BWG_IPH_TEXT" desc="Text for the BWG In-Product Help bubble.">
+        You can open Gemini here
       </message>
       <message name="IDS_IOS_BWG_PROMO_PRIMARY_BUTTON" desc="Text for the BWG Promo primary button.">
         Try it out
@@ -4163,9 +4163,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_CONTINUE" desc="The action button to use the selected credentials to fill the username on a username only form without password.">
         Continue
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_MORE_PASSWORDS" desc="This message is mentioned on the first password suggestion of the Password Bottom Sheet if there are more than one suggestion available and all other suggestions are hidden, which is the case initially, until the user expands the list by double tapping on this suggestion. This is spoken by VoiceOver. [iOS only]">
-        Double tap for more passwords.
       </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME" desc="Text shown for an option in a list of the user's saved passwords, when the user did not save a username along with the password.">
         No username ••••••••
