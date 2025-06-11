@@ -16374,7 +16374,8 @@
                         "memory_saver": "true",
                         "offer_notification": "true",
                         "price_insights": "true",
-                        "translate": "true"
+                        "translate": "true",
+                        "zoom": "true"
                     },
                     "enable_features": [
                         "PageActionsMigration"
