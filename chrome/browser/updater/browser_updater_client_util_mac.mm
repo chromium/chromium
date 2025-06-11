@@ -317,6 +317,7 @@ void SetupSystemUpdater() {
         CFErrorCopyDescription(error.get()));
     VLOG(0) << "Could not bless the privileged helper. Resulting error: "
             << base::SysCFStringRefToUTF8(desc.get());
+    return;
   }
 
   base::MakeRefCounted<BrowserUpdaterHelperClientMac>()->SetupSystemUpdater(
