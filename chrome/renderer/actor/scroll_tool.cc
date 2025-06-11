@@ -65,17 +65,16 @@ std::string ScrollTool::DebugString() const {
 }
 
 ScrollTool::ValidatedResult ScrollTool::Validate() const {
+  WebLocalFrame* web_frame = frame_->GetWebFrame();
+  CHECK(web_frame);
+  CHECK(web_frame->FrameWidget());
+
   // The scroll distance should always be positive.
   if (action_->distance <= 0.0) {
     return base::unexpected(MakeResult(
         mojom::ActionResultCode::kArgumentsInvalid, "Negative Distance"));
   }
 
-  WebLocalFrame* web_frame = frame_->GetWebFrame();
-  if (!web_frame || !web_frame->FrameWidget()) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kFrameWentAway));
-  }
 
   WebElement scrolling_element;
   if (!action_->target) {

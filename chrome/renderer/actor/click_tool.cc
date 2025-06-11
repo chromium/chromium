@@ -87,10 +87,8 @@ std::string ClickTool::DebugString() const {
 }
 
 ClickTool::ValidatedResult ClickTool::Validate() const {
-  if (!frame_->GetWebFrame()->FrameWidget()) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kFrameWentAway));
-  }
+  CHECK(frame_->GetWebFrame());
+  CHECK(frame_->GetWebFrame()->FrameWidget());
 
   if (action_->target->is_coordinate()) {
     gfx::PointF click_point(action_->target->get_coordinate());

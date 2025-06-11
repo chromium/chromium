@@ -40,8 +40,6 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
   CHECK(!completion_callback_);
   completion_callback_ = std::move(callback);
 
-  // TODO(bokan): Each individual has this condition. Replace in each tool with
-  // a CHECK.
   WebLocalFrame* web_frame = frame_->GetWebFrame();
   if (!web_frame || !web_frame->FrameWidget()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

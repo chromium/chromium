@@ -81,10 +81,9 @@ std::string DragAndReleaseTool::DebugString() const {
 }
 
 DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
-  if (!frame_->GetWebFrame() || !frame_->GetWebFrame()->FrameWidget()) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kFrameWentAway));
-  }
+  CHECK(frame_->GetWebFrame());
+  CHECK(frame_->GetWebFrame()->FrameWidget());
+
   mojom::ToolTargetPtr& from_target = action_->from_target;
   mojom::ToolTargetPtr& to_target = action_->to_target;
 
