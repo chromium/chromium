@@ -288,10 +288,6 @@ bool PlusAddressServiceImpl::IsPlusAddressFillingEnabled(
   return IsEnabled() && IsSupportedOrigin(origin);
 }
 
-bool PlusAddressServiceImpl::IsPlusAddressFullFormFillingEnabled() const {
-  return base::FeatureList::IsEnabled(features::kPlusAddressFullFormFill);
-}
-
 bool PlusAddressServiceImpl::IsFieldEligibleForPlusAddress(
     const autofill::AutofillField& field) const {
   autofill::FillingProduct filling_product =

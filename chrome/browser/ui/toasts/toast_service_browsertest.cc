@@ -42,7 +42,6 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {commerce::kCompareConfirmationToast, commerce::kProductSpecifications,
          plus_addresses::features::kPlusAddressesEnabled,
-         plus_addresses::features::kPlusAddressFullFormFill,
          safe_browsing::kEsbAsASyncedSetting,
          data_sharing::features::kDataSharingFeature,
          toast_features::kPinnedTabToastOnClose},

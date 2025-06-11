@@ -130,9 +130,7 @@ void ToastService::RegisterToasts(
   }
 
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressFullFormFill)) {
+          plus_addresses::features::kPlusAddressesEnabled)) {
     toast_registry_->RegisterToast(
         ToastId::kPlusAddressOverride,
         ToastSpecification::Builder(

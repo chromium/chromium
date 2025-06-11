@@ -150,10 +150,6 @@ bool FakePlusAddressService::IsPlusAddressFillingEnabled(
   return is_plus_address_filling_enabled_;
 }
 
-bool FakePlusAddressService::IsPlusAddressFullFormFillingEnabled() const {
-  return base::FeatureList::IsEnabled(features::kPlusAddressFullFormFill);
-}
-
 bool FakePlusAddressService::IsPlusAddressCreationEnabled(
     const url::Origin& origin,
     bool is_off_the_record) const {

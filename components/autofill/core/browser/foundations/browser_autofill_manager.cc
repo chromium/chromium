@@ -552,8 +552,7 @@ void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
 std::optional<std::string> GetPlusAddressOverride(
     const AutofillPlusAddressDelegate* delegate,
     const std::vector<std::string>& plus_addresses) {
-  if (!delegate || !delegate->IsPlusAddressFullFormFillingEnabled() ||
-      plus_addresses.empty()) {
+  if (!delegate || plus_addresses.empty()) {
     return std::nullopt;
   }
   // Except in very rare cases where affiliation data changes, `plus_addresses`

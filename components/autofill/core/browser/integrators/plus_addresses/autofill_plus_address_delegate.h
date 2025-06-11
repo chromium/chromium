@@ -77,9 +77,6 @@ class AutofillPlusAddressDelegate {
   // - `origin` is not a blocked origin.
   virtual bool IsPlusAddressFillingEnabled(const url::Origin& origin) const = 0;
 
-  // Returns whether plus address full form filling is supported.
-  virtual bool IsPlusAddressFullFormFillingEnabled() const = 0;
-
   // Returns whether plus address suggestions can be shown on `field`.
   // Returns true if field's filling_product is `kAddress` or when the `field`
   // had server prediction equal to either USERNAME or SINGLE_USERNAME, and an

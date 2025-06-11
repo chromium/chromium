@@ -30,7 +30,6 @@ class FakePlusAddressService : public PlusAddressService {
   bool IsPlusAddress(const std::string& potential_plus_address) const override;
   bool MatchesPlusAddressFormat(const std::u16string& value) const override;
   bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
-  bool IsPlusAddressFullFormFillingEnabled() const override;
   bool IsFieldEligibleForPlusAddress(
       const autofill::AutofillField& field) const override;
   void GetAffiliatedPlusAddresses(

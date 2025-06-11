@@ -123,8 +123,7 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
         {toast_features::kLinkCopiedToast, toast_features::kImageCopiedToast,
          toast_features::kReadingListToast,
          toast_features::kPinnedTabToastOnClose,
-         plus_addresses::features::kPlusAddressesEnabled,
-         plus_addresses::features::kPlusAddressFullFormFill},
+         plus_addresses::features::kPlusAddressesEnabled},
         {});
     InteractiveBrowserTest::SetUp();
   }
