@@ -75,10 +75,16 @@ public class FakeModalDialogManager extends ModalDialogManager {
                 .onClick(mShownDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
     }
 
+    @CalledByNativeForTesting
     public void clickNegativeButton() {
         mShownDialogModel
                 .get(ModalDialogProperties.CONTROLLER)
                 .onClick(mShownDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
+    }
+
+    @CalledByNativeForTesting
+    public int getButtonStyles() {
+        return mShownDialogModel.get(ModalDialogProperties.BUTTON_STYLES);
     }
 
     public PropertyModel getShownDialogModel() {

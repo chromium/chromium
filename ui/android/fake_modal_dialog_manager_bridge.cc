@@ -34,6 +34,16 @@ void FakeModalDialogManagerBridge::ClickPositiveButton() {
   Java_FakeModalDialogManager_clickPositiveButton(env, j_fake_manager_);
 }
 
+void FakeModalDialogManagerBridge::ClickNegativeButton() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FakeModalDialogManager_clickNegativeButton(env, j_fake_manager_);
+}
+
+int FakeModalDialogManagerBridge::GetButtonStyles() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_FakeModalDialogManager_getButtonStyles(env, j_fake_manager_);
+}
+
 bool FakeModalDialogManagerBridge::IsSuspend(
     ModalDialogManagerBridge::ModalDialogType dialog_type) {
   JNIEnv* env = base::android::AttachCurrentThread();

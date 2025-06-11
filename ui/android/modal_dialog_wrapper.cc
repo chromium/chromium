@@ -10,6 +10,7 @@
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/strings/grit/ui_strings.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -57,48 +58,81 @@ ModalDialogWrapper::~ModalDialogWrapper() {
   dialog_model_->OnDialogDestroying(DialogModelHost::GetPassKey());
 }
 
-void ModalDialogWrapper::BuildPropertyModel() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> title = ConvertUTF16ToJavaString(
-      env, dialog_model_->title(DialogModelHost::GetPassKey()));
-  auto* ok_button = dialog_model_->ok_button(DialogModelHost::GetPassKey());
-  ScopedJavaLocalRef<jstring> ok_button_label;
-  ButtonStyle ok_button_style;
-  if (ok_button) {
-    ok_button_label = ConvertUTF16ToJavaString(
-        env, ok_button->label().empty() ? l10n_util::GetStringUTF16(IDS_APP_OK)
-                                        : ok_button->label());
-    ok_button_style = ok_button->style().has_value()
-                          ? ok_button->style().value()
-                          : ui::ButtonStyle::kDefault;
+namespace {  // private helper for ModalDialogWrapper::BuildPropertyModel
+
+ScopedJavaLocalRef<jstring> GetButtonLabel(JNIEnv* env,
+                                           DialogModel::Button* button,
+                                           int default_label_id) {
+  if (!button) {
+    return ScopedJavaLocalRef<jstring>();
   }
-  auto* cancel_button =
-      dialog_model_->cancel_button(DialogModelHost::GetPassKey());
-  ScopedJavaLocalRef<jstring> cancel_button_label;
-  ButtonStyle cancel_button_style;
-  if (cancel_button) {
-    cancel_button_label = ConvertUTF16ToJavaString(
-        env, cancel_button->label().empty()
-                 ? l10n_util::GetStringUTF16(IDS_APP_CANCEL)
-                 : cancel_button->label());
-    cancel_button_style = cancel_button->style().has_value()
-                              ? cancel_button->style().value()
-                              : ui::ButtonStyle::kDefault;
+  const std::u16string& label_text = button->label();
+  return ConvertUTF16ToJavaString(
+      env, label_text.empty() ? l10n_util::GetStringUTF16(default_label_id)
+                              : label_text);
+}
+
+}  // anonymous namespace
+
+ModalDialogWrapper::ModalDialogButtonStyles
+ModalDialogWrapper::GetButtonStyles() const {
+  auto* ok_button = dialog_model_->ok_button(DialogModelHost::GetPassKey());
+  if (!ok_button) {
+    return ModalDialogButtonStyles::kPrimaryOutlineNegativeOutline;
   }
 
-  ModalDialogButtonStyles buttonStyles =
-      ModalDialogButtonStyles::kPrimaryOutlineNegativeOutline;
-  if (ok_button && ok_button_style == ui::ButtonStyle::kProminent) {
-    if (cancel_button && cancel_button_style != ui::ButtonStyle::kProminent) {
-      buttonStyles = ModalDialogButtonStyles::kPrimaryFilledNegativeOutline;
-    } else if (!cancel_button) {
-      buttonStyles = ModalDialogButtonStyles::kPrimaryFilledNoNegative;
-    }
-  } else if (ok_button && cancel_button &&
-             ok_button_style != ui::ButtonStyle::kProminent &&
-             cancel_button_style == ui::ButtonStyle::kProminent) {
-    buttonStyles = ModalDialogButtonStyles::kPrimaryOutlineNegativeFilled;
+  auto* cancel_button =
+      dialog_model_->cancel_button(DialogModelHost::GetPassKey());
+
+  const ButtonStyle ok_button_style =
+      ok_button->style().value_or(ButtonStyle::kDefault);
+  const ButtonStyle cancel_button_style =
+      cancel_button ? cancel_button->style().value_or(ui::ButtonStyle::kDefault)
+                    : ButtonStyle::kDefault;
+
+  const std::optional<mojom::DialogButton>& override_default_button =
+      dialog_model_->override_default_button(DialogModelHost::GetPassKey());
+
+  const bool is_ok_prominent =
+      (override_default_button == mojom::DialogButton::kOk) ||
+      (ok_button_style == ui::ButtonStyle::kProminent &&
+       !override_default_button.has_value());
+
+  const bool is_cancel_prominent =
+      (override_default_button == mojom::DialogButton::kCancel) ||
+      (cancel_button_style == ui::ButtonStyle::kProminent &&
+       !override_default_button.has_value());
+
+  if (is_ok_prominent && is_cancel_prominent) {
+    NOTREACHED() << "Both buttons cannot be prominent.";
   }
+
+  if (is_ok_prominent) {
+    return (cancel_button)
+               ? ModalDialogButtonStyles::kPrimaryFilledNegativeOutline
+               : ModalDialogButtonStyles::kPrimaryFilledNoNegative;
+  }
+
+  if (is_cancel_prominent) {
+    return ModalDialogButtonStyles::kPrimaryOutlineNegativeFilled;
+  }
+
+  return ModalDialogButtonStyles::kPrimaryOutlineNegativeOutline;
+}
+
+void ModalDialogWrapper::BuildPropertyModel() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  ScopedJavaLocalRef<jstring> title = ConvertUTF16ToJavaString(
+      env, dialog_model_->title(DialogModelHost::GetPassKey()));
+
+  ScopedJavaLocalRef<jstring> ok_button_label = GetButtonLabel(
+      env, dialog_model_->ok_button(DialogModelHost::GetPassKey()), IDS_APP_OK);
+  ScopedJavaLocalRef<jstring> cancel_button_label = GetButtonLabel(
+      env, dialog_model_->cancel_button(DialogModelHost::GetPassKey()),
+      IDS_APP_CANCEL);
+
+  ModalDialogButtonStyles buttonStyles = GetButtonStyles();
 
   Java_ModalDialogWrapper_withTitleAndButtons(
       env, java_obj_, title, ok_button_label, cancel_button_label,

@@ -66,6 +66,9 @@ class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost {
   void Close() override;
   void OnDialogButtonChanged() override;
 
+  // Helper function for BuildPropertyModel.
+  ModalDialogButtonStyles GetButtonStyles() const;
+
   // Build java PropertyModel from ui::DialogModel.
   void BuildPropertyModel();
 

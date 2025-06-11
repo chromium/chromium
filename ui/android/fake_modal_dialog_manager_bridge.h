@@ -30,6 +30,9 @@ class UI_ANDROID_EXPORT FakeModalDialogManagerBridge {
   ~FakeModalDialogManagerBridge();
 
   void ClickPositiveButton();
+  void ClickNegativeButton();
+
+  int GetButtonStyles();
 
   bool IsSuspend(ModalDialogManagerBridge::ModalDialogType dialog_type);
 
