@@ -12,6 +12,7 @@ import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.TravelException;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.transit.HtmlConditions.DisplayedCondition;
@@ -66,5 +67,15 @@ public class HtmlElement extends Element<Rect> {
                         "Timed out trying to long press DOM element", e);
             }
         };
+    }
+
+    /** Returns a TripBuilder with clicking the HTML element as trigger. */
+    public TripBuilder clickTo() {
+        return new TripBuilder().withContext(this).withTrigger(getClickTrigger());
+    }
+
+    /** Returns a TripBuilder with long pressing the HTML element as trigger. */
+    public TripBuilder longPressTo() {
+        return new TripBuilder().withContext(this).withTrigger(getLongPressTrigger());
     }
 }

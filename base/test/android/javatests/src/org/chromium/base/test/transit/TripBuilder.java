@@ -13,6 +13,7 @@ import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ import java.util.List;
 public class TripBuilder {
     private final List<Facility<?>> mFacilitiesToEnter = new ArrayList<>();
     private final List<Facility<?>> mFacilitiesToExit = new ArrayList<>();
+    private final List<Condition> mConditions = new ArrayList<>();
     private @Nullable Trigger mTrigger;
     private @Nullable TransitionOptions mOptions;
     private @Nullable Station<?> mDestinationStation;
@@ -89,6 +91,13 @@ public class TripBuilder {
         return this;
     }
 
+    /** Add a Transition |condition| that will be checked as part of the Transition. */
+    @CheckReturnValue
+    public TripBuilder waitForConditionsAnd(Condition... conditions) {
+        mConditions.addAll(Arrays.asList(conditions));
+        return this;
+    }
+
     /** Add a |facility| to enter as part of the Transition. */
     @CheckReturnValue
     public TripBuilder enterFacilityAnd(Facility<?> facility) {
@@ -137,6 +146,11 @@ public class TripBuilder {
                 : "Destination already set to " + mDestinationStation.getName();
         mDestinationStation = destination;
         return this;
+    }
+
+    /** Execute the transition synchronously, waiting for the given Conditions. */
+    public void waitForConditions(Condition... conditions) {
+        waitForConditionsAnd(conditions).complete();
     }
 
     /** Execute the transition synchronously, entering |facility| and returning it. */
@@ -235,6 +249,14 @@ public class TripBuilder {
     }
 
     private TransitionOptions getOptions() {
-        return mOptions == null ? TransitionOptions.DEFAULT : mOptions;
+        TransitionOptions options = mOptions == null ? TransitionOptions.DEFAULT : mOptions;
+
+        if (!mConditions.isEmpty()) {
+            options =
+                    TransitionOptions.merge(
+                            Transition.conditionOption(mConditions.toArray(new Condition[0])),
+                            mOptions);
+        }
+        return options;
     }
 }

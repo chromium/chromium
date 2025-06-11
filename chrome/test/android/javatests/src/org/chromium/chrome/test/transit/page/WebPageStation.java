@@ -5,12 +5,13 @@
 package org.chromium.chrome.test.transit.page;
 
 import android.util.Pair;
+import android.view.View;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Element;
-import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
@@ -19,6 +20,7 @@ import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -80,28 +82,79 @@ public class WebPageStation extends PageStation {
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public RegularWebPageAppMenuFacility openRegularTabAppMenu() {
         assert !mIsIncognito;
-        return enterFacilitySync(
-                new RegularWebPageAppMenuFacility(), menuButtonElement.getClickTrigger());
+        return menuButtonElement.clickTo().enterFacility(new RegularWebPageAppMenuFacility());
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public IncognitoWebPageAppMenuFacility openIncognitoTabAppMenu() {
         assert mIsIncognito;
-        return enterFacilitySync(
-                new IncognitoWebPageAppMenuFacility(), menuButtonElement.getClickTrigger());
+        return menuButtonElement.clickTo().enterFacility(new IncognitoWebPageAppMenuFacility());
+    }
+
+    /** Scrolls down the page using a drag gesture to dismiss browser controls. */
+    public TripBuilder scrollPageDownWithGestureTo() {
+        return runTo(
+                () -> {
+                    assertInPhase(Phase.ACTIVE);
+                    View contentView = activityTabElement.get().getView();
+                    float width = contentView.getWidth();
+                    float height = contentView.getHeight();
+                    // Start the scroll with some height to avoid touching the nav bar region.
+                    float fromY = height - height / 10;
+                    float toY = 0;
+                    TouchCommon.performDragNoFling(
+                            mActivityElement.get(),
+                            width / 2,
+                            width / 2,
+                            fromY,
+                            toY,
+                            /* stepCount= */ 50,
+                            /* duration= */ 500);
+                });
+    }
+
+    /** Scrolls up the page using a drag gesture to show browser controls. */
+    public TripBuilder scrollPageUpWithGestureTo() {
+        return runTo(
+                () -> {
+                    assertInPhase(Phase.ACTIVE);
+                    View contentView = activityTabElement.get().getView();
+                    float width = contentView.getWidth();
+                    float height = contentView.getHeight();
+
+                    int[] location = new int[2];
+                    toolbarElement.get().getLocationOnScreen(location);
+                    // Start the scroll with 5 additional height to avoid touching the toolbar.
+                    float fromY = location[1] + toolbarElement.get().getBottom() + 5;
+                    float toY = height;
+                    TouchCommon.performDragNoFling(
+                            mActivityElement.get(),
+                            width / 2,
+                            width / 2,
+                            fromY,
+                            toY,
+                            /* stepCount= */ 50,
+                            /* duration= */ 500);
+                });
     }
 
     /** Trigger to scroll WebContents to the bottom. */
-    public Transition.Trigger scrollToBottomTrigger() {
-        return () -> {
-            assertInPhase(Phase.ACTIVE);
-            try {
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        webContentsElement.get(), "window.scrollTo(0, document.body.scrollHeight)");
-            } catch (TimeoutException e) {
-                throw new RuntimeException(e);
-            }
-        };
+    public TripBuilder scrollToBottomTo() {
+        return runJsTo("window.scrollTo(0, document.body.scrollHeight)")
+                .waitForConditionsAnd(new ScrollToBottomCondition(webContentsElement));
+    }
+
+    /** Starts a Transition triggered by running |jsCode| in the WebContents. */
+    public TripBuilder runJsTo(String jsCode) {
+        return runTo(
+                () -> {
+                    try {
+                        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                webContentsElement.get(), jsCode);
+                    } catch (TimeoutException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     /** Click the URL bar to enter the Omnibox. */
@@ -110,8 +163,8 @@ public class WebPageStation extends PageStation {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ mIsIncognito, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        enterFacilitiesSync(
-                List.of(omniboxFacility, softKeyboard), urlBarElement.getClickTrigger());
+
+        urlBarElement.clickTo().enterFacilities(omniboxFacility, softKeyboard);
         return Pair.create(omniboxFacility, softKeyboard);
     }
 
