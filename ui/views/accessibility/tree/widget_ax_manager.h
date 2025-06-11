@@ -6,11 +6,13 @@
 #define UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/views/views_export.h"
 
 namespace views {
 
+class ViewAccessibility;
 class Widget;
 
 // This class owns and manages the accessibility tree for a Widget. It is owned
@@ -26,6 +28,9 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver {
   void Enable();
 
   bool is_enabled() const { return is_enabled_; }
+
+  void OnEvent(ViewAccessibility& view_ax, ax::mojom::Event event_type);
+  void OnDataChanged(ViewAccessibility& view_ax);
 
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;

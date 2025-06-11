@@ -29,6 +29,15 @@ void WidgetAXManager::Enable() {
   is_enabled_ = true;
 }
 
+void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
+                              ax::mojom::Event event_type) {
+  // TODO(accessibility): Implement data change handling.
+}
+
+void WidgetAXManager::OnDataChanged(ViewAccessibility& view_ax) {
+  // TODO(accessibility): Implement data change handling.
+}
+
 void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {
   if (mode.has_mode(ui::AXMode::kNativeAPIs)) {
     Enable();
