@@ -8071,6 +8071,7 @@
         ]
       },
       "android-x86-code-coverage": {
+        "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

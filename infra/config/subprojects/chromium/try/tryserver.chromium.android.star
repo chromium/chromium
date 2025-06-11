@@ -1684,3 +1684,11 @@ try_.builder(
     gn_args = "ci/android-code-coverage-native",
     execution_timeout = 20 * time.hour,
 )
+
+try_.builder(
+    name = "android-x86-code-coverage",
+    mirrors = ["ci/android-x86-code-coverage"],
+    gn_args = "ci/android-x86-code-coverage",
+    contact_team_email = "clank-engprod@google.com",
+    execution_timeout = 20 * time.hour,
+)

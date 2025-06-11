@@ -218,6 +218,7 @@ coverage_webview_builder(
 
 coverage_builder(
     name = "android-x86-code-coverage",
+    description_html = "Builder for creating x86 Android code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -429,6 +430,7 @@ coverage_builder(
             short_name = "x86",
         ),
     ],
+    contact_team_email = "clank-engprod@google.com",
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,

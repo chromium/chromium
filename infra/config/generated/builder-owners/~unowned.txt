@@ -30,7 +30,6 @@ ci/android-rust-arm64-rel
 ci/android-sdk-packager
 ci/android-webview-12-x64-dbg-tests
 ci/android-webview-13-x64-dbg-tests
-ci/android-x86-code-coverage
 ci/chromeos-js-code-coverage
 ci/fuchsia-code-coverage
 ci/fuchsia-x64-accessibility-rel

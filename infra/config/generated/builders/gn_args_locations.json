@@ -607,6 +607,7 @@
     "android-webview-oreo-arm64-dbg": "try/android-webview-oreo-arm64-dbg/gn-args.json",
     "android-webview-pie-arm64-dbg": "try/android-webview-pie-arm64-dbg/gn-args.json",
     "android-x64-rel": "try/android-x64-rel/gn-args.json",
+    "android-x86-code-coverage": "try/android-x86-code-coverage/gn-args.json",
     "android-x86-rel": "try/android-x86-rel/gn-args.json",
     "android_arm64_dbg_recipe": "try/android_arm64_dbg_recipe/gn-args.json",
     "android_blink_rel": "try/android_blink_rel/gn-args.json",

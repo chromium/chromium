@@ -44,6 +44,7 @@ ci/android-official
 ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-x86-rel
+ci/android-x86-code-coverage
 try/3pp-mac-arm64-packager
 try/android-10-x86-fyi-rel
 try/android-10-x86-rel
@@ -76,5 +77,6 @@ try/android-desktop-x64-rel-compilator
 try/android-official
 try/android-x64-rel
 try/android-x64-rel-compilator
+try/android-x86-code-coverage
 try/android-x86-rel
 try/android-x86-rel-compilator
