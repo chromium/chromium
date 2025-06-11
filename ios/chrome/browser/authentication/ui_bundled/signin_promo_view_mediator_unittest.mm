@@ -95,6 +95,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY((id)primary_button_);
     EXPECT_OCMOCK_VERIFY((id)secondary_button_);
     EXPECT_OCMOCK_VERIFY((id)close_button_);
+    EXPECT_OCMOCK_VERIFY((id)account_settings_presenter_);
   }
 
   void CreateMediator(signin_metrics::AccessPoint access_point) {

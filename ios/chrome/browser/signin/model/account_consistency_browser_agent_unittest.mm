@@ -68,6 +68,7 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
 
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY((id)application_commands_mock_);
+    EXPECT_OCMOCK_VERIFY((id)settings_commands_mock_);
     EXPECT_OCMOCK_VERIFY((id)base_view_controller_mock_);
   }
 

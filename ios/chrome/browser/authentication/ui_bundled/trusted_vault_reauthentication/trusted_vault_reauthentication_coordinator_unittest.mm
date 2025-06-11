@@ -90,6 +90,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
       OCMStrictProtocolMock(
           @protocol(TrustedVaultReauthenticationCoordinatorDelegate));
   trustedVaultReauthenticationCoordinator.delegate = delegate;
+
   // Open and cancel the web sign-in dialog.
   OCMExpect([delegate trustedVaultReauthenticationCoordinatorWantsToBeStopped:
                           trustedVaultReauthenticationCoordinator])
@@ -98,7 +99,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
       });
 
   [trustedVaultReauthenticationCoordinator start];
-  // Wait until the view controllre is presented.
+  // Wait until the view controller is presented.
   EXPECT_NE(nil, base_view_controller_.presentedViewController);
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
@@ -122,6 +123,8 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   static_cast<FakeTrustedVaultClientBackend*>(
       TrustedVaultClientBackendFactory::GetForProfile(profile_.get()))
       ->SimulateUserCancel();
+  // Stop the coordinator while being opened.
+  EXPECT_OCMOCK_VERIFY(delegate);
 }
 
 // Opens the trusted vault reauth dialog, and simulate a user cancel.
@@ -153,4 +156,5 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
       }));
   // Stop the coordinator while being opened.
   [trustedVaultReauthenticationCoordinator stop];
+  EXPECT_OCMOCK_VERIFY(delegate);
 }

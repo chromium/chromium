@@ -61,6 +61,13 @@ using l10n_util::GetNSStringF;
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!self.errorAlertCoordinator, base::NotFatalUntil::M140);
+  CHECK(!self.identity, base::NotFatalUntil::M140);
+}
+
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   [super start];
   AuthenticationService* authenticationService =
@@ -103,6 +110,7 @@ using l10n_util::GetNSStringF;
     std::move(_dialogCancelCallback).Run(NO, nil);
   }
   [super stop];
+  self.identity = nil;
   self.delegate = nil;
 }
 

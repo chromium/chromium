@@ -47,14 +47,11 @@ NSString* const kFakeTrustedVaultClientBackendErrorDomain =
 }
 
 - (void)simulateUserCancel {
-  __weak __typeof(self) weakSelf = self;
-  [self.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^() {
-                           if (weakSelf.completion) {
-                             weakSelf.completion(NO, nil);
-                           }
-                         }];
+  [self.presentingViewController dismissViewControllerAnimated:YES
+                                                    completion:nil];
+  if (self.completion) {
+    self.completion(NO, nil);
+  }
 }
 
 - (void)viewDidLoad {
