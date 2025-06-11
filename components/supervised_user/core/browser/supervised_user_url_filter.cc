@@ -162,32 +162,50 @@ SupervisedUserURLFilter::ResultCallback WrapCallbackWithMetrics(
                         context, transition_type);
 }
 
-// Returns true when two OrderedContainers have the same values.
-template <typename OrderedContainer>
-bool ContainersAreEqual(const OrderedContainer& lhs,
-                        const OrderedContainer& rhs) {
-  return lhs.size() == rhs.size() &&
-         std::equal(lhs.begin(), lhs.end(), rhs.begin());
+// Tells if url filtering is set at the correct level of pref store hierarchy
+// for parental settings.
+bool ConsistentParentalSetting(const PrefService& pref_service) {
+  return IsSubjectToParentalControls(pref_service) &&
+         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
+             ->IsManagedByCustodian() &&
+         pref_service
+             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+             ->IsManagedByCustodian();
 }
 
-// Indicates if all prefs that configure this filter are unset, meaning that
-// filtering is not required.
-bool ConfigPrefsAreDefault(const PrefService& pref_service) {
-  bool are_prefs_default =
-      pref_service.FindPreference(prefs::kSupervisedUserManualHosts)
-          ->IsDefaultValue() &&
-      pref_service.FindPreference(prefs::kSupervisedUserManualURLs)
-          ->IsDefaultValue() &&
-      pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
-          ->IsDefaultValue() &&
-      pref_service
-          .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
-          ->IsDefaultValue();
-  CHECK_EQ(are_prefs_default, !IsSubjectToParentalControls(pref_service))
-      << "URL filter config prefs can only be default when the parental "
-         "controls are off. With parental controls on, the preferences above "
-         "have values set from the supervised user pref store";
-  return are_prefs_default;
+// Tells if url filtering is set at the correct level of pref store hierarchy
+// for user settings.
+bool ConsistentUserSetting(const PrefService& pref_service) {
+  return IsSubjectToUserControls(pref_service) &&
+         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
+             ->HasUserSetting() &&
+         pref_service
+             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+             ->HasUserSetting();
+}
+
+bool AreUrlFilterPrefsDefault(const PrefService& pref_service) {
+  return pref_service.FindPreference(prefs::kSupervisedUserManualHosts)
+             ->IsDefaultValue() &&
+         pref_service.FindPreference(prefs::kSupervisedUserManualURLs)
+             ->IsDefaultValue() &&
+         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
+             ->IsDefaultValue() &&
+         pref_service
+             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+             ->IsDefaultValue();
+}
+
+// Returns true when the pref configuration suggests that filtering settings are
+// unset. Validates if the filter configuration is consistent with user type:
+// *) Users under parental controls have the prefs managed,
+// *) Users under self-controls have the prefs set by themselves,
+// *) Other users can either have all prefs default.
+bool FilterIsDisabled(const PrefService& pref_service) {
+  bool is_disabled = AreUrlFilterPrefsDefault(pref_service);
+  CHECK_NE(is_disabled, ConsistentParentalSetting(pref_service) ||
+                            ConsistentUserSetting(pref_service));
+  return is_disabled;
 }
 
 FilteringBehavior GetDefaultFilteringBehavior(const PrefService& pref_service) {
@@ -700,7 +718,7 @@ void SupervisedUserURLFilter::RemoveObserver(Observer* observer) {
 }
 
 WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
-  if (ConfigPrefsAreDefault(user_prefs_.get())) {
+  if (FilterIsDisabled(user_prefs_.get())) {
     return WebFilterType::kDisabled;
   }
 
@@ -726,8 +744,7 @@ bool SupervisedUserURLFilter::RunAsyncChecker(const GURL& url,
     return true;
   }
 
-  // The primary account must be supervised to run async URL classification.
-  CHECK(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
+  CHECK(async_url_checker_) << "Filter must always have a checker.";
   return async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
       base::BindOnce(&SupervisedUserURLFilter::CheckCallback,
