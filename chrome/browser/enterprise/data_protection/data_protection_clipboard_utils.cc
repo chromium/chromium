@@ -128,7 +128,10 @@ void HandleStringData(
 
             bool text_blocked =
                 !result.text_results.empty() && !result.text_results[0];
+
+            // Image scan results are ignore for non local scans.
             bool image_blocked =
+                data.settings.cloud_or_local_settings.is_local_analysis() &&
                 !clipboard_paste_data.png.empty() && !result.image_result;
             if (text_blocked || image_blocked) {
               std::move(callback).Run(std::nullopt);
