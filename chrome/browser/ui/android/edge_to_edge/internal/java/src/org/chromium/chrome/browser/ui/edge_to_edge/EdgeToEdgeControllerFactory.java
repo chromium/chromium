@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.hasTappableNavigationBar;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled;
 
 import android.app.Activity;
@@ -12,10 +11,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.BuildInfo;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
@@ -38,7 +34,6 @@ import org.chromium.ui.insets.InsetObserver;
  */
 @NullMarked
 public class EdgeToEdgeControllerFactory {
-    private static boolean sHas3ButtonNavBarForTesting;
 
     /**
      * Creates an {@link EdgeToEdgeController} instance using the given activity and {@link
@@ -157,10 +152,7 @@ public class EdgeToEdgeControllerFactory {
             return false;
         }
 
-        // The root view's window insets is needed to determine if we are in gesture nav mode.
-        if (activity == null
-                || activity.getWindow() == null
-                || activity.getWindow().getDecorView().getRootWindowInsets() == null) {
+        if (activity == null) {
             return false;
         }
 
@@ -174,13 +166,17 @@ public class EdgeToEdgeControllerFactory {
                 && !BuildInfo.getInstance().isAutomotive
                 // TODO(https://crbug.com/325356134) Look into using UiUtils#isGestureNavigationMode
                 // instead.
-                && !hasTappableNavigationBar(activity.getWindow())
-                && !sHas3ButtonNavBarForTesting;
+                && isGestureNavigationMode(activity);
     }
 
-    @VisibleForTesting
-    public static void setHas3ButtonNavBar(boolean has3ButtonNavBar) {
-        sHas3ButtonNavBarForTesting = has3ButtonNavBar;
-        ResettersForTesting.register(() -> sHas3ButtonNavBarForTesting = false);
+    private static boolean isGestureNavigationMode(Activity activity) {
+        // It is too soon to determine if we are in 3-button gesture nav if the root view does not
+        // yet have window insets.
+        if (activity == null
+                || activity.getWindow() == null
+                || activity.getWindow().getDecorView().getRootWindowInsets() == null) {
+            return false;
+        }
+        return !EdgeToEdgeUtils.hasTappableNavigationBar(activity.getWindow());
     }
 }

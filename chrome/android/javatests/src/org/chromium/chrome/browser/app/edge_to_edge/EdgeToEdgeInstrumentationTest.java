@@ -44,8 +44,8 @@ import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -124,7 +124,7 @@ public class EdgeToEdgeInstrumentationTest {
         assertFalse(
                 "Setup error, all tests start not opted into edge-to-edge!",
                 mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
-        EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(false);
     }
 
     @After
@@ -340,7 +340,7 @@ public class EdgeToEdgeInstrumentationTest {
         // Set 3-button mode to simulate switching to a tablet.
         // Using a mocked static EdgeToEdgeControllerFactory#isSupportedConfiguration would be
         // better but they are not supported on Android by Mockito.
-        EdgeToEdgeControllerFactory.setHas3ButtonNavBar(true);
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
 
         // Use an orientation change to trigger new insets.
         int targetOrientation = Configuration.ORIENTATION_LANDSCAPE;

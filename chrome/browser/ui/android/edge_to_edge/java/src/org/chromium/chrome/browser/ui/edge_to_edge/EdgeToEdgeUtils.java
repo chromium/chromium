@@ -23,6 +23,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -50,6 +51,7 @@ public class EdgeToEdgeUtils {
     private static @Nullable Boolean sIsTargetSdkEnforceEdgeToEdge;
     private static boolean sObservedTappableNavigationBar;
     private static boolean sAlwaysDrawWebEdgeToEdgeForTesting;
+    private static @Nullable Boolean sHas3ButtonNavBarForTesting;
 
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
     private static final String INELIGIBLE_REASON_HISTOGRAM =
@@ -348,19 +350,38 @@ public class EdgeToEdgeUtils {
 
     /**
      * @return whether the given window's insets indicate a tappable navigation bar.
+     * @deprecated Use {@link #hasTappableNavigationBar(Supplier)}.
      */
+    @Deprecated
     static boolean hasTappableNavigationBar(Window window) {
+        Supplier<WindowInsetsCompat> insetsSupplier =
+                () -> {
+                    var rootInsets = window.getDecorView().getRootWindowInsets();
+                    assert rootInsets != null;
+
+                    return WindowInsetsCompat.toWindowInsetsCompat(rootInsets);
+                };
+        return hasTappableNavigationBar(insetsSupplier);
+    }
+
+    /**
+     * @param insetsSupplier Supplier for the root window insets.
+     * @return whether the given window's insets indicate a tappable navigation bar.
+     */
+    static boolean hasTappableNavigationBar(Supplier<WindowInsetsCompat> insetsSupplier) {
+        if (sHas3ButtonNavBarForTesting != null) {
+            return sHas3ButtonNavBarForTesting;
+        }
+
         if (sObservedTappableNavigationBar
                 && ChromeFeatureList.sEdgeToEdgeMonitorConfigurations.isEnabled()) {
             return true;
         }
 
-        var rootInsets = window.getDecorView().getRootWindowInsets();
+        var rootInsets = insetsSupplier.get();
         assert rootInsets != null;
 
-        boolean hasTappableNavBar =
-                hasTappableNavigationBarFromInsets(
-                        WindowInsetsCompat.toWindowInsetsCompat(rootInsets));
+        boolean hasTappableNavBar = hasTappableNavigationBarFromInsets(rootInsets);
         sObservedTappableNavigationBar |= hasTappableNavBar;
         return hasTappableNavBar;
     }
@@ -399,6 +420,11 @@ public class EdgeToEdgeUtils {
     public static void setObservedTappableNavigationBarForTesting(boolean observed) {
         sObservedTappableNavigationBar = observed;
         ResettersForTesting.register(() -> sObservedTappableNavigationBar = false);
+    }
+
+    public static void setHas3ButtonNavBarForTesting(Boolean has3ButtonNavBar) {
+        sHas3ButtonNavBarForTesting = has3ButtonNavBar;
+        ResettersForTesting.register(() -> sHas3ButtonNavBarForTesting = null);
     }
 
     /** Returns whether the insets indicate that the device is in gesture navigation mode. */
