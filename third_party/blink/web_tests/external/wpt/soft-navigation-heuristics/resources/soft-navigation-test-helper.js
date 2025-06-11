@@ -99,7 +99,7 @@ class SoftNavigationTestHelper {
    * @param {number} minNumEntries The minimum number of entries to wait for.
    * @return {!Promise} The promise, which resolves with the entries.
    */
-  getPerformanceEntries(
+  static getPerformanceEntries(
       type, includeSoftNavigationObservations, minNumEntries) {
     return new Promise((resolve) => {
       const entries = [];
