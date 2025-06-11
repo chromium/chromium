@@ -146,8 +146,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       product_specifications_button =
           std::make_unique<ProductSpecificationsButton>(
               tab_strip_->controller(), browser->GetTabStripModel(),
-              browser->GetFeatures()
-                  .product_specifications_entry_point_controller(),
+              commerce::ProductSpecificationsEntryPointController::From(
+                  browser),
               render_tab_search_before_tab_strip_, this);
       product_specifications_button->SetProperty(
           views::kCrossAxisAlignmentKey, views::LayoutAlignment::kCenter);

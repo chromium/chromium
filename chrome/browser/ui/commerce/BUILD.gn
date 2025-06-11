@@ -34,6 +34,7 @@ source_set("commerce") {
     "//content/public/browser",
     "//ui/gfx",
   ]
+  deps = [ "//chrome/browser/ui/unowned_user_data" ]
 }
 
 source_set("impl") {

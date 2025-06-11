@@ -198,7 +198,7 @@ void CommerceUiTabHelper::DidFinishNavigation(
 
   if (BrowserWindowInterface* bwi = tab().GetBrowserWindowInterface()) {
     auto* product_specifications_entry_point_controller =
-        bwi->GetFeatures().product_specifications_entry_point_controller();
+        commerce::ProductSpecificationsEntryPointController::From(bwi);
     if (product_specifications_entry_point_controller) {
       product_specifications_entry_point_controller->DidFinishNavigation(
           web_contents());

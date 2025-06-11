@@ -131,10 +131,6 @@ class BrowserWindowFeatures {
   void TearDownPreBrowserViewDestruction();
 
   // Public accessors for features:
-  commerce::ProductSpecificationsEntryPointController*
-  product_specifications_entry_point_controller() {
-    return product_specifications_entry_point_controller_.get();
-  }
   extensions::Mv2DisabledDialogController*
   mv2_disabled_dialog_controller_for_testing() {
     return mv2_disabled_dialog_controller_.get();

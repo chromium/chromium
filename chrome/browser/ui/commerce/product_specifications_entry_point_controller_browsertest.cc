@@ -10,7 +10,6 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -93,9 +92,8 @@ class ProductSpecificationsEntryPointControllerBrowserTest
     mock_product_spec_service_ =
         static_cast<commerce::MockProductSpecificationsService*>(
             mock_shopping_service_->GetProductSpecificationsService());
-    controller_ = browser()
-                      ->browser_window_features()
-                      ->product_specifications_entry_point_controller();
+    controller_ =
+        commerce::ProductSpecificationsEntryPointController::From(browser());
     observer_ = std::make_unique<MockObserver>();
     controller_->AddObserver(observer_.get());
     // Mock disclosure dialog has been accepted by default.
