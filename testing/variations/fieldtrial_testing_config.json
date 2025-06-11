@@ -25099,21 +25099,6 @@
             ]
         }
     ],
-    "V8HighEndAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8HighEndAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8IncrementalMarkingStartUserVisible": [
         {
             "platforms": [
