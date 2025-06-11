@@ -52,6 +52,7 @@ per-file chromium.rust.json=file://build/rust/OWNERS
 # Code Coverage
 per-file chromium.coverage.json=jeffyoon@google.com
 per-file chromium.coverage.json=pasthana@google.com
+per-file chromium.coverage.json=wnwen@google.com
 
 # WebRTC owners
 per-file chromium.webrtc.fyi.json=file://infra/config/subprojects/webrtc/OWNERS
