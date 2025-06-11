@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -19,9 +18,13 @@ namespace optimization_guide {
 namespace {
 
 #if BUILDFLAG(IS_WIN)
+const char kTestAbsoluteFilePath[] = "C:\\absolute\\file\\path";
 const char kOtherAbsoluteFilePath[] = "C:\\other\\absolute\\file\\path";
+const char kTestRelativeFilePath[] = "relative\\file\\path";
 #else
+const char kTestAbsoluteFilePath[] = "/absolutefilepath";
 const char kOtherAbsoluteFilePath[] = "/other/abs/file/path";
+const char kTestRelativeFilePath[] = "relativefilepath";
 #endif
 
 }  // namespace

@@ -38,7 +38,6 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/optimization_guide/core/prediction_model_override.h"
 #include "components/optimization_guide/proto/models.pb.h"

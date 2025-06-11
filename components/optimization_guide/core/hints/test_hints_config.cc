@@ -2,20 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/optimization_guide_test_util.h"
+#include "components/optimization_guide/core/hints/test_hints_config.h"
 
 #include "base/base64.h"
 #include "build/build_config.h"
 
 namespace optimization_guide {
-
-#if BUILDFLAG(IS_WIN)
-const char kTestAbsoluteFilePath[] = "C:\\absolute\\file\\path";
-const char kTestRelativeFilePath[] = "relative\\file\\path";
-#else
-const char kTestAbsoluteFilePath[] = "/absolutefilepath";
-const char kTestRelativeFilePath[] = "relativefilepath";
-#endif
 
 std::string CreateHintsConfig(
     const GURL& hints_url,
@@ -32,8 +24,9 @@ std::string CreateHintsConfig(
   optimization_guide::proto::Optimization* optimization =
       page_hint->add_allowlisted_optimizations();
   optimization->set_optimization_type(optimization_type);
-  if (metadata)
+  if (metadata) {
     *optimization->mutable_any_metadata() = *metadata;
+  }
 
   std::string encoded_config;
   config.SerializeToString(&encoded_config);

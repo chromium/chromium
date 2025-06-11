@@ -41,6 +41,10 @@ class TestModelInfoBuilder {
   proto::PredictionModel model_;
 };
 
+// File paths that can be used in testing, handling platform differences, namely
+// C:\ in Windows.
+extern const char kTestAbsoluteFilePath[];
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_TEST_MODEL_INFO_BUILDER_H_

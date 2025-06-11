@@ -495,7 +495,7 @@ source_set("page_content") {
   ]
 }
 
-source_set("filters_test_support") {
+static_library("filters_test_support") {
   testonly = true
   sources = [
     "filters/test_hints_component_creator.cc",
@@ -509,19 +509,25 @@ source_set("filters_test_support") {
   ]
 }
 
-source_set("hints_test_support") {
+static_library("hints_test_support") {
   testonly = true
   sources = [
+    "hints/fake_hints_fetcher.h",
     "hints/mock_optimization_guide_decider.cc",
     "hints/mock_optimization_guide_decider.h",
     "hints/mock_push_notification_manager.cc",
     "hints/mock_push_notification_manager.h",
+    "hints/test_hints_config.cc",
+    "hints/test_hints_config.h",
     "hints/test_optimization_guide_decider.cc",
     "hints/test_optimization_guide_decider.h",
+    "proto_database_provider_test_base.cc",
+    "proto_database_provider_test_base.h",
   ]
   deps = [
     ":hints",
     "//base",
+    "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gmock",
     "//testing/gtest:gtest",
@@ -529,40 +535,31 @@ source_set("hints_test_support") {
   ]
 }
 
-static_library("test_support") {
+static_library("delivery_test_support") {
   testonly = true
   sources = [
-    "mock_optimization_guide_on_device_capability_provider.cc",
-    "mock_optimization_guide_on_device_capability_provider.h",
-    "model_quality/test_model_quality_logs_uploader_service.cc",
-    "model_quality/test_model_quality_logs_uploader_service.h",
-    "optimization_guide_test_util.cc",
-    "optimization_guide_test_util.h",
-    "proto_database_provider_test_base.cc",
-    "proto_database_provider_test_base.h",
-    "test_model_executor.cc",
-    "test_model_executor.h",
-    "test_model_handler.h",
     "test_model_info_builder.cc",
     "test_model_info_builder.h",
     "test_optimization_guide_model_provider.cc",
     "test_optimization_guide_model_provider.h",
   ]
-  public_deps = [
-    ":filters_test_support",
-    ":hints_test_support",
+  deps = [
+    ":prediction",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+}
+
+static_library("inference_test_support") {
+  testonly = true
+  sources = [
+    "test_model_executor.cc",
+    "test_model_executor.h",
+    "test_model_handler.h",
   ]
   deps = [
-    ":core",
-    ":filters",
+    ":model_executor",
     "//base",
-    "//base/test:test_support",
-    "//components/leveldb_proto",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//services/network/public/cpp",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//url",
   ]
   if (build_with_tflite_lib) {
     sources += [
@@ -572,6 +569,30 @@ static_library("test_support") {
     ]
     deps += [ "//third_party/abseil-cpp:absl" ]
   }
+}
+
+static_library("model_execution_test_support") {
+  testonly = true
+  sources = [
+    "mock_optimization_guide_on_device_capability_provider.cc",
+    "mock_optimization_guide_on_device_capability_provider.h",
+    "model_quality/test_model_quality_logs_uploader_service.cc",
+    "model_quality/test_model_quality_logs_uploader_service.h",
+  ]
+  deps = [
+    ":core_util",
+    ":delivery_test_support",
+    ":features",
+    ":model_execution",
+    ":prediction",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
   if (build_with_model_execution) {
     sources += [
       "mock_optimization_guide_model_executor.cc",
@@ -602,6 +623,17 @@ static_library("test_support") {
   }
 }
 
+group("test_support") {
+  testonly = true
+  public_deps = [
+    ":delivery_test_support",
+    ":filters_test_support",
+    ":hints_test_support",
+    ":inference_test_support",
+    ":model_execution_test_support",
+  ]
+}
+
 if (is_ios) {
   source_set("eg_test_support+eg2") {
     testonly = true
@@ -611,9 +643,8 @@ if (is_ios) {
       "optimization_guide_enums.h",
       "optimization_guide_switches.cc",
       "optimization_guide_switches.h",
-      "optimization_guide_test_util.cc",
-      "optimization_guide_test_util.h",
     ]
+    public_deps = [ ":hints_test_support" ]
     deps = [
       "//base",
       "//components/optimization_guide/proto:optimization_guide_proto",
@@ -664,7 +695,6 @@ source_set("hints_unit_tests") {
     ":filters",
     ":hints",
     ":hints_test_support",
-    ":test_support",
     "//base/test:test_support",
     "//components/leveldb_proto:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",

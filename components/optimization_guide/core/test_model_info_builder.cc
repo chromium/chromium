@@ -5,9 +5,14 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 
 #include "components/optimization_guide/core/model_util.h"
-#include "components/optimization_guide/core/optimization_guide_test_util.h"
 
 namespace optimization_guide {
+
+#if BUILDFLAG(IS_WIN)
+const char kTestAbsoluteFilePath[] = "C:\\absolute\\file\\path";
+#else
+const char kTestAbsoluteFilePath[] = "/absolutefilepath";
+#endif
 
 TestModelInfoBuilder::TestModelInfoBuilder() {
   // Valid (dummy values) by default.

@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -29,14 +30,12 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/optimization_guide/core/prediction_model_fetcher.h"
 #include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
 #include "components/optimization_guide/core/prediction_model_store.h"
-#include "components/optimization_guide/core/proto_database_provider_test_base.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -121,8 +120,9 @@ class FakeOptimizationTargetModelObserver
   std::optional<ModelInfo> last_received_model_for_target(
       proto::OptimizationTarget optimization_target) const {
     auto model_it = last_received_models_.find(optimization_target);
-    if (model_it == last_received_models_.end())
+    if (model_it == last_received_models_.end()) {
       return std::nullopt;
+    }
     return model_it->second;
   }
 
@@ -270,16 +270,18 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
       }
 
       auto it = expected_metadata_.find(model_info.optimization_target());
-      if (model_info.has_model_metadata() != (it != expected_metadata_.end()))
+      if (model_info.has_model_metadata() != (it != expected_metadata_.end())) {
         return false;
+      }
       if (model_info.has_model_metadata()) {
         proto::Any expected_metadata = it->second;
         if (model_info.model_metadata().type_url() !=
             expected_metadata.type_url()) {
           return false;
         }
-        if (model_info.model_metadata().value() != expected_metadata.value())
+        if (model_info.model_metadata().value() != expected_metadata.value()) {
           return false;
+        }
       }
     }
     return true;
@@ -369,7 +371,7 @@ class TestPredictionModelStore : public PredictionModelStore {
   raw_ptr<PrefService> local_state_;
 };
 
-class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
+class PredictionManagerTestBase : public testing::Test {
  public:
   PredictionManagerTestBase() = default;
   ~PredictionManagerTestBase() override = default;
@@ -379,8 +381,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
       delete;
 
   void SetUp() override {
-    ProtoDatabaseProviderTestBase::SetUp();
-
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     local_state_prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs::RegisterLocalStatePrefs(local_state_prefs_->registry());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
@@ -420,8 +421,6 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   TestPredictionManager* prediction_manager() const {
     return prediction_manager_.get();
   }
-
-  void TearDown() override { ProtoDatabaseProviderTestBase::TearDown(); }
 
   std::unique_ptr<TestPredictionModelFetcher> BuildTestPredictionModelFetcher(
       PredictionModelFetcherEndState end_state) {
@@ -498,6 +497,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -847,6 +847,8 @@ TEST_F(PredictionManagerTest,
        AddObserverForOptimizationTargetModelCommandLineOverride) {
   base::HistogramTester histogram_tester;
 
+  base::FilePath fake_path = temp_dir().AppendASCII("non_existent.tflite");
+
   optimization_guide::proto::Any metadata;
   metadata.set_type_url(
       "type.googleapis.com/"
@@ -857,7 +859,7 @@ TEST_F(PredictionManagerTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s:%s",
-                         kTestAbsoluteFilePath, encoded_metadata.c_str()));
+                         fake_path.AsUTF8Unsafe(), encoded_metadata.c_str()));
 
   CreatePredictionManager();
 
@@ -898,9 +900,8 @@ TEST_F(PredictionManagerTest,
   EXPECT_EQ(observer
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->GetModelFilePath()
-                .value(),
-            FILE_PATH_LITERAL(kTestAbsoluteFilePath));
+                ->GetModelFilePath(),
+            fake_path);
 
   // Now reset observer. New model downloads should not update the observer.
   observer.Reset();
@@ -1142,14 +1143,14 @@ TEST_F(PredictionManagerTest,
        StoreInitializedAfterOptimizationTargetRegistered) {
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
-    auto model = CreatePredictionModelForModelStore(
-        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-    prediction_model_store()->UpdateModel(
-        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, GetTestModelCacheKey(),
-        model.model_info(),
-        GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
-        base::DoNothing());
-    RunUntilIdle();
+  auto model = CreatePredictionModelForModelStore(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  prediction_model_store()->UpdateModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, GetTestModelCacheKey(),
+      model.model_info(),
+      GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      base::DoNothing());
+  RunUntilIdle();
 
   // Ensure that the fetch does not cause any models or features to load.
   prediction_manager()->SetPredictionModelFetcherForTesting(
@@ -1173,14 +1174,14 @@ TEST_F(PredictionManagerTest,
        StoreInitializedBeforeOptimizationTargetRegistered) {
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
-    auto model = CreatePredictionModelForModelStore(
-        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-    prediction_model_store()->UpdateModel(
-        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, GetTestModelCacheKey(),
-        model.model_info(),
-        GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
-        base::DoNothing());
-    RunUntilIdle();
+  auto model = CreatePredictionModelForModelStore(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  prediction_model_store()->UpdateModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, GetTestModelCacheKey(),
+      model.model_info(),
+      GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      base::DoNothing());
+  RunUntilIdle();
 
   // Ensure that the fetch does not cause any models or features to load.
   prediction_manager()->SetPredictionModelFetcherForTesting(
