@@ -1113,19 +1113,29 @@ void KeyframeEffect::GenerateEvent(AnimationEvents* events,
     return;
   }
 
-  AnimationEvent event(type,
-                       {animation_->animation_timeline()->id(),
-                        animation_->id(), keyframe_model.id()},
-                       keyframe_model.group(), keyframe_model.TargetProperty(),
-                       monotonic_time);
-  event.is_impl_only =
+  // Determine whether the animation is impl-only before proceeding.
+  bool is_impl_only =
       KeyframeModel::ToCcKeyframeModel(&keyframe_model)->is_impl_only();
-  if (!event.is_impl_only) {
-    events->events_.push_back(event);
-    return;
+
+  if (is_impl_only) {
+    // For impl-only animations, create and dispatch the event directly.
+    AnimationEvent event(type,
+                         {animation_->animation_timeline()->id(),
+                          animation_->id(), keyframe_model.id()},
+                         keyframe_model.group(),
+                         keyframe_model.TargetProperty(), monotonic_time);
+    event.is_impl_only = true;
+    animation_->DispatchAndDelegateAnimationEvent(event);
+  } else {
+    // For non-impl-only animations, construct the event directly.
+    events->events().emplace_back(type,
+                                  AnimationEvent::UniqueKeyframeModelId{
+                                      animation_->animation_timeline()->id(),
+                                      animation_->id(), keyframe_model.id()},
+                                  keyframe_model.group(),
+                                  keyframe_model.TargetProperty(),
+                                  monotonic_time);
   }
-  // For impl only animations notify delegate directly, do not record the event.
-  animation_->DispatchAndDelegateAnimationEvent(event);
 }
 
 void KeyframeEffect::GenerateTakeoverEventForScrollAnimation(
@@ -1136,19 +1146,23 @@ void KeyframeEffect::GenerateTakeoverEventForScrollAnimation(
   if (!events)
     return;
 
-  AnimationEvent takeover_event(
+  // Takeover events are always added to the event list.
+  events->events().emplace_back(
       AnimationEvent::Type::kTakeOver,
-      {animation_->animation_timeline()->id(), animation_->id(),
-       keyframe_model.id()},
+      AnimationEvent::UniqueKeyframeModelId{
+          animation_->animation_timeline()->id(), animation_->id(),
+          keyframe_model.id()},
       keyframe_model.group(), keyframe_model.TargetProperty(), monotonic_time);
+
+  // Get the event reference just added.
+  auto& takeover_event = events->events().back();
   takeover_event.animation_start_time = keyframe_model.start_time();
   const ScrollOffsetAnimationCurve* scroll_offset_animation_curve =
       ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
           keyframe_model.curve());
   takeover_event.curve = scroll_offset_animation_curve->Clone();
-  // Notify main thread.
-  events->events_.push_back(takeover_event);
 
+  // Create and dispatch the finished event.
   AnimationEvent finished_event(
       AnimationEvent::Type::kFinished,
       {animation_->animation_timeline()->id(), animation_->id(),

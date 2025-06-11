@@ -676,9 +676,7 @@ void AnimationHost::SetAnimationEvents(
   auto events =
       base::WrapUnique(static_cast<AnimationEvents*>(mutator_events.release()));
 
-  for (size_t event_index = 0; event_index < events->events_.size();
-       ++event_index) {
-    AnimationEvent& event = events->events_[event_index];
+  for (const AnimationEvent& event : events->events()) {
     AnimationTimeline* timeline = GetTimelineById(event.uid.timeline_id);
     if (timeline) {
       Animation* animation = timeline->GetAnimationById(event.uid.animation_id);

@@ -68,7 +68,7 @@ AnimationEvents::AnimationEvents() : needs_time_updated_events_(false) {}
 AnimationEvents::~AnimationEvents() = default;
 
 bool AnimationEvents::IsEmpty() const {
-  return events_.empty() && !needs_time_updated_events_;
+  return events().empty() && !needs_time_updated_events_;
 }
 
 bool AnimationEvent::ShouldDispatchToKeyframeEffectAndModel() const {

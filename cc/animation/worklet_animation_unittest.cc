@@ -134,8 +134,8 @@ TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
   // One event is generated as a result of update state.
   EXPECT_TRUE(animation_events->needs_time_updated_events());
   worklet_animation_->TakeTimeUpdatedEvent(animation_events);
-  EXPECT_EQ(1u, animation_events->events_.size());
-  AnimationEvent event = animation_events->events_[0];
+  EXPECT_EQ(1u, animation_events->events().size());
+  AnimationEvent event = animation_events->events()[0];
   EXPECT_EQ(AnimationEvent::Type::kTimeUpdated, event.type);
   EXPECT_EQ(worklet_animation_->id(), event.uid.animation_id);
   EXPECT_EQ(local_time, event.local_time);
@@ -164,8 +164,8 @@ TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
   worklet_animation_->UpdateState(true, animation_events);
   EXPECT_TRUE(animation_events->needs_time_updated_events());
   worklet_animation_->TakeTimeUpdatedEvent(animation_events);
-  EXPECT_EQ(1u, animation_events->events_.size());
-  EXPECT_EQ(local_time, animation_events->events_[0].local_time);
+  EXPECT_EQ(1u, animation_events->events().size());
+  EXPECT_EQ(local_time, animation_events->events()[0].local_time);
 }
 
 TEST_F(WorkletAnimationTest, CurrentTimeCorrectlyUsesScrollTimeline) {
