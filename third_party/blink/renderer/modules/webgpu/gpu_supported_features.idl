@@ -5,6 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 enum GPUFeatureName {
+    "core-features-and-limits",
     "depth-clip-control",
     "depth32float-stencil8",
     "texture-compression-bc",
@@ -22,7 +23,6 @@ enum GPUFeatureName {
     "clip-distances",
     "dual-source-blending",
     "subgroups",
-    "core-features-and-limits",
 
     // Non-standard (not currently in the spec).
     "chromium-experimental-timestamp-query-inside-passes",

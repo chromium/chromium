@@ -1286,9 +1286,9 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::AdapterPropertiesVk:
     case wgpu::FeatureName::AdapterPropertiesMemoryHeaps:
     case wgpu::FeatureName::ShaderModuleCompilationOptions:
-    case wgpu::FeatureName::CoreFeaturesAndLimits:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe ||
              safety_level_ == webgpu::SafetyLevel::kSafeExperimental;
+    case wgpu::FeatureName::CoreFeaturesAndLimits:
     case wgpu::FeatureName::DepthClipControl:
     case wgpu::FeatureName::Depth32FloatStencil8:
     case wgpu::FeatureName::TextureCompressionBC:
