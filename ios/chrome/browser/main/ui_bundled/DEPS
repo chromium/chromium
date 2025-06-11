@@ -19,4 +19,5 @@ include_rules = [
   "+ios/chrome/browser/snapshots/model/snapshot_browser_agent.h",
   "+ios/chrome/browser/tabs/model/inactive_tabs",
   "+ios/chrome/browser/default_browser/model/features.h",
+  "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
 ]

@@ -6,6 +6,9 @@
 
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/result.h"
+#import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -14,6 +17,8 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -137,6 +142,32 @@
   }
 }
 
+- (void)checkSegmentationBeforeUpdatingGenericPromoRegistration {
+  segmentation_platform::SegmentationPlatformService* segmentationService =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          self.sceneState.profileState.profile);
+  segmentation_platform::PredictionOptions options;
+  options.on_demand_execution = true;
+  __weak DefaultBrowserPromoSceneAgent* weakSelf = self;
+  segmentationService->GetClassificationResult(
+      segmentation_platform::kIosDefaultBrowserPromoKey, options, nil,
+      base::BindOnce(
+          ^(const segmentation_platform::ClassificationResult& result) {
+            // Register the generic promo if the model returned a show result or
+            // if the model execution failed, since failure should not disable
+            // the promo.
+            if (result.status !=
+                    segmentation_platform::PredictionStatus::kSucceeded ||
+                result.ordered_labels[0] ==
+                    segmentation_platform::kIosDefaultBrowserPromoShowLabel) {
+              [weakSelf updateGenericPromoRegistration];
+            } else {
+              weakSelf.promosManager->DeregisterPromo(
+                  promos_manager::Promo::DefaultBrowser);
+            }
+          }));
+}
+
 #pragma mark - ObservingSceneAgent
 
 - (void)setSceneState:(SceneState*)sceneState {
@@ -229,7 +260,11 @@
   [self updateAllTabsPromoRegistration];
   [self updateMadeForIOSPromoRegistration];
   [self updateStaySafePromoRegistration];
-  [self updateGenericPromoRegistration];
+  if (IsDefaultBrowserPromoPropensityModelEnabled()) {
+    [self checkSegmentationBeforeUpdatingGenericPromoRegistration];
+  } else {
+    [self updateGenericPromoRegistration];
+  }
 
   [self notifyFETSigninStatus];
   [self maybeSetTriggerCriteriaExperimentStartTimestamp];

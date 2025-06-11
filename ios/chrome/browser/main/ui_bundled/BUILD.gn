@@ -12,6 +12,7 @@ source_set("default_browser_scene_agent") {
   deps = [
     "//base",
     "//components/feature_engagement/public",
+    "//components/segmentation_platform/public",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
@@ -19,7 +20,9 @@ source_set("default_browser_scene_agent") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/common/app_group",
