@@ -20,7 +20,6 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
-#include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features.h"
@@ -165,11 +164,11 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   // If the value was overridden on the command line, use the specified value.
   static bool client_hard_limit_bytes_overridden =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kForceGpuMemAvailableMb);
+          switches::kForceGpuMemAvailableMb);
   if (client_hard_limit_bytes_overridden) {
     if (base::StringToSizeT(
             base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                ::switches::kForceGpuMemAvailableMb),
+                switches::kForceGpuMemAvailableMb),
             &actual.bytes_limit_when_visible)) {
       actual.bytes_limit_when_visible *= 1024 * 1024;
     }

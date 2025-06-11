@@ -1797,7 +1797,6 @@ component("platform") {
     "//crypto",
     "//device/vr/public/mojom:vr_service_blink",
     "//gin",
-    "//gpu:gpu",
     "//gpu/command_buffer/client:webgpu_interface",
     "//gpu/webgpu:common",
     "//media",

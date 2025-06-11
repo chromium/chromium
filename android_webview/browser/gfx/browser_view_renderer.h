@@ -53,7 +53,6 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
                             public CompositorFrameProducer,
                             public RootFrameSinkProxyClient {
  public:
-  static void CalculateTileMemoryPolicy();
   static BrowserViewRenderer* FromWebContents(
       content::WebContents* web_contents);
 

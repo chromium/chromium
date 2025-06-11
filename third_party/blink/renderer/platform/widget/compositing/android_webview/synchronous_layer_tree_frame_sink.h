@@ -220,6 +220,8 @@ class SynchronousLayerTreeFrameSink
 
   THREAD_CHECKER(thread_checker_);
 
+  std::optional<uint64_t> gpu_memory_override_in_bytes_;
+
   // Indicates that webview using viz
   const bool viz_frame_submission_enabled_;
   bool begin_frames_paused_ = false;

@@ -84,6 +84,10 @@ const char kEnableRasterSideDarkModeForImages[] =
 // Enable rasterizer that writes directly to GPU memory associated with tiles.
 const char kEnableZeroCopy[] = "enable-zero-copy";
 
+// Sets the total amount of memory that may be allocated for GPU resources in
+// cc.
+const char kForceGpuMemAvailableMb[] = "force-gpu-mem-available-mb";
+
 // The number of multisample antialiasing samples for GPU rasterization.
 // Requires MSAA support on GPU to have an effect. 0 disables MSAA.
 const char kGpuRasterizationMSAASampleCount[] =

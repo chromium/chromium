@@ -38,9 +38,6 @@ const char kDisableGpuProgramCache[]        = "disable-gpu-program-cache";
 // Enforce GL minimums.
 const char kEnforceGLMinimums[]             = "enforce-gl-minimums";
 
-// Sets the total amount of memory that may be allocated for GPU resources
-const char kForceGpuMemAvailableMb[]        = "force-gpu-mem-available-mb";
-
 // Sets the maximum GPU memory to use for discardable caches.
 const char kForceGpuMemDiscardableLimitMb[] =
     "force-gpu-mem-discardable-limit-mb";

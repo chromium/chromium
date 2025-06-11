@@ -31,7 +31,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
-#include "gpu/command_buffer/service/gpu_switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -52,7 +51,6 @@ const double kEpsilon = 1e-8;
 const size_t kMemoryMultiplier = 20;
 const size_t kBytesPerPixel = 4;
 const size_t kMemoryAllocationStep = 5 * 1024 * 1024;
-uint64_t g_memory_override_in_bytes = 0u;
 
 const void* const kBrowserViewRendererUserDataKey =
     &kBrowserViewRendererUserDataKey;
@@ -76,22 +74,6 @@ class BrowserViewRendererUserData : public base::SupportsUserData::Data {
 };
 
 }  // namespace
-
-// static
-void BrowserViewRenderer::CalculateTileMemoryPolicy() {
-  base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-
-  // If the value was overridden on the command line, use the specified value.
-  bool client_hard_limit_bytes_overridden =
-      cl->HasSwitch(switches::kForceGpuMemAvailableMb);
-  if (client_hard_limit_bytes_overridden) {
-    base::StringToUint64(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kForceGpuMemAvailableMb),
-        &g_memory_override_in_bytes);
-    g_memory_override_in_bytes *= 1024 * 1024;
-  }
-}
 
 // static
 BrowserViewRenderer* BrowserViewRenderer::FromWebContents(
@@ -219,39 +201,34 @@ gfx::Rect BrowserViewRenderer::ComputeTileRectAndUpdateMemoryPolicy() {
   }
   viewport_rect_for_tile_priority_in_view_space.Intersect(gfx::Rect(size_));
 
-  size_t bytes_limit = 0u;
-  if (g_memory_override_in_bytes) {
-    bytes_limit = static_cast<size_t>(g_memory_override_in_bytes);
+  // Note we are using |last_on_draw_global_visible_rect_| rather than
+  // |external_draw_constraints_.viewport_size|. This is to reduce budget
+  // for a webview that's much smaller than the surface it's rendering.
+  gfx::Rect interest_rect;
+  if (offscreen_pre_raster_) {
+    interest_rect = gfx::Rect(size_);
   } else {
-    // Note we are using |last_on_draw_global_visible_rect_| rather than
-    // |external_draw_constraints_.viewport_size|. This is to reduce budget
-    // for a webview that's much smaller than the surface it's rendering.
-    gfx::Rect interest_rect;
-    if (offscreen_pre_raster_) {
-      interest_rect = gfx::Rect(size_);
-    } else {
-      // Re-compute screen-space rect for computing tile budget, since tile is
-      // rastered in screen space.
-      gfx::Rect viewport_rect_for_tile_priority_in_screen_space =
-          cc::MathUtil::ProjectEnclosingClippedRect(
-              transform_for_tile_priority,
-              viewport_rect_for_tile_priority_in_view_space);
-      // Intersect by viewport size again, in case axis-aligning operations made
-      // the rect bigger than necessary.
-      viewport_rect_for_tile_priority_in_screen_space.Intersect(
-          gfx::Rect(external_draw_constraints_.viewport_size));
-      interest_rect = viewport_rect_for_tile_priority_in_screen_space.IsEmpty()
-                          ? last_on_draw_global_visible_rect_
-                          : viewport_rect_for_tile_priority_in_screen_space;
-    }
-
-    size_t width = interest_rect.width();
-    size_t height = interest_rect.height();
-    bytes_limit = kMemoryMultiplier * kBytesPerPixel * width * height;
-    // Round up to a multiple of kMemoryAllocationStep.
-    bytes_limit =
-        (bytes_limit / kMemoryAllocationStep + 1) * kMemoryAllocationStep;
+    // Re-compute screen-space rect for computing tile budget, since tile is
+    // rastered in screen space.
+    gfx::Rect viewport_rect_for_tile_priority_in_screen_space =
+        cc::MathUtil::ProjectEnclosingClippedRect(
+            transform_for_tile_priority,
+            viewport_rect_for_tile_priority_in_view_space);
+    // Intersect by viewport size again, in case axis-aligning operations made
+    // the rect bigger than necessary.
+    viewport_rect_for_tile_priority_in_screen_space.Intersect(
+        gfx::Rect(external_draw_constraints_.viewport_size));
+    interest_rect = viewport_rect_for_tile_priority_in_screen_space.IsEmpty()
+                        ? last_on_draw_global_visible_rect_
+                        : viewport_rect_for_tile_priority_in_screen_space;
   }
+
+  size_t width = interest_rect.width();
+  size_t height = interest_rect.height();
+  size_t bytes_limit = kMemoryMultiplier * kBytesPerPixel * width * height;
+  // Round up to a multiple of kMemoryAllocationStep.
+  bytes_limit =
+      (bytes_limit / kMemoryAllocationStep + 1) * kMemoryAllocationStep;
 
   compositor_->SetMemoryPolicy(bytes_limit);
   return viewport_rect_for_tile_priority_in_view_space;

@@ -150,8 +150,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   if (cl->GetSwitchValueASCII(switches::kProcessType).empty()) {
     // Browser process (no type specified).
 
-    BrowserViewRenderer::CalculateTileMemoryPolicy();
-
     if (AwDrawFnImpl::IsUsingVulkan())
       cl->AppendSwitch(switches::kWebViewDrawFunctorUsesVulkan);
 
