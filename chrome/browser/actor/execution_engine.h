@@ -50,6 +50,8 @@ class ActorTask;
 class ExecutionEngine {
  public:
   using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+  using ActionsResultCallback =
+      base::OnceCallback<void(optimization_guide::proto::ActionsResult)>;
 
   explicit ExecutionEngine(Profile* profile);
 
@@ -82,6 +84,10 @@ class ExecutionEngine {
   // Performs the next action in the current task.
   void Act(const optimization_guide::proto::BrowserAction& action,
            ActionResultCallback callback);
+
+  // Performs the next action in the current task.
+  void Act(const optimization_guide::proto::Actions& actions,
+           ActionsResultCallback callback);
 
   // Gets called when a new observation is made for the actor task.
   void DidObserveContext(const mojo_base::ProtoWrapper&);
@@ -118,8 +124,14 @@ class ExecutionEngine {
   // Called each time an action finishes.
   void FinishOneAction(mojom::ActionResultPtr result);
 
-  // Fires the callback and clears `actions`.
+  // Calls out to CompleteActionsV1 or CompleteActionsV2.
   void CompleteActions(mojom::ActionResultPtr result);
+
+  // Calls `callback` and clears `actions_v1_`.
+  void CompleteActionsV1(mojom::ActionResultPtr result);
+
+  // Calls `callback` and clears `actions_v2_`.
+  void CompleteActionsV2(mojom::ActionResultPtr result);
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
@@ -135,15 +147,31 @@ class ExecutionEngine {
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
       last_observed_page_content_;
 
-  struct Actions {
-    Actions(const optimization_guide::proto::BrowserAction& actions,
-            ExecutionEngine::ActionResultCallback callback);
-    ~Actions();
-    Actions(const Actions&) = delete;
-    Actions& operator=(const Actions&) = delete;
+  // This is deprecated. Do not add new use cases.
+  struct ActionsV1 {
+    ActionsV1(const optimization_guide::proto::BrowserAction& actions,
+              ActionResultCallback callback);
+    ~ActionsV1();
+    ActionsV1(const ActionsV1&) = delete;
+    ActionsV1& operator=(const ActionsV1&) = delete;
 
     optimization_guide::proto::BrowserAction proto;
+
+    // Note that ActionResultCallback != ActionsResultCallback.
     ActionResultCallback callback;
+  };
+
+  struct ActionsV2 {
+    ActionsV2(const optimization_guide::proto::Actions& actions,
+              ActionsResultCallback callback);
+    ~ActionsV2();
+    ActionsV2(const ActionsV2&) = delete;
+    ActionsV2& operator=(const ActionsV2&) = delete;
+
+    optimization_guide::proto::Actions proto;
+
+    // Note that ActionResultCallback != ActionsResultCallback.
+    ActionsResultCallback callback;
   };
 
   // TODO(crbug.com/411462297): This assumes all tasks are scoped to a tab,
@@ -159,7 +187,11 @@ class ExecutionEngine {
 
   // A sequence of actions that the model has requested. When it is finished
   // being processed it is reset.
-  std::optional<Actions> actions_;
+  std::optional<ActionsV1> actions_v1_;
+
+  // A sequence of actions that the model has requested. When it is finished
+  // being processed it is reset.
+  std::optional<ActionsV2> actions_v2_;
 
   // The index of the in-progress action.
   int action_index_ = 0;

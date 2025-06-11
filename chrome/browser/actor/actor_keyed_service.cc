@@ -222,6 +222,31 @@ void ActorKeyedService::OnActionFinished(
 }
 #endif
 
+void ActorKeyedService::PerformActions(
+    optimization_guide::proto::Actions actions,
+    base::OnceCallback<void(optimization_guide::proto::ActionsResult)>
+        callback) {
+  auto* task = GetTask(actor::TaskId(actions.task_id()));
+  if (!task) {
+    VLOG(1) << "PerformActions failed: Task not found.";
+    optimization_guide::proto::ActionsResult result;
+    result.set_action_result(
+        static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
+    RunLater(base::BindOnce(std::move(callback), std::move(result)));
+    return;
+  }
+  task->GetExecutionEngine()->Act(
+      std::move(actions),
+      base::BindOnce(&ActorKeyedService::OnActionsFinished,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ActorKeyedService::OnActionsFinished(
+    base::OnceCallback<void(optimization_guide::proto::ActionsResult)> callback,
+    optimization_guide::proto::ActionsResult result) {
+  RunLater(base::BindOnce(std::move(callback), std::move(result)));
+}
+
 void ActorKeyedService::StopTask(TaskId task_id) {
   auto task = tasks_.find(task_id);
   if (task != tasks_.end()) {

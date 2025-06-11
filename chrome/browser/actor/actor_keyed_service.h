@@ -61,7 +61,14 @@ class ActorKeyedService : public KeyedService {
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback);
 
-  // Starts a new task using the ExecutionEngine execution engine and fires
+  // Starts a new task and fires `callback` when the task is ready. Implicitly
+  // calls AddTask.
+  void PerformActions(
+      optimization_guide::proto::Actions actions,
+      base::OnceCallback<void(optimization_guide::proto::ActionsResult)>
+          callback);
+
+  // Starts a new task using the execution engine and fires
   // `callback` when the task is ready. Implicitly calls AddTask.
   void StartTask(
       optimization_guide::proto::BrowserStartTask task,
@@ -104,6 +111,11 @@ class ActorKeyedService : public KeyedService {
       int task_id,
       actor::mojom::ActionResultPtr action_result);
 #endif
+
+  void OnActionsFinished(
+      base::OnceCallback<void(optimization_guide::proto::ActionsResult)>
+          callback,
+      optimization_guide::proto::ActionsResult result);
 
   // In the future we may want to divide this between active and inactive tasks.
   std::map<TaskId, std::unique_ptr<ActorTask>> tasks_;
