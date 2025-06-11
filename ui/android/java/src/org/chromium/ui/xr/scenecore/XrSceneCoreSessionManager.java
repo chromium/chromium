@@ -11,9 +11,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * This is XR scene core session manager interface provided by an Activity through {@link
- * XrSceneCoreSessionManagerProvider}. See {@link org.chromium.chrome.browser.ChromeTabbedActivity}
- * and {@link XrSceneCoreUtils}.
+ * This is XR scene core session manager interface. The implementation is provided by an Activity.
+ * See {@link org.chromium.chrome.browser.ChromeTabbedActivity}.
  *
  * <p>Usage: 1. To switch XR space mode for an activity, the user of the interface must call
  * 'startSpaceModeChange' first. It start the mode switching flow and makes the activity invisible

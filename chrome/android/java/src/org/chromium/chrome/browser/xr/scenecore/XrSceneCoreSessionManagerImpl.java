@@ -26,7 +26,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
-import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManagerProvider;
 
 /** The class manages XR SceneCore JxrPlatformAdapterAxr for the activity. */
 @SuppressLint("RestrictedApi")
@@ -49,11 +48,11 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     private final ActivitySpace.OnBoundsChangedListener mBoundsChangedListener =
             this::boundsChangeCallback;
 
-    public XrSceneCoreSessionManagerImpl(XrSceneCoreSessionManagerProvider provider) {
+    public XrSceneCoreSessionManagerImpl(Activity activity) {
         // TODO(crbug.com/422134376): To detect "Android XR" query OS instead of device's
         // properties.
-        assert provider instanceof Activity && XrUtils.isXrDevice();
-        mActivity = (Activity) provider;
+        assert XrUtils.isXrDevice();
+        mActivity = activity;
         mJxrPlatformAdapter = createJxrPlatformAdapter(mActivity);
         mJxrPlatformAdapter.getActivitySpace().addOnBoundsChangedListener(mBoundsChangedListener);
     }

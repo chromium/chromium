@@ -314,7 +314,6 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
-import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManagerProvider;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -331,8 +330,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
  * accessible via a chrome specific tab switching UI.
  */
-public class ChromeTabbedActivity extends ChromeActivity
-        implements XrSceneCoreSessionManagerProvider {
+public class ChromeTabbedActivity extends ChromeActivity {
     // Name of the ChromeTabbedActivity alias that handles MAIN intents.
     public static final String MAIN_LAUNCHER_ACTIVITY_NAME = "com.google.android.apps.chrome.Main";
 
@@ -4353,8 +4351,7 @@ public class ChromeTabbedActivity extends ChromeActivity
         }
     }
 
-    @Override
-    public @Nullable XrSceneCoreSessionManager getXrSceneCoreSessionManager() {
+    private @Nullable XrSceneCoreSessionManager getXrSceneCoreSessionManager() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             // TODO(crbug.com/422134376): To detect "Android XR" query OS instead of device's
             // properties.
