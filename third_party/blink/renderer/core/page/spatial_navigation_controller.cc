@@ -198,20 +198,12 @@ bool SpatialNavigationController::HandleEnterKeyboardEvent(
     return false;
 
   if (event->type() == event_type_names::kKeydown) {
-    enter_key_down_seen_ = true;
     interest_element->SetActive(true);
-  } else if (event->type() == event_type_names::kKeypress) {
-    enter_key_press_seen_ = true;
   } else if (event->type() == event_type_names::kKeyup) {
     interest_element->SetActive(false);
   }
 
   return true;
-}
-
-void SpatialNavigationController::ResetEnterKeyState() {
-  enter_key_down_seen_ = false;
-  enter_key_press_seen_ = false;
 }
 
 bool SpatialNavigationController::HandleImeSubmitKeyboardEvent(

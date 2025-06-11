@@ -61,8 +61,6 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
-#include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -436,16 +434,6 @@ inline void EventDispatcher::DispatchEventPostProcess(
 
   if (event_->IsMouseEvent() && event_->type() == event_type_names::kMouseup) {
     node_->GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
-  }
-
-  auto* keyboard_event = DynamicTo<KeyboardEvent>(event_);
-  if (Page* page = node_->GetDocument().GetPage()) {
-    if (page->GetSettings().GetSpatialNavigationEnabled() &&
-        is_trusted_or_click && keyboard_event &&
-        keyboard_event->key() == keywords::kCapitalEnter &&
-        event_->type() == event_type_names::kKeyup) {
-      page->GetSpatialNavigationController().ResetEnterKeyState();
-    }
   }
 
   // Track the usage of sending a mousedown event to a select element to force
