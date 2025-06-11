@@ -53,7 +53,7 @@ void PopulateUserCertsAsync(
       continue;
     }
     x509_certificate_model::X509CertificateModel model(
-        net::x509_util::CreateCryptoBuffer(cert_info.der_cert), "");
+        net::x509_util::CreateCryptoBuffer(cert_info.der_cert));
     cert_infos.push_back(certificate_manager::mojom::SummaryCertInfo::New(
         cert_info.sha256hash_hex, model.GetTitle(), can_delete));
   }

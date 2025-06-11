@@ -15,11 +15,6 @@ typedef struct CERTCertificateStr CERTCertificate;
 // X509 certificates.
 namespace x509_certificate_model {
 
-// Returns the NSS nickname field of the certificate without processing. This
-// will generally be of the form "<token name> : <nickname>" but it's not
-// really documented in NSS.
-std::string GetRawNickname(CERTCertificate* cert_handle);
-
 // Returns the commonName of the certificate, or if that is empty, returns the
 // NSS certificate nickname (without the token name).
 std::string GetCertNameOrNickname(CERTCertificate* cert_handle);

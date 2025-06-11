@@ -32,10 +32,8 @@ using OptionalStringOrError = std::variant<Error, NotPresent, std::string>;
 class X509CertificateModel {
  public:
   // Construct an X509CertificateModel from |cert_data|, which must must not be
-  // nullptr.  |nickname| may optionally be provided as a platform-specific
-  // nickname for the certificate, if available.
-  X509CertificateModel(bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
-                       std::string nickname);
+  // nullptr.
+  explicit X509CertificateModel(bssl::UniquePtr<CRYPTO_BUFFER> cert_data);
   X509CertificateModel(X509CertificateModel&& other);
   X509CertificateModel& operator=(X509CertificateModel&& other) = default;
   ~X509CertificateModel();
@@ -49,7 +47,6 @@ class X509CertificateModel {
 
   // Get something that can be used as a title for the certificate, using the
   // following priority:
-  //   |nickname| passed to constructor
   //   subject commonName
   //   full subject
   //   dnsName or email address from subjectAltNames
@@ -117,9 +114,6 @@ class X509CertificateModel {
                                const bssl::ParsedExtension& extension) const;
   std::optional<std::string> ProcessExtensionData(
       const bssl::ParsedExtension& extension) const;
-
-  // Externally provided "nickname" for the cert.
-  std::string nickname_;
 
   bool parsed_successfully_ = false;
   bssl::UniquePtr<CRYPTO_BUFFER> cert_data_;

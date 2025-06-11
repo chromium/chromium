@@ -269,7 +269,7 @@ void PopulateCertInfosFromCertificateList(
   std::vector<certificate_manager::mojom::SummaryCertInfoPtr> out_infos;
   for (const auto& cert : certs) {
     x509_certificate_model::X509CertificateModel model(
-        bssl::UpRef(cert->cert_buffer()), "");
+        bssl::UpRef(cert->cert_buffer()));
     out_infos.push_back(certificate_manager::mojom::SummaryCertInfo::New(
         model.HashCertSHA256(), model.GetTitle(), is_deletable));
   }
@@ -440,7 +440,7 @@ class WritableCertLoader : public CertificateManagerPageHandler::CertSource {
     std::vector<certificate_manager::mojom::SummaryCertInfoPtr> out_infos;
     for (const auto& info : *certs_) {
       x509_certificate_model::X509CertificateModel model(
-          bssl::UpRef(info.cert->cert_buffer()), "");
+          bssl::UpRef(info.cert->cert_buffer()));
       out_infos.push_back(certificate_manager::mojom::SummaryCertInfo::New(
           model.HashCertSHA256(), model.GetTitle(), info.is_deletable));
     }

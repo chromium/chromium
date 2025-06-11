@@ -1289,9 +1289,8 @@ std::optional<std::string> ProcessQcStatements(
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
-    bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
-    std::string nickname)
-    : nickname_(std::move(nickname)), cert_data_(std::move(cert_data)) {
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_data)
+    : cert_data_(std::move(cert_data)) {
   DCHECK(cert_data_);
 
   bssl::ParseCertificateOptions options;
@@ -1326,9 +1325,6 @@ std::string X509CertificateModel::HashCertSHA256() const {
 }
 
 std::string X509CertificateModel::GetTitle() const {
-  if (!nickname_.empty())
-    return nickname_;
-
   if (!parsed_successfully_)
     return HashCertSHA256();
 

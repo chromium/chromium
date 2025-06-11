@@ -40,13 +40,6 @@ namespace x509_certificate_model {
 
 using std::string;
 
-std::string GetRawNickname(CERTCertificate* cert_handle) {
-  if (cert_handle->nickname) {
-    return cert_handle->nickname;
-  }
-  return std::string();
-}
-
 string GetCertNameOrNickname(CERTCertificate* cert_handle) {
   string name = ProcessIDN(
       Stringize(CERT_GetCommonName(&cert_handle->subject), std::string()));

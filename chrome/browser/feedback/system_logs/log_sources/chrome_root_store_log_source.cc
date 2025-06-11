@@ -32,7 +32,7 @@ void PopulateChromeRootStoreLogsAsync(
   entry += "version: " + base::NumberToString(info->version) + "\n\n";
   for (auto const& cert_info : info->root_cert_info) {
     x509_certificate_model::X509CertificateModel model(
-        net::x509_util::CreateCryptoBuffer(cert_info->cert), "");
+        net::x509_util::CreateCryptoBuffer(cert_info->cert));
     entry += "hash: " + cert_info->sha256hash_hex +
              "  name: " + model.GetTitle() + "\n";
   }

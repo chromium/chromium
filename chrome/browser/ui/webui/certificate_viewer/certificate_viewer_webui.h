@@ -40,7 +40,6 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
  public:
   static CertificateViewerDialog* ShowConstrained(
       std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
-      std::vector<std::string> cert_nicknames,
       content::WebContents* web_contents,
       gfx::NativeWindow parent);
 
@@ -71,7 +70,6 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   // If |modifications_callback| is not null, |cert_metadata| must be present.
   static CertificateViewerDialog* ShowConstrained(
       std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
-      std::vector<std::string> cert_nicknames,
       std::optional<
           chrome_browser_server_certificate_database::CertificateMetadata>
           cert_metadata,
@@ -84,7 +82,6 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   // viewer.
   CertificateViewerDialog(
       std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
-      std::vector<std::string> cert_nicknames,
       std::optional<
           chrome_browser_server_certificate_database::CertificateMetadata>
           cert_metadata,
