@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
@@ -60,6 +63,7 @@ ChangePasswordFormFillingSubmissionHelper::
 
 void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
     password_manager::PasswordFormManager* form_manager,
+    const std::u16string& username,
     const std::u16string& old_password,
     const std::u16string& new_password) {
   CHECK(form_manager);
@@ -76,7 +80,8 @@ void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
       base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::TriggerFilling,
                      weak_ptr_factory_.GetWeakPtr(),
                      *form_manager->GetParsedObservedForm(),
-                     form_manager->GetDriver(), old_password, new_password));
+                     form_manager->GetDriver(), username, old_password,
+                     new_password));
 
   // Proceed with verifying password on timeout, in case submission was not
   // captured.
@@ -121,6 +126,7 @@ GURL ChangePasswordFormFillingSubmissionHelper::GetURL() const {
 void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
     const password_manager::PasswordForm& form,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+    const std::u16string& username,
     const std::u16string& old_password,
     const std::u16string& new_password) {
   CHECK(form_manager_);
@@ -137,7 +143,14 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
           weak_ptr_factory_.GetWeakPtr(), driver,
           form.new_password_element_renderer_id));
 
-  form_manager_->PresaveGeneratedPassword(form.form_data, new_password);
+  password_manager::PasswordForm form_to_save(form);
+  form_to_save.username_value = username;
+  form_to_save.password_value = old_password;
+  password_manager::PasswordFormManager::PresaveGeneratedPasswordAsBackup(
+      *form_manager_, form_to_save, new_password);
+  // Fetch newly saved password so that it's included in the matches when we
+  // save the submitted form.
+  form_manager_->GetFormFetcher()->Fetch();
 }
 
 void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(

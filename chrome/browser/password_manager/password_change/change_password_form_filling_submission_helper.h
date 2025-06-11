@@ -51,10 +51,11 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   // Starts chain of actions:
   // * fills and submits a change password form observed by `form_manager`,
-  // * pre-saves a credential with new_password,
+  // * pre-saves the new_password as a backup,
   // * provisionally saves submitted password.
   void FillChangePasswordForm(
       password_manager::PasswordFormManager* form_manager,
+      const std::u16string& username,
       const std::u16string& old_password,
       const std::u16string& new_password);
 
@@ -78,6 +79,7 @@ class ChangePasswordFormFillingSubmissionHelper {
   void TriggerFilling(
       const password_manager::PasswordForm& form,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+      const std::u16string& username,
       const std::u16string& old_password,
       const std::u16string& new_password);
 

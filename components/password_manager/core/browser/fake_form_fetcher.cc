@@ -105,7 +105,10 @@ FakeFormFetcher::GetPreferredOrPotentialMatchedFormType() const {
 }
 
 std::unique_ptr<FormFetcher> FakeFormFetcher::Clone() {
-  return std::make_unique<FakeFormFetcher>();
+  auto fetcher = std::make_unique<FakeFormFetcher>();
+  fetcher->SetBestMatches(best_matches_);
+  fetcher->SetNonFederated(non_federated_);
+  return fetcher;
 }
 
 void FakeFormFetcher::SetNonFederated(

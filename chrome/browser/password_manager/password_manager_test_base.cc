@@ -469,6 +469,7 @@ void PasswordManagerBrowserTestBase::AddHSTSHost(const std::string& host) {
 void PasswordManagerBrowserTestBase::CheckThatCredentialsStored(
     const std::string& username,
     const std::string& password,
+    std::optional<std::string> backup_password,
     std::optional<password_manager::PasswordForm::Type> type) {
   SCOPED_TRACE(::testing::Message() << username << ", " << password);
   scoped_refptr<password_manager::TestPasswordStore> password_store =
@@ -483,6 +484,10 @@ void PasswordManagerBrowserTestBase::CheckThatCredentialsStored(
   const password_manager::PasswordForm& form = passwords_vector[0];
   EXPECT_EQ(base::ASCIIToUTF16(username), form.username_value);
   EXPECT_EQ(base::ASCIIToUTF16(password), form.password_value);
+  if (backup_password.has_value()) {
+    EXPECT_EQ(base::ASCIIToUTF16(backup_password.value()),
+              form.GetPasswordBackupNote());
+  }
   if (type.has_value()) {
     EXPECT_EQ(type.value(), form.type);
   }

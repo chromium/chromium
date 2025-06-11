@@ -210,8 +210,8 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
           base::BindOnce(
               &PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified,
               weak_ptr_factory_.GetWeakPtr()));
-  submission_verifier_->FillChangePasswordForm(form_manager, original_password_,
-                                               generated_password_);
+  submission_verifier_->FillChangePasswordForm(
+      form_manager, username_, original_password_, generated_password_);
   UpdateState(PasswordChangeDelegate::State::kChangingPassword);
 }
 

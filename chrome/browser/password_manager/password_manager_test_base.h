@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_TEST_BASE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -185,6 +186,7 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void CheckThatCredentialsStored(
       const std::string& username,
       const std::string& password,
+      std::optional<std::string> backup_password = std::nullopt,
       std::optional<password_manager::PasswordForm::Type> type = std::nullopt);
 
   // Accessors

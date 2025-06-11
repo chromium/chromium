@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -242,34 +244,6 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
             }))));
   }
 
-  void CheckPasswordsSavedOnFailure(const std::string& username,
-                                    const std::string& new_password) {
-    scoped_refptr<password_manager::TestPasswordStore> password_store =
-        static_cast<password_manager::TestPasswordStore*>(
-            ProfilePasswordStoreFactory::GetForProfile(
-                browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-                .get());
-    const std::vector<password_manager::PasswordForm>& passwords_vector =
-        password_store->stored_passwords().begin()->second;
-    // Check if |username| + |new password| is stored
-    bool found_username_with_new_password = false;
-    // Check if |empty username| + |new password| is stored
-    bool found_empty_username_with_new_password = false;
-
-    for (const auto& form : passwords_vector) {
-      if (form.username_value == base::ASCIIToUTF16(username) &&
-          form.password_value == base::ASCIIToUTF16(new_password)) {
-        found_username_with_new_password = true;
-      } else if (form.username_value.empty() &&
-                 form.password_value == base::ASCIIToUTF16(new_password)) {
-        found_empty_username_with_new_password = true;
-      }
-    }
-
-    EXPECT_FALSE(found_username_with_new_password);
-    EXPECT_TRUE(found_empty_username_with_new_password);
-  }
-
   void StartPasswordChange(const GURL& url,
                            const std::u16string& username,
                            const std::u16string& password,
@@ -433,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   EXPECT_EQ(base::UTF16ToUTF8(generated_password),
             GetElementValue(/*iframe_id=*/"null", "new_password_1"));
   CheckThatCredentialsStored(
-      /*username=*/"", base::UTF16ToUTF8(generated_password));
+      /*username=*/"test", "pa$$word", base::UTF16ToUTF8(generated_password));
 }
 
 // Verify that after password change is stopped, password change delegate is not
@@ -481,6 +455,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   }));
   CheckThatCredentialsStored(
       /*username=*/"test", base::UTF16ToUTF8(delegate->GetGeneratedPassword()),
+      /*backup_password*/ std::nullopt,
       password_manager::PasswordForm::Type::kChangeSubmission);
 
   delegate->Stop();
@@ -552,6 +527,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   CheckThatCredentialsStored(
       base::UTF16ToUTF8(form.username_value),
       base::UTF16ToUTF8(delegate->GetGeneratedPassword()),
+      /*backup_password*/ std::nullopt,
       password_manager::PasswordForm::Type::kChangeSubmission);
 }
 
@@ -658,8 +634,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   }));
 
   WaitForPasswordStore();
-  CheckPasswordsSavedOnFailure(
-      base::UTF16ToUTF8(form.username_value),
+  CheckThatCredentialsStored(
+      /*username=*/"test", "pa$$word",
       base::UTF16ToUTF8(delegate->GetGeneratedPassword()));
 
   delegate->Stop();
