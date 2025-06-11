@@ -11,12 +11,15 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -652,61 +655,84 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     }
 
     StartAdvertising();
-  } else if (controller_state_ ==
-             ControllerState::WAITING_TO_RESUME_AFTER_UPDATE) {
-    exit_point_ = EntryPoint::GAIA_INFO_SCREEN;
-    QuickStartMetrics::RecordEntryPoint(EntryPoint::AUTO_RESUME_AFTER_UPDATE);
-
-    // It's possible the local state still needs to be cleared if an update was
-    // initiated but cancelled. We can't check/clear the state immediately upon
-    // cancelling the update since it's possible it happens before the target
-    // device persists this pref to local state.
-    if (g_browser_process->local_state()->GetBoolean(
-            prefs::kShouldResumeQuickStartAfterReboot)) {
-      g_browser_process->local_state()->ClearPref(
-          prefs::kShouldResumeQuickStartAfterReboot);
-    }
-
-    if (IsBluetoothDisabled()) {
-      controller_state_ = ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION;
-      UpdateUiState(UiState::SHOWING_BLUETOOTH_DIALOG);
-      return;
-    }
-
-    StartAdvertising();
   } else {
-    // If the setup has finished, transitioning to QuickStart should
-    // show the last step of the flow.
-    if (controller_state_ == ControllerState::SETUP_COMPLETE) {
-      UpdateUiState(UiState::SETUP_COMPLETE);
-      SavePhoneInstanceID();
-      bootstrap_controller_->OnSetupComplete();
-      QuickStartMetrics::RecordSetupComplete();
-      return;
+    QS_LOG(INFO) << "Transition to QuickStart Screen with controller_state_: "
+                 << controller_state_;
+    if (ui_state_.has_value()) {
+      QS_LOG(INFO) << "ui_state_ at the transition: " << ui_state_.value();
+    } else {
+      QS_LOG(ERROR) << "No cached ui_state_ at the transition";
     }
 
-    // The flow must be resuming after reaching the GaiaInfoScreen or
-    // GaiaScreen. Note the the GaiaInfoScreen/GaiaScreen is technically never
-    // shown when it switches to QuickStart, so |previous_screen_| is one of the
-    // many screens that may have appeared up to this point.
-    // TODO(b:283965994) - Improve the resume logic.
+    switch (controller_state_) {
+      case ControllerState::NOT_ACTIVE:
+        NOTREACHED() << "Cannot transition to QuickStart: Setup in progress "
+                        "while controller_state_ is NOT_ACTIVE.";
+      case ControllerState::CONTINUING_AFTER_ENROLLMENT_CHECKS:
+        NOTREACHED()
+            << "Cannot transition to QuickStart: Setup in progress while "
+               "controller_state_ is CONTINUING_AFTER_ENROLLMENT_CHECKS.";
+      case ControllerState::INITIALIZING:
+        [[fallthrough]];
+      case ControllerState::ADVERTISING:
+        [[fallthrough]];
+      case ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION:
+        [[fallthrough]];
+      case ControllerState::WAITING_FOR_BLUETOOTH_ACTIVATION:
+        [[fallthrough]];
+      case ControllerState::FALLBACK_URL_FLOW_ON_GAIA_SCREEN:
+        RestoreCachedUIState();
+        break;
+      case ControllerState::WAITING_TO_RESUME_AFTER_UPDATE:
+        SetExitPointToDefault();
+        QuickStartMetrics::RecordEntryPoint(
+            EntryPoint::AUTO_RESUME_AFTER_UPDATE);
 
-    // OOBE flow cannot go back after enrollment checks, update exit point.
-    exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
+        // It's possible the local state still needs to be cleared if an update
+        // was initiated but cancelled. We can't check/clear the state
+        // immediately upon cancelling the update since it's possible it happens
+        // before the target device persists this pref to local state.
+        if (g_browser_process->local_state()->GetBoolean(
+                prefs::kShouldResumeQuickStartAfterReboot)) {
+          g_browser_process->local_state()->ClearPref(
+              prefs::kShouldResumeQuickStartAfterReboot);
+        }
 
-    if (controller_state_ != ControllerState::CONNECTED) {
-      QS_LOG(ERROR) << "Expected controller_state_ to be CONNECTED. Actual "
-                       "controller_state_: "
-                    << controller_state_;
-      AbortFlow(AbortFlowReason::ERROR);
-      return;
+        if (IsBluetoothDisabled()) {
+          controller_state_ = ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION;
+          UpdateUiState(UiState::SHOWING_BLUETOOTH_DIALOG);
+          return;
+        }
+
+        StartAdvertising();
+        break;
+      case ControllerState::CONNECTED:
+        CHECK(LoginDisplayHost::default_host()
+                  ->GetWizardContext()
+                  ->quick_start_setup_ongoing)
+            << "Expected quick_start_setup_ongoing";
+
+        SetExitPointToDefault();
+
+        // Only start account transfer the first time the following is reached
+        // after OOBE completion.
+        if (!StartupUtils::IsOobeCompleted() || did_request_account_info_) {
+          // Resuming after an external interruption (e.g. Reset screen).
+          RestoreCachedUIState();
+        } else {
+          // This is the first transition to this screen after user creation.
+          StartAccountTransfer();
+        }
+        break;
+      case ControllerState::SETUP_COMPLETE:
+        // If the setup has finished, transitioning to QuickStart should
+        // show the last step of the flow.
+        UpdateUiState(UiState::SETUP_COMPLETE);
+        SavePhoneInstanceID();
+        bootstrap_controller_->OnSetupComplete();
+        QuickStartMetrics::RecordSetupComplete();
+        break;
     }
-
-    CHECK(LoginDisplayHost::default_host()
-              ->GetWizardContext()
-              ->quick_start_setup_ongoing)
-        << "Expected quick_start_setup_ongoing";
-    StartAccountTransfer();
   }
 }
 
@@ -870,6 +896,23 @@ void QuickStartController::StartAdvertising() {
   QS_LOG(INFO) << "ControllerState::INITIALIZING requesting advertising.";
   controller_state_ = ControllerState::INITIALIZING;
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
+}
+
+void QuickStartController::SetExitPointToDefault() {
+  exit_point_ = StartupUtils::IsOobeCompleted() ? EntryPoint::GAIA_INFO_SCREEN
+                                                : EntryPoint::WELCOME_SCREEN;
+}
+
+void QuickStartController::RestoreCachedUIState() {
+  if (ui_state_.has_value()) {
+    UpdateUiState(ui_state_.value());
+  } else {
+    LOG(ERROR)
+        << "Failed to restore cached UI state because `ui_state_` is empty";
+    base::debug::DumpWithoutCrashing();
+    SetExitPointToDefault();
+    AbortFlow(AbortFlowReason::ERROR);
+  }
 }
 
 std::ostream& operator<<(std::ostream& stream,

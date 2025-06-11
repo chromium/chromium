@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/shell.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
@@ -46,6 +49,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -401,6 +405,16 @@ class QuickStartBrowserTest : public OobeBaseTest {
     // Network modification notifications are posted asynchronously. Wait until
     // idle to ensure observers are notified.
     base::RunLoop().RunUntilIdle();
+  }
+
+  void SwitchFromQuickStartToResetThenSwitchBack() {
+    ui::test::EventGenerator event_generator(
+        ash::Shell::GetPrimaryRootWindow());
+    event_generator.PressKeyAndModifierKeys(
+        ui::VKEY_R, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+    test::OobeJS().TapOnPath({"reset", "resetCancel"});
+    OobeScreenExitWaiter(ResetView::kScreenId).Wait();
+    OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   }
 
  protected:
@@ -1080,6 +1094,30 @@ IN_PROC_BROWSER_TEST_F(QuickStartLoginScreenTest, EntryPointNotVisible) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   base::RunLoop().RunUntilIdle();
   test::OobeJS().ExpectHiddenPath(kQuickStartButtonGaia);
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
+                       EndToEndWithExternalInterruption) {
+  SetUpDisconnectedWifiNetwork();
+
+  EnterQuickStartFlowFromWelcomeScreen();
+  SwitchFromQuickStartToResetThenSwitchBack();
+
+  SimulatePhoneConnection();
+  SwitchFromQuickStartToResetThenSwitchBack();
+
+  SimulateUserVerification();
+  SwitchFromQuickStartToResetThenSwitchBack();
+
+  SimulateWiFiTransfer();
+  test::WaitForNetworkSelectionScreen();
+
+  SkipUpdateScreenOnBrandedBuilds();
+  WaitForUserCreationAndTriggerPersonalFlow();
+  // The flow continues to QuickStart upon reaching the GaiaInfoScreen or
+  // GaiaScreen.
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  SwitchFromQuickStartToResetThenSwitchBack();
 }
 
 }  // namespace ash

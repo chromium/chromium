@@ -2104,9 +2104,11 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
       ShowNetworkScreen();
       return;
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_GAIA_INFO:
+      CHECK(StartupUtils::IsOobeCompleted());
       AdvanceToScreen(GaiaInfoScreenView::kScreenId);
       return;
     case ash::QuickStartScreen::Result::FALLBACK_URL_ON_GAIA:
+      CHECK(StartupUtils::IsOobeCompleted());
       wizard_context_->gaia_config.gaia_path =
           WizardContext::GaiaPath::kQuickStartFallback;
       wizard_context_->gaia_config.quick_start_fallback_path_contents =
@@ -2114,12 +2116,14 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
       AdvanceToScreen(GaiaView::kScreenId);
       return;
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_SIGNIN:
+      CHECK(StartupUtils::IsOobeCompleted());
       AdvanceToScreen(GaiaView::kScreenId);
       return;
     // Last step of the QuickStart flow. This is triggered immediately
     // after the 'RecoveryEligibility' screen and continues OOBE into
     // the TermsOfServiceScreen
     case QuickStartScreen::Result::SETUP_COMPLETE_NEXT_BUTTON:
+      CHECK(StartupUtils::IsOobeCompleted());
       quickstart_controller_->RecordFlowFinished();
       AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
   }

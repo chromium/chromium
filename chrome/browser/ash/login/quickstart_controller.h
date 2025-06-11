@@ -221,6 +221,15 @@ class QuickStartController
   // to transfer the user's credentials.
   void OnPhoneConnectionEstablished();
 
+  // Updates the exit point to the default one: Welcome screen if OOBE is
+  // incomplete, GAIA Info screen otherwise.
+  void SetExitPointToDefault();
+
+  // Called when the user returns to the QuickStart screen after it was exited
+  // externally. This method updates the UI to reflect the state it was in
+  // before the exit.
+  void RestoreCachedUIState();
+
   void SavePhoneInstanceID();
 
   // Performs the final steps and triggers ChromeOS account creation flow.
