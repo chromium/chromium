@@ -6193,6 +6193,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_page_context: true,
+      valid_for_permission_element: true,
     },
     {
       name: "view-timeline-axis",

@@ -23,6 +23,7 @@ permission {
   height: auto;
   width: auto;
   word-spacing: normal;
+  vertical-align: middle !important;
  }
 
 permission:granted {
