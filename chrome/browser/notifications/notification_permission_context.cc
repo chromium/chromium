@@ -73,7 +73,7 @@ NotificationPermissionContext::NotificationPermissionContext(
 
 NotificationPermissionContext::~NotificationPermissionContext() = default;
 
-ContentSetting NotificationPermissionContext::GetPermissionStatusInternal(
+ContentSetting NotificationPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -87,8 +87,8 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusInternal(
 #endif
 
   ContentSetting setting = permissions::ContentSettingPermissionContextBase::
-      GetPermissionStatusInternal(render_frame_host, requesting_origin,
-                                  embedding_origin);
+      GetContentSettingStatusInternal(render_frame_host, requesting_origin,
+                                      embedding_origin);
 
   content_settings::PageSpecificContentSettings::NotificationsAccessed(
       render_frame_host, /*blocked=*/setting != CONTENT_SETTING_ALLOW);

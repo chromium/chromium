@@ -19,7 +19,8 @@ BackgroundFetchPermissionContext::BackgroundFetchPermissionContext(
           ContentSettingsType::BACKGROUND_FETCH,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
-ContentSetting BackgroundFetchPermissionContext::GetPermissionStatusInternal(
+ContentSetting
+BackgroundFetchPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {

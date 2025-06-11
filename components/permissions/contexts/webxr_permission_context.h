@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/content_setting_permission_context_base.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 
 namespace permissions {
@@ -21,7 +22,7 @@ class WebXrPermissionContext : public ContentSettingPermissionContextBase {
   WebXrPermissionContext& operator=(const WebXrPermissionContext&) = delete;
 
  private:
-  // ContentSettingPermissionContextBase:
+  // PermissionContextBase:
 #if BUILDFLAG(IS_ANDROID)
   // On Android we need to do some additional checking for OS level permissions,
   // which do not need to happen on Desktop. Note that NotifyPermissionSet is

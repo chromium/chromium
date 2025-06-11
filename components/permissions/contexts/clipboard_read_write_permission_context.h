@@ -33,15 +33,15 @@ class ClipboardReadWritePermissionContext
                         BrowserPermissionCallback callback) override;
 
   // PermissionContextBase:
-  ContentSetting GetPermissionStatusInternal(
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin) const override;
-
-  // PermissionContextBase:
   void UpdateTabContext(const PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;
+
+  // ContentSettingPermissionContextBase:
+  ContentSetting GetContentSettingStatusInternal(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin) const override;
 
   std::unique_ptr<ClipboardPermissionContextDelegate> delegate_;
 };

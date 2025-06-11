@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -25,7 +26,8 @@ WindowManagementPermissionContext::~WindowManagementPermissionContext() =
     default;
 
 #if BUILDFLAG(IS_ANDROID)
-ContentSetting WindowManagementPermissionContext::GetPermissionStatusInternal(
+ContentSetting
+WindowManagementPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {

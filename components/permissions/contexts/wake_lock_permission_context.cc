@@ -25,7 +25,7 @@ WakeLockPermissionContext::WakeLockPermissionContext(
 
 WakeLockPermissionContext::~WakeLockPermissionContext() = default;
 
-ContentSetting WakeLockPermissionContext::GetPermissionStatusInternal(
+ContentSetting WakeLockPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {

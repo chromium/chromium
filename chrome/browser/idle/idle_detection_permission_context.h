@@ -22,7 +22,7 @@ class IdleDetectionPermissionContext
   ~IdleDetectionPermissionContext() override;
 
  private:
-  // ContentSettingPermissionContextBase:
+  // PermissionContextBase:
   void UpdateTabContext(const permissions::PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;

@@ -91,17 +91,13 @@ class StorageAccessGrantPermissionContext
   static void SetImplicitGrantLimitForTesting(int limit);
 
  private:
-  // ContentSettingPermissionContextBase:
+  // PermissionContextBase:
   void RequestPermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
-  ContentSetting GetPermissionStatusInternal(
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin) const override;
   void NotifyPermissionSet(
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
@@ -109,6 +105,12 @@ class StorageAccessGrantPermissionContext
       ContentSetting content_setting,
       bool is_one_time,
       bool is_final_decision) override;
+
+  // ContentSettingPermissionContextBase
+  ContentSetting GetContentSettingStatusInternal(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin) const override;
   void UpdateContentSetting(
       const permissions::PermissionRequestData& request_data,
       ContentSetting content_setting,

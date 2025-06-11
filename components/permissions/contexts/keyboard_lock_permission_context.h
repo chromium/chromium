@@ -10,7 +10,7 @@
 namespace permissions {
 
 class KeyboardLockPermissionContext
-    : public permissions::ContentSettingPermissionContextBase {
+    : public ContentSettingPermissionContextBase {
  public:
   explicit KeyboardLockPermissionContext(
       content::BrowserContext* browser_context);
@@ -23,7 +23,7 @@ class KeyboardLockPermissionContext
 #if !BUILDFLAG(IS_ANDROID)
  private:
   // ContentSettingPermissionContextBase:
-  ContentSetting GetPermissionStatusInternal(
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;

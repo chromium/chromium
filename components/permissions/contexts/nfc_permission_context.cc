@@ -23,7 +23,7 @@ NfcPermissionContext::NfcPermissionContext(
 NfcPermissionContext::~NfcPermissionContext() = default;
 
 #if !BUILDFLAG(IS_ANDROID)
-ContentSetting NfcPermissionContext::GetPermissionStatusInternal(
+ContentSetting NfcPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {

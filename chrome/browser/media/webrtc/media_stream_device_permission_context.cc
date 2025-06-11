@@ -10,7 +10,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
@@ -45,7 +44,7 @@ network::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
 MediaStreamDevicePermissionContext::MediaStreamDevicePermissionContext(
     content::BrowserContext* browser_context,
     const ContentSettingsType content_settings_type)
-    : ContentSettingPermissionContextBase(
+    : permissions::ContentSettingPermissionContextBase(
           browser_context,
           content_settings_type,
           GetPermissionsPolicyFeature(content_settings_type)),
@@ -57,7 +56,8 @@ MediaStreamDevicePermissionContext::MediaStreamDevicePermissionContext(
 MediaStreamDevicePermissionContext::~MediaStreamDevicePermissionContext() =
     default;
 
-ContentSetting MediaStreamDevicePermissionContext::GetPermissionStatusInternal(
+ContentSetting
+MediaStreamDevicePermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -97,8 +97,8 @@ ContentSetting MediaStreamDevicePermissionContext::GetPermissionStatusInternal(
   // Check the content setting. TODO(raymes): currently mic/camera permission
   // doesn't consider the embedder.
   ContentSetting setting = permissions::ContentSettingPermissionContextBase::
-      GetPermissionStatusInternal(render_frame_host, requesting_origin,
-                                  requesting_origin);
+      GetContentSettingStatusInternal(render_frame_host, requesting_origin,
+                                      requesting_origin);
 
   if (setting == CONTENT_SETTING_DEFAULT)
     setting = CONTENT_SETTING_ASK;

@@ -5,6 +5,8 @@
 #include "components/permissions/test/permission_test_util.h"
 
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/contexts/window_management_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -34,8 +36,8 @@ class FakePermissionContextAlwaysAllow : public FakePermissionContext {
                               content_settings_type,
                               permissions_policy_feature) {}
 
-  // ContentSettingPermissionContextBase:
-  ContentSetting GetPermissionStatusInternal(
+  // PermissionContextBase:
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override {

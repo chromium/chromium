@@ -18,15 +18,13 @@ KeyboardLockPermissionContext::KeyboardLockPermissionContext(
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 #if !BUILDFLAG(IS_ANDROID)
-ContentSetting KeyboardLockPermissionContext::GetPermissionStatusInternal(
+ContentSetting KeyboardLockPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   if (base::FeatureList::IsEnabled(features::kKeyboardLockPrompt)) {
-    return PermissionsClient::Get()
-        ->GetSettingsMap(browser_context())
-        ->GetContentSetting(requesting_origin, embedding_origin,
-                            ContentSettingsType::KEYBOARD_LOCK);
+    return ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
+        render_frame_host, requesting_origin, embedding_origin);
   }
   return CONTENT_SETTING_ALLOW;
 }

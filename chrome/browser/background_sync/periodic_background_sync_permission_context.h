@@ -71,10 +71,12 @@ class PeriodicBackgroundSyncPermissionContext
 
  private:
   // ContentSettingPermissionContextBase implementation.
-  ContentSetting GetPermissionStatusInternal(
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
+
+  // PermissionContextBase implementation.
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;

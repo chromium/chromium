@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_MIDI_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_MIDI_PERMISSION_CONTEXT_H_
 
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 
 namespace content {
@@ -22,7 +23,7 @@ class MidiPermissionContext : public ContentSettingPermissionContextBase {
 
  private:
   // ContentSettingPermissionContextBase:
-  ContentSetting GetPermissionStatusInternal(
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;

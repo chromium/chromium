@@ -37,11 +37,13 @@ class NfcPermissionContext : public ContentSettingPermissionContextBase {
  private:
   // ContentSettingPermissionContextBase:
 #if !BUILDFLAG(IS_ANDROID)
-  ContentSetting GetPermissionStatusInternal(
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
 #endif
+
+  // PermissionContextBase:
   void DecidePermission(std::unique_ptr<PermissionRequestData> request_data,
                         BrowserPermissionCallback callback) override;
   void UpdateTabContext(const PermissionRequestID& id,

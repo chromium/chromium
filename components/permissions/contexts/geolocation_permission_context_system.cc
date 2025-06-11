@@ -31,12 +31,13 @@ GeolocationPermissionContextSystem::~GeolocationPermissionContextSystem() {
   }
 }
 
-ContentSetting GeolocationPermissionContextSystem::GetPermissionStatusInternal(
+ContentSetting
+GeolocationPermissionContextSystem::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   auto site_permission =
-      GeolocationPermissionContext::GetPermissionStatusInternal(
+      GeolocationPermissionContext::GetContentSettingStatusInternal(
           render_frame_host, requesting_origin, embedding_origin);
   if (site_permission != ContentSetting::CONTENT_SETTING_ALLOW) {
     return site_permission;

@@ -149,7 +149,7 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
 }
 
 ContentSetting
-TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
+TopLevelStorageAccessPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -167,7 +167,7 @@ TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
   }
 
   ContentSetting setting =
-      ContentSettingPermissionContextBase::GetPermissionStatusInternal(
+      ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
           render_frame_host, requesting_origin, embedding_origin);
 
   // Although the current implementation does not persist rejected permissions,

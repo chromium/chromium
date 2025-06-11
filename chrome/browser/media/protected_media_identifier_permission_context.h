@@ -25,7 +25,7 @@ class ProtectedMediaIdentifierPermissionContext
   ~ProtectedMediaIdentifierPermissionContext() override;
 
   // ContentSettingPermissionContextBase implementation.
-  ContentSetting GetPermissionStatusInternal(
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;

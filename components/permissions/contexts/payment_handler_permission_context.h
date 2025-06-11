@@ -27,7 +27,7 @@ class PaymentHandlerPermissionContext
   ~PaymentHandlerPermissionContext() override;
 
  private:
-  // ContentSettingPermissionContextBase
+  // PermissionContextBase
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;

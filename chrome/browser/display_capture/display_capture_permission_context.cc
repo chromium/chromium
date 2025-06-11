@@ -14,13 +14,6 @@ DisplayCapturePermissionContext::DisplayCapturePermissionContext(
           ContentSettingsType::DISPLAY_CAPTURE,
           network::mojom::PermissionsPolicyFeature::kDisplayCapture) {}
 
-ContentSetting DisplayCapturePermissionContext::GetPermissionStatusInternal(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin) const {
-  return CONTENT_SETTING_ASK;
-}
-
 void DisplayCapturePermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
@@ -28,6 +21,13 @@ void DisplayCapturePermissionContext::DecidePermission(
                       /*persist=*/false, CONTENT_SETTING_DEFAULT,
                       /*is_one_time=*/false,
                       /*is_final_decision=*/true);
+}
+
+ContentSetting DisplayCapturePermissionContext::GetContentSettingStatusInternal(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin) const {
+  return CONTENT_SETTING_ASK;
 }
 
 void DisplayCapturePermissionContext::UpdateContentSetting(

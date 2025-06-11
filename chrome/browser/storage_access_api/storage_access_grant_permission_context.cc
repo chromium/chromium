@@ -30,7 +30,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/metrics/dwa/dwa_builders.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/permissions/constants.h"
@@ -267,7 +266,7 @@ void StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
 
 StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     content::BrowserContext* browser_context)
-    : ContentSettingPermissionContextBase(
+    : permissions::ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::STORAGE_ACCESS,
           network::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
@@ -412,8 +411,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     // this code is reachable even after permission has been blocked.
     // Accordingly, check the default implementation, and if a denial has been
     // persisted, respect that decision.
-    ContentSetting existing_setting =
-        ContentSettingPermissionContextBase::GetPermissionStatusInternal(
+    ContentSetting existing_setting = permissions::
+        ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
             rfh, request_data->requesting_origin,
             request_data->embedding_origin);
     // ALLOW grants are handled by ContentSettingPermissionContextBase so they
@@ -565,7 +564,8 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
                                                         std::move(callback));
 }
 
-ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
+ContentSetting
+StorageAccessGrantPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -578,9 +578,9 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
     return CONTENT_SETTING_ALLOW;
   }
 
-  ContentSetting setting =
-      ContentSettingPermissionContextBase::GetPermissionStatusInternal(
-          render_frame_host, requesting_origin, embedding_origin);
+  ContentSetting setting = permissions::ContentSettingPermissionContextBase::
+      GetContentSettingStatusInternal(render_frame_host, requesting_origin,
+                                      embedding_origin);
 
   // The spec calls for avoiding exposure of rejections to prevent any attempt
   // at retaliating against users who would reject a prompt.

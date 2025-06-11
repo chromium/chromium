@@ -50,7 +50,7 @@ void ClipboardSanitizedWritePermissionContext::DecidePermission(
 }
 
 ContentSetting
-ClipboardSanitizedWritePermissionContext::GetPermissionStatusInternal(
+ClipboardSanitizedWritePermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {

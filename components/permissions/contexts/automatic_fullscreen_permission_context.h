@@ -10,7 +10,7 @@
 namespace permissions {
 
 class AutomaticFullscreenPermissionContext
-    : public permissions::ContentSettingPermissionContextBase {
+    : public ContentSettingPermissionContextBase {
  public:
   explicit AutomaticFullscreenPermissionContext(
       content::BrowserContext* browser_context);

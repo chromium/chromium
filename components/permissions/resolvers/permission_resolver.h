@@ -45,7 +45,7 @@ class PermissionResolver {
   virtual base::Value ComputePermissionDecisionResult(
       const base::Value& previous_value,
       ContentSetting decision,
-      std::optional<base::Value> prompt_options) const = 0;
+      const base::Value& prompt_options = base::Value()) const = 0;
 
   // Determines the `PromptParameters` for the current request given the
   // `current_setting_state` which is the fully coalesced current settings

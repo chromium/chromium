@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/values.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/permission_resolver.h"
@@ -90,6 +91,8 @@ struct PermissionRequestData {
 
   std::vector<std::string> requested_audio_capture_device_ids;
   std::vector<std::string> requested_video_capture_device_ids;
+
+  base::Value prompt_options;
 };
 
 }  // namespace permissions

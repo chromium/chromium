@@ -25,7 +25,7 @@ class ContentSettingPermissionResolver : public PermissionResolver {
   base::Value ComputePermissionDecisionResult(
       const base::Value& previous_value,
       ContentSetting decision,
-      std::optional<base::Value> prompt_options) const override;
+      const base::Value& prompt_options = base::Value()) const override;
 
   PromptParameters GetPromptParameters(
       const base::Value& current_setting_state) const override;

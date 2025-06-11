@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_RESULT_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_RESULT_H_
 
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -51,11 +52,26 @@ enum class PermissionStatusSource {
 };
 
 struct CONTENT_EXPORT PermissionResult {
-  PermissionResult(PermissionStatus status, PermissionStatusSource source);
+  PermissionResult(
+      PermissionStatus permission_status,
+      PermissionStatusSource permission_status_source,
+      std::optional<base::Value> retrieved_permission_data = std::nullopt);
+  PermissionResult(const PermissionResult& other);
+  PermissionResult& operator=(PermissionResult& other);
+  PermissionResult(PermissionResult&&);
+  PermissionResult& operator=(PermissionResult&&);
   ~PermissionResult();
 
   PermissionStatus status;
   PermissionStatusSource source;
+
+  // Holds the fully coalesced (i.e. combined persisted & ephemeral state)
+  // permission state that determined the `PermissionResult`. This is used to
+  // support permissions with options. It's possible that a request cannot be
+  // satisfied as is, because an option has been denied, but the request can be
+  // downgraded. To determine what to do, the permission implementation can use
+  // this field to inspect the permission state.
+  std::optional<base::Value> retrieved_permission_data;
 };
 
 }  // namespace content

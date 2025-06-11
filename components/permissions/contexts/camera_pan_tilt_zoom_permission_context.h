@@ -53,11 +53,13 @@ class CameraPanTiltZoomPermissionContext
       const CameraPanTiltZoomPermissionContext&) = delete;
 
  private:
-  // ContentSettingPermissionContextBase
+  // PermissionContextBase
   void RequestPermission(
       std::unique_ptr<PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
-  ContentSetting GetPermissionStatusInternal(
+
+  // ContentSettingPermissionContextBase
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;

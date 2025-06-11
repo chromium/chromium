@@ -40,7 +40,7 @@ ContentSettingPermissionResolver::DeterminePermissionStatus(
 base::Value ContentSettingPermissionResolver::ComputePermissionDecisionResult(
     const base::Value& previous_value,
     ContentSetting decision,
-    std::optional<base::Value> prompt_options) const {
+    const base::Value& prompt_options) const {
   return decision == CONTENT_SETTING_DEFAULT ? base::Value(default_value_)
                                              : base::Value(decision);
 }

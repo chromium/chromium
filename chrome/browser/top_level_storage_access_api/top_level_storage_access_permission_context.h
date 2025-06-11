@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/permissions/content_setting_permission_context_base.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 
@@ -72,14 +73,10 @@ class TopLevelStorageAccessPermissionContext
       permissions::BrowserPermissionCallback callback);
 
  private:
-  // ContentSettingPermissionContextBase:
+  // PermissionContextBase:
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
-  ContentSetting GetPermissionStatusInternal(
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin) const override;
   void NotifyPermissionSet(
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
@@ -87,10 +84,18 @@ class TopLevelStorageAccessPermissionContext
       ContentSetting content_setting,
       bool is_one_time,
       bool is_final_decision) override;
+
+  // ContentSettingPermissionContextBase
   void UpdateContentSetting(
       const permissions::PermissionRequestData& request_data,
       ContentSetting content_setting,
       bool is_one_time) override;
+
+  // ContentSettingPermissionContextBase
+  ContentSetting GetContentSettingStatusInternal(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin) const override;
 
   // Internal implementation for NotifyPermissionSet.
   void NotifyPermissionSetInternal(

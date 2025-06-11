@@ -67,16 +67,16 @@ TEST_P(ContentSettingPermissionResolverTest, TestDeterminePermissionStatus) {
   base::Value previous_setting(
       content_settings::ContentSettingToValue(CONTENT_SETTING_DEFAULT));
 
-  EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, CONTENT_SETTING_ALLOW, std::nullopt),
+  EXPECT_EQ(resolver.ComputePermissionDecisionResult(previous_setting,
+                                                     CONTENT_SETTING_ALLOW),
             CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, CONTENT_SETTING_BLOCK, std::nullopt),
+  EXPECT_EQ(resolver.ComputePermissionDecisionResult(previous_setting,
+                                                     CONTENT_SETTING_BLOCK),
             CONTENT_SETTING_BLOCK);
 
-  EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, CONTENT_SETTING_DEFAULT, std::nullopt),
+  EXPECT_EQ(resolver.ComputePermissionDecisionResult(previous_setting,
+                                                     CONTENT_SETTING_DEFAULT),
             default_value);
 }
 
@@ -88,16 +88,16 @@ TEST_P(ContentSettingPermissionResolverTest,
   ContentSettingPermissionResolver resolver(type);
   base::Value previous_setting(CONTENT_SETTING_DEFAULT);
 
-  EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, CONTENT_SETTING_ALLOW, std::nullopt),
+  EXPECT_EQ(resolver.ComputePermissionDecisionResult(previous_setting,
+                                                     CONTENT_SETTING_ALLOW),
             CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, CONTENT_SETTING_BLOCK, std::nullopt),
+  EXPECT_EQ(resolver.ComputePermissionDecisionResult(previous_setting,
+                                                     CONTENT_SETTING_BLOCK),
             CONTENT_SETTING_BLOCK);
 
-  EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, CONTENT_SETTING_DEFAULT, std::nullopt),
+  EXPECT_EQ(resolver.ComputePermissionDecisionResult(previous_setting,
+                                                     CONTENT_SETTING_DEFAULT),
 
             default_value);
 }

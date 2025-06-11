@@ -96,8 +96,8 @@ class NotificationPermissionContext
       content::BrowserContext* browser_context);
   ~NotificationPermissionContext() override;
 
-  // ContentSettingPermissionContextBase implementation.
-  ContentSetting GetPermissionStatusInternal(
+  // PermissionContextBase implementation.
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;

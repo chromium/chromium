@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_DEVICE_PERMISSION_CONTEXT_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 
@@ -23,8 +24,8 @@ class MediaStreamDevicePermissionContext
 
   ~MediaStreamDevicePermissionContext() override;
 
+  // PermissionContextBase:
 #if BUILDFLAG(IS_ANDROID)
-  // ContentSettingPermissionContextBase:
   void NotifyPermissionSet(
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
@@ -33,17 +34,17 @@ class MediaStreamDevicePermissionContext
       bool is_one_time,
       bool is_final_decision) override;
 #endif
+  void ResetPermission(const GURL& requesting_origin,
+                       const GURL& embedding_origin) override;
 
+  // ContentSettingPermissionContextBase:
   // TODO(xhwang): GURL.DeprecatedGetOriginAsURL() shouldn't be used as the
   // origin. Need to refactor to use url::Origin. crbug.com/527149 is filed for
   // this.
-  ContentSetting GetPermissionStatusInternal(
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-
-  void ResetPermission(const GURL& requesting_origin,
-                       const GURL& embedding_origin) override;
 
  private:
 #if BUILDFLAG(IS_ANDROID)

@@ -8,8 +8,28 @@ namespace content {
 
 PermissionResult::PermissionResult(
     PermissionStatus permission_status,
-    PermissionStatusSource permission_status_source)
-    : status(permission_status), source(permission_status_source) {}
+    PermissionStatusSource permission_status_source,
+    std::optional<base::Value> retrieved_permission_data)
+    : status(permission_status),
+      source(permission_status_source),
+      retrieved_permission_data(std::move(retrieved_permission_data)) {}
+
+PermissionResult::PermissionResult(const PermissionResult& other) {
+  status = other.status;
+  source = other.source;
+  retrieved_permission_data =
+      other.retrieved_permission_data.has_value()
+          ? std::make_optional(other.retrieved_permission_data.value().Clone())
+          : std::nullopt;
+}
+PermissionResult& PermissionResult::operator=(PermissionResult& other) {
+  status = other.status;
+  source = other.source;
+  retrieved_permission_data = std::move(other.retrieved_permission_data);
+  return *this;
+}
+PermissionResult::PermissionResult(PermissionResult&&) = default;
+PermissionResult& PermissionResult::operator=(PermissionResult&&) = default;
 
 PermissionResult::~PermissionResult() = default;
 

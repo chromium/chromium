@@ -37,7 +37,7 @@ void PointerLockPermissionContext::NotifyPermissionSet(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-ContentSetting PointerLockPermissionContext::GetPermissionStatusInternal(
+ContentSetting PointerLockPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {

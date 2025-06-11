@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -37,7 +38,7 @@ using PermissionStatus = blink::mojom::PermissionStatus;
 
 DurableStoragePermissionContext::DurableStoragePermissionContext(
     content::BrowserContext* browser_context)
-    : ContentSettingPermissionContextBase(
+    : permissions::ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::DURABLE_STORAGE,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}

@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_CONTEXTS_WEB_APP_INSTALLATION_PERMISSION_CONTEXT_H_
 
 #include "components/permissions/content_setting_permission_context_base.h"
+#include "components/permissions/permission_context_base.h"
 
 namespace permissions {
 

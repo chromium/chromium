@@ -25,12 +25,12 @@ class ClipboardSanitizedWritePermissionContext
       const ClipboardSanitizedWritePermissionContext&) = delete;
 
  private:
-  // ContentSettingPermissionContextBase:
+  // PermissionContextBase:
   void DecidePermission(std::unique_ptr<PermissionRequestData> request_data,
                         BrowserPermissionCallback callback) override;
 
   // ContentSettingPermissionContextBase:
-  ContentSetting GetPermissionStatusInternal(
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;

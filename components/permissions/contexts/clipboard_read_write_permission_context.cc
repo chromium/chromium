@@ -46,11 +46,12 @@ void ClipboardReadWritePermissionContext::DecidePermission(
   }
 #endif
 
-  ContentSettingPermissionContextBase::DecidePermission(
-      std::move(request_data), std::move(callback_base));
+  PermissionContextBase::DecidePermission(std::move(request_data),
+                                          std::move(callback_base));
 }
 
-ContentSetting ClipboardReadWritePermissionContext::GetPermissionStatusInternal(
+ContentSetting
+ClipboardReadWritePermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -64,7 +65,7 @@ ContentSetting ClipboardReadWritePermissionContext::GetPermissionStatusInternal(
   }
 #endif
 
-  return ContentSettingPermissionContextBase::GetPermissionStatusInternal(
+  return ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
       render_frame_host, requesting_origin, embedding_origin);
 }
 

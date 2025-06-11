@@ -92,7 +92,8 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
           base::BindOnce(&CallbackWrapper, std::move(callback)));
 }
 
-ContentSetting CameraPanTiltZoomPermissionContext::GetPermissionStatusInternal(
+ContentSetting
+CameraPanTiltZoomPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -101,7 +102,7 @@ ContentSetting CameraPanTiltZoomPermissionContext::GetPermissionStatusInternal(
                                              embedding_origin, &result)) {
     return result;
   }
-  return ContentSettingPermissionContextBase::GetPermissionStatusInternal(
+  return ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
       render_frame_host, requesting_origin, embedding_origin);
 }
 
