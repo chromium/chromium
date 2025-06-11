@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/url_request/url_request_test_job.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -217,7 +213,10 @@ int URLRequestTestJob::CopyDataForRead(IOBuffer* buf, int buf_size) {
     if (bytes_read + offset_ > static_cast<int>(response_data_.length()))
       bytes_read = static_cast<int>(response_data_.length()) - offset_;
 
-    memcpy(buf->data(), &response_data_.c_str()[offset_], bytes_read);
+    buf->span().copy_prefix_from(
+        base::as_byte_span(response_data_)
+            .subspan(base::checked_cast<size_t>(offset_),
+                     base::checked_cast<size_t>(bytes_read)));
     offset_ += bytes_read;
   }
   return bytes_read;

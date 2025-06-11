@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #include <stdint.h>
@@ -631,10 +626,10 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
       spdy::SpdySerializedFrame serialized_frame = builder.take();
       DCHECK_EQ(frame_size, serialized_frame.size());
 
+      std::string_view serialized_frame_view(serialized_frame);
       ssl_config_.application_settings[NextProto::kProtoHTTP2] =
-          std::vector<uint8_t>(
-              serialized_frame.data(),
-              serialized_frame.data() + serialized_frame.size());
+          std::vector<uint8_t>(serialized_frame_view.begin(),
+                               serialized_frame_view.end());
 
       ssl_config_.client_hello_callback_for_testing =
           base::BindRepeating([](const SSL_CLIENT_HELLO* client_hello) {
