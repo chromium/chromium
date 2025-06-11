@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "services/webnn/ort/ort_data_type.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -52,6 +53,11 @@ constexpr base::cstring_view kOpTypeRelu = "Relu";
 constexpr base::cstring_view kOpTypeSigmoid = "Sigmoid";
 constexpr base::cstring_view kOpTypeSoftsign = "Softsign";
 constexpr base::cstring_view kOpTypeTanh = "Tanh";
+
+// Pooling operations
+constexpr base::cstring_view kOpTypeAveragePool2d = "AveragePool";
+constexpr base::cstring_view kOpTypeMaxPool2d = "MaxPool";
+constexpr base::cstring_view kOpTypeLpPool2d = "LpPool";
 
 constexpr std::string_view kUnderscore = "_";
 
@@ -320,6 +326,91 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   model_editor_.AddNode(kOpTypeGemm, node, inputs, outputs, attributes);
 }
 
+void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
+  std::vector<ScopedOrtOpAttr> attributes;
+  constexpr base::cstring_view kAttrDilations = "dilations";
+  constexpr base::cstring_view kAttrStrides = "strides";
+  constexpr base::cstring_view kAttrKernelShape = "kernel_shape";
+  constexpr base::cstring_view kAttrPads = "pads";
+  constexpr base::cstring_view kAttrCeilMode = "ceil_mode";
+
+  std::array<int64_t, 2> dilations = {
+      base::checked_cast<int64_t>(pool2d.dilations->height),
+      base::checked_cast<int64_t>(pool2d.dilations->width)};
+  attributes.push_back(
+      model_editor_.CreateAttribute(kAttrDilations, dilations));
+
+  std::array<int64_t, 2> strides = {
+      base::checked_cast<int64_t>(pool2d.strides->height),
+      base::checked_cast<int64_t>(pool2d.strides->width)};
+  attributes.push_back(model_editor_.CreateAttribute(kAttrStrides, strides));
+
+  std::array<int64_t, 2> window_dimensions = {
+      base::checked_cast<int64_t>(pool2d.window_dimensions->height),
+      base::checked_cast<int64_t>(pool2d.window_dimensions->width)};
+  attributes.push_back(
+      model_editor_.CreateAttribute(kAttrKernelShape, window_dimensions));
+
+  // ONNX's pads are [beginning_height, beginning_width, ending_height,
+  // ending_width].
+  std::array<int64_t, 4> pads = {
+      base::checked_cast<int64_t>(pool2d.padding->beginning->height),
+      base::checked_cast<int64_t>(pool2d.padding->beginning->width),
+      base::checked_cast<int64_t>(pool2d.padding->ending->height),
+      base::checked_cast<int64_t>(pool2d.padding->ending->width)};
+  attributes.push_back(model_editor_.CreateAttribute(kAttrPads, pads));
+
+  // Calculate the ceil_mode.
+  const OperandDescriptor& input_descriptor =
+      GetOperand(pool2d.input_operand_id).descriptor;
+  const std::vector<uint32_t>& input_shape = input_descriptor.shape();
+  const std::vector<uint32_t>& output_shape =
+      GetOperand(pool2d.output_operand_id).descriptor.shape();
+
+  CHECK_EQ(context_properties_.input_operand_layout, InputOperandLayout::kNchw);
+  uint32_t input_height = input_shape[2];
+  uint32_t output_height = output_shape[2];
+  const auto float_output_height = CalculateConv2dOutputSize(
+      input_height, pool2d.window_dimensions->height,
+      pool2d.padding->beginning->height, pool2d.padding->ending->height,
+      pool2d.strides->height, pool2d.dilations->height, pool2d.label);
+  CHECK(float_output_height.has_value());
+
+  int64_t ceil_mode = float_output_height.value() < output_height ? 1 : 0;
+  attributes.push_back(model_editor_.CreateAttribute(kAttrCeilMode, ceil_mode));
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  base::cstring_view op_type;
+  switch (pool2d.kind) {
+    case mojom::Pool2d::Kind::kAveragePool2d: {
+      CHECK(data_type_limits.average_pool2d_input.Supports(input_descriptor));
+      op_type = kOpTypeAveragePool2d;
+      break;
+    }
+    case mojom::Pool2d::Kind::kMaxPool2d: {
+      CHECK(data_type_limits.max_pool2d_input.Supports(input_descriptor));
+      op_type = kOpTypeMaxPool2d;
+      break;
+    }
+    case mojom::Pool2d::Kind::kL2Pool2d: {
+      CHECK(data_type_limits.l2_pool2d_input.Supports(input_descriptor));
+      constexpr base::cstring_view kAttrP = "p";
+      op_type = kOpTypeLpPool2d;
+      attributes.push_back(
+          model_editor_.CreateAttribute(kAttrP, static_cast<int64_t>(2)));
+      break;
+    }
+  }
+
+  const std::string node = GenerateOperationName(pool2d.label);
+  const std::string input = GetOperandNameById(pool2d.input_operand_id);
+  const std::string output = GetOperandNameById(pool2d.output_operand_id);
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(op_type, node, inputs, outputs, attributes);
+}
+
 [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
                              mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
@@ -361,6 +452,10 @@ GraphBuilderOrt::BuildModel() {
             GetOperand(operation->get_hard_swish()->input_operand_id)
                 .descriptor));
         AddUnaryOperation(*operation->get_hard_swish(), kOpTypeHardSwish);
+        break;
+      }
+      case mojom::Operation::Tag::kPool2d: {
+        AddPool2dOperation(*operation->get_pool2d());
         break;
       }
       case mojom::Operation::Tag::kRelu: {
@@ -411,7 +506,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kMatmul:
       case mojom::Operation::Tag::kLeakyRelu:
       case mojom::Operation::Tag::kPad:
-      case mojom::Operation::Tag::kPool2d:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReduce:

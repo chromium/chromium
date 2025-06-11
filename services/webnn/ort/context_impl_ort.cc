@@ -46,6 +46,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       OperandDataType::kFloat32, OperandDataType::kFloat16,
       OperandDataType::kInt32, OperandDataType::kInt64};
 
+  static constexpr SupportedDataTypes kInts8Float16To32 = {
+      OperandDataType::kUint8, OperandDataType::kInt8,
+      OperandDataType::kFloat16, OperandDataType::kFloat32};
+
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       BatchNormalizationAxis::kChannelsFirst,
@@ -135,9 +139,12 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*lstm_cell_bias=*/{},
        /*matmul_input=*/{},
        /*pad_input=*/{},
-       /*average_pool2d_input=*/{},
-       /*l2_pool2d_input=*/{},
-       /*max_pool2d_input=*/{},
+       /*average_pool2d_input=*/
+       {DataTypeConstraint::kFloat16To32, {3, 8}},
+       /*l2_pool2d_input=*/
+       {DataTypeConstraint::kFloat16To32, {3, 8}},
+       /*max_pool2d_input=*/
+       {kInts8Float16To32, {3, 8}},
        /*prelu_input=*/{},
        /*quantize_linear_input=*/{},
        /*quantize_linear_zero_point=*/{},
