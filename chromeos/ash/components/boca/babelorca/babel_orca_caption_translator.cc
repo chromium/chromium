@@ -25,14 +25,10 @@ bool IsNonIdeographicSourceOrIdeographicTarget(
          ::captions::IsIdeographicLocale(target_language);
 }
 
-bool AreLanguagesTheSame(const std::string& source_language,
-                         const std::string& target_language) {
-  std::string source_language_component =
-      l10n_util::GetLanguage(source_language);
-  std::string target_language_component =
-      l10n_util::GetLanguage(target_language);
-
-  return source_language_component == target_language_component;
+bool AreLanguagesTheSame(std::string_view source_language,
+                         std::string_view target_language) {
+  return l10n_util::GetLanguage(source_language) ==
+         l10n_util::GetLanguage(target_language);
 }
 
 }  // namespace
