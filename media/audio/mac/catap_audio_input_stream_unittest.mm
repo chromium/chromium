@@ -23,6 +23,10 @@
 namespace media {
 
 namespace {
+void LogToStderr(const std::string& message) {
+  LOG(ERROR) << message;
+}
+
 bool AudioObjectPropertyAddressEq(const AudioObjectPropertyAddress& x,
                                   const AudioObjectPropertyAddress& y) {
   return x.mSelector == y.mSelector && x.mScope == y.mScope &&
@@ -145,7 +149,7 @@ class CatapAudioInputStreamTest : public testing::Test {
                           ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
                           kCatapLoopbackDefaultFramesPerBuffer),
           media::AudioDeviceDescription::kLoopbackInputDeviceId,
-          base::DoNothing(), base::DoNothing(),
+          base::BindRepeating(LogToStderr), base::DoNothing(),
           media::AudioDeviceDescription::kDefaultDeviceId,
           std::move(mock_catap_api_object));
       EXPECT_TRUE(stream_);
@@ -285,28 +289,21 @@ class CatapAudioInputStreamTest : public testing::Test {
   AudioDeviceIOProc audio_proc_;
 };
 
-// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
-// be re-enabled ASAP.
-TEST_F(CatapAudioInputStreamTest, DISABLED_CreateAndInitializeWithPermissions) {
+TEST_F(CatapAudioInputStreamTest, CreateAndInitializeWithPermissions) {
   if (@available(macOS 14.2, *)) {
     EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/true),
               AudioInputStream::OpenOutcome::kSuccess);
   }
 }
 
-// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
-// be re-enabled ASAP.
-TEST_F(CatapAudioInputStreamTest,
-       DISABLED_CreateAndFailToInitializeWithoutPermissions) {
+TEST_F(CatapAudioInputStreamTest, CreateAndFailToInitializeWithoutPermissions) {
   if (@available(macOS 14.2, *)) {
     EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/false),
               AudioInputStream::OpenOutcome::kFailed);
   }
 }
 
-// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
-// be re-enabled ASAP.
-TEST_F(CatapAudioInputStreamTest, DISABLED_CaptureSomeAudioData) {
+TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
   if (@available(macOS 14.2, *)) {
     EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/true),
               AudioInputStream::OpenOutcome::kSuccess);
@@ -352,9 +349,7 @@ TEST_F(CatapAudioInputStreamTest, DISABLED_CaptureSomeAudioData) {
   }
 }
 
-// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
-// be re-enabled ASAP.
-TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithoutChromeId) {
+TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
   if (@available(macOS 14.2, *)) {
     auto mock_catap_api_object = std::make_unique<MockCatapApi>();
     // Keep a raw pointer to set expectations.
@@ -366,7 +361,7 @@ TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithoutChromeId) {
                         ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
                         kCatapLoopbackDefaultFramesPerBuffer),
         media::AudioDeviceDescription::kLoopbackWithoutChromeId,
-        base::DoNothing(), base::DoNothing(),
+        base::BindRepeating(LogToStderr), base::DoNothing(),
         media::AudioDeviceDescription::kDefaultDeviceId,
         std::move(mock_catap_api_object));
     EXPECT_TRUE(stream_);
@@ -466,9 +461,7 @@ TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithoutChromeId) {
   }
 }
 
-// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
-// be re-enabled ASAP.
-TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithMuteDevice) {
+TEST_F(CatapAudioInputStreamTest, LoopbackWithMuteDevice) {
   if (@available(macOS 14.2, *)) {
     auto mock_catap_api_object = std::make_unique<MockCatapApi>();
     // Keep a raw pointer to set expectations.
@@ -481,7 +474,7 @@ TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithMuteDevice) {
                         ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
                         kCatapLoopbackDefaultFramesPerBuffer),
         media::AudioDeviceDescription::kLoopbackWithMuteDeviceId,
-        base::DoNothing(), base::DoNothing(),
+        base::BindRepeating(LogToStderr), base::DoNothing(),
         media::AudioDeviceDescription::kDefaultDeviceId,
         std::move(mock_catap_api_object));
     EXPECT_TRUE(stream_);
@@ -516,9 +509,7 @@ TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithMuteDevice) {
   }
 }
 
-// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
-// be re-enabled ASAP.
-TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithAllDevices) {
+TEST_F(CatapAudioInputStreamTest, LoopbackWithAllDevices) {
   if (@available(macOS 14.2, *)) {
     auto mock_catap_api_object = std::make_unique<MockCatapApi>();
     // Keep a raw pointer to set expectations.
@@ -530,8 +521,9 @@ TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithAllDevices) {
         AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                         ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
                         kCatapLoopbackDefaultFramesPerBuffer),
-        media::AudioDeviceDescription::kLoopbackAllDevicesId, base::DoNothing(),
-        base::DoNothing(), media::AudioDeviceDescription::kDefaultDeviceId,
+        media::AudioDeviceDescription::kLoopbackAllDevicesId,
+        base::BindRepeating(LogToStderr), base::DoNothing(),
+        media::AudioDeviceDescription::kDefaultDeviceId,
         std::move(mock_catap_api_object));
     EXPECT_TRUE(stream_);
 
