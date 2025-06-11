@@ -69,8 +69,8 @@ SELECT
   input_type,
   task_start_time_ts
 FROM steps_with_ordering
--- This is where we actually remove duplicate steps.
 WHERE
+  -- This is where we actually remove duplicate steps.
   ordering_within_partition = 1
 ORDER BY
   slice_id,
