@@ -306,10 +306,10 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
     case ThreadType::kDefault:
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
       break;
-    case ThreadType::kDisplayCritical: {
+    case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
       break;
-    }
     case ThreadType::kRealtimeAudio:
       SetPriorityRealtimeAudio(GetCurrentThreadRealtimePeriod());
       DCHECK_EQ([NSThread.currentThread threadPriority], 1.0);

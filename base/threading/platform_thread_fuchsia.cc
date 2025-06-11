@@ -95,7 +95,7 @@ void PlatformThread::SetName(const std::string& name) {
 // static
 bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
   return from == to || to == ThreadType::kDisplayCritical ||
-         to == ThreadType::kRealtimeAudio;
+         to == ThreadType::kInteractive || to == ThreadType::kRealtimeAudio;
 }
 
 namespace internal {
@@ -117,6 +117,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       break;
 
     case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
       SetThreadRole("chromium.base.threading.display", kDisplaySchedulingPeriod,
                     kDisplaySchedulingCapacity);
       break;
@@ -141,6 +142,7 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
     case ThreadType::kDefault:
       return ThreadPriorityForTest::kNormal;
     case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
       return ThreadPriorityForTest::kDisplay;
     case ThreadType::kRealtimeAudio:
       return ThreadPriorityForTest::kRealtimeAudio;

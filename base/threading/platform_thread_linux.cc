@@ -56,6 +56,7 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
     case ThreadType::kDefault:
       return cgroup_filepath;
     case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
     case ThreadType::kRealtimeAudio:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
   }
@@ -283,6 +284,7 @@ int ThreadTypeToNiceValue(const ThreadType thread_type) {
     case ThreadType::kDefault:
       return 0;
     case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
       return -8;
     case ThreadType::kRealtimeAudio:
       return -10;

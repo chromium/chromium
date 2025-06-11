@@ -50,7 +50,8 @@ const ThreadPriorityToNiceValuePairForTest
 // result in heavy throttling and force the thread onto a little core on
 // big.LITTLE devices.
 // - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1 value.
-// - kDisplayCritical corresponds to Android's PRIORITY_DISPLAY = -4 value.
+// - kDisplayCritical and kInteractive correspond to Android's PRIORITY_DISPLAY
+// = -4 value.
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
 
 int ThreadTypeToNiceValue(const ThreadType thread_type) {
@@ -62,6 +63,7 @@ int ThreadTypeToNiceValue(const ThreadType thread_type) {
     case ThreadType::kDefault:
       return 0;
     case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
       if (base::FeatureList::IsEnabled(
               kIncreaseDisplayCriticalThreadPriority)) {
         return -12;

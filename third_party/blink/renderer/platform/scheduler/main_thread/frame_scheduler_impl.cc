@@ -779,8 +779,10 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
   if (feature == SchedulingPolicy::Feature::kWebRTC) {
     if (base::FeatureList::IsEnabled(
             kRendererMainIsDefaultThreadTypeForWebRTC) &&
-        base::PlatformThread::GetCurrentThreadType() ==
-            base::ThreadType::kDisplayCritical) {
+        (base::PlatformThread::GetCurrentThreadType() ==
+             base::ThreadType::kDisplayCritical ||
+         base::PlatformThread::GetCurrentThreadType() ==
+             base::ThreadType::kInteractive)) {
       base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
     }
 

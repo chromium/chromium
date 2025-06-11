@@ -437,6 +437,9 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadType) {
       base::ThreadType::kDisplayCritical, base::IsViaIPC(false));
   base::PlatformThread::SetThreadType(
       process_.Pid(), base::PlatformThreadId::ForTest(105),
+      base::ThreadType::kInteractive, base::IsViaIPC(false));
+  base::PlatformThread::SetThreadType(
+      process_.Pid(), base::PlatformThreadId::ForTest(106),
       base::ThreadType::kRealtimeAudio, base::IsViaIPC(false));
   task_environment_.RunUntilIdle();
 
@@ -455,6 +458,8 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadType) {
           FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(104),
                     resource_manager::ThreadState::kUrgent),
           FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(105),
+                    resource_manager::ThreadState::kUrgent),
+          FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(106),
                     resource_manager::ThreadState::kUrgentBursty)));
 }
 
