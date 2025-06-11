@@ -34,6 +34,7 @@
 #include "components/subresource_filter/content/renderer/web_document_subresource_filter_impl.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/renderer/render_thread_impl.h"
@@ -43,6 +44,7 @@
 #include "content/web_test/renderer/blink_test_helpers.h"
 #include "content/web_test/renderer/spell_check_client.h"
 #include "content/web_test/renderer/test_preferences.h"
+#include "content/web_test/renderer/test_runner_utils.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
@@ -3321,6 +3323,30 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   if (!IsFrameInMainWindow(frame)) {
     main_windows_.push_back(std::make_unique<MainWindowTracker>(view, this));
   }
+
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
+  std::string web_settings_switch_value =
+      command_line->GetSwitchValueASCII(switches::kWebSettingsForTesting);
+  for (auto [key, value] :
+       TestRunnerUtils::ParseWebSettingsString(web_settings_switch_value)) {
+    view->GetSettings()->SetFromStrings(blink::WebString::FromASCII(key),
+                                        blink::WebString::FromASCII(value));
+  }
+
+  if (command_line->HasSwitch(switches::kTargetDeviceScaleForTesting)) {
+    auto target_scale_factor_for_testing = command_line->GetSwitchValueASCII(
+        switches::kTargetDeviceScaleForTesting);
+    double scale_factor;
+    if (base::StringToDouble(
+            TrimWhitespaceASCII(target_scale_factor_for_testing,
+                                base::TRIM_ALL),
+            &scale_factor)) {
+      frame->FrameWidget()->SetDeviceScaleFactorForTesting(scale_factor);
+    }
+  }
+
   // This may be called for a local root in the same process as another local
   // root, in which case we just keep the original config, which should match.
   if (test_is_running_)

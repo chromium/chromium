@@ -741,6 +741,9 @@ const char kSkiaFontCacheLimitMb[] = "skia-font-cache-limit-mb";
 // exceeds this limit.
 const char kSkiaResourceCacheLimitMb[] = "skia-resource-cache-limit-mb";
 
+// Allows web tests to specify the target device scale for the test cases.
+const char kTargetDeviceScaleForTesting[] = "target-device-scale-for-testing";
+
 // Type of the current test harness ("browser" or "ui" or "gpu").
 const char kTestType[]                      = "test-type";
 
@@ -837,6 +840,9 @@ const char kWebglAntialiasingMode[] = "webgl-antialiasing-mode";
 
 // Set a default sample count for webgl if msaa is enabled.
 const char kWebglMSAASampleCount[] = "webgl-msaa-sample-count";
+
+// Allows web tests to specify additional web settings for the test cases.
+const char kWebSettingsForTesting[] = "web-settings-for-testing";
 
 // The prefix used when starting the zygote process. (i.e. 'gdb --args')
 const char kZygoteCmdPrefix[] = "zygote-cmd-prefix";

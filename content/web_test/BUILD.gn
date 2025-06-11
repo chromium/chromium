@@ -290,6 +290,23 @@ group("web_test_renderer_public_deps") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  sources = [
+    "renderer/test_runner_utils.cc",
+    "renderer/test_runner_utils.h",
+  ]
+
+  deps = [ "//base" ]
+
+  public_deps = []
+}
+
 static_library("web_test_renderer") {
   testonly = true
 
@@ -356,6 +373,7 @@ static_library("web_test_renderer") {
     "//components/web_cache/renderer",
     "//content/public/common",
     "//content/test:test_support",
+    "//content/web_test:test_support",
     "//gpu/command_buffer/client:gles2_interface",
     "//media/capture",
     "//printing/buildflags",

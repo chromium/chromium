@@ -3534,9 +3534,11 @@ test("content_unittests") {
       "../browser/speech/network_speech_recognition_engine_impl_unittest.cc",
       "../browser/speech/speech_recognizer_impl_unittest.cc",
       "../browser/tracing/tracing_ui_unittest.cc",
+      "../web_test/renderer/test_runner_utils_unittest.cc",
     ]
     deps += [
       "//components/speech:speech",
+      "//content/web_test:test_support",
       "//device/fido:cablev2_authenticator",
       "//device/fido:cablev2_test_util",
       "//media/mojo/mojom:web_speech_recognition",

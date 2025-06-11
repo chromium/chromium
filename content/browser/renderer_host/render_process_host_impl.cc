@@ -3547,6 +3547,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kStatsCollectionController,
       switches::kSkiaFontCacheLimitMb,
       switches::kSkiaResourceCacheLimitMb,
+      switches::kTargetDeviceScaleForTesting,
       switches::kTestType,
       switches::kTouchEventFeatureDetection,
       switches::kTraceToConsole,
@@ -3561,6 +3562,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kWebViewDrawFunctorUsesVulkan,
       switches::kWebglAntialiasingMode,
       switches::kWebglMSAASampleCount,
+      switches::kWebSettingsForTesting,
       // Please keep these in alphabetical order.
       blink::switches::kAllowPreCommitInput,
       blink::switches::kBlinkSettings,

@@ -7,7 +7,10 @@ import("//third_party/blink/renderer/core/core.gni")
 source_set("web_test") {
   testonly = true
 
-  visibility = [ "//content/web_test:web_test_renderer" ]
+  visibility = [
+    "//content/web_test:test_support",
+    "//content/web_test:web_test_renderer",
+  ]
 
   configs += [
     "//third_party/blink/renderer:config",
