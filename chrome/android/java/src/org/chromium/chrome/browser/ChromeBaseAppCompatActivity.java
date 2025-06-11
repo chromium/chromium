@@ -28,7 +28,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
@@ -46,6 +45,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
@@ -81,6 +82,7 @@ import java.util.LinkedHashSet;
  * A subclass of {@link AppCompatActivity} that maintains states and objects applied to all
  * activities in {@link ChromeApplication} (e.g. night mode).
  */
+@NullMarked
 public class ChromeBaseAppCompatActivity extends AppCompatActivity
         implements NightModeStateProvider.Observer, ModalDialogManagerHolder {
     /**
@@ -112,20 +114,20 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         int NONE = -1;
     }
 
-    private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
+    private final ObservableSupplierImpl<@Nullable ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();
     protected final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier =
             new OneshotSupplierImpl<>();
 
     private NightModeStateProvider mNightModeStateProvider;
     private final LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
-    private ServiceTracingProxyProvider mServiceTracingProxyProvider;
+    private @Nullable ServiceTracingProxyProvider mServiceTracingProxyProvider;
     private InsetObserver mInsetObserver;
     // Created in #onCreate
     private @Nullable EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     // Created in #onCreate
     private @Nullable EdgeToEdgeManager mEdgeToEdgeManager;
-    private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
+    private @Nullable EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -266,7 +268,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             mEdgeToEdgeLayoutCoordinator.destroy();
             mEdgeToEdgeLayoutCoordinator = null;
         }
-        mEdgeToEdgeManager.destroy();
+        if (mEdgeToEdgeManager != null) {
+            mEdgeToEdgeManager.destroy();
+        }
         super.onDestroy();
     }
 
@@ -285,6 +289,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         BundleUtils.saveLoadedSplits(outState);
     }
 
+    // This method has different Nullness than Activity.onRestoreInstanceState().
+    @SuppressWarnings("NullAway")
     @Override
     protected void onRestoreInstanceState(@Nullable Bundle state) {
         if (state != null) {
@@ -327,8 +333,13 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     // Implementation of ModalDialogManagerHolder
     /**
      * @return The {@link ModalDialogManager} that manages the display of modal dialogs (e.g.
-     *         JavaScript dialogs).
+     *     JavaScript dialogs).
      */
+
+    // Adding Nullable to this method will result in a lot of changes. Based on the comment below,
+    // this method will eventually be replaced by getModalDialogManagerSupplier(), so suppressing
+    // the warning should be acceptable.
+    @SuppressWarnings("NullAway")
     @Override
     public ModalDialogManager getModalDialogManager() {
         // TODO(jinsukkim): Remove this method in favor of getModalDialogManagerSupplier().
@@ -338,7 +349,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /**
      * Returns the supplier of {@link ModalDialogManager} that manages the display of modal dialogs.
      */
-    public ObservableSupplier<ModalDialogManager> getModalDialogManagerSupplier() {
+    public ObservableSupplier<@Nullable ModalDialogManager> getModalDialogManagerSupplier() {
         return mModalDialogManagerSupplier;
     }
 

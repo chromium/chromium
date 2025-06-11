@@ -345,7 +345,7 @@ public class BundleUtils {
                 LOADED_SPLITS_KEY, new ArrayList(sInflationClassLoaders.keySet()));
     }
 
-    public static void restoreLoadedSplits(Bundle savedInstanceState) {
+    public static void restoreLoadedSplits(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             return;
         }
