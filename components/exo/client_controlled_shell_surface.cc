@@ -38,11 +38,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/default_frame_header.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/exo/shell_surface_util.h"
@@ -1235,6 +1237,19 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
 
   ash::WindowState* window_state = GetWindowState();
   state_changed_ = window_state->GetStateType() != pending_window_state_;
+
+  // When the RoundedWindows feature is off, ARC++ incorrectly requests
+  // square windows (zero radii). Override the requested corners radii with the
+  // correct rounded corners.
+  // TODO(b:409867780): Remove this after ARC++ provides the correct window
+  // rounded corners.
+  if (!chromeos::features::IsRoundedWindowsEnabled()) {
+    SetWindowCornersRadii(ash::WindowState::ShouldWindowStateHaveRoundedCorners(
+                              pending_window_state_)
+                              ? chromeos::GetWindowRoundedCorners()
+                              : gfx::RoundedCornersF());
+  }
+
   if (!state_changed_) {
     // Animate PIP window movement unless it is being dragged.
     client_controlled_state_->set_next_bounds_change_animation_type(

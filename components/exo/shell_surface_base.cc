@@ -151,20 +151,13 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       return;
     }
 
-    aura::Window* window = GetWidget()->GetNativeWindow();
-    const ash::WindowState* window_state = ash::WindowState::Get(window);
-
-    if (!chromeos::features::IsRoundedWindowsEnabled()) {
-      if (GetFrameEnabled()) {
-        header_view_->SetHeaderCornerRadius(
-            window_state->GetWindowRoundedCorners().upper_left());
-      }
-    }
-
     std::optional<gfx::RoundedCornersF> window_radii =
         shell_surface_->window_corners_radii();
     std::optional<gfx::RoundedCornersF> shadow_radii =
         shell_surface_->shadow_corner_radii();
+
+    aura::Window* window = GetWidget()->GetNativeWindow();
+    const ash::WindowState* window_state = ash::WindowState::Get(window);
 
     std::optional<gfx::RoundedCornersF> rounded_corners;
     if (window_state->IsPip()) {
