@@ -91,13 +91,15 @@ void OsSignalsCollector::GetOsSignals(UserPermission permission,
   signal_response->windows_machine_domain =
       device_signals::GetWindowsMachineDomain();
   signal_response->windows_user_domain = device_signals::GetWindowsUserDomain();
-  signal_response->machine_guid = device_signals::GetMachineGuid();
 #endif  // BUILDFLAG(IS_WIN)
 
   // PII signals requires user consent
   if (permission == UserPermission::kGranted) {
     signal_response->display_name = policy::GetDeviceName();
     signal_response->hostname = device_signals::GetHostName();
+#if BUILDFLAG(IS_WIN)
+    signal_response->machine_guid = device_signals::GetMachineGuid();
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   signal_response->device_enrollment_domain =
