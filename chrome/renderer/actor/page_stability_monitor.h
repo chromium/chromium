@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_H_
 #define CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_H_
 
+#include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -83,6 +84,10 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
   // initialized. Used to compare to the number of requests after monitoring
   // begins to determine if new network requests were started in that interval.
   int starting_request_count_;
+
+  // Track the callback given to the RequestNetworkIdle method so that it can be
+  // canceled, the API supports only one request at a time.
+  base::CancelableOnceClosure network_idle_callback_;
 
   base::OnceClosure is_stable_callback_;
 

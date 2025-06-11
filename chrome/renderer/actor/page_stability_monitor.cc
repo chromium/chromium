@@ -121,8 +121,10 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kWaitForNetworkIdle: {
-      render_frame()->GetWebFrame()->RequestNetworkIdleCallback(
+      network_idle_callback_.Reset(
           PostMoveToStateClosure(State::kWaitForMainThreadIdle));
+      render_frame()->GetWebFrame()->RequestNetworkIdleCallback(
+          network_idle_callback_.callback());
       break;
     }
     case State::kWaitForMainThreadIdle: {
@@ -156,6 +158,8 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kInvokeCallback: {
+      // Ensure we release the network idle callback slot.
+      network_idle_callback_.Cancel();
       std::move(is_stable_callback_).Run();
       MoveToState(State::kDone);
       break;

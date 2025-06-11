@@ -1318,12 +1318,11 @@ void LocalFrame::NetworkBecameIdle(base::TimeDelta idle_start_time) {
 }
 
 void LocalFrame::RequestNetworkIdleCallback(base::OnceClosure callback) {
-  if (network_idle_callback_) {
-    // RequestNetworkIdleCallback only supports a single callback at this time
-    // because of how it's used. If there are multiple clients this could be
-    // changed to a Vector of callbacks.
-    std::move(network_idle_callback_).Run();
-  }
+  // RequestNetworkIdleCallback only supports a single callback at this time
+  // because of how it's used. If there are multiple clients this should change
+  // to a base::CallbackList.
+  CHECK(network_idle_callback_.is_null() ||
+        network_idle_callback_.IsCancelled());
   network_idle_callback_ = std::move(callback);
   idleness_detector_->StartIfNeeded();
 }
