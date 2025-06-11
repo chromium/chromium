@@ -23,6 +23,8 @@ blink_modules_sources("indexeddb") {
     "idb_factory.h",
     "idb_factory_client.cc",
     "idb_factory_client.h",
+    "idb_get_all_options_helper.cc",
+    "idb_get_all_options_helper.h",
     "idb_index.cc",
     "idb_index.h",
     "idb_key.cc",
