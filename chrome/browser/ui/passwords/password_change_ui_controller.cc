@@ -28,11 +28,11 @@ namespace {
 bool ShouldDisplayDialog(PasswordChangeDelegate::State state) {
   switch (state) {
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
     case PasswordChangeDelegate::State::kOtpDetected:
       return true;
-    case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
@@ -40,27 +40,33 @@ bool ShouldDisplayDialog(PasswordChangeDelegate::State state) {
   }
 }
 
-// Creates dialog for `PasswordChangeDelegate::State::kOfferingPasswordChange`.
+// Creates dialog offering password change to the user. `with_privacy_notice`
+// specifies whether an additional privacy paragraph should be displayed.
 std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
-    base::OnceClosure accept_callback) {
-  return ui::DialogModel::Builder()
-      .SetBannerImage(
-          ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_WARNING),
-          ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_WARNING_DARK))
-      .SetIcon(
-          ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon()))
-      .SetTitle(l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_TITLE))
-      .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_DETAILS)))
-      .AddCancelButton(base::DoNothing(),
-                       ui::DialogModel::Button::Params().SetLabel(
-                           l10n_util::GetStringUTF16(IDS_NO_THANKS)))
-      .AddOkButton(
-          std::move(accept_callback),
-          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CHANGE_PASSWORD)))
-      .Build();
+    base::OnceClosure accept_callback,
+    bool with_privacy_notice) {
+  ui::DialogModel::Builder dialog_builder;
+  dialog_builder.SetBannerImage(
+      ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_WARNING),
+      ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_WARNING_DARK));
+  dialog_builder.SetIcon(
+      ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon()));
+  dialog_builder.SetTitle(l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_TITLE));
+  dialog_builder.AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_DETAILS)));
+  dialog_builder.AddCancelButton(base::DoNothing(),
+                                 ui::DialogModel::Button::Params().SetLabel(
+                                     l10n_util::GetStringUTF16(IDS_NO_THANKS)));
+  dialog_builder.AddOkButton(
+      std::move(accept_callback),
+      ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CHANGE_PASSWORD)));
+  if (with_privacy_notice) {
+    dialog_builder.AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE)));
+  }
+  return dialog_builder.Build();
 }
 
 // Creates dialog for failed states of password change flow.
@@ -116,7 +122,11 @@ std::unique_ptr<ui::DialogModel> CreateDialog(
     base::OnceClosure accept_callback) {
   switch (state) {
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
-      return CreateOfferChangePasswordDialog(std::move(accept_callback));
+      return CreateOfferChangePasswordDialog(std::move(accept_callback),
+                                             /*with_privacy_notice=*/false);
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+      return CreateOfferChangePasswordDialog(std::move(accept_callback),
+                                             /*with_privacy_notice=*/true);
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
       return CreatePasswordChangeFailedDialog(std::move(accept_callback),
                                               /*use_error_image=*/false);
@@ -125,7 +135,6 @@ std::unique_ptr<ui::DialogModel> CreateDialog(
                                               /*use_error_image=*/true);
     case PasswordChangeDelegate::State::kOtpDetected:
       return CreateOtpDetectedDialog(std::move(accept_callback));
-    case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
@@ -225,7 +234,6 @@ void PasswordChangeUIController::UpdateState(
     dialog_widget_->MakeCloseSynchronous(
         base::BindOnce(&PasswordChangeUIController::CloseDialogWidget,
                        base::Unretained(this)));
-    return;
   }
 }
 
@@ -236,13 +244,15 @@ void PasswordChangeUIController::OnDialogAccepted() {
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
       password_change_delegate_->StartPasswordChangeFlow();
       return;
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+      password_change_delegate_->OnPrivacyNoticeAccepted();
+      return;
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
     case PasswordChangeDelegate::State::kOtpDetected:
       password_change_delegate_->OpenPasswordChangeTab();
       password_change_delegate_->Stop();
       return;
-    case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:

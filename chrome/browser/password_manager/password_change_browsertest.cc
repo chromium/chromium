@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
 #endif
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       PrivacyNoticeDisplayedAutomatically) {
+                       PrivacyNoticeDialogDisplayed) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
@@ -737,12 +737,14 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   BubbleObserver prompt_observer(WebContents());
   StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
 
-  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForAgreement,
-            password_change_service()
-                ->GetPasswordChangeDelegate(WebContents())
-                ->GetCurrentState());
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return prompt_observer.IsBubbleDisplayedAutomatically(); }));
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForAgreement);
+  EXPECT_TRUE(static_cast<PasswordChangeDelegateImpl*>(delegate)
+                  ->ui_controller()
+                  ->dialog_widget()
+                  ->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,

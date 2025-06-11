@@ -99,16 +99,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest,
   EXPECT_FALSE(GetView()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PasswordChangeIconViewsTest,
-    ViewIsVisibleWhenChangingPasswordWaitingForPrivacyNotice) {
-  EnableSignIn();
-  SetupPasswordChange();
-  EXPECT_TRUE(GetView()->GetVisible());
-  EXPECT_EQ(vector_icons::kPasswordManagerIcon.name,
-            GetView()->GetVectorIcon().name);
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest,
                        ViewIsNotVisibleWhenChangingPasswordCanceled) {
   SetupPasswordChange();
@@ -117,25 +107,4 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest,
           ->GetPasswordChangeDelegate();
   delegate->Stop();
   EXPECT_FALSE(GetView()->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest, TestPinnedToolbarTooltip) {
-  PinnedToolbarActionsModel::Get(browser()->profile())
-      ->UpdatePinnedState(kActionShowPasswordsBubbleOrPage, true);
-  BrowserActions* browser_actions = browser()->browser_actions();
-  std::u16string_view tooltip =
-      actions::ActionManager::Get()
-          .FindAction(kActionShowPasswordsBubbleOrPage,
-                      browser_actions->root_action_item())
-          ->GetTooltipText();
-  ASSERT_EQ(tooltip,
-            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE));
-
-  SetupPasswordChange();
-  tooltip = actions::ActionManager::Get()
-                .FindAction(kActionShowPasswordsBubbleOrPage,
-                            browser_actions->root_action_item())
-                ->GetTooltipText();
-  ASSERT_EQ(tooltip, l10n_util::GetStringUTF16(
-                         IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_ICON_TOOLTIP));
 }
