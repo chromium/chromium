@@ -206,48 +206,9 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     }
     RecordCreateOptionMetrics(*options, "create");
 
-    RemoteCanCreate(
-        ai_manager_remote, options,
-        WTF::BindOnce(
-            [](ScriptPromiseResolver<V8SessionObjectType>* resolver,
-               CreateOptions* options,
-               mojom::blink::ModelAvailabilityCheckResult result) {
-              ScriptState* script_state = resolver->GetScriptState();
-              if (!script_state || !script_state->ContextIsValid()) {
-                return;
-              }
-
-              auto availability = ConvertModelAvailabilityCheckResult(result);
-              if (availability == Availability::kUnavailable) {
-                resolver->RejectWithDOMException(
-                    DOMExceptionCode::kNotAllowedError,
-                    ConvertModelAvailabilityCheckResultToDebugString(result));
-                return;
-              }
-
-              LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
-
-              // Writing Assistance APIs are only available within window and
-              // extension worker contexts by default. User activation is not
-              // consumed by workers, as they lack the ability to do so.
-              if (window && RequiresUserActivation(availability) &&
-                  !LocalFrame::ConsumeTransientUserActivation(
-                      window->GetFrame())) {
-                resolver->RejectWithDOMException(
-                    DOMExceptionCode::kNotAllowedError,
-                    kExceptionMessageUserActivationRequired);
-                return;
-              }
-
-              // TODO(crbug.com/396466270): Make this one mojo round trip
-              // once we can consume User Activation on the browser-side.
-              MakeGarbageCollected<AIWritingAssistanceCreateClient<
-                  AIMojoClient, AIMojoCreateClient, CreateOptions,
-                  V8SessionObjectType>>(script_state, resolver, options)
-                  ->Create();
-            },
-            WrapPersistent(resolver), WrapPersistent(options)));
-
+    MakeGarbageCollected<AIWritingAssistanceCreateClient<
+        AIMojoClient, AIMojoCreateClient, CreateOptions, V8SessionObjectType>>(
+        script_state, resolver, options);
     return promise;
   }
 

@@ -32,6 +32,18 @@ void AIWritingAssistanceCreateClient<mojom::blink::AIWriter,
                                   ToMojoWriterCreateOptions(options_));
 }
 
+template <>
+void AIWritingAssistanceCreateClient<mojom::blink::AIWriter,
+                                     mojom::blink::AIManagerCreateWriterClient,
+                                     WriterCreateOptions,
+                                     Writer>::RemoteCanCreate(CanCreateCallback
+                                                                  callback) {
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  ai_manager_remote->CanCreateWriter(ToMojoWriterCreateOptions(options_),
+                                     std::move(callback));
+}
+
 // static
 template <>
 AIMetrics::AISessionType WriterBase::GetSessionType() {

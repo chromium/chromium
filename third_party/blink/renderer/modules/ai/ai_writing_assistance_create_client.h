@@ -18,6 +18,9 @@
 
 namespace blink {
 
+using CanCreateCallback =
+    base::OnceCallback<void(mojom::blink::ModelAvailabilityCheckResult)>;
+
 // TODO(crbug.com/416021087): Consolidate with LanguageModelCreateClient.
 template <typename AIMojoClient,
           typename AIMojoCreateClient,
@@ -42,19 +45,27 @@ class AIWritingAssistanceCreateClient
                                                this,
                                                resolver,
                                                options->getSignalOr(nullptr)),
-        receiver_(this, GetExecutionContext()),
         options_(options),
+        receiver_(this, GetExecutionContext()),
         task_runner_(
             GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)) {
     if (options->hasMonitor()) {
       monitor_ = MakeGarbageCollected<CreateMonitor>(GetExecutionContext(),
                                                      task_runner_);
-      std::ignore = options->monitor()->Invoke(nullptr, monitor_);
+      // If an exception is thrown, don't initiate the model download.
+      // `AICreateMonitorCallback`'s `Invoke` will automatically reject the
+      // promise with the thrown exception.
+      if (options->monitor()->Invoke(nullptr, monitor_).IsNothing()) {
+        return;
+      }
       HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
           AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
       ai_manager_remote->AddModelDownloadProgressObserver(
           monitor_->BindRemote());
     }
+
+    RemoteCanCreate(WTF::BindOnce(&AIWritingAssistanceCreateClient::Create,
+                                  WrapPersistent(this)));
   }
   ~AIWritingAssistanceCreateClient() override = default;
 
@@ -69,13 +80,6 @@ class AIWritingAssistanceCreateClient
     visitor->Trace(receiver_);
     visitor->Trace(options_);
     visitor->Trace(monitor_);
-  }
-
-  void Create() {
-    mojo::PendingRemote<AIMojoCreateClient> client_remote;
-    receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
-                   task_runner_);
-    RemoteCreate(std::move(client_remote));
   }
 
   // AIMojoCreateClient:
@@ -159,12 +163,48 @@ class AIWritingAssistanceCreateClient
   void ResetReceiver() override { receiver_.reset(); }
 
  protected:
-  // Runs Create* for the session type; defined in template specializations.
+  // Runs Create* and CanCreate* for the session type; defined in template
+  // specializations.
   void RemoteCreate(mojo::PendingRemote<AIMojoCreateClient> client_remote);
+  void RemoteCanCreate(CanCreateCallback callback);
+
+  Member<CreateOptions> options_;
+
+ private:
+  void Create(mojom::blink::ModelAvailabilityCheckResult result) {
+    if (!this->GetResolver()) {
+      return;
+    }
+
+    auto availability = ConvertModelAvailabilityCheckResult(result);
+    if (availability == Availability::kUnavailable) {
+      this->GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          ConvertModelAvailabilityCheckResultToDebugString(result));
+      return;
+    }
+
+    LocalDOMWindow* const window = LocalDOMWindow::From(this->GetScriptState());
+
+    // Writing Assistance APIs are only available within window and extension
+    // worker contexts by default. User activation is not consumed by workers,
+    // as they lack the ability to do so.
+    if (window && RequiresUserActivation(availability) &&
+        !LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
+      this->GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          kExceptionMessageUserActivationRequired);
+      return;
+    }
+
+    mojo::PendingRemote<AIMojoCreateClient> client_remote;
+    receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
+                   task_runner_);
+    RemoteCreate(std::move(client_remote));
+  }
 
   HeapMojoReceiver<AIMojoCreateClient, AIWritingAssistanceCreateClient>
       receiver_;
-  Member<CreateOptions> options_;
   Member<CreateMonitor> monitor_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };

@@ -34,6 +34,18 @@ void AIWritingAssistanceCreateClient<
                                     ToMojoRewriterCreateOptions(options_));
 }
 
+template <>
+void AIWritingAssistanceCreateClient<
+    mojom::blink::AIRewriter,
+    mojom::blink::AIManagerCreateRewriterClient,
+    RewriterCreateOptions,
+    Rewriter>::RemoteCanCreate(CanCreateCallback callback) {
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  ai_manager_remote->CanCreateRewriter(ToMojoRewriterCreateOptions(options_),
+                                       std::move(callback));
+}
+
 // static
 template <>
 AIMetrics::AISessionType RewriterBase::GetSessionType() {

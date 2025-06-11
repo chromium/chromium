@@ -34,6 +34,18 @@ void AIWritingAssistanceCreateClient<
                                       ToMojoSummarizerCreateOptions(options_));
 }
 
+template <>
+void AIWritingAssistanceCreateClient<
+    mojom::blink::AISummarizer,
+    mojom::blink::AIManagerCreateSummarizerClient,
+    SummarizerCreateOptions,
+    Summarizer>::RemoteCanCreate(CanCreateCallback callback) {
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  ai_manager_remote->CanCreateSummarizer(
+      ToMojoSummarizerCreateOptions(options_), std::move(callback));
+}
+
 // static
 template <>
 AIMetrics::AISessionType SummarizerBase::GetSessionType() {

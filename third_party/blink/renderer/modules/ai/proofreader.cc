@@ -30,6 +30,20 @@ void AIWritingAssistanceCreateClient<
   //                                         options_));
 }
 
+template <>
+void AIWritingAssistanceCreateClient<
+    mojom::blink::AIProofreader,
+    mojom::blink::AIManagerCreateProofreaderClient,
+    ProofreaderCreateOptions,
+    Proofreader>::RemoteCanCreate(CanCreateCallback callback) {
+  // TODO(crbug.com/413766815): Call CanCreateProofreader() once supported.
+  // HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+  // AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  // ai_manager_remote->CanCreateProofreader(
+  //    ToMojoProofreaderCreateOptions(options_),
+  //    std::move(callback));
+}
+
 Proofreader::Proofreader(
     ExecutionContext* execution_context,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -114,9 +128,8 @@ ScriptPromise<Proofreader> Proofreader::create(
 
   MakeGarbageCollected<AIWritingAssistanceCreateClient<
       mojom::blink::AIProofreader,
-      mojom::blink::AIManagerCreateProofreaderClient,
-      ProofreaderCreateOptions,
-      Proofreader>>(script_state, resolver, options)->Create();
+      mojom::blink::AIManagerCreateProofreaderClient, ProofreaderCreateOptions,
+      Proofreader>>(script_state, resolver, options);
   return promise;
 }
 
