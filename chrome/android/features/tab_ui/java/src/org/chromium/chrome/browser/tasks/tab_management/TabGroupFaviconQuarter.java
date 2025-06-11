@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
@@ -136,6 +138,6 @@ public class TabGroupFaviconQuarter extends FrameLayout {
     private void updateBackgroundColor(boolean hasImage) {
         @ColorInt
         int color = TabUiThemeProvider.getTabGroupFaviconQuarterFillColor(getContext(), hasImage);
-        mBackground.setColor(color);
+        mBackground.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
     }
 }

@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -28,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -105,20 +109,18 @@ public class TabGroupFaviconQuarterUnitTest {
         assertEquals(mDrawable, mImageView.getDrawable());
         assertEquals(View.INVISIBLE, mTextView.getVisibility());
         assertTrue(TextUtils.isEmpty(mTextView.getText()));
-        assertEquals(
-                mBackground.getColor().getDefaultColor(),
-                SemanticColorUtils.getColorSurfaceBright(mActivity));
+        assertEquals(filterColor(mBackground), SemanticColorUtils.getColorSurfaceBright(mActivity));
     }
 
     @Test
     public void testSetPlusCount() {
         mTabGroupFaviconQuarter.setPlusCount(PLUS_COUNT);
         assertEquals(View.INVISIBLE, mImageView.getVisibility());
-        assertEquals(null, mImageView.getDrawable());
+        assertNull(mImageView.getDrawable());
         assertEquals(View.VISIBLE, mTextView.getVisibility());
         assertEquals("+123", mTextView.getText());
         assertEquals(
-                mBackground.getColor().getDefaultColor(),
+                filterColor(mBackground),
                 SemanticColorUtils.getColorSurfaceContainerLow(mActivity));
     }
 
@@ -126,11 +128,16 @@ public class TabGroupFaviconQuarterUnitTest {
     public void testClear() {
         mTabGroupFaviconQuarter.clear();
         assertEquals(View.INVISIBLE, mImageView.getVisibility());
-        assertEquals(null, mImageView.getDrawable());
+        assertNull(mImageView.getDrawable());
         assertEquals(View.INVISIBLE, mTextView.getVisibility());
         assertTrue(TextUtils.isEmpty(mTextView.getText()));
         assertEquals(
-                mBackground.getColor().getDefaultColor(),
+                filterColor(mBackground),
                 SemanticColorUtils.getColorSurfaceContainerLow(mActivity));
+    }
+
+    private static @ColorInt int filterColor(Drawable drawable) {
+        PorterDuffColorFilter filter = (PorterDuffColorFilter) drawable.getColorFilter();
+        return Shadows.shadowOf(filter).getColor();
     }
 }

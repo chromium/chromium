@@ -5,7 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle" >
-  <solid android:color="@macro/sheet_container_bg_color"/>
+    android:shape="rectangle"
+    android:tint="@macro/sheet_container_bg_color">
+  <solid android:color="@android:color/white"/>
   <corners android:radius="24dp"/>
 </shape>

@@ -7,9 +7,10 @@ found in the LICENSE file.
 
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
+    android:shape="oval"
+    android:tint="?attr/colorPrimary">
     <size
         android:width="8dp"
         android:height="8dp"/>
-    <solid android:color="?attr/colorPrimary"/>
+    <solid android:color="@android:color/white"/>
 </shape>
