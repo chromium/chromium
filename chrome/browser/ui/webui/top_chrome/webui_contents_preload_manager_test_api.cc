@@ -35,7 +35,9 @@ WebUIContentsPreloadManagerTestAPI::GetNextWebUIURLToPreload(
 
 void WebUIContentsPreloadManagerTestAPI::MaybePreloadForBrowserContext(
     content::BrowserContext* browser_context) {
-  return preload_manager()->MaybePreloadForBrowserContext(browser_context);
+  return preload_manager()->MaybePreloadForBrowserContext(
+      browser_context,
+      WebUIContentsPreloadManager::PreloadReason::kBrowserWarmup);
 }
 
 void WebUIContentsPreloadManagerTestAPI::MaybePreloadForBrowserContextLater(
@@ -43,7 +45,8 @@ void WebUIContentsPreloadManagerTestAPI::MaybePreloadForBrowserContextLater(
     content::WebContents* busy_web_contents_to_watch,
     base::TimeDelta deadline) {
   return preload_manager()->MaybePreloadForBrowserContextLater(
-      browser_context, busy_web_contents_to_watch, deadline);
+      browser_context, busy_web_contents_to_watch,
+      WebUIContentsPreloadManager::PreloadReason::kBrowserWarmup, deadline);
 }
 
 void WebUIContentsPreloadManagerTestAPI::PreloadUrl(

@@ -622,6 +622,16 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram name="WebUI.TopChrome.Preload.Reason" enum="WebUIPreloadReason"
+    expires_after="2025-11-23">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The reason of preloading a WebUI. Logged when a preloaded WebUI is created.
+  </summary>
+</histogram>
+
 <histogram name="WebUI.TopChrome.Preload.Result" enum="WebUIPreloadResult"
     expires_after="2025-09-21">
   <owner>kerenzhu@chromium.org</owner>
