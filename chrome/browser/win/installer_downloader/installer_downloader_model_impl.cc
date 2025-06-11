@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -139,9 +140,9 @@ void InstallerDownloaderModelImpl::StartDownload(
 
   // The InstallerDownloaderController that hold this model is a browser global
   // feature. Therefore, it is safe to use base::Unretained here.
-  params->set_callback(
-      base::BindOnce(&InstallerDownloaderModelImpl::OnInstallerDownloadCreated,
-                     base::Unretained(this), std::move(completion_callback)));
+  params->set_callback(base::BindOnce(
+      &InstallerDownloaderModelImpl::OnInstallerDownloadCreated,
+      base::Unretained(this), destination, std::move(completion_callback)));
 
   download_manager.DownloadUrl(std::move(params));
 }
@@ -175,6 +176,7 @@ bool InstallerDownloaderModelImpl::ShouldByPassEligibilityCheck() const {
 }
 
 void InstallerDownloaderModelImpl::OnInstallerDownloadCreated(
+    const base::FilePath& expected_path,
     CompletionCallback completion_callback,
     download::DownloadItem* item,
     download::DownloadInterruptReason reason) {
@@ -186,6 +188,10 @@ void InstallerDownloaderModelImpl::OnInstallerDownloadCreated(
     std::move(completion_callback).Run(/*succeeded=*/false);
     return;
   }
+
+  // Did DownloadManager keep exactly the path we requested?
+  base::UmaHistogramBoolean("Windows.InstallerDownloader.DestinationMatches",
+                            item->GetFullPath() == expected_path);
 
   // The InstallerDownloaderController that hold this model is a browser global
   // feature. Therefore, it is safe to use base::Unretained here.
