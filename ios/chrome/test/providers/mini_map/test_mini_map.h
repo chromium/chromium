@@ -10,12 +10,7 @@
 // A protocol to replace the Mini Map providers in tests.
 @protocol MiniMapControllerFactory
 
-- (id<MiniMapController>)
-    createMiniMapControllerForString:(NSString*)address
-                          completion:
-                              (MiniMapControllerCompletionWithURL)completion
-                 completionWithQuery:
-                     (MiniMapControllerCompletionWithString)completionWithQuery;
+- (id<MiniMapController>)createMiniMapController;
 
 @end
 

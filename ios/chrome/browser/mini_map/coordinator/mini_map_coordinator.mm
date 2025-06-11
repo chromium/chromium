@@ -110,8 +110,11 @@
       ^(NSString* query) {
         [weakSelf mapDismissedRequestingQuery:query];
       };
-  self.miniMapController = ios::provider::CreateMiniMapController(
-      self.text, completion, completionWithQuery);
+  self.miniMapController = ios::provider::CreateMiniMapController();
+  [self.miniMapController configureAddress:self.text];
+  [self.miniMapController configureCompletion:completion];
+  [self.miniMapController
+      configureCompletionWithSearchQuery:completionWithQuery];
 
   [self.miniMapController
       configureFooterWithTitle:l10n_util::GetNSString(

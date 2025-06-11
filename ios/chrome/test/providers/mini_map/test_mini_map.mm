@@ -15,15 +15,9 @@ id<MiniMapControllerFactory> g_mini_map_controller_factory;
 namespace ios {
 namespace provider {
 
-id<MiniMapController> CreateMiniMapController(
-    NSString* address,
-    MiniMapControllerCompletionWithURL completion,
-    MiniMapControllerCompletionWithString completionWithQuery) {
+id<MiniMapController> CreateMiniMapController() {
   // Mini map is not supported in Tests.
-  return [g_mini_map_controller_factory
-      createMiniMapControllerForString:address
-                            completion:completion
-                   completionWithQuery:completionWithQuery];
+  return [g_mini_map_controller_factory createMiniMapController];
 }
 
 namespace test {
