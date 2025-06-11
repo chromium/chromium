@@ -410,6 +410,55 @@ TEST_F(PageActionViewTest, UpdateIconImageHandlesDifferentImageTypes) {
                    ->IsVectorIcon());
 }
 
+// Test that UpdateBorder() applies correct padding to image that is not a
+// vector icon.
+TEST_F(PageActionViewTest, UpdateBorderUsesChipPaddingForBitmapIcon) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kDefaultIconSize, kDefaultIconSize);
+  const ui::ImageModel bitmap_image =
+      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
+  ASSERT_FALSE(bitmap_image.IsVectorIcon());
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+
+  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->UpdateBorder();
+
+  const gfx::Insets expected_insets =
+      gfx::Insets::VH(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
+                      GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
+  EXPECT_EQ(page_action_view()->GetInsets(), expected_insets);
+}
+
+// Test that the corner radii are consistent for chips, regardless of whether
+// the icon is a vector or bitmap.
+TEST_F(PageActionViewTest, ChipCornerRadiiConsistentForVectorAndBitmapIcons) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kDefaultIconSize, kDefaultIconSize);
+  const ui::ImageModel bitmap_image =
+      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
+
+  const ui::ImageModel vector_image = ui::ImageModel::FromVectorIcon(
+      vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
+  page_action_view()->OnPageActionModelChanged(*model());
+  gfx::RoundedCornersF bitmap_radii = page_action_view()->GetCornerRadii();
+  EXPECT_FALSE(bitmap_radii.IsEmpty());
+
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(vector_image));
+  page_action_view()->OnPageActionModelChanged(*model());
+  gfx::RoundedCornersF vector_radii = page_action_view()->GetCornerRadii();
+  EXPECT_FALSE(vector_radii.IsEmpty());
+
+  EXPECT_EQ(bitmap_radii, vector_radii);
+}
+
 // TODO(crbug.com/411078148): Re-enable on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ChipAnnouncements DISABLED_ChipAnnouncements

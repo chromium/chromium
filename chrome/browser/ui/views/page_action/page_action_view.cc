@@ -142,7 +142,16 @@ void PageActionView::ViewHierarchyChanged(
 }
 
 void PageActionView::UpdateBorder() {
-  SetBorder(views::CreateEmptyBorder(icon_insets_));
+  gfx::Insets border_insets = icon_insets_;
+  // If the icon is not a vector icon ,
+  // and the view is in its chip state, apply chip padding.
+  if (observation_.IsObserving() &&
+      !observation_.GetSource()->GetImage().IsVectorIcon()) {
+    border_insets =
+        gfx::Insets::VH(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
+                        GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
+  }
+  SetBorder(views::CreateEmptyBorder(border_insets));
 }
 
 bool PageActionView::ShouldShowSeparator() const {
@@ -197,6 +206,10 @@ void PageActionView::UpdateIconImage() {
     }
   } else {
     SetImageModel(icon_image);
+    // For non-vector icons, the border needs to be updated to accommodate the
+    // icon, as the icon size may vary. For vector icons, the border gets
+    // set on instantiation and does not need to be updated again.
+    UpdateBorder();
   }
 }
 
