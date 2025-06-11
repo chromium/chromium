@@ -884,6 +884,18 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
+<histogram name="SupervisedUsers.ClassifyUrlThrottle.UseCase"
+    enum="ClassifyUrlThrottleUseCase" expires_after="2026-04-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the use case of the navigation throttle: the reason why it was
+    enabled.
+
+    It is explaining what user configuration caused the throttle to be enabled.
+  </summary>
+</histogram>
+
 <histogram name="SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle"
     units="Extensions" expires_after="2025-10-26">
   <owner>anthie@google.com</owner>

@@ -353,7 +353,8 @@ void CreateAndAddChromeThrottlesForNavigation(
 #endif
 
   SupervisedUserGoogleAuthNavigationThrottle::MaybeCreateAndAdd(registry);
-  supervised_user::ClassifyUrlNavigationThrottle::MaybeCreateAndAdd(registry);
+
+  supervised_user::MaybeCreateAndAddClassifyUrlNavigationThrottle(registry);
 
   if (auto* throttle_manager =
           subresource_filter::ContentSubresourceFilterThrottleManager::

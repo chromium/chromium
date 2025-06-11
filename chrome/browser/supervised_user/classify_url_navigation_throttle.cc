@@ -86,7 +86,6 @@ ClassifyUrlNavigationThrottle::WillProcessRequest() {
   if (navigation_handle()->IsInPrerenderedMainFrame()) {
     return *NextNavigationState(ClassifyUrlThrottleStatus::kCancel);
   }
-
   CheckURL();
 
   // It is possible that check was synchronous. If that's the case,
@@ -269,28 +268,30 @@ SupervisedUserURLFilter* ClassifyUrlNavigationThrottle::url_filter() const {
       ->GetURLFilter();
 }
 
-void ClassifyUrlNavigationThrottle::MaybeCreateAndAdd(
+void MaybeCreateAndAddClassifyUrlNavigationThrottle(
     content::NavigationThrottleRegistry& registry) {
   Profile* profile = Profile::FromBrowserContext(
       registry.GetNavigationHandle().GetWebContents()->GetBrowserContext());
+  CHECK(profile);
 
-  // Off the record profiles don't have the infrastructure to support the
-  // ClassifyUrlNavigationThrottle, so we should not add it.
-  if (profile->IsOffTheRecord()) {
+  if (!IsSubjectToParentalControls(*profile->GetPrefs())) {
+    base::UmaHistogramEnumeration(kClassifyUrlThrottleUseCaseHistogramName,
+                                  ClassifyUrlThrottleUseCase::kNotAllowed);
     return;
   }
 
-  // This check is not making logical difference as the throttle would allow
-  // this navigation anyway, but in this case no metrics will be recorded.
-  if (SupervisedUserServiceFactory::GetInstance()
-          ->GetForProfile(profile)
-          ->GetURLFilter()
-          ->GetWebFilterType() == WebFilterType::kDisabled) {
+  SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  if (!supervised_user_service) {
+    base::UmaHistogramEnumeration(kClassifyUrlThrottleUseCaseHistogramName,
+                                  ClassifyUrlThrottleUseCase::kNotAllowed);
     return;
   }
 
-  registry.AddThrottle(
-      base::WrapUnique(new ClassifyUrlNavigationThrottle(registry)));
+  base::UmaHistogramEnumeration(
+      kClassifyUrlThrottleUseCaseHistogramName,
+      ClassifyUrlThrottleUseCase::kFamilyLinkSupervisedUser);
+  ClassifyUrlNavigationThrottle::CreateAndAdd(registry);
 }
 
 std::optional<ClassifyUrlNavigationThrottle::ThrottleCheckResult>
@@ -357,6 +358,11 @@ void ClassifyUrlNavigationThrottle::CancelDeferredNavigation(
   NextNavigationState(ClassifyUrlThrottleStatus::kCancelDeferredNavigation);
 }
 
+void ClassifyUrlNavigationThrottle::CreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  registry.AddThrottle(
+      base::WrapUnique(new ClassifyUrlNavigationThrottle(registry)));
+}
 
 const char* ClassifyUrlNavigationThrottle::GetNameForLogging() {
   return "ClassifyUrlNavigationThrottle";

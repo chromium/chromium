@@ -11,7 +11,6 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "build/build_config.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -72,7 +71,7 @@ class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
 
 class ClassifyUrlNavigationThrottleTest
     : public ChromeRenderViewHostTestHarness {
- protected:
+ public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     EnableParentalControls(*profile()->GetPrefs());
@@ -102,13 +101,12 @@ class ClassifyUrlNavigationThrottleTest
     auto registry = std::make_unique<content::MockNavigationThrottleRegistry>(
         navigation_handle_.get(),
         content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
-    ClassifyUrlNavigationThrottle::MaybeCreateAndAdd(*registry.get());
+    ClassifyUrlNavigationThrottle::CreateAndAdd(*registry.get());
+    CHECK_EQ(registry->throttles().size(), 1u);
 
-    if (!registry->throttles().empty()) {
-      // Add mock handlers for resume & cancel deferred.
-      registry->throttles().back()->set_resume_callback_for_testing(
-          base::BindLambdaForTesting([&]() { resume_called_ = true; }));
-    }
+    // Add mock handlers for resume & cancel deferred.
+    registry->throttles().back()->set_resume_callback_for_testing(
+        base::BindLambdaForTesting([&]() { resume_called_ = true; }));
     return registry;
   }
 
@@ -154,19 +152,6 @@ class ClassifyUrlNavigationThrottleTest
   std::vector<GURL> redirects_;
   std::vector<GURL>::iterator current_url_it_;
 };
-
-// This test is used to test the behavior of the throttle when the user is not
-// supervised - all navigations are allowed, but no metrics recorded.
-class ClassifyUrlNavigationThrottleUnsupervisedUserTest
-    : public ClassifyUrlNavigationThrottleTest {
- protected:
-  void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
-};
-
-TEST_F(ClassifyUrlNavigationThrottleUnsupervisedUserTest,
-       WillNotRegisterThrottle) {
-  EXPECT_TRUE(CreateNavigationThrottle(GURL(kExampleURL))->throttles().empty());
-}
 
 TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   GURL allowed_url(kExampleURL);
@@ -243,33 +228,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
   EXPECT_FALSE(resume_called());
 }
 
-enum class SupervisionMode {
-  kSupervisedByFamilyLink,
-  kLocalSupervision,
-};
-
-struct AsyncCheckerTestCase {
-  std::string name;
-  SupervisionMode mode;
-};
-
-class ClassifyUrlNavigationThrottleAsyncCheckerTest
-    : public ClassifyUrlNavigationThrottleTest,
-      public ::testing::WithParamInterface<AsyncCheckerTestCase> {
- protected:
-  void SetUp() override {
-    // Consciously bypasses direct superclass SetUp to avoid enabling parental
-    // controls.
-    ChromeRenderViewHostTestHarness::SetUp();
-    if (GetParam().mode == SupervisionMode::kSupervisedByFamilyLink) {
-      EnableParentalControls(*profile()->GetPrefs());
-    } else {
-      EnableBrowserContentFilters(*profile()->GetPrefs());
-    }
-  }
-};
-
-TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
+TEST_F(ClassifyUrlNavigationThrottleTest,
        BlockedMatureSitesRecordedInBlockSafeSitesBucket) {
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
@@ -301,8 +260,7 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
   EXPECT_FALSE(resume_called());
 }
 
-TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
-       ClassificationIsFasterThanHttp) {
+TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsFasterThanHttp) {
   MockSupervisedUserURLFilter::ResultCallback check;
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
@@ -355,8 +313,7 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
                         {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
-TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
-       ClassificationIsSlowerThanHttp) {
+TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
   MockSupervisedUserURLFilter::ResultCallback check;
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
@@ -414,7 +371,7 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 // Last check is completed first but is blocking, and first check is completed
 // after it and is not blocking. Both checks complete after the response was
 // ready for processing.
-TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
+TEST_F(ClassifyUrlNavigationThrottleTest,
        ReverseOrderOfResponsesAfterContentIsReady) {
   std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
   // Check for the first url that will complete last.
@@ -466,23 +423,6 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
                         {ClassifyUrlThrottleStatus::kDefer, 1}});
   EXPECT_FALSE(resume_called());
 }
-
-const AsyncCheckerTestCase kAsyncCheckerTestCases[] = {
-    {.name = "SupervisedByFamilyLink",
-     .mode = SupervisionMode::kSupervisedByFamilyLink}
-#if BUILDFLAG(IS_ANDROID)
-    ,
-    {.name = "LocalSupervision", .mode = SupervisionMode::kLocalSupervision}
-#endif  // BUILDFLAG(IS_ANDROID)
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ClassifyUrlNavigationThrottleAsyncCheckerTest,
-    testing::ValuesIn(kAsyncCheckerTestCases),
-    [](const testing::TestParamInfo<AsyncCheckerTestCase>& info) {
-      return info.param.name;
-    });
 
 struct TestCase {
   std::string name;

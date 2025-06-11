@@ -86,9 +86,6 @@ enum class WebFilterType {
 // string included in the user feedback log.
 std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type);
 
-// Declaration for gtest: defining in prod code is not required.
-void PrintTo(const WebFilterType& web_filter_type, std::ostream* os);
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -170,8 +167,6 @@ extern const char kSkipParentApprovalToInstallExtensions[];
 
 // A special supervised user ID used for child accounts.
 extern const char kChildAccountSUID[];
-// A special supervised user ID used for self-managed supervised profiles.
-extern const char kSupervisedProfileSUID[];
 
 // Keys for supervised user shared settings. These can be configured remotely or
 // SupervisedUserPrefMappingService.
@@ -238,6 +233,9 @@ extern const char kClassifyUrlThrottleStatusHistogramName[];
 
 // Histogram name to track the final throttle verdict.
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[];
+
+// Histogram name to track the reason for creating a throttle.
+extern const char kClassifyUrlThrottleUseCaseHistogramName[];
 
 // Histogram name to track the duration of successful local web approval flows,
 // in milliseconds.

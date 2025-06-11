@@ -156,21 +156,11 @@ class SupervisedUserService : public KeyedService {
           platform_delegate);
 
  private:
-  // Activates the service which controls managed settings of url filtering and
-  // incognito mode.
   void SetSettingsServiceActive(bool active);
-  // Activates the settings that manually control url filtering and incognito
-  // mode.
-  void SetUserSettingsActive(bool active);
 
   void OnCustodianInfoChanged();
 
-  // Handles the change of supervision status driven by Family Link parental
-  // controls.
-  void OnFamilyLinkParentalControlsEnabled();
-  // Handles the change of supervision status self-set by user.
-  void OnLocalParentalControlsEnabled();
-  // Common handler when supervision is disabled. Intentionally idempotent.
+  void OnParentalControlsEnabled();
   void OnParentalControlsDisabled();
 
   void OnIncognitoModeAvailabilityChanged();
@@ -185,14 +175,10 @@ class SupervisedUserService : public KeyedService {
   // Interface for the above suitable for pref change registrar.
   void OnURLFilterChanged(const std::string& pref_name);
 
-  // Adds url filtering change handlers, originating from Family Link.
+  // Add or remove all pref handlers related to URL filtering.
   void AddURLFilterPrefChangeHandlers();
-  // Adds sentinel handlers that prevent unintended changes to url filtering.
-  void AddURLFilterPrefChangeSentinels();
-  // Removes all url filtering change handlers. Intentionally idempotent.
   void RemoveURLFilterPrefChangeHandlers();
-  // Add or remove all pref handlers related to custodians. The removal method
-  // is intentionally idempotent.
+  // Add or remove all pref handlers related to custodians.
   void AddCustodianPrefChangeHandlers();
   void RemoveCustodianPrefChangeHandlers();
 
@@ -208,16 +194,14 @@ class SupervisedUserService : public KeyedService {
 
   // Manages the status of parental controls and notifies this instance when the
   // state changes.
-  SupervisedControlsState controls_state_;
+  ParentalControlsState parental_controls_state_;
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 
   // Registrar for core prefs that drive this service.
   PrefChangeRegistrar main_pref_change_registrar_;
-  // Registrar for preferences that drive URL filtering. All prefs except for
-  // the safe sites mode are observed only when the profile is subject to
-  // parental controls. The safe sites pref is observed at all times, with
-  // varying handlers for enabled or disabled parental controls.
+  // Registrar for preferences that drive URL filtering. They're observed
+  // only when the profile is subject to parental controls.
   PrefChangeRegistrar url_filter_pref_change_registrar_;
   // Registrar for preferences that control custodian data. They're observed
   // only when the profile is subject to parental controls.

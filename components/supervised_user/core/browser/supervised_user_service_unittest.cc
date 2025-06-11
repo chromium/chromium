@@ -125,27 +125,6 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
                                     /*expected_count=*/2);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// Death tests tend to be flaky on Android.
-TEST_F(SupervisedUserServiceTest, CantDisableFilteringUsingUserControls) {
-  GTEST_FLAG_SET(death_test_style, "threadsafe");
-  EXPECT_DEATH_IF_SUPPORTED(
-      DisableBrowserContentFilters(
-          *supervised_user_test_environment_.pref_service()),
-      "Users who are subject to Family Link parental controls cannot change "
-      "browser content filters");
-}
-
-TEST_F(SupervisedUserServiceTest, CantEnableFilteringUsingUserControls) {
-  GTEST_FLAG_SET(death_test_style, "threadsafe");
-  EXPECT_DEATH_IF_SUPPORTED(
-      EnableBrowserContentFilters(
-          *supervised_user_test_environment_.pref_service()),
-      "Users who are subject to Family Link parental controls cannot change "
-      "browser content filters");
-}
-#endif
-
 // Tests that changes to the allow or blocklist of the parent configuration are
 // recorded.
 TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
@@ -212,84 +191,6 @@ TEST_F(SupervisedUserServiceTestUnsupervised, ApprovalRequestsDisabled) {
   EXPECT_FALSE(supervised_user_test_environment_.service()
                    ->remote_web_approvals_manager()
                    .AreApprovalRequestsEnabled());
-}
-
-// Tests that supervision restrictions do not apply to unsupervised users.
-TEST_F(SupervisedUserServiceTestUnsupervised,
-       CantRequestUrlClassificationBlocking) {
-  supervised_user_test_environment_.SetWebFilterType(
-      WebFilterType::kCertainSites);
-  EXPECT_EQ(static_cast<int>(FilteringBehavior::kAllow),
-            supervised_user_test_environment_.pref_service()->GetInteger(
-                prefs::kDefaultSupervisedUserFilteringBehavior))
-      << "Check why supervised user service received "
-         "WebFilterType::kCertainSites change (FilteringBehavior::kBlock)";
-
-  EXPECT_FALSE(supervised_user_test_environment_.service()->IsBlockedURL(
-      GURL("http://google.com")));
-}
-
-// Tests that supervision restrictions do not apply to unsupervised users.
-TEST_F(SupervisedUserServiceTestUnsupervised,
-       CantRequestTryToFilterClassificationViaFamilyLink) {
-  supervised_user_test_environment_.SetWebFilterType(
-      WebFilterType::kTryToBlockMatureSites);
-  EXPECT_EQ(static_cast<int>(FilteringBehavior::kAllow),
-            supervised_user_test_environment_.pref_service()->GetInteger(
-                prefs::kDefaultSupervisedUserFilteringBehavior));
-  EXPECT_FALSE(supervised_user_test_environment_.pref_service()->GetBoolean(
-      prefs::kSupervisedUserSafeSites));
-
-  EXPECT_FALSE(supervised_user_test_environment_.service()->IsBlockedURL(
-      GURL("http://google.com")));
-}
-
-// This checks verifies whether single profile can cycle through the all types
-// of supervision.
-TEST_F(SupervisedUserServiceTestUnsupervised, CyclesThroughFilteringSettings) {
-  ASSERT_EQ(WebFilterType::kDisabled,
-            supervised_user_test_environment_.url_filter()->GetWebFilterType());
-
-  // Browser content filtering is functionally equivalent to
-  // WebFilterType::kTryToBlockMatureSites with empty manual allow and
-  // blocklists.
-  EnableBrowserContentFilters(
-      *supervised_user_test_environment_.pref_service());
-  EXPECT_EQ(WebFilterType::kTryToBlockMatureSites,
-            supervised_user_test_environment_.url_filter()->GetWebFilterType());
-
-  DisableBrowserContentFilters(
-      *supervised_user_test_environment_.pref_service());
-  EXPECT_EQ(WebFilterType::kDisabled,
-            supervised_user_test_environment_.url_filter()->GetWebFilterType());
-
-  // "Try to block mature sites" is the default setting for child accounts
-  // (profiles supervised by the Family Link).
-  EnableParentalControls(*supervised_user_test_environment_.pref_service());
-  EXPECT_EQ(WebFilterType::kTryToBlockMatureSites,
-            supervised_user_test_environment_.url_filter()->GetWebFilterType());
-
-  // Once Family Link parental controls are enabled, more settings are
-  // available:
-  supervised_user_test_environment_.SetWebFilterType(
-      WebFilterType::kAllowAllSites);
-  EXPECT_EQ(WebFilterType::kAllowAllSites,
-            supervised_user_test_environment_.url_filter()->GetWebFilterType());
-
-  supervised_user_test_environment_.SetWebFilterType(
-      WebFilterType::kCertainSites);
-  EXPECT_EQ(WebFilterType::kCertainSites,
-            supervised_user_test_environment_.url_filter()->GetWebFilterType());
-
-  supervised_user_test_environment_.SetWebFilterType(
-      WebFilterType::kTryToBlockMatureSites);
-  EXPECT_EQ(WebFilterType::kTryToBlockMatureSites,
-            supervised_user_test_environment_.url_filter()->GetWebFilterType());
-
-  // Finally, turn all controls and bring back to defaults.
-  DisableParentalControls(*supervised_user_test_environment_.pref_service());
-  EXPECT_EQ(WebFilterType::kDisabled,
-            supervised_user_test_environment_.url_filter()->GetWebFilterType());
 }
 
 // Tests that supervision restrictions do not apply to unsupervised users.

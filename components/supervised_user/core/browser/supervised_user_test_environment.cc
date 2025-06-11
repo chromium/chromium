@@ -5,11 +5,9 @@
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 
 #include <memory>
-#include <ostream>
 #include <string_view>
 
 #include "components/prefs/pref_notifier_impl.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
@@ -23,11 +21,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 namespace supervised_user {
-
-// Defined in supervised_user_constants.h
-void PrintTo(const WebFilterType& web_filter_type, ::std::ostream* os) {
-  *os << WebFilterTypeToDisplayString(web_filter_type);
-}
 
 namespace {
 // Just like SupervisedUserPrefStore. The difference is that
@@ -115,15 +108,6 @@ SupervisedUserPrefStoreTestEnvironment::
   RegisterProfilePrefs(syncable_pref_service_->registry());
   SupervisedUserMetricsService::RegisterProfilePrefs(
       syncable_pref_service_->registry());
-
-  // Supervised user infra is not owning this pref but is using it: enable
-  // conditionally to avoid double registration.
-  if (syncable_pref_service_->FindPreference(
-          policy::policy_prefs::kIncognitoModeAvailability) == nullptr) {
-    syncable_pref_service_->registry()->RegisterIntegerPref(
-        policy::policy_prefs::kIncognitoModeAvailability,
-        static_cast<int>(policy::IncognitoModeAvailability::kEnabled));
-  }
 }
 
 SupervisedUserPrefStoreTestEnvironment::
