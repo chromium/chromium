@@ -405,6 +405,9 @@
   <message name="IDS_SYNC_DATATYPE_PAYMENTS" desc="Label for the checkbox that controls the Autofill/Payments integration feature used for Autofill Home. 'Google Pay' should not be translated as it is the product name. Sentence-Cased.">
     Payment methods, offers, and addresses using Google Pay
   </message>
+  <message name="IDS_SYNC_DATATYPE_PAYMENTS_AND_INFO" desc="Label for the checkbox that controls the Autofill/Wallet integration feature used for Autofill. 'Google Wallet' should not be translated as it is the product name. Sentence-Cased.">
+    Payment methods and other info from Google Wallet
+  </message>
 
   <!-- Manual filling (keyboard accessory) strings -->
   <if expr="is_android">
