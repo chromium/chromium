@@ -23,6 +23,7 @@
 #include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_matcher/url_matcher.h"
@@ -141,6 +142,7 @@ const char SafeBrowsingPrivateEventRouter::kKeyContentSize[] = "contentSize";
 const char SafeBrowsingPrivateEventRouter::kKeyTrigger[] = "trigger";
 const char SafeBrowsingPrivateEventRouter::kKeyEventResult[] = "eventResult";
 const char SafeBrowsingPrivateEventRouter::kKeyScanId[] = "scanId";
+const char SafeBrowsingPrivateEventRouter::kKeyReferrers[] = "referrers";
 const char SafeBrowsingPrivateEventRouter::kKeyIsFederated[] = "isFederated";
 const char SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin[] =
     "federatedOrigin";
@@ -243,7 +245,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
     const std::string& mime_type,
     const std::string& scan_id,
     const download::DownloadDangerType danger_type,
-    const int64_t content_size) {
+    const int64_t content_size,
+    const safe_browsing::ReferrerChain& referrer_chain) {
   api::safe_browsing_private::DangerousDownloadInfo params;
   params.url = url.spec();
   params.file_name = file_name;
@@ -294,6 +297,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
   // Safe Browsing verdict.
   if (!scan_id.empty()) {
     event.Set(kKeyScanId, scan_id);
+  }
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
   }
 
   reporting_client_->ReportRealtimeEvent(
@@ -623,10 +630,11 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const std::string& mime_type,
     const std::string& scan_id,
     const int64_t content_size,
+    const safe_browsing::ReferrerChain& referrer_chain,
     enterprise_connectors::EventResult event_result) {
   OnDangerousDownloadEvent(url, tab_url, file_name, download_digest_sha256,
                            DangerTypeToThreatType(danger_type), mime_type,
-                           scan_id, content_size, event_result);
+                           scan_id, content_size, referrer_chain, event_result);
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
@@ -638,6 +646,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const std::string& mime_type,
     const std::string& scan_id,
     const int64_t content_size,
+    const safe_browsing::ReferrerChain& referrer_chain,
     enterprise_connectors::EventResult event_result) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   std::optional<enterprise_connectors::ReportingSettings> settings =
@@ -674,6 +683,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     event.Set(kKeyScanId, scan_id);
   }
 
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
+  }
+
   reporting_client_->ReportRealtimeEvent(
       enterprise_connectors::kKeyDangerousDownloadEvent,
       std::move(settings.value()), std::move(event));
@@ -688,10 +701,12 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const download::DownloadDangerType danger_type,
     const std::string& mime_type,
     const std::string& scan_id,
-    const int64_t content_size) {
+    const int64_t content_size,
+    const safe_browsing::ReferrerChain& referrer_chain) {
   OnDangerousDownloadWarningBypassed(
       url, tab_url, file_name, download_digest_sha256,
-      DangerTypeToThreatType(danger_type), mime_type, scan_id, content_size);
+      DangerTypeToThreatType(danger_type), mime_type, scan_id, content_size,
+      referrer_chain);
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
@@ -702,7 +717,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const std::string& threat_type,
     const std::string& mime_type,
     const std::string& scan_id,
-    const int64_t content_size) {
+    const int64_t content_size,
+    const safe_browsing::ReferrerChain& referrer_chain) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
@@ -735,6 +751,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
   // Safe Browsing verdict.
   if (!scan_id.empty()) {
     event.Set(kKeyScanId, scan_id);
+  }
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
   }
 
   reporting_client_->ReportRealtimeEvent(

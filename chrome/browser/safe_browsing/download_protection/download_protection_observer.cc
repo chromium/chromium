@@ -11,13 +11,16 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -67,12 +70,19 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
   if (!router)
     return;
 
+  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+      referrer_chain;
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    referrer_chain =
+        safe_browsing::GetOrIdentifyReferrerChainForEnterprise(*download);
+  }
+
   router->OnDangerousDownloadEvent(
       download->GetURL(), download->GetTabUrl(),
       download->GetTargetFilePath().AsUTF8Unsafe(),
       base::HexEncode(download->GetHash()), download->GetDangerType(),
       download->GetMimeType(), /*scan_id*/ "", download->GetTotalBytes(),
-      enterprise_connectors::EventResult::WARNED);
+      referrer_chain, enterprise_connectors::EventResult::WARNED);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
@@ -91,6 +101,13 @@ void ReportDangerousDownloadWarningBypassed(
   if (!router)
     return;
 
+  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+      referrer_chain;
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    referrer_chain =
+        safe_browsing::GetOrIdentifyReferrerChainForEnterprise(*download);
+  }
+
   enterprise_connectors::ScanResult* stored_result =
       static_cast<enterprise_connectors::ScanResult*>(
           download->GetUserData(enterprise_connectors::ScanResult::kKey));
@@ -99,7 +116,8 @@ void ReportDangerousDownloadWarningBypassed(
       router->OnDangerousDownloadWarningBypassed(
           download->GetURL(), download->GetTabUrl(), metadata.filename,
           metadata.sha256, original_danger_type, metadata.mime_type,
-          metadata.scan_response.request_token(), metadata.size);
+          metadata.scan_response.request_token(), metadata.size,
+          referrer_chain);
     }
   } else {
     router->OnDangerousDownloadWarningBypassed(
@@ -107,7 +125,7 @@ void ReportDangerousDownloadWarningBypassed(
         download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(download->GetHash()), original_danger_type,
         download->GetMimeType(),
-        /*scan_id*/ "", download->GetTotalBytes());
+        /*scan_id*/ "", download->GetTotalBytes(), referrer_chain);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }

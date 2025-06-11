@@ -49,7 +49,7 @@ class ReferrerChainData : public base::SupportsUserData::Data {
   ReferrerChainProvider::AttributionResult attribution_result() const {
     return attribution_result_;
   }
-  ReferrerChain* GetReferrerChain();
+  ReferrerChain* GetReferrerChain() const;
   size_t referrer_chain_length() { return referrer_chain_length_; }
   size_t recent_navigations_to_collect() {
     return recent_navigations_to_collect_;
@@ -58,6 +58,7 @@ class ReferrerChainData : public base::SupportsUserData::Data {
   // Unique user data key used to get and set referrer chain data in
   // DownloadItem.
   static const char kDownloadReferrerChainDataKey[];
+  static const char kDownloadReferrerChainDataKeyForEnterprise[];
 
  private:
   // Result of trying to get the referrer chain. Referrer chains are

@@ -14,6 +14,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -430,6 +431,29 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
   return std::make_unique<ReferrerChainData>(result, std::move(referrer_chain),
                                              referrer_chain_length,
                                              recent_navigations_to_collect);
+}
+
+ReferrerChain GetOrIdentifyReferrerChainForEnterprise(
+    download::DownloadItem& item) {
+  safe_browsing::ReferrerChainData* referrer_chain_data =
+      static_cast<safe_browsing::ReferrerChainData*>(
+          item.GetUserData(safe_browsing::ReferrerChainData::
+                               kDownloadReferrerChainDataKeyForEnterprise));
+  if (!referrer_chain_data || !referrer_chain_data->GetReferrerChain() ||
+      referrer_chain_data->GetReferrerChain()->empty()) {
+    std::unique_ptr<safe_browsing::ReferrerChainData> new_referrer_chain_data =
+        safe_browsing::IdentifyReferrerChain(
+            item, enterprise_connectors::kReferrerUserGestureLimit);
+    if (!new_referrer_chain_data ||
+        !new_referrer_chain_data->GetReferrerChain()) {
+      return safe_browsing::ReferrerChain();
+    }
+    referrer_chain_data = new_referrer_chain_data.get();
+    item.SetUserData(safe_browsing::ReferrerChainData::
+                         kDownloadReferrerChainDataKeyForEnterprise,
+                     std::move(new_referrer_chain_data));
+  }
+  return *referrer_chain_data->GetReferrerChain();
 }
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

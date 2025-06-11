@@ -384,7 +384,7 @@ class DownloadProtectionService {
       bool has_user_gesture,
       ClientDownloadRequest* out_request);
 
-  void OnDangerousDownloadOpened(const download::DownloadItem* item,
+  void OnDangerousDownloadOpened(download::DownloadItem* item,
                                  Profile* profile);
 
 #if !BUILDFLAG(IS_ANDROID)
