@@ -116,10 +116,10 @@ public class PlatformContentCaptureController {
         ArrayList<Pattern> allowedRe = null;
         for (ContentCaptureCondition c : conditions) {
             if ((c.getFlags() & ContentCaptureCondition.FLAG_IS_REGEX) != 0) {
-                if (allowedRe == null) allowedRe = new ArrayList<Pattern>();
+                if (allowedRe == null) allowedRe = new ArrayList<>();
                 allowedRe.add(Pattern.compile(c.getLocusId().getId()));
             } else {
-                if (allowedUrls == null) allowedUrls = new HashSet<String>();
+                if (allowedUrls == null) allowedUrls = new HashSet<>();
                 allowedUrls.add(c.getLocusId().getId());
             }
         }

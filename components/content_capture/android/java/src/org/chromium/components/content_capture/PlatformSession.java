@@ -83,7 +83,7 @@ class PlatformSession {
 
     public HashMap<Long, PlatformSessionData> getFrameIdToPlatformSessionData() {
         if (mFrameIdToPlatformSessionData == null) {
-            mFrameIdToPlatformSessionData = new HashMap<Long, PlatformSessionData>();
+            mFrameIdToPlatformSessionData = new HashMap<>();
         }
         return mFrameIdToPlatformSessionData;
     }

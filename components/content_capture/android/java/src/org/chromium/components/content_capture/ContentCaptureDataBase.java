@@ -43,7 +43,7 @@ public abstract class ContentCaptureDataBase {
     }
 
     public void addChild(ContentCaptureDataBase data) {
-        if (mChildren == null) mChildren = new ArrayList<ContentCaptureDataBase>();
+        if (mChildren == null) mChildren = new ArrayList<>();
         mChildren.add(data);
     }
 

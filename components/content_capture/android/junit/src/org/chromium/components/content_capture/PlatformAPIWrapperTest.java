@@ -86,15 +86,13 @@ public class PlatformAPIWrapperTest {
 
         // The array for objects returned by the mocked APIs
         public final ArrayList<ContentCaptureSession> mCreatedContentCaptureSessions =
-                new ArrayList<ContentCaptureSession>();
-        public final ArrayList<AutofillId> mCreatedAutofilIds = new ArrayList<AutofillId>();
-        public final ArrayList<ViewStructureTestHelper> mCreatedViewStructures =
-                new ArrayList<ViewStructureTestHelper>();
-        public final ArrayList<AutofillId> mCreatedViewStructuresAutofilIds =
-                new ArrayList<AutofillId>();
+                new ArrayList<>();
+        public final ArrayList<AutofillId> mCreatedAutofilIds = new ArrayList<>();
+        public final ArrayList<ViewStructureTestHelper> mCreatedViewStructures = new ArrayList<>();
+        public final ArrayList<AutofillId> mCreatedViewStructuresAutofilIds = new ArrayList<>();
 
         // Array to record the API calls in sequence.
-        private volatile ArrayList<Integer> mCallbacks = new ArrayList<Integer>();
+        private volatile ArrayList<Integer> mCallbacks = new ArrayList<>();
 
         // Mock a ContentCaptureSession which will throw a exception if all its public
         // method is called because this test use the mocked PlatformAPIWrapper, the methods

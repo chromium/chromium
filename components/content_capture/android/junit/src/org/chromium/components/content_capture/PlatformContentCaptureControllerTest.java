@@ -63,9 +63,7 @@ public class PlatformContentCaptureControllerTest {
 
     @Test
     public void testEverythingDisallowed() throws Throwable {
-        doReturn(new HashSet<ContentCaptureCondition>())
-                .when(mContentCaptureManager)
-                .getContentCaptureConditions();
+        doReturn(new HashSet<>()).when(mContentCaptureManager).getContentCaptureConditions();
         PlatformContentCaptureController controller =
                 new PlatformContentCaptureController(mContext);
         assertTrue(controller.isAiai());
@@ -75,7 +73,7 @@ public class PlatformContentCaptureControllerTest {
 
     @Test
     public void testContentCaptureConditions() throws Throwable {
-        HashSet<ContentCaptureCondition> conditions = new HashSet<ContentCaptureCondition>();
+        HashSet<ContentCaptureCondition> conditions = new HashSet<>();
         conditions.add(
                 new ContentCaptureCondition(
                         new LocusId(".*chromium.org"), ContentCaptureCondition.FLAG_IS_REGEX));

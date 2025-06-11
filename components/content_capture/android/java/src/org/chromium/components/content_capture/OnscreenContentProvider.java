@@ -214,7 +214,7 @@ public class OnscreenContentProvider {
     }
 
     private String[] buildUrls(@Nullable FrameSession session, @Nullable ContentCaptureFrame data) {
-        ArrayList<String> urls = new ArrayList<String>();
+        ArrayList<String> urls = new ArrayList<>();
         if (session != null) {
             for (ContentCaptureFrame d : session) {
                 urls.add(d.getUrl());
