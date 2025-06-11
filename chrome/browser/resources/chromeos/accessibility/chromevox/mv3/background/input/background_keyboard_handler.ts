@@ -103,6 +103,7 @@ export class BackgroundKeyboardHandler {
 
     if (BackgroundKeyboardHandler.passThroughModeEnabled_) {
       this.passedThroughKeyDowns_.add(evt.keyCode);
+      stopPropogationCallback(false);
       return;
     }
 
@@ -111,6 +112,7 @@ export class BackgroundKeyboardHandler {
     // Try to restore to the last valid range.
     ChromeVoxRange.restoreLastValidRangeIfNeeded();
 
+    let stopPropogation = false;
     if (!this.callOnKeyDownHandlers_(evt) ||
         this.shouldConsumeSearchKey_(evt)) {
       if (BackgroundKeyboardHandler.passThroughModeEnabled_) {
@@ -118,9 +120,11 @@ export class BackgroundKeyboardHandler {
             KeyboardPassThroughState.PENDING_PASS_THROUGH_SHORTCUT_KEYUPS;
       }
 
-      stopPropogationCallback(true);
+      stopPropogation = true;
       this.eatenKeyDowns_.add(evt.keyCode);
+      return;
     }
+    stopPropogationCallback(stopPropogation);
   }
 
   /** Returns true if the key should continue propagation. */
@@ -184,6 +188,7 @@ export class BackgroundKeyboardHandler {
         this.passThroughState_ = KeyboardPassThroughState.NO_PASS_THROUGH;
       }
     }
+    stopPropogationCallback(false);
   }
 }
 
