@@ -9,10 +9,9 @@ import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
 import "url/mojom/url.mojom";
 
-// References a tab object. The id can refer to different types of underlying
-// resource. The |type| field can be used to differentiate between the type
-// of underlying resources.
-struct TabId {
+// References a node in the tab tree. (id, type) uniquely identifies a node in
+// the tree.
+struct NodeId {
   // The type of object referenced by the id.
   enum Type {
     // An unknown type. This will never be returned by the service and usually
@@ -34,7 +33,7 @@ struct TabId {
 };
 
 struct Tab {
-  TabId id;
+  NodeId id;
   string title;
   url.mojom.Url url;
 
@@ -80,7 +79,7 @@ struct TabCollection {
 
   // Unique id for the specific TabCollection. The id type would be a
   // kCollection.
-  TabId id;
+  NodeId id;
   CollectionType collection_type;
 };
 
@@ -119,7 +118,7 @@ interface TabStripService {
 
   // Get a single tab.
   [Sync]
-  GetTab(TabId id) => result<Tab, mojo_base.mojom.Error>;
+  GetTab(NodeId id) => result<Tab, mojo_base.mojom.Error>;
 
   // Creates a new tab.
   // Position specifies the location of the Tab after creation. If position is
@@ -136,18 +135,18 @@ interface TabStripService {
   // invocation will be rejected with a |Code.kNotFound| error.
   // If the method call succeeds, all of the tabs will have been closed.
   [Sync]
-  CloseTabs(array<TabId> id)
+  CloseTabs(array<NodeId> id)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Activates a tab. The only accepted id type for this method are |kContent|
   // ids.
   [Sync]
-  ActivateTab(TabId id)
+  ActivateTab(NodeId id)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Moves a tab identified by id to a specified position.
   [Sync]
-  MoveTab(TabId id, Position position)
+  MoveTab(NodeId id, Position position)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 
@@ -166,7 +165,7 @@ struct OnTabsCreatedEvent {
 
 struct OnTabsClosedEvent {
   // Tab ids of the closed tabs.
-  array<TabId> tabs;
+  array<NodeId> tabs;
 };
 
 struct OnTabDataChangedEvent {
@@ -177,7 +176,7 @@ struct OnTabDataChangedEvent {
 
 struct OnTabMovedEvent {
   // The id of the tab that moved.
-  TabId id;
+  NodeId id;
   // The original position.
   Position from;
   // The new position.

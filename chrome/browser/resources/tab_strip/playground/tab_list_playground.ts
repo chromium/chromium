@@ -9,7 +9,7 @@ import '../tab_group.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from '../tab_list.html.js';
-import type {Container, OnTabDataChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent, Position, Tab, TabCollectionContainer, TabCreatedContainer, TabId, TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
+import type {Container, OnTabDataChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent, Position, Tab, TabCollectionContainer, TabCreatedContainer, NodeId, TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
 import {TabCollection_CollectionType} from '../tab_strip_api.mojom-webui.js';
 
 import {TabElement} from './tab_playground.js';
@@ -111,7 +111,7 @@ export class TabListPlaygroundElement extends CustomElement {
 
   private onTabsClosed_(onTabsClosedEvent: OnTabsClosedEvent) {
     const tabsClosed = onTabsClosedEvent.tabs;
-    tabsClosed.forEach((tabId: TabId) => {
+    tabsClosed.forEach((tabId: NodeId) => {
       const tabElement = this.findTabElement_(tabId.id);
       if (tabElement) {
         this.addAnimationPromise_(tabElement.slideOut());

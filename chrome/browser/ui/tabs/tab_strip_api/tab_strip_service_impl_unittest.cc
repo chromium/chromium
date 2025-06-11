@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/node_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_browser_adapter.h"
@@ -70,7 +70,7 @@ TEST_F(TabStripServiceImplTest, CreateNewTab) {
   ASSERT_EQ(1ul, tab_strip_->GetTabs().size());
   auto created = tab_strip_->GetTabs().at(0);
   ASSERT_EQ(base::NumberToString(created.raw_value()), result.value()->id.Id());
-  ASSERT_EQ(TabId::Type::kContent, result.value()->id.Type());
+  ASSERT_EQ(NodeId::Type::kContent, result.value()->id.Type());
 }
 
 TEST_F(TabStripServiceImplTest, GetTabs) {
@@ -88,7 +88,7 @@ TEST_F(TabStripServiceImplTest, GetTabs) {
                        ->tab_strip->elements[0]
                        ->get_tab_container()
                        ->tab->id.Id());
-  ASSERT_EQ(TabId::Type::kContent, result.value()
+  ASSERT_EQ(NodeId::Type::kContent, result.value()
                                        ->tab_strip->elements[0]
                                        ->get_tab_container()
                                        ->tab->id.Type());
@@ -101,18 +101,18 @@ TEST_F(TabStripServiceImplTest, GetTab) {
   tab_strip_->AddTab({tabs::TabHandle(666), GURL("hihi")});
 
   tabs_api::mojom::TabStripService::GetTabResult result;
-  tabs_api::TabId tab_id(TabId::Type::kContent, "666");
+  tabs_api::NodeId tab_id(NodeId::Type::kContent, "666");
   bool success = client_->GetTab(tab_id, &result);
 
   ASSERT_TRUE(success);
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result.value()->id.Id(), "666");
-  ASSERT_EQ(result.value()->id.Type(), TabId::Type::kContent);
+  ASSERT_EQ(result.value()->id.Type(), NodeId::Type::kContent);
 }
 
 TEST_F(TabStripServiceImplTest, GetTab_NotFound) {
   tabs_api::mojom::TabStripService::GetTabResult result;
-  tabs_api::TabId tab_id(TabId::Type::kContent, "666");
+  tabs_api::NodeId tab_id(NodeId::Type::kContent, "666");
   bool success = client_->GetTab(tab_id, &result);
 
   ASSERT_TRUE(success);
@@ -122,7 +122,7 @@ TEST_F(TabStripServiceImplTest, GetTab_NotFound) {
 
 TEST_F(TabStripServiceImplTest, GetTab_MalformedId) {
   tabs_api::mojom::TabStripService::GetTabResult result;
-  tabs_api::TabId tab_id(TabId::Type::kContent, /* I know my */ "abc");
+  tabs_api::NodeId tab_id(NodeId::Type::kContent, /* I know my */ "abc");
   bool success = client_->GetTab(tab_id, &result);
 
   ASSERT_TRUE(success);
@@ -132,7 +132,7 @@ TEST_F(TabStripServiceImplTest, GetTab_MalformedId) {
 
 TEST_F(TabStripServiceImplTest, GetTab_InvalidType) {
   tabs_api::mojom::TabStripService::GetTabResult result;
-  tabs_api::TabId tab_id;
+  tabs_api::NodeId tab_id;
   bool success = client_->GetTab(tab_id, &result);
 
   ASSERT_TRUE(success);
@@ -141,8 +141,8 @@ TEST_F(TabStripServiceImplTest, GetTab_InvalidType) {
 }
 
 TEST_F(TabStripServiceImplTest, CloseTabs) {
-  tabs_api::TabId tab_id1(TabId::Type::kContent, "123");
-  tabs_api::TabId tab_id2(TabId::Type::kContent, "321");
+  tabs_api::NodeId tab_id1(NodeId::Type::kContent, "123");
+  tabs_api::NodeId tab_id2(NodeId::Type::kContent, "321");
 
   // insert fake tab entries.
   tab_strip_->AddTab({tabs::TabHandle(123), GURL("1")});
@@ -158,7 +158,7 @@ TEST_F(TabStripServiceImplTest, CloseTabs) {
 }
 
 TEST_F(TabStripServiceImplTest, CloseTabs_InvalidType) {
-  tabs_api::TabId collection_id(TabId::Type::kCollection, "321");
+  tabs_api::NodeId collection_id(NodeId::Type::kCollection, "321");
 
   tabs_api::mojom::TabStripService::CloseTabsResult result;
   bool success = client_->CloseTabs({collection_id}, &result);
@@ -186,7 +186,7 @@ TEST_F(TabStripServiceImplTest, ActivateTab) {
   tab_strip_->ActivateTab(tab1.tab_handle);
   ASSERT_EQ(tab_strip_->FindActiveTab(), tab1.tab_handle);
 
-  tabs_api::TabId tab2_id(TabId::Type::kContent,
+  tabs_api::NodeId tab2_id(NodeId::Type::kContent,
                           base::NumberToString(tab2.tab_handle.raw_value()));
 
   tabs_api::mojom::TabStripService::ActivateTabResult result;
@@ -197,7 +197,7 @@ TEST_F(TabStripServiceImplTest, ActivateTab) {
 }
 
 TEST_F(TabStripServiceImplTest, ActivateTab_WrongType) {
-  tabs_api::TabId tab2_id(TabId::Type::kCollection, "111");
+  tabs_api::NodeId tab2_id(NodeId::Type::kCollection, "111");
 
   tabs_api::mojom::TabStripService::ActivateTabResult result;
   bool success = client_->ActivateTab(tab2_id, &result);
@@ -207,7 +207,7 @@ TEST_F(TabStripServiceImplTest, ActivateTab_WrongType) {
 }
 
 TEST_F(TabStripServiceImplTest, ActivateTab_Malformed) {
-  tabs_api::TabId tab2_id(TabId::Type::kContent, "aaa");
+  tabs_api::NodeId tab2_id(NodeId::Type::kContent, "aaa");
 
   tabs_api::mojom::TabStripService::ActivateTabResult result;
   bool success = client_->ActivateTab(tab2_id, &result);
@@ -217,7 +217,7 @@ TEST_F(TabStripServiceImplTest, ActivateTab_Malformed) {
 }
 
 TEST_F(TabStripServiceImplTest, ActivateTab_NotFound) {
-  tabs_api::TabId tab2_id(TabId::Type::kContent, "111");
+  tabs_api::NodeId tab2_id(NodeId::Type::kContent, "111");
 
   tabs_api::mojom::TabStripService::ActivateTabResult result;
   bool success = client_->ActivateTab(tab2_id, &result);
@@ -241,7 +241,7 @@ TEST_F(TabStripServiceImplTest, MoveTab) {
       GURL("3"),
   });
 
-  tabs_api::TabId tab_id(TabId::Type::kContent, "1");
+  tabs_api::NodeId tab_id(NodeId::Type::kContent, "1");
 
   auto position = mojom::Position::New();
   position->index = 2;
@@ -270,7 +270,7 @@ TEST_F(TabStripServiceImplTest, MoveTab_OutOfRange) {
       GURL("1"),
   });
 
-  tabs_api::TabId tab_id(TabId::Type::kContent, "1");
+  tabs_api::NodeId tab_id(NodeId::Type::kContent, "1");
 
   auto position = mojom::Position::New();
   position->index = 9001;

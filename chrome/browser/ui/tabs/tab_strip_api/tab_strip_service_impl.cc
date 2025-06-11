@@ -89,9 +89,9 @@ void TabStripServiceImpl::GetTabs(GetTabsCallback callback) {
   std::move(callback).Run(std::move(snapshot));
 }
 
-void TabStripServiceImpl::GetTab(const tabs_api::TabId& tab_mojom_id,
+void TabStripServiceImpl::GetTab(const tabs_api::NodeId& tab_mojom_id,
                                  GetTabCallback callback) {
-  if (tab_mojom_id.Type() != tabs_api::TabId::Type::kContent) {
+  if (tab_mojom_id.Type() != tabs_api::NodeId::Type::kContent) {
     std::move(callback).Run(base::unexpected(
         mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
                                      "only tab content ids accepted")));
@@ -164,13 +164,13 @@ void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
   std::move(callback).Run(base::ok(std::move(mojo_tab)));
 }
 
-void TabStripServiceImpl::CloseTabs(const std::vector<tabs_api::TabId>& ids,
+void TabStripServiceImpl::CloseTabs(const std::vector<tabs_api::NodeId>& ids,
                                     CloseTabsCallback callback) {
   MutationSession recorder_session(recorder_.get());
 
   std::vector<int32_t> tab_content_targets;
   for (const auto& id : ids) {
-    if (id.Type() != tabs_api::TabId::Type::kContent) {
+    if (id.Type() != tabs_api::NodeId::Type::kContent) {
       std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
           mojo_base::mojom::Code::kUnimplemented,
           "only content tab closing has been implemented right now")));
@@ -209,11 +209,11 @@ void TabStripServiceImpl::CloseTabs(const std::vector<tabs_api::TabId>& ids,
   std::move(callback).Run(mojo_base::mojom::Empty::New());
 }
 
-void TabStripServiceImpl::ActivateTab(const tabs_api::TabId& id,
+void TabStripServiceImpl::ActivateTab(const tabs_api::NodeId& id,
                                       ActivateTabCallback callback) {
   MutationSession recorder_session(recorder_.get());
 
-  if (id.Type() != tabs_api::TabId::Type::kContent) {
+  if (id.Type() != tabs_api::NodeId::Type::kContent) {
     std::move(callback).Run(base::unexpected(
         mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
                                      "only a content tab id can be provided")));
@@ -239,7 +239,7 @@ void TabStripServiceImpl::ActivateTab(const tabs_api::TabId& id,
   std::move(callback).Run(mojo_base::mojom::Empty::New());
 }
 
-void TabStripServiceImpl::MoveTab(const tabs_api::TabId& id,
+void TabStripServiceImpl::MoveTab(const tabs_api::NodeId& id,
                                   tabs_api::mojom::PositionPtr position,
                                   MoveTabCallback callback) {
   MutationSession recorder_session(recorder_.get());
@@ -247,7 +247,7 @@ void TabStripServiceImpl::MoveTab(const tabs_api::TabId& id,
   // TODO(crbug.com/409086859): this implementation is not complete, because
   // it will only move the tabs within the unpinned section. We need additional
   // API support for the tab strip model, which is currently in discussion.
-  if (id.Type() != tabs_api::TabId::Type::kContent) {
+  if (id.Type() != tabs_api::NodeId::Type::kContent) {
     std::move(callback).Run(base::unexpected(
         mojo_base::mojom::Error::New(mojo_base::mojom::Code::kUnimplemented,
                                      "only tab moves have been implemetned")));

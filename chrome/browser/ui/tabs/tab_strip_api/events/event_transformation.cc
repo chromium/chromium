@@ -7,7 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/node_id.h"
 
 namespace tabs_api::events {
 
@@ -35,7 +35,7 @@ mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove) {
 
   for (auto& content : remove.contents) {
     event->tabs.emplace_back(
-        TabId::Type::kContent,
+        NodeId::Type::kContent,
         base::NumberToString(content.tab->GetHandle().raw_value()));
   }
 
@@ -43,7 +43,7 @@ mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove) {
 }
 
 mojom::OnTabMovedEventPtr ToEvent(const TabStripModelChange::Move& move) {
-  TabId id(TabId::Type::kContent,
+  NodeId id(NodeId::Type::kContent,
            base::NumberToString(move.tab->GetHandle().raw_value()));
 
   auto from = mojom::Position::New();

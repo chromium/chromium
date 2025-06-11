@@ -14,7 +14,7 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
                                      const TabRendererData& data) {
   auto result = tabs_api::mojom::Tab::New();
 
-  result->id = tabs_api::TabId(tabs_api::TabId::Type::kContent,
+  result->id = tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
                                base::NumberToString(handle.raw_value()));
   result->title = base::UTF16ToUTF8(data.title);
   // TODO(crbug.com/414630734). Integrate the favicon_url after it is
@@ -35,7 +35,7 @@ tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
     tabs::TabCollection::Type collection_type) {
   auto tab_collection = tabs_api::mojom::TabCollection::New();
   tab_collection->id =
-      tabs_api::TabId(tabs_api::TabId::Type::kCollection,
+      tabs_api::NodeId(tabs_api::NodeId::Type::kCollection,
                       base::NumberToString(handle.raw_value()));
   tab_collection->collection_type =
       tabs_api::mojom::TabCollection::CollectionType::kUnknown;

@@ -13,7 +13,7 @@ import {isRTL} from 'chrome://resources/js/util.js';
 
 import type {AlertIndicatorsElement} from '../alert_indicators.js';
 import {getTemplate} from '../tab.html.js';
-import type {Tab, TabId} from '../tab_strip_api.mojom-webui.js';
+import type {Tab, NodeId} from '../tab_strip_api.mojom-webui.js';
 import {TabNetworkState} from '../tabs.mojom-webui.js';
 
 import type {TabStripApiProxy} from './tab_strip_api.js';
@@ -36,7 +36,7 @@ export class TabElement extends CustomElement {
   private thumbnail_: HTMLImageElement;
   private tab_: Tab|null = null;
   private titleTextEl_: HTMLElement;
-  private onTabActivating_: (tabId: TabId) => void;
+  private onTabActivating_: (tabId: NodeId) => void;
   private tabStripApi_: TabStripApiProxy;
   private isValidDragOverTarget_: boolean;
   private dragHandler_: any;
@@ -86,7 +86,7 @@ export class TabElement extends CustomElement {
         (event: MouseEvent) => this.dragHandler_(this, event.clientX));
 
     this.closeButtonEl_.addEventListener('click', e => this.onClose_(e));
-    this.onTabActivating_ = (tabId: TabId) =>
+    this.onTabActivating_ = (tabId: NodeId) =>
         this.tabStripApi_.activateTab(tabId);
   }
 

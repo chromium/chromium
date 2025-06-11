@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_ID_H_
-#define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_ID_H_
+#ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_NODE_ID_H_
+#define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_NODE_ID_H_
 
 #include <string>
 #include <string_view>
 
 namespace tabs_api {
 
-// A discrete object representing an id for a tab resource.
+// A discrete object representing the id of a node in the tab tree.
 // Clients should never construct their own id instance and should only
 // use the IDs returned by the tab service.
-class TabId {
+class NodeId {
  public:
   enum class Type {
     kInvalid,
@@ -23,17 +23,17 @@ class TabId {
     kCollection,
   };
 
-  TabId() : TabId(Type::kInvalid, "") {}
-  TabId(enum Type type, std::string_view id) : type_(type), id_(id) {}
-  ~TabId() = default;
+  NodeId() : NodeId(Type::kInvalid, "") {}
+  NodeId(enum Type type, std::string_view id) : type_(type), id_(id) {}
+  ~NodeId() = default;
 
   std::string_view Id() const { return id_; }
 
   Type Type() const { return type_; }
 
-  // Two tab ids are equal iff they represent the same underlying resource
+  // Two node ids are equal iff they represent the same underlying resource
   // (denoted by the type) and they have the same id.
-  friend bool operator==(const TabId& a, const TabId& b);
+  friend bool operator==(const NodeId& a, const NodeId& b);
 
  private:
   enum Type type_;
@@ -42,4 +42,4 @@ class TabId {
 
 }  // namespace tabs_api
 
-#endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_ID_H_
+#endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_NODE_ID_H_

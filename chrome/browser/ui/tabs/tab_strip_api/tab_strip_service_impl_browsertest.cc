@@ -41,7 +41,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     for (auto& id : event->tabs) {
       auto found = std::find_if(
           tabs.begin(), tabs.end(),
-          [&](const std::pair<tabs_api::TabId, std::string>& element) {
+          [&](const std::pair<tabs_api::NodeId, std::string>& element) {
             return element.first == id;
           });
 
@@ -60,7 +60,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     auto& id = event->tab->id;
     auto found = std::find_if(
         tabs.begin(), tabs.end(),
-        [&](const std::pair<tabs_api::TabId, std::string>& element) {
+        [&](const std::pair<tabs_api::NodeId, std::string>& element) {
           return element.first == id;
         });
 
@@ -71,7 +71,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
 
   std::vector<tabs_api::mojom::OnTabMovedEventPtr> move_events;
   // Tabs is a vector containing a tab id and a url in the form of a string.
-  std::vector<std::pair<tabs_api::TabId, std::string>> tabs;
+  std::vector<std::pair<tabs_api::NodeId, std::string>> tabs;
 };
 
 class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
@@ -247,8 +247,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
 
   base::RunLoop close_loop;
   remote->CloseTabs(
-      {tabs_api::TabId(
-          tabs_api::TabId::Type::kContent,
+      {tabs_api::NodeId(
+          tabs_api::NodeId::Type::kContent,
           base::NumberToString(interface->GetHandle().raw_value()))},
       base::BindLambdaForTesting([&](TabStripService::CloseTabsResult result) {
         ASSERT_TRUE(result.has_value());
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
   mojo::Remote<TabStripService> remote;
   tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
 
-  tabs_api::TabId created_id;
+  tabs_api::NodeId created_id;
   base::RunLoop create_loop;
   // Append a new tab to the end, which will also focus it.
   remote->CreateTabAt(nullptr, std::make_optional(GURL("http://dark.web")),
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
   ASSERT_NE(GetTabStripModel()->GetActiveTab()->GetHandle(), old_tab_handle);
 
   auto old_tab_id =
-      tabs_api::TabId(tabs_api::TabId::Type::kContent,
+      tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
                       base::NumberToString(old_tab_handle.raw_value()));
   base::RunLoop activate_loop;
   remote->ActivateTab(
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
 
   auto handle_to_move = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
   auto to_move_id =
-      tabs_api::TabId(tabs_api::TabId::Type::kContent,
+      tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
                       base::NumberToString(handle_to_move.raw_value()));
 
   size_t target_idx = 1;
