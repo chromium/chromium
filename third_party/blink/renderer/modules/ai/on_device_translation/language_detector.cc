@@ -26,19 +26,22 @@ namespace {
 // TODO(crbug.com/410949688): Figure out how to retrieve these from the model.
 static constexpr auto kSupportedLanguages =
     base::MakeFixedFlatSet<std::string_view>({
-        "af",      "am",  "ar",  "ar-Latn", "az", "be", "bg", "bg-Latn", "bn",
-        "bs",      "ca",  "ceb", "co",      "cs", "cy", "da", "de",      "el",
-        "el-Latn", "en",  "eo",  "es",      "et", "eu", "fa", "fi",      "fil",
-        "fr",      "fy",  "ga",  "gd",      "gl", "gu", "ha", "haw",     "hi",
-        "hi-Latn", "hmn", "hr",  "ht",      "hu", "hy", "id", "ig",      "is",
-        "it",      "iw",  "ja",  "ja-Latn", "jv", "ka", "kk", "km",      "kn",
-        "ko",      "ku",  "ky",  "la",      "lb", "lo", "lt", "lv",      "mg",
-        "mi",      "mk",  "ml",  "mn",      "mr", "ms", "mt", "my",      "ne",
-        "nl",      "no",  "ny",  "pa",      "pl", "ps", "pt", "ro",      "ru",
-        "ru-Latn", "sd",  "si",  "sk",      "sl", "sm", "sn", "so",      "sq",
-        "sr",      "st",  "su",  "sv",      "sw", "ta", "te", "tg",      "th",
-        "tr",      "uk",  "ur",  "uz",      "vi", "xh", "yi", "yo",      "zh",
-        "zh-Latn", "zu",
+        "af",      "am", "ar",      "ar-Latn", "az",      "be",  "bg",
+        "bg-Latn", "bn", "bs",      "ca",      "ceb",     "co",  "cs",
+        "cy",      "da", "de",      "el",      "el-Latn", "en",  "eo",
+        "es",      "et", "eu",      "fa",      "fi",      "fil", "fr",
+        "fy",      "ga", "gd",      "gl",      "gu",      "ha",  "haw",
+        "he",      "hi", "hi-Latn", "hmn",     "hr",      "ht",  "hu",
+        "hy",      "id", "ig",      "is",      "it",      "ja",  "ja-Latn",
+        "jv",      "ka", "kk",      "km",      "kn",      "ko",  "ku",
+        "ky",      "la", "lb",      "lo",      "lt",      "lv",  "mg",
+        "mi",      "mk", "ml",      "mn",      "mr",      "ms",  "mt",
+        "my",      "ne", "nl",      "no",      "ny",      "pa",  "pl",
+        "ps",      "pt", "ro",      "ru",      "ru-Latn", "sd",  "si",
+        "sk",      "sl", "sm",      "sn",      "so",      "sq",  "sr",
+        "st",      "su", "sv",      "sw",      "ta",      "te",  "tg",
+        "th",      "tr", "uk",      "ur",      "uz",      "vi",  "xh",
+        "yi",      "yo", "zh",      "zh-Latn", "zu",
     });
 
 bool RequiresUserActivation(
@@ -489,7 +492,15 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
 
     auto* result = MakeGarbageCollected<LanguageDetectionResult>();
     results.push_back(result);
-    result->setDetectedLanguage(String(prediction.language));
+
+    // The language detection model returns the outdated language code "iw"
+    // instead of the canonical "he", so we correct it here.
+    if (prediction.language == "iw") {
+      result->setDetectedLanguage("he");
+    } else {
+      result->setDetectedLanguage(String(prediction.language));
+    }
+
     result->setConfidence(prediction.score);
 
     cumulative_confidence += prediction.score;
