@@ -926,6 +926,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testWalletSettingsButtonRedirectsToSettings() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
+                        TouchToFillLoyaltyCardOutcome.WALLET_SETTINGS);
         mCoordinator.showLoyaltyCards(
                 List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ true);
 
@@ -936,6 +940,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         walletSettingButtonModel.get(ON_CLICK_ACTION).run();
 
         verify(mDelegateMock).showGoogleWalletSettings();
+        histogramWatcher.assertExpected();
     }
 
     @Test

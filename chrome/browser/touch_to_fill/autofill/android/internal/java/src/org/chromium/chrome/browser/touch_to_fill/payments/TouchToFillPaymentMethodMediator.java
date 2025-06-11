@@ -137,14 +137,16 @@ class TouchToFillPaymentMethodMediator {
      */
     @IntDef({
         TouchToFillLoyaltyCardOutcome.LOYALTY_CARD,
+        TouchToFillLoyaltyCardOutcome.WALLET_SETTINGS,
         TouchToFillLoyaltyCardOutcome.MANAGE_LOYALTY_CARDS,
         TouchToFillLoyaltyCardOutcome.DISMISS
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface TouchToFillLoyaltyCardOutcome {
         int LOYALTY_CARD = 0;
-        int MANAGE_LOYALTY_CARDS = 1;
-        int DISMISS = 2;
+        int WALLET_SETTINGS = 1;
+        int MANAGE_LOYALTY_CARDS = 2;
+        int DISMISS = 3;
         int MAX_VALUE = DISMISS;
     }
 
@@ -384,6 +386,12 @@ class TouchToFillPaymentMethodMediator {
         }
     }
 
+    public void showGoogleWalletSettings() {
+        assert mLoyaltyCards != null;
+        recordTouchToFillLoyaltyCardOutcomeHistogram(TouchToFillLoyaltyCardOutcome.WALLET_SETTINGS);
+        mDelegate.showGoogleWalletSettings();
+    }
+
     public void showManageLoyaltyCards() {
         assert mLoyaltyCards != null;
         mDelegate.openPassesManagementUi();
@@ -498,7 +506,7 @@ class TouchToFillPaymentMethodMediator {
     private PropertyModel createWalletSettingsButtonModel() {
         return new PropertyModel.Builder(ButtonProperties.ALL_KEYS)
                 .with(TEXT_ID, R.string.autofill_loyalty_card_wallet_settings_button)
-                .with(ON_CLICK_ACTION, mDelegate::showGoogleWalletSettings)
+                .with(ON_CLICK_ACTION, this::showGoogleWalletSettings)
                 .build();
     }
 
