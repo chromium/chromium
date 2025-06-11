@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -184,6 +185,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
 
     @Override
     public void openMostRecentlyClosedEntry() {}
+
+    @Override
+    public void addDelegateModelObserver(Callback<TabModelInternal> callback) {}
 
     @Override
     public void addIncognitoObserver(IncognitoTabModelObserver observer) {}

@@ -42,6 +42,8 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
+    private final ObserverList<Callback<TabModelInternal>> mDelegateModelObservers =
+            new ObserverList<>();
     private final Callback<@Nullable Tab> mDelegateModelCurrentTabSupplierObserver;
     private final ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier =
             new ObservableSupplierImpl<>();
@@ -112,6 +114,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
         for (TabModelObserver observer : mObservers) {
             mDelegateModel.addObserver(observer);
         }
+        for (Callback<TabModelInternal> delegateModelObserver : mDelegateModelObservers) {
+            delegateModelObserver.onResult(mDelegateModel);
+        }
     }
 
     /**
@@ -139,6 +144,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
         mTabCountSupplier.set(0);
 
         mDelegateModel = EmptyTabModel.getInstance(true);
+        for (Callback<TabModelInternal> delegateModelObserver : mDelegateModelObservers) {
+            delegateModelObserver.onResult(mDelegateModel);
+        }
     }
 
     private boolean isEmpty() {
@@ -311,6 +319,14 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     public void removeObserver(TabModelObserver observer) {
         mObservers.removeObserver(observer);
         mDelegateModel.removeObserver(observer);
+    }
+
+    @Override
+    public void addDelegateModelObserver(Callback<TabModelInternal> delegateModelObserver) {
+        mDelegateModelObservers.addObserver(delegateModelObserver);
+        if (mDelegateModel != null) {
+            delegateModelObserver.onResult(mDelegateModel);
+        }
     }
 
     @Override

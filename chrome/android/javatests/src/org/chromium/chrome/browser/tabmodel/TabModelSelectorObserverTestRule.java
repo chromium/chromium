@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
@@ -220,6 +221,9 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
             super.removeObserver(observer);
             mObserverSet.remove(observer);
         }
+
+        @Override
+        public void addDelegateModelObserver(Callback<TabModelInternal> callback) {}
 
         @Override
         public void addIncognitoObserver(IncognitoTabModelObserver observer) {}

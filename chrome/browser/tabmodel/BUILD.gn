@@ -109,6 +109,7 @@ android_library_factory("factory_java") {
 robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabmodel/ArchivedTabCountSupplierUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabGroupModelFilterImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParamsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParamsUtilsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupCollapsedUtilsUnitTest.java",

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -32,20 +33,32 @@ import java.util.Set;
  */
 @NullMarked
 public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInternal {
+    private final Callback<TabModelInternal> mDelegateModelObserver = this::setDelegateModel;
+
     private final ObserverList<TabGroupModelFilterObserver> mObservers = new ObserverList<>();
-    private final IncognitoTabModel mIncognitoTabModel;
+    private final IncognitoTabModelInternal mIncognitoTabModel;
     private @Nullable TabGroupModelFilterInternal mCurrentFilter;
 
-    public IncognitoTabGroupModelFilterImpl(IncognitoTabModel incognitoTabModel) {
+    public IncognitoTabGroupModelFilterImpl(IncognitoTabModelInternal incognitoTabModel) {
         mIncognitoTabModel = incognitoTabModel;
+        mIncognitoTabModel.addDelegateModelObserver(mDelegateModelObserver);
     }
 
-    /*package*/ void setCurrentFilter(TabGroupModelFilterInternal newFilter) {
-        mCurrentFilter = newFilter;
-        if (mCurrentFilter == null) return;
-        for (TabGroupModelFilterObserver obs : mObservers) {
-            mCurrentFilter.addTabGroupObserver(obs);
+    private void setDelegateModel(TabModelInternal tabModel) {
+        if (tabModel instanceof TabGroupModelFilterInternal newFilter) {
+            mCurrentFilter = newFilter;
+            for (TabGroupModelFilterObserver obs : mObservers) {
+                mCurrentFilter.addTabGroupObserver(obs);
+            }
+        } else if (tabModel instanceof EmptyTabModel) {
+            mCurrentFilter = null;
+        } else {
+            assert false : "Not reached";
         }
+    }
+
+    /*package*/ @Nullable TabGroupModelFilterInternal getCurrentFilterForTesting() {
+        return mCurrentFilter;
     }
 
     @Override

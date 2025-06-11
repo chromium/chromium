@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -418,6 +419,9 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                     supportUndo,
                     trackInNativeModelList);
         }
+
+        @Override
+        public void addDelegateModelObserver(Callback<TabModelInternal> callback) {}
 
         @Override
         public void addIncognitoObserver(IncognitoTabModelObserver observer) {}
