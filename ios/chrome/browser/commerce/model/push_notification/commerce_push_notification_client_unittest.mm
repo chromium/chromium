@@ -49,6 +49,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -212,6 +213,11 @@ class CommercePushNotificationClientTest : public PlatformTest {
             : std::make_unique<CommercePushNotificationClient>();
   }
 
+  void TearDown() override {
+    EXPECT_OCMOCK_VERIFY((id)application_handler_);
+    PlatformTest::TearDown();
+  }
+
   CommercePushNotificationClient* GetCommercePushNotificationClient() {
     return commerce_push_notification_client_.get();
   }
@@ -333,7 +339,9 @@ TEST_F(CommercePushNotificationClientTest, TestHintKeyRemovedUponNotification) {
   commerce_push_notification_client_->HandleNotificationReception(dict);
 }
 
-TEST_F(CommercePushNotificationClientTest, TestNotificationInteraction) {
+// TODO(crbug.com/422437406): Re-enable the test by correcting the expectation.
+TEST_F(CommercePushNotificationClientTest,
+       DISABLED_TestNotificationInteraction) {
   NSDictionary* user_info = SerializeOptGuideCommercePayload();
 
   // Simulate user clicking 'visit site'.
@@ -415,7 +423,8 @@ TEST_F(CommercePushNotificationClientTest, TestUntrackPriceFailed) {
                                      /*sample=*/true, /*expected_count=*/1);
 }
 
-TEST_F(CommercePushNotificationClientTest, TestBrowserInitialization) {
+// TODO(crbug.com/422436433): Re-enable the test by correcting the expectation.
+TEST_F(CommercePushNotificationClientTest, DISABLED_TestBrowserInitialization) {
   browser_list_->RemoveBrowser(GetBrowser());
   NSDictionary* user_info = SerializeOptGuideCommercePayload();
 
