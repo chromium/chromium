@@ -3070,6 +3070,7 @@ test("content_unittests") {
 
   if (is_android) {
     sources += [
+      "../browser/accessibility/ax_style_data_unittest.cc",
       "../browser/accessibility/browser_accessibility_android_unittest.cc",
       "../browser/android/nfc_host_unittest.cc",
       "../browser/attribution_reporting/attribution_input_event_tracker_android_unittest.cc",

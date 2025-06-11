@@ -3247,6 +3247,8 @@ source_set("browser") {
       "accessibility/accessibility_tree_formatter_android_external.h",
       "accessibility/accessibility_tree_snapshot_combiner.cc",
       "accessibility/accessibility_tree_snapshot_combiner.h",
+      "accessibility/ax_style_data.cc",
+      "accessibility/ax_style_data.h",
       "accessibility/browser_accessibility_android.cc",
       "accessibility/browser_accessibility_android.h",
       "accessibility/browser_accessibility_manager_android.cc",
