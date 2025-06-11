@@ -82,7 +82,7 @@ bool SearchEngineChoiceDialogService::BrowserRegistry::RegisterBrowser(
     // are a cause of multi-prompts.
     SCOPED_CRASH_KEY_BOOL("ChoiceService", "browser_has_open_dialog",
                           HasOpenDialog(browser));
-    NOTREACHED(base::NotFatalUntil::M138);
+    NOTREACHED(base::NotFatalUntil::M141);
     return false;
   }
 
@@ -220,7 +220,7 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
     // browser.
     // TODO(crbug.com/400119363): Investigate whether we can more formally
     // handle this.
-    NOTREACHED(base::NotFatalUntil::M138);
+    NOTREACHED(base::NotFatalUntil::M141);
   } else {
     if (search_engine_choice_service_->IsDsePropagationAllowedForGuest()) {
       base::UmaHistogramBoolean("Search.SaveGuestModeSelection",
