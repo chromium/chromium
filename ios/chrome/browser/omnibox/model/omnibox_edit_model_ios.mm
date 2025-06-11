@@ -360,39 +360,12 @@ void OmniboxEditModelIOS::OnPopupDataChanged(
 
 bool OmniboxEditModelIOS::OnAfterPossibleChange(
     const OmniboxViewIOS::StateChanges& state_changes) {
-  // Update the paste state as appropriate: if we're just finishing a paste
-  // that replaced all the text, preserve that information; otherwise, if we've
-  // made some other edit, clear paste tracking.
-  if (text_model_->paste_state == OmniboxPasteState::kPasting) {
-    text_model_->paste_state = OmniboxPasteState::kPasted;
+  bool state_changed =
+      text_model_->UpdateStateAfterPossibleChange(state_changes);
 
-    GURL url = GURL(*(state_changes.new_text));
-    if (url.is_valid()) {
-      controller_->client()->OnUserPastedInOmniboxResultingInValidURL();
-    }
-  } else if (state_changes.text_differs) {
-    text_model_->paste_state = OmniboxPasteState::kNone;
-  }
-
-  if (state_changes.text_differs || state_changes.selection_differs) {
-    // Restore caret visibility whenever the user changes text or selection in
-    // the omnibox.
-    text_model_->SetFocusState(OMNIBOX_FOCUS_VISIBLE,
-                               OMNIBOX_FOCUS_CHANGE_TYPING);
-  }
-
-  // If the user text does not need to be changed, return now, so we don't
-  // change any other state, lest arrowing around the omnibox do something like
-  // reset `just_deleted_text_`.  Note that modifying the selection accepts any
-  // inline autocompletion, which results in a user text change.
-  if (!state_changes.text_differs &&
-      (!state_changes.selection_differs ||
-       text_model_->inline_autocompletion.empty())) {
+  if (!state_changed) {
     return false;
   }
-
-  text_model_->UpdateUserText(*state_changes.new_text);
-  text_model_->just_deleted_text = state_changes.just_deleted_text;
 
   if (view_) {
     view_->UpdatePopup();

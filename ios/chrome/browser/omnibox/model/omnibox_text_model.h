@@ -12,6 +12,7 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 
 enum class OmniboxPasteState {
   kNone,     // Most recent edit was not a paste.
@@ -51,6 +52,11 @@ struct OmniboxTextModel {
 
   // Updates the user text state.
   void UpdateUserText(const std::u16string& text);
+
+  // Updates the model state and returns true if possible state changes occur,
+  // returns false otherwise.
+  bool UpdateStateAfterPossibleChange(
+      const OmniboxViewIOS::StateChanges& state_changes);
 
   // The Omnibox client.
   raw_ptr<OmniboxClient> omnibox_client;
