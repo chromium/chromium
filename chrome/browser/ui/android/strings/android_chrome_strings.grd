@@ -4931,8 +4931,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_READER_MODE_MESSAGE_BUTTON" desc="The label for the button to open the current page in reader mode.">
         View
       </message>
-      <message name="IDS_READER_MODE_ACTION_CHIP_LABEL_SIMPLIFY_PAGE" desc="The label for the action chip shown on the toolbar to open the current page in reader mode. [CHAR_LIMIT=27]">
-        Simplify page
+      <message name="IDS_READER_MODE_ACTION_CHIP_LABEL_SIMPLIFY_PAGE" desc="The label for the action chip shown on the toolbar to open the current page in reading mode. [CHAR_LIMIT=27]">
+        Reading Mode
       </message>
       <message name="IDS_CONTENT_PROVIDER_SEARCH_DESCRIPTION" desc="Description for Chrome's entry in QSB's list of search suggestion providers [CHAR_LIMIT=32]">
         Bookmarks and web history
