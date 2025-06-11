@@ -136,11 +136,11 @@ void SnapshotBrowserAgent::InsertWebState(web::WebState* web_state) {
 
 void SnapshotBrowserAgent::DetachWebState(web::WebState* web_state,
                                           DetachPolicy policy) {
-  SnapshotTabHelper* tab_helper = SnapshotTabHelper::FromWebState(web_state);
   if (policy == DetachPolicy::kPurge) {
-    tab_helper->RemoveSnapshot();
+    const SnapshotID snapshot_id(web_state->GetUniqueIdentifier());
+    [snapshot_storage_ removeImageWithSnapshotID:snapshot_id];
   }
-  tab_helper->SetSnapshotStorage(nil);
+  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotStorage(nil);
 }
 
 void SnapshotBrowserAgent::MigrateStorageIfNecessary() {

@@ -152,16 +152,6 @@ UIImage* SnapshotTabHelper::GenerateSnapshotWithoutOverlays() {
   }
 }
 
-void SnapshotTabHelper::RemoveSnapshot() {
-  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    CHECK(snapshot_manager_);
-    [snapshot_manager_ removeSnapshot];
-  } else {
-    CHECK(legacy_snapshot_manager_);
-    [legacy_snapshot_manager_ removeSnapshot];
-  }
-}
-
 void SnapshotTabHelper::IgnoreNextLoad() {
   ignore_next_load_ = true;
 }

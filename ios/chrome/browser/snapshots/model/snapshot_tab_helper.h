@@ -66,9 +66,6 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // generation fails.
   UIImage* GenerateSnapshotWithoutOverlays();
 
-  // Requests deletion of the current page snapshot from disk and memory.
-  void RemoveSnapshot();
-
   // Instructs the helper not to snapshot content for the next page load event.
   void IgnoreNextLoad();
 

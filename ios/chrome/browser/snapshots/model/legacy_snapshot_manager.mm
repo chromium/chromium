@@ -92,10 +92,6 @@
   return [_snapshotGenerator generateUIViewSnapshot];
 }
 
-- (void)removeSnapshot {
-  [_snapshotStorage removeImageWithSnapshotID:_snapshotID];
-}
-
 - (void)setDelegate:(id<SnapshotGeneratorDelegate>)delegate {
   _snapshotGenerator.delegate = delegate;
 }

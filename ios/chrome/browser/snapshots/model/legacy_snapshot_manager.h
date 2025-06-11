@@ -47,9 +47,6 @@ class SnapshotID;
 // This does not update the snapshot storage.
 - (UIImage*)generateUIViewSnapshot;
 
-// Requests deletion of the current page snapshot from disk and memory.
-- (void)removeSnapshot;
-
 // Sets the delegate to SnapshotGenerator. Generating snapshots before setting a
 // delegate will fail. The delegate is not owned by the tab helper.
 - (void)setDelegate:(id<SnapshotGeneratorDelegate>)delegate;

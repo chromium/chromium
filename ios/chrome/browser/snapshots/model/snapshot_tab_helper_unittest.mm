@@ -372,38 +372,6 @@ TEST_F(SnapshotTabHelperTest, GenerateSnapshot) {
   EXPECT_FALSE(UIImagesAreEqual(snapshot, cached_snapshot));
 }
 
-// Tests that RemoveSnapshot deletes the cached snapshot from memory and
-// disk (i.e. that SnapshotStorage cannot retrieve a snapshot; depends on
-// a correct implementation of SnapshotStorage).
-TEST_F(SnapshotTabHelperTest, RemoveSnapshot) {
-  SetCachedSnapshot(
-      UIImageWithSizeAndSolidColor(kDefaultSnapshotSize, [UIColor greenColor]));
-
-  SnapshotTabHelper::FromWebState(&web_state_)->RemoveSnapshot();
-
-  ASSERT_FALSE(GetCachedSnapshot());
-}
-
-TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
-  id partialMock = OCMPartialMock(snapshot_storage_);
-  auto web_state = std::make_unique<web::FakeWebState>();
-
-  SnapshotTabHelper::CreateForWebState(web_state.get());
-  const SnapshotID snapshot_id(web_state_.GetUniqueIdentifier());
-  [(SnapshotStorageWrapper*)[partialMock reject]
-      removeImageWithSnapshotID:snapshot_id];
-
-  // Use @try/@catch as -reject raises an exception.
-  @try {
-    web_state.reset();
-    EXPECT_OCMOCK_VERIFY(partialMock);
-  } @catch (NSException* exception) {
-    // The exception is raised when -removeImageWithSnapshotID: is invoked. As
-    // this should not happen, mark the test as failed.
-    GTEST_FAIL();
-  }
-}
-
 // Tests that UpdateSnapshotStorage doesn't override an old image if taking a
 // new snapshot fails.
 TEST_F(SnapshotTabHelperTest, FailToUpdateSnapshotStorage) {

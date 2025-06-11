@@ -11,7 +11,7 @@ import UIKit
   private let snapshotGenerator: SnapshotGenerator
 
   // The snapshot storage which is used to store and retrieve snapshots.
-  var snapshotStorage: Optional<SnapshotStorage>
+  var snapshotStorage: SnapshotStorage?
 
   // The unique ID for WebState's snapshot.
   let snapshotID: SnapshotIDWrapper
@@ -78,11 +78,6 @@ import UIKit
   // the snapshot storage.
   func generateUIViewSnapshot() -> UIImage? {
     return snapshotGenerator.generateUIViewSnapshot()
-  }
-
-  // Requests deletion of the current page snapshot from disk and memory.
-  func removeSnapshot() {
-    snapshotStorage?.removeImage(snapshotID: snapshotID)
   }
 
   // Sets the delegate to SnapshotGenerator. Generating snapshots before setting a delegate will
