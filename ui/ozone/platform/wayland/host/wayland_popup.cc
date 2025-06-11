@@ -157,9 +157,6 @@ void WaylandPopup::Hide() {
   parent_window()->set_child_popup(nullptr);
   xdg_popup_.reset();
 
-  // Although this is unlikely to be reshown, popup state should be kUnknown.
-  pending_configure_state_.window_state = PlatformWindowState::kUnknown;
-
   WaylandWindow::Hide();
   // Mutter compositor crashes if we don't reset subsurfaces when hiding.
   if (WaylandWindow::primary_subsurface()) {
@@ -220,7 +217,7 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
     return;
   }
 
-  if (pending_configure_state_.window_state == PlatformWindowState::kUnknown) {
+  if (GetPlatformWindowState() == PlatformWindowState::kUnknown) {
     // ui::Compositor may have finished rendering the content at this point,
     // causing gpu process to not produce any new frames. Always full damage to
     // ensure we have something to give to the system compositor post 1st
@@ -330,7 +327,8 @@ void WaylandPopup::SetWindowGeometry(
 }
 
 void WaylandPopup::AckConfigure(uint32_t serial) {
-  DCHECK(xdg_popup_);
-  xdg_popup_->AckConfigure(serial);
+  if (xdg_popup_) {
+    xdg_popup_->AckConfigure(serial);
+  }
 }
 }  // namespace ui
