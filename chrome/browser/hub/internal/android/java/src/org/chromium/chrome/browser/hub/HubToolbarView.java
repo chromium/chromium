@@ -49,6 +49,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
@@ -74,6 +75,7 @@ public class HubToolbarView extends LinearLayout {
     private boolean mApplyDelayForSearchBoxAnimation;
     private final AnimationHandler mHubSearchAnimatorHandler;
     private final Handler mHandler;
+    private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /** Default {@link LinearLayout} constructor called by inflation. */
     public HubToolbarView(Context context, AttributeSet attributeSet) {
@@ -240,7 +242,7 @@ public class HubToolbarView extends LinearLayout {
         mixer.registerBlend(
                 new SingleHubViewColorBlend(
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                        colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
+                        colorScheme -> getBackgroundColor(context, colorScheme),
                         this::setBackgroundColor));
 
         if (isGtsUpdateEnabled) {
@@ -540,5 +542,16 @@ public class HubToolbarView extends LinearLayout {
         hoverDrawable.setShape(GradientDrawable.RECTANGLE);
         hoverDrawable.setCornerRadius(radius);
         return hoverDrawable;
+    }
+
+    private @ColorInt int getBackgroundColor(Context context, @HubColorScheme int colorScheme) {
+        boolean isXrFullSpaceMode =
+                mXrSpaceModeObservableSupplier != null && mXrSpaceModeObservableSupplier.get();
+        return HubColors.getBackgroundColor(context, colorScheme, isXrFullSpaceMode);
+    }
+
+    public void setXrSpaceModeObservableSupplier(
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
     }
 }

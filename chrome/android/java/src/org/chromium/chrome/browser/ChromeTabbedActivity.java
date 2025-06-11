@@ -949,7 +949,8 @@ public class ChromeTabbedActivity extends ChromeActivity
                         getTabModelSelectorSupplier(),
                         () -> getToolbarManager().getOverviewModeMenuButtonCoordinator(),
                         mEdgeToEdgeControllerSupplier,
-                        mHubSearchClient);
+                        mHubSearchClient,
+                        getXrSpaceModeObservableSupplier());
         var builder = mHubProvider.getPaneListBuilder();
         builder.registerPane(
                 PaneId.TAB_SWITCHER,

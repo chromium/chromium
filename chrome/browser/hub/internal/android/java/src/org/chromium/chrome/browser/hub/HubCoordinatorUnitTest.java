@@ -180,7 +180,8 @@ public class HubCoordinatorUnitTest {
                         mMenuButtonCoordinator,
                         mSearchActivityClient,
                         mEdgeToEdgeSupplier,
-                        mHubColorMixer);
+                        mHubColorMixer,
+                        /* xrSpaceModeObservableSupplier= */ null);
         ShadowLooper.runUiThreadTasks();
         mRootView.getChildCount();
         assertNotEquals(0, mRootView.getChildCount());

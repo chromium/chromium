@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.ValueUtils;
-import org.chromium.ui.xr.scenecore.XrSceneCoreUtils;
 
 /** Util class to handle various color operations shared between hub classes. */
 @NullMarked
@@ -44,12 +43,6 @@ public final class HubColors {
     /** Returns the background color generic surfaces should use per the given color scheme. */
     public static @ColorInt int getBackgroundColor(
             Context context, @HubColorScheme int colorScheme) {
-        // On an XRDevice in FSM the background color of the Hub view is set to transparent always.
-        if (XrSceneCoreUtils.isSceneCoreSessionInFsm(
-                XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(context))) {
-            return Color.TRANSPARENT;
-        }
-
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
                 return SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
@@ -61,6 +54,12 @@ public final class HubColors {
                 assert false;
                 return Color.TRANSPARENT;
         }
+    }
+
+    public static @ColorInt int getBackgroundColor(
+            Context context, @HubColorScheme int colorScheme, boolean isXrFullSpaceMode) {
+        if (isXrFullSpaceMode) return Color.TRANSPARENT;
+        return getBackgroundColor(context, colorScheme);
     }
 
     /** Returns the color toolbar action button uses per the given color scheme. */

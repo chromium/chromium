@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.hub;
 
 import android.app.Activity;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -36,6 +38,8 @@ public class HubManagerFactory {
      * @param edgeToEdgeSupplier A supplier to the {@link EdgeToEdgeController}.
      * @param searchActivityClient A client for the search activity, used to launch search.
      * @return an instance of {@link HubManagerImpl}.
+     * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
+     *     space mode, false otherwise.
      */
     public static HubManager createHubManager(
             Activity activity,
@@ -48,7 +52,8 @@ public class HubManagerFactory {
             MenuButtonCoordinator menuButtonCoordinator,
             HubShowPaneHelper hubShowPaneHelper,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            SearchActivityClient searchActivityClient) {
+            SearchActivityClient searchActivityClient,
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         return new HubManagerImpl(
                 activity,
                 profileProviderSupplier,
@@ -60,6 +65,7 @@ public class HubManagerFactory {
                 menuButtonCoordinator,
                 hubShowPaneHelper,
                 edgeToEdgeSupplier,
-                searchActivityClient);
+                searchActivityClient,
+                xrSpaceModeObservableSupplier);
     }
 }

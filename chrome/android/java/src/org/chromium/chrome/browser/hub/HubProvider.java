@@ -55,6 +55,8 @@ public class HubProvider {
      * @param menuButtonCoordinatorSupplier A supplier for the root component for the app menu.
      * @param edgeToEdgeSupplier A supplier for the {@link EdgeToEdgeController}.
      * @param searchActivityClient A client for the search activity, used to launch search.
+     * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
+     *     space mode, false otherwise.
      */
     public HubProvider(
             Activity activity,
@@ -66,7 +68,8 @@ public class HubProvider {
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            SearchActivityClient searchActivityClient) {
+            SearchActivityClient searchActivityClient,
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mHubShowPaneHelper = new HubShowPaneHelper();
@@ -91,7 +94,8 @@ public class HubProvider {
                                     menuButtonCoordinatorSupplier.get(),
                                     mHubShowPaneHelper,
                                     edgeToEdgeSupplier,
-                                    searchActivityClient);
+                                    searchActivityClient,
+                                    xrSpaceModeObservableSupplier);
                         });
 
         mOnPaneFocused =

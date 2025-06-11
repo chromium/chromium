@@ -64,6 +64,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private int mSnackbarOverrideToken;
     private int mStatusIndicatorHeight;
     private int mAppHeaderHeight;
+    private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /** See {@link HubManagerFactory#createHubManager}. */
     public HubManagerImpl(
@@ -77,7 +78,8 @@ public class HubManagerImpl implements HubManager, HubController {
             MenuButtonCoordinator menuButtonCoordinator,
             HubShowPaneHelper hubShowPaneHelper,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            SearchActivityClient searchActivityClient) {
+            SearchActivityClient searchActivityClient,
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mActivity = activity;
         mProfileProviderSupplier = profileProviderSupplier;
         mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
@@ -101,6 +103,7 @@ public class HubManagerImpl implements HubManager, HubController {
         mHubColorMixer =
                 new HubColorMixerImpl(
                         mActivity, mHubVisibilitySupplier, mPaneManager.getFocusedPaneSupplier());
+        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
     }
 
     @Override
@@ -231,7 +234,8 @@ public class HubManagerImpl implements HubManager, HubController {
                         mMenuButtonCoordinator,
                         mSearchActivityClient,
                         mEdgeToEdgeSupplier,
-                        mHubColorMixer);
+                        mHubColorMixer,
+                        mXrSpaceModeObservableSupplier);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
         Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         attachPaneDependencies(pane);

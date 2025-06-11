@@ -174,7 +174,8 @@ public class HubManagerImplUnitTest {
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        /* xrSpaceModeObservableSupplier= */ null);
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
@@ -206,7 +207,8 @@ public class HubManagerImplUnitTest {
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        /* xrSpaceModeObservableSupplier= */ null);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -269,7 +271,8 @@ public class HubManagerImplUnitTest {
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        /* xrSpaceModeObservableSupplier= */ null);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
 
@@ -308,7 +311,8 @@ public class HubManagerImplUnitTest {
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        /* xrSpaceModeObservableSupplier= */ null);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -351,7 +355,8 @@ public class HubManagerImplUnitTest {
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        /* xrSpaceModeObservableSupplier= */ null);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -401,7 +406,8 @@ public class HubManagerImplUnitTest {
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        /* xrSpaceModeObservableSupplier= */ null);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();

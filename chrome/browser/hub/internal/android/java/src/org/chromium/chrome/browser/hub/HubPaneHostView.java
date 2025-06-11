@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.animation.AnimationHandler;
@@ -37,6 +38,7 @@ public class HubPaneHostView extends FrameLayout {
     private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
     private final AnimationHandler mFadeAnimatorHandler;
+    private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
@@ -96,7 +98,7 @@ public class HubPaneHostView extends FrameLayout {
         mixer.registerBlend(
                 new SingleHubViewColorBlend(
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                        colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
+                        colorScheme -> getBackgroundColor(context, colorScheme),
                         mPaneFrame::setBackgroundColor));
         mixer.registerBlend(
                 new SingleHubViewColorBlend(
@@ -123,7 +125,18 @@ public class HubPaneHostView extends FrameLayout {
         }
     }
 
+    private @ColorInt int getBackgroundColor(Context context, @HubColorScheme int colorScheme) {
+        boolean isXrFullSpaceMode =
+                mXrSpaceModeObservableSupplier != null && mXrSpaceModeObservableSupplier.get();
+        return HubColors.getBackgroundColor(context, colorScheme, isXrFullSpaceMode);
+    }
+
     void setHairlineColor(@ColorInt int hairlineColor) {
         mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
+    }
+
+    public void setXrSpaceModeObservableSupplier(
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
     }
 }

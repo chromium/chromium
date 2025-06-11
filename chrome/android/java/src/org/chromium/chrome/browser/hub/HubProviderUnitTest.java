@@ -122,7 +122,8 @@ public class HubProviderUnitTest {
                         () -> mTabModelSelector,
                         () -> mMenuButtonCoordinator,
                         mEdgeToEdgeSupplier,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        /* xrSpaceModeObservableSupplier= */ null);
     }
 
     @Test
