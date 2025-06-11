@@ -12,15 +12,18 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** A phone specific version of the {@link FindToolbar}. */
+@NullMarked
 public class FindToolbarPhone extends FindToolbar {
     /**
      * Creates an instance of a {@link FindToolbarPhone}.
+     *
      * @param context The Context to create the {@link FindToolbarPhone} under.
      * @param attrs The AttributeSet used to create the {@link FindToolbarPhone}.
      */

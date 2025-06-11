@@ -9,14 +9,17 @@ import android.view.View;
 import android.view.ViewStub;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Manages the interactions with the find toolbar. */
+@NullMarked
 public class FindToolbarManager {
-    private FindToolbar mFindToolbar;
+    private @Nullable FindToolbar mFindToolbar;
     private final ViewStub mFindToolbarStub;
     private final TabModelSelector mTabModelSelector;
     private final WindowAndroid mWindowAndroid;

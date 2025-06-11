@@ -14,18 +14,21 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** A tablet specific version of the {@link FindToolbar}. */
+@NullMarked
 public class FindToolbarTablet extends FindToolbar {
     private static final int ENTER_EXIT_ANIMATION_DURATION_MS = 200;
     private static final int MAKE_ROOM_ANIMATION_DURATION_MS = 200;
 
     private static final float Y_INSET_DP = 8.f;
 
-    private ObjectAnimator mCurrentAnimation;
+    private @Nullable ObjectAnimator mCurrentAnimation;
 
     private ObjectAnimator mAnimationEnter;
     private ObjectAnimator mAnimationLeave;
