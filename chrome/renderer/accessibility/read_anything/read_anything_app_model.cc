@@ -511,6 +511,15 @@ void ReadAnythingAppModel::UnserializeUpdates(Updates& updates,
   // Unserialize the updates.
   const size_t prev_tree_size = tree->size();
   for (const ui::AXTreeUpdate& update : updates) {
+    // If a tree update without a valid root is received for a tree without
+    // a valid root, it is likely the tree was previously destroyed and reading
+    // mode received a delayed accessibility event. This can happen on pages
+    // with frequent updates. If this happens, don't continue trying to
+    // unserialize because the data is bad.
+    DUMP_WILL_BE_CHECK(tree->root() || update.root_id != ui::kInvalidAXNodeID);
+    if (!tree->root() && update.root_id == ui::kInvalidAXNodeID) {
+      return;
+    }
     tree->Unserialize(update);
   }
 
