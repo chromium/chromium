@@ -38,14 +38,19 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
               PageActionIconType::kManagePasswords),
           profile, IOSPromoType::kPassword);
       break;
-    case IOSPromoType::kAddress:
-      IOSPromoBubble::ShowPromoBubble(
-          toolbar_button_provider->GetAnchorView(
-              kActionShowAddressesBubbleOrPage),
-          toolbar_button_provider->GetPageActionIconView(
-              PageActionIconType::kAutofillAddress),
-          profile, IOSPromoType::kAddress);
+    case IOSPromoType::kAddress: {
+      PageActionIconView* highlighted_button =
+          IsPageActionMigrated(PageActionIconType::kAutofillAddress)
+              ? nullptr
+              : toolbar_button_provider->GetPageActionIconView(
+                    PageActionIconType::kAutofillAddress);
+
+      IOSPromoBubble::ShowPromoBubble(toolbar_button_provider->GetAnchorView(
+                                          kActionShowAddressesBubbleOrPage),
+                                      highlighted_button, profile,
+                                      IOSPromoType::kAddress);
       break;
+    }
     case IOSPromoType::kPayment:
       IOSPromoBubble::ShowPromoBubble(
           toolbar_button_provider->GetAnchorView(
