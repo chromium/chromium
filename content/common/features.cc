@@ -147,10 +147,9 @@ BASE_FEATURE(kCommittedOriginEnforcements,
 // Turn on the tracking of origins committed in each renderer process in
 // ChildProcessSecurityPolicy. This is required for committed origin
 // enforcements, which is gated behind kCommittedOriginEnforcements.
-// Temporarily disabled while investigating https://crbug.com/377793089.
 BASE_FEATURE(kCommittedOriginTracking,
              "CommittedOriginTracking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables support for the `Critical-CH` response header.
 // https://github.com/WICG/client-hints-infrastructure/blob/master/reliability.md#critical-ch
