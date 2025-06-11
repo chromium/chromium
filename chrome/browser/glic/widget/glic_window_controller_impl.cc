@@ -241,11 +241,6 @@ class GlicWindowControllerImpl::WindowEventObserver : public ui::EventObserver {
           glic_view_->IsPointWithinDraggableArea(mouse_location);
       initial_press_loc_ = mouse_location;
     }
-    if (event.type() == ui::EventType::kMouseReleased &&
-        event.AsMouseEvent()->IsRightMouseButton() &&
-        mouse_down_in_draggable_area_) {
-      glic_window_controller_->ShowTitleBarContextMenuAt(mouse_location);
-    }
     if (event.type() == ui::EventType::kMouseReleased ||
         event.type() == ui::EventType::kMouseExited) {
       mouse_down_in_draggable_area_ = false;
