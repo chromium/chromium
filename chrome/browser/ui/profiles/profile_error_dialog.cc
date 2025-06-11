@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -49,6 +49,7 @@ void ShowProfileErrorDialog(ProfileErrorType type,
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else  // BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramEnumeration("Profile.ProfileError2", type);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNoErrorDialogs)) {
     return;

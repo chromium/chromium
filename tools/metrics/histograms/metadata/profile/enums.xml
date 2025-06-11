@@ -336,6 +336,23 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Delayed and Crashed"/>
 </enum>
 
+<!-- LINT.IfChange(ProfileErrorType) -->
+
+<enum name="ProfileErrorType">
+  <int value="0" label="History error"/>
+  <int value="1" label="Preferences error"/>
+  <int value="2" label="Webdata autofill DB error"/>
+  <int value="3" label="Webdata token DB error"/>
+  <int value="4" label="Webdata DB error"/>
+  <int value="5" label="Webdata keyword DB error"/>
+  <int value="6" label="Create failure specified"/>
+  <int value="7" label="Create failure all"/>
+  <int value="8" label="Webdata payment manifest DB error"/>
+  <int value="9" label="Webdata account autofill DB error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_error_dialog.h:ProfileErrorType) -->
+
 <!-- LINT.IfChange(ProfileGaiaNameShareStatus) -->
 
 <enum name="ProfileGaiaNameShareStatus">

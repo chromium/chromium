@@ -13,17 +13,17 @@
 // this enum is used to back a histogram, and these are implicit assumptions
 // made in terms of how enumerated histograms are defined.
 enum class ProfileErrorType {
-  HISTORY,
-  PREFERENCES,
-  DB_AUTOFILL_WEB_DATA,
-  DB_TOKEN_WEB_DATA,
-  DB_WEB_DATA,
-  DB_KEYWORD_WEB_DATA,
-  CREATE_FAILURE_SPECIFIED,
-  CREATE_FAILURE_ALL,
-  DB_PAYMENT_MANIFEST_WEB_DATA,
-  DB_ACCOUNT_AUTOFILL_WEB_DATA,
-  END
+  HISTORY = 0,
+  PREFERENCES = 1,
+  DB_AUTOFILL_WEB_DATA = 2,
+  DB_TOKEN_WEB_DATA = 3,
+  DB_WEB_DATA = 4,
+  DB_KEYWORD_WEB_DATA = 5,
+  CREATE_FAILURE_SPECIFIED = 6,
+  CREATE_FAILURE_ALL = 7,
+  DB_PAYMENT_MANIFEST_WEB_DATA = 8,
+  DB_ACCOUNT_AUTOFILL_WEB_DATA = 9,
+  kMaxValue = DB_ACCOUNT_AUTOFILL_WEB_DATA,
 };
 
 // Shows an error dialog corresponding to the inability to open some portion of

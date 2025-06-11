@@ -474,6 +474,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Profile.ProfileError2" enum="ProfileErrorType"
+    expires_after="2025-11-16">
+  <owner>etienneb@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts the number of times a profile error dialog is shown. The dialog will
+    ask the user if they want to upload an error report for Google to debug the
+    issue.
+  </summary>
+</histogram>
+
 <histogram name="Profile.ProfilesOrderChanged" enum="BooleanHit"
     expires_after="2026-01-12">
   <owner>rsult@google.com</owner>
