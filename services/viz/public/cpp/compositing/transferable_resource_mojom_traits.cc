@@ -4,7 +4,6 @@
 
 #include "services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h"
 
-#include "base/functional/overloaded.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
