@@ -391,15 +391,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (FirstRunStatus.getFirstRunFlowComplete()
                     && !isEmptyUrl(mParams.getUrl())
                     && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
-                if (mParams.getOpenedFromInterestTarget()
-                        && mParams.getInterestTargetNodeID() != 0) {
-                    // This is a context menu for a link with `interesttarget`. If the node ID is
-                    // valid, then we should add a context menu item to show interest in the link.
-                    // There is a static_assert in ContextMenuController::ShowContextMenu() that
-                    // ensures "zero" means invalid. This item will only be created if the
-                    // HTMLInterestTargetAttribute flag is enabled.
-                    linkGroup.add(createListItem(Item.SHOW_INTEREST_IN_ELEMENT));
-                }
                 if (mMode == ContextMenuMode.NORMAL) {
                     if (ChromeFeatureList.sSwapNewTabAndNewTabInGroupAndroid.isEnabled()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
@@ -416,6 +407,15 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     } else if (isTabletScreen() && mItemDelegate.canEnterMultiWindowMode()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_WINDOW));
                     }
+                }
+                if (mParams.getOpenedFromInterestTarget()
+                        && mParams.getInterestTargetNodeID() != 0) {
+                    // This is a context menu for a link with `interesttarget`. If the node ID is
+                    // valid, then we should add a context menu item to show interest in the link.
+                    // There is a static_assert in ContextMenuController::ShowContextMenu() that
+                    // ensures "zero" means invalid. This item will only be created if the
+                    // HTMLInterestTargetAttribute flag is enabled.
+                    linkGroup.add(createListItem(Item.SHOW_INTEREST_IN_ELEMENT));
                 }
                 if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)
                         && EphemeralTabCoordinator.isSupported()) {
