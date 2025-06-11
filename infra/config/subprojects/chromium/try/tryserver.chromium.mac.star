@@ -809,7 +809,7 @@ ios_builder(
     mirrors = ["ci/ios26-sdk-simulator"],
     gn_args = "ci/ios26-sdk-simulator",
     cpu = cpu.ARM64,
-    xcode = xcode.x16betabots,
+    xcode = xcode.x26betabots,
 )
 
 ios_builder(
