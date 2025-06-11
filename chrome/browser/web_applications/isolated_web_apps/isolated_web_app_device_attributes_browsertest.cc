@@ -6,8 +6,10 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
+#include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -56,8 +59,9 @@ constexpr std::array<const char*, 5> kExpectedDeviceAttributeValues = {
     kDeviceAnnotatedAssetId, kDeviceAnnotatedLocation, kDeviceDirectoryApiId,
     kDeviceHostname, kDeviceSerialNumber};
 
-const AccountId kManagedUserAccountId =
-    AccountId::FromUserEmail("example@example.com");
+constexpr char kManagedUserEmail[] = "example@example.com";
+constexpr GaiaId::Literal kGaiaId("123456");
+constexpr char kTestAffiliationId[] = "test-affiliation-id";
 
 constexpr char kPermissionsPolicyError[] =
     "Permissions-Policy: device-attributes are disabled.";
@@ -87,10 +91,8 @@ class IsolatedWebAppDeviceAttributesBrowserTest
     }
   }
   void SetUpInProcessBrowserTestFixture() override {
-    if (!ash::SessionManagerClient::Get()) {
-      ash::SessionManagerClient::InitializeFakeInMemory();
-    }
     IsolatedWebAppBrowserTestHarness::SetUpInProcessBrowserTestFixture();
+    SetUpPolicies();
   }
 
  protected:
@@ -107,15 +109,9 @@ class IsolatedWebAppDeviceAttributesBrowserTest
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
     ash::system::StatisticsProvider::SetTestProvider(
         &fake_statistics_provider_);
-    SetDevicePolicies();
-  }
 
-  std::unique_ptr<user_manager::ScopedUserManager> GetLoggedInAffiliatedUser() {
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    fake_user_manager->AddUserWithAffiliation(kManagedUserAccountId, true);
-    fake_user_manager->LoginUser(kManagedUserAccountId);
-    return std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  kDeviceSerialNumber);
   }
 
   IsolatedWebAppUrlInfo InstallApp(
@@ -148,30 +144,38 @@ class IsolatedWebAppDeviceAttributesBrowserTest
   }
 
  private:
-  void SetDevicePolicies() {
-    device_policy().policy_data().set_annotated_asset_id(
-        kDeviceAnnotatedAssetId);
-    device_policy().policy_data().set_annotated_location(
-        kDeviceAnnotatedLocation);
-    device_policy().policy_data().set_directory_api_id(kDeviceDirectoryApiId);
-    device_policy()
-        .payload()
-        .mutable_network_hostname()
-        ->set_device_hostname_template(kDeviceHostname);
-    policy_helper_.RefreshDevicePolicy();
+  void SetUpPolicies() {
+    {
+      policy::CachedDevicePolicyUpdater updater;
+      updater.policy_data().set_annotated_asset_id(kDeviceAnnotatedAssetId);
+      updater.policy_data().set_annotated_location(kDeviceAnnotatedLocation);
+      updater.policy_data().set_directory_api_id(kDeviceDirectoryApiId);
+      updater.payload()
+          .mutable_network_hostname()
+          ->set_device_hostname_template(kDeviceHostname);
+      updater.policy_data().add_device_affiliation_ids(kTestAffiliationId);
+      updater.Commit();
+    }
 
-    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
-                                                  kDeviceSerialNumber);
+    // Mark as affiliated.
+    {
+      auto updater = user_policy_.RequestPolicyUpdate();
+      updater->policy_data()->add_user_affiliation_ids(kTestAffiliationId);
+    }
   }
   policy::DevicePolicyBuilder& device_policy() {
     return *(policy_helper_.device_policy());
   }
 
+  base::test::ScopedFeatureList features_;
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  ash::UserPolicyMixin user_policy_{
+      &mixin_host_, AccountId::FromUserEmailGaiaId(kManagedUserEmail, kGaiaId)};
+  ash::RegularLoggedInBrowserTestMixin logged_in_{
+      &mixin_host_, AccountId::FromUserEmailGaiaId(kManagedUserEmail, kGaiaId)};
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  base::test::ScopedFeatureList features_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
   web_app::IsolatedWebAppUpdateServerMixin
       isolated_web_app_update_server_mixin_{&mixin_host_};
@@ -183,8 +187,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
   if (IsAdminPolicyAllowed()) {
     AllowDeviceAttributesForOrigin(url_info.origin().Serialize());
   }
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_ =
-      GetLoggedInAffiliatedUser();
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   ASSERT_NE(app_frame, nullptr);
   ASSERT_EQ(kDeviceAttributeNames.size(),
@@ -211,8 +213,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
   if (IsAdminPolicyAllowed()) {
     AllowDeviceAttributesForOrigin(url_info.origin().Serialize());
   }
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_ =
-      GetLoggedInAffiliatedUser();
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   ASSERT_NE(app_frame, nullptr);
 

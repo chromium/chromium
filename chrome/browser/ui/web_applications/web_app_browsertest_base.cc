@@ -253,6 +253,8 @@ void WebAppBrowserTestBase::TearDownOnMainThread() {
 }
 
 void WebAppBrowserTestBase::SetUpCommandLine(base::CommandLine* command_line) {
+  WebAppBrowserTestBaseParent::SetUpCommandLine(command_line);
+
   // Browser will both run and display insecure content.
   command_line->AppendSwitch(switches::kAllowRunningInsecureContent);
   cert_verifier_.SetUpCommandLine(command_line);

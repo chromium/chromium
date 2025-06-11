@@ -1231,8 +1231,10 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/ash/policy/test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+      "//chrome/browser/ash/test:test_support",
       "//chrome/browser/ui/ash/login",
       "//chrome/browser/web_applications/ash/migrations:browser_tests",
+      "//chromeos/ash/components/policy/device_policy:test_support",
       "//chromeos/ash/components/system:system",
     ]
   } else {
