@@ -146,8 +146,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   params1.url = url_info1_->origin().GetURL().Resolve("/first-page.html");
   params1.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params1);
-  EXPECT_TRUE(params1.force_open_pwa_window);
-  EXPECT_TRUE(params1.open_pwa_window_if_possible);
 
   Browser* iwa_browser = params1.browser;
   EXPECT_NE(iwa_browser, browser());
@@ -172,8 +170,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   params2.url = url_info1_->origin().GetURL().Resolve("/other-page.html");
   params2.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params2);
-  EXPECT_TRUE(params2.force_open_pwa_window);
-  EXPECT_TRUE(params2.open_pwa_window_if_possible);
 
   // Navigating a tab in the app's scope should not create a new browser.
   EXPECT_EQ(iwa_browser, params2.browser);
@@ -189,8 +185,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
       url_info2_->origin().GetURL().Resolve("/page-in-another-iwa.html");
   params3.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params3);
-  EXPECT_TRUE(params3.force_open_pwa_window);
-  EXPECT_TRUE(params3.open_pwa_window_if_possible);
 
   // Navigating a tab outside of the app's scope should create a new browser.
   Browser* new_iwa_browser = params3.browser;
@@ -220,8 +214,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   params4.url = GetGoogleURL();
   params4.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params4);
-  EXPECT_FALSE(params4.force_open_pwa_window);
-  EXPECT_FALSE(params4.open_pwa_window_if_possible);
 
   // It might seem counterintuitive that `params4.browser` is expected to equal
   // to `iwa_browser`, but this is because the request is not intercepted by the
@@ -284,8 +276,6 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorIwaNewTabTest, NavigateNewTab) {
   params2.url = url_info1_->origin().GetURL();
   params2.disposition = GetParam();
   ui_test_utils::NavigateToURL(&params2);
-  EXPECT_TRUE(params2.force_open_pwa_window);
-  EXPECT_TRUE(params2.open_pwa_window_if_possible);
 
   EXPECT_EQ(params2.browser, iwa_browser);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
@@ -309,8 +299,6 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorIwaNewTabTest, NavigateNewTab) {
   params3.url = url_info1_->origin().GetURL();
   params3.disposition = GetParam();
   ui_test_utils::NavigateToURL(&params3);
-  EXPECT_TRUE(params3.force_open_pwa_window);
-  EXPECT_TRUE(params3.open_pwa_window_if_possible);
 
   Browser* new_iwa_browser = params3.browser;
   EXPECT_NE(new_iwa_browser, iwa_browser);

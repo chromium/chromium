@@ -8,6 +8,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
 
@@ -25,6 +27,14 @@ NavigationCapturingSettingsCrosImpl::~NavigationCapturingSettingsCrosImpl() =
 
 std::optional<webapps::AppId>
 NavigationCapturingSettingsCrosImpl::GetCapturingWebAppForUrl(const GURL& url) {
+  if (std::optional<webapps::AppId> iwa_id =
+          WebAppProvider::GetForWebApps(&profile_.get())
+              ->registrar_unsafe()
+              .FindBestAppWithUrlInScope(url, WebAppFilter::IsIsolatedApp())) {
+    // IWA URLs are always captured.
+    return *iwa_id;
+  }
+
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
           &profile_.get())) {
     return std::nullopt;

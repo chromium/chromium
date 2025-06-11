@@ -90,6 +90,7 @@
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -2890,27 +2891,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
   // Move back into tabbed browser: should keep showing the app settings link.
   Browser* tabbed_browser = chrome::OpenInChrome(app_browser);
   EXPECT_TRUE(ShowingAppManagementLink(tabbed_browser));
-}
-
-// Verifies behavior when an app window is opened by navigating with
-// `open_pwa_window_if_possible` set to true.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink,
-                       OpenAppWindowIfPossible) {
-  const GURL app_url = GetSecureAppURL();
-  InstallPWA(app_url);
-
-  NavigateParams params(browser(), app_url, ui::PAGE_TRANSITION_LINK);
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params.open_pwa_window_if_possible = true;
-  ui_test_utils::NavigateToURL(&params);
-
-  EXPECT_NE(browser(), params.browser);
-  EXPECT_FALSE(params.browser->is_type_normal());
-  EXPECT_TRUE(params.browser->is_type_app());
-  EXPECT_TRUE(params.browser->is_trusted_source());
-
-  EXPECT_TRUE(ShowingAppManagementLink(params.browser));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink, LaunchAsTab) {

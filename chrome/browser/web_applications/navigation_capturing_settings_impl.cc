@@ -23,8 +23,16 @@ NavigationCapturingSettingsImpl::~NavigationCapturingSettingsImpl() = default;
 
 std::optional<webapps::AppId>
 NavigationCapturingSettingsImpl::GetCapturingWebAppForUrl(const GURL& url) {
-  auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
-  return provider->registrar_unsafe().FindAppThatCapturesLinksInScope(url);
+  WebAppRegistrar& registrar =
+      web_app::WebAppProvider::GetForWebApps(&profile_.get())
+          ->registrar_unsafe();
+  if (std::optional<webapps::AppId> iwa_id =
+          registrar.FindBestAppWithUrlInScope(url,
+                                              WebAppFilter::IsIsolatedApp())) {
+    // IWA URLs are always captured.
+    return *iwa_id;
+  }
+  return registrar.FindAppThatCapturesLinksInScope(url);
 }
 
 }  // namespace web_app

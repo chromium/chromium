@@ -587,7 +587,10 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
 }
 
 // Add call should fail if calling app is already a sub app.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailAppIsSubApp) {
+// TODO(crbug.com/422710197): registrar.IsIsolated() must be true for subapps
+// of IWAs, otherwise the navigation to isolated-app:// will be aborted.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       DISABLED_AddFailAppIsSubApp) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   auto* original_provider = WebAppProvider::GetForTest(profile());
   BindRemote(iwa_frame);

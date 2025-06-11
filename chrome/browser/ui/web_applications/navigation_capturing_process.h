@@ -114,6 +114,9 @@ class NavigationCapturingProcess
 
   explicit NavigationCapturingProcess(const NavigateParams& params);
 
+  BrowserAndTabOverride HandleIsolatedWebAppNavigation(
+      const NavigateParams& params);
+
   // Returns true if based on the NavigateParams this instance was created with
   // the navigation capturing reimpl experiment is enabled.
   bool IsNavigationCapturingReimplExperimentEnabled();
@@ -201,6 +204,8 @@ class NavigationCapturingProcess
   const raw_ptr<Browser> navigation_params_browser_;
   std::optional<webapps::AppId> first_navigation_app_id_;
   std::optional<blink::mojom::DisplayMode> first_navigation_app_display_mode_;
+
+  bool isolated_web_app_navigation_ = false;
 
   bool navigation_capturing_enabled_ = false;
 

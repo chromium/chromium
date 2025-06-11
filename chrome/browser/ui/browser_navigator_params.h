@@ -320,10 +320,6 @@ struct NavigateParams {
   // possible, i.e. if the is a PWA installed for the target URL.
   bool open_pwa_window_if_possible = false;
 
-  // Indicates that the navigation must happen in a PWA window. If a PWA
-  // window can't be created, the navigation will be cancelled.
-  bool force_open_pwa_window = false;
-
   // The time when the input which led to the navigation occurred. Currently
   // only set when a link is clicked or the navigation takes place from the
   // desktop omnibox.

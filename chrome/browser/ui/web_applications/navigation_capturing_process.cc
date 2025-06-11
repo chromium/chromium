@@ -30,8 +30,11 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -114,9 +117,11 @@ bool IsAuxiliaryBrowsingContext(const NavigateParams& nav_params) {
 Browser* CreateWebAppWindowFromNavigationParams(
     const webapps::AppId& app_id,
     const NavigateParams& navigate_params,
-    bool should_create_app_popup = false) {
+    std::optional<bool> trusted_source_override = std::nullopt) {
   Browser::CreateParams app_browser_params = CreateParamsForApp(
-      app_id, should_create_app_popup, navigate_params.trusted_source,
+      app_id, /*is_popup=*/false,
+      /*trusted_source=*/
+      trusted_source_override.value_or(navigate_params.trusted_source),
       navigate_params.window_features.bounds,
       navigate_params.initiating_profile, navigate_params.user_gesture);
   Browser* created_browser =
@@ -249,8 +254,14 @@ NavigationCapturingProcess::MaybeHandleAppNavigation(
   auto result = base::WrapUnique(new NavigationCapturingProcess(params));
   // The `open_pwa_window_if_possible` flag is implemented in navigation
   // capturing logic, even if otherwise the reimpl experiment isn't enabled.
-  if (!result->IsNavigationCapturingReimplExperimentEnabled() &&
-      !params.open_pwa_window_if_possible) {
+
+  const bool should_handle_navigations_in_app =
+      result->IsNavigationCapturingReimplExperimentEnabled() ||
+      params.open_pwa_window_if_possible ||
+      content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+          profile, params.url);
+
+  if (!should_handle_navigations_in_app) {
     // Don't record debug information for ALL navigations unless expensive
     // DCHECKs are enabled.
 #if !EXPENSIVE_DCHECKS_ARE_ON()
@@ -309,6 +320,10 @@ NavigationCapturingProcess::NavigationCapturingProcess(
     first_navigation_app_display_mode_ =
         registrar.GetAppEffectiveDisplayMode(*first_navigation_app_id_);
   }
+
+  isolated_web_app_navigation_ =
+      content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+          &profile_.get(), params.url);
 }
 
 NavigationCapturingProcess::~NavigationCapturingProcess() {
@@ -393,71 +408,28 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
   debug_data_.Set("is_service_worker_clients_open_window",
                   is_service_worker_clients_open_window);
 
-  // TODO(https://crbug.com/382542907): Remove `open_pwa_window_if_possible` or
-  // make it IWA-specific.
-  bool is_service_worker_clients_open_window_with_nav_capturing =
-      is_service_worker_clients_open_window && navigation_capturing_enabled_;
-  if (params.open_pwa_window_if_possible &&
-      (!is_service_worker_clients_open_window_with_nav_capturing ||
-       params.force_open_pwa_window)) {
-    std::optional<webapps::AppId> app_id =
-        web_app::FindInstalledAppWithUrlInScope(&*profile_, params.url,
-                                                /*window_only=*/true);
-    if (!app_id && params.force_open_pwa_window) {
-      // In theory |force_open_pwa_window| should only be set if we know a
-      // matching PWA is installed. However, we can reach here if
-      // `WebAppRegistrar` hasn't finished starting yet, which can happen if
-      // Chrome is launched with the URL of an isolated app as an argument.
-      // This isn't a supported way to launch isolated apps, so we can cancel
-      // the navigation, but if we want to support it in the future we'll need
-      // to block until `WebAppRegistrar` is loaded.
-      initial_nav_handling_result_ =
-          NavigationCapturingInitialResult::kNavigationCanceled;
-      return CancelInitialNavigation();
+  if (isolated_web_app_navigation_) {
+    return HandleIsolatedWebAppNavigation(params);
+  }
+
+  CHECK(!isolated_web_app_navigation_);
+  // Handle service worker related navigations if any here.
+  if (is_service_worker_clients_open_window && !navigation_capturing_enabled_) {
+    // See service_worker_client_utils::OpenWindow() for more details.
+    CHECK(!params.browser);
+    CHECK_EQ(disposition_, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    CHECK(ui::PageTransitionCoreTypeIs(params.transition,
+                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
+
+    if (std::optional<webapps::AppId> app_id =
+            web_app::FindInstalledAppWithUrlInScope(&profile_.get(), params.url,
+                                                    /*window_only=*/true)) {
+      Browser* host_window = CreateWebAppWindowFromNavigationParams(
+          *app_id, params, /*trusted_source_override=*/true);
+      return NoCapturingOverrideBrowser(host_window);
     }
-    if (app_id) {
-      // Reuse the existing browser for in-app same window navigations.
-      bool navigating_same_app =
-          params.browser &&
-          web_app::AppBrowserController::IsForWebApp(params.browser, *app_id);
-      if (navigating_same_app) {
-        if (disposition_ == WindowOpenDisposition::CURRENT_TAB) {
-          return NoCapturingOverrideBrowser(params.browser);
-        }
 
-        // If the browser window does not yet have any tabs, and we are
-        // attempting to add the first tab to it, allow for it to be reused.
-        bool navigating_new_tab =
-            disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-            disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB;
-        bool browser_has_no_tabs =
-            params.browser && params.browser->tab_strip_model()->empty();
-        if (navigating_new_tab && browser_has_no_tabs) {
-          return NoCapturingOverrideBrowser(params.browser);
-        }
-      }
-
-      auto GetOriginSpecified = [](const NavigateParams& params) {
-        return params.window_features.has_x && params.window_features.has_y
-                   ? Browser::ValueSpecified::kSpecified
-                   : Browser::ValueSpecified::kUnspecified;
-      };
-
-      // App popups are handled in the switch statement in
-      // `GetBrowserAndTabForDisposition()`.
-      if (disposition_ == WindowOpenDisposition::NEW_POPUP) {
-        return CapturingDisabled();
-      }
-      std::string app_name = web_app::GenerateApplicationNameFromAppId(*app_id);
-      // Installed PWAs are considered trusted.
-      Browser::CreateParams browser_params =
-          Browser::CreateParams::CreateForApp(app_name, /*trusted_source=*/true,
-                                              params.window_features.bounds,
-                                              &*profile_, params.user_gesture);
-      browser_params.initial_origin_specified = GetOriginSpecified(params);
-      Browser* browser = Browser::Create(browser_params);
-      return NoCapturingOverrideBrowser(browser);
-    }
+    return CapturingDisabled();
   }
 
   // Below here handles the states outlined in
@@ -534,8 +506,7 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
     }
     if (source_browser_app_id_.has_value()) {
       Browser* app_window = CreateWebAppWindowFromNavigationParams(
-          *source_browser_app_id_, params,
-          disposition_ == WindowOpenDisposition::NEW_POPUP);
+          *source_browser_app_id_, params);
 
       return AuxiliaryContextInAppWindow(app_window);
     }
@@ -548,6 +519,7 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
   if (!first_navigation_app_id_) {
     return NoInitialActionRedirectionHandlingEligible();
   }
+
   CHECK(first_navigation_app_display_mode_);
   CHECK(client_mode_and_browser);
   const webapps::AppId& app_id = *first_navigation_app_id_;
@@ -718,6 +690,48 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
   }
 
   return CapturedNewClient(app_display_mode, host_window);
+}
+
+BrowserAndTabOverride
+NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
+    const NavigateParams& params) {
+  CHECK(isolated_web_app_navigation_);
+
+  if (!first_navigation_app_id_) {
+    initial_nav_handling_result_ =
+        NavigationCapturingInitialResult::kNavigationCanceled;
+    return CancelInitialNavigation();
+  }
+  // App popups are handled in the switch statement in
+  // `GetBrowserAndTabForDisposition()`.
+  if (disposition_ == WindowOpenDisposition::NEW_POPUP) {
+    return CapturingDisabled();
+  }
+
+  const webapps::AppId& iwa_id = *first_navigation_app_id_;
+
+  // Prefer `params.browser` if it's a compatible IWA browser.
+  bool iwa_browser =
+      params.browser &&
+      web_app::AppBrowserController::IsForWebApp(params.browser, iwa_id);
+  if (iwa_browser) {
+    if (disposition_ == WindowOpenDisposition::CURRENT_TAB) {
+      return CapturingDisabled();
+    }
+
+    // If the browser window does not yet have any tabs, and we are
+    // attempting to add the first tab to it, allow for it to be reused.
+    bool navigating_new_tab =
+        disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+        disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    if (navigating_new_tab && params.browser->tab_strip_model()->empty()) {
+      return CapturingDisabled();
+    }
+  }
+
+  Browser* host_window = CreateWebAppWindowFromNavigationParams(
+      iwa_id, params, /*trusted_source_override=*/true);
+  return NoCapturingOverrideBrowser(host_window);
 }
 
 // static
@@ -1547,6 +1561,7 @@ base::Value::Dict& NavigationCapturingProcess::PopulateAndGetDebugData() {
                   navigation_params_url_.possibly_invalid_spec());
   debug_data_.Set("navigation_params_browser",
                   base::ToString(navigation_params_browser_.get()));
+  debug_data_.Set("isolated_web_app_navigation", isolated_web_app_navigation_);
   debug_data_.Set("source_tab_app_id", source_tab_app_id_.value_or("<none>"));
   debug_data_.Set("disposition", base::ToString(disposition_));
   debug_data_.Set("state", base::ToString(state_));
