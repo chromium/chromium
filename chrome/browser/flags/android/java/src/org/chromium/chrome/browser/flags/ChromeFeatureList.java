@@ -1276,6 +1276,9 @@ public abstract class ChromeFeatureList {
                             "multi_data_source_skip_device_check",
                             false);
 
+    public static final BooleanCachedFeatureParam sAndroidComposeplateSkipLocaleCheck =
+            newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "skip_locale_check", false);
+
     public static final BooleanCachedFeatureParam sAndroidBottomToolbarDefaultToTop =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_TOOLBAR, "default_to_top", true);
 
@@ -1591,6 +1594,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours,
                     sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck,
                     sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck,
+                    sAndroidComposeplateSkipLocaleCheck,
                     sAndroidAppIntegrationV2ContentTtlHours,
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs,
                     sAndroidAppIntegrationWithFaviconSkipDeviceCheck,

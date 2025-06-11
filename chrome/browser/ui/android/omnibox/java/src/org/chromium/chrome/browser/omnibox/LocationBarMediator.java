@@ -44,6 +44,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -267,7 +268,7 @@ class LocationBarMediator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mOfflineDownloader = offlineDownloader;
 
-        mIsComposeplateEnabled = ChromeFeatureList.sAndroidComposeplate.isEnabled();
+        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet);
     }
 
     /**
@@ -1315,7 +1316,7 @@ class LocationBarMediator
         }
 
         // When this method is called on UI inflation, return false as the native is not ready.
-        if (!mNativeInitialized || mIsTablet) {
+        if (!mNativeInitialized) {
             return false;
         }
 

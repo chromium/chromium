@@ -2883,6 +2883,13 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
       std::size(kAndroidAppIntegrationModule_ForceCardShown_NonPixel),
       nullptr}};
 
+const FeatureEntry::FeatureParam kAndroidComposeplate_SkipLocaleCheck[] = {
+    {"skip_locale_check", "true"}};
+
+const FeatureEntry::FeatureVariation kAndroidComposeplateVariations[] = {
+    {"Skip locale check", kAndroidComposeplate_SkipLocaleCheck,
+     std::size(kAndroidComposeplate_SkipLocaleCheck), nullptr}};
+
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck[] = {
         {"multi_data_source_skip_device_check", "true"}};
@@ -6712,7 +6719,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"android-composeplate", flag_descriptions::kAndroidComposeplateName,
      flag_descriptions::kAndroidComposeplateDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidComposeplate)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidComposeplate,
+                                    kAndroidComposeplateVariations,
+                                    "AndroidComposeplate")},
 
     {"new-tab-page-customization-for-mvt",
      flag_descriptions::kNewTabPageCustomizationForMvtName,

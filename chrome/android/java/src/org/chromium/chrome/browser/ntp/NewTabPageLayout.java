@@ -35,8 +35,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
 import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -236,7 +236,7 @@ public class NewTabPageLayout extends LinearLayout
         mWindowAndroid = windowAndroid;
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
-        mIsComposeplateEnabled = ChromeFeatureList.sAndroidComposeplate.isEnabled() && !mIsTablet;
+        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet);
         if (mIsComposeplateEnabled) {
             mComposeplateUrlSupplier = composeplateUrlSupplier;
         }
