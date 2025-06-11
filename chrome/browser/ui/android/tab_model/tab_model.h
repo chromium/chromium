@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
-#include "chrome/browser/ui/android/tab_model/tab_list_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/sessions/core/session_id.h"

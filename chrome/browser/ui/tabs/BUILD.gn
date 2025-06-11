@@ -33,6 +33,18 @@ source_set("tab_enums") {
   sources = [ "tab_enums.h" ]
 }
 
+# A common interface for operating on tabs for use by both desktop and android.
+# This is temporary until the tabstrip api is implemented on both platforms.
+source_set("tab_list_interface") {
+  sources = [ "tab_list_interface.h" ]
+
+  deps = [
+    "//components/tab_groups:tab_groups",
+    "//components/tabs:public",
+    "//url",
+  ]
+}
+
 if (!is_android) {
   source_set("tab_menu") {
     sources = [
