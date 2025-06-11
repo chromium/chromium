@@ -316,8 +316,14 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
   ASSERT_EQ(product_specifications_button()->GetTooltipText(), u"title");
 }
 
+// TODO(crbug.com/413297654): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NotifyHideEntryPoint DISABLED_NotifyHideEntryPoint
+#else
+#define MAYBE_NotifyHideEntryPoint NotifyHideEntryPoint
+#endif
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
-                       NotifyHideEntryPoint) {
+                       MAYBE_NotifyHideEntryPoint) {
   product_specifications_button()->ShowEntryPointWithTitle(u"title");
 
   ShowButton();
