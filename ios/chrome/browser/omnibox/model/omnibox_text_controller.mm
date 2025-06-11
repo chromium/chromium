@@ -481,12 +481,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)hideKeyboard {
-  // This check is a tentative fix for a crash that happens when calling
-  // `resignFirstResponder`. TODO(crbug.com/375429786): Verify the crash rate
-  // and remove the comment or check if needed.
-  if (self.textField.window) {
-    [self.textField resignFirstResponder];
-  }
+  [self.textField endEditing:YES];
 }
 
 - (void)refineWithText:(const std::u16string&)text {
