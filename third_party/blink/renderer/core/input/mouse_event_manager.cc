@@ -298,6 +298,19 @@ MouseEventManager::SetElementUnderMouseAndDispatchMouseEvent(
           web_mouse_event.pointer_type));
 }
 
+namespace {
+
+bool HasClickListenersInAncestor(Node* node) {
+  for (; node; node = FlatTreeTraversal::Parent(*node)) {
+    if (node->HasEventListeners(event_type_names::kClick)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
     Element* mouse_release_target,
     Element* captured_click_target,
@@ -323,12 +336,15 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
     return WebInputEventResult::kNotHandled;
 
   Node* click_target_node = nullptr;
-  if (captured_click_target) {
+  Node* common_ancestor = mouse_release_target->CommonAncestor(
+      *mousedown_element_, event_handling_util::ParentForClickEvent);
+
+  if (RuntimeEnabledFeatures::ClickToCapturedPointerEnabled() &&
+      captured_click_target) {
     click_target_node = captured_click_target;
   } else if (mousedown_element_->GetDocument() ==
              mouse_release_target->GetDocument()) {
-    click_target_node = mouse_release_target->CommonAncestor(
-        *mousedown_element_, event_handling_util::ParentForClickEvent);
+    click_target_node = common_ancestor;
   }
 
   if (!click_target_node)
@@ -338,6 +354,14 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
       (mouse_event.button == WebPointerProperties::Button::kLeft)
           ? event_type_names::kClick
           : event_type_names::kAuxclick;
+
+  if (captured_click_target && (common_ancestor != captured_click_target) &&
+      (click_event_type == event_type_names::kClick) &&
+      (HasClickListenersInAncestor(common_ancestor) ||
+       HasClickListenersInAncestor(captured_click_target))) {
+    UseCounter::Count(frame_->GetDocument(),
+                      WebFeature::kExplicitPointerCaptureClickTargetDiff);
+  }
 
   return DispatchMouseEvent(click_target_node, click_event_type, mouse_event,
                             nullptr, nullptr, false, pointer_id, pointer_type);

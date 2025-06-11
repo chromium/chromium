@@ -239,7 +239,9 @@ blink::WebMouseEvent MakeWebMouseEvent(const MouseEvent& event) {
       MakeWebMouseEventFromUiEvent(event);
 #endif
 
-  webkit_event.UpdateEventModifiersToMatchButton();
+  if (base::FeatureList::IsEnabled(blink::features::kClickToCapturedPointer)) {
+    webkit_event.UpdateEventModifiersToMatchButton();
+  }
 
   // Replace the event's coordinate fields with translated position data from
   // |event|.

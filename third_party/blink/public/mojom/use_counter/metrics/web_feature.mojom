@@ -3198,7 +3198,7 @@ enum WebFeature {
   kXRFrameFillJointRadii = 3939,
   kXRFrameFillPoses = 3940,
   kOBSOLETE_kWindowOpenNewPopupBehaviorMismatch = 3941,
-  kOBSOLETE_kExplicitPointerCaptureClickTargetDiff = 3942,
+  kExplicitPointerCaptureClickTargetDiff = 3942,
   // The items above roughly this point are available in the M92 branch.
   kControlledNonBlobURLWorkerWillBeUncontrolled = 3943,
   kMediaMetaThemeColor = 3944,

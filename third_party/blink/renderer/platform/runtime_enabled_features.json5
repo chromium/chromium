@@ -890,6 +890,12 @@
       name: "ClearPopoverInvokerAfterBeforeToggle",
       status: "stable",
     },
+    // crbug.com/40851596: Send click to the capture pointer target instead of
+    // the common ancestor of pointerdown and pointerup targets.
+    {
+      name: "ClickToCapturedPointer",
+      status: "stable",
+    },
     {
       // Allows top-level sites to restrict collection of high-entropy UA client
       // hints (from 3Ps, or itself) via the getHighEntropyValues API.

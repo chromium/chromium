@@ -1109,9 +1109,15 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
 
   Element* captured_click_target = nullptr;
   if (consider_click_dispatch) {
-    // Remember the capture target for the click dispatch later.
+    // Remember the capture target for the click dispatch later, if applicable.
     captured_click_target =
         GetEffectiveTargetForPointerEvent(nullptr, pointer_event->pointerId());
+    // Dispatch the click event only when the flag is disabled.
+    if (!RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
+      mouse_event_manager_->DispatchMouseClickIfNeeded(
+          mouse_target, captured_click_target, mouse_event,
+          pointer_event->pointerId(), pointer_event->pointerType());
+    }
   }
 
   if (pointer_event->type() == event_type_names::kPointerup ||
@@ -1145,17 +1151,20 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     }
   }
 
-  if (consider_click_dispatch) {
+  // Dispatch the click event if applicable, when the flag is enabled.
+  if (consider_click_dispatch &&
+      RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
     ProcessPendingPointerCapture(pointer_event);
     mouse_event_manager_->DispatchMouseClickIfNeeded(
         mouse_target, captured_click_target, mouse_event,
         pointer_event->pointerId(), pointer_event->pointerType());
+    // TODO(https://crbug.com/40851596): The following call to
+    // `ProcessCaptureAndPositionOfPointerEvent()` does not see any pending
+    // capture.  Clean this up after the flag is enabled.
   }
 
   // Send got/lostpointercapture rightaway if necessary.
   if (pointer_event->type() == event_type_names::kPointerup) {
-    // If a click was dispatched above, the following call only sets element
-    // under pointer/mouse and skips sending got/lostpointercapture events.
     ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
                                             &mouse_event);
   } else if (pointer_event->type() == event_type_names::kPointercancel) {
