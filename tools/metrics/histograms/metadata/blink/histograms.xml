@@ -1152,19 +1152,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Element.Fullscreen.DurationUpTo1H.RequestFullscreen"
-    units="ms" expires_after="2025-04-13">
-  <owner>btriebw@chromium.org</owner>
-  <owner>msw@chromium.org</owner>
-  <owner>web-windowing-team@google.com</owner>
-  <summary>
-    The duration of a fullscreen session initiated by a
-    element.{webkit}requestFullscreen request, up to 1 hour. The value is
-    reported each time HTML fullscreen mode exits after it was initiated by
-    element.{webkit}requestFullscreen. Excludes XR fullscreen.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Experimental.Cookies.CacheLookupResult2"
     enum="CookieCacheLookupResult" expires_after="2025-10-26">
   <owner>olivierli@chromium.org</owner>

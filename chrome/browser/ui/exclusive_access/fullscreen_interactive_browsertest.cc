@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
@@ -21,10 +20,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace {
-
-// UMA Key for tracking duration of fullscreen requests.
-static constexpr char kFullscreenDurationMetricKeyRequestFullscreen[] =
-    "Blink.Element.Fullscreen.DurationUpTo1H.RequestFullscreen";
 
 class FullscreenWebContentsObserver : public content::WebContentsObserver {
  public:
@@ -176,56 +171,4 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
                        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     observer.Wait();
   }
-}
-
-IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
-                       FullscreenDurationUmaLogged) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-
-  base::HistogramTester histogram_tester;
-
-  FullscreenWebContentsObserver observer(web_contents, main_frame);
-  EXPECT_TRUE(ExecJs(main_frame, "document.body.requestFullscreen();"));
-  observer.Wait();
-  EXPECT_TRUE(ExecJs(main_frame, "document.exitFullscreen();"));
-  observer.WaitForExit();
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histogram_tester.ExpectTotalCount(
-      kFullscreenDurationMetricKeyRequestFullscreen, 1);
-}
-
-// TODO(crbug.com/40810181): Flaky on Chrome OS.
-// TODO(crbug.com/40133132): Flaky on Linux.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_FullscreenDurationUmaLoggedCrossProcess \
-  DISABLED_FullscreenDurationUmaLoggedCrossProcess
-#else
-#define MAYBE_FullscreenDurationUmaLoggedCrossProcess \
-  FullscreenDurationUmaLoggedCrossProcess
-#endif
-IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
-                       MAYBE_FullscreenDurationUmaLoggedCrossProcess) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b{allowfullscreen})");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-  content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
-  base::HistogramTester histogram_tester;
-
-  FullscreenWebContentsObserver observer(web_contents, child_frame);
-  EXPECT_TRUE(ExecJs(child_frame, "document.body.requestFullscreen();"));
-  observer.Wait();
-  EXPECT_TRUE(ExecJs(main_frame, "document.exitFullscreen();"));
-  observer.WaitForExit();
-
-  content::FetchHistogramsFromChildProcesses();
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histogram_tester.ExpectTotalCount(
-      kFullscreenDurationMetricKeyRequestFullscreen, 1);
 }
