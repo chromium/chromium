@@ -49,10 +49,44 @@ class CONTENT_EXPORT PermissionOverrides {
                         const std::vector<blink::PermissionType>& permissions);
 
  private:
-  url::Origin global_overrides_origin_;
-  base::flat_map<std::pair<url::Origin, blink::PermissionType>,
-                 blink::mojom::PermissionStatus>
-      overrides_;
+  // Represents a canonical key for permission overrides.
+  // TODO(crbug.com/421149173): Update PermissionKey to also store both an
+  // embedding and requesting site tuple.
+  class PermissionKey {
+   public:
+    // Constructor for specific origin scopes and permission types.
+    // Null |origin| means the key's scope is considered global for |type|.
+    PermissionKey(base::optional_ref<const url::Origin> origin,
+                  blink::PermissionType type);
+
+    // Constructor for a global key specific to a permission type.
+    // Delegates to the primary constructor, signaling a global scope with null
+    // origin.
+    explicit PermissionKey(blink::PermissionType);
+
+    PermissionKey();
+    ~PermissionKey();
+
+    PermissionKey(const PermissionKey&);
+    PermissionKey& operator=(const PermissionKey&);
+    PermissionKey(PermissionKey&&);
+    PermissionKey& operator=(PermissionKey&&);
+
+    friend auto operator<=>(const PermissionKey&,
+                            const PermissionKey&) = default;
+
+   private:
+    // Represents the global state within a PermissionKey.
+    // All instances of GlobalKey are considered identical for comparison
+    // purposes.
+    struct GlobalKey {
+      friend auto operator<=>(const GlobalKey&, const GlobalKey&) = default;
+    };
+    std::variant<GlobalKey, url::Origin> scope_;
+    blink::PermissionType type_;
+  };
+
+  base::flat_map<PermissionKey, blink::mojom::PermissionStatus> overrides_;
 };
 
 }  // namespace content

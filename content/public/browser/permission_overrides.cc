@@ -13,6 +13,30 @@
 namespace content {
 using PermissionStatus = blink::mojom::PermissionStatus;
 
+PermissionOverrides::PermissionKey::PermissionKey(
+    base::optional_ref<const url::Origin> origin,
+    blink::PermissionType type)
+    : scope_(origin.has_value() ? std::variant<GlobalKey, url::Origin>(
+                                      std::in_place_type<url::Origin>,
+                                      origin.value())
+                                : std::variant<GlobalKey, url::Origin>(
+                                      std::in_place_type<GlobalKey>)),
+      type_(type) {}
+
+PermissionOverrides::PermissionKey::PermissionKey(blink::PermissionType type)
+    : PermissionKey(std::nullopt, type) {}
+
+PermissionOverrides::PermissionKey::PermissionKey() = default;
+PermissionOverrides::PermissionKey::~PermissionKey() = default;
+PermissionOverrides::PermissionKey::PermissionKey(const PermissionKey&) =
+    default;
+PermissionOverrides::PermissionKey&
+PermissionOverrides::PermissionKey::operator=(const PermissionKey& other) =
+    default;
+PermissionOverrides::PermissionKey::PermissionKey(PermissionKey&&) = default;
+PermissionOverrides::PermissionKey&
+PermissionOverrides::PermissionKey::operator=(PermissionKey&& other) = default;
+
 PermissionOverrides::PermissionOverrides() = default;
 PermissionOverrides::~PermissionOverrides() = default;
 PermissionOverrides::PermissionOverrides(PermissionOverrides&& other) = default;
@@ -22,29 +46,28 @@ PermissionOverrides& PermissionOverrides::operator=(
 void PermissionOverrides::Set(base::optional_ref<const url::Origin> origin,
                               blink::PermissionType permission,
                               const blink::mojom::PermissionStatus& status) {
-  const url::Origin& key_origin =
-      origin.has_value() ? *origin : global_overrides_origin_;
-  overrides_[{key_origin, permission}] = status;
+  overrides_[PermissionKey(origin, permission)] = status;
 
   // Special override status - MIDI_SYSEX is stronger than MIDI, meaning that
   // granting MIDI_SYSEX implies granting MIDI, while denying MIDI implies
   // denying MIDI_SYSEX.
   if (permission == blink::PermissionType::MIDI &&
       status != PermissionStatus::GRANTED) {
-    overrides_[{key_origin, blink::PermissionType::MIDI_SYSEX}] = status;
+    overrides_[PermissionKey(origin, blink::PermissionType::MIDI_SYSEX)] =
+        status;
   } else if (permission == blink::PermissionType::MIDI_SYSEX &&
              status == PermissionStatus::GRANTED) {
-    overrides_[{key_origin, blink::PermissionType::MIDI}] = status;
+    overrides_[PermissionKey(origin, blink::PermissionType::MIDI)] = status;
   }
 }
 
 std::optional<PermissionStatus> PermissionOverrides::Get(
     const url::Origin& origin,
     blink::PermissionType permission) const {
-  const auto* status = base::FindOrNull(overrides_, {origin, permission});
+  const auto* status =
+      base::FindOrNull(overrides_, PermissionKey(origin, permission));
   if (!status) {
-    status =
-        base::FindOrNull(overrides_, {global_overrides_origin_, permission});
+    status = base::FindOrNull(overrides_, PermissionKey(permission));
   }
 
   return base::OptionalFromPtr(status);
