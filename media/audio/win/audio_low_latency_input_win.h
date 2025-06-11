@@ -299,6 +299,18 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // an audio stream between an audio application and the audio engine.
   Microsoft::WRL::ComPtr<IAudioClient> audio_client_;
 
+  // Loopback IAudioClient supports event-driven mode but it requires an active
+  // audio output. Some clients (e.g. Chromecast) needs to be able to deliver
+  // a (silent) captured loopback stream even without active output audio, so a
+  // separate IAudioClient is needed to receive notifications when data is
+  // available in the buffer. For loopback input |audio_client_| is used to
+  // receive data, while |audio_render_client_for_loopback_| is used as a helper
+  // to get notifications when a new buffer is ready.
+  // The extra rendering client is only created and used in combination
+  // with endpoint devices or when |is_process_loopback_capture_| is false.
+  // See comment inInitializeAudioEngine() for more details.
+  Microsoft::WRL::ComPtr<IAudioClient> audio_render_client_for_loopback_;
+
   // The IAudioCaptureClient interface enables a client to read input data
   // from a capture endpoint buffer.
   Microsoft::WRL::ComPtr<IAudioCaptureClient> audio_capture_client_;
