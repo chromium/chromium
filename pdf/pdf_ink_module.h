@@ -448,11 +448,10 @@ class PdfInkModule {
   }
 
   // Returns true when the user is using a highlighter over selectable text at
-  // `position`.
+  // `position`. Can only be called when is_drawing_stroke() returns true.
   //
   // - Only returns true when the text highlighting feature is enabled.
-  bool IsHighlightingTextAtPosition(const DrawingStrokeState& state,
-                                    const gfx::PointF& position) const;
+  bool IsHighlightingTextAtPosition(const gfx::PointF& position) const;
 
   // Returns the current brush. Must be in a drawing stroke state.
   PdfInkBrush& GetDrawingBrush();

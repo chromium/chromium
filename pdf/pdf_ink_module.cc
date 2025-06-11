@@ -441,7 +441,7 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   if (is_drawing_stroke()) {
     MaybeFinishStrokeForMissingMouseUpEvent();
 
-    if (IsHighlightingTextAtPosition(drawing_stroke_state(), position)) {
+    if (IsHighlightingTextAtPosition(position)) {
       return StartTextHighlight(position, event.ClickCount(), event.TimeStamp(),
                                 ink::StrokeInput::ToolType::kMouse);
     }
@@ -554,7 +554,7 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
   if (is_drawing_stroke()) {
     MaybeFinishStrokeForMissingMouseUpEvent();
 
-    if (IsHighlightingTextAtPosition(drawing_stroke_state(), position)) {
+    if (IsHighlightingTextAtPosition(position)) {
       // Multi-click text selection for touch is not supported.
       return StartTextHighlight(position, /*click_count=*/1, event.TimeStamp(),
                                 tool_type);
@@ -802,7 +802,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   state.input_last_event.reset();
 
   bool set_drawing_brush = MaybeSetDrawingBrush();
-  if (IsHighlightingTextAtPosition(state, position)) {
+  if (IsHighlightingTextAtPosition(position)) {
     client_->UpdateInkCursor(ui::mojom::CursorType::kIBeam);
   } else if (set_drawing_brush) {
     MaybeSetCursor();
@@ -1412,10 +1412,9 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
 }
 
 bool PdfInkModule::IsHighlightingTextAtPosition(
-    const DrawingStrokeState& state,
     const gfx::PointF& position) const {
   return features::kPdfInk2TextHighlighting.Get() &&
-         state.brush_type == PdfInkBrush::Type::kHighlighter &&
+         drawing_stroke_state().brush_type == PdfInkBrush::Type::kHighlighter &&
          client_->IsSelectableTextOrLinkArea(position);
 }
 
