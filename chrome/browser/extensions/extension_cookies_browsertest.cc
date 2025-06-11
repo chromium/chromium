@@ -51,6 +51,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -122,14 +123,19 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
     base::FilePath test_data_dir;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
     test_server()->ServeFilesFromDirectory(test_data_dir);
-    ASSERT_TRUE(test_server()->Start());
+    test_server()->StartAcceptingConnections();
   }
 
-  // Ignore cert errors for HTTPS test server, in order to use hostnames other
-  // than localhost or 127.0.0.1.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionBrowserTest::SetUpCommandLine(command_line);
+    // Ignore cert errors for HTTPS test server, in order to use hostnames other
+    // than localhost or 127.0.0.1.
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    // Initialize server so port is set.
+    ASSERT_TRUE(test_server()->InitializeAndListen());
+    // Treat the test server as public to bypass Local Network Access checks.
+    network::AddPublicIpAddressSpaceOverrideToCommandLine(*test_server(),
+                                                          *command_line);
   }
 
  protected:
