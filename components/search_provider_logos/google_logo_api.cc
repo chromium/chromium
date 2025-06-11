@@ -15,7 +15,6 @@
 #include <memory>
 #include <string_view>
 
-#include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -29,6 +28,7 @@
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"
 #include "components/search_provider_logos/switches.h"
+#include "net/base/data_url.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_constants.h"
 
@@ -107,41 +107,21 @@ ParseEncodedImageData(const std::string& encoded_image_data) {
   std::pair<std::string, scoped_refptr<base::RefCountedString>> result;
 
   GURL encoded_image_uri(encoded_image_data);
+
   if (!encoded_image_uri.is_valid() ||
       !encoded_image_uri.SchemeIs(url::kDataScheme)) {
     return result;
   }
-  std::string content = encoded_image_uri.GetContent();
-  // The content should look like this: "image/png;base64,aaa..." (where
-  // "aaa..." is the base64-encoded image data).
-  size_t mime_type_end = content.find_first_of(';');
-  if (mime_type_end == std::string::npos) {
-    return result;
-  }
 
-  std::string mime_type = content.substr(0, mime_type_end);
-
-  size_t base64_begin = mime_type_end + 1;
-  size_t base64_end = content.find_first_of(',', base64_begin);
-  if (base64_end == std::string::npos) {
-    return result;
-  }
-  auto base64 = base::MakeStringPiece(content.begin() + base64_begin,
-                                      content.begin() + base64_end);
-  if (base64 != "base64") {
-    return result;
-  }
-
-  size_t data_begin = base64_end + 1;
-  auto data =
-      base::MakeStringPiece(content.begin() + data_begin, content.end());
-
+  std::string mime_type;
+  std::string charset;
   std::string decoded_data;
-  if (!base::Base64Decode(data, &decoded_data)) {
+  if (!net::DataURL::Parse(encoded_image_uri, &mime_type, &charset,
+                           &decoded_data)) {
     return result;
   }
 
-  result.first = mime_type;
+  result.first = std::move(mime_type);
   result.second =
       base::MakeRefCounted<base::RefCountedString>(std::move(decoded_data));
   return result;
