@@ -756,7 +756,11 @@ public class MediaDrmBridge {
         }
 
         if (mMediaDrm != null) {
-            mMediaDrm.release();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mMediaDrm.close();
+            } else {
+                mMediaDrm.release();
+            }
             mMediaDrm = null;
         }
 
