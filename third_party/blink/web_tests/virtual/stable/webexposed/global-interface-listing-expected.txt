@@ -9396,6 +9396,18 @@ interface TransitionEvent : Event
     getter propertyName
     getter pseudoElement
     method constructor
+interface Translator
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter inputQuota
+    getter sourceLanguage
+    getter targetLanguage
+    method constructor
+    method destroy
+    method measureInputUsage
+    method translate
+    method translateStreaming
 interface TreeWalker
     attribute @@toStringTag
     getter currentNode
