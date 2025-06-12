@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
 
 /**
  * Defines the interface between a {@link ContextualSearchSelectionController} and the code that
  * handles callbacks in {@link ContextualSearchManager}.
  */
+@NullMarked
 interface ContextualSearchSelectionHandler {
     /** Handle a scroll event on the base page. */
     public void handleScrollStart();
