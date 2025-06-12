@@ -109,6 +109,7 @@ class OmniboxMatchCellView : public views::View {
     SEARCH_SUGGESTION_WITH_IMAGE,
     IPH_SUGGESTION,
     HISTORY_EMBEDDING_ANSWER,
+    TOOLBELT,
   };
 
   // How far to indent the icon, entity, or answer image from the left side of

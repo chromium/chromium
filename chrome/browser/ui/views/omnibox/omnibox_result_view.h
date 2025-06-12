@@ -40,6 +40,7 @@ class Image;
 namespace views {
 class Button;
 class ImageButton;
+class Separator;
 }  // namespace views
 
 class OmniboxResultView : public views::View {
@@ -110,6 +111,8 @@ class OmniboxResultView : public views::View {
   // controls that are only visible on row hover.
   void UpdateHoverState();
 
+  void UpdateDividerLineVisibility();
+
   // Sets the visibility of the |thumbs_up_button_| and |thumbs_down_button_|
   // based on the current state.
   void UpdateFeedbackButtonsVisibility();
@@ -141,6 +144,10 @@ class OmniboxResultView : public views::View {
 
   // A container view for layout.
   raw_ptr<views::View> local_answer_header_and_suggestion_and_buttons_;
+
+  // This separator runs along the top edge to visually divide the toolbelt
+  // match from other matches.
+  raw_ptr<views::Separator> divider_line_;
 
   // The answer header; e.g. 'Summary' or 'Generating...'. Lazily initialized.
   raw_ptr<OmniboxLocalAnswerHeaderView> local_answer_header_ = nullptr;

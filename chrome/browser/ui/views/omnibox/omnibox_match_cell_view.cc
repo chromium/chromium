@@ -60,6 +60,10 @@ static constexpr int kUniformRowHeightIconSize = 28;
 // since the text will have to be further right to accommodate the icons.
 static constexpr int kIphTextIndent = 14;
 
+// The gap between the left|right edge of the toolbelt background to the
+// left|right edge of the text bounds.
+static constexpr int kToolbeltTextIndent = 14;
+
 // The radius of the rounded square backgrounds of icons, answers, and entities.
 static constexpr int kIconAndImageCornerRadius = 4;
 
@@ -233,6 +237,8 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
     layout_style_ = LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE;
   } else if (AutocompleteMatch::IsSearchType(match.type)) {
     layout_style_ = LayoutStyle::SEARCH_SUGGESTION;
+  } else if (match.IsToolbelt()) {
+    layout_style_ = LayoutStyle::TOOLBELT;
   } else if (match.IsIPHSuggestion()) {
     layout_style_ = LayoutStyle::IPH_SUGGESTION;
   } else if (match.type ==
@@ -433,7 +439,9 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
   // IPH text bounds should be centered within the IPH background when there's
   // no IPH icon. So make their `right_margin` equal to their text's x position.
   const int right_margin =
-      layout_style_ == LayoutStyle::IPH_SUGGESTION
+      layout_style_ == LayoutStyle::TOOLBELT
+          ? OmniboxMatchCellView::kMarginLeft + kToolbeltTextIndent
+      : layout_style_ == LayoutStyle::IPH_SUGGESTION
           ? OmniboxMatchCellView::kMarginLeft + kIphTextIndent
           : 7;
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
@@ -566,8 +574,9 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
                description_view_->GetLineHeight() + kHistoryEmbeddingAnswerGap +
                kHistoryEmbeddingAnswerBottomPadding;
     }
-  } else if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
-    // IPH suggestions have extra height.
+  } else if (layout_style_ == LayoutStyle::IPH_SUGGESTION ||
+             layout_style_ == LayoutStyle::TOOLBELT) {
+    // IPH and toolbelt suggestions have extra height.
     height = kRowHeight + 4;
   } else {
     // The height for traditional 1-line matches.
@@ -583,7 +592,8 @@ int OmniboxMatchCellView::GetImageIndent() const {
   // This number is independent of other layout numbers; i.e., it's not meant to
   // align with any other UI; it's just arbitrarily chosen by UX. Hence, it's
   // not derived from other matches' `indent` below.
-  if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
+  if (layout_style_ == LayoutStyle::IPH_SUGGESTION ||
+      layout_style_ == LayoutStyle::TOOLBELT) {
     return 2;
   }
 
@@ -607,6 +617,11 @@ int OmniboxMatchCellView::GetImageIndent() const {
 int OmniboxMatchCellView::GetTextIndent() const {
   // Text indent is added to the `OmniboxMatchCellView::GetInsets()`. It is not
   // added to the image position & size.
+
+  // Toolbelt layout is similar to IPH and has a custom indent.
+  if (layout_style_ == LayoutStyle::TOOLBELT) {
+    return kToolbeltTextIndent;
+  }
 
   // Some IPH matches have no icons. They should be moved further left so the
   // gap between the IPH background and the start of the IPH text isn't jarring.
@@ -635,12 +650,12 @@ int OmniboxMatchCellView::GetTextIndent() const {
                 .Get()
                 .match_text_indent_offset;
 
-  // The IPH row left inset is +`kIphOffset` from other suggestions, so the text
-  // indent should be -`kIphOffset` to keep the text aligned. IPH matches seem
-  // to have inner padding, so the gap between the left edge of this
-  // `OmniboxMatchCellView` and the IPH icon/text is actually larger than
-  // `indent`.
   if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
+    // The IPH row left inset is +`kIphOffset` from other suggestions, so the
+    // text indent should be -`kIphOffset` to keep the text aligned. IPH matches
+    // seem to have inner padding, so the gap between the left edge of this
+    // `OmniboxMatchCellView` and the IPH icon/text is actually larger than
+    // `indent`.
     indent -= kIphOffset;
   }
 

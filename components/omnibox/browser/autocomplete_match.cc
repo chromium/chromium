@@ -1723,6 +1723,12 @@ bool AutocompleteMatch::IsContextualSearchSuggestion() const {
   return subtypes.contains(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
 }
 
+bool AutocompleteMatch::IsToolbelt() const {
+  // TODO(crbug.com/423692206): Could also check group once it lands.
+  return type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
+         !actions.empty() && omnibox_feature_configs::Toolbelt::Get().enabled;
+}
+
 void AutocompleteMatch::FilterOmniboxActions(
     const std::vector<OmniboxActionId>& allowed_action_ids) {
   // Short circuit if there's nothing to do.

@@ -65,6 +65,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -198,6 +199,15 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   local_answer_header_and_suggestion_and_buttons_
       ->SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
+
+  divider_line_ = local_answer_header_and_suggestion_and_buttons_->AddChildView(
+      std::make_unique<views::Separator>());
+  divider_line_->SetOrientation(views::Separator::Orientation::kHorizontal);
+  // TODO(crbug.com/423729255): The mocks extend to the edge but without
+  //  any adjustment, the right edge only doesn't extend all the way.
+  //  This just pushes the left edge so it doesn't look asymmetrical.
+  divider_line_->SetProperty(views::kMarginsKey,
+                             gfx::Insets::TLBR(0, 16, 8, 0));
 
   auto* suggestion_and_buttons =
       local_answer_header_and_suggestion_and_buttons_->AddChildView(
@@ -364,6 +374,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
                                 gfx::Insets::TLBR(0, 0, 0, 0));
 
   suggestion_view_->OnMatchUpdate(this, match_);
+  UpdateDividerLineVisibility();
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
   if (match_.IsIPHSuggestion()) {
@@ -506,6 +517,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 }
 
 void OmniboxResultView::OnSelectionStateChanged() {
+  UpdateDividerLineVisibility();
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
   UpdateAccessibleName();
@@ -697,10 +709,22 @@ gfx::Image OmniboxResultView::GetIcon() const {
 }
 
 void OmniboxResultView::UpdateHoverState() {
+  UpdateDividerLineVisibility();
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
   ApplyThemeAndRefreshIcons();
   GetViewAccessibility().SetIsHovered(IsMouseHovered());
+}
+
+void OmniboxResultView::UpdateDividerLineVisibility() {
+  const bool old_visibility = divider_line_->GetVisible();
+  const bool new_visibility = match_.IsToolbelt();
+
+  divider_line_->SetVisible(new_visibility);
+
+  if (old_visibility != new_visibility) {
+    InvalidateLayout();
+  }
 }
 
 void OmniboxResultView::UpdateFeedbackButtonsVisibility() {
