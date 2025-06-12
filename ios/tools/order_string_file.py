@@ -31,7 +31,9 @@ def SortFile(file_path):
         messages_element.remove(message)
     for message in messages:
         messages_element.append(message)
-    tree.write(file_path, encoding="UTF-8", xml_declaration=True)
+    with open(file_path, 'w') as xml_file:
+        tree.write(xml_file, encoding="UTF-8", xml_declaration=True)
+        xml_file.write('\n')
 
 
 def main(args):
