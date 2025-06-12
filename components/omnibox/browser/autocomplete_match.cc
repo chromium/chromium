@@ -1724,7 +1724,6 @@ bool AutocompleteMatch::IsContextualSearchSuggestion() const {
 }
 
 bool AutocompleteMatch::IsToolbelt() const {
-  // TODO(crbug.com/423692206): Could also check group once it lands.
   return type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
          !actions.empty() && omnibox_feature_configs::Toolbelt::Get().enabled;
 }

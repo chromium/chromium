@@ -280,6 +280,12 @@ class DesktopLensMultimodalZpsSection : public ZpsSection {
       omnibox::GroupConfigMap& group_configs);
 };
 
+// A ZPS section that includes only the toolbelt match.
+class ToolbeltSection : public ZpsSection {
+ public:
+  explicit ToolbeltSection(omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the Desktop, non-ZPS limits and grouping.
 // - up to 10 suggestions total.
 //  - up to 1 default, 10 starer packs, 10 search, 8 nav, and 1 history cluster

@@ -640,6 +640,16 @@ DesktopLensMultimodalZpsSection::DesktopLensMultimodalZpsSection(
                  },
                  group_configs) {}
 
+ToolbeltSection::ToolbeltSection(omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(1,
+                 {
+                     Group(1,
+                           {
+                               {omnibox::GROUP_SEARCH_TOOLBELT, 1},
+                           }),
+                 },
+                 group_configs) {}
+
 DesktopNonZpsSection::DesktopNonZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : Section(10,

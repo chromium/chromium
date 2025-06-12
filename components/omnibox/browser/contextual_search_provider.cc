@@ -396,7 +396,7 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
                           AutocompleteMatchType::NULL_RESULT_MESSAGE);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
-  match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH_ACTION;
+  match.suggestion_group_id = omnibox::GroupId::GROUP_SEARCH_TOOLBELT;
 
   match.description = l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLBELT_LABEL);
   if (!match.description.empty()) {
