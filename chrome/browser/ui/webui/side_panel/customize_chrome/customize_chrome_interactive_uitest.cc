@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -71,9 +72,9 @@ class CustomizeChromeInteractiveTest
                      contents_id, kCustomizeChromeSidePanelWebViewElementId));
   }
 
-  // Installs an extensions overriding the NTP. `index` is used to differentiate
+  // Loads an extensions overriding the NTP. `index` is used to differentiate
   // multiple installed extensions.
-  void InstallExtensionOverridingNtp(int index = 0) {
+  void LoadNtpOverridingExtension(int index = 0) {
     extensions::TestExtensionDir extension_dir;
     extension_dir.WriteFile(FILE_PATH_LITERAL("ext.html"),
                             "<body>Extension-overridden NTP</body>");
@@ -96,14 +97,6 @@ class CustomizeChromeInteractiveTest
     const extensions::Extension* extension =
         extension_loader.LoadExtension(extension_dir.Pack()).get();
     ASSERT_TRUE(extension);
-  }
-
-  InteractiveTestApi::MultiStep OpenNewTabPage() {
-    return Steps(
-        InstrumentTab(kNewTabElementId, 0),
-        NavigateWebContents(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
-        WaitForWebContentsReady(kNewTabElementId,
-                                GURL(chrome::kChromeUINewTabURL)));
   }
 
   std::unique_ptr<content::URLLoaderInterceptor> SetUpThemesResponses() {
@@ -155,40 +148,19 @@ class CustomizeChromeInteractiveTest
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
-                       EditThemeEnabledForExtensionNtp) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
-
-  const DeepQuery kEditThemeButton = {"customize-chrome-app",
-                                      "#appearanceElement", "#editThemeButton"};
-
-  // 1. Load extension that overrides NTP.
-  InstallExtensionOverridingNtp();
-  RunTestSequence(
-      // 2. Open extension new tab page.
-      OpenNewTabPage(),
-      // 3. Open customize chrome side panel.
-      OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
-      // 4. Check edit theme is enabled in customize chrome side panel.
-      Steps(WaitForElementExists(kLocalCustomizeChromeElementId,
-                                 kEditThemeButton),
-            WaitForElementToRender(kLocalCustomizeChromeElementId,
-                                   kEditThemeButton)));
-}
-
-IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
                        ShowsFooterSectionForExtensionNtp) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
   const DeepQuery kFooterSection = {"customize-chrome-app", "#footer",
                                     "customize-chrome-footer",
                                     "#showToggleContainer"};
-  // 1. Load extension that overrides NTP.
-  InstallExtensionOverridingNtp();
+  // Load extension that overrides NTP.
+  LoadNtpOverridingExtension();
   RunTestSequence(
-      // 2. Open extension new tab page.
-      OpenNewTabPage(),
-      // 3. Open customize chrome side panel.
+      // Open extension new tab page.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Open customize chrome side panel.
       OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
-      // 4. Check that the footer section exists.
+      // Check that the footer section exists.
       Steps(
           WaitForElementExists(kLocalCustomizeChromeElementId, kFooterSection),
           WaitForElementToRender(kLocalCustomizeChromeElementId,
@@ -202,12 +174,36 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
                                     "customize-chrome-footer",
                                     "#showToggleContainer"};
   RunTestSequence(
-      // 1. Open non-extension new tab page.
-      OpenNewTabPage(),
-      // 2. Open customize chrome side panel.
+      // Open non-extension new tab page.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Open customize chrome side panel.
       OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
-      // 3. Check that the footer section does not exist.
+      // Check that the footer section does not exist.
       EnsureNotPresent(kLocalCustomizeChromeElementId, kFooterSection));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
+                       TogglesFooterVisibility) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  const DeepQuery kFooterToggle = {"customize-chrome-app", "#footer",
+                                   "customize-chrome-footer",
+                                   "#showToggleContainer"};
+  // Install extension NTP.
+  LoadNtpOverridingExtension();
+  RunTestSequence(
+      // Open NTP with footer showing.
+      Steps(AddInstrumentedTab(kNewTabElementId,
+                               GURL(chrome::kChromeUINewTabURL)),
+            WaitForShow(kNtpFooterId)),
+      // Click the footer toggle.
+      Steps(OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+            ClickElement(kLocalCustomizeChromeElementId, kFooterToggle)),
+      // Ensure footer hides.
+      WaitForHide(kNtpFooterId),
+      // Click the footer toggle.
+      ClickElement(kLocalCustomizeChromeElementId, kFooterToggle),
+      // Ensure footer shows.
+      WaitForShow(kNtpFooterId));
 }
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
@@ -216,6 +212,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
       SetUpThemesResponses();
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalNewTabElementId);
 
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kNtpHasBackgroundEvent);
   StateChange ntp_has_background;
@@ -235,23 +232,24 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
                                     "customize-chrome-footer",
                                     "#showToggleContainer"};
 
-  // 1. Load multiple extensions that override NTP to verify that all are
-  // uninstalled when a theme is selected.
-  InstallExtensionOverridingNtp(0);
-  InstallExtensionOverridingNtp(1);
+  // Install multiple extensions that override the new tab page.
+  LoadNtpOverridingExtension(0);
+  LoadNtpOverridingExtension(1);
   RunTestSequence(
-      // 2. Open extension new tab page.
-      OpenNewTabPage(),
-      // 3. Open customize chrome side panel.
-      OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
-      // 4. Click Edit Theme button.
-      ClickElement(kLocalCustomizeChromeElementId, kEditThemeButton),
-      // 5. Click first theme collection.
-      ClickElement(kLocalCustomizeChromeElementId, kCollectionButton),
-      // 6. Click first theme.
-      ClickElement(kLocalCustomizeChromeElementId, kThemeButton),
-      // 7. Wait for tab to redirect to 1P NTP with background.
+      // Open extension NTP.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Choose a 1P NTP theme from Customize Chrome.
+      Steps(OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+            ClickElement(kLocalCustomizeChromeElementId, kEditThemeButton),
+            ClickElement(kLocalCustomizeChromeElementId, kCollectionButton),
+            ClickElement(kLocalCustomizeChromeElementId, kThemeButton)),
+      // Ensure that both extensions were disabled, and the tab redirected to 1P
+      // NTP with background.
       Steps(WaitForWebContentsNavigation(kNewTabElementId,
                                          GURL(chrome::kChromeUINewTabURL)),
-            WaitForStateChange(kNewTabElementId, ntp_has_background)));
+            WaitForStateChange(kNewTabElementId, ntp_has_background)),
+      // Ensure that opening a new tab redirects to the 1P NTP.
+      Steps(AddInstrumentedTab(kLocalNewTabElementId,
+                               GURL(chrome::kChromeUINewTabURL)),
+            WaitForStateChange(kLocalNewTabElementId, ntp_has_background)));
 }
