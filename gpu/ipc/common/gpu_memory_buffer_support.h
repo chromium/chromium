@@ -65,8 +65,6 @@ class GPU_EXPORT GpuMemoryBufferSupport {
   static GpuMemoryBufferConfigurationSet
   GetNativeGpuMemoryBufferConfigurations();
 
-  static bool IsSizeValid(const gfx::Size& size);
-
 #if BUILDFLAG(IS_OZONE)
   gfx::ClientNativePixmapFactory* client_native_pixmap_factory() {
     return client_native_pixmap_factory_.get();

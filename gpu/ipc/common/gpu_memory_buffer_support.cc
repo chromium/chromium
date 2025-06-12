@@ -226,13 +226,6 @@ bool GpuMemoryBufferSupport::IsConfigurationSupportedForTest(
   NOTREACHED();
 }
 
-// static
-bool GpuMemoryBufferSupport::IsSizeValid(const gfx::Size& size) {
-  base::CheckedNumeric<int> bytes = size.width();
-  bytes *= size.height();
-  return bytes.IsValid();
-}
-
 std::unique_ptr<GpuMemoryBufferImpl>
 GpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
     gfx::GpuMemoryBufferHandle handle,
