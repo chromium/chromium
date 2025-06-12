@@ -5,9 +5,6 @@
 #ifndef NET_WEBSOCKETS_WEBSOCKET_EXTENSION_PARSER_H_
 #define NET_WEBSOCKETS_WEBSOCKET_EXTENSION_PARSER_H_
 
-#include <stddef.h>
-
-#include <string>
 #include <string_view>
 #include <vector>
 
@@ -16,46 +13,16 @@
 
 namespace net {
 
-class NET_EXPORT_PRIVATE WebSocketExtensionParser {
- public:
-  WebSocketExtensionParser();
-
-  WebSocketExtensionParser(const WebSocketExtensionParser&) = delete;
-  WebSocketExtensionParser& operator=(const WebSocketExtensionParser&) = delete;
-
-  ~WebSocketExtensionParser();
-
-  // Parses the given string as a Sec-WebSocket-Extensions header value.
-  //
-  // There must be no newline characters in the input. LWS-concatenation must
-  // have already been done before calling this method.
-  //
-  // Returns true if the method was successful (no syntax error was found).
-  bool Parse(const char* data, size_t size);
-  bool Parse(std::string_view data) { return Parse(data.data(), data.size()); }
-
-  // Returns the result of the last Parse() method call.
-  const std::vector<WebSocketExtension>& extensions() const {
-    return extensions_;
-  }
-
- private:
-  [[nodiscard]] bool Consume(char c);
-  [[nodiscard]] bool ConsumeExtension(WebSocketExtension* extension);
-  [[nodiscard]] bool ConsumeExtensionParameter(
-      WebSocketExtension::Parameter* parameter);
-  [[nodiscard]] bool ConsumeToken(std::string_view* token);
-  [[nodiscard]] bool ConsumeQuotedToken(std::string* token);
-  void ConsumeSpaces();
-  [[nodiscard]] bool Lookahead(char c);
-  [[nodiscard]] bool ConsumeIfMatch(char c);
-
-  // The current position in the input string.
-  const char* current_;
-  // The pointer of the end of the input string.
-  const char* end_;
-  std::vector<WebSocketExtension> extensions_;
-};
+// Parses a Sec-WebSocket-Extensions header value and returns a vector of
+// WebSocketExtension objects representing the parsed extensions.
+//
+// The input string must not contain newline characters, and any
+// LWS-concatenation must be performed before calling this function.
+//
+// Returns a vector of WebSocketExtension objects. If a syntax error is found,
+// the returned vector will be empty.
+NET_EXPORT std::vector<WebSocketExtension> ParseWebSocketExtensions(
+    std::string_view data);
 
 }  // namespace net
 

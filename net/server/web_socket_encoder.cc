@@ -211,14 +211,15 @@ std::unique_ptr<WebSocketEncoder> WebSocketEncoder::CreateServer() {
 std::unique_ptr<WebSocketEncoder> WebSocketEncoder::CreateServer(
     const std::string& extensions,
     WebSocketDeflateParameters* deflate_parameters) {
-  WebSocketExtensionParser parser;
-  if (!parser.Parse(extensions)) {
+  const std::vector<WebSocketExtension> parsed_extensions =
+      ParseWebSocketExtensions(extensions);
+  if (parsed_extensions.empty()) {
     // Failed to parse Sec-WebSocket-Extensions header. We MUST fail the
     // connection.
     return nullptr;
   }
 
-  for (const auto& extension : parser.extensions()) {
+  for (const auto& extension : parsed_extensions) {
     std::string failure_message;
     WebSocketDeflateParameters offer;
     if (!offer.Initialize(extension, &failure_message) ||
@@ -258,8 +259,9 @@ std::unique_ptr<WebSocketEncoder> WebSocketEncoder::CreateClient(
     const std::string& response_extensions) {
   // TODO(yhirano): Add a way to return an error.
 
-  WebSocketExtensionParser parser;
-  if (!parser.Parse(response_extensions)) {
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions(response_extensions);
+  if (extensions.empty()) {
     // Parse error. Note that there are two cases here.
     // 1) There is no Sec-WebSocket-Extensions header.
     // 2) There is a malformed Sec-WebSocketExtensions header.
@@ -267,12 +269,12 @@ std::unique_ptr<WebSocketEncoder> WebSocketEncoder::CreateClient(
     // fail the connection for the latter case.
     return base::WrapUnique(new WebSocketEncoder(FOR_CLIENT, nullptr, nullptr));
   }
-  if (parser.extensions().size() != 1) {
+  if (extensions.size() != 1) {
     // Only permessage-deflate extension is supported.
     // TODO (yhirano): Fail the connection.
     return base::WrapUnique(new WebSocketEncoder(FOR_CLIENT, nullptr, nullptr));
   }
-  const auto& extension = parser.extensions()[0];
+  const auto& extension = extensions[0];
   WebSocketDeflateParameters params;
   std::string failure_message;
   if (!params.Initialize(extension, &failure_message) ||

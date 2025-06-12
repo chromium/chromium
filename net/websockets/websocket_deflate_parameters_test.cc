@@ -113,10 +113,10 @@ TEST_P(WebSocketDeflateParametersInitializeTest, Initialize) {
   const std::string expected_failure_message =
       GetParam().expected.failure_message;
 
-  WebSocketExtensionParser parser;
-  ASSERT_TRUE(parser.Parse("permessage-deflate" + query));
-  ASSERT_EQ(1u, parser.extensions().size());
-  WebSocketExtension extension = parser.extensions()[0];
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions("permessage-deflate" + query);
+  ASSERT_EQ(1u, extensions.size());
+  WebSocketExtension extension = extensions[0];
 
   WebSocketDeflateParameters parameters;
   std::string failure_message;
@@ -153,16 +153,16 @@ TEST_P(WebSocketDeflateParametersCompatibilityTest, CheckCompatiblity) {
   std::string message;
   WebSocketDeflateParameters request, response;
 
-  WebSocketExtensionParser request_parser;
-  ASSERT_TRUE(request_parser.Parse("permessage-deflate" + request_query));
-  ASSERT_EQ(1u, request_parser.extensions().size());
-  ASSERT_TRUE(request.Initialize(request_parser.extensions()[0], &message));
+  const std::vector<WebSocketExtension> request_extensions =
+      ParseWebSocketExtensions("permessage-deflate" + request_query);
+  ASSERT_EQ(1u, request_extensions.size());
+  ASSERT_TRUE(request.Initialize(request_extensions[0], &message));
   ASSERT_TRUE(request.IsValidAsRequest(&message));
 
-  WebSocketExtensionParser response_parser;
-  ASSERT_TRUE(response_parser.Parse("permessage-deflate" + response_query));
-  ASSERT_EQ(1u, response_parser.extensions().size());
-  ASSERT_TRUE(response.Initialize(response_parser.extensions()[0], &message));
+  const std::vector<WebSocketExtension> response_extensions =
+      ParseWebSocketExtensions("permessage-deflate" + response_query);
+  ASSERT_EQ(1u, response_extensions.size());
+  ASSERT_TRUE(response.Initialize(response_extensions[0], &message));
   ASSERT_TRUE(response.IsValidAsResponse(&message));
 
   EXPECT_EQ(expected, request.IsCompatibleWith(response));

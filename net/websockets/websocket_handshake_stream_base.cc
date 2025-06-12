@@ -115,8 +115,9 @@ bool WebSocketHandshakeStreamBase::ValidateExtensions(
   while (std::optional<std::string_view> header_value =
              headers->EnumerateHeader(&iter,
                                       websockets::kSecWebSocketExtensions)) {
-    WebSocketExtensionParser parser;
-    if (!parser.Parse(*header_value)) {
+    const std::vector<WebSocketExtension> extensions =
+        ParseWebSocketExtensions(*header_value);
+    if (extensions.empty()) {
       // TODO(yhirano) Set appropriate failure message.
       *failure_message =
           base::StrCat({"'Sec-WebSocket-Extensions' header value is "
@@ -125,7 +126,6 @@ bool WebSocketHandshakeStreamBase::ValidateExtensions(
       return false;
     }
 
-    const std::vector<WebSocketExtension>& extensions = parser.extensions();
     for (const auto& extension : extensions) {
       if (extension.name() == "permessage-deflate") {
         if (seen_permessage_deflate) {

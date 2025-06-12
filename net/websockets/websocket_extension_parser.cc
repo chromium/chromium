@@ -2,155 +2,177 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_extension_parser.h"
-
-#include <string_view>
 
 #include "base/check_op.h"
 #include "net/http/http_util.h"
 
 namespace net {
+namespace {
+class WebSocketExtensionParser {
+ public:
+  WebSocketExtensionParser() = default;
+  ~WebSocketExtensionParser() = default;
 
-WebSocketExtensionParser::WebSocketExtensionParser() = default;
+  WebSocketExtensionParser(const WebSocketExtensionParser&) = delete;
+  WebSocketExtensionParser& operator=(const WebSocketExtensionParser&) = delete;
 
-WebSocketExtensionParser::~WebSocketExtensionParser() = default;
+  std::vector<WebSocketExtension> Parse(std::string_view data) {
+    std::vector<WebSocketExtension> extensions;
+    remaining_ = data;
 
-bool WebSocketExtensionParser::Parse(const char* data, size_t size) {
-  current_ = data;
-  end_ = data + size;
-  extensions_.clear();
+    bool failed = false;
+    do {
+      WebSocketExtension extension;
+      if (!ConsumeExtension(&extension)) {
+        failed = true;
+        break;
+      }
+      extensions.push_back(extension);
 
-  bool failed = false;
+      ConsumeSpaces();
+    } while (ConsumeIfMatch(','));
 
-  do {
-    WebSocketExtension extension;
-    if (!ConsumeExtension(&extension)) {
-      failed = true;
-      break;
+    if (!failed && remaining_.empty()) {
+      return extensions;
     }
-    extensions_.push_back(extension);
 
+    return {};
+  }
+
+ private:
+  [[nodiscard]] bool Consume(char c) {
     ConsumeSpaces();
-  } while (ConsumeIfMatch(','));
-
-  if (!failed && current_ == end_)
-    return true;
-
-  extensions_.clear();
-  return false;
-}
-
-bool WebSocketExtensionParser::Consume(char c) {
-  ConsumeSpaces();
-  if (current_ == end_ || c != *current_)
-    return false;
-  ++current_;
-  return true;
-}
-
-bool WebSocketExtensionParser::ConsumeExtension(WebSocketExtension* extension) {
-  std::string_view name;
-  if (!ConsumeToken(&name))
-    return false;
-  *extension = WebSocketExtension(std::string(name));
-
-  while (ConsumeIfMatch(';')) {
-    WebSocketExtension::Parameter parameter((std::string()));
-    if (!ConsumeExtensionParameter(&parameter))
+    if (remaining_.empty() || c != remaining_.front()) {
       return false;
-    extension->Add(parameter);
-  }
-
-  return true;
-}
-
-bool WebSocketExtensionParser::ConsumeExtensionParameter(
-    WebSocketExtension::Parameter* parameter) {
-  std::string_view name, value;
-  std::string value_string;
-
-  if (!ConsumeToken(&name))
-    return false;
-
-  if (!ConsumeIfMatch('=')) {
-    *parameter = WebSocketExtension::Parameter(std::string(name));
-    return true;
-  }
-
-  if (Lookahead('\"')) {
-    if (!ConsumeQuotedToken(&value_string))
-      return false;
-  } else {
-    if (!ConsumeToken(&value))
-      return false;
-    value_string = std::string(value);
-  }
-  *parameter = WebSocketExtension::Parameter(std::string(name), value_string);
-  return true;
-}
-
-bool WebSocketExtensionParser::ConsumeToken(std::string_view* token) {
-  ConsumeSpaces();
-  const char* head = current_;
-  while (current_ < end_ && HttpUtil::IsTokenChar(*current_))
-    ++current_;
-  if (current_ == head)
-    return false;
-  *token = std::string_view(head, current_ - head);
-  return true;
-}
-
-bool WebSocketExtensionParser::ConsumeQuotedToken(std::string* token) {
-  if (!Consume('"'))
-    return false;
-
-  *token = "";
-  while (current_ < end_ && *current_ != '"') {
-    if (*current_ == '\\') {
-      ++current_;
-      if (current_ == end_)
-        return false;
     }
-    if (!HttpUtil::IsTokenChar(*current_))
+    remaining_.remove_prefix(1);
+    return true;
+  }
+
+  [[nodiscard]] bool ConsumeExtension(WebSocketExtension* extension) {
+    std::string_view name;
+    if (!ConsumeToken(&name)) {
       return false;
-    *token += *current_;
-    ++current_;
-  }
-  if (current_ == end_)
-    return false;
-  DCHECK_EQ(*current_, '"');
+    }
+    *extension = WebSocketExtension(std::string(name));
 
-  ++current_;
+    while (ConsumeIfMatch(';')) {
+      WebSocketExtension::Parameter parameter((std::string()));
+      if (!ConsumeExtensionParameter(&parameter)) {
+        return false;
+      }
+      extension->Add(parameter);
+    }
 
-  return !token->empty();
-}
-
-void WebSocketExtensionParser::ConsumeSpaces() {
-  while (current_ < end_ && (*current_ == ' ' || *current_ == '\t'))
-    ++current_;
-  return;
-}
-
-bool WebSocketExtensionParser::Lookahead(char c) {
-  const char* head = current_;
-  bool result = Consume(c);
-  current_ = head;
-  return result;
-}
-
-bool WebSocketExtensionParser::ConsumeIfMatch(char c) {
-  const char* head = current_;
-  if (!Consume(c)) {
-    current_ = head;
-    return false;
+    return true;
   }
 
-  return true;
+  [[nodiscard]] bool ConsumeExtensionParameter(
+      WebSocketExtension::Parameter* parameter) {
+    std::string_view name;
+    if (!ConsumeToken(&name)) {
+      return false;
+    }
+
+    if (!ConsumeIfMatch('=')) {
+      *parameter = WebSocketExtension::Parameter(std::string(name));
+      return true;
+    }
+
+    std::string value_string;
+    if (Lookahead('\"')) {
+      if (!ConsumeQuotedToken(&value_string)) {
+        return false;
+      }
+    } else {
+      std::string_view value;
+      if (!ConsumeToken(&value)) {
+        return false;
+      }
+      value_string = std::string(value);
+    }
+    *parameter = WebSocketExtension::Parameter(std::string(name), value_string);
+    return true;
+  }
+
+  [[nodiscard]] bool ConsumeToken(std::string_view* token) {
+    ConsumeSpaces();
+    size_t count = 0;
+    while (count < remaining_.size() &&
+           HttpUtil::IsTokenChar(remaining_[count])) {
+      ++count;
+    }
+    if (count == 0) {
+      return false;
+    }
+    *token = remaining_.substr(0, count);
+    remaining_.remove_prefix(count);
+    return true;
+  }
+
+  [[nodiscard]] bool ConsumeQuotedToken(std::string* token) {
+    if (!Consume('"')) {
+      return false;
+    }
+
+    *token = "";
+    while (!remaining_.empty() && remaining_.front() != '"') {
+      if (remaining_.front() == '\\') {
+        remaining_.remove_prefix(1);
+        if (remaining_.empty()) {
+          return false;
+        }
+      }
+      if (!HttpUtil::IsTokenChar(remaining_.front())) {
+        return false;
+      }
+      *token += remaining_.front();
+      remaining_.remove_prefix(1);
+    }
+    if (remaining_.empty()) {
+      return false;
+    }
+    DCHECK_EQ(remaining_.front(), '"');
+
+    remaining_.remove_prefix(1);
+
+    return !token->empty();
+  }
+
+  void ConsumeSpaces() {
+    while (!remaining_.empty() &&
+           (remaining_.front() == ' ' || remaining_.front() == '\t')) {
+      remaining_.remove_prefix(1);
+    }
+  }
+
+  [[nodiscard]] bool Lookahead(char c) {
+    std::string_view saved = remaining_;
+    bool result = Consume(c);
+    remaining_ = saved;
+    return result;
+  }
+
+  [[nodiscard]] bool ConsumeIfMatch(char c) {
+    std::string_view saved = remaining_;
+    if (!Consume(c)) {
+      remaining_ = saved;
+      return false;
+    }
+    return true;
+  }
+
+  // Unprocessed part of the input string.
+  std::string_view remaining_;
+};
+
+}  // namespace
+
+std::vector<WebSocketExtension> ParseWebSocketExtensions(
+    std::string_view data) {
+  WebSocketExtensionParser parser;
+  return parser.Parse(data);
 }
 
 }  // namespace net
