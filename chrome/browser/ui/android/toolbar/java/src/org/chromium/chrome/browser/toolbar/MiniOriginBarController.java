@@ -236,9 +236,7 @@ public class MiniOriginBarController implements Observer {
         boolean isChangingVisibility =
                 isMiniOriginBarVisibleForState(newMiniOriginState)
                         != isMiniOriginBarVisibleForState(mMiniOriginBarState);
-        boolean finishingShowAnimation =
-                mMiniOriginBarState == MiniOriginState.ANIMATING
-                        && newMiniOriginState == MiniOriginState.SHOWING;
+        boolean finishedShowing = newMiniOriginState == MiniOriginState.SHOWING;
         boolean startingHideAnimation =
                 mMiniOriginBarState == MiniOriginState.SHOWING
                         && newMiniOriginState == MiniOriginState.ANIMATING;
@@ -250,7 +248,7 @@ public class MiniOriginBarController implements Observer {
             // jump is hidden by the keyboard.
             mControlContainerHeightSupplier.set(LayoutParams.WRAP_CONTENT);
         }
-        if (finishingShowAnimation) {
+        if (finishedShowing) {
             setMinimizationProgress(1.0f);
             // Re-set the control container height at the end of a show animation in case the hide
             // animation, which sets the height at its start, was cancelled, which can happen for
