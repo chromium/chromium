@@ -53,13 +53,6 @@ const CGFloat kMenuSymbolSize = 18;
       CustomSymbolWithPointSize(kGoogleIconSymbol, kMenuSymbolSize));
 #endif
 
-  if (IsLensOverlaySameTabNavigationEnabled(
-          _browser->GetProfile()->GetPrefs())) {
-    return [self openURLInTheSameTabAction:GURL(kMyActivityURL)
-                                     title:title
-                                     image:image];
-  }
-
   return [self openURLInNewTabAction:GURL(kMyActivityURL)
                                title:title
                                image:image];
@@ -73,13 +66,6 @@ const CGFloat kMenuSymbolSize = 18;
   image = MakeSymbolMonochrome(
       DefaultSymbolWithPointSize(kInfoCircleSymbol, kMenuSymbolSize));
 #endif
-
-  if (IsLensOverlaySameTabNavigationEnabled(
-          _browser->GetProfile()->GetPrefs())) {
-    return [self openURLInTheSameTabAction:GURL(kLearnMoreLensURL)
-                                     title:title
-                                     image:image];
-  }
 
   return [self openURLInNewTabAction:GURL(kLearnMoreLensURL)
                                title:title
