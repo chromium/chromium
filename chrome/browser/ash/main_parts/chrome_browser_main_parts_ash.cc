@@ -548,8 +548,8 @@ class DBusServices {
     chromeos::sensors::SensorHalDispatcher::GetInstance()
         ->TryToEstablishMojoChannelByServiceManager();
 
-    DeviceSettingsService::Get()->SetSessionManager(
-        SessionManagerClient::Get(),
+    DeviceSettingsService::Get()->StartProcessing(
+        g_browser_process->local_state(), SessionManagerClient::Get(),
         OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil());
   }
 
@@ -1594,7 +1594,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Tell DeviceSettingsService to stop talking to session_manager. Do not
   // shutdown DeviceSettingsService yet, it might still be accessed by
   // BrowserPolicyConnector (owned by g_browser_process).
-  DeviceSettingsService::Get()->UnsetSessionManager();
+  DeviceSettingsService::Get()->StopProcessing();
 
   // Destroy the CrosUsb detector so it stops trying to reconnect to the
   // UsbDeviceManager

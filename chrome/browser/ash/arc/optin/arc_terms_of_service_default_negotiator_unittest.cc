@@ -132,7 +132,8 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    ::ash::DeviceSettingsService::Get()->SetSessionManager(
+    ::ash::DeviceSettingsService::Get()->StartProcessing(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         &session_manager_client_, owner_key_util_);
 
     // MetricsService.
@@ -178,7 +179,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     test_metrics_state_manager_.reset();
     test_enabled_state_provider_.reset();
 
-    ::ash::DeviceSettingsService::Get()->UnsetSessionManager();
+    ::ash::DeviceSettingsService::Get()->StopProcessing();
     ash::StatsReportingController::Shutdown();
     BrowserWithTestWindowTest::TearDown();
   }

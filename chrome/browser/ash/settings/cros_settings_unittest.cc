@@ -83,15 +83,14 @@ class CrosSettingsTest : public testing::Test {
         device_policy_.GetSigningKey());
     OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
         owner_key_util_);
-    DeviceSettingsService::Get()->SetSessionManager(
+    DeviceSettingsService::Get()->StartProcessing(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         &fake_session_manager_client_, owner_key_util_);
     DeviceSettingsService::Get()->Load();
     task_environment_.RunUntilIdle();
   }
 
-  void TearDown() override {
-    DeviceSettingsService::Get()->UnsetSessionManager();
-  }
+  void TearDown() override { DeviceSettingsService::Get()->StopProcessing(); }
 
   // Some tests below use an OwnerSettingsService so they can change settings
   // partway through the test - this sets one up for those tests that need it.

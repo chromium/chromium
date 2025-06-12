@@ -284,7 +284,7 @@ class DeviceDisablingManagerTest : public DeviceDisablingManagerTestBase,
 DeviceDisablingManagerTest::DeviceDisablingManagerTest() = default;
 
 void DeviceDisablingManagerTest::TearDown() {
-  DeviceSettingsService::Get()->UnsetSessionManager();
+  DeviceSettingsService::Get()->StopProcessing();
   DeviceDisablingManagerTestBase::TearDown();
 }
 
@@ -303,8 +303,9 @@ void DeviceDisablingManagerTest::MakeCrosSettingsTrusted() {
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util(
       new ownership::MockOwnerKeyUtil);
   owner_key_util->SetPublicKeyFromPrivateKey(*device_policy_.GetSigningKey());
-  DeviceSettingsService::Get()->SetSessionManager(&session_manager_client_,
-                                                  owner_key_util);
+  DeviceSettingsService::Get()->StartProcessing(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      &session_manager_client_, owner_key_util);
   SimulatePolicyFetch();
 }
 

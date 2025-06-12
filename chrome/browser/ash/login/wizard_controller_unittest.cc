@@ -192,7 +192,8 @@ class WizardControllerTestBase : public ::testing::Test {
   void SetUp() override {
     SessionManagerClient::InitializeFake();
 
-    DeviceSettingsService::Get()->SetSessionManager(
+    DeviceSettingsService::Get()->StartProcessing(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         SessionManagerClient::Get(), new ownership::MockOwnerKeyUtil());
     DeviceSettingsService::Get()->Load();
 
@@ -269,7 +270,7 @@ class WizardControllerTestBase : public ::testing::Test {
     profile_ = nullptr;
     profile_manager_.reset();
 
-    DeviceSettingsService::Get()->UnsetSessionManager();
+    DeviceSettingsService::Get()->StopProcessing();
     SessionManagerClient::Shutdown();
   }
 

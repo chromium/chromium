@@ -19,3 +19,9 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/common/channel_info.h",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/test",
+  ],
+}

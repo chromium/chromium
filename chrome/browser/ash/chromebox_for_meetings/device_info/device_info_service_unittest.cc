@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -57,8 +58,9 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
         new ownership::MockOwnerKeyUtil());
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
-    DeviceSettingsService::Get()->SetSessionManager(&session_manager_client_,
-                                                    owner_key_util_);
+    DeviceSettingsService::Get()->StartProcessing(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        &session_manager_client_, owner_key_util_);
 
     CfmHotlineClient::InitializeFake();
     chromeos::cfm::ServiceConnection::UseFakeServiceConnectionForTesting(
@@ -70,7 +72,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
   void TearDown() override {
     DeviceInfoService::Shutdown();
     CfmHotlineClient::Shutdown();
-    DeviceSettingsService::Get()->UnsetSessionManager();
+    DeviceSettingsService::Get()->StopProcessing();
   }
 
   FakeCfmHotlineClient* GetClient() {

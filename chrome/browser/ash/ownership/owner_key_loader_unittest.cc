@@ -74,8 +74,9 @@ class OwnerKeyLoaderTestBase : public testing::Test {
 
     owner_key_util_ = base::MakeRefCounted<ownership::MockOwnerKeyUtil>();
 
-    device_settings_service_.SetSessionManager(&session_manager_client_,
-                                               owner_key_util_);
+    device_settings_service_.StartProcessing(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        &session_manager_client_, owner_key_util_);
 
     profile_ = TestingProfile::Builder().SetProfileName(kUserEmail).Build();
 

@@ -18,6 +18,7 @@
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -169,8 +170,9 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipUnknown) {
 }
 
 TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipNone) {
-  DeviceSettingsService::Get()->SetSessionManager(&fake_session_manager_client_,
-                                                  no_keys);
+  DeviceSettingsService::Get()->StartProcessing(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      &fake_session_manager_client_, no_keys);
   DeviceSettingsService::Get()->Load();
   content::RunAllTasksUntilIdle();
 
@@ -197,8 +199,9 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipNone) {
 }
 
 TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipTaken) {
-  DeviceSettingsService::Get()->SetSessionManager(&fake_session_manager_client_,
-                                                  both_keys);
+  DeviceSettingsService::Get()->StartProcessing(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      &fake_session_manager_client_, both_keys);
   std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, both_keys);
 
   EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
@@ -233,8 +236,9 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipTaken) {
 }
 
 TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipTaken_NonOwner) {
-  DeviceSettingsService::Get()->SetSessionManager(&fake_session_manager_client_,
-                                                  both_keys);
+  DeviceSettingsService::Get()->StartProcessing(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      &fake_session_manager_client_, both_keys);
   std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, both_keys);
 
   EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
@@ -271,8 +275,9 @@ TEST_F(StatsReportingControllerTest, SetBeforeOwnershipTaken) {
   ExpectThatPendingValueIs(true);
   ExpectThatSignedStoredValueIs(false);
 
-  DeviceSettingsService::Get()->SetSessionManager(&fake_session_manager_client_,
-                                                  both_keys);
+  DeviceSettingsService::Get()->StartProcessing(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      &fake_session_manager_client_, both_keys);
   std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, both_keys);
   EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             DeviceSettingsService::Get()->GetOwnershipStatus());

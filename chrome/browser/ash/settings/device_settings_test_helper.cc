@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/net/fake_nss_service.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -62,8 +63,9 @@ void DeviceSettingsTestBase::SetUp() {
       false);
   ReloadDevicePolicy();
   owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
-  device_settings_service_->SetSessionManager(&session_manager_client_,
-                                              owner_key_util_);
+  device_settings_service_->StartProcessing(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      &session_manager_client_, owner_key_util_);
 
   if (profile_creation_enabled_) {
     profile_ = std::make_unique<TestingProfile>();
@@ -76,7 +78,7 @@ void DeviceSettingsTestBase::TearDown() {
   teardown_called_ = true;
   OwnerSettingsServiceAshFactory::SetDeviceSettingsServiceForTesting(nullptr);
   FlushDeviceSettings();
-  device_settings_service_->UnsetSessionManager();
+  device_settings_service_->StopProcessing();
   device_settings_service_.reset();
   chromeos::TpmManagerClient::Shutdown();
   chromeos::PowerManagerClient::Shutdown();

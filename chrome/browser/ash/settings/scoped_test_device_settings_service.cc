@@ -14,7 +14,7 @@ ScopedTestDeviceSettingsService::ScopedTestDeviceSettingsService() {
 
 ScopedTestDeviceSettingsService::~ScopedTestDeviceSettingsService() {
   // Clean pending operations.
-  DeviceSettingsService::Get()->UnsetSessionManager();
+  DeviceSettingsService::Get()->StopProcessing();
   DeviceSettingsService::Shutdown();
 }
 

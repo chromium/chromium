@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_policy_applier.h"
 #include "chrome/browser/ash/settings/session_manager_operation.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/ownership/owner_key_util.h"
@@ -161,15 +161,20 @@ DeviceSettingsService::~DeviceSettingsService() {
     observer.OnDeviceSettingsServiceShutdown();
 }
 
-void DeviceSettingsService::SetSessionManager(
+void DeviceSettingsService::StartProcessing(
+    PrefService* local_state,
     SessionManagerClient* session_manager_client,
     scoped_refptr<OwnerKeyUtil> owner_key_util) {
+  if (!local_state) {
+    CHECK_IS_TEST();
+  }
   DCHECK(session_manager_client);
   DCHECK(owner_key_util.get());
+  CHECK(!local_state_);
   DCHECK(!session_manager_client_);
   DCHECK(!owner_key_util_.get());
 
-  local_state_ = g_browser_process->local_state();
+  local_state_ = local_state;
   session_manager_client_ = session_manager_client;
   owner_key_util_ = owner_key_util;
 
@@ -178,7 +183,7 @@ void DeviceSettingsService::SetSessionManager(
   StartNextOperation();
 }
 
-void DeviceSettingsService::UnsetSessionManager() {
+void DeviceSettingsService::StopProcessing() {
   pending_operations_.clear();
 
   if (session_manager_client_)

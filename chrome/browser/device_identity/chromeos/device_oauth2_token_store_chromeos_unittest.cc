@@ -61,13 +61,14 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
         new ownership::MockOwnerKeyUtil());
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
-    ash::DeviceSettingsService::Get()->SetSessionManager(
+    ash::DeviceSettingsService::Get()->StartProcessing(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         &session_manager_client_, owner_key_util_);
   }
 
   void TearDown() override {
     base::ThreadPoolInstance::Get()->FlushForTesting();
-    ash::DeviceSettingsService::Get()->UnsetSessionManager();
+    ash::DeviceSettingsService::Get()->StopProcessing();
     ash::SystemSaltGetter::Shutdown();
     ash::CryptohomeMiscClient::Shutdown();
   }
