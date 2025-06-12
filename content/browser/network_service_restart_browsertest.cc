@@ -558,8 +558,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, BrowserUIFactory) {
 // it's called after the StoragePartition is deleted.
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        BrowserUIFactoryAfterStoragePartitionGone) {
-  if (IsInProcessNetworkService())
-    return;
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<ShellBrowserContext> browser_context =
       std::make_unique<ShellBrowserContext>(true);
@@ -569,6 +567,15 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 
   EXPECT_EQ(net::OK, LoadBasicRequestOnUIThread(factory.get(), GetTestURL()));
 
+  // Reset partition's URLLoaderFactories. If not called, `factory` will not
+  // notice its underlying URLLoaderFactory Mojo pipe has been closed, so it
+  // will just reuse its old pipe. This both results in the test not testing
+  // what it's intended to check, and makes the test flaky, because the
+  // SimpleURLLoader may hang, possibly because Mojo can fail to send pipe
+  // disconnect messages when the pipe that other pipes are being sent over is
+  // closed before the pipe reach their destination.
+  partition->ResetURLLoaderFactories();
+  partition = nullptr;
   browser_context.reset();
 
   EXPECT_EQ(net::ERR_FAILED,
