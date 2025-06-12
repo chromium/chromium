@@ -6,11 +6,14 @@
 #define UI_EVENTS_ANDROID_EVENTS_ANDROID_UTILS_H_
 
 #include "ui/events/event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 namespace ui {
 
 // Creates a PlatformEvent from the given event.
 EVENTS_EXPORT PlatformEvent NativeEventFromEvent(Event& event);
+
+EVENTS_EXPORT MotionEvent::Action FromAndroidAction(int android_action);
 
 }  // namespace ui
 

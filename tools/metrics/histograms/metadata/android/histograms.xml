@@ -2602,6 +2602,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.Viz.DroppedNonTouchActions"
+    enum="MotionEventAction" expires_after="2025-11-23">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Records the actions of input events that were dropped on Viz due to lack of
+    implementation. Viz expects to only handle touch events which means it
+    doesn't expect to see actions like button down/release.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputOnViz.Viz.PendingStateTransfers.{CurrentState}"
     units="counts" expires_after="2025-11-16">
   <owner>kartarsingh@google.com</owner>

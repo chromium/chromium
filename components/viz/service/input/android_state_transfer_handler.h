@@ -59,7 +59,12 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
   static constexpr const char* kPendingTransfersHistogramNull =
       "Android.InputOnViz.Viz.PendingStateTransfers.NullCurrentState";
 
+  static constexpr const char* kDroppedNonTouchActions =
+      "Android.InputOnViz.Viz.DroppedNonTouchActions";
+
  private:
+  bool IsExpectedMotionEventAction(int action);
+
   bool CanStartProcessingVizEvents(
       const base::android::ScopedInputEvent& event);
 

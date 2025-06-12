@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/notreached.h"
+#include "ui/events/android/events_android_utils.h"
 #include "ui/events/android/motion_event_android_native.h"
 
 namespace viz {
@@ -100,6 +101,13 @@ bool AndroidStateTransferHandler::OnMotionEvent(
 
   const int action = AMotionEvent_getAction(input_event.a_input_event()) &
                      AMOTION_EVENT_ACTION_MASK;
+
+  // Viz only handles touch events, actions like button press/release are not
+  // supported and should ideally not be arriving.
+  if (!IsExpectedMotionEventAction(action)) {
+    return true;
+  }
+
   if (ignore_remaining_touch_sequence_) {
     if (action == AMOTION_EVENT_ACTION_CANCEL ||
         action == AMOTION_EVENT_ACTION_UP) {
@@ -132,6 +140,24 @@ bool AndroidStateTransferHandler::OnMotionEvent(
   // Always return true since we are receiving input on Viz after hit testing on
   // Browser already determined that web contents are being hit.
   return true;
+}
+
+bool AndroidStateTransferHandler::IsExpectedMotionEventAction(int action) {
+  switch (action) {
+    case AMOTION_EVENT_ACTION_DOWN:
+    case AMOTION_EVENT_ACTION_UP:
+    case AMOTION_EVENT_ACTION_MOVE:
+    case AMOTION_EVENT_ACTION_CANCEL:
+    case AMOTION_EVENT_ACTION_POINTER_DOWN:
+    case AMOTION_EVENT_ACTION_POINTER_UP:
+      return true;
+    default:
+      break;
+  }
+
+  base::UmaHistogramEnumeration(kDroppedNonTouchActions,
+                                ui::FromAndroidAction(action));
+  return false;
 }
 
 bool AndroidStateTransferHandler::CanStartProcessingVizEvents(

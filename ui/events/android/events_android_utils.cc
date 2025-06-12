@@ -11,6 +11,9 @@
 #include "ui/events/android/event_type_android.h"
 #include "ui/events/keycodes/keyboard_code_conversion_android.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
+
 namespace ui {
 
 PlatformEvent NativeEventFromEvent(Event& event) {
@@ -31,5 +34,29 @@ PlatformEvent NativeEventFromEvent(Event& event) {
   // Support other event types as needed.
   NOTREACHED();
 }
+
+#define ACTION_CASE(x)              \
+  case JNI_MotionEvent::ACTION_##x: \
+    return MotionEvent::Action::x
+
+MotionEvent::Action FromAndroidAction(int android_action) {
+  switch (android_action) {
+    ACTION_CASE(DOWN);
+    ACTION_CASE(UP);
+    ACTION_CASE(MOVE);
+    ACTION_CASE(CANCEL);
+    ACTION_CASE(POINTER_DOWN);
+    ACTION_CASE(POINTER_UP);
+    ACTION_CASE(HOVER_ENTER);
+    ACTION_CASE(HOVER_EXIT);
+    ACTION_CASE(HOVER_MOVE);
+    ACTION_CASE(BUTTON_PRESS);
+    ACTION_CASE(BUTTON_RELEASE);
+    default:
+      NOTREACHED() << "Invalid Android MotionEvent action: " << android_action;
+  }
+}
+
+#undef ACTION_CASE
 
 }  // namespace ui
