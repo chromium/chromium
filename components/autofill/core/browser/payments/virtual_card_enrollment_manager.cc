@@ -98,12 +98,12 @@ bool VirtualCardEnrollmentManager::ShouldOfferVirtualCardEnrollment(
 void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
     const CreditCard& credit_card,
     VirtualCardEnrollmentSource virtual_card_enrollment_source,
+    VirtualCardEnrollmentFieldsLoadedCallback
+        virtual_card_enrollment_fields_loaded_callback,
     std::optional<payments::GetDetailsForEnrollmentResponseDetails>
         get_details_for_enrollment_response_details,
     PrefService* user_prefs,
-    RiskAssessmentFunction risk_assessment_function,
-    VirtualCardEnrollmentFieldsLoadedCallback
-        virtual_card_enrollment_fields_loaded_callback) {
+    RiskAssessmentFunction risk_assessment_function) {
   if (base::FeatureList::IsEnabled(
           features::
               kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
@@ -128,6 +128,10 @@ void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
   SetInitialVirtualCardEnrollFields(credit_card,
                                     virtual_card_enrollment_source);
 
+  CHECK(virtual_card_enrollment_fields_loaded_callback);
+  virtual_card_enrollment_fields_loaded_callback_ =
+      std::move(virtual_card_enrollment_fields_loaded_callback);
+
   if (get_details_for_enrollment_response_details.has_value() &&
       IsValidGetDetailsForEnrollmentResponseDetails(
           get_details_for_enrollment_response_details.value())) {
@@ -138,12 +142,9 @@ void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
   // |autofill_client_| being nullptr denotes that we are in the Clank settings
   // page virtual card enrollment use case, so we will need to use
   // |risk_assessment_function_| to load risk data as we do not have access to
-  // web contents, and |virtual_card_enrollment_fields_loaded_callback_| to
-  // display the UI.
+  // web contents.
   if (!autofill_client_) {
     risk_assessment_function_ = std::move(risk_assessment_function);
-    virtual_card_enrollment_fields_loaded_callback_ =
-        std::move(virtual_card_enrollment_fields_loaded_callback);
   }
 
   LoadRiskDataAndContinueFlow(
@@ -279,8 +280,9 @@ bool VirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
 void VirtualCardEnrollmentManager::
     AddStrikeToBlockOfferingVirtualCardEnrollment(
         const std::string& instrument_id) {
-  if (!GetVirtualCardEnrollmentStrikeDatabase())
+  if (!GetVirtualCardEnrollmentStrikeDatabase()) {
     return;
+  }
 
   GetVirtualCardEnrollmentStrikeDatabase()->AddStrike(instrument_id);
 
@@ -294,8 +296,9 @@ void VirtualCardEnrollmentManager::
 void VirtualCardEnrollmentManager::
     RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(
         const std::string& instrument_id) {
-  if (!GetVirtualCardEnrollmentStrikeDatabase())
+  if (!GetVirtualCardEnrollmentStrikeDatabase()) {
     return;
+  }
 
   // Before we remove the existing strikes for the card, log the strike number
   // first.
@@ -310,6 +313,29 @@ void VirtualCardEnrollmentManager::
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
       VirtualCardEnrollmentStrikeDatabaseEvent::
           VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKES_CLEARED);
+}
+
+void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble(
+    VirtualCardEnrollmentFields* virtual_card_enrollment_fields) {
+  CHECK(autofill_client_);
+  LogUiLatencyMetrics();
+
+  autofill_client_->GetPaymentsAutofillClient()->ShowVirtualCardEnrollDialog(
+      *virtual_card_enrollment_fields,
+      base::BindOnce(
+          &VirtualCardEnrollmentManager::Enroll, weak_ptr_factory_.GetWeakPtr(),
+          /*virtual_card_enrollment_update_response_callback=*/
+          base::BindOnce(
+              &VirtualCardEnrollmentManager::OnVirtualCardEnrollCompleted,
+              weak_ptr_factory_.GetWeakPtr())),
+      base::BindOnce(
+          &VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+base::WeakPtr<VirtualCardEnrollmentManager>
+VirtualCardEnrollmentManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void VirtualCardEnrollmentManager::SetSaveCardBubbleAcceptedTimestamp(
@@ -389,23 +415,6 @@ void VirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
   }
 }
 
-void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
-  DCHECK(autofill_client_);
-  LogUiLatencyMetrics();
-
-  autofill_client_->GetPaymentsAutofillClient()->ShowVirtualCardEnrollDialog(
-      state_.virtual_card_enrollment_fields,
-      base::BindOnce(
-          &VirtualCardEnrollmentManager::Enroll, weak_ptr_factory_.GetWeakPtr(),
-          /*virtual_card_enrollment_update_response_callback=*/
-          base::BindOnce(
-              &VirtualCardEnrollmentManager::OnVirtualCardEnrollCompleted,
-              weak_ptr_factory_.GetWeakPtr())),
-      base::BindOnce(
-          &VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
     AddStrikeToBlockOfferingVirtualCardEnrollment(base::NumberToString(
         state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
@@ -428,8 +437,8 @@ void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
     // card art image is set to then display in the bubble.
     EnsureCardArtImageIsSetBeforeShowingUI();
 
-    // Shows the virtual card enroll bubble.
-    ShowVirtualCardEnrollBubble();
+    std::move(virtual_card_enrollment_fields_loaded_callback_)
+        .Run(&state_.virtual_card_enrollment_fields);
   } else {
     // We are not in the upstream case where we received the
     // GetDetailsForEnrollmentResponseDetails in the UploadCardResponseDetails,
@@ -509,16 +518,8 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
   // card art image is set to then display in the bubble.
   EnsureCardArtImageIsSetBeforeShowingUI();
 
-  if (autofill_client_) {
-    ShowVirtualCardEnrollBubble();
-  } else {
-    // If the |autofill_client_| is not present, it means that the request is
-    // from Android settings page, thus run the callback with the
-    // |virtual_card_enrollment_fields_|, which would show the enrollment
-    // dialog.
-    std::move(virtual_card_enrollment_fields_loaded_callback_)
-        .Run(&state_.virtual_card_enrollment_fields);
-  }
+  std::move(virtual_card_enrollment_fields_loaded_callback_)
+      .Run(&state_.virtual_card_enrollment_fields);
 }
 
 void VirtualCardEnrollmentManager::SetGetDetailsForEnrollmentResponseDetails(

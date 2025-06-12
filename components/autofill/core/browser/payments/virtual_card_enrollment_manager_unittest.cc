@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface_base.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -69,6 +70,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
         std::make_unique<TestVirtualCardEnrollmentManager>(
             &payments_data_manager(), &payments_network_interface(),
             autofill_client_.get());
+    SetUpCard();
   }
 
   void SetUpCard() {
@@ -105,15 +107,10 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
       const TestLegalMessageLine& issuer_legal_message,
       bool make_image_present) {
     payments_data_manager().ClearCachedImages();
-    SetUpCard();
-    auto* state = virtual_card_enrollment_manager_
-                      ->GetVirtualCardEnrollmentProcessState();
     if (make_image_present) {
+      CHECK(card_);
       SetValidCardArtImageForCard(*card_);
-    } else {
-      state->virtual_card_enrollment_fields.card_art_image = nullptr;
     }
-    state->virtual_card_enrollment_fields.credit_card = *card_;
 
     payments::GetDetailsForEnrollmentResponseDetails response;
     response.vcn_context_token = kTestVcnContextToken;
@@ -125,25 +122,18 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   // TODO(crbug.com/303715506): This part does not test the desired behavior on
   // iOS as the virtual card enrollment strikedatabase on iOS is not initialized
   // (guarded by the feature flag).
+  // Strike database tests bypass the InitVirtualCardEnroll call. Hence set the
+  // VirtualCardEnrollmentProcessState specifically.
   void SetUpStrikeDatabaseTest() {
     VirtualCardEnrollmentProcessState* state =
         virtual_card_enrollment_manager_
             ->GetVirtualCardEnrollmentProcessState();
     state->vcn_context_token = kTestVcnContextToken;
-    SetUpCard();
     state->virtual_card_enrollment_fields.credit_card = *card_;
+    state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
+        VirtualCardEnrollmentSource::kDownstream;
     payments_data_manager().SetPaymentsCustomerData(
         std::make_unique<PaymentsCustomerData>("123456"));
-    EXPECT_FALSE(
-        virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
-            base::NumberToString(state->virtual_card_enrollment_fields
-                                     .credit_card.instrument_id()),
-            VirtualCardEnrollmentSource::kUpstream));
-    EXPECT_FALSE(
-        virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
-            base::NumberToString(state->virtual_card_enrollment_fields
-                                     .credit_card.instrument_id()),
-            VirtualCardEnrollmentSource::kDownstream));
   }
 
  protected:
@@ -172,55 +162,9 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   std::unique_ptr<CreditCard> card_;
 };
 
-TEST_F(VirtualCardEnrollmentManagerTest, InitVirtualCardEnroll) {
-  for (VirtualCardEnrollmentSource virtual_card_enrollment_source :
-       {VirtualCardEnrollmentSource::kUpstream,
-        VirtualCardEnrollmentSource::kDownstream,
-        VirtualCardEnrollmentSource::kSettingsPage}) {
-    for (bool make_image_present : {true, false}) {
-      SCOPED_TRACE(testing::Message()
-                   << " virtual_card_enrollment_source="
-                   << static_cast<int>(virtual_card_enrollment_source)
-                   << ", make_image_present=" << make_image_present);
-      payments_data_manager().ClearCachedImages();
-      SetUpCard();
-      auto* state = virtual_card_enrollment_manager_
-                        ->GetVirtualCardEnrollmentProcessState();
-      state->risk_data.reset();
-      state->virtual_card_enrollment_fields.card_art_image = nullptr;
-      if (make_image_present)
-        SetValidCardArtImageForCard(*card_);
-#if BUILDFLAG(IS_ANDROID)
-      virtual_card_enrollment_manager_->SetAutofillClient(nullptr);
-#endif
-
-      virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-          *card_, virtual_card_enrollment_source, std::nullopt,
-          virtual_card_enrollment_manager_->AutofillClientIsPresent()
-              ? user_prefs()
-              : nullptr,
-          base::DoNothing());
-
-      // CreditCard class overloads equality operator to check that GUIDs,
-      // origins, and the contents of the two cards are equal.
-      EXPECT_EQ(*card_, state->virtual_card_enrollment_fields.credit_card);
-      EXPECT_EQ(
-          make_image_present,
-          state->virtual_card_enrollment_fields.card_art_image != nullptr);
-      EXPECT_TRUE(state->risk_data.has_value());
-
-      // Reset to avoid that state keeps track of card art images that will be
-      // invalidated at the start of the next loop.
-      virtual_card_enrollment_manager_
-          ->ResetVirtualCardEnrollmentProcessState();
-    }
-  }
-}
-
 TEST_F(VirtualCardEnrollmentManagerTest,
        InitVirtualCardEnroll_GetDetailsForEnrollmentResponseReceived) {
   payments_data_manager().ClearCachedImages();
-  SetUpCard();
   auto* state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   state->risk_data.reset();
@@ -241,7 +185,7 @@ TEST_F(VirtualCardEnrollmentManagerTest,
       get_details_for_enrollment_response_details_optional =
           get_details_for_enrollment_response_details;
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-      *card_, VirtualCardEnrollmentSource::kUpstream,
+      *card_, VirtualCardEnrollmentSource::kUpstream, base::DoNothing(),
       get_details_for_enrollment_response_details_optional);
 
   // CreditCard class overloads equality operator to check that GUIDs,
@@ -266,7 +210,6 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kUpstream;
-  SetUpCard();
   state->virtual_card_enrollment_fields.credit_card = *card_;
   state->risk_data.reset();
 
@@ -290,99 +233,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
       /*sample=*/true, 1);
 }
 
-TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
-  base::HistogramTester histogram_tester;
-  const TestLegalMessageLine google_legal_message =
-      TestLegalMessageLine("google_test_legal_message");
-  const TestLegalMessageLine issuer_legal_message =
-      TestLegalMessageLine("issuer_test_legal_message");
-  for (VirtualCardEnrollmentSource source :
-       {VirtualCardEnrollmentSource::kUpstream,
-        VirtualCardEnrollmentSource::kDownstream,
-        VirtualCardEnrollmentSource::kSettingsPage}) {
-// TODO(crbug.com/40223706): Makes the following test
-// PersonalDataManagerTest.AddUpdateRemoveCreditCards fail on iOS.
-// That other test fails when SetNetworkImageInResourceBundle is called here.
-#if BUILDFLAG(IS_IOS)
-    for (bool make_image_present : {true}) {
-#else
-    for (bool make_image_present : {true, false}) {
-#endif  // BUILDFLAG(IS_IOS)
-      virtual_card_enrollment_manager_
-          ->get_details_for_enrollment_request_sent_timestamp_ =
-          base::Time::Now();
-      payments::GetDetailsForEnrollmentResponseDetails response =
-          std::move(SetUpOnDidGetDetailsForEnrollResponse(
-              google_legal_message, issuer_legal_message, make_image_present));
-      auto* state = virtual_card_enrollment_manager_
-                        ->GetVirtualCardEnrollmentProcessState();
-      state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
-          source;
-
-      NiceMock<ui::MockResourceBundleDelegate> delegate;
-      std::unique_ptr<ui::ResourceBundle::SharedInstanceSwapperForTesting>
-          resource_bundle_swapper;
-
-      gfx::Image network_image;
-      if (!make_image_present) {
-        network_image = gfx::test::CreateImage(32, 30);
-        resource_bundle_swapper = std::make_unique<
-            ui::ResourceBundle::SharedInstanceSwapperForTesting>();
-        SetNetworkImageInResourceBundle(
-            &delegate,
-            state->virtual_card_enrollment_fields.credit_card.network(),
-            network_image);
-      }
-
-      task_environment_.FastForwardBy(base::Milliseconds(5));
-
-      virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
-          payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-          response);
-
-      EXPECT_TRUE(state->vcn_context_token.has_value());
-      EXPECT_EQ(state->vcn_context_token, response.vcn_context_token);
-      VirtualCardEnrollmentFields virtual_card_enrollment_fields =
-          virtual_card_enrollment_manager_
-              ->GetVirtualCardEnrollmentProcessState()
-              ->virtual_card_enrollment_fields;
-      EXPECT_TRUE(
-          virtual_card_enrollment_fields.google_legal_message[0].text() ==
-          google_legal_message.text());
-      EXPECT_TRUE(
-          virtual_card_enrollment_fields.issuer_legal_message[0].text() ==
-          issuer_legal_message.text());
-
-      // The |card_art_image| should always be present. If there is no card art
-      // image available, it should be set to the network image.
-      EXPECT_TRUE(virtual_card_enrollment_fields.card_art_image != nullptr);
-      if (!make_image_present) {
-        EXPECT_TRUE(
-            virtual_card_enrollment_fields.card_art_image->BackedBySameObjectAs(
-                network_image.AsImageSkia()));
-      }
-      histogram_tester.ExpectUniqueSample(
-          "Autofill.VirtualCard.GetDetailsForEnrollment.Result." +
-              VirtualCardEnrollmentSourceToMetricSuffix(source),
-          /*sample=*/true, make_image_present ? 1 : 2);
-      histogram_tester.ExpectBucketCount(
-          "Autofill.VirtualCard.GetDetailsForEnrollment.Latency." +
-              VirtualCardEnrollmentSourceToMetricSuffix(source) +
-              PaymentsRpcResultToMetricsSuffix(
-                  payments::PaymentsAutofillClient::PaymentsRpcResult::
-                      kSuccess),
-          /*sample=*/5, make_image_present ? 1 : 2);
-
-      // Avoid dangling pointers to artwork.
-      virtual_card_enrollment_manager_
-          ->ResetVirtualCardEnrollmentProcessState();
-      if (!make_image_present) {
-        ui::ResourceBundle::CleanupSharedInstance();
-      }
-    }
-  }
-}
-
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(VirtualCardEnrollmentManagerTest,
        OnDidGetDetailsForEnrollResponse_NoAutofillClient) {
   base::HistogramTester histogram_tester;
@@ -394,22 +245,20 @@ TEST_F(VirtualCardEnrollmentManagerTest,
       std::move(SetUpOnDidGetDetailsForEnrollResponse(
           google_legal_message, issuer_legal_message,
           /*make_image_present=*/true));
-  auto* state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
-      VirtualCardEnrollmentSource::kSettingsPage;
-
   virtual_card_enrollment_manager_->SetAutofillClient(nullptr);
   base::MockCallback<TestVirtualCardEnrollmentManager::
                          VirtualCardEnrollmentFieldsLoadedCallback>
       virtual_card_enrollment_fields_loaded_callback;
-  virtual_card_enrollment_manager_
-      ->SetVirtualCardEnrollmentFieldsLoadedCallback(
-          virtual_card_enrollment_fields_loaded_callback.Get());
+
   EXPECT_CALL(virtual_card_enrollment_fields_loaded_callback, Run(_));
+  virtual_card_enrollment_manager_->InitVirtualCardEnroll(
+      *card_, VirtualCardEnrollmentSource::kSettingsPage,
+      virtual_card_enrollment_fields_loaded_callback.Get());
   virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response);
 
+  auto* state =
+      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   EXPECT_TRUE(state->vcn_context_token.has_value());
   EXPECT_EQ(state->vcn_context_token, response.vcn_context_token);
   VirtualCardEnrollmentFields virtual_card_enrollment_fields =
@@ -424,27 +273,31 @@ TEST_F(VirtualCardEnrollmentManagerTest,
       "Autofill.VirtualCard.GetDetailsForEnrollment.Result.SettingsPage",
       /*sample=*/true, 1);
 }
+#endif
 
 TEST_F(VirtualCardEnrollmentManagerTest,
        OnDidGetDetailsForEnrollResponse_Reset) {
   base::HistogramTester histogram_tester;
-  auto* state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
-      VirtualCardEnrollmentSource::kSettingsPage;
+  // Ignore strike database to avoid its required delay cooldown.
+  virtual_card_enrollment_manager_->set_ignore_strike_database(true);
+
   for (payments::PaymentsAutofillClient::PaymentsRpcResult result :
        {payments::PaymentsAutofillClient::PaymentsRpcResult::
             kVcnRetrievalTryAgainFailure,
         payments::PaymentsAutofillClient::PaymentsRpcResult::
             kVcnRetrievalPermanentFailure}) {
+    virtual_card_enrollment_manager_->InitVirtualCardEnroll(
+        *card_, VirtualCardEnrollmentSource::kDownstream, base::DoNothing());
     virtual_card_enrollment_manager_->SetResetCalled(false);
-
     virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
         result, payments::GetDetailsForEnrollmentResponseDetails());
-
     EXPECT_TRUE(virtual_card_enrollment_manager_->GetResetCalled());
   }
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.VirtualCard.GetDetailsForEnrollment.Result.Downstream",
+      /*sample=*/false, 2);
 
+#if BUILDFLAG(IS_ANDROID)
   // Ensure the clank settings page use-case works as expected.
   virtual_card_enrollment_manager_->SetAutofillClient(nullptr);
   for (payments::PaymentsAutofillClient::PaymentsRpcResult result :
@@ -452,96 +305,17 @@ TEST_F(VirtualCardEnrollmentManagerTest,
             kVcnRetrievalTryAgainFailure,
         payments::PaymentsAutofillClient::PaymentsRpcResult::
             kVcnRetrievalPermanentFailure}) {
+    virtual_card_enrollment_manager_->InitVirtualCardEnroll(
+        *card_, VirtualCardEnrollmentSource::kSettingsPage, base::DoNothing());
     virtual_card_enrollment_manager_->SetResetCalled(false);
-
     virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
         result, payments::GetDetailsForEnrollmentResponseDetails());
-
     EXPECT_TRUE(virtual_card_enrollment_manager_->GetResetCalled());
   }
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCard.GetDetailsForEnrollment.Result.SettingsPage",
-      /*sample=*/false, 4);
-}
-
-TEST_F(VirtualCardEnrollmentManagerTest, Enroll) {
-  VirtualCardEnrollmentProcessState* state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->vcn_context_token = kTestVcnContextToken;
-  SetUpCard();
-  SetValidCardArtImageForCard(*card_);
-  payments_data_manager().SetPaymentsCustomerData(
-      std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
-
-  for (VirtualCardEnrollmentSource virtual_card_enrollment_source :
-       {VirtualCardEnrollmentSource::kUpstream,
-        VirtualCardEnrollmentSource::kDownstream,
-        VirtualCardEnrollmentSource::kSettingsPage}) {
-    base::HistogramTester histogram_tester;
-    SCOPED_TRACE(testing::Message()
-                 << " virtual_card_enrollment_source="
-                 << static_cast<int>(virtual_card_enrollment_source));
-    state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
-        virtual_card_enrollment_source;
-    virtual_card_enrollment_manager_->SetPaymentsRpcResult(
-        payments::PaymentsAutofillClient::PaymentsRpcResult::kNone);
-
-    payments_network_interface().set_update_virtual_card_enrollment_result(
-        payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
-    virtual_card_enrollment_manager_->Enroll(
-        /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
-
-    payments::UpdateVirtualCardEnrollmentRequestDetails request_details =
-        payments_network_interface()
-            .update_virtual_card_enrollment_request_details();
-    EXPECT_TRUE(request_details.vcn_context_token.has_value());
-    EXPECT_EQ(request_details.vcn_context_token, kTestVcnContextToken);
-    EXPECT_EQ(request_details.virtual_card_enrollment_source,
-              virtual_card_enrollment_source);
-    EXPECT_EQ(request_details.virtual_card_enrollment_request_type,
-              VirtualCardEnrollmentRequestType::kEnroll);
-    EXPECT_EQ(request_details.billing_customer_number, 123456);
-    EXPECT_EQ(virtual_card_enrollment_manager_->GetPaymentsRpcResult(),
-              payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
-
-    std::string suffix;
-    switch (virtual_card_enrollment_source) {
-      case VirtualCardEnrollmentSource::kUpstream:
-        suffix = "Upstream";
-        break;
-      case VirtualCardEnrollmentSource::kDownstream:
-        suffix = "Downstream";
-        break;
-      case VirtualCardEnrollmentSource::kSettingsPage:
-        suffix = "SettingsPage";
-        break;
-      default:
-        NOTREACHED();
-    }
-
-    // Verifies the logging.
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.VirtualCard.Enroll.Attempt." + suffix,
-        /*sample=*/true, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.VirtualCard.Enroll.Result." + suffix,
-        /*sample=*/true, 1);
-
-    // Starts another request and makes sure it fails.
-    payments_network_interface().set_update_virtual_card_enrollment_result(
-        payments::PaymentsAutofillClient::PaymentsRpcResult::
-            kVcnRetrievalPermanentFailure);
-    virtual_card_enrollment_manager_->Enroll(
-        /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
-
-    // Verifies the logging.
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.VirtualCard.Enroll.Attempt." + suffix,
-        /*sample=*/true, 2);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.VirtualCard.Enroll.Result." + suffix,
-        /*sample=*/false, 1);
-  }
+      /*sample=*/false, 2);
+#endif
 }
 
 TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
@@ -600,19 +374,12 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleAccepted) {
   base::HistogramTester histogram_tester;
   SetUpStrikeDatabaseTest();
 
-  VirtualCardEnrollmentProcessState* state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  // Reject the bubble and log strike.
-  virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.StrikeDatabase.NthStrikeAdded.VirtualCardEnrollment",
-      /*sample=*/1, /*count=*/1);
+  virtual_card_enrollment_manager_
+      ->AddStrikeToBlockOfferingVirtualCardEnrollment(
+          base::NumberToString(card_->instrument_id()));
   EXPECT_EQ(
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
-          ->GetStrikes(
-              base::NumberToString(state->virtual_card_enrollment_fields
-                                       .credit_card.instrument_id())),
+          ->GetStrikes(base::NumberToString(card_->instrument_id())),
       1);
 
   // Ensure a strike has been removed after enrollment accepted.
@@ -620,9 +387,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleAccepted) {
       /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
   EXPECT_EQ(
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
-          ->GetStrikes(
-              base::NumberToString(state->virtual_card_enrollment_fields
-                                       .credit_card.instrument_id())),
+          ->GetStrikes(base::NumberToString(card_->instrument_id())),
       0);
 
   histogram_tester.ExpectBucketCount(
@@ -630,8 +395,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleAccepted) {
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardEnrollmentStrikeDatabase." +
           VirtualCardEnrollmentSourceToMetricSuffix(
-              state->virtual_card_enrollment_fields
-                  .virtual_card_enrollment_source),
+              VirtualCardEnrollmentSource::kDownstream),
       VirtualCardEnrollmentStrikeDatabaseEvent::
           VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKES_CLEARED,
       1);
@@ -641,28 +405,25 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleCanceled) {
   base::HistogramTester histogram_tester;
   SetUpStrikeDatabaseTest();
 
-  // Reject the bubble and log strike.
-  virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
+  // Log one strike for the card.
+  virtual_card_enrollment_manager_
+      ->AddStrikeToBlockOfferingVirtualCardEnrollment(
+          base::NumberToString(card_->instrument_id()));
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NthStrikeAdded.VirtualCardEnrollment",
       /*sample=*/1, /*count=*/1);
 
-  VirtualCardEnrollmentProcessState* state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   // Ensure a strike has been logged.
   EXPECT_EQ(
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
-          ->GetStrikes(
-              base::NumberToString(state->virtual_card_enrollment_fields
-                                       .credit_card.instrument_id())),
+          ->GetStrikes(base::NumberToString(card_->instrument_id())),
       1);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardEnrollmentStrikeDatabase." +
           VirtualCardEnrollmentSourceToMetricSuffix(
-              state->virtual_card_enrollment_fields
-                  .virtual_card_enrollment_source),
+              VirtualCardEnrollmentSource::kDownstream),
       VirtualCardEnrollmentStrikeDatabaseEvent::
           VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKE_LOGGED,
       1);
@@ -671,17 +432,26 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleCanceled) {
 TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
   base::HistogramTester histogram_tester;
   SetUpStrikeDatabaseTest();
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(card_->instrument_id()),
+          VirtualCardEnrollmentSource::kUpstream));
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(card_->instrument_id()),
+          VirtualCardEnrollmentSource::kDownstream));
 
   for (int i = 0; i < virtual_card_enrollment_manager_
                           ->GetVirtualCardEnrollmentStrikeDatabase()
                           ->GetMaxStrikesLimit();
        i++) {
-    // Reject the bubble and log strike.
-    virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
+    virtual_card_enrollment_manager_
+        ->AddStrikeToBlockOfferingVirtualCardEnrollment(
+            base::NumberToString(card_->instrument_id()));
 
     histogram_tester.ExpectBucketCount(
         "Autofill.StrikeDatabase.NthStrikeAdded.VirtualCardEnrollment",
-        /*sample=*/i + 1, /*count=*/1);
+        /*sample=*/i + 1, /*expected_count=*/1);
 
     for (VirtualCardEnrollmentSource source :
          {VirtualCardEnrollmentSource::kUpstream,
@@ -699,7 +469,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
        {VirtualCardEnrollmentSource::kUpstream,
         VirtualCardEnrollmentSource::kDownstream}) {
     virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-        *card_, source, std::nullopt,
+        *card_, source, base::DoNothing(), std::nullopt,
         virtual_card_enrollment_manager_->AutofillClientIsPresent()
             ? user_prefs()
             : nullptr,
@@ -712,24 +482,19 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
         source, 1);
   }
 
-  VirtualCardEnrollmentProcessState* state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   EXPECT_TRUE(
       virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
-          base::NumberToString(state->virtual_card_enrollment_fields.credit_card
-                                   .instrument_id()),
+          base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kUpstream));
   EXPECT_TRUE(
       virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
-          base::NumberToString(state->virtual_card_enrollment_fields.credit_card
-                                   .instrument_id()),
+          base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kDownstream));
 }
 
 TEST_F(VirtualCardEnrollmentManagerTest,
        StrikeDatabase_EnrollmentAttemptFailed) {
   base::HistogramTester histogram_tester;
-  SetUpStrikeDatabaseTest();
 
   std::vector<payments::PaymentsAutofillClient::PaymentsRpcResult>
       failure_results = {
@@ -740,29 +505,24 @@ TEST_F(VirtualCardEnrollmentManagerTest,
               kClientSideTimeout,
       };
 
-  VirtualCardEnrollmentProcessState* state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-
   for (int i = 0; i < static_cast<int>(failure_results.size()); i++) {
+    SetUpStrikeDatabaseTest();
     virtual_card_enrollment_manager_
         ->OnDidGetUpdateVirtualCardEnrollmentResponse(
             VirtualCardEnrollmentRequestType::kEnroll, failure_results[i]);
     histogram_tester.ExpectBucketCount(
         "Autofill.StrikeDatabase.NthStrikeAdded.VirtualCardEnrollment",
-        /*sample=*/i + 1, /*count=*/1);
+        /*sample=*/i + 1, /*expected_count=*/1);
 
     EXPECT_EQ(virtual_card_enrollment_manager_
                   ->GetVirtualCardEnrollmentStrikeDatabase()
-                  ->GetStrikes(
-                      base::NumberToString(state->virtual_card_enrollment_fields
-                                               .credit_card.instrument_id())),
+                  ->GetStrikes(base::NumberToString(card_->instrument_id())),
               i + 1);
 
     histogram_tester.ExpectBucketCount(
         "Autofill.VirtualCardEnrollmentStrikeDatabase." +
             VirtualCardEnrollmentSourceToMetricSuffix(
-                state->virtual_card_enrollment_fields
-                    .virtual_card_enrollment_source),
+                VirtualCardEnrollmentSource::kDownstream),
         VirtualCardEnrollmentStrikeDatabaseEvent::
             VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKE_LOGGED,
         i + 1);
@@ -778,8 +538,9 @@ TEST_F(VirtualCardEnrollmentManagerTest,
                           ->GetVirtualCardEnrollmentStrikeDatabase()
                           ->GetMaxStrikesLimit();
        i++) {
-    // Reject the bubble and log strike.
-    virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
+    virtual_card_enrollment_manager_
+        ->AddStrikeToBlockOfferingVirtualCardEnrollment(
+            base::NumberToString(card_->instrument_id()));
 
     histogram_tester.ExpectBucketCount(
         "Autofill.StrikeDatabase.NthStrikeAdded.VirtualCardEnrollment",
@@ -789,10 +550,7 @@ TEST_F(VirtualCardEnrollmentManagerTest,
   // Make sure enrollment is not blocked through settings page.
   EXPECT_FALSE(
       virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
-          base::NumberToString(
-              virtual_card_enrollment_manager_
-                  ->GetVirtualCardEnrollmentProcessState()
-                  ->virtual_card_enrollment_fields.credit_card.instrument_id()),
+          base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kSettingsPage));
 }
 
@@ -803,7 +561,6 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
   VirtualCardEnrollmentProcessState* state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   state->vcn_context_token = kTestVcnContextToken;
-  SetUpCard();
   state->virtual_card_enrollment_fields.credit_card = *card_;
   payments_data_manager().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>("123456"));
@@ -826,20 +583,22 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
     // Start enrollment and ensures VirtualCardEnrollmentFields is set
     // correctly.
     virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-        *card_, VirtualCardEnrollmentSource::kDownstream);
+        *card_, VirtualCardEnrollmentSource::kDownstream, base::DoNothing());
     EXPECT_FALSE(state->virtual_card_enrollment_fields.last_show);
-    // Reject the bubble and log strike.
-    virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
+    // Log one strike for the card.
+    virtual_card_enrollment_manager_
+        ->AddStrikeToBlockOfferingVirtualCardEnrollment(
+            base::NumberToString(card_->instrument_id()));
 
     histogram_tester.ExpectBucketCount(
         "Autofill.StrikeDatabase.NthStrikeAdded.VirtualCardEnrollment",
-        /*sample=*/i + 1, /*count=*/1);
+        /*sample=*/i + 1, /*expected_count=*/1);
   }
 
   // Start enrollment and ensures VirtualCardEnrollmentFields is set
   // correctly.
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-      *card_, VirtualCardEnrollmentSource::kDownstream);
+      *card_, VirtualCardEnrollmentSource::kDownstream, base::DoNothing());
   EXPECT_TRUE(state->virtual_card_enrollment_fields.last_show);
 }
 
@@ -850,19 +609,21 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
   SetUpStrikeDatabaseTest();
   VirtualCardEnrollmentProcessState* state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  SetUpCard();
   card_->set_instrument_id(11223344);
   state->virtual_card_enrollment_fields.credit_card = *card_;
 
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-      *card_, VirtualCardEnrollmentSource::kDownstream, std::nullopt,
+      *card_, VirtualCardEnrollmentSource::kDownstream, base::DoNothing(),
+      std::nullopt,
       virtual_card_enrollment_manager_->AutofillClientIsPresent() ? user_prefs()
                                                                   : nullptr,
       base::DoNothing());
 
   // Logs one strike for the card and makes sure that the enrollment offer is
   // blocked.
-  virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
+  virtual_card_enrollment_manager_
+      ->AddStrikeToBlockOfferingVirtualCardEnrollment(
+          base::NumberToString(card_->instrument_id()));
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NthStrikeAdded.VirtualCardEnrollment",
@@ -910,10 +671,205 @@ TEST_F(VirtualCardEnrollmentManagerTest, Metrics_LatencySinceUpstream) {
       ->virtual_card_enrollment_fields.virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kUpstream;
   task_environment_.FastForwardBy(base::Minutes(1));
-  virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble();
+  virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble(
+      &virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState()
+           ->virtual_card_enrollment_fields);
   histogram_tester.ExpectTimeBucketCount(
       "Autofill.VirtualCardEnrollBubble.LatencySinceUpstream", base::Minutes(1),
       1);
+}
+
+class VirtualCardEnrollmentManagerParamTest
+    : public VirtualCardEnrollmentManagerTest,
+      public ::testing::WithParamInterface<VirtualCardEnrollmentSource> {
+ public:
+  VirtualCardEnrollmentSource source() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    VirtualCardEnrollmentManagerTest,
+    VirtualCardEnrollmentManagerParamTest,
+    ::testing::Values(VirtualCardEnrollmentSource::kUpstream,
+                      VirtualCardEnrollmentSource::kDownstream,
+                      VirtualCardEnrollmentSource::kSettingsPage));
+
+TEST_P(VirtualCardEnrollmentManagerParamTest, InitVirtualCardEnroll) {
+  for (bool make_image_present : {true, false}) {
+    SCOPED_TRACE(testing::Message()
+                 << ", make_image_present=" << make_image_present);
+    payments_data_manager().ClearCachedImages();
+    auto* state = virtual_card_enrollment_manager_
+                      ->GetVirtualCardEnrollmentProcessState();
+    state->risk_data.reset();
+    state->virtual_card_enrollment_fields.card_art_image = nullptr;
+    if (make_image_present) {
+      SetValidCardArtImageForCard(*card_);
+    }
+#if BUILDFLAG(IS_ANDROID)
+    virtual_card_enrollment_manager_->SetAutofillClient(nullptr);
+#endif
+
+    virtual_card_enrollment_manager_->InitVirtualCardEnroll(
+        *card_, source(), base::DoNothing(), std::nullopt,
+        virtual_card_enrollment_manager_->AutofillClientIsPresent()
+            ? user_prefs()
+            : nullptr,
+        base::DoNothing());
+
+    // CreditCard class overloads equality operator to check that GUIDs,
+    // origins, and the contents of the two cards are equal.
+    EXPECT_EQ(*card_, state->virtual_card_enrollment_fields.credit_card);
+    EXPECT_EQ(make_image_present,
+              state->virtual_card_enrollment_fields.card_art_image != nullptr);
+    EXPECT_TRUE(state->risk_data.has_value());
+
+    // Reset to avoid that state keeps track of card art images that will be
+    // invalidated at the start of the next loop.
+    virtual_card_enrollment_manager_->ResetVirtualCardEnrollmentProcessState();
+  }
+}
+
+TEST_P(VirtualCardEnrollmentManagerParamTest, Enroll) {
+  SetValidCardArtImageForCard(*card_);
+  payments_data_manager().SetPaymentsCustomerData(
+      std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
+  for (payments::PaymentsRpcResult result :
+       {payments::PaymentsRpcResult::kSuccess,
+        payments::PaymentsRpcResult::kPermanentFailure}) {
+    base::HistogramTester histogram_tester;
+    SCOPED_TRACE(testing::Message()
+                 << " Payments Rpc result= " << static_cast<int>(result));
+    VirtualCardEnrollmentProcessState* state =
+        virtual_card_enrollment_manager_
+            ->GetVirtualCardEnrollmentProcessState();
+    state->vcn_context_token = kTestVcnContextToken;
+    state->virtual_card_enrollment_fields.credit_card = *card_;
+    state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
+        source();
+    virtual_card_enrollment_manager_->SetPaymentsRpcResult(
+        payments::PaymentsAutofillClient::PaymentsRpcResult::kNone);
+    payments_network_interface().set_update_virtual_card_enrollment_result(
+        result);
+
+    virtual_card_enrollment_manager_->Enroll(
+        /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
+
+    payments::UpdateVirtualCardEnrollmentRequestDetails request_details =
+        payments_network_interface()
+            .update_virtual_card_enrollment_request_details();
+    EXPECT_TRUE(request_details.vcn_context_token.has_value());
+    EXPECT_EQ(request_details.vcn_context_token, kTestVcnContextToken);
+    EXPECT_EQ(request_details.virtual_card_enrollment_source, source());
+    EXPECT_EQ(request_details.virtual_card_enrollment_request_type,
+              VirtualCardEnrollmentRequestType::kEnroll);
+    EXPECT_EQ(request_details.billing_customer_number, 123456);
+    EXPECT_EQ(virtual_card_enrollment_manager_->GetPaymentsRpcResult(), result);
+
+    std::string suffix;
+    switch (source()) {
+      case VirtualCardEnrollmentSource::kUpstream:
+        suffix = "Upstream";
+        break;
+      case VirtualCardEnrollmentSource::kDownstream:
+        suffix = "Downstream";
+        break;
+      case VirtualCardEnrollmentSource::kSettingsPage:
+        suffix = "SettingsPage";
+        break;
+      default:
+        NOTREACHED();
+    }
+    // Verifies the logging.
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.VirtualCard.Enroll.Attempt." + suffix,
+        /*sample=*/true, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.VirtualCard.Enroll.Result." + suffix,
+        /*sample=*/result ==
+            payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+        1);
+  }
+}
+
+TEST_P(VirtualCardEnrollmentManagerParamTest,
+       OnDidGetDetailsForEnrollResponse) {
+  base::HistogramTester histogram_tester;
+  const TestLegalMessageLine google_legal_message =
+      TestLegalMessageLine("google_test_legal_message");
+  const TestLegalMessageLine issuer_legal_message =
+      TestLegalMessageLine("issuer_test_legal_message");
+  // Ignore strike database to avoid its required delay cooldown.
+  virtual_card_enrollment_manager_->set_ignore_strike_database(true);
+// TODO(crbug.com/40223706): Makes the following test
+// PersonalDataManagerTest.AddUpdateRemoveCreditCards fail on iOS.
+// That other test fails when SetNetworkImageInResourceBundle is called here.
+#if BUILDFLAG(IS_IOS)
+  for (bool make_image_present : {true}) {
+#else
+  for (bool make_image_present : {true, false}) {
+#endif  // BUILDFLAG(IS_IOS)
+    SCOPED_TRACE(testing::Message()
+                 << ", make_image_present=" << make_image_present);
+    payments::GetDetailsForEnrollmentResponseDetails response =
+        std::move(SetUpOnDidGetDetailsForEnrollResponse(
+            google_legal_message, issuer_legal_message, make_image_present));
+    NiceMock<ui::MockResourceBundleDelegate> delegate;
+    std::unique_ptr<ui::ResourceBundle::SharedInstanceSwapperForTesting>
+        resource_bundle_swapper;
+
+    gfx::Image network_image;
+    if (!make_image_present) {
+      network_image = gfx::test::CreateImage(32, 30);
+      resource_bundle_swapper = std::make_unique<
+          ui::ResourceBundle::SharedInstanceSwapperForTesting>();
+      SetNetworkImageInResourceBundle(&delegate, card_->network(),
+                                      network_image);
+    }
+
+    virtual_card_enrollment_manager_->InitVirtualCardEnroll(*card_, source(),
+                                                            base::DoNothing());
+    task_environment_.FastForwardBy(base::Milliseconds(5));
+    virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
+        payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+        response);
+
+    auto* state = virtual_card_enrollment_manager_
+                      ->GetVirtualCardEnrollmentProcessState();
+    EXPECT_TRUE(state->vcn_context_token.has_value());
+    EXPECT_EQ(state->vcn_context_token, response.vcn_context_token);
+    VirtualCardEnrollmentFields virtual_card_enrollment_fields =
+        virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState()
+            ->virtual_card_enrollment_fields;
+    EXPECT_TRUE(virtual_card_enrollment_fields.google_legal_message[0].text() ==
+                google_legal_message.text());
+    EXPECT_TRUE(virtual_card_enrollment_fields.issuer_legal_message[0].text() ==
+                issuer_legal_message.text());
+
+    // The |card_art_image| should always be present. If there is no card art
+    // image available, it should be set to the network image.
+    EXPECT_TRUE(virtual_card_enrollment_fields.card_art_image != nullptr);
+    if (!make_image_present) {
+      EXPECT_TRUE(
+          virtual_card_enrollment_fields.card_art_image->BackedBySameObjectAs(
+              network_image.AsImageSkia()));
+    }
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.VirtualCard.GetDetailsForEnrollment.Result." +
+            VirtualCardEnrollmentSourceToMetricSuffix(source()),
+        /*sample=*/true, make_image_present ? 1 : 2);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.VirtualCard.GetDetailsForEnrollment.Latency." +
+            VirtualCardEnrollmentSourceToMetricSuffix(source()) +
+            PaymentsRpcResultToMetricsSuffix(
+                payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess),
+        /*sample=*/5, make_image_present ? 1 : 2);
+
+    // Avoid dangling pointers to artwork.
+    virtual_card_enrollment_manager_->ResetVirtualCardEnrollmentProcessState();
+    if (!make_image_present) {
+      ui::ResourceBundle::CleanupSharedInstance();
+    }
+  }
 }
 
 class DownstreamLatencyMetricsTest
@@ -934,11 +890,16 @@ TEST_P(DownstreamLatencyMetricsTest, LatencySinceDownstream) {
       CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
   virtual_card_enrollment_manager_->ShouldOfferVirtualCardEnrollment(
       card, card.instrument_id(), card_unmasked_from_cache());
-  virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState()
-      ->virtual_card_enrollment_fields.virtual_card_enrollment_source =
+  VirtualCardEnrollmentFields* virtual_card_enrollment_fields =
+      &virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState()
+           ->virtual_card_enrollment_fields;
+  virtual_card_enrollment_fields->virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kDownstream;
+
   task_environment_.FastForwardBy(base::Minutes(1));
-  virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble();
+  virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble(
+      virtual_card_enrollment_fields);
+
   histogram_tester.ExpectTimeBucketCount(
       "Autofill.VirtualCardEnrollBubble.LatencySinceDownstream",
       base::Minutes(1), card_unmasked_from_cache() ? 0 : 1);

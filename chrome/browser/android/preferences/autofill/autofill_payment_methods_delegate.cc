@@ -87,10 +87,11 @@ void AutofillPaymentMethodsDelegate::InitVirtualCardEnrollment(
       personal_data_manager_->payments_data_manager()
           .GetCreditCardByInstrumentId(instrument_id);
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-      *credit_card, VirtualCardEnrollmentSource::kSettingsPage, std::nullopt,
-      profile_->GetPrefs(), base::BindOnce(&risk_util::LoadRiskDataHelper),
+      *credit_card, VirtualCardEnrollmentSource::kSettingsPage,
       base::BindOnce(&RunVirtualCardEnrollmentFieldsLoadedCallback,
-                     ScopedJavaGlobalRef<jobject>(jcallback)));
+                     ScopedJavaGlobalRef<jobject>(jcallback)),
+      std::nullopt, profile_->GetPrefs(),
+      base::BindOnce(&risk_util::LoadRiskDataHelper));
 }
 
 void AutofillPaymentMethodsDelegate::EnrollOfferedVirtualCard(

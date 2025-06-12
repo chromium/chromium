@@ -850,7 +850,10 @@ bool FormDataImporter::ProcessExtractedCreditCard(
           *extracted_credit_card, fetched_card_instrument_id_,
           card_was_fetched_from_cache_)) {
     virtual_card_enrollment_manager->InitVirtualCardEnroll(
-        *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream);
+        *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream,
+        base::BindOnce(
+            &VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble,
+            virtual_card_enrollment_manager->GetWeakPtr()));
     return true;
   }
 
