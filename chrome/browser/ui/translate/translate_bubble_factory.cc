@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/translate/core/browser/translate_step.h"
 
