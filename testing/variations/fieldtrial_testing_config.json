@@ -19759,6 +19759,28 @@
             ]
         }
     ],
+    "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
+                    "enable_features": [
+                        "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReduceCpuUtilization2": [
         {
             "platforms": [

@@ -43,6 +43,16 @@ namespace content {
 
 namespace {
 
+BASE_FEATURE(kReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
+             "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ReduceCallingServiceWorkerRegisteredStorageKeysOnStartupEnabled() {
+  static const bool enabled = base::FeatureList::IsEnabled(
+      kReduceCallingServiceWorkerRegisteredStorageKeysOnStartup);
+  return enabled;
+}
+
 blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   switch (status) {
@@ -952,6 +962,9 @@ void ServiceWorkerRegistry::GetRegisteredStorageKeys(
                      weak_factory_.GetWeakPtr(), std::move(wrapped_callback)));
 }
 
+// TODO(crbug.com/422348336): Merge this function into
+// `DidGetRegisteredStorageKeysOnStartup()` when
+// kReduceCallingServiceWorkerRegisteredStorageKeysOnStartup feature is removed.
 void ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartupDeprecated(
     base::TimeTicks start_time,
     const std::vector<blink::StorageKey>& storage_keys) {
@@ -1073,12 +1086,15 @@ void ServiceWorkerRegistry::Start(base::TimeTicks start_time) {
 
     GetRegisteredStorageKeys(base::BindOnce(
         &ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartup,
-        weak_factory_.GetWeakPtr()));
+        weak_factory_.GetWeakPtr(), start_time));
   }
 
-  GetRegisteredStorageKeys(base::BindOnce(
-      &ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartupDeprecated,
-      weak_factory_.GetWeakPtr(), start_time));
+  if (!special_storage_policy_ ||
+      !ReduceCallingServiceWorkerRegisteredStorageKeysOnStartupEnabled()) {
+    GetRegisteredStorageKeys(base::BindOnce(
+        &ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartupDeprecated,
+        weak_factory_.GetWeakPtr(), start_time));
+  }
 }
 
 void ServiceWorkerRegistry::FindRegistrationForIdInternal(
@@ -1943,6 +1959,7 @@ void ServiceWorkerRegistry::DidApplyPolicyUpdates(
 }
 
 void ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartup(
+    base::TimeTicks start_time,
     const std::vector<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(special_storage_policy_);
@@ -1952,6 +1969,9 @@ void ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartup(
     origins.push_back(storage_key.origin());
   }
   storage_policy_observer_->StartTrackingOrigins(origins);
+  if (ReduceCallingServiceWorkerRegisteredStorageKeysOnStartupEnabled()) {
+    DidGetRegisteredStorageKeysOnStartupDeprecated(start_time, storage_keys);
+  }
 }
 
 void ServiceWorkerRegistry::ApplyPolicyUpdates(

@@ -467,6 +467,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void DidApplyPolicyUpdates(
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidGetRegisteredStorageKeysOnStartup(
+      base::TimeTicks start_time,
       const std::vector<blink::StorageKey>& storage_keys);
 
   // This is used as a callback of GetRegisteredStorageKeys when initialising to
