@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.payments;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -45,7 +48,9 @@ import org.chromium.components.payments.PaymentResponseHelper;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController.SpcResponseStatus;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationController;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationNoMatchingCredController;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PayerDetail;
@@ -109,10 +114,15 @@ public class ChromePaymentRequestService
     private boolean mHasSkippedAppSelector;
 
     // mSpcAuthnUiController is null when it is closed and before it is shown.
+    // TODO(crbug.com/424155125): Replaced by mSpcController and removed when SPCUXRefresh launches.
     @Nullable private SecurePaymentConfirmationAuthnController mSpcAuthnUiController;
 
+    // TODO(crbug.com/424155125): Replaced by mSpcController and removed when SPCUXRefresh launches.
     // mNoMatchingController is null when it is closed and before it is shown.
     @Nullable private SecurePaymentConfirmationNoMatchingCredController mNoMatchingController;
+
+    // mSpcController is null when it is closed and before it is shown.
+    @Nullable private SecurePaymentConfirmationController mSpcController;
 
     /** The delegate of this class */
     public interface Delegate extends PaymentRequestService.Delegate {
@@ -210,17 +220,15 @@ public class ChromePaymentRequestService
      */
     public ChromePaymentRequestService(
             PaymentRequestService paymentRequestService, Delegate delegate) {
-        assert paymentRequestService != null;
-        assert delegate != null;
+        assertNonNull(paymentRequestService);
+        assertNonNull(delegate);
 
         mPaymentRequestService = paymentRequestService;
-        mRenderFrameHost = paymentRequestService.getRenderFrameHost();
-        assert mRenderFrameHost != null;
+        mRenderFrameHost = assertNonNull(paymentRequestService.getRenderFrameHost());
         mDelegate = delegate;
         mWebContents = paymentRequestService.getWebContents();
         mJourneyLogger = paymentRequestService.getJourneyLogger();
-        String topLevelOrigin = paymentRequestService.getTopLevelOrigin();
-        assert topLevelOrigin != null;
+        String topLevelOrigin = assertNonNull(paymentRequestService.getTopLevelOrigin());
         mPaymentUiService =
                 mDelegate.createPaymentUiService(
                         /* delegate= */ this,
@@ -274,8 +282,8 @@ public class ChromePaymentRequestService
             Map<String, PaymentMethodData> methodData,
             PaymentDetails details,
             PaymentOptions options) {
-        assert methodData != null;
-        assert details != null;
+        assertNonNull(methodData);
+        assertNonNull(details);
 
         if (!parseAndValidateDetailsFurtherIfNeeded(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -340,14 +348,16 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public boolean showNoMatchingPaymentCredential() {
-        assert mSpec != null;
+        assertNonNull(mSpec);
         assert !mSpec.isDestroyed();
         assert mSpec.isSecurePaymentConfirmationRequested();
         // Either there are no apps, XOR the new fallback flow is enabled where there must be an SPC
         // app.
         assert !hasAvailableApps()
-                ^ PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK);
+                ^ (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)
+                        || ContentFeatureMap.isEnabled(
+                                BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH));
 
         mJourneyLogger.setNoMatchingCredentialsShown();
 
@@ -362,8 +372,65 @@ public class ChromePaymentRequestService
                             ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);
                 };
         PaymentMethodData spcMethodData =
-                mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
-        assert spcMethodData != null;
+                assertNonNull(mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION));
+
+        if (ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
+            assert mSpcController == null;
+            WindowAndroid windowAndroid =
+                    assertNonNull(mDelegate.getWindowAndroid(mRenderFrameHost));
+
+            Callback<Integer> responseCallback =
+                    (responseStatus) -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                SPC_FALLBACK_OUTCOME_HISTOGRAM,
+                                responseStatus,
+                                SpcResponseStatus.COUNT);
+
+                        switch (responseStatus) {
+                            case SpcResponseStatus.ANOTHER_WAY:
+                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                        PaymentErrorReason.NOT_ALLOWED_ERROR);
+                                break;
+                            case SpcResponseStatus.CANCEL:
+                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.USER_CANCELLED,
+                                        PaymentErrorReason.USER_CANCEL);
+                                break;
+                            case SpcResponseStatus.OPT_OUT:
+                                mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.SPC_USER_OPTED_OUT,
+                                        PaymentErrorReason.USER_OPT_OUT);
+                                break;
+                            default:
+                                Log.e(TAG, "Unexpected SPC response status: %d", responseStatus);
+                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                        PaymentErrorReason.NOT_ALLOWED_ERROR);
+                        }
+                        mSpcController = null;
+                    };
+            mSpcController =
+                    new SecurePaymentConfirmationController(
+                            windowAndroid,
+                            spcMethodData.securePaymentConfirmation.payeeName,
+                            getPayeeOrigin(spcMethodData),
+                            getSelectedPaymentApp().getLabel(),
+                            mSpec.getRawTotal(),
+                            getSelectedPaymentApp().getDrawableIcon(),
+                            getIssuerIcon(),
+                            getNetworkIcon(),
+                            spcMethodData.securePaymentConfirmation.rpId,
+                            spcMethodData.securePaymentConfirmation.showOptOut,
+                            /* informOnly= */ true,
+                            responseCallback);
+            return mSpcController.show();
+        }
+
         if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                 PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)) {
             assert mSpcAuthnUiController == null;
@@ -442,16 +509,91 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public String onShowCalledAndAppsQueriedAndDetailsFinalized() {
-        assert mSpec.getRawTotal() != null;
+        assertNonNull(mSpec.getRawTotal());
+
+        WindowAndroid windowAndroid = mDelegate.getWindowAndroid(mRenderFrameHost);
+        if (windowAndroid == null) return ErrorStrings.WINDOW_NOT_FOUND;
+        Context context = mDelegate.getContext(mRenderFrameHost);
+        if (context == null) return ErrorStrings.CONTEXT_NOT_FOUND;
 
         if (isSecurePaymentConfirmationApplicable()) {
-            assert getSelectedPaymentApp() != null;
-            assert mSpcAuthnUiController == null;
-
-            mSpcAuthnUiController = SecurePaymentConfirmationAuthnController.create(mWebContents);
+            assertNonNull(getSelectedPaymentApp());
             PaymentMethodData spcMethodData =
-                    mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
-            assert spcMethodData != null;
+                    assertNonNull(
+                            mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION));
+
+            if (ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
+                assert mSpcController == null;
+                Callback<Integer> responseCallback =
+                        (responseStatus) -> {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    SPC_TRANSACTION_OUTCOME_HISTOGRAM,
+                                    responseStatus,
+                                    SpcResponseStatus.COUNT);
+
+                            switch (responseStatus) {
+                                case SpcResponseStatus.ACCEPT:
+                                    onSecurePaymentConfirmationUiAccepted(getSelectedPaymentApp());
+                                    break;
+                                case SpcResponseStatus.ANOTHER_WAY:
+                                    mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                    disconnectFromClientWithDebugMessage(
+                                            ErrorStrings
+                                                    .WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                            PaymentErrorReason.NOT_ALLOWED_ERROR);
+                                    break;
+                                case SpcResponseStatus.CANCEL:
+                                    mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                    disconnectFromClientWithDebugMessage(
+                                            ErrorStrings.USER_CANCELLED,
+                                            PaymentErrorReason.USER_CANCEL);
+                                    break;
+                                case SpcResponseStatus.OPT_OUT:
+                                    mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
+                                    disconnectFromClientWithDebugMessage(
+                                            ErrorStrings.SPC_USER_OPTED_OUT,
+                                            PaymentErrorReason.USER_OPT_OUT);
+                                    break;
+                                default:
+                                    Log.e(
+                                            TAG,
+                                            "Unexpected SPC response status: %d",
+                                            responseStatus);
+                                    mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                    disconnectFromClientWithDebugMessage(
+                                            ErrorStrings
+                                                    .WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                            PaymentErrorReason.NOT_ALLOWED_ERROR);
+                            }
+                            mSpcController = null;
+                        };
+                mSpcController =
+                        new SecurePaymentConfirmationController(
+                                windowAndroid,
+                                spcMethodData.securePaymentConfirmation.payeeName,
+                                getPayeeOrigin(spcMethodData),
+                                getSelectedPaymentApp().getLabel(),
+                                mSpec.getRawTotal(),
+                                getSelectedPaymentApp().getDrawableIcon(),
+                                getIssuerIcon(),
+                                getNetworkIcon(),
+                                spcMethodData.securePaymentConfirmation.rpId,
+                                spcMethodData.securePaymentConfirmation.showOptOut,
+                                /* informOnly= */ false,
+                                responseCallback);
+
+                if (mSpcController.show()) {
+                    mJourneyLogger.setShown();
+                    mPaymentRequestService.onUiDisplayed();
+                    return null;
+                } else {
+                    mSpcController = null;
+                    return ErrorStrings.SPC_AUTHN_UI_SUPPRESSED;
+                }
+            }
+
+            assert mSpcAuthnUiController == null;
+            mSpcAuthnUiController = SecurePaymentConfirmationAuthnController.create(mWebContents);
             Callback<Integer> responseCallback =
                     (responseStatus) -> {
                         RecordHistogram.recordEnumeratedHistogram(
@@ -522,11 +664,6 @@ public class ChromePaymentRequestService
             }
         }
 
-        WindowAndroid windowAndroid = mDelegate.getWindowAndroid(mRenderFrameHost);
-        if (windowAndroid == null) return ErrorStrings.WINDOW_NOT_FOUND;
-        Context context = mDelegate.getContext(mRenderFrameHost);
-        if (context == null) return ErrorStrings.CONTEXT_NOT_FOUND;
-
         // If we are skipping showing the app selector UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
         if (mHasSkippedAppSelector) {
@@ -563,7 +700,7 @@ public class ChromePaymentRequestService
     }
 
     private void onSecurePaymentConfirmationUiAccepted(PaymentApp app) {
-        assert mPaymentRequestService != null;
+        assertNonNull(mPaymentRequestService);
         mPaymentRequestService.invokePaymentApp(
                 app, new PaymentResponseHelper(app, mSpec.getPaymentOptions()));
     }
@@ -743,6 +880,11 @@ public class ChromePaymentRequestService
         if (mNoMatchingController != null) {
             mNoMatchingController.close();
             mNoMatchingController = null;
+        }
+
+        if (mSpcController != null) {
+            mSpcController.hide();
+            mSpcController = null;
         }
 
         if (mPaymentRequestService != null) {

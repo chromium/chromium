@@ -25,6 +25,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kDevicePosture,
     &blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
     &blink::features::kSecurePaymentConfirmationBrowserBoundKeys,
+    &blink::features::kSecurePaymentConfirmationUxRefresh,
     &blink::features::kViewportSegments,
     &input::features::kInputOnViz,
     &features::kAccessibilityDeprecateJavaNodeCache,

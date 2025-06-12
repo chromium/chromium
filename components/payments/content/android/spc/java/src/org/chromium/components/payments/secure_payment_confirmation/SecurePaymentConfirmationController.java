@@ -111,10 +111,9 @@ public class SecurePaymentConfirmationController
             boolean showOptOut,
             boolean informOnly,
             Callback<Integer> responseCallback) {
-        Context context = window.getContext().get();
-        assertNonNull(context);
-        BottomSheetController bottomSheetController = BottomSheetControllerProvider.from(window);
-        assertNonNull(bottomSheetController);
+        Context context = assertNonNull(window.getContext().get());
+        BottomSheetController bottomSheetController =
+                assertNonNull(BottomSheetControllerProvider.from(window));
 
         mBottomSheetController = bottomSheetController;
         mInformOnly = informOnly;
