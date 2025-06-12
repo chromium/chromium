@@ -12,12 +12,14 @@
 [package]
 edition = "2021"
 name = "adler2"
-version = "2.0.0"
+version = "2.0.1"
 authors = [
     "Jonas Schievink <jonasschievink@gmail.com>",
     "oyvindln <oyvindln@users.noreply.github.com>",
 ]
 build = false
+exclude = [".*"]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -67,6 +69,11 @@ file = "src/lib.rs"
 replace = "https://docs.rs/adler/{{version}}"
 search = 'https://docs.rs/adler/[a-z0-9\.-]+'
 
+[features]
+default = ["std"]
+rustc-dep-of-std = ["core"]
+std = []
+
 [lib]
 name = "adler2"
 path = "src/lib.rs"
@@ -76,22 +83,9 @@ name = "bench"
 path = "benches/bench.rs"
 harness = false
 
-[dependencies.compiler_builtins]
-version = "0.1.2"
-optional = true
-
 [dependencies.core]
 version = "1.0.0"
 optional = true
 package = "rustc-std-workspace-core"
 
-[dev-dependencies.criterion]
-version = "0.3.2"
-
-[features]
-default = ["std"]
-rustc-dep-of-std = [
-    "core",
-    "compiler_builtins",
-]
-std = []
+[dev-dependencies]

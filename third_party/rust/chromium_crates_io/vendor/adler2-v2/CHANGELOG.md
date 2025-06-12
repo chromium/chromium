@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 ---
+## [2.0.1](https://github.com/Frommi/miniz_oxide/compare/2.0.0..2.0.1) - 2025-06-09
+
+### Other
+
+- Remove `compiler-builtins` from `rustc-dep-of-std` dependencies - ([7cdbd39](https://github.com/Frommi/miniz_oxide/commit/7cdbd3925a7f61cc075f44367b5d383861571b0a)) - Trevor Gross
+
+---
 ## [2.0.0](https://github.com/Frommi/miniz_oxide/compare/1.0.2..2.0.0) - 2024-08-04
 
 First release of adler2 - fork of adler crate as the original is unmaintained and archived

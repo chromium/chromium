@@ -1,6 +1,6 @@
 [package]
 name = "adler2"
-version = "2.0.0"
+version = "2.0.1"
 authors = ["Jonas Schievink <jonasschievink@gmail.com>", "oyvindln <oyvindln@users.noreply.github.com>"]
 description = "A simple clean-room implementation of the Adler-32 checksum"
 documentation = "https://docs.rs/adler2/"
@@ -10,6 +10,7 @@ categories = ["algorithms"]
 readme = "README.md"
 license = "0BSD OR MIT OR Apache-2.0"
 edition = "2021"
+exclude = [".*"]
 
 [[bench]]
 name = "bench"
@@ -19,10 +20,11 @@ harness = false
 # Internal features, only used when building as part of libstd, not part of the
 # stable interface of this crate.
 core = { version = '1.0.0', optional = true, package = 'rustc-std-workspace-core' }
-compiler_builtins = { version = '0.1.2', optional = true }
 
 [dev-dependencies]
-criterion = "0.3.2"
+## Messes with minimum rust version and drags in deps just for running tests
+## so just comment out for now and enable manually when needed for enabling benches
+## criterion = "0.3.2"
 
 [features]
 # Disable default features to enable `#![no_std]` support.
@@ -31,7 +33,7 @@ std = []
 
 # Internal feature, only used when building as part of libstd, not part of the
 # stable interface of this crate.
-rustc-dep-of-std = ['core', 'compiler_builtins']
+rustc-dep-of-std = ['core']
 
 
 [package.metadata.docs.rs]
