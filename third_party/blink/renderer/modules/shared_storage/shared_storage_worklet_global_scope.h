@@ -152,7 +152,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   void OnModuleScriptDownloaded(
       const KURL& script_source_url,
       mojom::blink::SharedStorageWorkletService::AddModuleCallback callback,
-      std::unique_ptr<std::string> response_body,
+      std::optional<std::string> response_body,
       std::string error_message,
       network::mojom::URLResponseHeadPtr response_head);
 

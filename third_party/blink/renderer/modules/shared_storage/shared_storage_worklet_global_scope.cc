@@ -1146,7 +1146,7 @@ int64_t SharedStorageWorkletGlobalScope::GetCurrentOperationId() {
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     const KURL& script_source_url,
     mojom::blink::SharedStorageWorkletService::AddModuleCallback callback,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     std::string error_message,
     network::mojom::URLResponseHeadPtr response_head) {
   module_script_downloader_.reset();
@@ -1177,7 +1177,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
           &SharedStorageWorkletGlobalScope::RecordAddModuleFinished,
           WrapPersistent(this)));
 
-  if (!response_body) {
+  if (!response_body.has_value()) {
     std::move(add_module_finished_callback)
         .Run(false, String(error_message.c_str()));
     return;

@@ -112,12 +112,12 @@ ModuleScriptDownloader::ModuleScriptDownloader(
 
 ModuleScriptDownloader::~ModuleScriptDownloader() = default;
 
-void ModuleScriptDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
+void ModuleScriptDownloader::OnBodyReceived(std::optional<std::string> body) {
   DCHECK(module_script_downloader_callback_);
 
   auto simple_url_loader = std::move(simple_url_loader_);
 
-  if (!body) {
+  if (!body.has_value()) {
     std::string error_message;
     if (simple_url_loader->ResponseInfo() &&
         simple_url_loader->ResponseInfo()->headers &&
@@ -134,7 +134,7 @@ void ModuleScriptDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
           net::ErrorToString(simple_url_loader->NetError()).c_str());
     }
     std::move(module_script_downloader_callback_)
-        .Run(/*body=*/nullptr, error_message,
+        .Run(/*body=*/std::nullopt, error_message,
              simple_url_loader->TakeResponseInfo());
     return;
   }
@@ -142,7 +142,7 @@ void ModuleScriptDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
   if (!blink::IsSupportedJavascriptMimeType(
           simple_url_loader->ResponseInfo()->mime_type)) {
     std::move(module_script_downloader_callback_)
-        .Run(/*body=*/nullptr,
+        .Run(/*body=*/std::nullopt,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected MIME type.",
                  source_url_.spec().c_str()),
@@ -152,7 +152,7 @@ void ModuleScriptDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
 
   if (!IsAllowedCharset(simple_url_loader->ResponseInfo()->charset, *body)) {
     std::move(module_script_downloader_callback_)
-        .Run(/*body=*/nullptr,
+        .Run(/*body=*/std::nullopt,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected charset.",
                  source_url_.spec().c_str()),
@@ -177,7 +177,7 @@ void ModuleScriptDownloader::OnRedirect(
   simple_url_loader_.reset();
 
   std::move(module_script_downloader_callback_)
-      .Run(/*body=*/nullptr,
+      .Run(/*body=*/std::nullopt,
            base::StringPrintf("Unexpected redirect on %s.",
                               source_url_.spec().c_str()),
            nullptr);
