@@ -26,7 +26,7 @@ const uint8_t kFakeIccData[] = {0x00, 0x00, 0x08, 0x90, 0x20, 0x20,
 
 // Full path to fake icc file in <tmp test directory>/display_profiles/.
 base::FilePath GetPathForIccFile(int64_t product_id) {
-  return QuirksManager::Get()->delegate()->GetDisplayProfileDirectory().Append(
+  return QuirksManager::Get()->display_profile_path().Append(
       quirks::IdToFileName(product_id));
 }
 
@@ -85,8 +85,7 @@ class QuirksBrowserTest : public InProcessBrowserTest {
     // called in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()`.
 
     // Create display_profiles subdirectory under temp profile directory.
-    const base::FilePath path =
-        QuirksManager::Get()->delegate()->GetDisplayProfileDirectory();
+    const base::FilePath path = QuirksManager::Get()->display_profile_path();
     base::File::Error error = base::File::FILE_OK;
     bool created = base::CreateDirectoryAndGetError(path, &error);
     ASSERT_TRUE(created);

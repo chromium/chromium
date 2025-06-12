@@ -49,6 +49,7 @@ class CrostiniUnsupportedActionNotifier;
 
 namespace policy {
 class LockToSingleUserManager;
+class QuirksPolicyController;
 }  // namespace policy
 
 namespace video_conference {
@@ -273,6 +274,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<policy::LockToSingleUserManager> lock_to_single_user_manager_;
   std::unique_ptr<LoginScreenExtensionsStorageCleaner>
       login_screen_extensions_storage_cleaner_;
+
+  std::unique_ptr<policy::QuirksPolicyController> quirks_policy_controller_;
 
   std::unique_ptr<GnubbyNotification> gnubby_notification_;
 

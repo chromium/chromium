@@ -76,31 +76,6 @@ class DisplayColorManagerForTest : public DisplayColorManager {
   base::OnceClosure on_finished_for_test_;
 };
 
-// Implementation of QuirksManager::Delegate to fake chrome-restricted parts.
-class QuirksManagerDelegateTestImpl : public quirks::QuirksManager::Delegate {
- public:
-  explicit QuirksManagerDelegateTestImpl(base::FilePath color_path)
-      : color_path_(color_path) {}
-
-  QuirksManagerDelegateTestImpl(const QuirksManagerDelegateTestImpl&) = delete;
-  QuirksManagerDelegateTestImpl& operator=(
-      const QuirksManagerDelegateTestImpl&) = delete;
-
-  // Unused by these tests.
-  std::string GetApiKey() const override { return std::string(); }
-
-  base::FilePath GetDisplayProfileDirectory() const override {
-    return color_path_;
-  }
-
-  bool DevicePolicyEnabled() const override { return true; }
-
- private:
-  ~QuirksManagerDelegateTestImpl() override = default;
-
-  base::FilePath color_path_;
-};
-
 }  // namespace
 
 class DisplayColorManagerTest : public testing::Test {
@@ -125,11 +100,10 @@ class DisplayColorManagerTest : public testing::Test {
                       .Append(FILE_PATH_LITERAL("test_data"));
     path_override_ = std::make_unique<base::ScopedPathOverride>(
         DIR_DEVICE_DISPLAY_PROFILES, color_path_);
-
     quirks::QuirksManager::Initialize(
-        std::unique_ptr<quirks::QuirksManager::Delegate>(
-            new QuirksManagerDelegateTestImpl(color_path_)),
-        nullptr, nullptr);
+        /*api_key=*/std::string(), /*local_state=*/nullptr,
+        /*url_loader_factory=*/nullptr);
+    quirks::QuirksManager::Get()->SetEnabled(true);
 
     system::StatisticsProvider::SetTestProvider(&fake_statistics_provider_);
   }

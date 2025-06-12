@@ -55,15 +55,17 @@ bool WriteIccFile(const base::FilePath file_path, const std::string& data) {
 // QuirksClient
 
 QuirksClient::QuirksClient(int64_t product_id,
-                           const std::string& display_name,
+                           std::string display_name,
+                           std::string api_key,
                            RequestFinishedCallback on_request_finished,
                            QuirksManager* manager)
     : product_id_(product_id),
-      display_name_(display_name),
+      display_name_(std::move(display_name)),
+      api_key_(std::move(api_key)),
       on_request_finished_(std::move(on_request_finished)),
       manager_(manager),
-      icc_path_(manager->delegate()->GetDisplayProfileDirectory().Append(
-          IdToFileName(product_id))),
+      icc_path_(
+          manager_->display_profile_path().Append(IdToFileName(product_id))),
       backoff_entry_(&kDefaultBackoffPolicy) {}
 
 QuirksClient::~QuirksClient() = default;
@@ -84,7 +86,7 @@ void QuirksClient::StartDownload() {
   VLOG(2) << "Preparing to download\n  " << url << "\nto file "
           << icc_path_.value();
 
-  url += "key=" + manager_->delegate()->GetApiKey();
+  url += "key=" + api_key_;
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(url);

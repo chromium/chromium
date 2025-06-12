@@ -37,8 +37,7 @@ class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
     // called in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()`.
 
     // Create display_profiles subdirectory under temp profile directory.
-    base::FilePath path =
-        quirks::QuirksManager::Get()->delegate()->GetDisplayProfileDirectory();
+    base::FilePath path = quirks::QuirksManager::Get()->display_profile_path();
     base::File::Error error = base::File::FILE_OK;
     bool created = base::CreateDirectoryAndGetError(path, &error);
     ASSERT_TRUE(created) << error;

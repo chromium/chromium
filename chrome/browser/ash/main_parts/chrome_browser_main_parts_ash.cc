@@ -14,6 +14,7 @@
 #include "ash/accelerators/rapid_key_sequence_recorder.h"
 #include "ash/accelerators/shortcut_input_handler.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/public/ash_interfaces.h"
@@ -94,7 +95,6 @@
 #include "chrome/browser/ash/dbus/vm/vm_wl_service_provider.h"
 #include "chrome/browser/ash/device_name/device_name_store.h"
 #include "chrome/browser/ash/diagnostics/diagnostics_browser_delegate_impl.h"
-#include "chrome/browser/ash/display/quirks_manager_delegate_impl.h"
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/events/shortcut_mapping_pref_service.h"
 #include "chrome/browser/ash/extensions/default_app_order.h"
@@ -242,6 +242,7 @@
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/policy/handlers/quirks/quirks_policy_controller.h"
 #include "chromeos/ash/services/cros_healthd/private/cpp/data_collector.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
@@ -279,6 +280,7 @@
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "extensions/common/switches.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_passive.h"
 #include "printing/backend/print_backend.h"
@@ -806,12 +808,26 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   content::MediaCaptureDevices::GetInstance()->AddVideoCaptureObserver(
       CrasAudioHandler::Get());
 
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // While on ChromeOS devices in production, /var/cache/display_profiles
+  // is used, but it is not available in linux-chromeos.
+  // So, we'll use "${DIR_USER_DATA}/display_profiles" in linux-chromeos
+  // then.
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  CHECK(user_data_dir.IsAbsolute());
+  CHECK(base::PathService::OverrideAndCreateIfNeeded(
+      ash::DIR_DEVICE_DISPLAY_PROFILES,
+      user_data_dir.Append("display_profiles"),
+      /*is_absolute=*/true,
+      /*create=*/false));
+#endif
   quirks::QuirksManager::Initialize(
-      base::WrapUnique<quirks::QuirksManager::Delegate>(
-          new quirks::QuirksManagerDelegateImpl()),
-      g_browser_process->local_state(),
+      google_apis::GetAPIKey(), g_browser_process->local_state(),
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory());
+  quirks_policy_controller_ = std::make_unique<policy::QuirksPolicyController>(
+      quirks::QuirksManager::Get(), ash::CrosSettings::Get());
 
   // Start loading machine statistics here. StatisticsProvider::Shutdown()
   // will ensure that loading is aborted on early exit.
@@ -1787,6 +1803,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Shutdown after PostMainMessageLoopRun() which should destroy all observers.
   CrasAudioHandler::Shutdown();
 
+  // Disconnect quirks from policy just before destroying the quirks manager.
+  quirks_policy_controller_.reset();
   quirks::QuirksManager::Shutdown();
 
   // Called after ChromeBrowserMainPartsLinux::PostMainMessageLoopRun() (which
