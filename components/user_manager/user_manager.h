@@ -19,10 +19,6 @@ class AccountId;
 class PrefRegistrySimple;
 class PrefService;
 
-namespace ash {
-class UserManagerTest;
-}  // namespace ash
-
 namespace user_manager {
 
 namespace internal {
@@ -576,13 +572,6 @@ class USER_MANAGER_EXPORT UserManager {
 
  private:
   friend class internal::ScopedUserManagerImpl;
-  // Allows access to kTestType.
-  friend class ash::UserManagerTest;
-
-  // TODO(crbug.com/278643115): Temporarily mirror of ::switches::kTestType,
-  // to prevent the regression of test code. Remove this once all tests
-  // are migrated, and unconditionally block the unexpected instantiation.
-  inline static constexpr char kTestType[] = "test-type";
 
   // Same as Get() but doesn't won't crash is current instance is NULL.
   static UserManager* GetForTesting();
