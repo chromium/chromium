@@ -280,7 +280,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     /**
      * @param rootId The tab group's new rootId. Should be synced with the {@link
-     *     org.chromium.chrome.browser.tabmodel.TabGroupModelFilter}.
+     *     TabGroupModelFilter}.
      */
     protected void updateRootId(int rootId) {
         mRootId = rootId;
@@ -389,29 +389,29 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * This method measures and lays out the avatar view, registers the avatar resource and triggers
      * an update to the group title bitmap
      *
-     * @params view The Android view of the avatar.
+     * @params avatarView The Android view of the avatar.
      * @param registerAvatarResource A callback to register the avatar resource once it is captured.
      * @param updateGroupTitleBitmap A {@link Runnable} to update the group title bitmap after the
      *     avatar is captured.
      */
     private void captureSharedAvatarBitmap(
-            View view,
+            View avatarView,
             Callback<ViewResourceAdapter> registerAvatarResource,
             Runnable updateGroupTitleBitmap) {
-        view.measure(
+        avatarView.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        avatarView.layout(0, 0, avatarView.getMeasuredWidth(), avatarView.getMeasuredHeight());
 
         // Register the avatar resource if it does not already exist.
         if (mAvatarResource == null) {
-            mAvatarResource = new ViewResourceAdapter(view);
+            mAvatarResource = new ViewResourceAdapter(avatarView);
             registerAvatarResource.onResult(mAvatarResource);
         }
 
         // Calculate the avatar width including padding.
         int avatarWidthPx =
-                view.getWidth()
+                avatarView.getWidth()
                         + mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.tablet_shared_group_avatar_padding);
         mAvatarWidthWithPadding =

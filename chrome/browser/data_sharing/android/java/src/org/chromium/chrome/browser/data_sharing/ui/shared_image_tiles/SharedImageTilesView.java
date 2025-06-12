@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
+import android.text.TextDirectionHeuristic;
+import android.text.TextDirectionHeuristics;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -18,8 +21,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
+import androidx.core.text.PrecomputedTextCompat;
+import androidx.core.widget.TextViewCompat;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.base.LocalizationUtils;
 
 /** View logic for SharedImageTiles component. */
 @NullMarked
@@ -104,6 +111,32 @@ public class SharedImageTilesView extends LinearLayout {
         String countText =
                 res.getString(R.string.shared_image_tiles_count, Integer.toString(count));
         mCountTileView.setText(countText);
+
+        // Precomputes count text layout to reduce rendering time and avoid missing text, especially
+        // on Android Q and below.
+        if (!BuildConfig.IS_FOR_TEST) {
+            precomputeCountText();
+        }
+    }
+
+    public void precomputeCountText() {
+        // Set text direction to optimize render speed in RTL layouts. If skipped, text may
+        // precompute as LTR and reflow to RTL upon attachment or before bitmap capture, making
+        // precompute ineffective.
+        TextDirectionHeuristic heuristics =
+                LocalizationUtils.isLayoutRtl()
+                        ? TextDirectionHeuristics.FIRSTSTRONG_RTL
+                        : TextDirectionHeuristics.FIRSTSTRONG_LTR;
+        TextPaint textPaint = mCountTileView.getPaint();
+        PrecomputedTextCompat.Params params =
+                new PrecomputedTextCompat.Params.Builder(textPaint)
+                        .setBreakStrategy(mCountTileView.getBreakStrategy())
+                        .setHyphenationFrequency(mCountTileView.getHyphenationFrequency())
+                        .setTextDirection(heuristics)
+                        .build();
+        PrecomputedTextCompat precomputedText =
+                PrecomputedTextCompat.create(mCountTileView.getText(), params);
+        TextViewCompat.setPrecomputedText(mCountTileView, precomputedText);
     }
 
     void showManageTile(boolean show) {
