@@ -140,7 +140,7 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   // because it will be too late during the paint invalidation phase.
   if (!GetOrCreateCanvasResourceProvider())
     return;
-  Host()->FlushRecording(reason);
+  Host()->FlushRecordingForCanvas2D(reason);
 }
 
 // BaseRenderingContext2D implementation
@@ -361,7 +361,7 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     int y) {
   DCHECK(IsCanvas2DBufferValid());
 
-  Host()->FlushRecording(FlushReason::kWritePixels);
+  Host()->FlushRecordingForCanvas2D(FlushReason::kWritePixels);
 
   // Short-circuit out if an error occurred while flushing the recording.
   if (!Host()->GetResourceProviderForCanvas2D()->IsValid()) {

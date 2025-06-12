@@ -497,8 +497,9 @@ bool CanvasRenderingContextHost::IsContextLost() const {
   return !context || context->isContextLost();
 }
 
-void CanvasRenderingContextHost::FlushRecording(FlushReason reason) {
-  if (auto* provider = ResourceProvider()) {
+void CanvasRenderingContextHost::FlushRecordingForCanvas2D(FlushReason reason) {
+  CHECK(IsRenderingContext2D());
+  if (auto* provider = GetResourceProviderForCanvas2D()) {
     provider->FlushCanvas(reason);
   }
 }

@@ -143,7 +143,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
     return ResourceProvider();
   }
 
-  void FlushRecording(FlushReason reason);
+  void FlushRecordingForCanvas2D(FlushReason reason);
 
  protected:
   ~CanvasRenderingContextHost() override = default;
