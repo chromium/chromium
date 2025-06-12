@@ -246,6 +246,16 @@ bool IsNetErrorEligibleForRetry(int net_error) {
       net_error == net::ERR_NAME_RESOLUTION_FAILED;
 }
 
+bool IsServerGuaranteedToBeNotReachedYet(int net_error) {
+  return net_error == net::ERR_CONNECTION_REFUSED ||
+         net_error == net::ERR_ADDRESS_UNREACHABLE ||
+         net_error == net::ERR_TUNNEL_CONNECTION_FAILED ||
+         net_error == net::ERR_PROXY_CONNECTION_FAILED ||
+         net_error == net::ERR_SOCKS_CONNECTION_FAILED ||
+         net_error == net::ERR_NAME_NOT_RESOLVED ||
+         net_error == net::ERR_NAME_RESOLUTION_FAILED;
+}
+
 }  // namespace
 
 // A wrapper class around the target URLLoaderClient connected to Renderer,
@@ -616,6 +626,7 @@ void KeepAliveURLLoader::EndReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  did_encounter_redirect_ = true;
   CHECK_GT(redirect_limit_, 0u);
   if (--redirect_limit_ == 0) {
     // Don't process the redirect if we've reached our limit.
@@ -936,8 +947,13 @@ bool KeepAliveURLLoader::IsEligibleForRetry(
   }
 
   if (!completion_status.has_value()) {
-    // Nothing left to check, so the request should be eligible.
-    return true;
+    // No completion status. This can only happen when we hit the renderer
+    // disconnect timeout before getting any results. The request should be
+    // eligible to retry, except if explicitly opting in to retry only if the
+    // server is guaranteed to be not reached yet. We can't guarantee that in
+    // this case, because we don't know if the server has been reached yet or
+    // not.
+    return !retry_options->retry_only_if_server_unreached;
   }
 
   if (completion_status->resolve_error_info.is_secure_network_error) {
@@ -947,6 +963,14 @@ bool KeepAliveURLLoader::IsEligibleForRetry(
     // DNS network errors without interfering with the captive portal
     // probe state.
     return false;
+  }
+
+  if (retry_options->retry_only_if_server_unreached) {
+    // Only retry in this case if we've never encountered redirect yet (since if
+    // we've been redirected, we must have reached the redirector server
+    // before), and the error indicates that the server is not reached yet.
+    return !did_encounter_redirect_ &&
+           IsServerGuaranteedToBeNotReachedYet(completion_status->error_code);
   }
 
   return IsNetErrorEligibleForRetry(completion_status->error_code);

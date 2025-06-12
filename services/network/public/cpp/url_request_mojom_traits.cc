@@ -328,6 +328,7 @@ bool StructTraits<network::mojom::FetchRetryOptionsDataView,
   out->backoff_factor = data.backoff_factor();
   out->retry_after_unload = data.retry_after_unload();
   out->retry_non_idempotent = data.retry_non_idempotent();
+  out->retry_only_if_server_unreached = data.retry_only_if_server_unreached();
   return true;
 }
 

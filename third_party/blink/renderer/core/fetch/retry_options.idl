@@ -36,4 +36,8 @@ dictionary RetryOptions {
   // request method of the fetch is non-idempotent, no retry will be attempted.
   // Defaults to false.
   boolean retryNonIdempotent = false;
+
+  // Optional: Specifies whether to retry when the network request is guaranteed
+  // to have not reach the server yet (e.g. a connection can't be established).
+  boolean retryOnlyIfServerUnreached = false;
 };

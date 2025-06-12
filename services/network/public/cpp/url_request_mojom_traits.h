@@ -602,6 +602,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool retry_non_idempotent(const FetchRetryOptions& options) {
     return options.retry_non_idempotent;
   }
+  static bool retry_only_if_server_unreached(const FetchRetryOptions& options) {
+    return options.retry_only_if_server_unreached;
+  }
 
   static bool Read(network::mojom::FetchRetryOptionsDataView data,
                    network::FetchRetryOptions* out);
