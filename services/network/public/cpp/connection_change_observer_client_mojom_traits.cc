@@ -61,7 +61,8 @@ bool StructTraits<network::mojom::ConnectionKeepAliveConfigDataView,
   out->ping_interval_in_seconds = data.ping_interval_in_seconds();
   out->idle_timeout_in_seconds = data.idle_timeout_in_seconds();
   out->enable_connection_keep_alive = data.enable_connection_keep_alive();
-  return true;
+
+  return data.ReadQuicConnectionOptions(&out->quic_connection_options);
 }
 
 }  // namespace mojo

@@ -55,4 +55,12 @@ void ConnectionChangeNotifier::RemoveObserver(const Observer* observer) {
 ConnectionChangeNotifier::ConnectionChangeNotifier() = default;
 ConnectionChangeNotifier::~ConnectionChangeNotifier() = default;
 
+ConnectionManagementConfig::ConnectionManagementConfig() = default;
+ConnectionManagementConfig::~ConnectionManagementConfig() = default;
+
+ConnectionManagementConfig::ConnectionManagementConfig(
+    const ConnectionManagementConfig& other) = default;
+
+ConnectionManagementConfig::ConnectionManagementConfig(
+    ConnectionManagementConfig&& other) = default;
 }  // namespace net

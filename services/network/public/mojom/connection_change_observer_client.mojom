@@ -57,4 +57,13 @@ struct ConnectionKeepAliveConfig {
   // Enables the connection keep alive mechanism to periodically send PING
   // to the server.
   bool enable_connection_keep_alive = false;
+
+  // The QUIC connection options which will be sent to the server in order to
+  // enable certain QUIC features. This should be set using `QuicTag`s (32-bit
+  // value represented in ASCII equivalent e.g. EXMP). If we want to set
+  // multiple features, then the values should be separated with a comma
+  // (e.g. "ABCD,EFGH"). Note that this is parsed inside the network layer later
+  // on, hence we intentionally send the raw string that is received from Finch
+  // as is.
+  string quic_connection_options = "";
 };

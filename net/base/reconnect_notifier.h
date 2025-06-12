@@ -116,14 +116,28 @@ struct NET_EXPORT ConnectionKeepAliveConfig {
   // Enables the connection keep alive mechanism to periodically send PING
   // to the server when there are no active requests.
   bool enable_connection_keep_alive = false;
+
+  // The QUIC connection options which will be sent to the server in order to
+  // enable certain QUIC features. This should be set using `QuicTag`s (32-bit
+  // value represented in ASCII equivalent e.g. EXMP). If we want to set
+  // multiple features, then the values should be separated with a comma
+  // (e.g. "ABCD,EFGH").
+  std::string quic_connection_options;
 };
 
 // Keeps track of the connection management relevant information (e.g.
 // connection keep alive configs, reconnect notification configs) to be passed
 // on to the underlying connection.
 struct NET_EXPORT ConnectionManagementConfig {
-  ConnectionManagementConfig() = default;
-  ~ConnectionManagementConfig() = default;
+  ConnectionManagementConfig();
+  ~ConnectionManagementConfig();
+  ConnectionManagementConfig(const ConnectionManagementConfig& other);
+  ConnectionManagementConfig(ConnectionManagementConfig&& other);
+
+  ConnectionManagementConfig& operator=(
+      const ConnectionManagementConfig& other) = default;
+  ConnectionManagementConfig& operator=(ConnectionManagementConfig&& other) =
+      default;
 
   // Connection keep alive related information.
   std::optional<ConnectionKeepAliveConfig> keep_alive_config;
