@@ -4773,6 +4773,10 @@ static_library("browser") {
     }
   }
 
+  if (!is_android || is_desktop_android) {
+    deps += [ "//chrome/browser/ui/browser_window" ]
+  }
+
   if (enable_screen_capture) {
     sources += [
       "media/capture_access_handler_base.cc",

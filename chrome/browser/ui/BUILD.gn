@@ -679,6 +679,13 @@ static_library("ui") {
     "//v8:v8_version",
   ]
 
+  if (!is_android || is_desktop_android) {
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:impl",
+    ]
+  }
+
   # TODO(crbug.com/413572035): Move into build files of the actual
   # modules depending on this. eg: autofill, user_education.
   if (is_chrome_branded) {
@@ -1663,8 +1670,6 @@ static_library("ui") {
       "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/bookmarks:impl",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/commerce",

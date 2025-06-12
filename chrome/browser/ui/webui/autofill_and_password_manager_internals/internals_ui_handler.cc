@@ -39,8 +39,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #else
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #endif

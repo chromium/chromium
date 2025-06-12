@@ -2,71 +2,79 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win || is_mac || is_linux || is_chromeos)
-
 import("//chrome/common/features.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
 
 # This is the public interface for a browser window. Most features in
 # //chrome/browser depend on this interface, and thus to prevent circular
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("browser_window") {
-  sources = [
-    "public/browser_window_features.h",
-    "public/browser_window_interface.h",
-    "public/browser_window_interface_iterator.h",
-    "public/desktop_browser_window_capabilities.h",
-    "public/desktop_browser_window_capabilities_delegate.h",
-  ]
-  public_deps = [
-    "//base",
-    "//chrome/common:buildflags",
-    "//content/public/browser",
-    "//ui/base:types",
-  ]
+  sources = [ "public/browser_window_interface.h" ]
+  public_deps = [ "//content/public/browser" ]
   deps = [ "//chrome/browser/ui/unowned_user_data" ]
+
+  if (!is_android) {
+    sources += [
+      "public/browser_window_features.h",
+      "public/browser_window_interface_iterator.h",
+      "public/desktop_browser_window_capabilities.h",
+      "public/desktop_browser_window_capabilities_delegate.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/common:buildflags",
+      "//ui/base:types",
+    ]
+  }
 }
 
 source_set("impl") {
-  sources = [
-    "browser_window_features.cc",
-    "browser_window_interface_iterator.cc",
-    "desktop_browser_window_capabilities.cc",
-  ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-  deps = [
-    ":browser_window",
-    "//chrome/browser/extensions",
-    "//chrome/browser/lens/region_search:region_search",
-    "//chrome/browser/media/router:media_router_feature",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/commerce",
-    "//chrome/browser/ui/extensions",
-    "//chrome/browser/ui/find_bar:find_bar",
-    "//chrome/browser/ui/lens",
-    "//chrome/browser/ui/signin",
-    "//chrome/browser/ui/tabs/tab_strip_api",
-    "//chrome/browser/ui/toasts",
-    "//chrome/browser/ui/unowned_user_data",
-    "//chrome/browser/ui/views/download",
-    "//chrome/browser/ui/views/new_tab_footer",
-    "//chrome/browser/ui/views/side_panel",
-    "//chrome/browser/ui/views/toolbar",
-    "//chrome/browser/ui/web_applications",
-    "//components/collaboration/public:public",
-    "//components/commerce/core:feature_list",
-    "//components/data_sharing/public:public",
-    "//components/lens:features",
-    "//components/profile_metrics",
-    "//components/saved_tab_groups/public",
-    "//components/search",
-  ]
+  sources = []
 
-  if (is_win || is_mac) {
-    deps += [ "//chrome/browser/ui/pdf/infobar" ]
-  }
+  if (!is_android) {
+    sources += [
+      "browser_window_features.cc",
+      "browser_window_interface_iterator.cc",
+      "desktop_browser_window_capabilities.cc",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
+    deps = [
+      ":browser_window",
+      "//chrome/browser/extensions",
+      "//chrome/browser/lens/region_search:region_search",
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/find_bar:find_bar",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/tabs/tab_strip_api",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/unowned_user_data",
+      "//chrome/browser/ui/views/download",
+      "//chrome/browser/ui/views/new_tab_footer",
+      "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/web_applications",
+      "//components/collaboration/public:public",
+      "//components/commerce/core:feature_list",
+      "//components/data_sharing/public:public",
+      "//components/lens:features",
+      "//components/profile_metrics",
+      "//components/saved_tab_groups/public",
+      "//components/search",
+    ]
+
+    if (is_win || is_mac) {
+      deps += [ "//chrome/browser/ui/pdf/infobar" ]
+    }
+
+    if (enable_glic) {
+      deps += [ "//chrome/browser/glic" ]
+    }
   }
 }
