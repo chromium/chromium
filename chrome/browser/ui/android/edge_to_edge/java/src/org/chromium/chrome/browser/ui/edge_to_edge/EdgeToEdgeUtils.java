@@ -112,7 +112,7 @@ public class EdgeToEdgeUtils {
      */
     @Deprecated
     public static boolean isChromeEdgeToEdgeFeatureEnabled() {
-        return isEdgeToEdgeBottomChinEnabled() || isEdgeToEdgeEverywhereEnabled();
+        return isBottomChinFeatureEnabled() || isEdgeToEdgeEverywhereEnabled();
     }
 
     /**
@@ -121,8 +121,47 @@ public class EdgeToEdgeUtils {
      * <p>When enabled, Chrome will replace the OS navigation bar with a thin "Chin" layer in the
      * browser controls and can be scrolled off the screen on web pages.
      */
-    public static boolean isEdgeToEdgeBottomChinEnabled() {
+    static boolean isBottomChinFeatureEnabled() {
         return ChromeFeatureList.sEdgeToEdgeBottomChin.isEnabled();
+    }
+
+    /**
+     * Returns whether the configuration of the device should allow Edge To Edge bottom chin. Note
+     * the results are false-positive, if the method is called before the |activity|'s decor view
+     * being attached to the window.
+     */
+    public static boolean isEdgeToEdgeBottomChinEnabled(Activity activity) {
+        // Make sure we test SDK version before checking the Feature so Field Trials only collect
+        // from qualifying devices.
+        if (!EdgeToEdgeFieldTrial.getBottomChinOverrides().isEnabledForManufacturerVersion()) {
+            return false;
+        }
+
+        if (activity == null) {
+            return false;
+        }
+
+        // Not supported on tablet unless the flag is on.
+        if (!isEdgeToEdgeTabletEnabled() && isSupportedTablet(activity)) {
+            return false;
+        }
+
+        return isBottomChinFeatureEnabled()
+                && !BuildInfo.getInstance().isAutomotive
+                // TODO(https://crbug.com/325356134) Look into using UiUtils#isGestureNavigationMode
+                // instead.
+                && isGestureNavigationMode(activity);
+    }
+
+    private static boolean isGestureNavigationMode(Activity activity) {
+        // The root view's window insets is too soon to determine if we are in 3-button gesture nav
+        // mode.
+        if (activity == null
+                || activity.getWindow() == null
+                || activity.getWindow().getDecorView().getRootWindowInsets() == null) {
+            return false;
+        }
+        return !hasTappableNavigationBar(activity.getWindow());
     }
 
     /** Whether the edge-to-edge feature is enabled on tablet. */
@@ -144,7 +183,7 @@ public class EdgeToEdgeUtils {
      * bottom chin.
      */
     public static boolean isEdgeToEdgeWebOptInEnabled() {
-        return isEdgeToEdgeBottomChinEnabled() && ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
+        return isBottomChinFeatureEnabled() && ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
     }
 
     /** Whether edge-to-edge should be enabled everywhere. */
@@ -177,7 +216,7 @@ public class EdgeToEdgeUtils {
 
     /** Whether key native pages should draw to edge. */
     public static boolean isDrawKeyNativePageToEdgeEnabled() {
-        return isEdgeToEdgeBottomChinEnabled()
+        return isBottomChinFeatureEnabled()
                 && ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled();
     }
 
@@ -186,7 +225,7 @@ public class EdgeToEdgeUtils {
      * isEdgeToEdgeBottomChinEnabled}.
      */
     public static boolean isSafeAreaConstraintEnabled() {
-        return isEdgeToEdgeBottomChinEnabled()
+        return isBottomChinFeatureEnabled()
                 && ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled();
     }
 
@@ -266,7 +305,7 @@ public class EdgeToEdgeUtils {
     static boolean shouldDrawToEdge(
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
         return isPageOptedIntoEdgeToEdge
-                || (isEdgeToEdgeBottomChinEnabled() && isBottomChinAllowed(layoutType, bottomInset))
+                || (isBottomChinFeatureEnabled() && isBottomChinAllowed(layoutType, bottomInset))
                 || (isDrawKeyNativePageToEdgeEnabled()
                         && layoutType == LayoutType.TAB_SWITCHER
                         && !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableHubE2e.getValue());

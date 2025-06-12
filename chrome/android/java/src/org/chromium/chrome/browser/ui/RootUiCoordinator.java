@@ -1854,7 +1854,7 @@ public class RootUiCoordinator
         UmaSessionStats.registerSyntheticFieldTrial(
                 "EdgeToEdgeChinEligibility", eligible ? "Eligible" : "Not Eligible");
 
-        if (supportsEdgeToEdge() && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
+        if (supportsEdgeToEdge()) {
             assert eligible
                     : "The edge-to-edge controller is being initialized, though it should not be"
                             + " eligible!";
@@ -1917,8 +1917,7 @@ public class RootUiCoordinator
         }
 
         boolean hasEdgeToEdgeController = mEdgeToEdgeControllerSupplier.get() != null;
-        boolean isSupportedConfiguration =
-                EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+        boolean isSupportedConfiguration = EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
         mEdgeToEdgeDebuggingInfo.buildDebugReport(
                 mActivity.getWindow(),
                 mWindowAndroid,

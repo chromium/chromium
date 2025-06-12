@@ -56,7 +56,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -268,8 +268,7 @@ public class TabbedNavigationBarColorControllerTest {
     public void testNavBarColorAnimationsEdgeToEdgeBottomChin() throws InterruptedException {
         Assume.assumeTrue(
                 "E2E not applicable.",
-                EdgeToEdgeControllerFactory.isSupportedConfiguration(
-                        mActivityTestRule.getActivity()));
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivityTestRule.getActivity()));
         testNavBarColorAnimations();
     }
 
@@ -298,8 +297,7 @@ public class TabbedNavigationBarColorControllerTest {
     public void testNavBarColorAnimationsFeatureFlagDisabled() {
         Assume.assumeTrue(
                 "E2E not applicable.",
-                EdgeToEdgeControllerFactory.isSupportedConfiguration(
-                        mActivityTestRule.getActivity()));
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivityTestRule.getActivity()));
         testNavBarColorAnimationsDisabled();
     }
 

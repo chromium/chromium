@@ -463,9 +463,7 @@ public class BottomAttachedUiObserver
 
         // When bottom chin constraint exists, the chin will have the same coloring mechanism as
         // the OS navigation bar as if E2E is disabled.
-        if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)) {
+        if (EdgeToEdgeUtils.isSafeAreaConstraintEnabled()) {
             boolean hasScrollablePortion =
                     bottomOffset < mBottomControlsHeight - mBottomControlsMinHeight;
             boolean chinNotScrollable =

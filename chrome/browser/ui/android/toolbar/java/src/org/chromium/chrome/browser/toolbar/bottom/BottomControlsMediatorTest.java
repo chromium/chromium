@@ -36,11 +36,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -156,15 +154,6 @@ public class BottomControlsMediatorTest {
         changeObserver.onToEdgeChange(
                 DEFAULT_INSET, /* isDrawingToEdge= */ false, /* isPageOptInToEdge= */ false);
         assertEquals(DEFAULT_HEIGHT, mModel.get(ANDROID_VIEW_HEIGHT));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
-    public void testEdgeToEdge_ToEdge_bottomChinDisabled() {
-        ChangeObserver changeObserver = mMediator.getEdgeToEdgeChangeObserverForTesting();
-        changeObserver.onToEdgeChange(
-                DEFAULT_INSET, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
-        assertEquals(DEFAULT_HEIGHT + DEFAULT_INSET, mModel.get(ANDROID_VIEW_HEIGHT));
     }
 
     @Test

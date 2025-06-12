@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -86,7 +85,6 @@ class BottomControlsMediator
     private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     private @Nullable ChangeObserver mEdgeToEdgeChangeObserver;
-    private int mEdgeToEdgePaddingPx;
 
     /**
      * Build a new mediator that handles events from outside the bottom controls component.
@@ -234,8 +232,6 @@ class BottomControlsMediator
 
     private void onEdgeToEdgeChanged(
             int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
-        mEdgeToEdgePaddingPx = isDrawingToEdge ? bottomInset : 0;
-
         updateBrowserControlsHeight();
 
         int androidViewHeight = getAndroidViewHeight();
@@ -279,16 +275,7 @@ class BottomControlsMediator
     }
 
     private int getAndroidViewHeight() {
-        int edgeToEdgePadding = 0;
-
-        if (mEdgeToEdgeControllerSupplier.get() != null
-                && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
-            // TODO(https://crbug.com/327274751): Account for presence of Read Aloud when
-            // determining bottom controls height.
-            edgeToEdgePadding = mEdgeToEdgePaddingPx;
-        }
-
-        return mBottomControlsHeight + edgeToEdgePadding;
+        return mBottomControlsHeight;
     }
 
     private void updateBrowserControlsHeight() {

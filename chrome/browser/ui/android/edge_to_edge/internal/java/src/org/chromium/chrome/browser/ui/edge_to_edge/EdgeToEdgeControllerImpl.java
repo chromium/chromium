@@ -155,7 +155,7 @@ public class EdgeToEdgeControllerImpl
     private @Nullable Tab mCurrentTab;
     private @Nullable WebContentsObserver mWebContentsObserver;
 
-    private boolean mIsSupportedConfiguration;
+    private boolean mIsBottomChinEnabled;
 
     /**
      * Whether the system is drawing "toEdge" (i.e. the edge-to-edge wrapper has no bottom padding).
@@ -217,7 +217,7 @@ public class EdgeToEdgeControllerImpl
         mEdgeToEdgeManager = edgeToEdgeManager;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
         mDisablePaddingRootView = EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();
-        mIsSupportedConfiguration = EdgeToEdgeControllerFactory.isSupportedConfiguration(activity);
+        mIsBottomChinEnabled = EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
 
         mEdgeToEdgeOsWrapper =
                 edgeToEdgeOsWrapper == null && !mDisablePaddingRootView
@@ -462,10 +462,9 @@ public class EdgeToEdgeControllerImpl
      */
     @VisibleForTesting
     void drawToEdge(boolean pageOptedIntoEdgeToEdge, boolean changedWindowState) {
-        final boolean isSupportedConfiguration =
-                EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+        final boolean isChinEnabled = EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
 
-        if (!isSupportedConfiguration) {
+        if (!isChinEnabled) {
             RecordHistogram.recordBooleanHistogram(
                     DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM, changedWindowState);
         }
@@ -484,8 +483,8 @@ public class EdgeToEdgeControllerImpl
                 EdgeToEdgeUtils.shouldDrawToEdge(
                         pageOptedIntoEdgeToEdge, currentLayoutType, mSystemInsets.bottom);
         if (shouldMonitorConfigurationChanges()) {
-            shouldDrawToEdge &= isSupportedConfiguration;
-            pageOptedIntoEdgeToEdge &= isSupportedConfiguration;
+            shouldDrawToEdge &= isChinEnabled;
+            pageOptedIntoEdgeToEdge &= isChinEnabled;
         }
         // Refresh the mHasSafeAreaConstraint to ensure the boolean stays fresh (e.g. when
         // #drawToEdge is called due to tab switching)
@@ -570,27 +569,25 @@ public class EdgeToEdgeControllerImpl
         boolean changedWindowState = false;
         @SupportedConfigurationSwitch
         int configurationChanged = SupportedConfigurationSwitch.NUM_ENTRIES;
-        if (mIsSupportedConfiguration
-                != EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity)) {
+        if (mIsBottomChinEnabled != EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity)) {
             Log.v(
                     TAG,
                     "Switching supported configuration from %s",
-                    (mIsSupportedConfiguration
+                    (mIsBottomChinEnabled
                             ? "supported to unsupported"
                             : "unsupported to supported"));
             configurationChanged =
-                    mIsSupportedConfiguration
+                    mIsBottomChinEnabled
                             ? SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED
                             : SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED;
             RecordHistogram.recordEnumeratedHistogram(
                     SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM,
                     configurationChanged,
                     SupportedConfigurationSwitch.NUM_ENTRIES);
-            mIsSupportedConfiguration =
-                    EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+            mIsBottomChinEnabled = EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
             changedWindowState = true;
         }
-        if (mIsSupportedConfiguration) {
+        if (mIsBottomChinEnabled) {
             verifyInsetsInSupportedConfiguration(windowInsets);
         }
 
@@ -615,7 +612,7 @@ public class EdgeToEdgeControllerImpl
             // TODO(https://crbug.com/325356134) Find a cleaner check and remedy.
             mIsPageOptedIntoEdgeToEdge =
                     mIsPageOptedIntoEdgeToEdge
-                            && EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+                            && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
 
             changedWindowState = true;
         }

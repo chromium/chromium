@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.media.ui.MediaSessionTabHelper;
 import org.chromium.chrome.browser.password_check.PasswordCheckUkmRecorder;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 
 /** Helper class that initializes various tab UserData objects. */
 public final class TabHelpers {
@@ -74,7 +74,7 @@ public final class TabHelpers {
                 && tab.getWindowAndroid() != null
                 && tab.getWindowAndroid().getActivity().get() != null) {
             Activity activity = tab.getWindowAndroid().getActivity().get();
-            if (EdgeToEdgeControllerFactory.isSupportedConfiguration(activity)) {
+            if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity)) {
                 DisplayCutoutTabHelper.from(tab);
             }
         }

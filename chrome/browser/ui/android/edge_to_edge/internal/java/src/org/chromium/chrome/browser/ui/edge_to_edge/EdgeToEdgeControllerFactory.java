@@ -4,14 +4,11 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled;
-
 import android.app.Activity;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
@@ -62,7 +59,7 @@ public class EdgeToEdgeControllerFactory {
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
-        assert isSupportedConfiguration(activity);
+        assert EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
         return new EdgeToEdgeControllerImpl(
                 activity,
                 windowAndroid,
@@ -100,7 +97,7 @@ public class EdgeToEdgeControllerFactory {
             BottomControlsStacker bottomControlsStacker,
             FullscreenManager fullscreenManager,
             boolean isTablet) {
-        assert isEdgeToEdgeBottomChinEnabled();
+        assert EdgeToEdgeUtils.isBottomChinFeatureEnabled();
         return new EdgeToEdgeBottomChinCoordinator(
                 androidView,
                 keyboardVisibilityDelegate,
@@ -138,45 +135,5 @@ public class EdgeToEdgeControllerFactory {
                 view,
                 edgeToEdgeControllerSupplier,
                 EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
-    }
-
-    /**
-     * Returns whether the configuration of the device should allow Edge To Edge. Note the results
-     * are false-positive, if the method is called before the |activity|'s decor view being attached
-     * to the window.
-     */
-    public static boolean isSupportedConfiguration(Activity activity) {
-        // Make sure we test SDK version before checking the Feature so Field Trials only collect
-        // from qualifying devices.
-        if (!EdgeToEdgeFieldTrial.getBottomChinOverrides().isEnabledForManufacturerVersion()) {
-            return false;
-        }
-
-        if (activity == null) {
-            return false;
-        }
-
-        // Not supported on tablet unless the flag is on.
-        if (!EdgeToEdgeUtils.isEdgeToEdgeTabletEnabled()
-                && EdgeToEdgeUtils.isSupportedTablet(activity)) {
-            return false;
-        }
-
-        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
-                && !BuildInfo.getInstance().isAutomotive
-                // TODO(https://crbug.com/325356134) Look into using UiUtils#isGestureNavigationMode
-                // instead.
-                && isGestureNavigationMode(activity);
-    }
-
-    private static boolean isGestureNavigationMode(Activity activity) {
-        // It is too soon to determine if we are in 3-button gesture nav if the root view does not
-        // yet have window insets.
-        if (activity == null
-                || activity.getWindow() == null
-                || activity.getWindow().getDecorView().getRootWindowInsets() == null) {
-            return false;
-        }
-        return !EdgeToEdgeUtils.hasTappableNavigationBar(activity.getWindow());
     }
 }

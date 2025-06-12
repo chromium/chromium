@@ -205,7 +205,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         boolean isOnlyNavBarPresent =
                 (bottomInset == mBrowserControlsVisibilityManager.getBottomControlsHeight());
         boolean affectsNavBar =
-                isOnlyNavBarPresent && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled();
+                isOnlyNavBarPresent && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
         int bottomMargin =
                 affectsNavBar ? 0 : mBrowserControlsVisibilityManager.getBottomControlsHeight();
 
