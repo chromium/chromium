@@ -102,6 +102,7 @@ using base::UserMetricsAction;
   _consumer = consumer;
 
   [self updateConsumerEmptyTextImage];
+  [self setDefaultLeftImage];
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
