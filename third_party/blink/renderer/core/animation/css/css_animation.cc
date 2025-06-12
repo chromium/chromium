@@ -14,9 +14,8 @@ CSSAnimation::CSSAnimation(ExecutionContext* execution_context,
                            AnimationTimeline* timeline,
                            AnimationEffect* content,
                            wtf_size_t animation_index,
-                           const String& animation_name,
-                           AnimationTrigger* trigger)
-    : Animation(execution_context, timeline, content, trigger),
+                           const String& animation_name)
+    : Animation(execution_context, timeline, content),
       animation_index_(animation_index),
       animation_name_(animation_name) {
   // The owning_element does not always equal to the target element of an

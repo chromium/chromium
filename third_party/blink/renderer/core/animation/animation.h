@@ -64,7 +64,6 @@ class PaintArtifactCompositor;
 class StyleChangeReasonForTracing;
 class TreeScope;
 class TimelineRange;
-class AnimationTrigger;
 
 class CORE_EXPORT Animation : public EventTarget,
                               public ActiveScriptWrappable<Animation>,
@@ -108,10 +107,7 @@ class CORE_EXPORT Animation : public EventTarget,
                            AnimationTimeline*,
                            ExceptionState&);
 
-  Animation(ExecutionContext*,
-            AnimationTimeline*,
-            AnimationEffect*,
-            AnimationTrigger*);
+  Animation(ExecutionContext*, AnimationTimeline*, AnimationEffect*);
   ~Animation() override;
   void Dispose();
 
@@ -750,7 +746,6 @@ class CORE_EXPORT Animation : public EventTarget,
   // event.
   bool paused_for_trigger_ = false;
 
-  Member<AnimationTrigger> trigger_;
   AnimationTriggerData trigger_data_;
 
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestCompositing,

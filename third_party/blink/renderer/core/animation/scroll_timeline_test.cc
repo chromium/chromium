@@ -61,8 +61,7 @@ Animation* CreateCompositableTestAnimation(Element* target,
       *target, target->GetDocument().GetStyleResolver().InitialStyle(),
       /* parent_style */ nullptr);
   return MakeGarbageCollected<Animation>(
-      timeline->GetDocument()->GetExecutionContext(), timeline, effect,
-      /*trigger=*/nullptr);
+      timeline->GetDocument()->GetExecutionContext(), timeline, effect);
 }
 
 }  // namespace

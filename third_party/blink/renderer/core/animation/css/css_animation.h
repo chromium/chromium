@@ -22,8 +22,7 @@ class CORE_EXPORT CSSAnimation : public Animation {
                AnimationTimeline*,
                AnimationEffect*,
                wtf_size_t animation_index,
-               const String& animation_name,
-               AnimationTrigger* trigger);
+               const String& animation_name);
 
   bool IsCSSAnimation() const final { return true; }
 
