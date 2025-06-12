@@ -79,6 +79,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>0.0.0</string>
+	<key>UIDesignRequiresCompatibility</key>
+	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
