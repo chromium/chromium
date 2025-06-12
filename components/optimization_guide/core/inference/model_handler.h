@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_HANDLER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_HANDLER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_MODEL_HANDLER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_MODEL_HANDLER_H_
 
 #include <optional>
 
@@ -23,7 +23,7 @@
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
-#include "components/optimization_guide/core/model_executor.h"
+#include "components/optimization_guide/core/inference/model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
@@ -220,8 +220,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     std::optional<base::FilePath> model_file_path;
 
-    if (optimization_target_ != optimization_target)
+    if (optimization_target_ != optimization_target) {
       return;
+    }
 
     if (handler_created_time_) {
       base::UmaHistogramMediumTimes(
@@ -280,8 +281,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
     requires(std::is_convertible_v<T*, google::protobuf::MessageLite*>)
   std::optional<T> ParsedSupportedFeaturesForLoadedModel() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!model_info_ || !model_info_->GetModelMetadata())
+    if (!model_info_ || !model_info_->GetModelMetadata()) {
       return std::nullopt;
+    }
     return ParsedAnyMetadata<T>(*model_info_->GetModelMetadata());
   }
 
@@ -382,4 +384,4 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_HANDLER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_MODEL_HANDLER_H_

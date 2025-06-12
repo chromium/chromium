@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "components/optimization_guide/core/base_model_executor.h"
+#include "components/optimization_guide/core/inference/base_model_executor.h"
 #include "components/permissions/prediction_service/prediction_model_metadata.pb.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"

@@ -11,8 +11,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/test_tflite_model_executor.h"
-#include "components/optimization_guide/core/test_tflite_model_handler.h"
+#include "components/optimization_guide/core/inference/test_tflite_model_executor.h"
+#include "components/optimization_guide/core/inference/test_tflite_model_handler.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,8 +99,9 @@ class TFLiteModelExecutorTest : public testing::Test {
   void TearDown() override { ResetModelHandler(); }
 
   virtual void CreateModelHandler() {
-    if (model_handler_)
+    if (model_handler_) {
       model_handler_.reset();
+    }
 
     model_handler_ = std::make_unique<TestTFLiteModelHandler>(
         test_model_provider(), execution_sequence_);
@@ -278,8 +279,9 @@ TEST_F(TFLiteModelExecutorTest, ExecuteWithLoadedModel) {
   std::vector<float> input;
   int expected_dims = 1 * 32 * 32 * 3;
   input.reserve(expected_dims);
-  for (int i = 0; i < expected_dims; i++)
+  for (int i = 0; i < expected_dims; i++) {
     input.emplace_back(1);
+  }
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   model_handler()->ExecuteModelWithInput(
@@ -291,8 +293,9 @@ TEST_F(TFLiteModelExecutorTest, ExecuteWithLoadedModel) {
             std::vector<float> expected_output = {
                 -0.4936581, -0.32497078, -0.1705023, -0.38193324, 0.36136785,
                 0.2177353,  0.32200375,  0.28686714, -0.21846706, -0.4200018};
-            for (size_t i = 0; i < expected_output.size(); i++)
+            for (size_t i = 0; i < expected_output.size(); i++) {
               EXPECT_NEAR(expected_output[i], output.value()[i], 1e-5);
+            }
 
             run_loop->Quit();
           },
@@ -541,8 +544,9 @@ TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
   std::vector<float> input;
   int expected_dims = 1 * 32 * 32 * 3;
   input.reserve(expected_dims);
-  for (int i = 0; i < expected_dims; i++)
+  for (int i = 0; i < expected_dims; i++) {
     input.emplace_back(1);
+  }
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   // First run.

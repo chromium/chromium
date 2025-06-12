@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_VALIDATOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_VALIDATOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_MODEL_VALIDATOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_MODEL_VALIDATOR_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/core/base_model_executor.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_executor.h"
-#include "components/optimization_guide/core/model_handler.h"
+#include "components/optimization_guide/core/inference/base_model_executor.h"
+#include "components/optimization_guide/core/inference/model_executor.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
@@ -61,4 +61,4 @@ class ModelValidatorExecutor
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_VALIDATOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_MODEL_VALIDATOR_H_

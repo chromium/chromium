@@ -11,7 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_handler.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/autocomplete_scoring_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"

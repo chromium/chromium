@@ -6,8 +6,8 @@
 #define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_MODEL_HANDLER_H_
 
 #include "base/run_loop.h"
-#include "components/optimization_guide/core/model_executor.h"
-#include "components/optimization_guide/core/model_handler.h"
+#include "components/optimization_guide/core/inference/model_executor.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/permissions/prediction_service/prediction_model_executor.h"
 #include "components/permissions/prediction_service/prediction_model_metadata.pb.h"

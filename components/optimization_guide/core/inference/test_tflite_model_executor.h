@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_TEST_TFLITE_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_TEST_TFLITE_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_TEST_TFLITE_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_TEST_TFLITE_MODEL_EXECUTOR_H_
 
-#include "components/optimization_guide/core/base_model_executor.h"
+#include "components/optimization_guide/core/inference/base_model_executor.h"
 
 namespace optimization_guide {
 
@@ -25,4 +25,4 @@ class TestTFLiteModelExecutor
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_TEST_TFLITE_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_TEST_TFLITE_MODEL_EXECUTOR_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_EXECUTION_STATUS_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_EXECUTION_STATUS_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_EXECUTION_STATUS_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_EXECUTION_STATUS_H_
 
 #include <string>
 
@@ -47,4 +47,4 @@ std::string ExecutionStatusToString(ExecutionStatus status);
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_EXECUTION_STATUS_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_EXECUTION_STATUS_H_

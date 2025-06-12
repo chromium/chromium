@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/test_model_executor.h"
+#include "components/optimization_guide/core/inference/test_model_executor.h"
 
 namespace optimization_guide {
 

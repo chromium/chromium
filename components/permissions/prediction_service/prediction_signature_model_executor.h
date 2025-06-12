@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_SIGNATURE_MODEL_EXECUTOR_H_
 #define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_SIGNATURE_MODEL_EXECUTOR_H_
 
-#include "components/optimization_guide/core/signature_model_executor.h"
+#include "components/optimization_guide/core/inference/signature_model_executor.h"
 #include "components/permissions/prediction_service/prediction_model_executor.h"
 #include "components/permissions/prediction_service/prediction_model_metadata.pb.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"

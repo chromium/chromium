@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_H_
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/base_model_executor_helpers.h"
-#include "components/optimization_guide/core/execution_status.h"
+#include "components/optimization_guide/core/inference/base_model_executor_helpers.h"
+#include "components/optimization_guide/core/inference/execution_status.h"
+#include "components/optimization_guide/core/inference/tflite_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/tflite_model_executor.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
@@ -104,4 +104,4 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_H_

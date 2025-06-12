@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NAVIGATION_PREDICTOR_PRELOADING_MODEL_EXECUTOR_H_
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_PRELOADING_MODEL_EXECUTOR_H_
 
-#include "components/optimization_guide/core/base_model_executor.h"
+#include "components/optimization_guide/core/inference/base_model_executor.h"
 
 // A model executor to run the history clusters module ranking model.
 class PreloadingModelExecutor

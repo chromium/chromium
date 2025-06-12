@@ -30,7 +30,7 @@
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
-#include "components/optimization_guide/core/execution_status.h"
+#include "components/optimization_guide/core/inference/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"

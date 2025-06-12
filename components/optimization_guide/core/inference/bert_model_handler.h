@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_HANDLER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_HANDLER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BERT_MODEL_HANDLER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BERT_MODEL_HANDLER_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/core/model_handler.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
@@ -32,4 +32,4 @@ class BertModelHandler
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_HANDLER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BERT_MODEL_HANDLER_H_

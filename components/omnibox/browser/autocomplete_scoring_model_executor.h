@@ -8,7 +8,7 @@
 #include <optional>
 #include <vector>
 
-#include "components/optimization_guide/core/base_model_executor.h"
+#include "components/optimization_guide/core/inference/base_model_executor.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 
 // Implements BaseModelExecutor to execute models with float vector input and

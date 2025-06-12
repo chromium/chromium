@@ -8,8 +8,8 @@
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/test_model_executor.h"
-#include "components/optimization_guide/core/test_model_handler.h"
+#include "components/optimization_guide/core/inference/test_model_executor.h"
+#include "components/optimization_guide/core/inference/test_model_handler.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -74,8 +74,9 @@ class ModelHandlerTest : public testing::Test {
   void TearDown() override { ResetModelHandler(); }
 
   void CreateModelHandler() {
-    if (model_handler_)
+    if (model_handler_) {
       model_handler_.reset();
+    }
 
     model_handler_ = std::make_unique<TestModelHandler>(
         model_observer_tracker(), task_environment_.GetMainThreadTaskRunner());

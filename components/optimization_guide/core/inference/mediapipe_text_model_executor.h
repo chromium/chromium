@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MEDIAPIPE_TEXT_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MEDIAPIPE_TEXT_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_MEDIAPIPE_TEXT_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_MEDIAPIPE_TEXT_MODEL_EXECUTOR_H_
 
 // TODO(b/283522287): This file has the same header guard as the one in TFLite
 // Support, but the two are not interchangeable nor a super/subset of each
@@ -13,10 +13,9 @@
 // and TFLite Support). Until then, putting this include before any of the
 // TFLite Support includes (found inside tflite_model_executor.h) is a decent
 // bandaid.
-#include "third_party/mediapipe/src/mediapipe/tasks/metadata/metadata_schema_generated.h"
-
-#include "components/optimization_guide/core/tflite_model_executor.h"
+#include "components/optimization_guide/core/inference/tflite_model_executor.h"
 #include "third_party/mediapipe/src/mediapipe/tasks/cc/text/text_classifier/text_classifier.h"
+#include "third_party/mediapipe/src/mediapipe/tasks/metadata/metadata_schema_generated.h"
 
 namespace optimization_guide {
 
@@ -46,4 +45,4 @@ class MediapipeTextModelExecutor
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MEDIAPIPE_TEXT_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_MEDIAPIPE_TEXT_MODEL_EXECUTOR_H_

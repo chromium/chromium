@@ -30,7 +30,7 @@
 #include "components/optimization_guide/proto/string_value.pb.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/optimization_guide/core/model_validator.h"
+#include "components/optimization_guide/core/inference/model_validator.h"
 #endif  // BUILD_WITH_TFLITE_LIB
 
 namespace {

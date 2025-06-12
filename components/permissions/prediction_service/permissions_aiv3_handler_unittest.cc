@@ -11,7 +11,7 @@
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/test_model_handler.h"
+#include "components/optimization_guide/core/inference/test_model_handler.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
 #include "testing/gmock/include/gmock/gmock.h"

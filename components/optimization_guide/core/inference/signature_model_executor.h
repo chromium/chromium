@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_SIGNATURE_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_SIGNATURE_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_SIGNATURE_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_SIGNATURE_MODEL_EXECUTOR_H_
 
 #include <optional>
 
 #include "base/notreached.h"
-#include "components/optimization_guide/core/base_model_executor.h"
-#include "components/optimization_guide/core/execution_status.h"
+#include "components/optimization_guide/core/inference/base_model_executor.h"
+#include "components/optimization_guide/core/inference/execution_status.h"
 #include "third_party/tflite/src/tensorflow/lite/signature_runner.h"
 
 namespace optimization_guide {
@@ -99,4 +99,4 @@ class SignatureModelExecutor : public BaseModelExecutor<OutputType, InputType> {
 };
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_SIGNATURE_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_SIGNATURE_MODEL_EXECUTOR_H_

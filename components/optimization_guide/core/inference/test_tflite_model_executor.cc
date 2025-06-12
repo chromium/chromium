@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/test_tflite_model_executor.h"
+#include "components/optimization_guide/core/inference/test_tflite_model_executor.h"
 
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 

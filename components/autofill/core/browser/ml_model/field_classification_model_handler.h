@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_handler.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
 
 namespace autofill {

@@ -6,9 +6,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/buildflag.h"
-#include "components/optimization_guide/core/bert_model_handler.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/inference/bert_model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

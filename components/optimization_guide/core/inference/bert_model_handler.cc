@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/bert_model_handler.h"
+#include "components/optimization_guide/core/inference/bert_model_handler.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/core/bert_model_executor.h"
+#include "components/optimization_guide/core/inference/bert_model_executor.h"
 
 namespace optimization_guide {
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_TFLITE_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_TFLITE_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_TFLITE_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_TFLITE_MODEL_EXECUTOR_H_
 
 #include <optional>
 
@@ -22,9 +22,9 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/delivery/model_enums.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
-#include "components/optimization_guide/core/execution_status.h"
-#include "components/optimization_guide/core/model_execution_timeout_watchdog.h"
-#include "components/optimization_guide/core/model_executor.h"
+#include "components/optimization_guide/core/inference/execution_status.h"
+#include "components/optimization_guide/core/inference/model_execution_timeout_watchdog.h"
+#include "components/optimization_guide/core/inference/model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
@@ -607,4 +607,4 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_TFLITE_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_TFLITE_MODEL_EXECUTOR_H_

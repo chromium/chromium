@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/bert_model_executor.h"
+#include "components/optimization_guide/core/inference/bert_model_executor.h"
 
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -69,8 +69,9 @@ BertModelExecutor::BuildModelExecutionTask(base::File& model_file) {
   auto maybe_nl_classifier =
       tflite::task::text::BertNLClassifier::CreateFromOptions(
           std::move(options), std::make_unique<TFLiteOpResolver>());
-  if (maybe_nl_classifier.ok())
+  if (maybe_nl_classifier.ok()) {
     return std::move(maybe_nl_classifier.value());
+  }
   DLOG(ERROR) << "Unable to load BERT model: "
               << maybe_nl_classifier.status().ToString();
   return base::unexpected(ExecutionStatus::kErrorModelFileNotValid);

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_TEST_TFLITE_MODEL_HANDLER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_TEST_TFLITE_MODEL_HANDLER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_TEST_TFLITE_MODEL_HANDLER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_TEST_TFLITE_MODEL_HANDLER_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/core/model_handler.h"
-#include "components/optimization_guide/core/test_tflite_model_executor.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
+#include "components/optimization_guide/core/inference/test_tflite_model_executor.h"
 
 namespace optimization_guide {
 
@@ -37,4 +37,4 @@ class TestTFLiteModelHandler
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_TEST_TFLITE_MODEL_HANDLER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_TEST_TFLITE_MODEL_HANDLER_H_

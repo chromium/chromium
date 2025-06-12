@@ -6,7 +6,7 @@
 #define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV3_HANDLER_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/core/model_handler.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
 #include "components/permissions/prediction_service/prediction_model_metadata.pb.h"

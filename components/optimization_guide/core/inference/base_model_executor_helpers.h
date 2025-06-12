@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_HELPERS_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_HELPERS_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_HELPERS_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_HELPERS_H_
 
 #include <memory>
 #include <optional>
@@ -11,7 +11,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "components/optimization_guide/core/execution_status.h"
+#include "components/optimization_guide/core/inference/execution_status.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace optimization_guide {
@@ -98,4 +98,4 @@ class GenericModelExecutionTask
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_HELPERS_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_HELPERS_H_

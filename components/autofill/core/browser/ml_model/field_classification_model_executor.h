@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
-#include "components/optimization_guide/core/base_model_executor.h"
+#include "components/optimization_guide/core/inference/base_model_executor.h"
 
 namespace autofill {
 

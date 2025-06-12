@@ -52,25 +52,25 @@ static_library("filters") {
 
 static_library("model_executor") {
   sources = [
-    "execution_status.cc",
-    "execution_status.h",
-    "model_executor.h",
-    "model_handler.h",
+    "inference/execution_status.cc",
+    "inference/execution_status.h",
+    "inference/model_executor.h",
+    "inference/model_handler.h",
   ]
   if (build_with_tflite_lib) {
     sources += [
-      "base_model_executor.h",
-      "base_model_executor_helpers.h",
-      "bert_model_executor.cc",
-      "bert_model_executor.h",
-      "bert_model_handler.cc",
-      "bert_model_handler.h",
-      "model_execution_timeout_watchdog.cc",
-      "model_execution_timeout_watchdog.h",
-      "model_validator.cc",
-      "model_validator.h",
-      "signature_model_executor.h",
-      "tflite_model_executor.h",
+      "inference/base_model_executor.h",
+      "inference/base_model_executor_helpers.h",
+      "inference/bert_model_executor.cc",
+      "inference/bert_model_executor.h",
+      "inference/bert_model_handler.cc",
+      "inference/bert_model_handler.h",
+      "inference/model_execution_timeout_watchdog.cc",
+      "inference/model_execution_timeout_watchdog.h",
+      "inference/model_validator.cc",
+      "inference/model_validator.h",
+      "inference/signature_model_executor.h",
+      "inference/tflite_model_executor.h",
     ]
   }
 
@@ -78,8 +78,8 @@ static_library("model_executor") {
     assert(build_with_tflite_lib)
 
     sources += [
-      "mediapipe_text_model_executor.cc",
-      "mediapipe_text_model_executor.h",
+      "inference/mediapipe_text_model_executor.cc",
+      "inference/mediapipe_text_model_executor.h",
     ]
   }
 
@@ -553,9 +553,9 @@ static_library("delivery_test_support") {
 static_library("inference_test_support") {
   testonly = true
   sources = [
-    "test_model_executor.cc",
-    "test_model_executor.h",
-    "test_model_handler.h",
+    "inference/test_model_executor.cc",
+    "inference/test_model_executor.h",
+    "inference/test_model_handler.h",
   ]
   deps = [
     ":model_executor",
@@ -563,9 +563,9 @@ static_library("inference_test_support") {
   ]
   if (build_with_tflite_lib) {
     sources += [
-      "test_tflite_model_executor.cc",
-      "test_tflite_model_executor.h",
-      "test_tflite_model_handler.h",
+      "inference/test_tflite_model_executor.cc",
+      "inference/test_tflite_model_executor.h",
+      "inference/test_tflite_model_handler.h",
     ]
     deps += [ "//third_party/abseil-cpp:absl" ]
   }
@@ -745,7 +745,7 @@ source_set("delivery_unit_tests") {
 
 source_set("inference_unit_tests") {
   testonly = true
-  sources = [ "model_handler_unittest.cc" ]
+  sources = [ "inference/model_handler_unittest.cc" ]
   deps = [
     ":delivery_test_support",
     ":inference_test_support",
@@ -757,9 +757,9 @@ source_set("inference_unit_tests") {
   ]
   if (build_with_tflite_lib) {
     sources += [
-      "bert_model_executor_unittest.cc",
-      "model_validator_unittest.cc",
-      "tflite_model_executor_unittest.cc",
+      "inference/bert_model_executor_unittest.cc",
+      "inference/model_validator_unittest.cc",
+      "inference/tflite_model_executor_unittest.cc",
     ]
     deps += [
       ":core_util",

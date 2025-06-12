@@ -8,8 +8,8 @@
 #include <optional>
 #include <vector>
 
-#include "components/optimization_guide/core/base_model_executor.h"
-#include "components/optimization_guide/core/model_executor.h"
+#include "components/optimization_guide/core/inference/base_model_executor.h"
+#include "components/optimization_guide/core/inference/model_executor.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
