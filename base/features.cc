@@ -72,6 +72,8 @@ BASE_FEATURE_PARAM(size_t,
                    "LowMemoryDeviceThresholdMB",
                    LOW_MEMORY_DEVICE_THRESHOLD_MB);
 
+BASE_FEATURE(kReducePPMs, "ReducePPMs", FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Force to enable LowEndDeviceMode partially on Android 3Gb devices.
 // (see PartialLowEndModeOnMidRangeDevices below)

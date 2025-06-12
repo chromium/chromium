@@ -26,6 +26,12 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kLowEndMemoryExperiment);
 
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kLowMemoryDeviceThresholdMB);
 
+// PPM: Poor performance moment.
+//
+// This feature covers fixes to many egregious performance problems and the goal
+// is to measure their aggregated impact.
+BASE_EXPORT BASE_DECLARE_FEATURE(kReducePPMs);
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOn3GbDevices);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
