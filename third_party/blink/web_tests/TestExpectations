@@ -1214,13 +1214,6 @@ crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Fai
 # CSS counters scope tests to be fixed with new implementation.
 crbug.com/990657 external/wpt/css/css-lists/counters-scope-004.html [ Failure ]
 
-# Temporary failures while we attempt to ship:
-# https://github.com/w3c/csswg-drafts/issues/11452
-crbug.com/397674426 external/wpt/css/css-sizing/intrinsic-percent-non-replaced-001.html [ Failure ]
-crbug.com/397674426 external/wpt/css/css-sizing/intrinsic-percent-non-replaced-004.html [ Failure ]
-crbug.com/397674426 external/wpt/css/css-values/calc-min-height-block-1.html [ Failure ]
-crbug.com/397674426 external/wpt/css/css-values/calc-min-width-block-intrinsic-1.html [ Failure ]
-
 # LayoutNG failures that needs to be triaged
 crbug.com/591099 virtual/text-antialias/selection/selection-rect-line-height-too-small.html [ Failure ]
 crbug.com/591099 fast/css-intrinsic-dimensions/width-avoid-floats.html [ Failure ]

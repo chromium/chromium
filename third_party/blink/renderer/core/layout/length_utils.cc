@@ -73,14 +73,10 @@ LayoutUnit ResolveInlineLengthInternal(
           constraint_space.PercentageResolutionInlineSize();
       if (length.HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
-        if (RuntimeEnabledFeatures::LayoutMinSizeIndefiniteEnabled()) {
-          if (length_type != LengthTypeInternal::kMin) {
-            return kIndefiniteSize;
-          }
-          percentage_resolution_size = LayoutUnit();
-        } else {
+        if (length_type != LengthTypeInternal::kMin) {
           return kIndefiniteSize;
         }
+        percentage_resolution_size = LayoutUnit();
       }
       bool evaluated_indefinite = false;
       LayoutUnit value = MinimumValueForLength(
@@ -222,11 +218,7 @@ LayoutUnit ResolveBlockLengthInternal(
           percentage_resolution_size == kIndefiniteSize) {
         switch (length_type) {
           case LengthTypeInternal::kMin: {
-            if (RuntimeEnabledFeatures::LayoutMinSizeIndefiniteEnabled()) {
-              percentage_resolution_size = LayoutUnit();
-            } else {
-              return kIndefiniteSize;
-            }
+            percentage_resolution_size = LayoutUnit();
             break;
           }
           case LengthTypeInternal::kMain:
