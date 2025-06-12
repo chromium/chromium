@@ -390,11 +390,8 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
             PixelsAndPercent(std::abs(value)));
       } else if (op == CalculationOperator::kSign) {
-        if (value == 0 || std::isnan(value)) {
-          return MakeGarbageCollected<CalculationExpressionNumberNode>(value);
-        }
         return MakeGarbageCollected<CalculationExpressionNumberNode>(
-            value > 0 ? 1 : -1);
+            EvaluateSignFunction(value));
       } else if (op == CalculationOperator::kExp) {
         return MakeGarbageCollected<CalculationExpressionNumberNode>(
             std::exp(value));
@@ -604,10 +601,7 @@ float CalculationExpressionOperationNode::Evaluate(
       } else if (operator_ == CalculationOperator::kExp) {
         return std::exp(value);
       } else if (operator_ == CalculationOperator::kSign) {
-        if (value == 0 || std::isnan(value)) {
-          return value;
-        }
-        return value > 0 ? 1 : -1;
+        return EvaluateSignFunction(value);
       } else {
         return std::sqrt(value);
       }

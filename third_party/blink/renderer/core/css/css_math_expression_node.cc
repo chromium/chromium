@@ -1998,9 +1998,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
         const std::optional<double> opt =
             operand->ComputeValueInCanonicalUnit();
         DCHECK(opt.has_value());
-        const double value = opt.value();
-        const double signum =
-            (value == 0 || std::isnan(value)) ? value : ((value > 0) ? 1 : -1);
+        const double signum = EvaluateSignFunction(opt.value());
         return CSSMathExpressionNumericLiteral::Create(
             signum, CSSPrimitiveValue::UnitType::kNumber);
       }
@@ -3456,10 +3454,7 @@ double CSSMathExpressionOperation::EvaluateOperator(
     }
     case CSSMathOperator::kSign: {
       DCHECK_EQ(operands.size(), 1u);
-      const double value = operands.front();
-      const double signum =
-          (value == 0 || std::isnan(value)) ? value : ((value > 0) ? 1 : -1);
-      return signum;
+      return EvaluateSignFunction(operands.front());
     }
     case CSSMathOperator::kProgress:
     case CSSMathOperator::kMediaProgress:

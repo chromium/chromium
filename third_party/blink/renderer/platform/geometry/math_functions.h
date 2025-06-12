@@ -268,6 +268,12 @@ ValueType EvaluateSteppedValueFunction(OperatorType op,
   }
 }
 
+template <typename ValueType>
+  requires std::floating_point<ValueType>
+ValueType EvaluateSignFunction(ValueType v) {
+  return (v == 0 || std::isnan(v)) ? v : ((v > 0) ? 1 : -1);
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_MATH_FUNCTIONS_H_
