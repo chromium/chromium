@@ -9743,6 +9743,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "transferable-resource-pass-alpha-type-directly",
+    "owners": [ "blundell@chromium.org", "vasilyt@chromium.org" ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "translate-force-trigger-on-english",
     "owners": [ "megjablon@chromium.org", "cuianthony@chromium.org", "chrome-language@google.com" ],
     // This flag is used to manually trigger a Finch controlled, India only

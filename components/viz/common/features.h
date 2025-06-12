@@ -31,6 +31,8 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvoidDuplicateDelayBeginFrame);
 VIZ_COMMON_EXPORT extern const char kDrawQuadSplit[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kTransferableResourcePassAlphaTypeDirectly);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawQuadSplitLimit);
 
 enum class DelegatedCompositingMode {

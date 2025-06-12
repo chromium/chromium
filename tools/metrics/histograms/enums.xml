@@ -9905,6 +9905,8 @@ from previous Chrome versions.
   <int value="-1501658124" label="IsolatedWebAppAutomaticUpdates:enabled"/>
   <int value="-1500811568" label="MuteNotificationSnoozeAction:disabled"/>
   <int value="-1499989506" label="FedCmWithoutThirdPartyCookies:disabled"/>
+  <int value="-1499394802"
+      label="TransferableResourcePassAlphaTypeDirectly:enabled"/>
   <int value="-1498681588" label="AndroidWebContentsDarkMode:enabled"/>
   <int value="-1498582719"
       label="ColorProviderRedirectionForThemeProvider:enabled"/>
@@ -16120,6 +16122,8 @@ from previous Chrome versions.
   <int value="811726957" label="SlideTopChromeWithPageScrolls:enabled"/>
   <int value="812710781" label="SyncUSSBookmarks:disabled"/>
   <int value="812969700" label="EdgeToEdgeBottomChin:enabled"/>
+  <int value="813037491"
+      label="TransferableResourcePassAlphaTypeDirectly:disabled"/>
   <int value="813120521" label="ProjectorUseUSMForS3:enabled"/>
   <int value="813162118" label="TabGroupSyncAndroid:disabled"/>
   <int value="813211869" label="ScrollCapture:disabled"/>

@@ -12959,6 +12959,11 @@ BUILDFLAG(IS_WIN)
  #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
          // BUILDFLAG(IS_WIN)
 
+    {"transferable-resource-pass-alpha-type-directly",
+     flag_descriptions::kTransferableResourcePassAlphaTypeDirectlyName,
+     flag_descriptions::kTransferableResourcePassAlphaTypeDirectlyDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kTransferableResourcePassAlphaTypeDirectly)},
     // Add new entries above this line.
 
 #if BUILDFLAG(IS_ANDROID)

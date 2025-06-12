@@ -365,6 +365,9 @@ extern const char kFwupdDeveloperModeDescription[];
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 
+extern const char kTransferableResourcePassAlphaTypeDirectlyName[];
+extern const char kTransferableResourcePassAlphaTypeDirectlyDescription[];
+
 extern const char kMagicBoostUpdateForQuickAnswersName[];
 extern const char kMagicBoostUpdateForQuickAnswersDescription[];
 

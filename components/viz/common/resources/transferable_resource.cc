@@ -5,18 +5,11 @@
 #include "components/viz/common/resources/transferable_resource.h"
 
 #include "base/feature_list.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 
 namespace viz {
-
-namespace {
-
-BASE_FEATURE(kPassAlphaTypeDirectly,
-             "PassAlphaTypeDirectly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
 
 // static
 TransferableResource TransferableResource::MakeSoftwareSharedImage(
@@ -101,7 +94,8 @@ TransferableResource TransferableResource::Make(
   // side. Eliminate this historical behavior under a killswitch.
   // TODO(crbug.com/410591523): Remove killswitch after it has safely rolled
   // out.
-  if (base::FeatureList::IsEnabled(kPassAlphaTypeDirectly)) {
+  if (base::FeatureList::IsEnabled(
+          features::kTransferableResourcePassAlphaTypeDirectly)) {
     resource.alpha_type = alpha_type;
   } else {
     resource.alpha_type = (alpha_type == kUnpremul_SkAlphaType)

@@ -534,6 +534,12 @@ const char kTangibleSyncName[] = "Tangible Sync";
 const char kTangibleSyncDescription[] =
     "Enables the tangible sync when a user starts the sync consent flow";
 
+const char kTransferableResourcePassAlphaTypeDirectlyName[] =
+    "TransferableResource pass alpha type directly";
+const char kTransferableResourcePassAlphaTypeDirectlyDescription[] =
+    "Enables Transferableresource passing the SkAlphaType dierctly rather than "
+    "flattening it to premul/unpremul";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kDisableInstanceLimitName[] = "Disable Instance Limit";
 const char kDisableInstanceLimitDescription[] =
