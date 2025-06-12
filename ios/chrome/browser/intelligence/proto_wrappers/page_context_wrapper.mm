@@ -8,30 +8,102 @@
 
 #import <memory>
 #import <optional>
+#import <string>
+#import <utility>
 
 #import "base/barrier_closure.h"
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/logging.h"
 #import "base/memory/weak_ptr.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/token.h"
+#import "components/optimization_guide/core/page_content_proto_serializer.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "url/origin.h"
 
 namespace {
 
-// The JavaScript to be executed on each WebState's WebFrames, which retrieves
-// the innerText.
-const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
+// The key for the current node's innerText in the JavaScript object.
+const char kCurrentNodeInnerTextDictKey[] = "currentNodeInnerText";
 
+// The key for the children frames in the JavaScript object.
+const char kChildrenFramesDictKey[] = "children";
+
+// The key for the source URL of the frame in the JavaScript object.
+const char kSourceURLDictKey[] = "sourceURL";
+
+// The key for the title of the frame in the JavaScript object.
+const char kFrameTitleDictKey[] = "title";
+
+// The JavaScript to be executed on each WebState's WebFrames, which retrieves
+// the innerText of the document body, and recursively traverses through
+// same-origin nested iframes to retrieve their innerTexts as well, constructing
+// a tree structure. iframes are marked as processed with a nonce to avoid
+// duplicate text from frames, but only for the current run.
+// TODO(crbug.com/423681226): Write this in TypeScript and create a JS Feature
+// for it.
+const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
+(() => {
+    // The script should only run if it has no same-origin parent. (The script
+    // should only start execution on top-most nodes of a given origin).
+    if (window.self !== window.top &&
+        location.ancestorOrigins?.[0] === location.origin) {
+        // Not the top-most same-origin frame, early exit.
+        return null;
+    }
+
+    const constructSameOriginInnerTextTree = (node, frameURL, frameTitle, nonceAttributeValue) => {
+        // Early return if the node is null or already processed.
+        if (!node || node.getAttribute('data-__gCrWeb-innerText-processed') === nonceAttributeValue) {
+            return null;
+        }
+
+        // Mark node as processed.
+        node.setAttribute('data-__gCrWeb-innerText-processed', nonceAttributeValue);
+
+        // Get all nested iframes within the current node.
+        const nestedIframes = node.getElementsByTagName('iframe');
+        const childNodeInnerTexts = [...nestedIframes].map(iframe => {
+            if (!iframe) {
+                return null;
+            }
+
+            // Try to access the iframe's body, failure is possible (cross-origin iframes).
+            let iframeBody;
+            try {
+                iframeBody = iframe.contentDocument ? iframe.contentDocument.body : null;
+            } catch (error) {
+                return null;
+            }
+
+            // Recursively construct the innerText tree for the iframe's body.
+            return iframeBody ? constructSameOriginInnerTextTree(iframeBody, iframe.src, iframe.title,
+                nonceAttributeValue) : null;
+        });
+
+        return {
+            currentNodeInnerText: node.innerText,
+            children: childNodeInnerTexts.filter(item => item !== null),
+            sourceURL: frameURL,
+            title: frameTitle,
+        };
+    };
+
+    return constructSameOriginInnerTextTree(document.body, window.location.href, document.title, "$1");
+})();
+  )DELIM";
 }  // namespace
 
-
+// TODO(crbug.com/424258248): Add a timeout for the execution of the async tasks
+// in the PageContextWrapper.
 @implementation PageContextWrapper {
   base::WeakPtr<web::WebState> _webState;
 
@@ -39,9 +111,13 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
   // needs to complete before executing the `completionCallback`.
   NSInteger _asyncTasksToComplete;
 
+  // The root node of the PageContext's APC tree. This tree is constructed on
+  // the fly as values are returned from JavaScript.
+  std::unique_ptr<optimization_guide::proto::AnnotatedPageContent> _rootAPCNode;
+
   // The accumulation of innerTexts from the all of the WebState's associated
-  // WebFrames.
-  NSMutableArray<NSString*>* _webFramesInnerTexts;
+  // WebFrames. Passed as one big string to PageContext, as a fallback for APC.
+  std::vector<std::string> _webFramesInnerTexts;
 
   // The callback to execute once all async work is complete, whichs
   // relinquishes ownership of the PageContext proto to the callback's handler.
@@ -52,6 +128,7 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
   // Unique pointer to the PageContext proto.
   std::unique_ptr<optimization_guide::proto::PageContext> _page_context;
 }
+
 - (instancetype)
       initWithWebState:(web::WebState*)webState
     completionCallback:
@@ -63,7 +140,6 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
     _asyncTasksToComplete = 0;
     _webState = webState->GetWeakPtr();
     _completion_callback = std::move(completionCallback);
-    _webFramesInnerTexts = [[NSMutableArray alloc] init];
 
     // Create the PageContext proto/object.
     _page_context = std::make_unique<optimization_guide::proto::PageContext>();
@@ -219,35 +295,66 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
     barrier.Run();
     return;
   }
+
+  // Create the root node of the APC tree and its first root ContentNode.
+  _rootAPCNode =
+      std::make_unique<optimization_guide::proto::AnnotatedPageContent>();
+  _rootAPCNode->mutable_root_node()
+      ->mutable_content_attributes()
+      ->set_attribute_type(optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
   // Use a `BarrierClosure` to ensure the JavaScript is done executing in
   // all WebFrames before executing the page context barrier `barrier`,
   // which in turn signals to the PageContextWrapper that the innerText is
   // done being processed. The BarrierClosure will wait until the
-  // `inner_text_barrier` callback is itself run once per WebFrame.
+  // `inner_text_barrier` callback is itself run once per WebFrame (+1 since we
+  // execute the JS explicitly on the main frame first).
   __weak PageContextWrapper* weakSelf = self;
   base::RepeatingClosure inner_text_barrier =
-      base::BarrierClosure(web_frames.size(), base::BindOnce(^{
+      base::BarrierClosure(web_frames.size() + 1, base::BindOnce(^{
                              [weakSelf webFramesInnerTextsFetchCompleted];
                              barrier.Run();
                            }));
 
-  auto callback = ^(const base::Value* value, NSError* error) {
-    [weakSelf parseAndConcatenateJavaScriptValue:value withError:error];
-    inner_text_barrier.Run();
+  // Callback to aggregate values from the JS execution.
+  auto callback = [](PageContextWrapper* weakWrapper,
+                     base::RepeatingClosure barrier, BOOL isMainFrame,
+                     const url::Origin& securityOrigin,
+                     const base::Value* value, NSError* error) {
+    [weakWrapper aggregateJavaScriptValue:value
+                                withError:error
+                              isMainFrame:isMainFrame
+                           securityOrigin:securityOrigin];
+    barrier.Run();
   };
 
-  // Execute the JavaScript on each WebFrame and pass in the callback (which
-  // executes the barrier when run).
+  // Construct the JavaScript script to be executed on each Web Frame with a
+  // random token as nonce to differentiate between runs/executions.
+  base::Token nonce = base::Token::CreateRandom();
+  std::u16string nonceString = base::UTF8ToUTF16(nonce.ToString());
+  std::u16string script = base::ReplaceStringPlaceholders(
+      kInnerTextTreeJavaScript, nonceString, nullptr);
+
+  // Execute the JavaScript on the main WebFrame first and pass in the callback
+  // (which executes the barrier when run)
+  main_frame->ExecuteJavaScript(
+      script,
+      base::BindOnce(callback, weakSelf, inner_text_barrier,
+                     /*isMainFrame=*/YES, main_frame->GetSecurityOrigin()));
+
+  // Execute the JavaScript on each other WebFrame and pass in the callback
+  // (which executes the barrier when run).
   for (web::WebFrame* web_frame : web_frames) {
-    // Skip WebFrames with different origins from the main WebFrame.
-    if (!web_frame || (!web_frame->GetSecurityOrigin().IsSameOriginWith(
-                          main_frame->GetSecurityOrigin()))) {
+    // Skip the main frame since it was already processed above.
+    if (!web_frame || web_frame->IsMainFrame()) {
       inner_text_barrier.Run();
       continue;
     }
 
-    web_frame->ExecuteJavaScript(kInnerTextJavaScript,
-                                 base::BindOnce(callback));
+    web_frame->ExecuteJavaScript(
+        script,
+        base::BindOnce(callback, weakSelf, inner_text_barrier,
+                       /*isMainFrame=*/NO, web_frame->GetSecurityOrigin()));
   }
 }
 
@@ -311,37 +418,174 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
   _page_context->set_pdf_data(base::SysNSStringToUTF8(base64String));
 }
 
-// If it exists, parse and trim the returned base::Value from the JavaScript
-// execution, and append it to the `_webFramesInnerTexts` array. `error` is
-// defined if the JavaScript execution failed.
-- (void)parseAndConcatenateJavaScriptValue:(const base::Value*)value
-                                 withError:(NSError*)error {
-  if (error || !value || !value->is_string()) {
-    DLOG(WARNING) << "Failed to fetch webpage innerText.";
+// If it exists, parse the returned JavaScript value from the WebFrame,
+// construct its ContentNode subtree and insert it into the APC tree.
+- (void)aggregateJavaScriptValue:(const base::Value*)value
+                       withError:(NSError*)error
+                     isMainFrame:(BOOL)isMainFrame
+                  securityOrigin:(const url::Origin&)securityOrigin {
+  if (error || !value || !value->is_dict()) {
+    DLOG(WARNING) << "Failed to fetch frame's innerText tree.";
     if (error) {
+      // TODO(crbug.com/401282824): Log the failure rate of aggregation.
       DLOG(WARNING) << base::SysNSStringToUTF8([error localizedDescription]);
     }
     return;
   }
 
-  NSString* resultString = [base::SysUTF8ToNSString(value->GetString())
-      stringByTrimmingCharactersInSet:[NSCharacterSet
-                                          whitespaceAndNewlineCharacterSet]];
+  if (isMainFrame) {
+    [self populateMainFrameSubtreeWithValue:value origin:securityOrigin];
+  }
 
-  if (!resultString.length) {
+  // Recursively populate the ContentNode subtree for any of the WebFrame's
+  // iframes.
+  const base::Value::List* childrenFrames =
+      value->GetDict().FindList(kChildrenFramesDictKey);
+  if (childrenFrames && !childrenFrames->empty()) {
+    for (const auto& childFrame : *childrenFrames) {
+      if (!childFrame.is_dict()) {
+        continue;
+      }
+
+      [self populateIframeSubtreeWithValue:&childFrame
+                                    origin:securityOrigin
+                                parentNode:_rootAPCNode->mutable_root_node()];
+    }
+  }
+}
+
+// Set the constructed APC tree and the innerText blob on the PageContext proto.
+- (void)webFramesInnerTextsFetchCompleted {
+  _page_context->set_allocated_annotated_page_content(_rootAPCNode.release());
+
+  std::string concatenatedInnerTexts =
+      base::JoinString(_webFramesInnerTexts, "\n");
+  _page_context->set_inner_text(concatenatedInnerTexts);
+}
+
+// Populate the main frame's ContentNode subtree with the correct nodes and
+// their values. Adds Main Frame data and the root text ContentNode.
+- (void)populateMainFrameSubtreeWithValue:(const base::Value*)value
+                                   origin:(const url::Origin&)origin {
+  if (!value || !value->is_dict()) {
     return;
   }
 
-  [_webFramesInnerTexts addObject:resultString];
+  // Set the main frame's security origin.
+  [self populateFrameDataNode:_rootAPCNode->mutable_main_frame_data()
+                    withValue:value
+                       origin:origin];
+
+  // Set its child text node.
+  [self populateTextInfoNodeWithValue:value
+                               origin:origin
+                           parentNode:_rootAPCNode->mutable_root_node()];
 }
 
-// Concatenate the innerText strings, and set the result in the PageContext
-// proto.
-- (void)webFramesInnerTextsFetchCompleted {
-  NSString* concatenatedInnerTexts =
-      [_webFramesInnerTexts componentsJoinedByString:@"\n"];
-  _page_context->set_inner_text(
-      base::SysNSStringToUTF8(concatenatedInnerTexts));
+//  Populate a FrameData node with the correct values.
+- (void)populateFrameDataNode:
+            (optimization_guide::proto::FrameData*)frameDataNode
+                    withValue:(const base::Value*)value
+                       origin:(const url::Origin&)origin {
+  if (!value || !value->is_dict() || !frameDataNode) {
+    return;
+  }
+
+  optimization_guide::SecurityOriginSerializer::Serialize(
+      origin, frameDataNode->mutable_security_origin());
+
+  const std::string* titlePtr = value->GetDict().FindString(kFrameTitleDictKey);
+  if (titlePtr) {
+    frameDataNode->set_title(*titlePtr);
+  }
+
+  const std::string* urlPtr = value->GetDict().FindString(kSourceURLDictKey);
+  if (urlPtr) {
+    frameDataNode->set_url(*urlPtr);
+  }
+}
+
+// Populate a ContentNode with a TextInfo node and its correct values. Also adds
+// the innerText to the accumulated array of innerTexts.
+- (void)populateTextInfoNodeWithValue:(const base::Value*)value
+                               origin:(const url::Origin&)origin
+                           parentNode:(optimization_guide::proto::ContentNode*)
+                                          parentNode {
+  if (!value || !value->is_dict() || !parentNode) {
+    return;
+  }
+
+  // Early return if there is no text to add.
+  const std::string* innerTextPtr =
+      value->GetDict().FindString(kCurrentNodeInnerTextDictKey);
+  if (!innerTextPtr) {
+    return;
+  }
+  std::string_view trimmedText =
+      base::TrimWhitespaceASCII(*innerTextPtr, base::TRIM_ALL);
+  if (trimmedText.empty()) {
+    return;
+  }
+
+  // Create and add the text node.
+  optimization_guide::proto::ContentNode* childTextNode =
+      parentNode->add_children_nodes();
+  childTextNode->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  childTextNode->mutable_content_attributes()
+      ->mutable_text_data()
+      ->set_text_content(trimmedText);
+
+  // Accumulate the innerText.
+  _webFramesInnerTexts.emplace_back(trimmedText);
+}
+
+// Populate the ContentNode subtree for an iframe with the correct values. Also
+// recursively populates the subtrees for all of this iframe's children.
+- (void)populateIframeSubtreeWithValue:(const base::Value*)value
+                                origin:(const url::Origin&)origin
+                            parentNode:(optimization_guide::proto::ContentNode*)
+                                           parentNode {
+  if (!value || !value->is_dict() || !parentNode) {
+    return;
+  }
+
+  // Create the child iframe node.
+  optimization_guide::proto::ContentNode* node =
+      parentNode->add_children_nodes();
+  node->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+
+  // Set its FrameData values.
+  optimization_guide::proto::FrameData* nodeFrameData =
+      node->mutable_content_attributes()
+          ->mutable_iframe_data()
+          ->mutable_frame_data();
+  [self populateFrameDataNode:nodeFrameData withValue:value origin:origin];
+
+  // Create the nested root child ContentNode.
+  optimization_guide::proto::ContentNode* childRootNode =
+      node->add_children_nodes();
+  childRootNode->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  // Create the nested text node.
+  [self populateTextInfoNodeWithValue:value
+                               origin:origin
+                           parentNode:childRootNode];
+
+  // Recursively populate the ContentNode subtree for any children iframes.
+  const base::Value::List* childrenFrames =
+      value->GetDict().FindList(kChildrenFramesDictKey);
+  if (childrenFrames && !childrenFrames->empty()) {
+    for (const auto& childFrame : *childrenFrames) {
+      if (childFrame.is_dict()) {
+        [self populateIframeSubtreeWithValue:&childFrame
+                                      origin:origin
+                                  parentNode:childRootNode];
+      }
+    }
+  }
 }
 
 // Stop the highlighting of text.
