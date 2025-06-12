@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_lex"
-version = "0.7.4"
+version = "0.7.5"
 build = false
 include = [
     "build.rs",
@@ -21,7 +21,6 @@ include = [
     "Cargo.toml",
     "LICENSE*",
     "README.md",
-    "benches/**/*",
     "examples/**/*",
 ]
 autolib = false
@@ -131,7 +130,7 @@ macro_use_imports = "warn"
 mem_forget = "warn"
 multiple_bound_locations = "allow"
 mutex_integer = "warn"
-needless_continue = "warn"
+needless_continue = "allow"
 needless_for_each = "warn"
 negative_feature_names = "warn"
 path_buf_push_overwrite = "warn"
@@ -140,6 +139,7 @@ rc_mutex = "warn"
 redundant_feature_names = "warn"
 ref_option_ref = "warn"
 rest_pat_in_fully_bound_structs = "warn"
+result_large_err = "allow"
 same_functions_in_if_condition = "warn"
 self_named_module_files = "warn"
 semicolon_if_nothing_returned = "warn"
@@ -152,6 +152,7 @@ verbose_file_reads = "warn"
 zero_sized_map_values = "warn"
 
 [lints.rust]
+unnameable_types = "allow"
 unreachable_pub = "warn"
 unsafe_op_in_unsafe_fn = "warn"
 unused_lifetimes = "warn"

@@ -24,7 +24,7 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_name = "clap_lex"
   cargo_pkg_description = "Minimal, flexible command line parser"
-  cargo_pkg_version = "0.7.4"
+  cargo_pkg_version = "0.7.5"
 
   allow_unsafe = true
 
