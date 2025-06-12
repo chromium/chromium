@@ -53,9 +53,6 @@ BASE_DECLARE_FEATURE(kUseHostedDomainForManagementCheckOnSignin);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kMakeAccountsAvailableInIdentityManager);
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -132,6 +129,11 @@ extern const char kForceFreDefaultBrowserStep[];
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
+
+// TODO(crbug.com/408962000): This feature is going to be used after clients
+// have the required information in local storage.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
 #endif
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
