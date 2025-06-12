@@ -17,18 +17,19 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -58,25 +59,23 @@ MATCHER_P(BookmarkVariantMatcher, node, "") {
 
 }  // namespace
 
-class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
+class BookmarkMenuDelegateTest : public InProcessBrowserTest {
  public:
   BookmarkMenuDelegateTest() = default;
   BookmarkMenuDelegateTest(const BookmarkMenuDelegateTest&) = delete;
   BookmarkMenuDelegateTest& operator=(const BookmarkMenuDelegateTest&) = delete;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
 
     // Set managed bookmarks.
-    sync_preferences::TestingPrefServiceSyncable* prefs =
-        profile()->GetTestingPrefService();
+    PrefService* prefs = browser()->profile()->GetPrefs();
     ASSERT_FALSE(prefs->HasPrefPath(bookmarks::prefs::kManagedBookmarks));
-    prefs->SetManagedPref(
-        bookmarks::prefs::kManagedBookmarks,
-        base::Value::List().Append(
-            base::Value::Dict()
-                .Set("name", "Google")
-                .Set("url", GURL("http://google.com/").spec())));
+    prefs->SetList(bookmarks::prefs::kManagedBookmarks,
+                   base::Value::List().Append(
+                       base::Value::Dict()
+                           .Set("name", "Google")
+                           .Set("url", GURL("http://google.com/").spec())));
 
     WaitForBookmarkMergedSurfaceServiceToLoad(bookmark_service());
     model()->CreateAccountPermanentFolders();
@@ -85,22 +84,13 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
     AddTestData();
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     DestroyDelegate();
 
-    BrowserWithTestWindowTest::TearDown();
-  }
+    root_menu_.reset();
+    bookmark_menu_delegate_.reset();
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {TestingProfile::TestingFactory{
-                BookmarkModelFactory::GetInstance(),
-                BookmarkModelFactory::GetDefaultFactory()},
-            TestingProfile::TestingFactory{
-                ManagedBookmarkServiceFactory::GetInstance(),
-                ManagedBookmarkServiceFactory::GetDefaultFactory()},
-            TestingProfile::TestingFactory{
-                BookmarkMergedSurfaceServiceFactory::GetInstance(),
-                BookmarkMergedSurfaceServiceFactory::GetDefaultFactory()}};
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -144,7 +134,7 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
 
   void NewAndBuildFullMenuWithBookmarksTitle() {
     // Remove the managed bookmarks node.
-    profile()->GetTestingPrefService()->SetManagedPref(
+    browser()->profile()->GetPrefs()->SetList(
         bookmarks::prefs::kManagedBookmarks, base::Value::List());
     root_menu_ = std::make_unique<views::MenuItemView>();
     root_menu_->CreateSubmenu();
@@ -186,15 +176,16 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   }
 
   BookmarkModel* model() {
-    return BookmarkModelFactory::GetForBrowserContext(profile());
+    return BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   }
 
   BookmarkMergedSurfaceService* bookmark_service() {
-    return BookmarkMergedSurfaceServiceFactory::GetForProfile(profile());
+    return BookmarkMergedSurfaceServiceFactory::GetForProfile(
+        browser()->profile());
   }
 
   const BookmarkNode* managed_node() {
-    return ManagedBookmarkServiceFactory::GetForProfile(profile())
+    return ManagedBookmarkServiceFactory::GetForProfile(browser()->profile())
         ->managed_node();
   }
 
@@ -275,7 +266,7 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   views::MenuDelegate test_delegate_;
 };
 
-TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
   NewAndBuildFullMenu();
   views::MenuItemView* root_item = menu();
   ASSERT_TRUE(root_item->HasSubmenu());
@@ -321,7 +312,7 @@ TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
 
 // Verifies WillRemoveBookmarks() doesn't attempt to access MenuItemViews that
 // have since been deleted.
-TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
@@ -339,7 +330,7 @@ TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
 
 // Verifies WillRemoveBookmarks() doesn't attempt to access MenuItemViews that
 // have since been deleted.
-TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
   NewDelegate();
   EXPECT_FALSE(ShouldCloseOnRemove(model()->account_bookmark_bar_node()));
 
@@ -379,7 +370,8 @@ TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
 
 // Tests that the "Bookmarks" title and separator are removed from the parent
 // menu when the children of the bookmark bar node are removed.
-TEST_F(BookmarkMenuDelegateTest, UpdateBookmarksTitleAfterNodeRemoved) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
+                       UpdateBookmarksTitleAfterNodeRemoved) {
   NewAndBuildFullMenuWithBookmarksTitle();
   views::MenuItemView* root_menu = menu();
 
@@ -412,7 +404,8 @@ TEST_F(BookmarkMenuDelegateTest, UpdateBookmarksTitleAfterNodeRemoved) {
 
 // Tests that the separator is removed from the "other" bookmarks menu item
 // when its child bookmarks are removed.
-TEST_F(BookmarkMenuDelegateTest, UpdateOtherNodeMenuAfterNodeRemoved) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
+                       UpdateOtherNodeMenuAfterNodeRemoved) {
   NewDelegate();
   bookmark_menu_delegate_->SetActiveMenu(BookmarkParentFolder::OtherFolder(),
                                          0);
@@ -441,7 +434,7 @@ TEST_F(BookmarkMenuDelegateTest, UpdateOtherNodeMenuAfterNodeRemoved) {
   EXPECT_EQ(1u, other_node_menu->GetSubmenu()->children().size());
 }
 
-TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterNode) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterNode) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
@@ -479,7 +472,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterNode) {
   EXPECT_EQ(f1->children()[1]->GetTitle(), std::u16string(u"z"));
 }
 
-TEST_F(BookmarkMenuDelegateTest, DragAndDropOnNode) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropOnNode) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
@@ -518,7 +511,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropOnNode) {
   EXPECT_EQ(f11_node->children()[1]->GetTitle(), std::u16string(u"z"));
 }
 
-TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeNode) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeNode) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
@@ -556,7 +549,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeNode) {
   EXPECT_EQ(f1->children()[1]->GetTitle(), std::u16string(u"z"));
 }
 
-TEST_F(BookmarkMenuDelegateTest, DropCallbackModelChanged) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DropCallbackModelChanged) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
@@ -588,7 +581,7 @@ TEST_F(BookmarkMenuDelegateTest, DropCallbackModelChanged) {
   EXPECT_EQ(f1->children().size(), 2u);
 }
 
-TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
   NewAndBuildFullMenu();
   views::MenuItemView* root_item = menu();
   LoadAllMenus(root_item);
@@ -664,7 +657,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
             ui::mojom::DragOperation::kNone);
 }
 
-TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterManagedNode) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterManagedNode) {
   NewAndBuildFullMenu();
   views::MenuItemView* root_item = menu();
   LoadAllMenus(root_item);
@@ -708,7 +701,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterManagedNode) {
       std::u16string(u"z"));
 }
 
-TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeOtherNode) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeOtherNode) {
   NewAndBuildFullMenu();
   views::MenuItemView* root_item = menu();
   LoadAllMenus(root_item);
@@ -758,7 +751,8 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeOtherNode) {
 }
 
 // Tests moving a bookmark between two normal bookmark folders.
-TEST_F(BookmarkMenuDelegateTest, MovingBookmarksBetweenNormalFolders) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
+                       MovingBookmarksBetweenNormalFolders) {
   NewAndBuildFullMenu();
   views::MenuItemView* root_item = menu();
   views::MenuItemView* f1_item = root_item->GetSubmenu()->GetMenuItemAt(4);
@@ -801,7 +795,8 @@ TEST_F(BookmarkMenuDelegateTest, MovingBookmarksBetweenNormalFolders) {
 }
 
 // Tests moving a bookmark whose menu doesn't have a parent.
-TEST_F(BookmarkMenuDelegateTest, MoveBookmarkWithoutParentMenu) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
+                       MoveBookmarkWithoutParentMenu) {
   BookmarkParentFolderChildren bookamrk_bar_children =
       bookmark_service()->GetChildren(
           BookmarkParentFolder::BookmarkBarFolder());
@@ -835,7 +830,8 @@ TEST_F(BookmarkMenuDelegateTest, MoveBookmarkWithoutParentMenu) {
 
 // Tests that the bookmarks title is appropriately added and removed when moving
 // bookmarks into/out of the bookmarks bar for an embedded menu.
-TEST_F(BookmarkMenuDelegateTest, MovingBookmarkUpdatesBookmarksTitle) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
+                       MovingBookmarkUpdatesBookmarksTitle) {
   NewAndBuildFullMenuWithBookmarksTitle();
   views::MenuItemView* root_menu = menu();
   EXPECT_EQ(root_menu->GetSubmenu()->GetMenuItems().size(), 8u);
@@ -878,7 +874,8 @@ TEST_F(BookmarkMenuDelegateTest, MovingBookmarkUpdatesBookmarksTitle) {
 
 // Tests that the separator in the "other" bookmarks menu is appropriately added
 // and removed when moving bookmarks into/out of it.
-TEST_F(BookmarkMenuDelegateTest, MovingBookmarkUpdatesOtherNodeHeader) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
+                       MovingBookmarkUpdatesOtherNodeHeader) {
   NewAndBuildFullMenu();
   views::MenuItemView* root_item = menu();
   views::MenuItemView* other_node_menu =
@@ -925,7 +922,8 @@ TEST_F(BookmarkMenuDelegateTest, MovingBookmarkUpdatesOtherNodeHeader) {
 
 // Tests that moving bookmarks into/out of a folder built with a "start index"
 // respescts the initially provided start index.
-TEST_F(BookmarkMenuDelegateTest, MovingBookmarkRespectsStartIndex) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
+                       MovingBookmarkRespectsStartIndex) {
   BookmarkParentFolder bookmark_bar_folder =
       BookmarkParentFolder::BookmarkBarFolder();
   BookmarkParentFolderChildren bookamrk_bar_children =
@@ -961,7 +959,8 @@ TEST_F(BookmarkMenuDelegateTest, MovingBookmarkRespectsStartIndex) {
 }
 
 // Tests that moving a bookmark into the hidden section of a menu does nothing.
-TEST_F(BookmarkMenuDelegateTest, MovingBookmarkBeforeStartIndexDoesNothing) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
+                       MovingBookmarkBeforeStartIndexDoesNothing) {
   BookmarkParentFolder bookmark_bar_folder =
       BookmarkParentFolder::BookmarkBarFolder();
   BookmarkParentFolderChildren bookmark_bar_children =
@@ -982,7 +981,7 @@ TEST_F(BookmarkMenuDelegateTest, MovingBookmarkBeforeStartIndexDoesNothing) {
   EXPECT_EQ(root_menu->GetSubmenu()->GetMenuItems().size(), 3u);
 }
 
-TEST_F(BookmarkMenuDelegateTest, IncreaseStartIndex) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, IncreaseStartIndex) {
   BookmarkParentFolder bookmark_bar_folder =
       BookmarkParentFolder::BookmarkBarFolder();
   BookmarkParentFolderChildren bookmark_bar_children =
@@ -1003,7 +1002,7 @@ TEST_F(BookmarkMenuDelegateTest, IncreaseStartIndex) {
   EXPECT_EQ(root_menu->GetSubmenu()->GetMenuItemAt(0)->title(), u"F2");
 }
 
-TEST_F(BookmarkMenuDelegateTest, DecreaseStartIndex) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DecreaseStartIndex) {
   BookmarkParentFolder bookmark_bar_folder =
       BookmarkParentFolder::BookmarkBarFolder();
   BookmarkParentFolderChildren bookmark_bar_children =
@@ -1027,7 +1026,7 @@ TEST_F(BookmarkMenuDelegateTest, DecreaseStartIndex) {
   EXPECT_EQ(root_menu->GetSubmenu()->GetMenuItemAt(2)->title(), u"b");
 }
 
-TEST_F(BookmarkMenuDelegateTest, SetMenuStartIndexUnchanged) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, SetMenuStartIndexUnchanged) {
   BookmarkParentFolder bookmark_bar_folder =
       BookmarkParentFolder::BookmarkBarFolder();
   BookmarkParentFolderChildren bookmark_bar_children =
@@ -1046,7 +1045,8 @@ TEST_F(BookmarkMenuDelegateTest, SetMenuStartIndexUnchanged) {
   EXPECT_EQ(root_menu->GetSubmenu()->GetMenuItems().size(), 2u);
 }
 
-TEST_F(BookmarkMenuDelegateTest, SetMenuStartIndexForMissingMenu) {
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
+                       SetMenuStartIndexForMissingMenu) {
   BookmarkParentFolder bookmark_bar_folder =
       BookmarkParentFolder::BookmarkBarFolder();
   BookmarkParentFolderChildren bookmark_bar_children =
