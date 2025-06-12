@@ -98,7 +98,7 @@
           "thirdPartyCookiesAllowed": {
             "$ref": "types.ChromeSetting",
             "value": ["thirdPartyCookiesAllowed", {"type": "boolean"}],
-            "description": "If disabled, Chrome blocks third-party sites from setting cookies. The value of this preference is of type boolean, and the default value is <code>true</code>.<br></br><b>Note:</b>Individual sites may still be able to access third-party cookies when this API returns <code>false</code>, if they have a valid <a href='https://developers.google.com/privacy-sandbox/cookies/temporary-exceptions/preserving-critical-user-experiences'>exemption</a> or they use the <a href='https://developers.google.com/privacy-sandbox/cookies/storage-access-api'>Storage Access API</a> instead."
+            "description": "If disabled, Chrome blocks third-party sites from setting cookies. The value of this preference is of type boolean, and the default value is <code>true</code>. Extensions may not enable this API in Incognito mode, where third-party cookies are blocked and can only be allowed at the site level. If you try setting this API to true in Incognito, it will throw an error.<br></br>Note: Individual sites may still be able to access third-party cookies when this API returns <code>false</code>, if they have a valid <a href='https://developers.google.com/privacy-sandbox/cookies/temporary-exceptions/preserving-critical-user-experiences'>exemption</a> or they use the <a href='https://developers.google.com/privacy-sandbox/cookies/storage-access-api'>Storage Access API</a> instead."
           },
           "topicsEnabled": {
             "$ref": "types.ChromeSetting",
