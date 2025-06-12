@@ -5251,6 +5251,24 @@
             ]
         }
     ],
+    "ChromnientUpdatedVisuals": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "VisualUpdatesEnabled",
+                    "enable_features": [
+                        "LensOverlayVisualSelectionUpdates"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClampAutoScaling": [
         {
             "platforms": [

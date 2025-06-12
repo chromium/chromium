@@ -27,6 +27,7 @@ suite('OverlayTranslatePromo', () => {
 
     loadTimeData.overrideValues({
       'enableOverlayTranslateButton': true,
+      'enableCsbMotionTweaks': false,
     });
   });
 

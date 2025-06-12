@@ -12,9 +12,21 @@ import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLensGhostLoaderBrowserProxy} from './test_ghost_loader_browser_proxy.js';
 
-suite('SearchboxBackButton', () => {
+suite('SearchboxGhostLoader', () => {
   let testBrowserProxy: TestLensGhostLoaderBrowserProxy;
   let searchboxGhostLoaderElement: SearchboxGhostLoaderElement;
+
+  function getSearchboxGhostLoaderElement(): HTMLElement {
+    // The ghost loader loading UI can be replaced by a different UI if
+    // LensOverlayVisualSelectionUpdates is enabled. Grab the new UI if it
+    // exists, otherwise use the old UI.
+    const newLoadingState =
+        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
+            ':host([enable-csb-motion-tweaks]) .suggestion-loader-container');
+    return newLoadingState ??
+        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
+            '#loadingState')!;
+  }
 
   setup(() => {
     testBrowserProxy = new TestLensGhostLoaderBrowserProxy();
@@ -33,16 +45,12 @@ suite('SearchboxBackButton', () => {
     assertFalse(isVisible(
         searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
             '#errorState')));
-    assertTrue(isVisible(
-        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
-            '#loadingState')));
+    assertTrue(isVisible(getSearchboxGhostLoaderElement()));
     testBrowserProxy.page.showErrorState();
     await waitAfterNextRender(searchboxGhostLoaderElement);
     // After autocomplete stop timer has been triggered, the ghost loader
     // should switch to showing the error state.
-    assertFalse(isVisible(
-        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
-            '#loadingState')));
+    assertFalse(isVisible(getSearchboxGhostLoaderElement()));
     assertTrue(isVisible(
         searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
             '#errorState')));

@@ -18,6 +18,21 @@ suite('SearchboxBackButton', () => {
   let testBrowserProxy: TestLensSidePanelBrowserProxy;
   let lensSidePanelElement: LensSidePanelAppElement;
 
+  function getSearchboxGhostLoaderElement(): HTMLElement {
+    const searchboxGhostLoaderElement =
+        lensSidePanelElement.shadowRoot!.querySelector<HTMLElement>(
+            'cr-searchbox-ghost-loader')!;
+    // The ghost loader loading UI can be replaced by a different UI if
+    // LensOverlayVisualSelectionUpdates is enabled. Grab the new UI if it
+    // exists, otherwise use the old UI.
+    const newLoadingState =
+        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
+            ':host([enable-csb-motion-tweaks]) .suggestion-loader-container');
+    return newLoadingState ??
+        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
+            '#loadingState')!;
+  }
+
   setup(async () => {
     testBrowserProxy = new TestLensSidePanelBrowserProxy();
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
@@ -62,8 +77,7 @@ suite('SearchboxBackButton', () => {
 
     await waitAfterNextRender(lensSidePanelElement);
     // Ghost loader should show on true empty input.
-    assertTrue(
-        isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
+    assertTrue(isVisible(getSearchboxGhostLoaderElement()));
 
     lensSidePanelElement.dispatchEvent(new CustomEvent('query-autocomplete', {
       bubbles: true,
@@ -73,8 +87,7 @@ suite('SearchboxBackButton', () => {
 
     await waitAfterNextRender(lensSidePanelElement);
     // Ghost loader should not show when input is only whitespace.
-    assertFalse(
-        isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
+    assertFalse(isVisible(getSearchboxGhostLoaderElement()));
   });
 
   test('click resets ghost loader loading state', async () => {
@@ -94,7 +107,6 @@ suite('SearchboxBackButton', () => {
 
     await waitAfterNextRender(lensSidePanelElement);
     // State should be switched back to loading state clicking into searchbox.
-    assertTrue(
-        isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
+    assertTrue(isVisible(getSearchboxGhostLoaderElement()));
   });
 });

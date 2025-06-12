@@ -857,8 +857,10 @@ class LensOverlayControllerTranslatePromoTest
 //  (1) User opens the Lens Overlay.
 //  (2) Promo shows. After, user clicks the translate button.
 //  (3) Promo hides.
+// TODO(crbug.com/392907122): Re-enable this test once the translate button is in a
+// launchable state.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerTranslatePromoTest,
-                       ShowsTranslatePromo) {
+                       DISABLED_ShowsTranslatePromo) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
 
