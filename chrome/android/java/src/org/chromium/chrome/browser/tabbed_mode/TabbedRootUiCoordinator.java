@@ -196,6 +196,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -1026,7 +1027,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected ScrimManager buildScrimWidget() {
-        ScrimManager scrimManager = new ScrimManager(mActivity, mCoordinator);
+        ScrimManager scrimManager =
+                new ScrimManager(mActivity, mCoordinator, ScrimClient.TABBED_ROOT_UI_COORDINATOR);
         scrimManager
                 .getStatusBarColorSupplier()
                 .addObserver(mStatusBarColorController::setScrimColor);

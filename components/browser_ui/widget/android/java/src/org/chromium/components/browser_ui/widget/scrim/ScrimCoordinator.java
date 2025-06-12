@@ -19,6 +19,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -81,8 +82,9 @@ public class ScrimCoordinator {
     /**
      * @param context An Android {@link Context} for creating the view.
      * @param parent The {@link ViewGroup} the scrim should exist in.
+     * @param client The client that's creating the scrim system, used for error reporting.
      */
-    /* package */ ScrimCoordinator(Context context, ViewGroup parent) {
+    /* package */ ScrimCoordinator(Context context, ViewGroup parent, @ScrimClient int client) {
         @ColorInt
         int defaultScrimColor = ContextCompat.getColor(context, R.color.default_scrim_color);
         mMediator =
@@ -95,11 +97,7 @@ public class ScrimCoordinator {
                             notifyVisibilityObservers();
                         },
                         defaultScrimColor);
-        mScrimViewBuilder =
-                () -> {
-                    ScrimView view = new ScrimView(context, parent);
-                    return view;
-                };
+        mScrimViewBuilder = () -> new ScrimView(context, parent, client);
     }
 
     /**
@@ -121,19 +119,8 @@ public class ScrimCoordinator {
     }
 
     /**
-     * Show the scrim.
-     *
      * @param model The property model of {@link ScrimProperties} that define the scrim behavior.
      * @param animate Whether the scrim should animate.
-     */
-    public void showScrim(PropertyModel model) {
-        showScrim(model, true);
-    }
-
-    /**
-     * Show the scrim.
-     *
-     * @param model The property model of {@link ScrimProperties} that define the scrim behavior.
      */
     public void showScrim(PropertyModel model, boolean animate) {
         assert model != null : "Showing the scrim requires a model.";

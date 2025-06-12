@@ -174,6 +174,7 @@ import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibility
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
@@ -1558,7 +1559,8 @@ public class RootUiCoordinator
      */
     protected ScrimManager buildScrimWidget() {
         ViewGroup coordinator = mActivity.findViewById(R.id.coordinator);
-        ScrimManager scrimManager = new ScrimManager(mActivity, coordinator);
+        ScrimManager scrimManager =
+                new ScrimManager(mActivity, coordinator, ScrimClient.ROOT_UI_COORDINATOR);
         scrimManager
                 .getStatusBarColorSupplier()
                 .addObserver(RootUiCoordinator.this::onScrimColorChanged);

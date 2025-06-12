@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -125,7 +126,9 @@ public class BottomSheetObserverTest {
         mBottomSheetController =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            mScrimManager = new ScrimManager(sTestRule.getActivity(), rootView);
+                            mScrimManager =
+                                    new ScrimManager(
+                                            sTestRule.getActivity(), rootView, ScrimClient.NONE);
                             Supplier<ScrimManager> scrimSupplier = () -> mScrimManager;
                             Callback<View> initializedCallback = (v) -> {};
                             return new BottomSheetControllerImpl(

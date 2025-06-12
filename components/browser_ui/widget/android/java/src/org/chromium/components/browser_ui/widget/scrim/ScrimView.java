@@ -11,9 +11,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.TouchEventDelegate;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.UiUtils;
 
 /**
@@ -26,16 +28,20 @@ public class ScrimView extends View {
     /** The view that the scrim should exist in. */
     private final ViewGroup mParent;
 
+    private final @ScrimClient int mClient;
+
     /** A means of passing all touch events to an external handler. */
     private @Nullable TouchEventDelegate mEventDelegate;
 
     /**
      * @param context An Android {@link Context} for creating the view.
      * @param parent The {@link ViewGroup} the scrim should exist in.
+     * @param client The client to associate metrics with.
      */
-    public ScrimView(Context context, ViewGroup parent) {
+    public ScrimView(Context context, ViewGroup parent, @ScrimClient int client) {
         super(context);
         mParent = parent;
+        mClient = client;
         setFocusable(false);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
 
@@ -68,6 +74,12 @@ public class ScrimView extends View {
         while (anchorView.getParent() != mParent) {
             anchorView = (View) anchorView.getParent();
             assert anchorView instanceof ViewGroup : "Focused view must be part of the hierarchy!";
+
+            if (anchorView == null) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.Scrim.MissingParent.Client", mClient, ScrimClient.COUNT);
+                return;
+            }
         }
         if (inFrontOf) {
             // TODO(skym): This un-intuitively inserts before (underneath) other previous scrims.

@@ -62,6 +62,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -401,7 +402,8 @@ public class CreatorCoordinator
 
     /** Set up the bottom sheet for this activity. */
     private void initBottomSheet() {
-        mScrimManager = new ScrimManager(mActivity, mCreatorViewGroup);
+        mScrimManager =
+                new ScrimManager(mActivity, mCreatorViewGroup, ScrimClient.CREATOR_COORDINATOR);
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);

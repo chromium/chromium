@@ -5,22 +5,33 @@
 package org.chromium.components.browser_ui.widget.scrim;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.CREATOR_COORDINATOR;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.HISTORY_ACTIVITY;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.NONE;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.ROOT_UI_COORDINATOR;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.SETTINGS_ACTIVITY;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.SIGNIN_ACCOUNT_PICKER_COORDINATOR;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.TABBED_ROOT_UI_COORDINATOR;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +49,32 @@ import java.util.Map;
  */
 @NullMarked
 public class ScrimManager {
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(ScrimClient)
+    @IntDef({
+        NONE,
+        CREATOR_COORDINATOR,
+        SIGNIN_ACCOUNT_PICKER_COORDINATOR,
+        ROOT_UI_COORDINATOR,
+        TABBED_ROOT_UI_COORDINATOR,
+        HISTORY_ACTIVITY,
+        SETTINGS_ACTIVITY,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ScrimClient {
+        int NONE = 0;
+        int CREATOR_COORDINATOR = 1;
+        int SIGNIN_ACCOUNT_PICKER_COORDINATOR = 2;
+        int ROOT_UI_COORDINATOR = 3;
+        int TABBED_ROOT_UI_COORDINATOR = 4;
+        int HISTORY_ACTIVITY = 5;
+        int SETTINGS_ACTIVITY = 6;
+        int COUNT = 7;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:ScrimClient)
+
     private final ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
             new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<Integer> mStatusBarColorSupplier =
@@ -47,6 +84,7 @@ public class ScrimManager {
 
     private final Context mContext;
     private final ViewGroup mParent;
+    private final @ScrimClient int mClient;
     private final Map<PropertyModel, ScrimCoordinator> mModelToScrim = new HashMap<>();
     private final ScrimCoordinator.Observer mOnScrimVisibilityChanged = this::pruneHiddenScrims;
     private final Callback<Integer> mOnStatusBarColorChanged = this::updateStatusBarColor;
@@ -57,10 +95,12 @@ public class ScrimManager {
     /**
      * @param context An Android {@link Context} for creating the view.
      * @param parent The {@link ViewGroup} the scrim should exist in.
+     * @param client The client that's creating the scrim system, used for error reporting.
      */
-    public ScrimManager(Context context, ViewGroup parent) {
+    public ScrimManager(Context context, ViewGroup parent, @ScrimClient int client) {
         mContext = context;
         mParent = parent;
+        mClient = client;
     }
 
     /** Performs tear down. Removes outstanding scrims and resets suppliers. */
@@ -131,9 +171,12 @@ public class ScrimManager {
      * @param animate Whether the scrim should animate.
      */
     public void showScrim(PropertyModel model, boolean animate) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Scrim.ShowRequest.Client", mClient, ScrimClient.COUNT);
+
         ViewGroup customParent = model.get(ScrimProperties.CUSTOM_PARENT);
         ViewGroup parent = customParent == null ? mParent : customParent;
-        ScrimCoordinator coordinator = new ScrimCoordinator(mContext, parent);
+        ScrimCoordinator coordinator = new ScrimCoordinator(mContext, parent, mClient);
         mModelToScrim.put(model, coordinator);
         mScrimVisibilitySupplier.set(true);
         coordinator.showScrim(model, animate);

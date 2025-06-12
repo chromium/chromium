@@ -34,6 +34,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -77,7 +78,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     mActivity = sActivityTestRule.getActivity();
                     ViewGroup activityContentView = mActivity.findViewById(android.R.id.content);
                     activityContentView.removeAllViews();
-                    ScrimManager scrimManager = new ScrimManager(mActivity, activityContentView);
+                    ScrimManager scrimManager =
+                            new ScrimManager(mActivity, activityContentView, ScrimClient.NONE);
                     mBottomSheetController =
                             BottomSheetControllerFactory.createFullWidthBottomSheetController(
                                     () -> scrimManager,

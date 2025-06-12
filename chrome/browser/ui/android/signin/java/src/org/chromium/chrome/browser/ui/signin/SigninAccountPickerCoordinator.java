@@ -35,6 +35,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -130,7 +131,11 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         sheetContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mContainerView.addView(sheetContainer);
-        mScrimManager = new ScrimManager(mActivity, (ViewGroup) sheetContainer.getParent());
+        mScrimManager =
+                new ScrimManager(
+                        mActivity,
+                        (ViewGroup) sheetContainer.getParent(),
+                        ScrimClient.SIGNIN_ACCOUNT_PICKER_COORDINATOR);
         mScrimManager.getStatusBarColorSupplier().addObserver(mDelegate::setStatusBarColor);
 
         mBottomSheetController =

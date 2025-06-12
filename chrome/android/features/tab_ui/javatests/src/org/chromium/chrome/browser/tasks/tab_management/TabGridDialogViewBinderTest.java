@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -179,7 +180,7 @@ public class TabGridDialogViewBinderTest {
                         assertNull(mShareButton);
                         assertNull(mImageTilesContainer);
                     }
-                    mScrimManager = new ScrimManager(sActivity, parentView);
+                    mScrimManager = new ScrimManager(sActivity, parentView, ScrimClient.NONE);
                     mTabGridDialogView.setupScrimManager(mScrimManager);
 
                     mModel =

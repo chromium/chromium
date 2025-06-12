@@ -56,6 +56,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.Observer;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -110,7 +111,7 @@ public class ScrimTest {
                     mAnchorView = new View(sActivity);
                     sParent.addView(mAnchorView);
 
-                    mScrimManager = new ScrimManager(sActivity, sParent);
+                    mScrimManager = new ScrimManager(sActivity, sParent, ScrimClient.NONE);
                     mScrimManager
                             .getStatusBarColorSupplier()
                             .addObserver(mStatusBarColorHelper::notifyCalled);

@@ -38,6 +38,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -134,7 +135,8 @@ public class NoPasskeysBottomSheetRenderTest {
 
     private BottomSheetController createBottomSheetController() {
         ViewGroup activityContentView = getActivity().findViewById(android.R.id.content);
-        ScrimManager scrimManager = new ScrimManager(getActivity(), activityContentView);
+        ScrimManager scrimManager =
+                new ScrimManager(getActivity(), activityContentView, ScrimClient.NONE);
         return BottomSheetControllerFactory.createFullWidthBottomSheetController(
                 () -> scrimManager,
                 (unused) -> {},

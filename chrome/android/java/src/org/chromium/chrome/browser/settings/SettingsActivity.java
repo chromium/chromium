@@ -57,6 +57,7 @@ import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -235,7 +236,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private void initBottomSheet() {
         ViewGroup sheetContainer = findViewById(R.id.sheet_container);
         // TODO: Observe scrim changes if status bar needs to change color with the scrim.
-        mScrimManager = new ScrimManager(this, (ViewGroup) sheetContainer.getParent());
+        mScrimManager =
+                new ScrimManager(
+                        this,
+                        (ViewGroup) sheetContainer.getParent(),
+                        ScrimClient.SETTINGS_ACTIVITY);
 
         mManagedBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(

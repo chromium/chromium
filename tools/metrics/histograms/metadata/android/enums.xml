@@ -1500,6 +1500,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Root View was Not Focused (calls Focus())"/>
 </enum>
 
+<!-- LINT.IfChange(ScrimClient) -->
+
+<enum name="ScrimClient">
+  <int value="0" label="NONE"/>
+  <int value="1" label="CREATOR_COORDINATOR"/>
+  <int value="2" label="SIGNIN_ACCOUNT_PICKER_COORDINATOR"/>
+  <int value="3" label="ROOT_UI_COORDINATOR"/>
+  <int value="4" label="TABBED_ROOT_UI_COORDINATOR"/>
+  <int value="5" label="HISTORY_ACTIVITY"/>
+  <int value="6" label="SETTINGS_ACTIVITY"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/scrim/ScrimManager.java:ScrimClient) -->
+
 <!-- LINT.IfChange(IntentOrigin) -->
 
 <enum name="SearchActivityIntentOrigin">

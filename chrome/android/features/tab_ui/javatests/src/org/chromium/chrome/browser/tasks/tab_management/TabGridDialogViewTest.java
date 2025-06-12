@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.Visibi
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -105,7 +106,7 @@ public class TabGridDialogViewTest {
                     mAnimationCardView =
                             mTabGridDialogView.findViewById(R.id.dialog_animation_card_view);
                     mBackgroundFrameView = mTabGridDialogView.findViewById(R.id.dialog_frame);
-                    mScrimManager = new ScrimManager(sActivity, mTestParent);
+                    mScrimManager = new ScrimManager(sActivity, mTestParent, ScrimClient.NONE);
                     mTabGridDialogView.setupScrimManager(mScrimManager);
                     mTabGridDialogView.setScrimClickRunnable(() -> {});
 

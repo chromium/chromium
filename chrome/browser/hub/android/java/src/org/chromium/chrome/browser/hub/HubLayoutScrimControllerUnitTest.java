@@ -36,6 +36,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -70,7 +71,7 @@ public class HubLayoutScrimControllerUnitTest {
         mAnchorView = new View(mActivity);
         rootView.addView(mAnchorView);
 
-        mScrimManager = spy(new ScrimManager(mActivity, rootView));
+        mScrimManager = spy(new ScrimManager(mActivity, rootView, ScrimClient.NONE));
 
         mIsIncognitoSupplier = new ObservableSupplierImpl<>(false);
 

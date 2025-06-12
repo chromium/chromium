@@ -4985,6 +4985,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Scrim.MissingParent.Client" enum="ScrimClient"
+    expires_after="2026-06-11">
+  <owner>skym@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Scrims are placed into the view heirarchy by walking up from the anchor view
+    looking for the parent. This is supposed to always work, but we're currently
+    seeing failures in the wild. This histogram aims to narrow down which scrim
+    clients are having problems to inform the investigation.
+  </summary>
+</histogram>
+
+<histogram name="Android.Scrim.ShowRequest.Client" enum="ScrimClient"
+    expires_after="2026-06-11">
+  <owner>skym@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Emitted when a scrim is actaully triggered. Should help narrow down which
+    clients that have code depedencies on the scrim systme actaully use it. It's
+    possible some are legacy and just dead code. Additionally, will help give a
+    ratio of usages to problems encountered when compared to the other scrim
+    histograms.
+  </summary>
+</histogram>
+
 <histogram name="Android.SearchEngineChoice.ChosenSearchEngine"
     enum="OmniboxSearchEngineType" expires_after="never">
 <!-- expires-never: Continuously monitored by Android partner team. -->
