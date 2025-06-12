@@ -290,7 +290,9 @@ void EmbeddedWorkerTestHelper::BindStorageControl(
     mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
         receiver) {
   storage_control_ = std::make_unique<storage::ServiceWorkerStorageControlImpl>(
-      user_data_directory_, wrapper_->storage_shared_buffer(),
+      user_data_directory_,
+      base::MakeRefCounted<
+          storage::ServiceWorkerStorage::StorageSharedBuffer>(),
       std::move(receiver));
 }
 

@@ -31,6 +31,7 @@
 #include "content/common/service_worker/service_worker_router_evaluator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -43,6 +44,14 @@
 namespace content {
 
 namespace {
+
+// Another switch for `kServiceWorkerBackgroundUpdateForRegisteredStorageKeys`
+// intended to be controlled from Field Trial (e.g. kill-switch). The original
+// flag may be overridden by `AwFieldTrials::RegisterFeatureOverrides`.
+BASE_FEATURE(
+    kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled,
+    "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled",
+    base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
              "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
@@ -228,6 +237,16 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
     storage::SpecialStoragePolicy* special_storage_policy,
     base::TimeTicks start_time)
     : context_(context),
+      storage_shared_buffer_(
+          base::FeatureList::IsEnabled(
+              features::
+                  kServiceWorkerBackgroundUpdateForRegisteredStorageKeys) &&
+                  base::FeatureList::IsEnabled(
+                      kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled)
+              ? base::MakeRefCounted<
+                    storage::ServiceWorkerStorage::StorageSharedBuffer>(
+                    /*enable_registered_storage_keys=*/true)
+              : nullptr),
       quota_manager_proxy_(quota_manager_proxy),
       special_storage_policy_(special_storage_policy),
       registration_scope_cache_(kServiceWorkerScopeCacheLimitSize),
@@ -974,9 +993,9 @@ void ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartupDeprecated(
       "ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartupDeprecated");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (context_->wrapper()->storage_shared_buffer()) {
-    // Discard RegisteredKeys from storage_shared_buffer.
-    context_->wrapper()->storage_shared_buffer()->TakeRegisteredKeys();
+  if (storage_shared_buffer_) {
+    // Discard RegisteredKeys from `storage_shared_buffer_`.
+    storage_shared_buffer_->TakeRegisteredKeys();
   }
 
   if (!registrations_initialized_) {
@@ -1014,12 +1033,9 @@ bool ServiceWorkerRegistry::MaybeHasRegistrationForStorageKey(
   // `storage_keys` from the `ServiceWorkerStorage` in the thread pool without
   // waiting for `DidGetRegisteredStorageKeys()` to be called. This can speed up
   // navigation during the browser startup phase.
-  if (!registrations_initialized_ &&
-      context_->wrapper()->storage_shared_buffer()) {
+  if (!registrations_initialized_ && storage_shared_buffer_) {
     if (std::optional<std::vector<blink::StorageKey>> storage_keys =
-            context_->wrapper()
-                ->storage_shared_buffer()
-                ->TakeRegisteredKeys()) {
+            storage_shared_buffer_->TakeRegisteredKeys()) {
       SetRegisteredStorageKeys(*storage_keys);
     }
   }
@@ -2048,7 +2064,7 @@ void ServiceWorkerRegistry::BindStorageControl(
       base::BindOnce(
           base::IgnoreResult(&storage::ServiceWorkerStorageControlImpl::Create),
           std::move(receiver), context_->wrapper()->user_data_directory(),
-          context_->wrapper()->storage_shared_buffer()));
+          storage_shared_buffer_));
 }
 
 void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {

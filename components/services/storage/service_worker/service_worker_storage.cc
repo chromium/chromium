@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -67,6 +68,11 @@ void RecordDeleteAndStartOverResult(DeleteAndStartOverResult result) {
 }
 
 }  // namespace
+
+ServiceWorkerStorage::StorageSharedBuffer::StorageSharedBuffer()  // IN-TEST
+    : enable_registered_storage_keys_(true) {
+  CHECK_IS_TEST();
+}
 
 ServiceWorkerStorage::StorageSharedBuffer::StorageSharedBuffer(
     bool enable_registered_storage_keys)

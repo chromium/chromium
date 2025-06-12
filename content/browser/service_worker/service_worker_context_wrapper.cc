@@ -80,14 +80,6 @@ namespace content {
 
 namespace {
 
-// Another switch for `kServiceWorkerBackgroundUpdateForRegisteredStorageKeys`
-// intended to be controlled from Field Trial (e.g. kill-switch). The original
-// flag may be overridden by `AwFieldTrials::RegisterFeatureOverrides`.
-BASE_FEATURE(
-    kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled,
-    "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled",
-    base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Translate a ServiceWorkerVersion::Status to a
 // ServiceWorkerRunningInfo::ServiceWorkerVersionStatus.
 ServiceWorkerRunningInfo::ServiceWorkerVersionStatus
@@ -275,17 +267,7 @@ ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
       core_sync_observer_list_(
           base::MakeRefCounted<ServiceWorkerContextSynchronousObserverList>()),
       browser_context_(browser_context),
-      process_manager_(std::make_unique<ServiceWorkerProcessManager>()),
-      storage_shared_buffer_(
-          base::FeatureList::IsEnabled(
-              features::
-                  kServiceWorkerBackgroundUpdateForRegisteredStorageKeys) &&
-                  base::FeatureList::IsEnabled(
-                      kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled)
-              ? base::MakeRefCounted<
-                    storage::ServiceWorkerStorage::StorageSharedBuffer>(
-                    /*enable_registered_storage_keys=*/true)
-              : nullptr) {
+      process_manager_(std::make_unique<ServiceWorkerProcessManager>()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Add this object as an observer of the wrapped |context_core_|. This lets us

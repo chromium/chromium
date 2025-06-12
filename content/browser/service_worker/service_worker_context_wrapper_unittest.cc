@@ -111,7 +111,9 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
           receiver) {
     storage_control_ =
         std::make_unique<storage::ServiceWorkerStorageControlImpl>(
-            user_data_directory_.GetPath(), wrapper_->storage_shared_buffer(),
+            user_data_directory_.GetPath(),
+            base::MakeRefCounted<
+                storage::ServiceWorkerStorage::StorageSharedBuffer>(),
             std::move(receiver));
   }
 

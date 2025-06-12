@@ -65,6 +65,7 @@ class ServiceWorkerStorage {
   class StorageSharedBuffer
       : public base::RefCountedThreadSafe<StorageSharedBuffer> {
    public:
+    StorageSharedBuffer();
     explicit StorageSharedBuffer(bool enable_registered_storage_keys);
     StorageSharedBuffer(const StorageSharedBuffer&) = delete;
     StorageSharedBuffer& operator=(const StorageSharedBuffer&) = delete;

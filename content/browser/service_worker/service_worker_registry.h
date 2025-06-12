@@ -21,6 +21,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
+#include "components/services/storage/service_worker/service_worker_storage.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -538,6 +539,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   // The ServiceWorkerContextCore object must outlive this.
   const raw_ref<ServiceWorkerContextCore> context_;
+
+  // This is a direct communication channel between this ServiceWorkerRegistry
+  // in the UI thread and the ServiceWorkerStorage in the thread pool.
+  scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+      storage_shared_buffer_;
 
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>
       remote_storage_control_;
