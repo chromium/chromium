@@ -32482,6 +32482,33 @@ should be able to be added at any place in this file.
   <description>Permissions reset from PageInfo.</description>
 </action>
 
+<action name="PageInfo.PrivacySubpage.IncognitoSettingsOpened">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Incognito settings link clicked on the page info &quot;Privacy and site
+    data&quot; subpage.
+  </description>
+</action>
+
+<action name="PageInfo.PrivacySubpage.TrackingProtectionsPaused">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User paused tracking protections on the page info &quot;Privacy and site
+    data&quot; subpage via the tracking protections button.
+  </description>
+</action>
+
+<action name="PageInfo.PrivacySubpage.TrackingProtectionsReenabled">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User reenabled tracking protections on the page info &quot;Privacy and site
+    data&quot; subpage via the tracking protections button.
+  </description>
+</action>
+
 <action name="PageInfo.SafeBrowsing.HelpOpened">
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>

@@ -1804,7 +1804,6 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
                     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_PRIVACY_SITE_DATA_SUBPAGE);
 
     base::RunLoop run_loop2;
-    base::UserActionTester user_actions_stats;
     PerformMouseClickOnView(privacy_button);
     auto* privacy_subpage_content = static_cast<PageInfoCookiesContentView*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting()
@@ -1822,6 +1821,7 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
 IN_PROC_BROWSER_TEST_P(
     PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
     ButtonForPausingAndResumingProtectionsUpdatesTrackingProtectionException) {
+  base::UserActionTester user_actions_stats;
   Browser* incognito_browser = CreateIncognitoBrowser();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, GURL(kUrl)));
@@ -1849,6 +1849,9 @@ IN_PROC_BROWSER_TEST_P(
       host_content_settings_map()->GetContentSetting(
           GURL(), GURL(kUrl), ContentSettingsType::TRACKING_PROTECTION, &info),
       CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(user_actions_stats.GetActionCount(
+                "PageInfo.PrivacySubpage.TrackingProtectionsPaused"),
+            1);
 
   PerformMouseClickOnView(tracking_protections_button);
   base::RunLoop().RunUntilIdle();
@@ -1860,10 +1863,14 @@ IN_PROC_BROWSER_TEST_P(
       host_content_settings_map()->GetContentSetting(
           GURL(), GURL(kUrl), ContentSettingsType::TRACKING_PROTECTION, &info),
       CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(user_actions_stats.GetActionCount(
+                "PageInfo.PrivacySubpage.TrackingProtectionsReenabled"),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
                        ClickingSettingsButtonOpensIncognitoSettingsPage) {
+  base::UserActionTester user_actions_stats;
   Browser* incognito_browser = CreateIncognitoBrowser();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, GURL(kUrl)));
@@ -1896,6 +1903,9 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
 
   EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(),
             chrome::GetSettingsUrl(chrome::kIncognitoSettingsSubPage));
+  EXPECT_EQ(user_actions_stats.GetActionCount(
+                "PageInfo.PrivacySubpage.IncognitoSettingsOpened"),
+            1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

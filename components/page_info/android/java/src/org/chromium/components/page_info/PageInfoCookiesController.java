@@ -165,7 +165,12 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
 
     private void onTrackingProtectionsButtonPressed() {
         if (mBridge != null) {
-            // TODO(crbug.com/388294499): Add metrics for toggling protections.
+            // Check current controls state to record metrics before updates are made via
+            // `onTrackingProtectionsChangedForSite`.
+            mMainController.recordAction(
+                    mControlsState == CookieControlsState.ACTIVE_TP
+                            ? PageInfoAction.PAGE_INFO_PRIVACY_PAGE_TRACKING_PROTECTIONS_PAUSED
+                            : PageInfoAction.PAGE_INFO_PRIVACY_PAGE_TRACKING_PROTECTIONS_REENABLED);
             mBridge.onTrackingProtectionsChangedForSite();
         }
     }

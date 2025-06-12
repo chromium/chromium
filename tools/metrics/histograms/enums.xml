@@ -26259,6 +26259,9 @@ This is true even if the type has been removed from the mojom file.
   <int value="36" label="Show full history clicked in Last Visited"/>
   <int value="37" label="Safe Browsing help opened"/>
   <int value="38" label="Chrome Sync settings opened"/>
+  <int value="39" label="Incognito settings opened"/>
+  <int value="40" label="Tracking protections reenabled"/>
+  <int value="41" label="Tracking protections paused"/>
 </enum>
 
 <!--LINT.ThenChange(//components/page_info/core/page_info_action.h:PageInfoAction) -->
