@@ -3664,19 +3664,20 @@ void TabStripModel::UpdateActiveTabInSplitImpl(split_tabs::SplitTabId split_id,
     CloseWebContentsAt(close_index, TabCloseTypes::CLOSE_USER_GESTURE);
   } else {
     int initial_active_index = active_index();
-    std::optional<tab_groups::TabGroupId> destination_group =
-        GetTabGroupForTab(update_index);
-    bool destination_pinned = IsTabPinned(update_index);
+    tabs::TabInterface* update_tab = GetTabAtIndex(update_index);
+    std::optional<tab_groups::TabGroupId> initial_active_group =
+        GetTabGroupForTab(active_index());
+    bool initial_active_pinned = IsTabPinned(active_index());
 
-    MoveTabToIndexImpl(update_index, active_index(), GetActiveTab()->GetGroup(),
-                       GetActiveTab()->IsPinned(), true);
-    if (active_index() < update_index) {
-      MoveTabToIndexImpl(initial_active_index + 1, update_index,
-                         destination_group, destination_pinned, false);
-    } else {
-      MoveTabToIndexImpl(initial_active_index - 1, update_index,
-                         destination_group, destination_pinned, false);
-    }
+    // Move the active index first so the group is not possibly destroyed at the
+    // update index. This can happen when the update index is the only member of
+    // a group. Note that the active split tab cannot be the only member of a
+    // group since it is a split tab.
+    MoveTabToIndexImpl(active_index(), update_index, update_tab->GetGroup(),
+                       update_tab->IsPinned(), false);
+
+    MoveTabToIndexImpl(GetIndexOfTab(update_tab), initial_active_index,
+                       initial_active_group, initial_active_pinned, true);
   }
 
   std::vector<int> split_indices;

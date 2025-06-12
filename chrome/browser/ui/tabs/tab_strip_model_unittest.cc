@@ -2213,6 +2213,30 @@ TEST_F(TabStripModelTest, SwapActiveTabInSplit) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
+TEST_F(TabStripModelTest, SwapActiveTabInSplitWithOnlyTabInGroup) {
+  // Create five tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2}));
+
+  tabstrip()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+
+  EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
+
+  tab_groups::TabGroupId update_group_id = tabstrip()->AddToNewGroup({3});
+
+  tabstrip()->UpdateActiveTabInSplit(split_tab_id, 3,
+                                     TabStripModel::SplitUpdateType::kSwap);
+  EXPECT_EQ("2ps 3ps 1p 0 4", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(3), update_group_id);
+  tabstrip()->CloseAllTabs();
+  EXPECT_TRUE(tabstrip()->empty());
+}
+
 TEST_F(TabStripModelTest, ReverseTabsInSplit) {
   // Create five tabs with two pinned, select the last.
   ASSERT_NO_FATAL_FAILURE(
