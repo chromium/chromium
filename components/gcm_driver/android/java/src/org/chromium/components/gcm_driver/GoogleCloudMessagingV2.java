@@ -146,7 +146,7 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
             data = new Bundle();
         }
 
-        final BlockingQueue<Intent> responseResult = new LinkedBlockingQueue<Intent>();
+        final BlockingQueue<Intent> responseResult = new LinkedBlockingQueue<>();
         Handler responseHandler =
                 new Handler(Looper.getMainLooper()) {
                     @Override

@@ -238,7 +238,7 @@ public class InstanceIDBridge {
                 return;
             }
             AsyncTask<Result> task =
-                    new AsyncTask<Result>() {
+                    new AsyncTask<>() {
                         @Override
                         @SuppressWarnings(
                                 "NoSynchronizedThisCheck") // Only used/accessible by native.

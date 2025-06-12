@@ -117,7 +117,7 @@ public class LazySubscriptionsManager {
                 new HashSet<>(
                         sharedPrefs.getStringSet(
                                 SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY, Collections.emptySet()));
-        Set<String> subscriptionsWithPersistedMessagesWithPrefix = new HashSet<String>();
+        Set<String> subscriptionsWithPersistedMessagesWithPrefix = new HashSet<>();
         for (String subscriptionWithPersistedMessages : subscriptionsWithPersistedMessages) {
             if (subscriptionWithPersistedMessages.startsWith(subscriptionIdPrefix)) {
                 subscriptionsWithPersistedMessagesWithPrefix.add(subscriptionWithPersistedMessages);

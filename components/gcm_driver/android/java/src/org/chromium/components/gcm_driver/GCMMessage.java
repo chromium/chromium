@@ -92,7 +92,7 @@ public class GCMMessage {
         mOriginalPriority = extras.getString(bundleOriginalPriority); // May be null.
         mMessageId = extras.getString(bundleMessageId); // May be null.
 
-        List<String> dataKeysAndValues = new ArrayList<String>();
+        List<String> dataKeysAndValues = new ArrayList<>();
         for (String key : extras.keySet()) {
             if (key.equals(bundleSubtype)
                     || key.equals(bundleSenderId)
@@ -364,7 +364,7 @@ public class GCMMessage {
             if (jsonArray == null) {
                 return null;
             }
-            List<String> strings = new ArrayList<String>(jsonArray.length());
+            List<String> strings = new ArrayList<>(jsonArray.length());
             for (int i = 0; i < jsonArray.length(); i++) {
                 strings.add(jsonArray.optString(i));
             }
