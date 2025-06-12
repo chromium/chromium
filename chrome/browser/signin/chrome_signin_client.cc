@@ -8,9 +8,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -100,6 +103,29 @@
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 namespace {
+
+// TODO(crbug.com/408181043): These groups are only used for the experiment
+// with feature flag `syncer::kSyncEnableBookmarksInTransportMode`. Can be
+// safely removed during cleanup.
+//
+// Local Pref used to track in which group from
+// `kSigninFromBookmarksBubbleSyntheticTrialName` trial the user is currently
+// in. This is set at sign-in and read/set at startup.
+constexpr char kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref[] =
+    "UnoDesktopBookmarksEnabledInAccountFromBubbleGroup";
+// Local Pref used to track in which group from
+// `kBookmarksBubblePromoShownSyntheticTrialName` trial the user is currently
+// in. This is set when the promo is shown and read/set at startup.
+constexpr char kBookmarksBubblePromoShownSyntheticTrialGroupNamePref[] =
+    "UnoDesktopBookmarksBubblePromoShownGroup";
+
+// Synthetic field trial for users that have enabled account bookmarks through
+// the Bookmarks Bubble.
+constexpr char kSigninFromBookmarksBubbleSyntheticTrialName[] =
+    "UnoDesktopBookmarksEnabledInAccountFromBubble";
+// Synthetic field trial for users that have seen the Bookmarks Sign in Promo.
+constexpr char kBookmarksBubblePromoShownSyntheticTrialName[] =
+    "UnoDesktopBookmarksBubblePromoShown";
 
 // List of sources for which sign out is always allowed.
 // TODO(crbug.com/40162614): core product logic should not rely on metric
@@ -215,9 +241,66 @@ ChromeSigninClient::ChromeSigninClient(Profile* profile)
 #endif
               ),
       profile_(profile) {
+  // Makes sure to register groups on Startup if previously set.
+  RegisterSyntheticTrialsFromPrefs();
 }
 
 ChromeSigninClient::~ChromeSigninClient() = default;
+
+// static
+void ChromeSigninClient::
+    MaybeAddUserToBookmarksBubblePromoShownSyntheticFieldTrial() {
+  MaybeAddUserToUnoBookmarksSyntheticFieldTrial(
+      kBookmarksBubblePromoShownSyntheticTrialGroupNamePref);
+}
+
+// static
+void ChromeSigninClient::MaybeAddUserToUnoBookmarksSyntheticFieldTrial(
+    std::string_view synthetic_field_trial_group_pref) {
+  // Do not register groups that do not override the main feature.
+  base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
+      switches::kSyncEnableBookmarksInTransportMode);
+  if (!field_trial) {
+    return;
+  }
+
+  PrefService* local_prefs =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  if (!local_prefs) {
+    return;
+  }
+  local_prefs->SetString(synthetic_field_trial_group_pref,
+                         field_trial->GetGroupNameWithoutActivation());
+  RegisterSyntheticTrialsFromPrefs();
+}
+
+// static
+void ChromeSigninClient::RegisterSyntheticTrialsFromPrefs() {
+  PrefService* local_prefs =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  if (!local_prefs) {
+    return;
+  }
+
+  std::string_view signin_from_bookmarks_group_name = local_prefs->GetString(
+      kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref);
+  if (!signin_from_bookmarks_group_name.empty()) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kSigninFromBookmarksBubbleSyntheticTrialName,
+        signin_from_bookmarks_group_name,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
+
+  std::string_view bookmarks_bubble_promo_shown_group_name =
+      local_prefs->GetString(
+          kBookmarksBubblePromoShownSyntheticTrialGroupNamePref);
+  if (!bookmarks_bubble_promo_shown_group_name.empty()) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kBookmarksBubblePromoShownSyntheticTrialName,
+        bookmarks_bubble_promo_shown_group_name,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
+}
 
 void ChromeSigninClient::DoFinalInit() {
   VerifySyncToken();
@@ -411,18 +494,9 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
         RecordOpenTabCount(access_point, consent_level);
 #endif
 
-        if (consent_level == signin::ConsentLevel::kSignin &&
-            SigninPrefs(*GetPrefs())
-                .GetBookmarksExplicitBrowserSignin(
-                    event_details.GetCurrentState().primary_account.gaia)) {
-          // `Enabled` group contains all users that have butter for bookmarks
-          // active - this is used to differentiate between the users that have
-          // the feature active `switches::kSyncEnableBookmarksInTransportMode`
-          // and butter active (in this group).
-          // There is no equivalent control group recorded for the field trial.
-          ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-              "UnoDesktopBookmarksButterActive", "Enabled",
-              variations::SyntheticTrialAnnotationMode::kCurrentLog);
+        if (access_point == signin_metrics::AccessPoint::kBookmarkBubble) {
+          MaybeAddUserToUnoBookmarksSyntheticFieldTrial(
+              kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref);
         }
         break;
     }
@@ -673,4 +747,12 @@ void ChromeSigninClient::ShowUserManager(const base::FilePath& profile_path) {
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileLocked));
 #endif
+}
+
+// static
+void ChromeSigninClient::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(
+      kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref, "");
+  registry->RegisterStringPref(
+      kBookmarksBubblePromoShownSyntheticTrialGroupNamePref, "");
 }
