@@ -102,6 +102,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -876,17 +877,19 @@
   }
   [self dismissCustomizationMenu];
   [self.NTPMetricsRecorder recordIdentityDiscTapped];
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-
   BOOL isSignedIn =
       self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (![self isSignInAllowed]) {
-    [handler showSettingsFromViewController:self.baseViewController];
+    id<SettingsCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SettingsCommands);
+    [handler
+        showGoogleServicesSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
     if (IsIdentityDiscAccountMenuEnabled()) {
       [self showAccountMenu:identityDisc];
     } else {
+      id<ApplicationCommands> handler = HandlerForProtocol(
+          self.browser->GetCommandDispatcher(), ApplicationCommands);
       [handler showSettingsFromViewController:self.baseViewController];
     }
   } else {

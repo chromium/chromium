@@ -52,6 +52,7 @@
 using chrome_test_util::BookmarksNavigationBarDoneButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::GoogleServicesSettingsButton;
+using chrome_test_util::GoogleServicesSettingsView;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
@@ -735,8 +736,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
-  // Ensure the Settings menu is displayed.
-  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+  // Ensure the Google Service settings  screen menu is displayed.
+  [[EarlGrey selectElementWithMatcher:GoogleServicesSettingsView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
