@@ -23,6 +23,7 @@ td {
   border-style: solid;
   border-width: 1px;
   padding: 1px 4px;
+  overflow: auto;
 }
 
 div[slot='panel'] {
