@@ -643,10 +643,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         if (selectedModel.containsKey(TabProperties.TAB_ID)
                 && canDropOnArchivalMessage(selectedViewHolder)
                 && mOnDropOnArchivalMessageCardEventListener != null) {
-            @TabId int tabId = selectedModel.get(TabProperties.TAB_ID);
-
-            mOnDropOnArchivalMessageCardEventListener.onDropTab(tabId);
-
             RecyclerView.ViewHolder archivalMessageViewHolder =
                     recyclerView.findViewHolderForAdapterPosition(
                             mPreviousArchivedMessageCardIndex);
@@ -654,6 +650,12 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                 mModel.updateHoveredCardForHover(mPreviousArchivedMessageCardIndex, false);
             }
             mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
+
+            @TabId int tabId = selectedModel.get(TabProperties.TAB_ID);
+            mOnDropOnArchivalMessageCardEventListener.onDropTab(tabId);
+
+            View selectedItemView = selectedViewHolder.itemView;
+            recyclerView.getLayoutManager().removeView(selectedItemView);
         }
     }
 
