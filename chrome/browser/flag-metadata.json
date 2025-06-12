@@ -507,11 +507,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "arc-rounded-window-compat",
-    "owners": [ "toshikikikuchi@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "arc-rt-vcpu-dual-core",
     "owners": [ "kansho@chromium.org" ],
     "expiry_milestone": 100
@@ -8543,14 +8538,6 @@
       "gerchiko@microsoft.com"
     ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "rounded-windows",
-    "owners": [
-      "zoraiznaeem@chromium.org",
-      "chromeos-foundations@google.com"
-    ],
-    "expiry_milestone": 135
   },
   {
     "name": "ruby-short-heuristics",

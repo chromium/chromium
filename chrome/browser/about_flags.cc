@@ -1057,50 +1057,6 @@ const FeatureEntry::FeatureVariation kCctSignInPromptVariations[] = {
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-const FeatureEntry::FeatureParam kRoundedWindowRadius8 = {
-    chromeos::features::kRoundedWindowsRadius, "8"};
-
-const FeatureEntry::FeatureParam kRoundedWindowRadius10 = {
-    chromeos::features::kRoundedWindowsRadius, "10"};
-
-const FeatureEntry::FeatureParam kRoundedWindowRadius12 = {
-    chromeos::features::kRoundedWindowsRadius, "12"};
-
-const FeatureEntry::FeatureParam kRoundedWindowRadius14 = {
-    chromeos::features::kRoundedWindowsRadius, "14"};
-
-const FeatureEntry::FeatureParam kRoundedWindowRadius16 = {
-    chromeos::features::kRoundedWindowsRadius, "16"};
-
-const FeatureEntry::FeatureParam kRoundedWindowRadius18 = {
-    chromeos::features::kRoundedWindowsRadius, "18"};
-
-const FeatureEntry::FeatureVariation kRoundedWindowsRadiusVariation[] = {
-    {"8", &kRoundedWindowRadius8, 1, nullptr},
-    {"10", &kRoundedWindowRadius10, 1, nullptr},
-    {"12", &kRoundedWindowRadius12, 1, nullptr},
-    {"14", &kRoundedWindowRadius14, 1, nullptr},
-    {"16", &kRoundedWindowRadius16, 1, nullptr},
-    {"18", &kRoundedWindowRadius18, 1, nullptr},
-};
-
-const FeatureEntry::FeatureParam
-    kArcRoundedWindowCompatStrategyLeftRightBottomGesture = {
-        arc::kRoundedWindowCompatStrategy,
-        arc::kRoundedWindowCompatStrategy_LeftRightBottomGesture};
-
-const FeatureEntry::FeatureParam
-    kArcRoundedWindowCompatStrategyBottomOnlyGesture = {
-        arc::kRoundedWindowCompatStrategy,
-        arc::kRoundedWindowCompatStrategy_BottomOnlyGesture};
-
-const FeatureEntry::FeatureVariation kArcRoundedWindowCompatVariation[] = {
-    {"Left-Right-Bottom Gesture Exclusion",
-     &kArcRoundedWindowCompatStrategyLeftRightBottomGesture, 1, nullptr},
-    {"Bottom-only Gesture Exclusion",
-     &kArcRoundedWindowCompatStrategyBottomOnlyGesture, 1, nullptr},
-};
-
 const FeatureEntry::FeatureParam kZinkEnableRecommended[] = {
     {"BorealisZinkGlDriverParam", "ZinkEnableRecommended"}};
 const FeatureEntry::FeatureParam kZinkEnableAll[] = {
@@ -5137,11 +5093,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"disable-system-blur", flag_descriptions::kDisableSystemBlur,
      flag_descriptions::kDisableSystemBlurDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kDisableSystemBlur)},
-    {"rounded-windows", flag_descriptions::kRoundedWindows,
-     flag_descriptions::kRoundedWindowsDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chromeos::features::kRoundedWindows,
-                                    kRoundedWindowsRadiusVariation,
-                                    "RoundedWindows")},
     {"bluetooth-audio-le-audio-only",
      flag_descriptions::kBluetoothAudioLEAudioOnlyName,
      flag_descriptions::kBluetoothAudioLEAudioOnlyDescription, kOsCrOS,
@@ -6485,12 +6436,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"arc-resize-compat", flag_descriptions::kArcResizeCompatName,
      flag_descriptions::kArcResizeCompatDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kResizeCompat)},
-    {"arc-rounded-window-compat",
-     flag_descriptions::kArcRoundedWindowCompatName,
-     flag_descriptions::kArcRoundedWindowCompatDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(arc::kRoundedWindowCompat,
-                                    kArcRoundedWindowCompatVariation,
-                                    "ArcRoundedWindowCompat")},
     {"arc-rt-vcpu-dual-core", flag_descriptions::kArcRtVcpuDualCoreName,
      flag_descriptions::kArcRtVcpuDualCoreDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kRtVcpuDualCore)},

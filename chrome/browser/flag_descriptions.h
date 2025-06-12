@@ -2125,9 +2125,6 @@ extern const char kRootScrollbarFollowsTheme[];
 extern const char kRootScrollbarFollowsThemeDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-extern const char kRoundedWindows[];
-extern const char kRoundedWindowsDescription[];
-
 extern const char kRubyShortHeuristicsName[];
 extern const char kRubyShortHeuristicsDescription[];
 
@@ -3792,9 +3789,6 @@ extern const char kArcPerAppLanguageDescription[];
 
 extern const char kArcResizeCompatName[];
 extern const char kArcResizeCompatDescription[];
-
-extern const char kArcRoundedWindowCompatName[];
-extern const char kArcRoundedWindowCompatDescription[];
 
 extern const char kArcRtVcpuDualCoreName[];
 extern const char kArcRtVcpuDualCoreDesc[];

@@ -3715,11 +3715,6 @@ const char kRootScrollbarFollowsThemeDescription[] =
     "If enabled makes the root scrollbar follow the browser's theme color.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-const char kRoundedWindows[] = "Use rounded windows";
-const char kRoundedWindowsDescription[] =
-    "Specifies the radius of rounded windows in DIPs (Device Independent "
-    "Pixels)";
-
 const char kRubyShortHeuristicsName[] = "Short ruby heuristics";
 const char kRubyShortHeuristicsDescription[] =
     "When enabled, line breaking doesn't happen inside <ruby>s with shorter "
@@ -6470,10 +6465,6 @@ const char kArcPerAppLanguageDescription[] =
 const char kArcResizeCompatName[] = "Enable ARC Resize Compatibility features";
 const char kArcResizeCompatDescription[] =
     "Enable resize compatibility features for ARC++ apps";
-
-const char kArcRoundedWindowCompatName[] = "ARC Rounded Window Compatibility";
-const char kArcRoundedWindowCompatDescription[] =
-    "Enable rounded window compatibility feature for ARC++ apps";
 
 const char kArcRtVcpuDualCoreName[] =
     "Enable ARC real time vCPU on a device with 2 logical cores online.";
