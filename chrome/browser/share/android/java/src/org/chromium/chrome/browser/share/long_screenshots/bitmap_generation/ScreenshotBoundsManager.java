@@ -11,7 +11,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
-import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -29,9 +28,9 @@ public class ScreenshotBoundsManager {
     private static final int NUM_VIEWPORTS_CAPTURE_BELOW_FOR_FULL_CAPTURE = 4;
 
     private final Tab mTab;
-    private @MonotonicNonNull Rect mCaptureRect;
-    private @MonotonicNonNull Size mContentSize;
-    private @MonotonicNonNull Point mScrollOffset;
+    private Rect mCaptureRect;
+    private @Nullable Size mContentSize;
+    private @Nullable Point mScrollOffset;
     private int mClipHeightScaled;
 
     /**
@@ -92,17 +91,17 @@ public class ScreenshotBoundsManager {
     /**
      * @return The bounds of the capture.
      */
-    public @Nullable Rect getCaptureBounds() {
+    public Rect getCaptureBounds() {
         return mCaptureRect;
     }
 
     /** Sets the composited rect. */
-    public void setCompositedSize(Size size) {
+    public void setCompositedSize(@Nullable Size size) {
         mContentSize = size;
     }
 
     /** Set the composited scroll offset. */
-    public void setCompositedScrollOffset(Point offset) {
+    public void setCompositedScrollOffset(@Nullable Point offset) {
         mScrollOffset = offset;
     }
 

@@ -9,12 +9,14 @@ import android.content.Intent;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 
 /**
  * For bookmarks/history suggestions, wrap the cursor returned in one that can feed
  * the data back to global search in the format it wants.
  */
+@NullMarked
 class ChromeBrowserProviderSuggestionsCursor extends AbstractCursor {
 
     private static final String[] COLS =

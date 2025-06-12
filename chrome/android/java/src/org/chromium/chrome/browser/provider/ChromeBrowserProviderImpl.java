@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.provider;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,10 +16,15 @@ import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * This class provides access to user data stored in Chrome, such as bookmarks, most visited pages,
  * etc. It is used to support android.provider.Browser.
  */
+@NullMarked
 public class ChromeBrowserProviderImpl extends ChromeBrowserProvider.Impl {
     private static final String TAG = "ChromeBrowserProvider";
 
@@ -92,15 +99,16 @@ public class ChromeBrowserProviderImpl extends ChromeBrowserProvider.Impl {
             };
 
     private final Object mInitializeUriMatcherLock = new Object();
-    private UriMatcher mUriMatcher;
+    private @Nullable UriMatcher mUriMatcher;
 
+    @EnsuresNonNull("mUriMatcher")
     private void ensureUriMatcherInitialized() {
         synchronized (mInitializeUriMatcherLock) {
             if (mUriMatcher != null) return;
 
             mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
             // The internal URIs
-            String authority = getContext().getPackageName() + AUTHORITY_SUFFIX;
+            String authority = assumeNonNull(getContext()).getPackageName() + AUTHORITY_SUFFIX;
             mUriMatcher.addURI(authority, BOOKMARKS_PATH, URI_MATCH_BOOKMARKS);
             mUriMatcher.addURI(authority, BOOKMARKS_PATH + "/#", URI_MATCH_BOOKMARKS_ID);
             // The internal authority for public APIs
@@ -179,25 +187,29 @@ public class ChromeBrowserProviderImpl extends ChromeBrowserProvider.Impl {
     @Override
     public Cursor query(
             Uri uri,
-            String[] projection,
-            String selection,
-            String[] selectionArgs,
-            String sortOrder) {
+            String @Nullable [] projection,
+            @Nullable String selection,
+            String @Nullable [] selectionArgs,
+            @Nullable String sortOrder) {
         return new MatrixCursor(BOOKMARK_DEFAULT_PROJECTION, 0);
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public @Nullable Uri insert(Uri uri, @Nullable ContentValues values) {
         return null;
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(Uri uri, @Nullable String selection, String @Nullable [] selectionArgs) {
         return 0;
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(
+            Uri uri,
+            @Nullable ContentValues values,
+            @Nullable String selection,
+            String @Nullable [] selectionArgs) {
         return 0;
     }
 

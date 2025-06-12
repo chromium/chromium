@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.share.screenshot;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The view binder for the Screenshot Share Sheet. */
+@NullMarked
 class ScreenshotShareSheetViewBinder {
     public static void bind(
             PropertyModel model, ScreenshotShareSheetView view, PropertyKey propertyKey) {

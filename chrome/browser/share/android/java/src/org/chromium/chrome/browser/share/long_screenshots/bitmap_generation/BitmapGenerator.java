@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 import org.chromium.url.GURL;
@@ -21,9 +25,10 @@ import org.chromium.url.GURL;
  * to capture the webpage, then using {@link LongScreenshotsCompositor} to composite the bitmap.
  * Callers of this class should supply a GeneratorCallback to receive status updates.
  */
+@NullMarked
 public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcessor {
     // Compositor delegate responsible for compositing the skia
-    private LongScreenshotsCompositor mCompositor;
+    private @MonotonicNonNull LongScreenshotsCompositor mCompositor;
     private LongScreenshotsTabService mTabService;
     private final Tab mTab;
 
@@ -81,6 +86,7 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
      * Starts the capture of the screenshot.
      * @param inMemory Capture the contents of the tab in memory rather than using temporary files.
      */
+    @Initializer
     public void captureTab(boolean inMemory) {
         if (mTabService == null) {
             mTabService = LongScreenshotsTabServiceFactory.getServiceInstance();
@@ -131,10 +137,12 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
         if (mScaleFactor == 0f) {
             mScaleFactor = mBoundsManager.getBitmapScaleFactor();
         }
+        assumeNonNull(mCompositor);
         return mCompositor.requestBitmap(rect, mScaleFactor, errorCallback, onBitmapGenerated);
     }
 
     /** Destroy and clean up any memory. */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mCompositor != null) {
             mCompositor.destroy();
@@ -165,6 +173,7 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
 
     private void onCompositorResult(@CompositorStatus int status) {
         if (status == CompositorStatus.OK) {
+            assumeNonNull(mCompositor);
             mBoundsManager.setCompositedSize(mCompositor.getContentSize());
             mBoundsManager.setCompositedScrollOffset(mCompositor.getScrollOffset());
         }
