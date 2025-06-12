@@ -17,6 +17,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
 
   flags = [
+    "USE_AV1_HW_DECODER=$use_av1_hw_decoder",
     "USE_VAAPI=$use_vaapi",
     "USE_VAAPI_IMAGE_CODECS=$use_vaapi_image_codecs",
     "USE_V4L2_CODEC=$use_v4l2_codec",
