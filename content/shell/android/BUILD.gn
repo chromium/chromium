@@ -201,8 +201,8 @@ template("content_shell_apk_tmpl") {
       "//media/capture/video/android:capture_java",
       "//net/android:net_java",
       "//services/shape_detection:shape_detection_java",
-      "//third_party/mesa_headers",
       "//ui/android:ui_java",
+      "//ui/gl:gl_headers",
     ]
     loadable_modules = [ "$root_out_dir/libchrome_crashpad_handler.so" ]
   }

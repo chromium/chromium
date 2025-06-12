@@ -360,6 +360,7 @@ source_set("unit_tests") {
     "//ui/display:display_manager_test_api",
     "//ui/events:test_support",
     "//ui/gfx:test_support",
+    "//ui/gl:gl_headers",
     "//ui/gl:test_support",
     "//ui/message_center",
     "//ui/native_theme",
@@ -369,8 +370,5 @@ source_set("unit_tests") {
     "//ui/views:test_support",
   ]
 
-  data_deps = [
-    "//third_party/mesa_headers",
-    "//ui/resources:ui_test_pak_data",
-  ]
+  data_deps = [ "//ui/resources:ui_test_pak_data" ]
 }

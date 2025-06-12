@@ -22,8 +22,6 @@ target(link_target_type, "service") {
     "media_gpu_channel_manager.h",
   ]
 
-  include_dirs = [ "//third_party/angle:includes" ]
-
   public_deps = [
     "//base",
     "//gpu/config",
@@ -38,8 +36,8 @@ target(link_target_type, "service") {
     "//media/gpu",
     "//media/gpu:buildflags",
     "//media/gpu/ipc/common",
-    "//third_party/mesa_headers",
     "//ui/gfx/ipc/color",
+    "//ui/gl:gl_headers",
   ]
 
   if (is_mac) {

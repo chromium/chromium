@@ -51,6 +51,10 @@ component("gl_enums") {
   public_deps = [ "//third_party/angle:includes" ]
 }
 
+source_set("gl_headers") {
+  public_deps = [ "//third_party/angle:includes" ]
+}
+
 component("gl") {
   output_name = "gl_wrapper"  # Avoid colliding with OS X"s libGL.dylib.
 
@@ -173,6 +177,7 @@ component("gl") {
   ]
   public_deps = [
     ":gl_enums",
+    ":gl_headers",
     "//base",
     "//ui/events/platform",
     "//ui/gfx",
@@ -333,7 +338,6 @@ component("gl") {
       "Quartz.framework",
     ]
 
-    data_deps += [ "//third_party/mesa_headers" ]
     if (!use_static_angle) {
       data_deps += [
         "//third_party/angle:libEGL",
@@ -549,6 +553,7 @@ test("gl_unittests") {
 
   deps = [
     ":gl",
+    ":gl_headers",
     ":gl_unittest_utils",
     ":run_all_unittests",
     ":test_support",
@@ -565,10 +570,7 @@ test("gl_unittests") {
     "//ui/platform_window:platform_impls",
   ]
 
-  data_deps = [
-    "//testing/buildbot/filters:gl_unittests_filters",
-    "//third_party/mesa_headers",
-  ]
+  data_deps = [ "//testing/buildbot/filters:gl_unittests_filters" ]
 
   if (is_win) {
     deps += [

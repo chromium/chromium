@@ -201,6 +201,7 @@ source_set("config_sources") {
     "//ui/gfx",
     "//ui/gl",
     "//ui/gl:buildflags",
+    "//ui/gl:gl_headers",
     "//ui/gl/init",
   ]
 
@@ -222,9 +223,6 @@ source_set("config_sources") {
   # cycle between this target and gpu_preferences_interface.
   allow_circular_includes_from =
       [ "//gpu/ipc/common:gpu_preferences_interface" ]
-
-  # Prefer mesa GL headers to system headers, which cause problems on Win.
-  include_dirs = [ "//third_party/mesa_headers" ]
 
   if (is_android) {
     sources += [ "gpu_info_collector_android.cc" ]

@@ -355,9 +355,6 @@ target(link_target_type, "gles2_sources") {
     "//third_party/khronos:khronos_headers",
   ]
 
-  # Prefer mesa GL headers to system headers, which cause problems on Win.
-  include_dirs = [ "//third_party/mesa_headers" ]
-
   public_deps = [
     "//base",
     "//cc/paint",
@@ -396,6 +393,7 @@ target(link_target_type, "gles2_sources") {
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:buildflags",
+    "//ui/gl:gl_headers",
     "//ui/gl/init",
   ]
 

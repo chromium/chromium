@@ -1975,6 +1975,7 @@ test("content_browsertests") {
     "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry",
     "//ui/gl",
+    "//ui/gl:gl_headers",
     "//ui/gl:test_support",
     "//ui/latency",
     "//ui/native_theme",
@@ -1988,10 +1989,7 @@ test("content_browsertests") {
     deps += [ "//components/variations" ]
   }
 
-  data_deps = [
-    "//content/shell:pak",
-    "//third_party/mesa_headers",
-  ]
+  data_deps = [ "//content/shell:pak" ]
 
   data = [
     "data/",
@@ -3312,6 +3310,7 @@ test("content_unittests") {
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/skia",
     "//ui/gl",
+    "//ui/gl:gl_headers",
     "//ui/gl:test_support",
     "//ui/latency:test_support",
     "//ui/shell_dialogs:shell_dialogs",
@@ -3323,10 +3322,7 @@ test("content_unittests") {
     deps += [ ":content_nocompile_tests" ]
   }
 
-  data_deps = [
-    "//testing/buildbot/filters:content_unittests_filters",
-    "//third_party/mesa_headers",
-  ]
+  data_deps = [ "//testing/buildbot/filters:content_unittests_filters" ]
 
   if (!is_ios) {
     data_deps += [
