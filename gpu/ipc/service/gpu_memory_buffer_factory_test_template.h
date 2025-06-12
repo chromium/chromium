@@ -75,7 +75,8 @@ TYPED_TEST_P(GpuMemoryBufferFactoryTest, CreateGpuMemoryBuffer) {
     };
     for (auto usage : usages) {
       if (!gpu::GpuMemoryBufferSupport::
-              IsNativeGpuMemoryBufferConfigurationSupported(format, usage)) {
+              IsNativeGpuMemoryBufferConfigurationSupportedForTesting(format,
+                                                                      usage)) {
         continue;
       }
 

@@ -56,14 +56,16 @@ class GPU_EXPORT GpuMemoryBufferSupport {
 
   virtual ~GpuMemoryBufferSupport();
 
-  // Returns whether the provided buffer format is supported.
-  static bool IsNativeGpuMemoryBufferConfigurationSupported(
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage);
-
   // Returns the set of supported configurations.
   static GpuMemoryBufferConfigurationSet
   GetNativeGpuMemoryBufferConfigurations();
+
+  // Returns whether the provided buffer format is supported.
+  static bool IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage) {
+    return IsNativeGpuMemoryBufferConfigurationSupported(format, usage);
+  }
 
   // Returns whether the provided buffer format is supported.
   bool IsConfigurationSupportedForTest(gfx::GpuMemoryBufferType type,
@@ -88,6 +90,11 @@ class GPU_EXPORT GpuMemoryBufferSupport {
       base::span<uint8_t> premapped_memory = base::span<uint8_t>());
 
  private:
+  // Returns whether the provided buffer format is supported.
+  static bool IsNativeGpuMemoryBufferConfigurationSupported(
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage);
+
 #if BUILDFLAG(IS_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 #endif
