@@ -203,11 +203,12 @@ ScriptPromise<IDLString> Translator::translate(
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   ScriptPromise<IDLString> promise = resolver->Promise();
 
+  // Pass persistent refs to keep this instance alive during the response.
   auto pending_remote = CreateModelExecutionResponder(
       script_state, composite_signal, resolver, task_runner_,
       AIMetrics::AISessionType::kTranslator,
-      /*complete_callback=*/base::DoNothing(),
-      /*overflow_callback=*/base::DoNothing());
+      /*complete_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
+      /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)));
 
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.
@@ -235,12 +236,15 @@ ReadableStream* Translator::translateStreaming(
     return nullptr;
   }
 
+  // Pass persistent refs to keep this instance alive during the response.
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(
           script_state, composite_signal, task_runner_,
           AIMetrics::AISessionType::kTranslator,
-          /*complete_callback=*/base::DoNothing(),
-          /*overflow_callback=*/base::DoNothing());
+          /*complete_callback=*/
+          base::DoNothingWithBoundArgs(WrapPersistent(this)),
+          /*overflow_callback=*/
+          base::DoNothingWithBoundArgs(WrapPersistent(this)));
 
   // TODO(crbug.com/335374928): Implement the error handling for the translation
   // service crash.
