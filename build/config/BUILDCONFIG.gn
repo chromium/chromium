@@ -565,6 +565,7 @@ DEFAULT_MODULE_DEPS = [
   "//buildtools/third_party/libc++:std_stdbool_h",
   "//buildtools/third_party/libc++:std_string_h",
   "//buildtools/third_party/libc++:std_uchar_h",
+  "//buildtools/third_party/libc++:std_wchar_h",
   "//buildtools/third_party/libc++:std_wctype_h",
   "//buildtools/third_party/libc++:sysroot_bits",
   "//buildtools/third_party/libc++:sysroot_features",
