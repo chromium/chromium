@@ -296,6 +296,8 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void NewTabButtonPressed(const ui::Event& event);
 
+  void UpdateRecedingCornerRadius();
+
   gfx::SlideAnimation size_animation_{this};
 
   // Controls. Most of these can be null, e.g. in popup windows. Only
@@ -372,8 +374,8 @@ class ToolbarView : public views::AccessiblePaneView,
   // size of the corner radius that's clipped out, and the background_view_left_
   //  background_view_right_ are the area painted behind the toolbar which give
   // the effect of the toolbar raising up into the tabstrip region.
-  // The receding_corner_radius_ can change based on whether the first tab is
-  // active or not.
+  // The receding_corner_radius_ can change based on whether if WebUiTabStrip is
+  // being used and if the first tab is active or not.
   int receding_corner_radius_ = 0;
   raw_ptr<View> background_view_left_ = nullptr;
   raw_ptr<View> background_view_right_ = nullptr;

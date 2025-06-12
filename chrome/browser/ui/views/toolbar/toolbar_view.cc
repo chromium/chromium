@@ -631,6 +631,8 @@ void ToolbarView::UpdateForWebUITabStrip() {
   } else {
     new_tab_button_->SetVisible(false);
   }
+
+  UpdateRecedingCornerRadius();
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
 
@@ -1270,19 +1272,26 @@ void ToolbarView::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  UpdateRecedingCornerRadius();
+}
+
+void ToolbarView::UpdateRecedingCornerRadius() {
   bool tab_strip_has_trailing_frame_buttons =
       (browser_view_->tabstrip()->controller()->IsFrameButtonsRightAligned() ^
        base::i18n::IsRTL());
   bool tab_strip_has_leading_action_buttons =
       (!tabs::GetTabSearchTrailingTabstrip(browser()->profile()) &&
        !features::IsTabSearchMoving());
-  bool first_tab_selected = tab_strip_model->active_index() == 0;
+  bool first_tab_selected = browser_->tab_strip_model()->active_index() == 0;
 
   int new_corner_radius;
+
   // If there is anything on the leading side or not the first tab is selected,
   // then the corner radius is shown, otherwise we hide the corner radius.
-  if (!tab_strip_has_trailing_frame_buttons ||
-      tab_strip_has_leading_action_buttons || !first_tab_selected) {
+  // Also when showing WebUITabStrip, toolbar should not have receding corners.
+  if (!browser_view_->webui_tab_strip() &&
+      (!tab_strip_has_trailing_frame_buttons ||
+       tab_strip_has_leading_action_buttons || !first_tab_selected)) {
     new_corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
   } else {
     new_corner_radius = 0;
