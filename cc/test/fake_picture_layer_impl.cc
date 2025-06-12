@@ -71,19 +71,6 @@ PictureLayerTiling* FakePictureLayerImpl::HighResTiling() const {
   return result;
 }
 
-PictureLayerTiling* FakePictureLayerImpl::LowResTiling() const {
-  PictureLayerTiling* result = nullptr;
-  for (size_t i = 0; i < tilings_->num_tilings(); ++i) {
-    PictureLayerTiling* tiling = tilings_->tiling_at(i);
-    if (tiling->resolution() == LOW_RESOLUTION) {
-      // There should be only one low res tiling.
-      CHECK(!result);
-      result = tiling;
-    }
-  }
-  return result;
-}
-
 void FakePictureLayerImpl::SetRasterSource(
     scoped_refptr<RasterSource> raster_source,
     const Region& invalidation) {

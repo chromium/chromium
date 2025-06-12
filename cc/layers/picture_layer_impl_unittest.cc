@@ -1902,7 +1902,6 @@ TEST_F(LegacySWPictureLayerImplTest, HighResRequiredWhenActiveAllReady) {
   // All active tiles ready, so pending can only activate with all high res
   // tiles.
   pending_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
-  EXPECT_FALSE(pending_layer()->LowResTiling());
 
   AssertAllTilesRequired(pending_layer()->HighResTiling());
 }
@@ -1969,7 +1968,6 @@ TEST_F(LegacySWPictureLayerImplTest, HighResRequiredIfActiveCantHaveTiles) {
   // This can happen if a layer exists for a while and switches from
   // not being able to have content to having content.
   pending_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
-  EXPECT_FALSE(pending_layer()->LowResTiling());
 
   AssertAllTilesRequired(pending_layer()->HighResTiling());
 }
@@ -1991,7 +1989,6 @@ TEST_F(LegacySWPictureLayerImplTest,
   // Since the active layer has different bounds, the pending layer needs all
   // high res tiles in order to activate.
   pending_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
-  EXPECT_FALSE(pending_layer()->LowResTiling());
   active_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
 
   AssertAllTilesRequired(pending_layer()->HighResTiling());

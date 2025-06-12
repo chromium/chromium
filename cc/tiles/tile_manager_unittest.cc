@@ -862,7 +862,6 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueue) {
   pending_layer()->set_invalidation(invalidation);
   pending_layer()->HighResTiling()->Invalidate(invalidation);
   pending_layer()->HighResTiling()->CreateMissingTilesInLiveTilesRect();
-  EXPECT_FALSE(pending_layer()->LowResTiling());
 
   // Renew all of the tile priorities.
   gfx::Rect viewport(50, 50, 100, 100);

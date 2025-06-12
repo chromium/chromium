@@ -76,7 +76,6 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   using PictureLayerImpl::raster_contents_scale_key;
 
   PictureLayerTiling* HighResTiling() const;
-  PictureLayerTiling* LowResTiling() const;
   size_t num_tilings() const { return tilings_->num_tilings(); }
 
   size_t GetNumberOfTilesWithResources() const;
