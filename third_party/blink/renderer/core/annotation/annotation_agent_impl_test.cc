@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_test_utils.h"
+#include "third_party/blink/renderer/core/annotation/node_annotation_selector.h"
 #include "third_party/blink/renderer/core/annotation/text_annotation_selector.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
@@ -143,6 +144,16 @@ class AnnotationAgentImplTest : public SimTest {
         AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
     return container->CreateUnboundAgent(type, *selector);
   }
+
+  AnnotationAgentImpl* CreateNodeAgent(
+      DOMNodeId dom_node_id,
+      mojom::blink::AnnotationType type = mojom::blink::AnnotationType::kGlic) {
+    auto* selector = MakeGarbageCollected<NodeAnnotationSelector>(dom_node_id);
+    auto* container =
+        AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
+    return container->CreateUnboundAgent(type, *selector);
+  }
+
   // Performs a check that the given node is fully visible in the visual
   // viewport - that is, it's entire bounding rect is contained in the visual
   // viewport. Returns whether the check passed so it can be used as an ASSERT
@@ -1189,6 +1200,41 @@ TEST_F(AnnotationAgentImplTest, ActivatesContentVisibilityAuto) {
   RangeInFlatTree* range = CreateRangeToExpectedText(node, 0, 6, "foobar");
   EXPECT_FALSE(DisplayLockUtilities::NeedsActivationForFindInPage(
       range->ToEphemeralRange()));
+}
+
+TEST_F(AnnotationAgentImplTest, NodeContentsBeginsWithLineBreak) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        position: absolute;
+        width: 200px;
+        height: 20px;
+        left: 0;
+        top: 20000px;
+      }
+    </style>
+    <body>
+      <div id="section">
+        <div>Step</div>
+        1
+      </div>
+    </body>
+  )HTML");
+
+  auto* element_foo =
+      GetDocument().body()->getElementById(AtomicString("section"));
+  ASSERT_NE(element_foo, nullptr);
+  auto* agent = CreateNodeAgent(element_foo->GetDomNodeId());
+  // Produce a compositor frame. This should process the DOM mutations and
+  // finish attaching the agent.
+  Compositor().BeginFrame();
+  EXPECT_TRUE(agent->IsAttached());
+  agent->ScrollIntoView(/*applies_focus=*/false);
+  Compositor().BeginFrame();
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
 }
 
 // kTextFinder type annotations must not cause side-effects. Ensure they do not

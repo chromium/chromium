@@ -377,13 +377,20 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
   document.EnsurePaintLocationDataValidForNode(
       &first_node, DocumentUpdateReason::kFindInPage);
 
+  Node* first_node_with_layout_object = nullptr;
+  for (Node& node : range.Nodes()) {
+    if (node.GetLayoutObject()) {
+      first_node_with_layout_object = &node;
+    }
+  }
+
   // TODO(bokan): Text can be attached without having a LayoutObject since it
   // may be inside an unexpanded <details> element or inside a
   // `content-visibility: auto` subtree. In those cases we should make sure we
   // expand/make-visible the node. This is implemented in TextFragmentAnchor
   // but that doesn't cover all cases we can get here so we should migrate that
   // code here.
-  if (!first_node.GetLayoutObject()) {
+  if (!first_node_with_layout_object) {
     return;
   }
 
@@ -404,7 +411,7 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
     // relying on keyboard navigation. If the node is not focusable, clear focus
     // so the next "Tab" press will start the search to find the next focusable
     // element from this element.
-    auto* element = first_node.parentElement();
+    auto* element = first_node_with_layout_object->parentElement();
     if (element && element->IsFocusable()) {
       document.SetFocusedElement(
           element, FocusParams(SelectionBehaviorOnFocus::kNone,
@@ -417,11 +424,13 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
   // Set the sequential focus navigation to the start of selection.
   // Even if this element isn't focusable, "Tab" press will
   // start the search to find the next focusable element from this element.
-  document.SetSequentialFocusNavigationStartingPoint(&first_node);
+  document.SetSequentialFocusNavigationStartingPoint(
+      first_node_with_layout_object);
 
   if (type_ == mojom::blink::AnnotationType::kGlic) {
     float max_distance_px = CalculateMaxScrollOffsetPx(
-        first_node.GetLayoutObject()->GetFrameView(), bounding_box, *params);
+        first_node_with_layout_object->GetLayoutObject()->GetFrameView(),
+        bounding_box, *params);
     if (max_distance_px <= 1.f) {
       document.Markers().StartGlicMarkerAnimationIfNeeded();
     } else {
@@ -436,8 +445,9 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
     }
   }
 
-  scroll_into_view_util::ScrollRectToVisible(*first_node.GetLayoutObject(),
-                                             bounding_box, std::move(params));
+  scroll_into_view_util::ScrollRectToVisible(
+      *first_node_with_layout_object->GetLayoutObject(), bounding_box,
+      std::move(params));
 }
 
 std::optional<mojom::blink::AnnotationType>
