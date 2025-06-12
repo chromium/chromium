@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
   ASSERT_TRUE(button2_id);
 
   BrowserAction action;
-  ClickAction* click1 = action.add_action_information()->mutable_click();
+  ClickAction* click1 = action.add_actions()->mutable_click();
   click1->mutable_target()->set_content_node_id(button1_id.value());
   click1->mutable_target()->mutable_document_identifier()->set_serialized_token(
       *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
   click1->set_click_type(ClickAction::LEFT);
   click1->set_click_count(ClickAction::SINGLE);
 
-  ClickAction* click2 = action.add_action_information()->mutable_click();
+  ClickAction* click2 = action.add_actions()->mutable_click();
   click2->mutable_target()->set_content_node_id(button2_id.value());
   click2->mutable_target()->mutable_document_identifier()->set_serialized_token(
       *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(

@@ -34,7 +34,7 @@ using ::optimization_guide::proto::TypeAction_TypeMode;
 
 BrowserAction MakeClick(RenderFrameHost& rfh, int content_node_id) {
   BrowserAction action;
-  ClickAction* click = action.add_action_information()->mutable_click();
+  ClickAction* click = action.add_actions()->mutable_click();
   click->mutable_target()->set_content_node_id(content_node_id);
   click->mutable_target()->mutable_document_identifier()->set_serialized_token(
       *DocumentIdentifierUserData::GetDocumentIdentifier(
@@ -46,7 +46,7 @@ BrowserAction MakeClick(RenderFrameHost& rfh, int content_node_id) {
 
 BrowserAction MakeClick(RenderFrameHost& rfh, const gfx::Point& click_point) {
   BrowserAction action;
-  ClickAction* click = action.add_action_information()->mutable_click();
+  ClickAction* click = action.add_actions()->mutable_click();
   Coordinate* coordinate = click->mutable_target()->mutable_coordinate();
   coordinate->set_x(click_point.x());
   coordinate->set_y(click_point.y());
@@ -60,19 +60,19 @@ BrowserAction MakeClick(RenderFrameHost& rfh, const gfx::Point& click_point) {
 
 BrowserAction MakeHistoryBack() {
   BrowserAction action;
-  action.add_action_information()->mutable_back();
+  action.add_actions()->mutable_back();
   return action;
 }
 
 BrowserAction MakeHistoryForward() {
   BrowserAction action;
-  action.add_action_information()->mutable_forward();
+  action.add_actions()->mutable_forward();
   return action;
 }
 
 BrowserAction MakeMouseMove(RenderFrameHost& rfh, int content_node_id) {
   BrowserAction action;
-  MoveMouseAction* move = action.add_action_information()->mutable_move_mouse();
+  MoveMouseAction* move = action.add_actions()->mutable_move_mouse();
   move->mutable_target()->set_content_node_id(content_node_id);
   move->mutable_target()->mutable_document_identifier()->set_serialized_token(
       *DocumentIdentifierUserData::GetDocumentIdentifier(
@@ -83,7 +83,7 @@ BrowserAction MakeMouseMove(RenderFrameHost& rfh, int content_node_id) {
 BrowserAction MakeMouseMove(RenderFrameHost& rfh,
                             const gfx::Point& move_point) {
   BrowserAction action;
-  MoveMouseAction* move = action.add_action_information()->mutable_move_mouse();
+  MoveMouseAction* move = action.add_actions()->mutable_move_mouse();
   Coordinate* coordinate = move->mutable_target()->mutable_coordinate();
   coordinate->set_x(move_point.x());
   coordinate->set_y(move_point.y());
@@ -95,8 +95,7 @@ BrowserAction MakeMouseMove(RenderFrameHost& rfh,
 
 BrowserAction MakeNavigate(std::string_view target_url) {
   BrowserAction action;
-  NavigateAction* navigate =
-      action.add_action_information()->mutable_navigate();
+  NavigateAction* navigate = action.add_actions()->mutable_navigate();
   navigate->mutable_url()->assign(target_url);
   return action;
 }
@@ -106,7 +105,7 @@ BrowserAction MakeType(RenderFrameHost& rfh,
                        std::string_view text,
                        bool follow_by_enter) {
   BrowserAction action;
-  TypeAction* type_action = action.add_action_information()->mutable_type();
+  TypeAction* type_action = action.add_actions()->mutable_type();
   type_action->mutable_target()->set_content_node_id(content_node_id);
   type_action->mutable_target()
       ->mutable_document_identifier()
@@ -125,7 +124,7 @@ BrowserAction MakeType(RenderFrameHost& rfh,
                        std::string_view text,
                        bool follow_by_enter) {
   BrowserAction action;
-  TypeAction* type_action = action.add_action_information()->mutable_type();
+  TypeAction* type_action = action.add_actions()->mutable_type();
   Coordinate* coordinate = type_action->mutable_target()->mutable_coordinate();
   coordinate->set_x(type_point.x());
   coordinate->set_y(type_point.y());
@@ -148,7 +147,7 @@ BrowserAction MakeScroll(RenderFrameHost& rfh,
   CHECK(!scroll_offset_x || !scroll_offset_y)
       << "Scroll action supports only one axis at a time.";
   BrowserAction action;
-  ScrollAction* scroll = action.add_action_information()->mutable_scroll();
+  ScrollAction* scroll = action.add_actions()->mutable_scroll();
 
   if (content_node_id.has_value()) {
     scroll->mutable_target()->set_content_node_id(content_node_id.value());
@@ -183,8 +182,7 @@ BrowserAction MakeSelect(RenderFrameHost& rfh,
                          int content_node_id,
                          std::string_view value) {
   BrowserAction action;
-  SelectAction* select_action =
-      action.add_action_information()->mutable_select();
+  SelectAction* select_action = action.add_actions()->mutable_select();
   select_action->mutable_target()->set_content_node_id(content_node_id);
   select_action->mutable_target()
       ->mutable_document_identifier()
@@ -199,7 +197,7 @@ BrowserAction MakeDragAndRelease(RenderFrameHost& rfh,
                                  const gfx::Point& to_point) {
   BrowserAction action;
   DragAndReleaseAction* drag_and_release =
-      action.add_action_information()->mutable_drag_and_release();
+      action.add_actions()->mutable_drag_and_release();
   drag_and_release->mutable_from_target()->mutable_coordinate()->set_x(
       from_point.x());
   drag_and_release->mutable_from_target()->mutable_coordinate()->set_y(
@@ -221,7 +219,7 @@ BrowserAction MakeDragAndRelease(RenderFrameHost& rfh,
 
 BrowserAction MakeWait() {
   BrowserAction action;
-  action.add_action_information()->mutable_wait();
+  action.add_actions()->mutable_wait();
   return action;
 }
 

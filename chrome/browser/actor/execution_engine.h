@@ -136,10 +136,9 @@ class ExecutionEngine {
 
   const GURL& LastCommittedURLOfCurrentTask();
 
-  const optimization_guide::proto::ActionInformation& GetNextAction();
+  const optimization_guide::proto::Action& GetNextAction();
   // Returns the tab associated with the action or nullptr.
-  tabs::TabInterface* GetTab(
-      const optimization_guide::proto::ActionInformation& action);
+  tabs::TabInterface* GetTab(const optimization_guide::proto::Action& action);
 
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 

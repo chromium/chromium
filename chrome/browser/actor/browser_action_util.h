@@ -11,17 +11,17 @@ class WebContents;
 }  // namespace content
 
 namespace optimization_guide::proto {
-class ActionInformation;
+class Action;
 class ActionTarget;
 }  // namespace optimization_guide::proto
 
 namespace actor {
 
 // Helper to pick out the ActionTarget from the specific type of action in the
-// ActionInformation proto. Returns nullptr actions which don't contain this
+// Action proto. Returns nullptr actions which don't contain this
 // field (tab-targeting actions).
 const optimization_guide::proto::ActionTarget* ExtractTarget(
-    const optimization_guide::proto::ActionInformation& action_information);
+    const optimization_guide::proto::Action& action);
 
 // Finds the specific frame in the given WebContents that's requested by the
 // given action. For a tab-targeting action, this returns the current primary
@@ -29,7 +29,7 @@ const optimization_guide::proto::ActionTarget* ExtractTarget(
 // longer active or has a new document since the action was generated.
 content::RenderFrameHost* FindTargetFrame(
     content::WebContents& web_contents,
-    const optimization_guide::proto::ActionInformation& action_information);
+    const optimization_guide::proto::Action& action);
 
 }  // namespace actor
 

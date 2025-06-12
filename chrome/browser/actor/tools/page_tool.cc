@@ -26,7 +26,7 @@ using ::content::GlobalRenderFrameHostId;
 using ::content::RenderFrameHost;
 using ::content::WebContents;
 using ::content::WebContentsObserver;
-using ::optimization_guide::proto::ActionInformation;
+using ::optimization_guide::proto::Action;
 using ::optimization_guide::proto::ActionTarget;
 using ::optimization_guide::proto::ClickAction_ClickCount;
 using ::optimization_guide::proto::ClickAction_ClickType;
@@ -51,10 +51,10 @@ void SetMojoTarget(const ActionTarget& target,
 // Set mojom for click action based on proto. Returns false if the proto does
 // not contain correct/sufficient information, true otherwise.
 bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
-                      const ActionInformation& action_info) {
-  SetMojoTarget(action_info.click().target(), click->target);
+                      const Action& action) {
+  SetMojoTarget(action.click().target(), click->target);
 
-  switch (action_info.click().click_type()) {
+  switch (action.click().click_type()) {
     case ClickAction_ClickType::ClickAction_ClickType_LEFT:
       click->type = actor::mojom::ClickAction::Type::kLeft;
       break;
@@ -72,7 +72,7 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
       // return false;
   }
 
-  switch (action_info.click().click_count()) {
+  switch (action.click().click_count()) {
     case ClickAction_ClickCount::ClickAction_ClickCount_SINGLE:
       click->count = actor::mojom::ClickAction::Count::kSingle;
       break;
@@ -94,22 +94,22 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
 
 // Set mojom for mouse move action based on proto.
 void SetMouseMoveToolArgs(actor::mojom::MouseMoveActionPtr& move,
-                          const ActionInformation& action_info) {
-  SetMojoTarget(action_info.move_mouse().target(), move->target);
+                          const Action& action) {
+  SetMojoTarget(action.move_mouse().target(), move->target);
 }
 
 // Set mojom for type action based on proto.
 // Returns false if the proto does not contain correct/sufficient information,
 // true otherwise.
 bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
-                     const ActionInformation& action_info) {
-  SetMojoTarget(action_info.type().target(), type_action->target);
+                     const Action& action) {
+  SetMojoTarget(action.type().target(), type_action->target);
 
-  type_action->text = action_info.type().text();
-  type_action->follow_by_enter = action_info.type().follow_by_enter();
+  type_action->text = action.type().text();
+  type_action->follow_by_enter = action.type().follow_by_enter();
 
   // Map proto enum to mojom enum
-  switch (action_info.type().mode()) {
+  switch (action.type().mode()) {
     case TypeAction_TypeMode::TypeAction_TypeMode_DELETE_EXISTING:
       type_action->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;
       break;
@@ -128,7 +128,7 @@ bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
       type_action->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;
       break;
       //      DLOG(ERROR) << "TypeAction proto type mode not supported"
-      //                  << action_info.type().mode();
+      //                  << action.type().mode();
       //      return false;
   }
 
@@ -136,11 +136,11 @@ bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
 }
 
 bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
-                       const ActionInformation& action_info) {
-  if (action_info.scroll().has_target()) {
-    SetMojoTarget(action_info.scroll().target(), scroll->target);
+                       const Action& action) {
+  if (action.scroll().has_target()) {
+    SetMojoTarget(action.scroll().target(), scroll->target);
   }
-  switch (action_info.scroll().direction()) {
+  switch (action.scroll().direction()) {
     case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_LEFT:
       scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kLeft;
       break;
@@ -164,22 +164,22 @@ bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
       break;
       // return false;
   }
-  scroll->distance = action_info.scroll().distance();
+  scroll->distance = action.scroll().distance();
   return true;
 }
 
 void SetSelectToolArgs(actor::mojom::SelectActionPtr& select,
-                       const ActionInformation& action_info) {
-  SetMojoTarget(action_info.select().target(), select->target);
-  select->value = action_info.select().value();
+                       const Action& action) {
+  SetMojoTarget(action.select().target(), select->target);
+  select->value = action.select().value();
 }
 
 void SetDragAndReleaseToolArgs(
     actor::mojom::DragAndReleaseActionPtr& drag_and_release,
-    ActionInformation action_info) {
-  SetMojoTarget(action_info.drag_and_release().from_target(),
+    Action action) {
+  SetMojoTarget(action.drag_and_release().from_target(),
                 drag_and_release->from_target);
-  SetMojoTarget(action_info.drag_and_release().to_target(),
+  SetMojoTarget(action.drag_and_release().to_target(),
                 drag_and_release->to_target);
 }
 
@@ -214,9 +214,8 @@ class RenderFrameChangeObserver : public WebContentsObserver {
 
 PageTool::PageTool(AggregatedJournal& journal,
                    RenderFrameHost& frame,
-                   const ActionInformation& action_information)
-    : render_frame_host_(frame.GetWeakDocumentPtr()),
-      action_information_(action_information) {
+                   const Action& action)
+    : render_frame_host_(frame.GetWeakDocumentPtr()), action_(action) {
   journal.EnsureJournalBound(frame);
 }
 
@@ -238,65 +237,65 @@ void PageTool::Invoke(InvokeCallback callback) {
 
   auto request = actor::mojom::ToolInvocation::New();
 
-  switch (action_information_.action_info_case()) {
-    case ActionInformation::ActionInfoCase::kClick: {
+  switch (action_.action_case()) {
+    case Action::ActionCase::kClick: {
       auto click = mojom::ClickAction::New();
-      if (!SetClickToolArgs(click, action_information_)) {
+      if (!SetClickToolArgs(click, action_)) {
         PostFinishInvoke(mojom::ActionResultCode::kArgumentsInvalid);
         return;
       }
       request->action = mojom::ToolAction::NewClick(std::move(click));
       break;
     }
-    case ActionInformation::ActionInfoCase::kType: {
+    case Action::ActionCase::kType: {
       auto type = mojom::TypeAction::New();
-      if (!SetTypeToolArgs(type, action_information_)) {
+      if (!SetTypeToolArgs(type, action_)) {
         PostFinishInvoke(mojom::ActionResultCode::kArgumentsInvalid);
         return;
       }
       request->action = mojom::ToolAction::NewType(std::move(type));
       break;
     }
-    case ActionInformation::ActionInfoCase::kScroll: {
+    case Action::ActionCase::kScroll: {
       auto scroll = mojom::ScrollAction::New();
-      if (!SetScrollToolArgs(scroll, action_information_)) {
+      if (!SetScrollToolArgs(scroll, action_)) {
         PostFinishInvoke(mojom::ActionResultCode::kArgumentsInvalid);
         return;
       }
       request->action = mojom::ToolAction::NewScroll(std::move(scroll));
       break;
     }
-    case ActionInformation::ActionInfoCase::kMoveMouse: {
+    case Action::ActionCase::kMoveMouse: {
       auto mouse_move = mojom::MouseMoveAction::New();
-      SetMouseMoveToolArgs(mouse_move, action_information_);
+      SetMouseMoveToolArgs(mouse_move, action_);
       request->action = mojom::ToolAction::NewMouseMove(std::move(mouse_move));
       break;
     }
-    case ActionInformation::ActionInfoCase::kDragAndRelease: {
+    case Action::ActionCase::kDragAndRelease: {
       auto drag_and_release = mojom::DragAndReleaseAction::New();
-      SetDragAndReleaseToolArgs(drag_and_release, action_information_);
+      SetDragAndReleaseToolArgs(drag_and_release, action_);
       request->action =
           mojom::ToolAction::NewDragAndRelease(std::move(drag_and_release));
       break;
     }
-    case ActionInformation::ActionInfoCase::kSelect: {
+    case Action::ActionCase::kSelect: {
       auto select = mojom::SelectAction::New();
-      SetSelectToolArgs(select, action_information_);
+      SetSelectToolArgs(select, action_);
       request->action = mojom::ToolAction::NewSelect(std::move(select));
       break;
     }
-    case ActionInformation::ActionInfoCase::kNavigate:
-    case ActionInformation::ActionInfoCase::kBack:
-    case ActionInformation::ActionInfoCase::kForward:
-    case ActionInformation::ActionInfoCase::kWait:
-    case ActionInformation::kCreateTab:
-    case ActionInformation::kCloseTab:
-    case ActionInformation::kActivateTab:
-    case ActionInformation::kCreateWindow:
-    case ActionInformation::kCloseWindow:
-    case ActionInformation::kActivateWindow:
-    case ActionInformation::kYieldToUser:
-    case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
+    case Action::ActionCase::kNavigate:
+    case Action::ActionCase::kBack:
+    case Action::ActionCase::kForward:
+    case Action::ActionCase::kWait:
+    case Action::kCreateTab:
+    case Action::kCloseTab:
+    case Action::kActivateTab:
+    case Action::kCreateWindow:
+    case Action::kCloseWindow:
+    case Action::kActivateWindow:
+    case Action::kYieldToUser:
+    case Action::ActionCase::ACTION_NOT_SET:
       NOTREACHED();
   }
 
@@ -337,37 +336,37 @@ std::string PageTool::DebugString() const {
 }
 
 std::string PageTool::JournalEvent() const {
-  switch (action_information_.action_info_case()) {
-    case ActionInformation::ActionInfoCase::kClick: {
+  switch (action_.action_case()) {
+    case Action::ActionCase::kClick: {
       return "Click";
     }
-    case ActionInformation::ActionInfoCase::kType: {
+    case Action::ActionCase::kType: {
       return "Type";
     }
-    case ActionInformation::ActionInfoCase::kScroll: {
+    case Action::ActionCase::kScroll: {
       return "Scroll";
     }
-    case ActionInformation::ActionInfoCase::kMoveMouse: {
+    case Action::ActionCase::kMoveMouse: {
       return "MoveMouse";
     }
-    case ActionInformation::ActionInfoCase::kDragAndRelease: {
+    case Action::ActionCase::kDragAndRelease: {
       return "DragAndRelease";
     }
-    case ActionInformation::ActionInfoCase::kSelect: {
+    case Action::ActionCase::kSelect: {
       return "Select";
     }
-    case ActionInformation::ActionInfoCase::kNavigate:
-    case ActionInformation::ActionInfoCase::kBack:
-    case ActionInformation::ActionInfoCase::kForward:
-    case ActionInformation::ActionInfoCase::kWait:
-    case ActionInformation::kCreateTab:
-    case ActionInformation::kCloseTab:
-    case ActionInformation::kActivateTab:
-    case ActionInformation::kCreateWindow:
-    case ActionInformation::kCloseWindow:
-    case ActionInformation::kActivateWindow:
-    case ActionInformation::kYieldToUser:
-    case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
+    case Action::ActionCase::kNavigate:
+    case Action::ActionCase::kBack:
+    case Action::ActionCase::kForward:
+    case Action::ActionCase::kWait:
+    case Action::kCreateTab:
+    case Action::kCloseTab:
+    case Action::kActivateTab:
+    case Action::kCreateWindow:
+    case Action::kCloseWindow:
+    case Action::kActivateWindow:
+    case Action::kYieldToUser:
+    case Action::ActionCase::ACTION_NOT_SET:
       NOTREACHED();
   }
 }

@@ -39,7 +39,7 @@
 using content::RenderFrameHost;
 using content::WebContents;
 using optimization_guide::DocumentIdentifierUserData;
-using optimization_guide::proto::ActionInformation;
+using optimization_guide::proto::Action;
 using optimization_guide::proto::Actions;
 using optimization_guide::proto::ActionTarget;
 using optimization_guide::proto::AnnotatedPageContent;
@@ -52,123 +52,123 @@ namespace {
 
 // Whether we need to run synchronous and asynchronous, tab-scoped safety
 // checks.
-bool ActionRequiresTabScopedSafetyChecks(const ActionInformation& action) {
-  switch (action.action_info_case()) {
-    case ActionInformation::kClick:
-    case ActionInformation::kType:
-    case ActionInformation::kScroll:
-    case ActionInformation::kMoveMouse:
-    case ActionInformation::kDragAndRelease:
-    case ActionInformation::kSelect:
+bool ActionRequiresTabScopedSafetyChecks(const Action& action) {
+  switch (action.action_case()) {
+    case Action::kClick:
+    case Action::kType:
+    case Action::kScroll:
+    case Action::kMoveMouse:
+    case Action::kDragAndRelease:
+    case Action::kSelect:
       return true;
     // TODO(crbug.com/411462297): It's not clear that navigate and wait requests
     // should be doing tab safety checks. For now we return `true` to preserve
     // existing behavior.
-    case ActionInformation::kBack:
-    case ActionInformation::kForward:
-    case ActionInformation::kNavigate:
-    case ActionInformation::kWait:
+    case Action::kBack:
+    case Action::kForward:
+    case Action::kNavigate:
+    case Action::kWait:
       return true;
-    case ActionInformation::kCreateTab:
-    case ActionInformation::kCloseTab:
-    case ActionInformation::kActivateTab:
-    case ActionInformation::kCreateWindow:
-    case ActionInformation::kCloseWindow:
-    case ActionInformation::kActivateWindow:
-    case ActionInformation::kYieldToUser:
-    case ActionInformation::ACTION_INFO_NOT_SET:
+    case Action::kCreateTab:
+    case Action::kCloseTab:
+    case Action::kActivateTab:
+    case Action::kCreateWindow:
+    case Action::kCloseWindow:
+    case Action::kActivateWindow:
+    case Action::kYieldToUser:
+    case Action::ACTION_NOT_SET:
       return false;
   }
 }
 
 // Whether the action requires a frame.
-bool ActionRequiresFrame(const ActionInformation& action) {
-  switch (action.action_info_case()) {
-    case ActionInformation::kClick:
-    case ActionInformation::kType:
-    case ActionInformation::kScroll:
-    case ActionInformation::kMoveMouse:
-    case ActionInformation::kDragAndRelease:
-    case ActionInformation::kSelect:
+bool ActionRequiresFrame(const Action& action) {
+  switch (action.action_case()) {
+    case Action::kClick:
+    case Action::kType:
+    case Action::kScroll:
+    case Action::kMoveMouse:
+    case Action::kDragAndRelease:
+    case Action::kSelect:
       return true;
     // TODO(crbug.com/411462297): These requests do not require frames. For now
     // we return `true` to preserve existing behavior.
-    case ActionInformation::kBack:
-    case ActionInformation::kForward:
-    case ActionInformation::kNavigate:
-    case ActionInformation::kWait:
+    case Action::kBack:
+    case Action::kForward:
+    case Action::kNavigate:
+    case Action::kWait:
       return true;
 
-    case ActionInformation::kCreateTab:
-    case ActionInformation::kCloseTab:
-    case ActionInformation::kActivateTab:
-    case ActionInformation::kCreateWindow:
-    case ActionInformation::kCloseWindow:
-    case ActionInformation::kActivateWindow:
-    case ActionInformation::kYieldToUser:
-    case ActionInformation::ACTION_INFO_NOT_SET:
+    case Action::kCreateTab:
+    case Action::kCloseTab:
+    case Action::kActivateTab:
+    case Action::kCreateWindow:
+    case Action::kCloseWindow:
+    case Action::kActivateWindow:
+    case Action::kYieldToUser:
+    case Action::ACTION_NOT_SET:
       return false;
   }
 }
 
 tabs::TabHandle GetTabHandleFromAction(
-    const optimization_guide::proto::ActionInformation& action) {
-  switch (action.action_info_case()) {
-    case ActionInformation::kClick:
+    const optimization_guide::proto::Action& action) {
+  switch (action.action_case()) {
+    case Action::kClick:
       return tabs::TabHandle(action.click().tab_id());
-    case ActionInformation::kType:
+    case Action::kType:
       return tabs::TabHandle(action.type().tab_id());
-    case ActionInformation::kScroll:
+    case Action::kScroll:
       return tabs::TabHandle(action.scroll().tab_id());
-    case ActionInformation::kMoveMouse:
+    case Action::kMoveMouse:
       return tabs::TabHandle(action.move_mouse().tab_id());
-    case ActionInformation::kDragAndRelease:
+    case Action::kDragAndRelease:
       return tabs::TabHandle(action.drag_and_release().tab_id());
-    case ActionInformation::kSelect:
+    case Action::kSelect:
       return tabs::TabHandle(action.select().tab_id());
-    case ActionInformation::kBack:
+    case Action::kBack:
       return tabs::TabHandle(action.back().tab_id());
-    case ActionInformation::kForward:
+    case Action::kForward:
       return tabs::TabHandle(action.forward().tab_id());
-    case ActionInformation::kNavigate:
+    case Action::kNavigate:
       return tabs::TabHandle(action.navigate().tab_id());
-    case ActionInformation::kCloseTab:
+    case Action::kCloseTab:
       return tabs::TabHandle(action.close_tab().tab_id());
-    case ActionInformation::kActivateTab:
+    case Action::kActivateTab:
       return tabs::TabHandle(action.activate_tab().tab_id());
-    case ActionInformation::kWait:
-    case ActionInformation::kCreateTab:
-    case ActionInformation::kCreateWindow:
-    case ActionInformation::kCloseWindow:
-    case ActionInformation::kActivateWindow:
-    case ActionInformation::kYieldToUser:
-    case ActionInformation::ACTION_INFO_NOT_SET:
+    case Action::kWait:
+    case Action::kCreateTab:
+    case Action::kCreateWindow:
+    case Action::kCloseWindow:
+    case Action::kActivateWindow:
+    case Action::kYieldToUser:
+    case Action::ACTION_NOT_SET:
       return tabs::TabHandle();
   }
 }
 
 // Whether the action requires a tab.
-bool ActionRequiresTab(const ActionInformation& action) {
-  switch (action.action_info_case()) {
-    case ActionInformation::kClick:
-    case ActionInformation::kType:
-    case ActionInformation::kScroll:
-    case ActionInformation::kMoveMouse:
-    case ActionInformation::kDragAndRelease:
-    case ActionInformation::kSelect:
-    case ActionInformation::kBack:
-    case ActionInformation::kForward:
-    case ActionInformation::kNavigate:
-    case ActionInformation::kWait:
-    case ActionInformation::kCloseTab:
-    case ActionInformation::kActivateTab:
+bool ActionRequiresTab(const Action& action) {
+  switch (action.action_case()) {
+    case Action::kClick:
+    case Action::kType:
+    case Action::kScroll:
+    case Action::kMoveMouse:
+    case Action::kDragAndRelease:
+    case Action::kSelect:
+    case Action::kBack:
+    case Action::kForward:
+    case Action::kNavigate:
+    case Action::kWait:
+    case Action::kCloseTab:
+    case Action::kActivateTab:
       return true;
-    case ActionInformation::kCreateTab:
-    case ActionInformation::kCreateWindow:
-    case ActionInformation::kCloseWindow:
-    case ActionInformation::kActivateWindow:
-    case ActionInformation::kYieldToUser:
-    case ActionInformation::ACTION_INFO_NOT_SET:
+    case Action::kCreateTab:
+    case Action::kCreateWindow:
+    case Action::kCloseWindow:
+    case Action::kActivateWindow:
+    case Action::kYieldToUser:
+    case Action::ACTION_NOT_SET:
       return false;
   }
 }
@@ -322,7 +322,7 @@ void ExecutionEngine::KickOffNextAction(
     mojom::ActionResultPtr previous_action_result) {
   if (actions_v1_) {
     BrowserAction& proto = actions_v1_->proto;
-    if (proto.action_information_size() <= action_index_) {
+    if (proto.actions_size() <= action_index_) {
       CompleteActionsV1(std::move(previous_action_result));
       return;
     }
@@ -399,7 +399,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 void ExecutionEngine::ExecuteNextAction() {
   CHECK(actions_v1_ || actions_v2_);
 
-  const ActionInformation& action = GetNextAction();
+  const Action& action = GetNextAction();
   ++action_index_;
 
   tabs::TabInterface* tab = GetTab(action);
@@ -528,17 +528,16 @@ const GURL& ExecutionEngine::LastCommittedURLOfCurrentTask() {
   return tab_->GetContents()->GetLastCommittedURL();
 }
 
-const optimization_guide::proto::ActionInformation&
-ExecutionEngine::GetNextAction() {
+const optimization_guide::proto::Action& ExecutionEngine::GetNextAction() {
   if (actions_v1_) {
-    return actions_v1_->proto.action_information().at(action_index_);
+    return actions_v1_->proto.actions().at(action_index_);
   } else {
     return actions_v2_->proto.actions().at(action_index_);
   }
 }
 
 tabs::TabInterface* ExecutionEngine::GetTab(
-    const optimization_guide::proto::ActionInformation& action) {
+    const optimization_guide::proto::Action& action) {
   tabs::TabHandle tab_handle = GetTabHandleFromAction(action);
   tabs::TabInterface* tab = tab_handle.Get();
   if (tab) {

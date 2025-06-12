@@ -29,10 +29,9 @@ class RenderFrameChangeObserver;
 // of the request to the renderer.
 class PageTool : public Tool {
  public:
-  PageTool(
-      AggregatedJournal& journal,
-      content::RenderFrameHost& frame,
-      const optimization_guide::proto::ActionInformation& action_information);
+  PageTool(AggregatedJournal& journal,
+           content::RenderFrameHost& frame,
+           const optimization_guide::proto::Action& action);
   ~PageTool() override;
 
   // actor::Tool
@@ -49,7 +48,7 @@ class PageTool : public Tool {
   InvokeCallback invoke_callback_;
   content::WeakDocumentPtr render_frame_host_;
   std::unique_ptr<RenderFrameChangeObserver> frame_change_observer_;
-  optimization_guide::proto::ActionInformation action_information_;
+  optimization_guide::proto::Action action_;
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame_;
 
   base::WeakPtrFactory<PageTool> weak_ptr_factory_{this};

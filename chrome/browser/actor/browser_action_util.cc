@@ -15,95 +15,95 @@ namespace actor {
 using ::content::RenderFrameHost;
 using ::content::WebContents;
 using ::optimization_guide::DocumentIdentifierUserData;
-using ::optimization_guide::proto::ActionInformation;
+using ::optimization_guide::proto::Action;
 using ::optimization_guide::proto::ActionTarget;
 
 namespace {
 
-bool IsTargetingTab(const ActionInformation& action_information) {
-  switch (action_information.action_info_case()) {
-    case ActionInformation::ActionInfoCase::kClick:
-    case ActionInformation::ActionInfoCase::kType:
-    case ActionInformation::ActionInfoCase::kScroll:
-    case ActionInformation::ActionInfoCase::kMoveMouse:
-    case ActionInformation::ActionInfoCase::kDragAndRelease:
-    case ActionInformation::ActionInfoCase::kSelect:
+bool IsTargetingTab(const Action& action) {
+  switch (action.action_case()) {
+    case Action::ActionCase::kClick:
+    case Action::ActionCase::kType:
+    case Action::ActionCase::kScroll:
+    case Action::ActionCase::kMoveMouse:
+    case Action::ActionCase::kDragAndRelease:
+    case Action::ActionCase::kSelect:
     // These actions target neither tabs nor frames.
-    case ActionInformation::ActionInfoCase::kCreateTab:
-    case ActionInformation::ActionInfoCase::kCloseTab:
-    case ActionInformation::ActionInfoCase::kActivateTab:
-    case ActionInformation::ActionInfoCase::kCreateWindow:
-    case ActionInformation::ActionInfoCase::kCloseWindow:
-    case ActionInformation::ActionInfoCase::kActivateWindow:
-    case ActionInformation::ActionInfoCase::kYieldToUser:
+    case Action::ActionCase::kCreateTab:
+    case Action::ActionCase::kCloseTab:
+    case Action::ActionCase::kActivateTab:
+    case Action::ActionCase::kCreateWindow:
+    case Action::ActionCase::kCloseWindow:
+    case Action::ActionCase::kActivateWindow:
+    case Action::ActionCase::kYieldToUser:
       return false;
-    case ActionInformation::ActionInfoCase::kNavigate:
-    case ActionInformation::ActionInfoCase::kBack:
-    case ActionInformation::ActionInfoCase::kForward:
-    case ActionInformation::ActionInfoCase::kWait:
+    case Action::ActionCase::kNavigate:
+    case Action::ActionCase::kBack:
+    case Action::ActionCase::kForward:
+    case Action::ActionCase::kWait:
       return true;
-    case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
+    case Action::ActionCase::ACTION_NOT_SET:
       NOTREACHED();
   }
 }
 
 }  // namespace
 
-const ActionTarget* ExtractTarget(const ActionInformation& action_information) {
-  switch (action_information.action_info_case()) {
-    case ActionInformation::kClick:
-      if (!action_information.click().has_target()) {
+const ActionTarget* ExtractTarget(const Action& action) {
+  switch (action.action_case()) {
+    case Action::ActionCase::kClick:
+      if (!action.click().has_target()) {
         return nullptr;
       }
-      return &action_information.click().target();
-    case ActionInformation::kType:
-      if (!action_information.type().has_target()) {
+      return &action.click().target();
+    case Action::ActionCase::kType:
+      if (!action.type().has_target()) {
         return nullptr;
       }
-      return &action_information.type().target();
-    case ActionInformation::kScroll:
-      if (!action_information.scroll().has_target()) {
+      return &action.type().target();
+    case Action::ActionCase::kScroll:
+      if (!action.scroll().has_target()) {
         return nullptr;
       }
-      return &action_information.scroll().target();
-    case ActionInformation::kMoveMouse:
-      if (!action_information.move_mouse().has_target()) {
+      return &action.scroll().target();
+    case Action::ActionCase::kMoveMouse:
+      if (!action.move_mouse().has_target()) {
         return nullptr;
       }
-      return &action_information.move_mouse().target();
-    case ActionInformation::kDragAndRelease:
-      if (!action_information.drag_and_release().has_from_target()) {
+      return &action.move_mouse().target();
+    case Action::ActionCase::kDragAndRelease:
+      if (!action.drag_and_release().has_from_target()) {
         return nullptr;
       }
-      return &action_information.drag_and_release().from_target();
-    case ActionInformation::kSelect:
-      if (!action_information.select().has_target()) {
+      return &action.drag_and_release().from_target();
+    case Action::ActionCase::kSelect:
+      if (!action.select().has_target()) {
         return nullptr;
       }
-      return &action_information.select().target();
-    case ActionInformation::kNavigate:
-    case ActionInformation::kBack:
-    case ActionInformation::kForward:
-    case ActionInformation::kWait:
-    case ActionInformation::kCreateTab:
-    case ActionInformation::kCloseTab:
-    case ActionInformation::kActivateTab:
-    case ActionInformation::kCreateWindow:
-    case ActionInformation::kCloseWindow:
-    case ActionInformation::kActivateWindow:
-    case ActionInformation::kYieldToUser:
-    case ActionInformation::ACTION_INFO_NOT_SET:
+      return &action.select().target();
+    case Action::ActionCase::kNavigate:
+    case Action::ActionCase::kBack:
+    case Action::ActionCase::kForward:
+    case Action::ActionCase::kWait:
+    case Action::ActionCase::kCreateTab:
+    case Action::ActionCase::kCloseTab:
+    case Action::ActionCase::kActivateTab:
+    case Action::ActionCase::kCreateWindow:
+    case Action::ActionCase::kCloseWindow:
+    case Action::ActionCase::kActivateWindow:
+    case Action::ActionCase::kYieldToUser:
+    case Action::ActionCase::ACTION_NOT_SET:
       return nullptr;
   }
 }
 
 RenderFrameHost* FindTargetFrame(WebContents& web_contents,
-                                 const ActionInformation& action_information) {
-  if (IsTargetingTab(action_information)) {
+                                 const Action& action) {
+  if (IsTargetingTab(action)) {
     return web_contents.GetPrimaryMainFrame();
   }
 
-  const ActionTarget* target = ExtractTarget(action_information);
+  const ActionTarget* target = ExtractTarget(action);
 
   if (target) {
     const std::string& serialized_token =
@@ -124,8 +124,7 @@ RenderFrameHost* FindTargetFrame(WebContents& web_contents,
           return RenderFrameHost::FrameIterationAction::kContinue;
         });
     return target_frame;
-  } else if (action_information.action_info_case() ==
-             ActionInformation::kScroll) {
+  } else if (action.action_case() == Action::kScroll) {
     // A scroll action may not have a target, which indicates scrolling the
     // main frame.
     return web_contents.GetPrimaryMainFrame();

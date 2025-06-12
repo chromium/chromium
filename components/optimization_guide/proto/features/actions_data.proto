@@ -244,8 +244,8 @@ message YieldToUserAction {
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
 // Next ID: 18
-message ActionInformation {
-  oneof action_info {
+message Action {
+  oneof action {
     ClickAction click = 1;
 
     TypeAction type = 2;
@@ -287,7 +287,7 @@ message ActionInformation {
 // Next ID: 4
 message BrowserAction {
   // The actions to be taken by Chrome.
-  repeated ActionInformation action_information = 1;
+  repeated Action actions = 1;
 
   // The task id of the action.
   int32 task_id = 2 [features = { field_presence: EXPLICIT }];
@@ -327,7 +327,7 @@ message BrowserActionResult {
 // Next ID: 3
 message Actions {
   // The actions to be taken by Chrome.
-  repeated ActionInformation actions = 1;
+  repeated Action actions = 1;
 
   // The task id of the action.
   int32 task_id = 2 [features = { field_presence: EXPLICIT }];

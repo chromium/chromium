@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   optimization_guide::proto::BrowserAction action_request;
   action_request.set_task_id(id);
   action_request.set_tab_id(tab_id);
-  action_request.add_action_information()->mutable_navigate()->set_url(
+  action_request.add_actions()->mutable_navigate()->set_url(
       "https://www.google.com");
   actor_service().ExecuteAction(
       std::move(action_request),
@@ -640,8 +640,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   optimization_guide::proto::BrowserAction action_request;
   action_request.set_task_id(id);
   action_request.set_tab_id(tab_id);
-  action_request.add_action_information()->mutable_navigate()->set_url(
-      url.spec());
+  action_request.add_actions()->mutable_navigate()->set_url(url.spec());
   actor_service().ExecuteAction(std::move(action_request),
                                 navigate_result.GetCallback());
   auto& navigate_response = navigate_result.Get();
@@ -656,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   optimization_guide::proto::BrowserAction click_request;
   click_request.set_task_id(id);
   click_request.set_tab_id(id);
-  ClickAction* click = click_request.add_action_information()->mutable_click();
+  ClickAction* click = click_request.add_actions()->mutable_click();
   click->mutable_target()->set_content_node_id(anchor_dom_node_id.value());
   click->mutable_target()->mutable_document_identifier()->set_serialized_token(
       *DocumentIdentifierUserData::GetDocumentIdentifier(

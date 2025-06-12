@@ -29,8 +29,6 @@ namespace glic {
 
 namespace {
 
-using optimization_guide::proto::ActionInformation;
-
 mojom::ActInFocusedTabResultPtr MakeActErrorResult(
     mojom::ActInFocusedTabErrorReason error_reason) {
   mojom::ActInFocusedTabResultPtr result =

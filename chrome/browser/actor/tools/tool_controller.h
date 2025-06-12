@@ -24,7 +24,7 @@ class RenderFrameHost;
 }  // namespace content
 
 namespace optimization_guide::proto {
-class ActionInformation;
+class Action;
 }  // namespace optimization_guide::proto
 
 namespace actor {
@@ -45,7 +45,7 @@ class ToolController {
   ToolController& operator=(const ToolController&) = delete;
 
   // Invokes a tool action. Both `tab` and `target_frame` can be null.
-  void Invoke(const optimization_guide::proto::ActionInformation& action,
+  void Invoke(const optimization_guide::proto::Action& action,
               AggregatedJournal& journal,
               TaskId task_id,
               tabs::TabInterface* tab,
@@ -65,7 +65,7 @@ class ToolController {
       TaskId task_id,
       tabs::TabInterface* tab,
       content::RenderFrameHost* frame,
-      const optimization_guide::proto::ActionInformation& action_information);
+      const optimization_guide::proto::Action& action);
 
   void ValidationComplete(mojom::ActionResultPtr result);
 

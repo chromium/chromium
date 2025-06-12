@@ -28,7 +28,7 @@
 
 using content::RenderFrameHost;
 using content::WebContents;
-using optimization_guide::proto::ActionInformation;
+using optimization_guide::proto::Action;
 using tabs::TabInterface;
 
 namespace actor {
@@ -53,58 +53,57 @@ ToolController::ToolController() {
 
 ToolController::~ToolController() = default;
 
-std::unique_ptr<Tool> ToolController::CreateTool(
-    AggregatedJournal& journal,
-    TaskId task_id,
-    TabInterface* tab,
-    RenderFrameHost* frame,
-    const ActionInformation& action_information) {
-  switch (action_information.action_info_case()) {
-    case ActionInformation::kClick:
-    case ActionInformation::kType:
-    case ActionInformation::kScroll:
-    case ActionInformation::kMoveMouse:
-    case ActionInformation::kDragAndRelease:
-    case ActionInformation::kSelect: {
+std::unique_ptr<Tool> ToolController::CreateTool(AggregatedJournal& journal,
+                                                 TaskId task_id,
+                                                 TabInterface* tab,
+                                                 RenderFrameHost* frame,
+                                                 const Action& action) {
+  switch (action.action_case()) {
+    case Action::kClick:
+    case Action::kType:
+    case Action::kScroll:
+    case Action::kMoveMouse:
+    case Action::kDragAndRelease:
+    case Action::kSelect: {
       // PageTools are all implemented in the renderer so share the PageTool
       // implementation to shuttle them there.
-      return std::make_unique<PageTool>(journal, *frame, action_information);
+      return std::make_unique<PageTool>(journal, *frame, action);
     }
-    case ActionInformation::kNavigate: {
-      GURL url(action_information.navigate().url());
+    case Action::kNavigate: {
+      GURL url(action.navigate().url());
       return std::make_unique<NavigateTool>(*tab->GetContents(), url);
     }
-    case ActionInformation::kBack: {
+    case Action::kBack: {
       return std::make_unique<HistoryTool>(*tab->GetContents(),
                                            HistoryTool::kBack);
     }
-    case ActionInformation::kForward: {
+    case Action::kForward: {
       return std::make_unique<HistoryTool>(*tab->GetContents(),
                                            HistoryTool::kForward);
     }
-    case ActionInformation::kWait: {
+    case Action::kWait: {
       return std::make_unique<WaitTool>();
     }
-    case ActionInformation::kCreateTab:
-    case ActionInformation::kCloseTab:
-    case ActionInformation::kActivateTab:
-    case ActionInformation::kCreateWindow:
-    case ActionInformation::kCloseWindow:
-    case ActionInformation::kActivateWindow:
-    case ActionInformation::kYieldToUser:
-    case ActionInformation::ACTION_INFO_NOT_SET:
+    case Action::kCreateTab:
+    case Action::kCloseTab:
+    case Action::kActivateTab:
+    case Action::kCreateWindow:
+    case Action::kCloseWindow:
+    case Action::kActivateWindow:
+    case Action::kYieldToUser:
+    case Action::ACTION_NOT_SET:
       NOTREACHED();
   }
 }
 
-void ToolController::Invoke(const ActionInformation& action_information,
+void ToolController::Invoke(const Action& action,
                             AggregatedJournal& journal,
                             TaskId task_id,
                             tabs::TabInterface* tab,
                             content::RenderFrameHost* target_frame,
                             ResultCallback result_callback) {
   std::unique_ptr<Tool> created_tool =
-      CreateTool(journal, task_id, tab, target_frame, action_information);
+      CreateTool(journal, task_id, tab, target_frame, action);
 
   if (!created_tool) {
     // Tool not found.
