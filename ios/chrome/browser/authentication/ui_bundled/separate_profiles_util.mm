@@ -82,6 +82,23 @@ void SignoutFromAccountMenu() {
       performAction:grey_tap()];
 }
 
+void WaitForEnterpriseOnboardingScreen() {
+  // Wait for the enterprise onboarding screen for `kWaitForActionTimeout`
+  // seconds.
+  ConditionBlock enterpriseOnboardingCondition = ^{
+    NSError* error;
+    [[EarlGrey selectElementWithMatcher:ManagedProfileCreationScreenMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForActionTimeout,
+                 enterpriseOnboardingCondition),
+             @"Enterprise onboarding didn't appear.");
+}
+
 id<GREYMatcher> SigninScreenMatcher() {
   return grey_accessibilityID(
       first_run::kFirstRunSignInScreenAccessibilityIdentifier);

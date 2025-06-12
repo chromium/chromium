@@ -135,8 +135,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for enterprise onboarding screen.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // Verifies that the subtitle is the right one.
   [[EarlGrey selectElementWithMatcher:ManagedProfileCreationSubtitleMatcher()]
@@ -166,8 +165,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
   // Wait for the browsing data management screen to disappear, and the
   // enteprise onboarding screen to appear again.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // We are still signed out before accepting enterprise management.
   [SigninEarlGrey verifySignedOut];
@@ -237,8 +235,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for enterprise onboarding screen.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
   // Verify that the subtitle is the right one.
   [[EarlGrey selectElementWithMatcher:ManagedProfileCreationSubtitleMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -270,8 +267,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
   // Wait for the browsing data management screen to disappear, and the
   // enteprise onboarding screen to appear again.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // We are still signed out before accepting enterprise management.
   [SigninEarlGrey verifySignedOut];
@@ -354,8 +350,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for enterprise onboarding screen.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // The data migration disabled message should be shown.
   [[EarlGrey selectElementWithMatcher:
@@ -433,8 +428,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for the enterprise onboarding screen.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // The data migration disabled message should be shown.
   [[EarlGrey selectElementWithMatcher:
@@ -493,8 +487,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for the enterprise onboarding screen.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // Verifies that the subtitle is the right one.
   [[EarlGrey selectElementWithMatcher:ManagedProfileCreationSubtitleMergeByDefaultMatcher()]
@@ -520,8 +513,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for the browsing data management screen to disappear.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // We are still signed out before accepting enterprise management.
   [SigninEarlGrey verifySignedOut];
@@ -593,8 +585,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for enterprise onboarding screen.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // Open the browsing data management screen.
   [[EarlGrey selectElementWithMatcher:
@@ -617,8 +608,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for the browsing data management screen to disappear.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // We are still signed out before accepting enterprise management.
   [SigninEarlGrey verifySignedOut];
@@ -669,8 +659,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for the enterprise onboarding screen.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
   // No merge browsing data button shown.
   [[EarlGrey selectElementWithMatcher:
                  ManagedProfileCreationBrowsingDataButtonMatcher()]
@@ -748,8 +737,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for the enterprise onboarding screen.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // Remove the managed account from device.
   [SigninEarlGrey forgetFakeIdentity:managedIdentity];
@@ -796,8 +784,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for enterprise onboarding screen.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // Refuse the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -879,8 +866,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey
       selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  // Wait for the enterprise onboarding screen.
+  WaitForEnterpriseOnboardingScreen();
   // Confirm the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
@@ -956,8 +943,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey
       selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  // Wait for the enterprise onboarding screen.
+  WaitForEnterpriseOnboardingScreen();
   // Confirm the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
@@ -1010,8 +997,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  // Wait for the enterprise onboarding screen.
+  WaitForEnterpriseOnboardingScreen();
   // Confirm the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
@@ -1136,7 +1123,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Managed profile creation/confirmation screen: Accept.
-  [ChromeEarlGrey waitForMatcher:ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
   // No merge browsing data button shown.
   [[EarlGrey selectElementWithMatcher:
                  ManagedProfileCreationBrowsingDataButtonMatcher()]

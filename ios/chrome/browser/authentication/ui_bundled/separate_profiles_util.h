@@ -28,6 +28,9 @@ void OpenManageAccountsView();
 // taps on the sign-out button, and dismisses the signout snackabr.
 void SignoutFromAccountMenu();
 
+// Waits for the enterprise oboarding screen to become sufficiently visible.
+void WaitForEnterpriseOnboardingScreen();
+
 id<GREYMatcher> SigninScreenMatcher();
 id<GREYMatcher> ManagedProfileCreationScreenMatcher();
 id<GREYMatcher> BrowsingDataManagementScreenMatcher();
