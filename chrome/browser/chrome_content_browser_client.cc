@@ -8498,6 +8498,11 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
     base::OnceCallback<void(std::optional<blink::mojom::RelatedApplication>)>
         callback) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
+
+  if (!web_app::AreWebAppsEnabled(profile)) {
+    return std::move(callback).Run(std::nullopt);
+  }
+
   web_app::WebAppProvider* const provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
 
