@@ -85,6 +85,10 @@ class DeviceScheduledUpdateCheckerForTest
   DeviceScheduledUpdateCheckerForTest& operator=(
       const DeviceScheduledUpdateCheckerForTest&) = delete;
 
+  ~DeviceScheduledUpdateCheckerForTest() override {
+    TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
+  }
+
   int GetUpdateCheckTimerExpirations() const {
     return update_check_timer_expirations_;
   }

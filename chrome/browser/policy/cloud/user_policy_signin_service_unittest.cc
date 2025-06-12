@@ -184,6 +184,9 @@ class UserPolicySigninServiceTest : public testing::Test {
     // Free the profile before we clear out the browser prefs.
     identity_test_env_adaptor_.reset();
     profile_.reset();
+    TestingBrowserProcess* testing_browser_process =
+        TestingBrowserProcess::GetGlobal();
+    testing_browser_process->ShutdownBrowserPolicyConnector();
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
   }

@@ -157,6 +157,7 @@ class ProfilePolicyConnectorTest : public testing::Test {
     // it here to make sure the cleanup happens.
     BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
 
+    TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
     cloud_policy_manager_->Shutdown();
   }
 

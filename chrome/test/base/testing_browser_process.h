@@ -17,7 +17,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -71,9 +70,7 @@ namespace variations {
 class VariationsService;
 }
 
-class TestingBrowserProcess
-    : public BrowserProcess,
-      public base::test::TaskEnvironment::DestructionObserver {
+class TestingBrowserProcess : public BrowserProcess {
  public:
   // Initializes |g_browser_process| with a new TestingBrowserProcess.
   static void CreateInstance();
@@ -174,9 +171,6 @@ class TestingBrowserProcess
   GlobalFeatures* GetFeatures() override;
   void CreateGlobalFeaturesForTesting() override;
 
-  // TaskEnvironment::DestructionObserver:
-  void WillDestroyCurrentTaskEnvironment() override;
-
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).
   void SetLocalState(PrefService* local_state);
@@ -198,6 +192,7 @@ class TestingBrowserProcess
   void SetSystemNotificationHelper(
       std::unique_ptr<SystemNotificationHelper> system_notification_helper);
   void SetShuttingDown(bool is_shutting_down);
+  void ShutdownBrowserPolicyConnector();
   TestingBrowserProcessPlatformPart* GetTestPlatformPart();
   void SetStatusTray(std::unique_ptr<StatusTray> status_tray);
 #if !BUILDFLAG(IS_ANDROID)
@@ -211,22 +206,16 @@ class TestingBrowserProcess
 #endif
 
  private:
+  // Perform necessary cleanup prior to destruction of |g_browser_process|
+  static void StartTearDown();
+
   // See CreateInstance() and DestoryInstance() above.
   TestingBrowserProcess();
   ~TestingBrowserProcess() override;
 
   void Init();
 
-  // Perform necessary cleanup prior to destruction of |g_browser_process|
-  void MaybeStartTearDown();
-
-  void ShutdownBrowserPolicyConnector();
-
-  // The value returned by `IsShuttingDown()`.
   bool is_shutting_down_ = false;
-
-  // Used as a guard for `MaybeStartTearDown()`.
-  bool is_torn_down_ = false;
 
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
       browser_policy_connector_;
