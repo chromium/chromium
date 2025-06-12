@@ -26508,19 +26508,19 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_WithScriptStreaming",
+                    "enable_features": [
+                        "ScriptStreamingForNonHTTP",
+                        "WebUIInProcessResourceLoading"
+                    ]
+                },
+                {
                     "name": "Enabled_NoScriptStreaming",
                     "enable_features": [
                         "WebUIInProcessResourceLoading"
                     ],
                     "disable_features": [
                         "ScriptStreamingForNonHTTP"
-                    ]
-                },
-                {
-                    "name": "Enabled_WithScriptStreaming",
-                    "enable_features": [
-                        "ScriptStreamingForNonHTTP",
-                        "WebUIInProcessResourceLoading"
                     ]
                 }
             ]
