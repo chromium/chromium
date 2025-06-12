@@ -70,11 +70,9 @@ class WebState;
 // an APC tree with all same-origin and cross-origin frames as FrameData
 // ContentNodes, each with their single corresponding TextInfo ContentNode
 // filled with their innerText. For the main frame and its same-origin iframes,
-// the hierarchy is kept. All cross-origin iframes will be direct children of
-// the main frame's root node, with their descendents keeping their relative
-// (WRT to their parent cross-origin iframes) hierarchy. The innerText blob (big
-// concatenated string of frames' innerTexts) will also be passed on PageContext
-// as a fallback option.
+// the original hierarchy is kept. All cross-origin iframes will be direct
+// children of the main frame's root node, with their descendents keeping their
+// relative (WRT to their parent cross-origin iframes) hierarchy.
 @property(nonatomic, assign) BOOL shouldGetInnerText;
 
 @end

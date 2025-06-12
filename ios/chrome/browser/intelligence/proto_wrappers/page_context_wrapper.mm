@@ -115,10 +115,6 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
   // the fly as values are returned from JavaScript.
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent> _rootAPCNode;
 
-  // The accumulation of innerTexts from the all of the WebState's associated
-  // WebFrames. Passed as one big string to PageContext, as a fallback for APC.
-  std::vector<std::string> _webFramesInnerTexts;
-
   // The callback to execute once all async work is complete, whichs
   // relinquishes ownership of the PageContext proto to the callback's handler.
   base::OnceCallback<void(
@@ -454,13 +450,9 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
   }
 }
 
-// Set the constructed APC tree and the innerText blob on the PageContext proto.
+// Set the constructed APC tree on the PageContext proto.
 - (void)webFramesInnerTextsFetchCompleted {
   _page_context->set_allocated_annotated_page_content(_rootAPCNode.release());
-
-  std::string concatenatedInnerTexts =
-      base::JoinString(_webFramesInnerTexts, "\n");
-  _page_context->set_inner_text(concatenatedInnerTexts);
 }
 
 // Populate the main frame's ContentNode subtree with the correct nodes and
@@ -505,8 +497,7 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
   }
 }
 
-// Populate a ContentNode with a TextInfo node and its correct values. Also adds
-// the innerText to the accumulated array of innerTexts.
+// Populate a ContentNode with a TextInfo node and its correct values.
 - (void)populateTextInfoNodeWithValue:(const base::Value*)value
                                origin:(const url::Origin&)origin
                            parentNode:(optimization_guide::proto::ContentNode*)
@@ -535,9 +526,6 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
   childTextNode->mutable_content_attributes()
       ->mutable_text_data()
       ->set_text_content(trimmedText);
-
-  // Accumulate the innerText.
-  _webFramesInnerTexts.emplace_back(trimmedText);
 }
 
 // Populate the ContentNode subtree for an iframe with the correct values. Also
