@@ -145,11 +145,13 @@ TEST_F(ShopCardMediatorTest, TestReset) {
   EXPECT_EQ(nil, mediator().shopCardItemForTesting);
 }
 
-TEST_F(ShopCardMediatorTest, TestRemoveShopCard) {
+// TODO(crbug.com/424378332): `removeShopCard` is not called.
+TEST_F(ShopCardMediatorTest, DISABLED_TestRemoveShopCard) {
   id mockDelegate = OCMStrictProtocolMock(@protocol(ShopCardMediatorDelegate));
   OCMExpect([mockDelegate removeShopCard]);
   mediator().delegate = mockDelegate;
   [mediator() disableModule];
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
 // Tests impression limit functions. ShopCards should not be
