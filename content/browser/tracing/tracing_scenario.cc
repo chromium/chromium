@@ -264,7 +264,6 @@ bool TracingScenario::Initialize(
   if (!tracing::AdaptPerfettoConfigForChrome(
           &trace_config_, privacy_filtering_enabled_,
           enable_package_name_filter,
-          perfetto::protos::gen::ChromeConfig::BACKGROUND,
           enable_system_backend)) {
     return false;
   }

@@ -58,13 +58,6 @@ class PerfettoService : public mojom::PerfettoService {
   void RegisterTracingSession(ConsumerHost::TracingSession* consumer_host);
   void UnregisterTracingSession(ConsumerHost::TracingSession* consumer_host);
 
-  // Make a request of the service for whether or not a TracingSession
-  // should be allowed to start tracing, in case of pre-existing sessions.
-  // |callback| will eventually be called once a session is allowed, or it
-  // will be destroyed.
-  void RequestTracingSession(mojom::TracingClientPriority priority,
-                             base::OnceClosure callback);
-
   // Called by TracingService to notify the perfetto service of the PIDs of
   // actively running services (whenever a service starts or stops).
   void AddActiveServicePid(base::ProcessId pid);

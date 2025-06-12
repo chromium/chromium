@@ -238,9 +238,8 @@ TEST_F(AdaptPerfettoConfigForChromeTest, EnableSystemBackend_NonChrome) {
     data_sources: { config: { name: "linux.ftrace" } }
   )pb");
 
-  EXPECT_TRUE(AdaptPerfettoConfigForChrome(
-      &perfetto_config, false, false,
-      perfetto::protos::gen::ChromeConfig::USER_INITIATED, true));
+  EXPECT_TRUE(
+      AdaptPerfettoConfigForChrome(&perfetto_config, false, false, true));
 
   // System data sources are not adapted.
   for (auto& ds : perfetto_config.data_sources()) {
@@ -271,9 +270,8 @@ TEST_F(AdaptPerfettoConfigForChromeTest, EnableSystemBackend_Chrome) {
     data_sources: { config: { name: "org.chromium.trace_metadata" } }
   )pb");
 
-  EXPECT_TRUE(AdaptPerfettoConfigForChrome(
-      &perfetto_config, false, false,
-      perfetto::protos::gen::ChromeConfig::USER_INITIATED, true));
+  EXPECT_TRUE(
+      AdaptPerfettoConfigForChrome(&perfetto_config, false, false, true));
 
   for (auto& ds : perfetto_config.data_sources()) {
     EXPECT_TRUE(ds.config().has_chrome_config());

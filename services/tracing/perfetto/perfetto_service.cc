@@ -195,36 +195,6 @@ void PerfettoService::UnregisterTracingSession(
   tracing_sessions_.erase(tracing_session);
 }
 
-void PerfettoService::RequestTracingSession(
-    mojom::TracingClientPriority priority,
-    base::OnceClosure callback) {
-  // TODO(oysteine): This currently assumes we only have one concurrent tracing
-  // session, which is enforced by all ConsumerHost::BeginTracing calls routing
-  // through RequestTracingSession before creating a new TracingSession.
-  // Not running the callback means we'll drop any connection requests and deny
-  // the creation of the tracing session.
-  for (ConsumerHost::TracingSession* tracing_session : tracing_sessions_) {
-    if (!tracing_session->tracing_enabled()) {
-      continue;
-    }
-
-    if (tracing_session->tracing_priority() > priority) {
-      return;
-    }
-
-    // If the currently active session is the same or lower priority and it's
-    // tracing, then we'll disable it and re-try the request once it's shut
-    // down.
-    tracing_session->RequestDisableTracing(
-        base::BindOnce(&PerfettoService::RequestTracingSession,
-                       base::Unretained(PerfettoService::GetInstance()),
-                       priority, std::move(callback)));
-    return;
-  }
-
-  std::move(callback).Run();
-}
-
 void PerfettoService::OnServiceDisconnect() {
   OnDisconnectFromProcess(receivers_.current_context());
 }

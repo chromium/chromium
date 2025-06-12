@@ -207,8 +207,7 @@ class TracingAgent::PerfettoTracingSession
     return tracing::GetDefaultPerfettoConfig(
         chrome_config,
         /*privacy_filtering_enabled=*/false,
-        /*convert_to_legacy_json=*/false,
-        perfetto::protos::gen::ChromeConfig::USER_INITIATED);
+        /*convert_to_legacy_json=*/false);
   }
 
   void OnTracingSessionFailed() {

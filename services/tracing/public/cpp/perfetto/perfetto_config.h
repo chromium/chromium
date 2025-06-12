@@ -25,8 +25,6 @@ perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP) GetDefaultPerfettoConfig(
     const base::trace_event::TraceConfig& chrome_config,
     bool privacy_filtering_enabled = false,
     bool convert_to_legacy_json = false,
-    perfetto::protos::gen::ChromeConfig::ClientPriority =
-        perfetto::protos::gen::ChromeConfig::USER_INITIATED,
     const std::string& json_agent_label_filter = "");
 
 // Modifies |perfetto_config| to make it suitable for tracing in chrome. The
@@ -37,8 +35,6 @@ bool COMPONENT_EXPORT(TRACING_CPP) AdaptPerfettoConfigForChrome(
     perfetto::TraceConfig* perfetto_config,
     bool privacy_filtering_enabled = false,
     bool enable_package_name_filter = false,
-    perfetto::protos::gen::ChromeConfig::ClientPriority =
-        perfetto::protos::gen::ChromeConfig::USER_INITIATED,
     bool enable_system_backend = false);
 
 }  // namespace tracing

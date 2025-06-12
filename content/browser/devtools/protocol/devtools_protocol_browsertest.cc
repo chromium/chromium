@@ -3634,11 +3634,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
   std::string perfetto_config_encoded;
 
   chrome_config = base::trace_event::TraceConfig();
-  perfetto_config = tracing::GetDefaultPerfettoConfig(
-      chrome_config,
-      /*privacy_filtering_enabled=*/false,
-      /*convert_to_legacy_json=*/false,
-      perfetto::protos::gen::ChromeConfig::USER_INITIATED);
+  perfetto_config =
+      tracing::GetDefaultPerfettoConfig(chrome_config,
+                                        /*privacy_filtering_enabled=*/false,
+                                        /*convert_to_legacy_json=*/false);
   perfetto_config_encoded =
       base::Base64Encode(perfetto_config.SerializeAsString());
 
@@ -3670,11 +3669,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, NavigateToAboutBlankLoaderId) {
 class SystemTracingDevToolsProtocolTest : public DevToolsProtocolTest {
  protected:
   const base::Value::Dict* StartSystemTrace() {
-    perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
-        base::trace_event::TraceConfig(),
-        /*privacy_filtering_enabled=*/false,
-        /*convert_to_legacy_json=*/false,
-        perfetto::protos::gen::ChromeConfig::USER_INITIATED);
+    perfetto::TraceConfig perfetto_config =
+        tracing::GetDefaultPerfettoConfig(base::trace_event::TraceConfig(),
+                                          /*privacy_filtering_enabled=*/false,
+                                          /*convert_to_legacy_json=*/false);
 
     std::string perfetto_config_encoded =
         base::Base64Encode(perfetto_config.SerializeAsString());

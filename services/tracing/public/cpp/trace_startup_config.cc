@@ -103,8 +103,7 @@ perfetto::TraceConfig TraceStartupConfig::GetDefaultBackgroundStartupConfig() {
   config.add_data_sources()->mutable_config()->set_name(
       tracing::mojom::kSamplerProfilerSourceName);
 #endif
-  tracing::AdaptPerfettoConfigForChrome(
-      &config, true, true, perfetto::protos::gen::ChromeConfig::BACKGROUND);
+  tracing::AdaptPerfettoConfigForChrome(&config, true, true);
   return config;
 }
 
@@ -245,8 +244,7 @@ bool TraceStartupConfig::EnableFromCommandLine() {
   }
 
   perfetto_config_ = tracing::GetDefaultPerfettoConfig(
-      chrome_config, false, output_format_ != OutputFormat::kProto,
-      perfetto::protos::gen::ChromeConfig::USER_INITIATED, "");
+      chrome_config, false, output_format_ != OutputFormat::kProto, "");
 
   if (startup_duration_in_seconds > 0) {
     perfetto_config_.set_duration_ms(startup_duration_in_seconds * 1000);
@@ -304,8 +302,7 @@ bool TraceStartupConfig::EnableFromJsonConfigFile() {
     DLOG(WARNING) << "Use default trace config.";
     perfetto_config_ = tracing::GetDefaultPerfettoConfig(
         base::trace_event::TraceConfig(), false,
-        output_format_ != OutputFormat::kProto,
-        perfetto::protos::gen::ChromeConfig::USER_INITIATED, "");
+        output_format_ != OutputFormat::kProto, "");
     perfetto_config_.set_duration_ms(kDefaultStartupDurationInSeconds * 1000);
     return true;
   }
@@ -418,8 +415,7 @@ TraceStartupConfig::ParseTraceJsonConfigFileContent(
   auto chrome_config =
       base::trace_event::TraceConfig(std::move(*trace_config_dict));
   perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
-      chrome_config, false, output_format_ != OutputFormat::kProto,
-      perfetto::protos::gen::ChromeConfig::USER_INITIATED, "");
+      chrome_config, false, output_format_ != OutputFormat::kProto, "");
 
   int startup_duration_in_seconds =
       value->FindInt(kStartupDurationParam).value_or(0);

@@ -44,7 +44,6 @@ perfetto::TraceConfig::DataSource* AddDataSourceConfig(
     const std::string& chrome_config_string,
     bool privacy_filtering_enabled,
     bool convert_to_legacy_json,
-    perfetto::protos::gen::ChromeConfig::ClientPriority client_priority,
     const std::string& json_agent_label_filter,
     bool enable_package_name_filter) {
   auto* data_source = perfetto_config->add_data_sources();
@@ -58,7 +57,6 @@ perfetto::TraceConfig::DataSource* AddDataSourceConfig(
   }
   chrome_config->set_privacy_filtering_enabled(privacy_filtering_enabled);
   chrome_config->set_convert_to_legacy_json(convert_to_legacy_json);
-  chrome_config->set_client_priority(client_priority);
   chrome_config->set_event_package_name_filter_enabled(
       enable_package_name_filter);
   if (!json_agent_label_filter.empty())
@@ -74,7 +72,6 @@ void AddDataSourceConfigs(
     bool systrace_enabled,
     bool privacy_filtering_enabled,
     bool convert_to_legacy_json,
-    perfetto::protos::gen::ChromeConfig::ClientPriority client_priority,
     const std::string& json_agent_label_filter,
     bool enable_package_name_filter) {
   const std::string chrome_config_string = stripped_config.ToString();
@@ -84,17 +81,17 @@ void AddDataSourceConfigs(
     AddDataSourceConfig(
         perfetto_config, tracing::mojom::kMemoryInstrumentationDataSourceName,
         chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
-        client_priority, json_agent_label_filter, enable_package_name_filter);
+        json_agent_label_filter, enable_package_name_filter);
     AddDataSourceConfig(
         perfetto_config, tracing::mojom::kNativeHeapProfilerSourceName,
         chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
-        client_priority, json_agent_label_filter, enable_package_name_filter);
+        json_agent_label_filter, enable_package_name_filter);
   }
 
   auto* trace_event_data_source = AddDataSourceConfig(
       perfetto_config, tracing::mojom::kTraceEventDataSourceName,
       chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
-      client_priority, json_agent_label_filter, enable_package_name_filter);
+      json_agent_label_filter, enable_package_name_filter);
   auto* trace_event_source_config = trace_event_data_source->mutable_config();
   trace_event_source_config->set_name("track_event");
   trace_event_source_config->set_track_event_config_raw(
@@ -112,29 +109,29 @@ void AddDataSourceConfigs(
     AddDataSourceConfig(
         perfetto_config, tracing::mojom::kSystemTraceDataSourceName,
         chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
-        client_priority, json_agent_label_filter, enable_package_name_filter);
+        json_agent_label_filter, enable_package_name_filter);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
     AddDataSourceConfig(
         perfetto_config, tracing::mojom::kArcTraceDataSourceName,
         chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
-        client_priority, json_agent_label_filter, enable_package_name_filter);
+        json_agent_label_filter, enable_package_name_filter);
 #endif
   }
 
   // Also capture global metadata.
   AddDataSourceConfig(perfetto_config, tracing::mojom::kMetaDataSourceName,
                       chrome_config_string, privacy_filtering_enabled,
-                      convert_to_legacy_json, client_priority,
-                      json_agent_label_filter, enable_package_name_filter);
+                      convert_to_legacy_json, json_agent_label_filter,
+                      enable_package_name_filter);
 
   if (stripped_config.IsCategoryGroupEnabled(
           TRACE_DISABLED_BY_DEFAULT("histogram_samples"))) {
     auto* data_source = AddDataSourceConfig(
         perfetto_config, tracing::mojom::kHistogramSampleSourceName,
         /*chrome_config_string=*/"", privacy_filtering_enabled,
-        convert_to_legacy_json, client_priority, json_agent_label_filter,
+        convert_to_legacy_json, json_agent_label_filter,
         enable_package_name_filter);
 
     perfetto::protos::gen::ChromiumHistogramSamplesConfig histogram_config;
@@ -154,8 +151,8 @@ void AddDataSourceConfigs(
     AddDataSourceConfig(perfetto_config,
                         tracing::mojom::kSamplerProfilerSourceName,
                         /*chrome_config_string=*/"", privacy_filtering_enabled,
-                        convert_to_legacy_json, client_priority,
-                        json_agent_label_filter, enable_package_name_filter);
+                        convert_to_legacy_json, json_agent_label_filter,
+                        enable_package_name_filter);
   }
 
   if (stripped_config.IsCategoryGroupEnabled(
@@ -163,8 +160,8 @@ void AddDataSourceConfigs(
     AddDataSourceConfig(perfetto_config,
                         tracing::mojom::kSystemMetricsSourceName,
                         /*chrome_config_string=*/"", privacy_filtering_enabled,
-                        convert_to_legacy_json, client_priority,
-                        json_agent_label_filter, enable_package_name_filter);
+                        convert_to_legacy_json, json_agent_label_filter,
+                        enable_package_name_filter);
   }
 
   if (stripped_config.IsCategoryGroupEnabled(
@@ -172,7 +169,7 @@ void AddDataSourceConfigs(
     AddDataSourceConfig(
         perfetto_config, tracing::mojom::kJavaHeapProfilerSourceName,
         chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
-        client_priority, json_agent_label_filter, enable_package_name_filter);
+        json_agent_label_filter, enable_package_name_filter);
   }
 }
 
@@ -229,7 +226,6 @@ void AdaptDataSourceConfig(
     perfetto::DataSourceConfig* config,
     bool privacy_filtering_enabled,
     bool enable_package_name_filter,
-    perfetto::protos::gen::ChromeConfig::ClientPriority client_priority,
     bool enable_system_backend) {
   if (!config->has_target_buffer()) {
     config->set_target_buffer(0);
@@ -246,7 +242,6 @@ void AdaptDataSourceConfig(
     // There are no use case for legacy json, since this is used to adapt
     // background tracing configs.
     chrome_config->set_convert_to_legacy_json(false);
-    chrome_config->set_client_priority(client_priority);
     chrome_config->set_event_package_name_filter_enabled(
         enable_package_name_filter);
   }
@@ -279,7 +274,6 @@ perfetto::TraceConfig GetDefaultPerfettoConfig(
     const base::trace_event::TraceConfig& chrome_config,
     bool privacy_filtering_enabled,
     bool convert_to_legacy_json,
-    perfetto::protos::gen::ChromeConfig::ClientPriority client_priority,
     const std::string& json_agent_label_filter) {
   perfetto::TraceConfig perfetto_config;
 
@@ -326,7 +320,7 @@ perfetto::TraceConfig GetDefaultPerfettoConfig(
   AddDataSourceConfigs(&perfetto_config, chrome_config.process_filter_config(),
                        stripped_config, chrome_config.IsSystraceEnabled(),
                        privacy_filtering_enabled, convert_to_legacy_json,
-                       client_priority, json_agent_label_filter,
+                       json_agent_label_filter,
                        chrome_config.IsEventPackageNameFilterEnabled());
 
   return perfetto_config;
@@ -336,7 +330,6 @@ bool AdaptPerfettoConfigForChrome(
     perfetto::TraceConfig* perfetto_config,
     bool privacy_filtering_enabled,
     bool enable_package_name_filter,
-    perfetto::protos::gen::ChromeConfig::ClientPriority client_priority,
     bool enable_system_backend) {
   if (perfetto_config->buffers_size() < 1) {
     auto* buffer_config = perfetto_config->add_buffers();
@@ -355,7 +348,7 @@ bool AdaptPerfettoConfigForChrome(
   for (auto& data_source_config : *perfetto_config->mutable_data_sources()) {
     AdaptDataSourceConfig(data_source_config.mutable_config(),
                           privacy_filtering_enabled, enable_package_name_filter,
-                          client_priority, enable_system_backend);
+                          enable_system_backend);
   }
   return true;
 }
