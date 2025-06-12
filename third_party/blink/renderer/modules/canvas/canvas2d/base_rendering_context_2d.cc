@@ -793,6 +793,11 @@ void BaseRenderingContext2D::Reset() {
   ResetInternal();
 }
 
+CanvasResourceProvider* BaseRenderingContext2D::PaintRenderingResultsToCanvas(
+    SourceDrawingBuffer) {
+  return Host()->ResourceProvider();
+}
+
 void BaseRenderingContext2D::WillUseCurrentFont() const {
   if (HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
       canvas != nullptr) {

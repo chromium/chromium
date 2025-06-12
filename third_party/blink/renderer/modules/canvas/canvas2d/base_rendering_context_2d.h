@@ -224,6 +224,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void PageVisibilityChanged() override {}
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const final;
   void Reset() override;
+  CanvasResourceProvider* PaintRenderingResultsToCanvas(
+      SourceDrawingBuffer) final;
 
   void SetTryRestoreContextIntervalForTesting(base::TimeDelta delay) {
     try_restore_context_interval_ = delay;

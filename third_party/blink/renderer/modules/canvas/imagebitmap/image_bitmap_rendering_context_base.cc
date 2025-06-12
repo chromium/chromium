@@ -49,6 +49,12 @@ void ImageBitmapRenderingContextBase::Stop() {
   image_layer_bridge_->Dispose();
 }
 
+CanvasResourceProvider*
+ImageBitmapRenderingContextBase::PaintRenderingResultsToCanvas(
+    SourceDrawingBuffer) {
+  return Host()->ResourceProvider();
+}
+
 void ImageBitmapRenderingContextBase::Dispose() {
   Stop();
   CanvasRenderingContext::Dispose();

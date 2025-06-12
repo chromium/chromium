@@ -63,6 +63,9 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
 
   void Stop() override;
 
+  CanvasResourceProvider* PaintRenderingResultsToCanvas(
+      SourceDrawingBuffer) override;
+
   bool IsPaintable() const final;
 
  protected:

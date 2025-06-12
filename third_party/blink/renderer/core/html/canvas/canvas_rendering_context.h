@@ -349,14 +349,9 @@ class CORE_EXPORT CanvasRenderingContext
   bool did_print_in_current_task() const { return did_print_in_current_task_; }
 
   // Returns a CanvasResourceProvider containing the current content, or nullptr
-  // if it was not possible to obtain that content. Default implementation
-  // returns the host's CanvasResourceProvider, which is suitable for contexts
-  // that write directly to that resource provider. Other contexts will need to
-  // override this method as suitable.
+  // if it was not possible to obtain that content.
   virtual CanvasResourceProvider* PaintRenderingResultsToCanvas(
-      SourceDrawingBuffer) {
-    return Host()->ResourceProvider();
-  }
+      SourceDrawingBuffer) = 0;
 
  protected:
   CanvasRenderingContext(CanvasRenderingContextHost*,
