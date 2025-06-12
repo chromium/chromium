@@ -29,17 +29,17 @@ namespace {
 //
 // Note: if the value is changed, you will also need to manually update
 // kCrostiniInstallerShelfId and kCrostiniUpgraderShelfId.
-constexpr char kCrostiniShelfIdPrefix[] = "crostini:";
+constexpr std::string_view kCrostiniShelfIdPrefix = "crostini:";
 
 // Prefix of the WindowAppId set on exo windows for GuestOS X apps.
-constexpr char kGuestOsWindowAppIdPrefix[] = "org.chromium.guest_os.";
+constexpr std::string_view kGuestOsWindowAppIdPrefix = "org.chromium.guest_os.";
 // This comes after kGuestOsWindowAppIdPrefix+token for GuestOS Wayland apps.
-constexpr char kWaylandPrefix[] = "wayland.";
+constexpr std::string_view kWaylandPrefix = "wayland.";
 // This comes after kGuestOsWindowAppIdPrefix+token.
-constexpr char kWmClassPrefix[] = "wmclass.";
+constexpr std::string_view kWmClassPrefix = "wmclass.";
 
 // TODO(b/267377562): Borealis windows have a hardcoded "borealis" token.
-constexpr char kBorealisToken[] = "borealis";
+constexpr std::string_view kBorealisToken = "borealis";
 
 const std::string* GetAppNameForWMClass(std::string_view wmclass) {
   // A hard-coded mapping from WMClass to app names.
@@ -145,7 +145,7 @@ std::string GetGuestTokenForWindowId(const std::string* window_app_id) {
                         base::CompareCase::SENSITIVE)) {
     return std::string();
   }
-  const auto token_start = strlen(kGuestOsWindowAppIdPrefix);
+  const auto token_start = kGuestOsWindowAppIdPrefix.size();
   // Find the first "." after the kGuestOsWindowAppIdPrefix
   const auto token_end = window_app_id->find(".", token_start);
 
@@ -161,7 +161,7 @@ std::string GetUnregisteredAppIdPrefix(const std::string& token) {
 
   // TODO(b/244651040): We should support other VMs, e.g. bruschetta.
   // For all other unregistered apps, default to "crostini:".
-  return kCrostiniShelfIdPrefix;
+  return std::string(kCrostiniShelfIdPrefix);
 }
 
 }  // namespace
@@ -231,10 +231,9 @@ std::string GetGuestOsShelfAppId(Profile* profile,
   // Get the suffix by stripping "org.chromium.guest_os.<token>.".
   // token.length() + 1 is used since the '.' separator was not included in the
   // token.
-  std::string_view suffix = base::MakeStringPiece(
-      window_app_id->begin() + strlen(kGuestOsWindowAppIdPrefix) +
-          token.length() + 1,
-      window_app_id->end());
+  std::string_view suffix =
+      std::string_view(*window_app_id)
+          .substr(kGuestOsWindowAppIdPrefix.size() + token.length() + 1);
 
   // Wayland apps will have a "wayland." identifier.
   std::optional<std::string_view> wayland_app =
@@ -319,7 +318,7 @@ bool IsCrostiniShelfAppId(const Profile* profile,
 
 apps::AppType GetAppType(Profile* profile, std::string_view shelf_app_id) {
   if (shelf_app_id.starts_with(kCrostiniShelfIdPrefix)) {
-    shelf_app_id.remove_prefix(strlen(kCrostiniShelfIdPrefix));
+    shelf_app_id.remove_prefix(kCrostiniShelfIdPrefix.size());
   }
   const std::string id(shelf_app_id);
   const std::string token = GetGuestTokenForWindowId(&id);
