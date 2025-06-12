@@ -228,7 +228,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   // Creates the FIFO used to store audio data between the audio engine and the
   // converter.
-  void CreateFifoIfNeeded();
+  HRESULT CreateFifoIfNeeded();
 
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;
