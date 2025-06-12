@@ -53,10 +53,16 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_consumer.h"
+#include "google_apis/gaia/oauth2_access_token_manager.h"
 #endif
 
 namespace extensions {
@@ -749,26 +755,6 @@ void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void IdentityGetAuthTokenFunction::OnAccessTokenForDeviceAccountFetchCompleted(
-    crosapi::mojom::AccessTokenResultPtr result) {
-  std::optional<std::string> access_token;
-  base::Time expiration_time;
-  GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
-  if (result->is_access_token_info()) {
-    access_token = result->get_access_token_info()->access_token;
-    expiration_time = result->get_access_token_info()->expiration_time;
-  } else {
-    DCHECK(result->is_error());
-    error = account_manager::FromMojoGoogleServiceAuthError(result->get_error())
-                .value_or(GoogleServiceAuthError(
-                    GoogleServiceAuthError::SERVICE_ERROR));
-  }
-  device_oauth2_token_fetcher_.reset();
-  OnGetAccessTokenComplete(access_token, expiration_time, error);
-}
-#endif
-
 void IdentityGetAuthTokenFunction::OnAccessTokenFetchCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
@@ -800,21 +786,6 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
   CompleteFunctionWithError(IdentityGetAuthTokenError(
       IdentityGetAuthTokenError::State::kBrowserContextShutDown));
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void IdentityGetAuthTokenFunction::StartDeviceAccessTokenRequest() {
-  device_oauth2_token_fetcher_ = std::make_unique<DeviceOAuth2TokenFetcher>();
-  // Since robot account refresh tokens are scoped down to [any-api] only,
-  // request access token for [any-api] instead of login.
-  // `Unretained()` is safe because this outlives
-  // `device_oauth2_token_fetcher_`.
-  device_oauth2_token_fetcher_->FetchAccessTokenForDeviceAccount(
-      {GaiaConstants::kAnyApiOAuth2Scope},
-      base::BindOnce(&IdentityGetAuthTokenFunction::
-                         OnAccessTokenForDeviceAccountFetchCompleted,
-                     base::Unretained(this)));
-}
-#endif
 
 void IdentityGetAuthTokenFunction::StartTokenKeyAccountAccessTokenRequest() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("identity", "GetAccessToken", this);
@@ -1038,5 +1009,70 @@ void IdentityGetAuthTokenFunction::RefreshTokensLoadedWaiter::
   identity_manager_observation_.Reset();
   std::move(callback_).Run();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+class IdentityGetAuthTokenFunction::DeviceOAuth2TokenFetcher
+    : public OAuth2AccessTokenManager::Consumer {
+ public:
+  using CallbackType = base::OnceCallback<void(
+      const std::optional<std::string>& /*access_token*/,
+      base::Time /*expiration_time*/,
+      const GoogleServiceAuthError& /*error*/)>;
+
+  DeviceOAuth2TokenFetcher()
+      : OAuth2AccessTokenManager::Consumer("device_oauth2_token_service_ash") {}
+  ~DeviceOAuth2TokenFetcher() override = default;
+
+  // Starts requesting access token.
+  void StartRequest(CallbackType callback) {
+    request_ = DeviceOAuth2TokenServiceFactory::Get()->StartAccessTokenRequest(
+        {GaiaConstants::kAnyApiOAuth2Scope}, this);
+    callback_ = std::move(callback);
+  }
+
+  // OAuth2AccessTokenManager::Consumer:
+
+  void OnGetTokenSuccess(
+      const OAuth2AccessTokenManager::Request* request,
+      const OAuth2AccessTokenConsumer::TokenResponse& token_response) override {
+    if (callback_) {
+      std::move(callback_).Run(token_response.access_token,
+                               token_response.expiration_time,
+                               GoogleServiceAuthError::AuthErrorNone());
+    }
+  }
+
+  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
+                         const GoogleServiceAuthError& error) override {
+    if (callback_) {
+      std::move(callback_).Run(std::nullopt, base::Time(), error);
+    }
+  }
+
+ private:
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request_;
+  CallbackType callback_;
+};
+
+void IdentityGetAuthTokenFunction::StartDeviceAccessTokenRequest() {
+  device_oauth2_token_fetcher_ = std::make_unique<DeviceOAuth2TokenFetcher>();
+  // Since robot account refresh tokens are scoped down to [any-api] only,
+  // request access token for [any-api] instead of login.
+  device_oauth2_token_fetcher_->StartRequest(
+      base::BindOnce(&IdentityGetAuthTokenFunction::
+                         OnAccessTokenForDeviceAccountFetchCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IdentityGetAuthTokenFunction::OnAccessTokenForDeviceAccountFetchCompleted(
+    const std::optional<std::string>& access_token,
+    base::Time expiration_time,
+    const GoogleServiceAuthError& error) {
+  device_oauth2_token_fetcher_.reset();
+  OnGetAccessTokenComplete(access_token, expiration_time, error);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

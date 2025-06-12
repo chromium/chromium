@@ -45,7 +45,6 @@ namespace crosapi {
 
 class CertProvisioningAsh;
 class DeviceAttributesAsh;
-class DeviceOAuth2TokenServiceAsh;
 class DocumentScanAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
@@ -87,8 +86,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindDeviceAttributes(
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
-  void BindDeviceOAuth2TokenService(
-      mojo::PendingReceiver<mojom::DeviceOAuth2TokenService> receiver) override;
   void BindDiagnosticsService(
       mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDocumentScan(
@@ -223,7 +220,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
-  std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>

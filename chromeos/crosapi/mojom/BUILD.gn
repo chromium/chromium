@@ -15,7 +15,6 @@ mojom("mojom") {
     "crosapi.mojom",
     "desk_profiles.mojom",
     "device_attributes.mojom",
-    "device_oauth2_token_service.mojom",
     "diagnostics_service.mojom",
     "document_scan.mojom",
     "file_change_service_bridge.mojom",
