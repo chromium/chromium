@@ -35,7 +35,7 @@ KURL Credential::ParseStringAsURLOrThrow(const String& url,
   if (!parsed_url.IsValid()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat({"'", url, "' is not a valid URL."}));
+        StrCat({"'", url, "' is not a valid URL."}));
   }
   return parsed_url;
 }

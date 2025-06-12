@@ -131,29 +131,26 @@ void SetSinkIdResolver::HandleOutputDeviceStatus(
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND:
       Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kNotFoundError,
-          WTF::StrCat({"AudioContext.setSinkId(): failed: the device ",
-                       String(sink_descriptor_.SinkId()), " is not found."})));
+          StrCat({"AudioContext.setSinkId(): failed: the device ",
+                  String(sink_descriptor_.SinkId()), " is not found."})));
       return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED:
       Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-          WTF::StrCat({"AudioContext.setSinkId() failed: access to the device ",
-                       String(sink_descriptor_.SinkId()),
-                       " is not permitted."})));
+          StrCat({"AudioContext.setSinkId() failed: access to the device ",
+                  String(sink_descriptor_.SinkId()), " is not permitted."})));
       return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT:
       Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kTimeoutError,
-          WTF::StrCat(
-              {"AudioContext.setSinkId() failed: the request for device ",
-               String(sink_descriptor_.SinkId()), " is timed out."})));
+          StrCat({"AudioContext.setSinkId() failed: the request for device ",
+                  String(sink_descriptor_.SinkId()), " is timed out."})));
       return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL:
       Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-          WTF::StrCat({"AudioContext.setSinkId() failed: the device ",
-                       String(sink_descriptor_.SinkId()),
-                       " is not available."})));
+          StrCat({"AudioContext.setSinkId() failed: the device ",
+                  String(sink_descriptor_.SinkId()), " is not available."})));
       return;
   }
   NOTREACHED();

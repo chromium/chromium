@@ -232,8 +232,8 @@ void BaseAudioContext::WarnIfContextClosed(const AudioHandler* handler) const {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kOther,
             mojom::ConsoleMessageLevel::kWarning,
-            WTF::StrCat({"Construction of ", handler->NodeTypeName(),
-                         " is not useful when context is closed."})));
+            StrCat({"Construction of ", handler->NodeTypeName(),
+                    " is not useful when context is closed."})));
   }
 }
 

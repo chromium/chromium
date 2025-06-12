@@ -17,7 +17,7 @@ bool ThrowIfCodecStateClosed(V8CodecState state,
 
   exception_state.ThrowDOMException(
       DOMExceptionCode::kInvalidStateError,
-      WTF::StrCat({"Cannot call '", operation, "' on a closed codec."}));
+      StrCat({"Cannot call '", operation, "' on a closed codec."}));
   return true;
 }
 
@@ -30,7 +30,7 @@ bool ThrowIfCodecStateUnconfigured(V8CodecState state,
 
   exception_state.ThrowDOMException(
       DOMExceptionCode::kInvalidStateError,
-      WTF::StrCat({"Cannot call '", operation, "' on an unconfigured codec."}));
+      StrCat({"Cannot call '", operation, "' on an unconfigured codec."}));
   return true;
 }
 

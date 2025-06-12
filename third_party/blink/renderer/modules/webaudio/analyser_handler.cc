@@ -92,8 +92,8 @@ void AnalyserHandler::SetFftSize(unsigned size,
                   ExceptionMessages::kInclusiveBound,
                   RealtimeAnalyser::kMaxFFTSize,
                   ExceptionMessages::kInclusiveBound)
-            : WTF::StrCat({"The value provided (", String::Number(size),
-                           ") is not a power of two."}));
+            : StrCat({"The value provided (", String::Number(size),
+                      ") is not a power of two."}));
   }
 }
 
@@ -127,9 +127,9 @@ void AnalyserHandler::SetMinMaxDecibels(double min_decibels,
   if (min_decibels >= max_decibels) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"maxDecibels (", String::Number(max_decibels),
-                     ") must be greater than or equal to minDecibels ( ",
-                     String::Number(min_decibels), ")."}));
+        StrCat({"maxDecibels (", String::Number(max_decibels),
+                ") must be greater than or equal to minDecibels ( ",
+                String::Number(min_decibels), ")."}));
     return;
   }
   analyser_.SetMinDecibels(min_decibels);

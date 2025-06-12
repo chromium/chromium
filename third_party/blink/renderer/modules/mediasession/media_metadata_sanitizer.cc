@@ -49,9 +49,8 @@ bool CheckMediaImageSrcSanity(const KURL& src, ExecutionContext* context) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
-        WTF::StrCat(
-            {"MediaImage src can only be of http/https/data/blob scheme: ",
-             src.GetString()})));
+        StrCat({"MediaImage src can only be of http/https/data/blob scheme: ",
+                src.GetString()})));
     return false;
   }
 
@@ -60,7 +59,7 @@ bool CheckMediaImageSrcSanity(const KURL& src, ExecutionContext* context) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
-        WTF::StrCat(
+        StrCat(
             {"MediaImage src exceeds maximum URL length: ", src.GetString()})));
     return false;
   }

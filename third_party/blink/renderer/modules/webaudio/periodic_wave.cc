@@ -81,9 +81,9 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
   if (real.size() != imag.size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"length of real array (", String::Number(real.size()),
-                     ") and length of imaginary array (",
-                     String::Number(imag.size()), ") must match."}));
+        StrCat({"length of real array (", String::Number(real.size()),
+                ") and length of imaginary array (",
+                String::Number(imag.size()), ") must match."}));
     return nullptr;
   }
 

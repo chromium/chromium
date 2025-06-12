@@ -164,18 +164,18 @@ AudioNode* AudioNode::connect(AudioNode* destination,
   if (output_index >= numberOfOutputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"output index (", String::Number(output_index),
-                     ") exceeds number of outputs (",
-                     String::Number(numberOfOutputs()), ")."}));
+        StrCat({"output index (", String::Number(output_index),
+                ") exceeds number of outputs (",
+                String::Number(numberOfOutputs()), ")."}));
     return nullptr;
   }
 
   if (destination && input_index >= destination->numberOfInputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"input index (", String::Number(input_index),
-                     ") exceeds number of inputs (",
-                     String::Number(destination->numberOfInputs()), ")."}));
+        StrCat({"input index (", String::Number(input_index),
+                ") exceeds number of inputs (",
+                String::Number(destination->numberOfInputs()), ")."}));
     return nullptr;
   }
 
@@ -246,9 +246,9 @@ void AudioNode::connect(AudioParam* param,
   if (output_index >= numberOfOutputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"output index (", String::Number(output_index),
-                     ") exceeds number of outputs (",
-                     String::Number(numberOfOutputs()), ")."}));
+        StrCat({"output index (", String::Number(output_index),
+                ") exceeds number of outputs (",
+                String::Number(numberOfOutputs()), ")."}));
     return;
   }
 
@@ -429,8 +429,8 @@ void AudioNode::disconnect(AudioNode* destination,
   if (number_of_disconnections == 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        WTF::StrCat({"output (", String::Number(output_index),
-                     ") is not connected to the given destination."}));
+        StrCat({"output (", String::Number(output_index),
+                ") is not connected to the given destination."}));
   }
 
   Handler().UpdatePullStatusIfNeeded();
@@ -479,9 +479,9 @@ void AudioNode::disconnect(AudioNode* destination,
                                        input_index)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        WTF::StrCat({"output (", String::Number(output_index),
-                     ") is not connected to the input (",
-                     String::Number(input_index), ") of the destination."}));
+        StrCat({"output (", String::Number(output_index),
+                ") is not connected to the input (",
+                String::Number(input_index), ") of the destination."}));
     return;
   }
 
@@ -558,8 +558,8 @@ void AudioNode::disconnect(AudioParam* destination_param,
   if (!DisconnectFromOutputIfConnected(output_index, *destination_param)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        WTF::StrCat({"specified destination AudioParam and node output (",
-                     String::Number(output_index), ") are not connected."}));
+        StrCat({"specified destination AudioParam and node output (",
+                String::Number(output_index), ") are not connected."}));
     return;
   }
 

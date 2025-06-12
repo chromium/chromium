@@ -101,11 +101,10 @@ void AudioParam::WarnIfOutsideRange(const String& param_method, float value) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
             mojom::ConsoleMessageLevel::kWarning,
-            WTF::StrCat({Handler().GetParamName(), ".", param_method, " ",
-                         String::Number(value), " outside nominal range [",
-                         String::Number(minValue()), ", ",
-                         String::Number(maxValue()),
-                         "]; value will be clamped."})));
+            StrCat({Handler().GetParamName(), ".", param_method, " ",
+                    String::Number(value), " outside nominal range [",
+                    String::Number(minValue()), ", ",
+                    String::Number(maxValue()), "]; value will be clamped."})));
   }
 }
 
@@ -163,9 +162,9 @@ void AudioParam::setAutomationRate(const V8AutomationRate& rate,
   if (Handler().IsAutomationRateFixed()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({Handler().GetParamName(),
-                     ".automationRate is fixed and cannot be changed to \"",
-                     rate.AsString(), "\""}));
+        StrCat({Handler().GetParamName(),
+                ".automationRate is fixed and cannot be changed to \"",
+                rate.AsString(), "\""}));
     return;
   }
 

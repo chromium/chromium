@@ -74,7 +74,7 @@ AXRange AXRange::RangeOfContents(const AXObject& container) {
 String AXRange::ToString() const {
   if (!IsValid())
     return "Invalid AXRange";
-  return WTF::StrCat(
+  return StrCat(
       {"AXRange from ", Start().ToString(), " to ", End().ToString()});
 }
 

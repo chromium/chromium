@@ -142,8 +142,8 @@ WTF::String AXBlockFlowData::GetText(wtf_size_t item_index) const {
     // prepend its text here.
     // TODO(accessibility): investigate and implement the correct solution for
     // this, as this is not serializing always the correct style info.
-    return WTF::StrCat({first_letter->TransformedText().SimplifyWhiteSpace(),
-                        StringView(full_text, start_offset, length)});
+    return StrCat({first_letter->TransformedText().SimplifyWhiteSpace(),
+                   StringView(full_text, start_offset, length)});
   }
 
   return StringView(full_text, start_offset, length).ToString();

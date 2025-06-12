@@ -268,8 +268,8 @@ void IIRFilterHandler::NotifyBadState() const {
       MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          WTF::StrCat({NodeTypeName(),
-                       ": state is bad, probably due to unstable filter."})));
+          StrCat({NodeTypeName(),
+                  ": state is bad, probably due to unstable filter."})));
 }
 
 }  // namespace blink

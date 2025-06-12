@@ -102,7 +102,7 @@ bool IsNonNegativeAudioParamTime(double time,
     return true;
   }
 
-  exception_state.ThrowRangeError(WTF::StrCat(
+  exception_state.ThrowRangeError(StrCat(
       {message,
        " must be a finite non-negative number: ", String::Number(time)}));
   return false;
@@ -115,7 +115,7 @@ bool IsPositiveAudioParamTime(double time,
     return true;
   }
 
-  exception_state.ThrowRangeError(WTF::StrCat(
+  exception_state.ThrowRangeError(StrCat(
       {message, " must be a finite positive number: ", String::Number(time)}));
   return false;
 }
@@ -453,7 +453,7 @@ void AudioParamHandler::CalculateTimelineValues(float* values,
 String AudioParamHandler::EventToString(const ParamEvent& event) const {
   // The default arguments for most automation methods is the value and the
   // time.
-  String args = WTF::StrCat(
+  String args = StrCat(
       {String::Number(event.Value()), ", ", String::Number(event.Time(), 16)});
 
   // Get a nice printable name for the event and update the args if necessary.
@@ -471,14 +471,13 @@ String AudioParamHandler::EventToString(const ParamEvent& event) const {
     case ParamEvent::Type::kSetTarget:
       s = "setTargetAtTime";
       // This has an extra time constant arg
-      args =
-          WTF::StrCat({args, ", ", String::Number(event.TimeConstant(), 16)});
+      args = StrCat({args, ", ", String::Number(event.TimeConstant(), 16)});
       break;
     case ParamEvent::Type::kSetValueCurve:
       s = "setValueCurveAtTime";
       // Replace the default arg, using "..." to denote the curve argument.
-      args = WTF::StrCat({"..., ", String::Number(event.Time(), 16), ", ",
-                          String::Number(event.Duration(), 16)});
+      args = StrCat({"..., ", String::Number(event.Time(), 16), ", ",
+                     String::Number(event.Duration(), 16)});
       break;
     case ParamEvent::Type::kCancelValues:
     case ParamEvent::Type::kSetValueCurveEnd:
@@ -488,7 +487,7 @@ String AudioParamHandler::EventToString(const ParamEvent& event) const {
       NOTREACHED();
   };
 
-  return WTF::StrCat({s, "(", args, ")"});
+  return StrCat({s, "(", args, ")"});
 }
 
 std::unique_ptr<AudioParamHandler::ParamEvent>
@@ -777,7 +776,7 @@ void AudioParamHandler::ExponentialRampToValueAtTime(
   }
 
   if (!value) {
-    exception_state.ThrowRangeError(WTF::StrCat(
+    exception_state.ThrowRangeError(StrCat(
         {"The float target value provided (", String::Number(value),
          ") should not be in the range (",
          String::Number(-std::numeric_limits<float>::denorm_min()), ", ",
@@ -928,8 +927,8 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
           // start/end of the event, it's an error.
           exception_state.ThrowDOMException(
               DOMExceptionCode::kNotSupportedError,
-              WTF::StrCat({EventToString(*event), " overlaps ",
-                           EventToString(*events_[i])}));
+              StrCat({EventToString(*event), " overlaps ",
+                      EventToString(*events_[i])}));
           return false;
         }
       } else {
@@ -941,8 +940,8 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
             events_[i]->Time() < end_time) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kNotSupportedError,
-              WTF::StrCat({EventToString(*event), " overlaps ",
-                           EventToString(*events_[i])}));
+              StrCat({EventToString(*event), " overlaps ",
+                      EventToString(*events_[i])}));
           return false;
         }
       }
@@ -973,8 +972,8 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
             event->Time() >= events_[i]->Time() && event->Time() < end_time) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kNotSupportedError,
-              WTF::StrCat({EventToString(*event), " overlaps ",
-                           EventToString(*events_[i])}));
+              StrCat({EventToString(*event), " overlaps ",
+                      EventToString(*events_[i])}));
           return false;
         }
       }

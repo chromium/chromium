@@ -41,7 +41,7 @@ bool IsEmpty(const V8UnionArrayBufferOrArrayBufferView* buffer) {
 bool IsValidDomain(const String& rp_id) {
   // A valid domain, such as 'site.example', should be a URL host (and nothing
   // more of the URL!) that is not an IP address.
-  KURL url(WTF::StrCat({"https://", rp_id}));
+  KURL url(StrCat({"https://", rp_id}));
   return url.IsValid() && url.Host() == rp_id &&
          !url::HostIsIPAddress(url.Host().Utf8());
 }

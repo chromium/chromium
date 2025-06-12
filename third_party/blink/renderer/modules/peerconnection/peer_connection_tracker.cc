@@ -802,7 +802,7 @@ void PeerConnectionTracker::TrackCreateOffer(
     return;
   SendPeerConnectionUpdate(
       id, "createOffer",
-      WTF::StrCat({"options: {", SerializeOfferOptions(options), "}"}));
+      StrCat({"options: {", SerializeOfferOptions(options), "}"}));
 }
 
 void PeerConnectionTracker::TrackCreateAnswer(
@@ -814,7 +814,7 @@ void PeerConnectionTracker::TrackCreateAnswer(
     return;
   SendPeerConnectionUpdate(
       id, "createAnswer",
-      WTF::StrCat({"options: {", SerializeAnswerOptions(options), "}"}));
+      StrCat({"options: {", SerializeAnswerOptions(options), "}"}));
 }
 
 void PeerConnectionTracker::TrackSetSessionDescription(
@@ -826,7 +826,7 @@ void PeerConnectionTracker::TrackSetSessionDescription(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  String value = WTF::StrCat({"type: ", type, ", sdp: ", sdp});
+  String value = StrCat({"type: ", type, ", sdp: ", sdp});
   SendPeerConnectionUpdate(
       id,
       source == kSourceLocal ? "setLocalDescription" : "setRemoteDescription",
@@ -866,7 +866,7 @@ void PeerConnectionTracker::TrackAddIceCandidate(
     return;
   String relay_protocol = candidate->RelayProtocol();
   String url = candidate->Url();
-  String value = WTF::StrCat(
+  String value = StrCat(
       {"sdpMid: ", String(candidate->SdpMid()), ", ", "sdpMLineIndex: ",
        (candidate->SdpMLineIndex() ? String::Number(*candidate->SdpMLineIndex())
                                    : "null"),
@@ -899,13 +899,13 @@ void PeerConnectionTracker::TrackIceCandidateError(
   if (id == -1)
     return;
   String address_string =
-      address ? WTF::StrCat({"address: ", address, "\n"}) : String();
+      address ? StrCat({"address: ", address, "\n"}) : String();
   String port_string =
       port.has_value() ? String::Format("port: %d\n", port.value()) : "";
-  String value = WTF::StrCat({"url: ", url, "\n", address_string, port_string,
-                              "host_candidate: ", host_candidate, "\n",
-                              "error_text: ", error_text, "\n",
-                              "error_code: ", String::Number(error_code)});
+  String value = StrCat({"url: ", url, "\n", address_string, port_string,
+                         "host_candidate: ", host_candidate, "\n",
+                         "error_text: ", error_text, "\n",
+                         "error_code: ", String::Number(error_code)});
   SendPeerConnectionUpdate(id, "icecandidateerror", value);
 }
 
@@ -937,11 +937,11 @@ void PeerConnectionTracker::TrackTransceiver(
   if (id == -1)
     return;
   String callback_type =
-      WTF::StrCat({"transceiver", String::FromUTF8(callback_type_ending)});
-  String result = WTF::StrCat(
-      {"Caused by: ", GetTransceiverUpdatedReasonString(reason), "\n\n",
-       "getTransceivers()", "[", String::Number(transceiver_index),
-       "]:", SerializeTransceiver(transceiver)});
+      StrCat({"transceiver", String::FromUTF8(callback_type_ending)});
+  String result =
+      StrCat({"Caused by: ", GetTransceiverUpdatedReasonString(reason), "\n\n",
+              "getTransceivers()", "[", String::Number(transceiver_index),
+              "]:", SerializeTransceiver(transceiver)});
   SendPeerConnectionUpdate(id, callback_type, result);
 }
 
@@ -1073,7 +1073,7 @@ void PeerConnectionTracker::TrackSessionDescriptionCallback(
     default:
       NOTREACHED();
   }
-  update_type = WTF::StrCat({update_type, callback_type});
+  update_type = StrCat({update_type, callback_type});
 
   SendPeerConnectionUpdate(id, update_type, value);
 }
@@ -1126,13 +1126,13 @@ void PeerConnectionTracker::TrackGetUserMediaSuccess(
   String audio_track_info =
       stream->getAudioTracks().empty()
           ? g_empty_string
-          : WTF::StrCat({"id:", stream->getAudioTracks()[0]->id(),
-                         " label:", stream->getAudioTracks()[0]->label()});
+          : StrCat({"id:", stream->getAudioTracks()[0]->id(),
+                    " label:", stream->getAudioTracks()[0]->label()});
   String video_track_info =
       stream->getVideoTracks().empty()
           ? g_empty_string
-          : WTF::StrCat({"id:", stream->getVideoTracks()[0]->id(),
-                         " label:", stream->getVideoTracks()[0]->label()});
+          : StrCat({"id:", stream->getVideoTracks()[0]->id(),
+                    " label:", stream->getVideoTracks()[0]->label()});
 
   peer_connection_tracker_host_->GetUserMediaSuccess(
       user_media_request->request_id(), stream->id(), audio_track_info,
@@ -1172,13 +1172,13 @@ void PeerConnectionTracker::TrackGetDisplayMediaSuccess(
   String audio_track_info =
       stream->getAudioTracks().empty()
           ? g_empty_string
-          : WTF::StrCat({"id:", stream->getAudioTracks()[0]->id(),
-                         " label:", stream->getAudioTracks()[0]->label()});
+          : StrCat({"id:", stream->getAudioTracks()[0]->id(),
+                    " label:", stream->getAudioTracks()[0]->label()});
   String video_track_info =
       stream->getVideoTracks().empty()
           ? g_empty_string
-          : WTF::StrCat({"id:", stream->getVideoTracks()[0]->id(),
-                         " label:", stream->getVideoTracks()[0]->label()});
+          : StrCat({"id:", stream->getVideoTracks()[0]->id(),
+                    " label:", stream->getVideoTracks()[0]->label()});
 
   peer_connection_tracker_host_->GetDisplayMediaSuccess(
       user_media_request->request_id(), stream->id(), audio_track_info,

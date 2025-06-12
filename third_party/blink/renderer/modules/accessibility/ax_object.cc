@@ -2043,7 +2043,7 @@ String AXObject::KeyboardShortcut() const {
     modifier_string = modifier_string_builder.ToString();
   }
 
-  return WTF::StrCat({modifier_string, access_key});
+  return StrCat({modifier_string, access_key});
 }
 
 void AXObject::SerializeOtherScreenReaderAttributes(
@@ -8504,7 +8504,7 @@ void AXObject::PreSerializationConsistencyCheck() const{
 // static
 String AXObject::GetNodeString(Node* node) {
   if (node->IsTextNode()) {
-    return WTF::StrCat({"\"", node->nodeValue(), "\""});
+    return StrCat({"\"", node->nodeValue(), "\""});
   }
 
   Element* element = DynamicTo<Element>(node);
@@ -8541,21 +8541,20 @@ String AXObject::ToString(bool verbose) const {
 
 #if !defined(NDEBUG)
   if (IsDetached() && verbose) {
-    return WTF::StrCat({"(detached) ", detached_object_debug_info_});
+    return StrCat({"(detached) ", detached_object_debug_info_});
   }
 #endif
 
   String role = InternalRoleName(RoleValue()).EncodeForDebugging();
 
   if (IsDetached()) {
-    return WTF::StrCat({role, " (detached)"});
+    return StrCat({role, " (detached)"});
   }
 
   bool cached_values_only = !AXObjectCache().IsFrozen();
 
   if (AXObjectCache().HasBeenDisposed() || AXObjectCache().IsDisposing()) {
-    return WTF::StrCat(
-        {role, " (doc shutdown) #", String::Number(AXObjectID())});
+    return StrCat({role, " (doc shutdown) #", String::Number(AXObjectID())});
   }
 
   StringBuilder string_builder;

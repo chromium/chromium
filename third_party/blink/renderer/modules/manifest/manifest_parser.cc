@@ -263,7 +263,7 @@ String ResolveRelativePathnamePattern(const KURL& base_url, String pathname) {
       // Extract the base_url path up to and including the last slash. Append
       // the relative pathname to it.
       base_path.Truncate(slash_index + 1);
-      base_path = WTF::StrCat({base_path, pathname});
+      base_path = StrCat({base_path, pathname});
       return base_path;
     }
   }
@@ -533,7 +533,7 @@ bool ManifestParser::ParseBoolean(const JSONObject* object,
   bool value;
   if (!json_value->AsBoolean(&value)) {
     AddErrorInfo(
-        WTF::StrCat({"property '", key, "' ignored, type boolean expected."}));
+        StrCat({"property '", key, "' ignored, type boolean expected."}));
     return default_value;
   }
 
@@ -551,7 +551,7 @@ std::optional<String> ManifestParser::ParseString(const JSONObject* object,
   String value;
   if (!json_value->AsString(&value) || value.IsNull()) {
     AddErrorInfo(
-        WTF::StrCat({"property '", key, "' ignored, type string expected."}));
+        StrCat({"property '", key, "' ignored, type string expected."}));
     return std::nullopt;
   }
 
@@ -570,8 +570,8 @@ std::optional<String> ManifestParser::ParseStringForMember(
   JSONValue* json_value = object->Get(key);
   if (!json_value) {
     if (required) {
-      AddErrorInfo(WTF::StrCat(
-          {"property '", key, "' of '", member_name, "' not present."}));
+      AddErrorInfo(
+          StrCat({"property '", key, "' of '", member_name, "' not present."}));
     }
 
     return std::nullopt;
@@ -579,8 +579,8 @@ std::optional<String> ManifestParser::ParseStringForMember(
 
   String value;
   if (!json_value->AsString(&value)) {
-    AddErrorInfo(WTF::StrCat({"property '", key, "' of '", member_name,
-                              "' ignored, type string expected."}));
+    AddErrorInfo(StrCat({"property '", key, "' of '", member_name,
+                         "' ignored, type string expected."}));
     return std::nullopt;
   }
   if (trim) {
@@ -588,7 +588,7 @@ std::optional<String> ManifestParser::ParseStringForMember(
   }
 
   if (value == "") {
-    AddErrorInfo(WTF::StrCat(
+    AddErrorInfo(StrCat(
         {"property '", key, "' of '", member_name, "' is an empty string."}));
     if (required) {
       return std::nullopt;
@@ -607,8 +607,8 @@ std::optional<RGBA32> ManifestParser::ParseColor(const JSONObject* object,
 
   Color color;
   if (!CSSParser::ParseColor(color, *parsed_color)) {
-    AddErrorInfo(WTF::StrCat({"property '", key, "' ignored, '", *parsed_color,
-                              "' is not a valid color."}));
+    AddErrorInfo(StrCat({"property '", key, "' ignored, '", *parsed_color,
+                         "' is not a valid color."}));
     return std::nullopt;
   }
 
@@ -630,8 +630,7 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
 
   KURL resolved = KURL(base_url, *url_str);
   if (!resolved.IsValid()) {
-    AddErrorInfo(
-        WTF::StrCat({"property '", key, "' ignored, URL is invalid."}));
+    AddErrorInfo(StrCat({"property '", key, "' ignored, URL is invalid."}));
     return KURL();
   }
 
@@ -640,17 +639,16 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
       return resolved;
     case ParseURLRestrictions::kSameOriginOnly:
       if (!SecurityOrigin::AreSameOrigin(resolved, document_url_)) {
-        AddErrorInfo(
-            WTF::StrCat({"property '", key,
-                         "' ignored, should be same origin as document."}));
+        AddErrorInfo(StrCat({"property '", key,
+                             "' ignored, should be same origin as document."}));
         return KURL();
       }
       return resolved;
     case ParseURLRestrictions::kWithinScope:
       if (!URLIsWithinScope(resolved, manifest_->scope)) {
-        AddErrorInfo(WTF::StrCat(
-            {"property '", key,
-             "' ignored, should be within scope of the manifest."}));
+        AddErrorInfo(
+            StrCat({"property '", key,
+                    "' ignored, should be within scope of the manifest."}));
         return KURL();
       }
 
@@ -677,8 +675,8 @@ Enum ManifestParser::ParseFirstValidEnum(const JSONObject* object,
   if (value->AsString(&string_value)) {
     Enum enum_value = parse_enum(string_value.Utf8());
     if (enum_value == invalid_value) {
-      AddErrorInfo(WTF::StrCat(
-          {key, " value '", string_value, "' ignored, unknown value."}));
+      AddErrorInfo(
+          StrCat({key, " value '", string_value, "' ignored, unknown value."}));
     }
     return enum_value;
   }
@@ -686,16 +684,16 @@ Enum ManifestParser::ParseFirstValidEnum(const JSONObject* object,
   const JSONArray* list = JSONArray::Cast(value);
   if (!list) {
     AddErrorInfo(
-        WTF::StrCat({"property '", key,
-                     "' ignored, type string or array of strings expected."}));
+        StrCat({"property '", key,
+                "' ignored, type string or array of strings expected."}));
     return invalid_value;
   }
 
   for (wtf_size_t i = 0; i < list->size(); ++i) {
     const JSONValue* item = list->at(i);
     if (!item->AsString(&string_value)) {
-      AddErrorInfo(WTF::StrCat({key, " value '", item->ToJSONString(),
-                                "' ignored, string expected."}));
+      AddErrorInfo(StrCat({key, " value '", item->ToJSONString(),
+                           "' ignored, string expected."}));
       continue;
     }
 
@@ -704,8 +702,8 @@ Enum ManifestParser::ParseFirstValidEnum(const JSONObject* object,
       return enum_value;
     }
 
-    AddErrorInfo(WTF::StrCat(
-        {key, " value '", string_value, "' ignored, unknown value."}));
+    AddErrorInfo(
+        StrCat({key, " value '", string_value, "' ignored, unknown value."}));
   }
 
   return invalid_value;
@@ -1076,7 +1074,7 @@ ManifestParser::ParseImageResourceArray(const String& key,
   JSONArray* icons_list = object->GetArray(key);
   if (!icons_list) {
     AddErrorInfo(
-        WTF::StrCat({"property '", key, "' ignored, type array expected."}));
+        StrCat({"property '", key, "' ignored, type array expected."}));
     return icons;
   }
 
@@ -1159,11 +1157,10 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
 
   for (wtf_size_t i = 0; i < shortcuts_list->size(); ++i) {
     if (i == kMaxShortcutsSize) {
-      AddErrorInfo(
-          WTF::StrCat({"property 'shortcuts' contains more than ",
-                       String::Number(kMaxShortcutsSize),
-                       " valid elements, only the first ",
-                       String::Number(kMaxShortcutsSize), " are parsed."}));
+      AddErrorInfo(StrCat({"property 'shortcuts' contains more than ",
+                           String::Number(kMaxShortcutsSize),
+                           " valid elements, only the first ",
+                           String::Number(kMaxShortcutsSize), " are parsed."}));
       break;
     }
 
@@ -1544,7 +1541,7 @@ HashMap<String, Vector<String>> ManifestParser::ParseFileHandlerAccept(
     if (!net::ParseMimeTypeWithoutParameter(mimetype.Utf8(),
                                             &top_level_mime_type, nullptr) ||
         !net::IsValidTopLevelMimeType(top_level_mime_type)) {
-      AddErrorInfo(WTF::StrCat({"invalid MIME type: ", mimetype}));
+      AddErrorInfo(StrCat({"invalid MIME type: ", mimetype}));
       continue;
     }
 
@@ -1581,9 +1578,9 @@ HashMap<String, Vector<String>> ManifestParser::ParseFileHandlerAccept(
     if (extension_overflow > 0) {
       auto erase_iter = UNSAFE_TODO(extensions.end() - extension_overflow);
       AddErrorInfo(
-          WTF::StrCat({"property 'accept': too many total file extensions, "
-                       "ignoring extensions starting from \"",
-                       *erase_iter, "\""}));
+          StrCat({"property 'accept': too many total file extensions, ignoring "
+                  "extensions starting from \"",
+                  *erase_iter, "\""}));
       extensions.erase(erase_iter, extensions.end());
     }
 
@@ -1729,11 +1726,11 @@ ManifestParser::ParseScopeExtensions(const JSONObject* from) {
 
   for (wtf_size_t i = 0; i < extensions_list->size(); ++i) {
     if (i == kMaxScopeExtensionsSize) {
-      AddErrorInfo(WTF::StrCat(
-          {"property 'scope_extensions' contains more than ",
-           String::Number(kMaxScopeExtensionsSize),
-           " valid elements, only the first ",
-           String::Number(kMaxScopeExtensionsSize), " are parsed."}));
+      AddErrorInfo(
+          StrCat({"property 'scope_extensions' contains more than ",
+                  String::Number(kMaxScopeExtensionsSize),
+                  " valid elements, only the first ",
+                  String::Number(kMaxScopeExtensionsSize), " are parsed."}));
       break;
     }
 
@@ -1812,9 +1809,9 @@ ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
 
   if (origin_string.length() > kMaxOriginLength) {
     AddErrorInfo(
-        WTF::StrCat({"scope_extensions entry ignored, 'origin' exceeds maximum "
-                     "character length of ",
-                     String::Number(kMaxOriginLength), " ."}));
+        StrCat({"scope_extensions entry ignored, 'origin' exceeds maximum "
+                "character length of ",
+                String::Number(kMaxOriginLength), " ."}));
     return std::nullopt;
   }
 
@@ -2046,8 +2043,8 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
     JSONArray* origin_allowlist = JSONArray::Cast(entry.second);
     if (!origin_allowlist) {
       AddErrorInfo(
-          WTF::StrCat({"permission '", feature,
-                       "' ignored, invalid allowlist: type array expected."}));
+          StrCat({"permission '", feature,
+                  "' ignored, invalid allowlist: type array expected."}));
       continue;
     }
 
@@ -2077,7 +2074,7 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
       String wrapped_origin = origin;
       if (EqualIgnoringASCIICase(origin, "self") ||
           EqualIgnoringASCIICase(origin, "none")) {
-        wrapped_origin = WTF::StrCat({"'", origin, "'"});
+        wrapped_origin = StrCat({"'", origin, "'"});
         ;
       }
       new_policy.allowlist.push_back(wrapped_origin);
@@ -2130,9 +2127,9 @@ Vector<String> ManifestParser::ParseOriginAllowlist(
 
     if (origin_string.length() > kMaxOriginLength) {
       AddErrorInfo(
-          WTF::StrCat({"permissions_policy entry ignored, 'origin' exceeds "
-                       "maximum character length of ",
-                       String::Number(kMaxOriginLength), " ."}));
+          StrCat({"permissions_policy entry ignored, 'origin' exceeds maximum "
+                  "character length of ",
+                  String::Number(kMaxOriginLength), " ."}));
       return Vector<String>();
     }
     out.push_back(origin_string);

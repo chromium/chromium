@@ -106,10 +106,10 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   if (buffer->sampleRate() != Context()->sampleRate()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"The buffer sample rate of ",
-                     String::Number(buffer->sampleRate()),
-                     " does not match the context rate of ",
-                     String::Number(Context()->sampleRate()), " Hz."}));
+        StrCat({"The buffer sample rate of ",
+                String::Number(buffer->sampleRate()),
+                " does not match the context rate of ",
+                String::Number(Context()->sampleRate()), " Hz."}));
     return;
   }
 
@@ -126,8 +126,8 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   if (!is_channel_count_good) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"The buffer must have 1, 2, or 4 channels, not ",
-                     String::Number(number_of_channels)}));
+        StrCat({"The buffer must have 1, 2, or 4 channels, not ",
+                String::Number(number_of_channels)}));
     return;
   }
 

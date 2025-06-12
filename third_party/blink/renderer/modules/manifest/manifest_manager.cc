@@ -262,7 +262,7 @@ void ManifestManager::ParseManifestFromPage(const KURL& document_url,
         mojom::blink::ConsoleMessageSource::kOther,
         error->critical ? mojom::blink::ConsoleMessageLevel::kError
                         : mojom::blink::ConsoleMessageLevel::kWarning,
-        WTF::StrCat({"Manifest: ", error->message}), std::move(location)));
+        StrCat({"Manifest: ", error->message}), std::move(location)));
   }
 
   // Having errors while parsing the manifest doesn't mean the manifest parsing

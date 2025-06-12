@@ -307,9 +307,9 @@ void ScriptProcessorHandler::SetChannelCount(uint32_t channel_count,
   if (channel_count != channel_count_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"channelCount cannot be changed from ",
-                     String::Number(channel_count_), " to ",
-                     String::Number(channel_count)}));
+        StrCat({"channelCount cannot be changed from ",
+                String::Number(channel_count_), " to ",
+                String::Number(channel_count)}));
   }
 }
 
@@ -323,8 +323,8 @@ void ScriptProcessorHandler::SetChannelCountMode(
       (mode == V8ChannelCountMode::Enum::kClampedMax)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"channelCountMode cannot be changed from 'explicit' to '",
-                     V8ChannelCountMode(mode).AsString(), "'"}));
+        StrCat({"channelCountMode cannot be changed from 'explicit' to '",
+                V8ChannelCountMode(mode).AsString(), "'"}));
   }
 }
 

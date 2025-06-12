@@ -102,9 +102,9 @@ AudioBuffer* AudioBuffer::Create(unsigned number_of_channels,
   if (!audio_buffer) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"createBuffer(", String::Number(number_of_channels), ", ",
-                     String::Number(number_of_frames), ", ",
-                     String::Number(sample_rate), ") failed."}));
+        StrCat({"createBuffer(", String::Number(number_of_channels), ", ",
+                String::Number(number_of_frames), ", ",
+                String::Number(sample_rate), ") failed."}));
   }
 
   return audio_buffer;
@@ -206,9 +206,9 @@ NotShared<DOMFloat32Array> AudioBuffer::getChannelData(
   if (channel_index >= channels_.size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat({"channel index (", String::Number(channel_index),
-                     ") exceeds number of channels (",
-                     String::Number(channels_.size()), ")"}));
+        StrCat({"channel index (", String::Number(channel_index),
+                ") exceeds number of channels (",
+                String::Number(channels_.size()), ")"}));
     return NotShared<DOMFloat32Array>(nullptr);
   }
 

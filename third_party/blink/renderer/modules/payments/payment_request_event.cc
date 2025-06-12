@@ -188,7 +188,7 @@ PaymentRequestEvent::openWindow(ScriptState* script_state, const String& url) {
   if (!parsed_url_to_open.IsValid()) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),
-        WTF::StrCat({"'", url, "' is not a valid URL."})));
+        StrCat({"'", url, "' is not a valid URL."})));
     return promise;
   }
 

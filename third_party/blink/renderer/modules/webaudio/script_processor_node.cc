@@ -180,17 +180,17 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
   if (number_of_input_channels > BaseAudioContext::MaxNumberOfChannels()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat(
-            {"number of input channels (",
-             String::Number(number_of_input_channels), ") exceeds maximum (",
-             String::Number(BaseAudioContext::MaxNumberOfChannels()), ")."}));
+        StrCat({"number of input channels (",
+                String::Number(number_of_input_channels), ") exceeds maximum (",
+                String::Number(BaseAudioContext::MaxNumberOfChannels()),
+                ")."}));
     return nullptr;
   }
 
   if (number_of_output_channels > BaseAudioContext::MaxNumberOfChannels()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        WTF::StrCat(
+        StrCat(
             {"number of output channels (",
              String::Number(number_of_output_channels), ") exceeds maximum (",
              String::Number(BaseAudioContext::MaxNumberOfChannels()), ")."}));
@@ -229,9 +229,8 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
     default:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
-          WTF::StrCat(
-              {"buffer size (", String::Number(requested_buffer_size),
-               ") must be 0 or a power of two between 256 and 16384."}));
+          StrCat({"buffer size (", String::Number(requested_buffer_size),
+                  ") must be 0 or a power of two between 256 and 16384."}));
       return nullptr;
   }
 

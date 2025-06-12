@@ -163,9 +163,9 @@ void PrivateAggregation::contributeToHistogramOnEvent(
     execution_context->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kRecommendation,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        WTF::StrCat({"Unrecognized event ", event,
-                     " was passed to contributeToHistogramOnEvent(). The call "
-                     "will be ignored."}));
+        StrCat({"Unrecognized event ", event,
+                " was passed to contributeToHistogramOnEvent(). The call will "
+                "be ignored."}));
     return;
   }
 

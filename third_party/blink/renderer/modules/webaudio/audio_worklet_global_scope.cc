@@ -73,8 +73,8 @@ void AudioWorkletGlobalScope::registerProcessor(
   if (processor_definition_map_.Contains(name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"An AudioWorkletProcessor with name:\"", name,
-                     "\" is already registered."}));
+        StrCat({"An AudioWorkletProcessor with name:\"", name,
+                "\" is already registered."}));
     return;
   }
 
@@ -82,8 +82,8 @@ void AudioWorkletGlobalScope::registerProcessor(
   //    a TypeError .
   if (!processor_ctor->IsConstructor()) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"The provided class definition of \"", name,
-                     "\" AudioWorkletProcessor is not a constructor."}));
+        StrCat({"The provided class definition of \"", name,
+                "\" AudioWorkletProcessor is not a constructor."}));
     return;
   }
 
@@ -140,7 +140,7 @@ void AudioWorkletGlobalScope::registerProcessor(
       if (!sanitized_names.insert(new_param_name).is_new_entry) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kNotSupportedError,
-            WTF::StrCat(
+            StrCat(
                 {"Found a duplicate name \"", new_param_name,
                  "\" in parameterDescriptors() from the AudioWorkletProcessor "
                  "definition of \"",
@@ -155,13 +155,12 @@ void AudioWorkletGlobalScope::registerProcessor(
       if ((default_value < min_value) || (default_value > max_value)) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kInvalidStateError,
-            WTF::StrCat(
-                {"The default value, ", String::Number(default_value),
-                 ", in \"", new_param_name,
-                 "\" parameterDescriptors() from the AudioWorkletProcessor "
-                 "is out of the range [",
-                 String::Number(min_value), ", ", String::Number(max_value),
-                 "]."}));
+            StrCat({"The default value, ", String::Number(default_value),
+                    ", in \"", new_param_name,
+                    "\" parameterDescriptors() from the AudioWorkletProcessor "
+                    "is out of the range [",
+                    String::Number(min_value), ", ", String::Number(max_value),
+                    "]."}));
         return;
       }
 

@@ -234,22 +234,22 @@ void ValidateShippingOptionOrPaymentItem(const T* item,
 
   if (item->label().length() > PaymentRequest::kMaxStringLength) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"The label for ", item_name,
-                     " cannot be longer than 1024 characters"}));
+        StrCat({"The label for ", item_name,
+                " cannot be longer than 1024 characters"}));
     return;
   }
 
   if (item->amount()->currency().length() > PaymentRequest::kMaxStringLength) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"The currency code for ", item_name,
-                     " cannot be longer than 1024 characters"}));
+        StrCat({"The currency code for ", item_name,
+                " cannot be longer than 1024 characters"}));
     return;
   }
 
   if (item->amount()->value().length() > PaymentRequest::kMaxStringLength) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"The amount value for ", item_name,
-                     " cannot be longer than 1024 characters"}));
+        StrCat({"The amount value for ", item_name,
+                " cannot be longer than 1024 characters"}));
     return;
   }
 
@@ -272,8 +272,7 @@ void ValidateShippingOptionOrPaymentItem(const T* item,
     execution_context.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError,
-        WTF::StrCat(
-            {"Empty ", item_name, " label may be confusing the user"})));
+        StrCat({"Empty ", item_name, " label may be confusing the user"})));
     return;
   }
 }
@@ -301,7 +300,7 @@ void ValidateAndConvertDisplayItems(
     ExceptionState& exception_state) {
   if (input.size() > PaymentRequest::kMaxListSize) {
     exception_state.ThrowTypeError(
-        WTF::StrCat({"At most 1024 ", item_names, " allowed"}));
+        StrCat({"At most 1024 ", item_names, " allowed"}));
     return;
   }
 
@@ -731,13 +730,13 @@ void ValidateAndConvertPaymentMethodData(
             &execution_context)) {
       if (input.size() > 1) {
         exception_state.ThrowRangeError(
-            WTF::StrCat({kSecurePaymentConfirmationMethod,
-                         " must be the only payment method identifier "
-                         "specified in the PaymentRequest constructor."}));
+            StrCat({kSecurePaymentConfirmationMethod,
+                    " must be the only payment method identifier specified in "
+                    "the PaymentRequest constructor."}));
         return;
       } else if (options->requestShipping() || options->requestPayerName() ||
                  options->requestPayerEmail() || options->requestPayerPhone()) {
-        exception_state.ThrowRangeError(WTF::StrCat(
+        exception_state.ThrowRangeError(StrCat(
             {kSecurePaymentConfirmationMethod,
              " payment method identifier cannot be used with "
              "\"requestShipping\", \"requestPayerName\", "
@@ -751,7 +750,7 @@ void ValidateAndConvertPaymentMethodData(
         !CSPAllowsConnectToSource(url, /*url_before_redirects=*/url,
                                   /*did_follow_redirect=*/false,
                                   execution_context)) {
-      exception_state.ThrowRangeError(WTF::StrCat(
+      exception_state.ThrowRangeError(StrCat(
           {payment_method_data->supportedMethod(),
            " payment method identifier violates Content Security Policy."}));
       return;
@@ -1410,10 +1409,10 @@ PaymentRequest::PaymentRequest(
       execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kError,
-          WTF::StrCat({"Payment method \"", data->supported_method,
-                       "\" cannot be used with \"requestShipping\", "
-                       "\"requestPayerName\", \"requestPayerEmail\", or "
-                       "\"requestPayerPhone\"."})));
+          StrCat({"Payment method \"", data->supported_method,
+                  "\" cannot be used with \"requestShipping\", "
+                  "\"requestPayerName\", \"requestPayerEmail\", or "
+                  "\"requestPayerPhone\"."})));
     }
   }
 

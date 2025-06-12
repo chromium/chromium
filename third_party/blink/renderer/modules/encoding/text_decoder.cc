@@ -50,8 +50,8 @@ TextDecoder* TextDecoder::Create(const String& label,
   // rejects aliases of the replacement encoding.
   if (!encoding.IsValid() ||
       WTF::EqualIgnoringASCIICase(encoding.GetName(), "replacement")) {
-    exception_state.ThrowRangeError(WTF::StrCat(
-        {"The encoding label provided ('", label, "') is invalid."}));
+    exception_state.ThrowRangeError(
+        StrCat({"The encoding label provided ('", label, "') is invalid."}));
     return nullptr;
   }
 

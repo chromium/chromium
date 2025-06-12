@@ -894,9 +894,9 @@ void BiquadFilterHandler::NotifyBadState() const {
       MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          WTF::StrCat({NodeTypeName(),
-                       ": state is bad, probably due to unstable filter caused "
-                       "by fast parameter automation."})));
+          StrCat({NodeTypeName(),
+                  ": state is bad, probably due to unstable filter caused by "
+                  "fast parameter automation."})));
 }
 
 bool BiquadFilterHandler::HasConstantValuesForTesting(float* values,

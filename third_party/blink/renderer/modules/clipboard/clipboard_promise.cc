@@ -216,7 +216,7 @@ void ClipboardPromise::WriteNextRepresentation() {
   if (!clipboard_writer_) {
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError,
-        WTF::StrCat({"Type ", type, " is not supported"}));
+        StrCat({"Type ", type, " is not supported"}));
     return;
   }
   clipboard_writer_->WriteToSystem(clipboard_item_data);
@@ -234,9 +234,9 @@ void ClipboardPromise::RejectFromReadOrDecodeFailure() {
           : "Failed to read or decode Blob for clipboard item type ";
   script_promise_resolver_->RejectWithDOMException(
       DOMExceptionCode::kDataError,
-      WTF::StrCat({exception_text,
-                   clipboard_item_data_[clipboard_representation_index_].first,
-                   "."}));
+      StrCat({exception_text,
+              clipboard_item_data_[clipboard_representation_index_].first,
+              "."}));
 }
 
 void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
@@ -253,8 +253,8 @@ void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
     if (unsanitized_formats[0] != ui::kMimeTypeHtml) {
       script_promise_resolver_->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError,
-          WTF::StrCat({"The unsanitized type ", unsanitized_formats[0],
-                       " is not supported."}));
+          StrCat({"The unsanitized type ", unsanitized_formats[0],
+                  " is not supported."}));
       return;
     }
     // HTML is the only standard format that can be read without any processing
@@ -474,8 +474,8 @@ void ClipboardPromise::WriteClipboardItemData(
            !type_with_args.Contains(web_custom_format))) {
         script_promise_resolver_->RejectWithDOMException(
             DOMExceptionCode::kNotAllowedError,
-            WTF::StrCat({"Type ", type, " does not match the blob's type ",
-                         type_with_args}));
+            StrCat({"Type ", type, " does not match the blob's type ",
+                    type_with_args}));
         return;
       }
     }
@@ -513,7 +513,7 @@ void ClipboardPromise::HandleWriteWithPermission(
     if (!ClipboardItem::supports(type)) {
       script_promise_resolver_->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError,
-          WTF::StrCat({"Type ", type, " not supported on write."}));
+          StrCat({"Type ", type, " not supported on write."}));
       return;
     }
   }

@@ -431,8 +431,7 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     if (!converted_url.IsValid()) {
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kDataError,
-          WTF::StrCat(
-              {"The url \"", url_with_metadata->url(), "\" is invalid."})));
+          StrCat({"The url \"", url_with_metadata->url(), "\" is invalid."})));
       LogSharedStorageWorkletError(
           SharedStorageWorkletErrorType::kSelectURLWebVisible);
       return promise;
@@ -493,11 +492,10 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
         if (!IsValidFencedFrameReportingURL(converted_report_url)) {
           resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
               script_state->GetIsolate(), DOMExceptionCode::kDataError,
-              WTF::StrCat(
-                  {"The metadata for the url at index ",
-                   String::NumberToStringECMAScript(index),
-                   " has an invalid or non-HTTPS report_url parameter \"",
-                   report_url_string, "\"."})));
+              StrCat({"The metadata for the url at index ",
+                      String::NumberToStringECMAScript(index),
+                      " has an invalid or non-HTTPS report_url parameter \"",
+                      report_url_string, "\"."})));
           LogSharedStorageWorkletError(
               SharedStorageWorkletErrorType::kSelectURLWebVisible);
           return promise;

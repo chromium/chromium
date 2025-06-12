@@ -58,8 +58,8 @@ ScriptPromise<BackgroundFetchRegistration> RejectWithTypeError(
     const String& reason,
     ExceptionState& exception_state) {
   exception_state.ThrowTypeError(
-      WTF::StrCat({"Refused to fetch '", request_url.ElidedString(),
-                   "' because ", reason, "."}));
+      StrCat({"Refused to fetch '", request_url.ElidedString(), "' because ",
+              reason, "."}));
   return EmptyPromise();
 }
 

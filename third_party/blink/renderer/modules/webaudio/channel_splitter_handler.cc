@@ -77,8 +77,8 @@ void ChannelSplitterHandler::SetChannelCount(unsigned channel_count,
   if (channel_count != NumberOfOutputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"ChannelSplitter: channelCount cannot be changed from ",
-                     String::Number(NumberOfOutputs())}));
+        StrCat({"ChannelSplitter: channelCount cannot be changed from ",
+                String::Number(NumberOfOutputs())}));
   }
 }
 

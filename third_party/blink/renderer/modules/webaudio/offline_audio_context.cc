@@ -173,8 +173,8 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
   if (ContextState() != V8AudioContextState::Enum::kSuspended) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"cannot startRendering when an OfflineAudioContext is ",
-                     state().AsString()}));
+        StrCat({"cannot startRendering when an OfflineAudioContext is ",
+                state().AsString()}));
     return EmptyPromise();
   }
 
@@ -201,10 +201,10 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
   if (!render_target) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        WTF::StrCat({"startRendering failed to create AudioBuffer(",
-                     String::Number(number_of_channels), ", ",
-                     String::Number(total_render_frames_), ", ",
-                     String::Number(sample_rate), ")"}));
+        StrCat({"startRendering failed to create AudioBuffer(",
+                String::Number(number_of_channels), ", ",
+                String::Number(total_render_frames_), ", ",
+                String::Number(sample_rate), ")"}));
     return EmptyPromise();
   }
 
@@ -236,8 +236,8 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
   if (when < 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"negative suspend time (", String::Number(when),
-                     ") is not allowed"}));
+        StrCat({"negative suspend time (", String::Number(when),
+                ") is not allowed"}));
     return EmptyPromise();
   }
 
@@ -248,13 +248,13 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
   if (total_render_duration <= when) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"cannot schedule a suspend at ",
-                     String::NumberToStringECMAScript(when),
-                     " seconds because it is greater than or equal to the "
-                     "total render duration of ",
-                     String::Number(total_render_frames_), " frames (",
-                     String::NumberToStringECMAScript(total_render_duration),
-                     " seconds)"}));
+        StrCat({"cannot schedule a suspend at ",
+                String::NumberToStringECMAScript(when),
+                " seconds because it is greater than or equal to the "
+                "total render duration of ",
+                String::Number(total_render_frames_), " frames (",
+                String::NumberToStringECMAScript(total_render_duration),
+                " seconds)"}));
     return EmptyPromise();
   }
 
@@ -273,11 +273,11 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
         std::min(currentTime(), length() / static_cast<double>(sampleRate()));
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        WTF::StrCat({"suspend(", String::Number(when),
-                     ") failed to suspend at frame ", String::Number(frame),
-                     " because it is earlier than the current frame of ",
-                     String::Number(current_frame_clamped), " (",
-                     String::Number(current_time_clamped), " seconds)"}));
+        StrCat({"suspend(", String::Number(when),
+                ") failed to suspend at frame ", String::Number(frame),
+                " because it is earlier than the current frame of ",
+                String::Number(current_frame_clamped), " (",
+                String::Number(current_time_clamped), " seconds)"}));
     return EmptyPromise();
   }
 
@@ -293,9 +293,9 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
     if (scheduled_suspends_.Contains(frame)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
-          WTF::StrCat({"cannot schedule more than one suspend at frame ",
-                       String::Number(frame), " (", String::Number(when),
-                       " seconds)"}));
+          StrCat({"cannot schedule more than one suspend at frame ",
+                  String::Number(frame), " (", String::Number(when),
+                  " seconds)"}));
       return EmptyPromise();
     }
 

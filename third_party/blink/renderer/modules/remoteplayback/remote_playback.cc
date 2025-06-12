@@ -87,9 +87,9 @@ KURL GetAvailabilityUrl(const KURL& source,
       audio_codec.has_value()
           ? ("&audio_codec=" + media::GetCodecName(audio_codec.value()))
           : "";
-  return KURL(WTF::StrCat({kRemotePlaybackPresentationUrlPath,
-                           "?source=", encoded_source, video_codec_str.c_str(),
-                           audio_codec_str.c_str()}));
+  return KURL(
+      StrCat({kRemotePlaybackPresentationUrlPath, "?source=", encoded_source,
+              video_codec_str.c_str(), audio_codec_str.c_str()}));
 }
 
 bool IsBackgroundAvailabilityMonitoringDisabled() {

@@ -440,8 +440,8 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
 }
 
 String AXSelection::ToString() const {
-  return WTF::StrCat({IsValid() ? "" : "Invalid ", "AXSelection from ",
-                      Anchor().ToString(), " to ", Focus().ToString()});
+  return StrCat({IsValid() ? "" : "Invalid ", "AXSelection from ",
+                 Anchor().ToString(), " to ", Focus().ToString()});
 }
 
 std::optional<AXSelection::TextControlSelection>

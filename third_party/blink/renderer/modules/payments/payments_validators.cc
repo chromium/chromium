@@ -37,9 +37,9 @@ bool PaymentsValidators::IsValidCurrencyCodeFormat(
 
   if (optional_error_message) {
     *optional_error_message =
-        WTF::StrCat({"'", code,
-                     "' is not a valid ISO 4217 currency code, should be "
-                     "well-formed 3-letter alphabetic code."});
+        StrCat({"'", code,
+                "' is not a valid ISO 4217 currency code, should be "
+                "well-formed 3-letter alphabetic code."});
   }
 
   return false;
@@ -55,8 +55,8 @@ bool PaymentsValidators::IsValidAmountFormat(v8::Isolate* isolate,
     return true;
 
   if (optional_error_message) {
-    *optional_error_message = WTF::StrCat(
-        {"'", amount, "' is not a valid amount format for ", item_name});
+    *optional_error_message =
+        StrCat({"'", amount, "' is not a valid amount format for ", item_name});
   }
 
   return false;
@@ -72,10 +72,9 @@ bool PaymentsValidators::IsValidCountryCodeFormat(
     return true;
 
   if (optional_error_message) {
-    *optional_error_message =
-        WTF::StrCat({"'", code,
-                     "' is not a valid CLDR country code, should be 2 upper "
-                     "case letters [A-Z]"});
+    *optional_error_message = StrCat({"'", code,
+                                      "' is not a valid CLDR country code, "
+                                      "should be 2 upper case letters [A-Z]"});
   }
   return false;
 }

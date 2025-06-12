@@ -21,7 +21,7 @@ CompressionFormat LookupCompressionFormat(const AtomicString& format,
   }
 
   exception_state.ThrowTypeError(
-      WTF::StrCat({"Unsupported compression format: '", format, "'"}));
+      StrCat({"Unsupported compression format: '", format, "'"}));
   return CompressionFormat::kGzip;
 }
 

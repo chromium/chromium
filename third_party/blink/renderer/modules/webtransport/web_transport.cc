@@ -1226,25 +1226,25 @@ void WebTransport::Init(const String& url_for_diagnostics,
     // original URL and not the canonicalized version stored in `url_`.
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat({"The URL '", url_for_diagnostics, "' is invalid."}));
+        StrCat({"The URL '", url_for_diagnostics, "' is invalid."}));
     return;
   }
 
   if (!url_.ProtocolIs("https")) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat({"The URL's scheme must be 'https'. '", url_.Protocol(),
-                     "' is not allowed."}));
+        StrCat({"The URL's scheme must be 'https'. '", url_.Protocol(),
+                "' is not allowed."}));
     return;
   }
 
   if (url_.HasFragmentIdentifier()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        WTF::StrCat({"The URL contains a fragment identifier ('#",
-                     url_.FragmentIdentifier(),
-                     "'). Fragment identifiers are not allowed in WebTransport "
-                     "URLs."}));
+        StrCat({"The URL contains a fragment identifier ('#",
+                url_.FragmentIdentifier(),
+                "'). Fragment identifiers are not allowed in WebTransport "
+                "URLs."}));
     return;
   }
 
@@ -1258,9 +1258,9 @@ void WebTransport::Init(const String& url_for_diagnostics,
         WebTransportError::Create(
             script_state_->GetIsolate(),
             /*stream_error_code=*/std::nullopt,
-            WTF::StrCat({"Refused to connect to '", url_.ElidedString(),
-                         "' because it violates the document's Content "
-                         "Security Policy"}),
+            StrCat({"Refused to connect to '", url_.ElidedString(),
+                    "' because it violates the document's Content Security "
+                    "Policy"}),
             V8WebTransportErrorSource::Enum::kSession));
 
     connection_pending_ = false;

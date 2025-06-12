@@ -1293,7 +1293,7 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
                                                ConsoleMessage>(
           mojom::ConsoleMessageSource::kOther,
           mojom::ConsoleMessageLevel::kInfo,
-          WTF::StrCat(
+          StrCat(
               {"[AudioContext] Fallback to the default device due to an invalid"
                " audio device change. (",
                String(sink_descriptor_.SinkId().Utf8()), ")"})));

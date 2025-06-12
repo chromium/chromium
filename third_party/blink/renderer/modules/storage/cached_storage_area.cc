@@ -40,7 +40,7 @@ enum class StorageFormat : uint8_t { UTF16 = 0, Latin1 = 1 };
 // These methods are used to pack and unpack the page_url/storage_area_id into
 // source strings to/from the browser.
 String PackSource(const KURL& page_url, const String& storage_area_id) {
-  return WTF::StrCat({page_url.GetString(), "\n", storage_area_id});
+  return StrCat({page_url.GetString(), "\n", storage_area_id});
 }
 
 void UnpackSource(const String& source,

@@ -104,7 +104,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
       return nullptr;
     }
 
-    domain = WTF::StrCat({".", options->domain()});
+    domain = StrCat({".", options->domain()});
     if (!cookie_url_host.EndsWith(domain) &&
         cookie_url_host != options->domain()) {
       exception_state.ThrowTypeError(
@@ -125,7 +125,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
       return nullptr;
     }
     if (!path.EndsWith("/")) {
-      path = WTF::StrCat({path, "/"});
+      path = StrCat({path, "/"});
     }
   }
 

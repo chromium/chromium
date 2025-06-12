@@ -18,26 +18,24 @@ void PaymentHandlerUtils::ReportResponseError(
     ExecutionContext* execution_context,
     const String& event_name_prefix,
     ServiceWorkerResponseError error) {
-  String error_message =
-      WTF::StrCat({event_name_prefix, ".respondWith() failed: "});
+  String error_message = StrCat({event_name_prefix, ".respondWith() failed: "});
   switch (error) {
     case ServiceWorkerResponseError::kPromiseRejected:
-      error_message = WTF::StrCat(
+      error_message = StrCat(
           {error_message, "the promise passed to respondWith() was rejected."});
       break;
     case ServiceWorkerResponseError::kDefaultPrevented:
-      error_message = WTF::StrCat(
+      error_message = StrCat(
           {error_message,
            "preventDefault() was called without calling respondWith()."});
       break;
     case ServiceWorkerResponseError::kNoV8Instance:
-      error_message = WTF::StrCat({error_message,
-                                   "an object that was not a PaymentResponse "
-                                   "was passed to respondWith()."});
+      error_message = StrCat({error_message,
+                              "an object that was not a PaymentResponse was "
+                              "passed to respondWith()."});
       break;
     case ServiceWorkerResponseError::kUnknown:
-      error_message =
-          WTF::StrCat({error_message, "an unexpected error occurred."});
+      error_message = StrCat({error_message, "an unexpected error occurred."});
       break;
     case ServiceWorkerResponseError::kResponseTypeError:
     case ServiceWorkerResponseError::kResponseTypeOpaque:
