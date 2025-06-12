@@ -318,6 +318,17 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     }
 
     /**
+     * Whether the current position matches the user-configured one, e.g. if the configured position
+     * is bottom but the omnibox is focused.
+     */
+    public boolean doesPrefMismatchPosition() {
+        @ControlsPosition
+        int positionForPref =
+                isToolbarConfiguredToShowOnTop() ? ControlsPosition.TOP : ControlsPosition.BOTTOM;
+        return mCurrentPosition != positionForPref;
+    }
+
+    /**
      * Returns whether the given {context, device, cct-ness} combo is eligible for toolbar position
      * customization.
      *

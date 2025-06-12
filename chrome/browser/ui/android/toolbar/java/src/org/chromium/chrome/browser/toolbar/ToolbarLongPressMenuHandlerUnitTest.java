@@ -76,6 +76,8 @@ import org.chromium.ui.widget.UiWidgetFactory;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.function.BooleanSupplier;
+
 /** Unit tests for {@link ToolbarLongPressMenuHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
@@ -108,7 +110,8 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     private ObservableSupplierImpl mProfileSupplier;
 
     private Activity mActivity;
-    private ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier;
+    private boolean mShouldSuppress;
+    private final BooleanSupplier mSuppressSupplier = () -> mShouldSuppress;
     private SharedPreferencesManager mSharedPreferencesManager;
     private String mUrlString;
     private Configuration mConfiguration;
@@ -127,8 +130,6 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
         TrackerFactory.setTrackerForTests(mTracker);
 
-        mOmniboxFocusStateSupplier = new ObservableSupplierImpl<>();
-        mOmniboxFocusStateSupplier.set(false);
         mConfiguration = mActivity.getResources().getConfiguration();
         mConfiguration.screenWidthDp = 320;
         doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
@@ -139,7 +140,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                         mActivity,
                         mProfileSupplier,
                         false,
-                        mOmniboxFocusStateSupplier,
+                        mSuppressSupplier,
                         mActivityLifecycleDispatcher,
                         mWindowAndroid,
                         () -> mUrlString,
@@ -210,7 +211,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testNoDisplayLongpressMenuWhenFocus() {
-        mOmniboxFocusStateSupplier.set(true);
+        mShouldSuppress = true;
         mToolbarLongPressMenuHandler.getOnLongClickListener().onLongClick(mUrlBar);
 
         assertNull(mToolbarLongPressMenuHandler.getPopupWindowForTesting());

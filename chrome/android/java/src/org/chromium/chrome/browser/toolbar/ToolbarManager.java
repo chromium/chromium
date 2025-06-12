@@ -1056,7 +1056,7 @@ public class ToolbarManager
                         /* context= */ mActivity,
                         mProfileSupplier,
                         mIsCustomTab,
-                        mOmniboxFocusStateSupplier,
+                        this::shouldSuppressToolbarLongPress,
                         mActivityLifecycleDispatcher,
                         mWindowAndroid,
                         () -> getUrlBarTextWithoutAutocomplete(),
@@ -1682,6 +1682,12 @@ public class ToolbarManager
                         });
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
+    }
+
+    private boolean shouldSuppressToolbarLongPress() {
+        return mOmniboxFocusStateSupplier.get()
+                || (mToolbarPositionController != null
+                        && mToolbarPositionController.doesPrefMismatchPosition());
     }
 
     private void back(int metaState) {
