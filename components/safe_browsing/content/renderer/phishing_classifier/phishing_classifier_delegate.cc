@@ -327,6 +327,10 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
 
   GURL stripped_last_load_url(StripRef(last_finished_load_url_));
   if (last_url_received_from_browser_ != stripped_last_load_url) {
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.PhishingClassifierMatchOnStrippedEmptyPath",
+        last_url_received_from_browser_.GetWithEmptyPath() ==
+            stripped_last_load_url.GetWithEmptyPath());
     RecordEvent(SBPhishingClassifierEvent::kUrlShouldNotBeClassified);
     // The browser has not yet confirmed that this URL should be classified,
     // so defer classification for now.  Note: the ref does not affect

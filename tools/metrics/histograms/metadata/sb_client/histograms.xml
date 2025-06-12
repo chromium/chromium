@@ -953,6 +953,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.PhishingClassifierMatchOnStrippedEmptyPath"
+    enum="BooleanMatched" expires_after="2026-06-11">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the stripped GURLs with empty path on browser and renderer
+    loaded URL would have matched when the reference stripped URLs have not.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.PhishingDetectionDuration{RequestType}"
     units="ms" expires_after="2025-10-26">
   <owner>andysjlim@chromium.org</owner>
