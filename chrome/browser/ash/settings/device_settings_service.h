@@ -21,6 +21,8 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
+class PrefService;
+
 namespace ownership {
 class OwnerKeyUtil;
 class PublicKey;
@@ -282,6 +284,8 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // Processes pending callbacks from GetOwnershipStatusAsync().
   void RunPendingOwnershipStatusCallbacks();
+
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   raw_ptr<SessionManagerClient> session_manager_client_ = nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;

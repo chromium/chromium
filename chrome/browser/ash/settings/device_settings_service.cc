@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -24,7 +26,6 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
-
 #include "crypto/rsa_private_key.h"
 
 namespace em = enterprise_management;
@@ -47,32 +48,39 @@ constexpr char kDeviceIdValidityNewEnrollmentDemo[] =
 constexpr char kDeviceLocalAccountCount[] =
     "Enterprise.DeviceLocalAccountCount";
 
-void RecordDeviceIdValidityMetric(em::PolicyData* policy_data) {
+void RecordDeviceIdValidityMetric(PrefService* local_state,
+                                  const InstallAttributes& install_attributes,
+                                  const em::PolicyData& policy_data) {
+  const std::string device_id = install_attributes.GetDeviceId();
+
+  PolicyDeviceIdValidity device_id_validity;
+  if (device_id.empty()) {
+    device_id_validity = PolicyDeviceIdValidity::kActualIdUnknown;
+  } else if (!policy_data.has_device_id()) {
+    device_id_validity = PolicyDeviceIdValidity::kMissing;
+  } else if (policy_data.device_id() != device_id) {
+    device_id_validity = PolicyDeviceIdValidity::kInvalid;
+  } else {
+    device_id_validity = PolicyDeviceIdValidity::kValid;
+  }
+
+  const bool is_demo_mode =
+      install_attributes.GetMode() == policy::DEVICE_MODE_DEMO;
+
   // The enrollment version pref was added in M121. All the devices enrolled
   // before that don't have the pref on local state.
-  auto* local_state = g_browser_process->local_state();
   const bool is_old_enrollment =
       !local_state ||
       local_state->GetString(prefs::kEnrollmentVersionOS).empty();
-  InstallAttributes* install_attributes = InstallAttributes::Get();
-  const bool is_demo_mode =
-      install_attributes->GetMode() == policy::DEVICE_MODE_DEMO;
 
-  PolicyDeviceIdValidity device_id_validity = PolicyDeviceIdValidity::kValid;
-  if (install_attributes->GetDeviceId().empty()) {
-    device_id_validity = PolicyDeviceIdValidity::kActualIdUnknown;
-  } else if (!policy_data->has_device_id()) {
-    device_id_validity = PolicyDeviceIdValidity::kMissing;
-  } else if (policy_data->device_id() != install_attributes->GetDeviceId()) {
-    device_id_validity = PolicyDeviceIdValidity::kInvalid;
-  }
-
-  const char* histogram_name = kDeviceIdValidityNewEnrollmentEnterprise;
+  const char* histogram_name;
   if (is_demo_mode) {
     histogram_name = is_old_enrollment ? kDeviceIdValidityOldEnrollmentDemo
                                        : kDeviceIdValidityNewEnrollmentDemo;
-  } else if (is_old_enrollment) {
-    histogram_name = kDeviceIdValidityOldEnrollmentEnterprise;
+  } else {
+    histogram_name = is_old_enrollment
+                         ? kDeviceIdValidityOldEnrollmentEnterprise
+                         : kDeviceIdValidityNewEnrollmentEnterprise;
   }
   base::UmaHistogramEnumeration(histogram_name, device_id_validity);
 }
@@ -161,6 +169,7 @@ void DeviceSettingsService::SetSessionManager(
   DCHECK(!session_manager_client_);
   DCHECK(!owner_key_util_.get());
 
+  local_state_ = g_browser_process->local_state();
   session_manager_client_ = session_manager_client;
   owner_key_util_ = owner_key_util;
 
@@ -176,6 +185,8 @@ void DeviceSettingsService::UnsetSessionManager() {
     session_manager_client_->RemoveObserver(this);
   session_manager_client_ = nullptr;
   owner_key_util_.reset();
+
+  local_state_ = nullptr;
 }
 
 void DeviceSettingsService::SetDeviceMode(policy::DeviceMode device_mode) {
@@ -371,8 +382,8 @@ void DeviceSettingsService::EnsureReload(bool request_key_load) {
 }
 
 void DeviceSettingsService::StartNextOperation() {
-  if (!pending_operations_.empty() && session_manager_client_ &&
-      owner_key_util_.get()) {
+  if (!pending_operations_.empty() && session_manager_client_) {
+    CHECK(owner_key_util_.get());
     pending_operations_.front()->Start(session_manager_client_, owner_key_util_,
                                        public_key_);
   }
@@ -404,7 +415,9 @@ void DeviceSettingsService::HandleCompletedOperation(
     // good state.
     if (policy_data_ && policy_data_->has_request_token() &&
         InstallAttributes::Get()->IsEnterpriseManaged()) {
-      RecordDeviceIdValidityMetric(policy_data_.get());
+      RecordDeviceIdValidityMetric(local_state_.get(),
+                                   CHECK_DEREF(InstallAttributes::Get()),
+                                   CHECK_DEREF(policy_data_.get()));
       RecordDeviceLocalAccountsMetric(*device_settings_);
     }
     // Update "OffHours" policy state and apply "OffHours" policy to current
