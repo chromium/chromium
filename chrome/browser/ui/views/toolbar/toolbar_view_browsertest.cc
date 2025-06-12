@@ -4,31 +4,36 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-class ToolbarViewUnitTest : public TestWithBrowserView {
+class ToolbarViewUnitTest : public InProcessBrowserTest {
  public:
   ToolbarButton* GetForwardButton() {
-    return browser_view()->toolbar()->forward_button();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->forward_button();
   }
 };
 
-TEST_F(ToolbarViewUnitTest, ForwardButtonVisibility) {
+IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest, ForwardButtonVisibility) {
   // Forward button should be visible by default.
   EXPECT_TRUE(GetForwardButton()->GetVisible());
 
-  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kShowForwardButton, false);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  browser_view->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
+                                                     false);
   EXPECT_FALSE(GetForwardButton()->GetVisible());
 }
 
-TEST_F(ToolbarViewUnitTest, AccessibleProperties) {
-  ToolbarView* toolbar = browser_view()->toolbar();
+IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest, AccessibleProperties) {
+  ToolbarView* toolbar =
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
   ui::AXNodeData data;
 
   toolbar->GetViewAccessibility().GetAccessibleNodeData(&data);
