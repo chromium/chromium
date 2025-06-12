@@ -582,7 +582,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         if (mIsByPermanentButton) availableScreenSpace -= padding.top;
         if (availableScreenSpace <= 0 && sExceptionReporter != null) {
             String logMessage =
-                    "there is no screen space for app menn, mIsByPermanentButton = "
+                    "there is no screen space for app menu, mIsByPermanentButton = "
                             + mIsByPermanentButton
                             + ", anchorViewOffset = "
                             + anchorViewOffset
