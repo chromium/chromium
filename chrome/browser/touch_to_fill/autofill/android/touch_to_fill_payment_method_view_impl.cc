@@ -155,7 +155,8 @@ bool TouchToFillPaymentMethodViewImpl::ShowIbans(
 bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
     TouchToFillPaymentMethodViewController* controller,
     base::span<const LoyaltyCard> affiliated_loyalty_cards,
-    base::span<const LoyaltyCard> all_loyalty_cards) {
+    base::span<const LoyaltyCard> all_loyalty_cards,
+    bool first_time_usage) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!IsReadyToShow(controller, env)) {
     return false;
@@ -166,8 +167,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
   Java_TouchToFillPaymentMethodViewBridge_showLoyaltyCards(
       env, java_object_,
       GetJavaArrayFromLoyaltyCards(env, affiliated_loyalty_cards),
-      GetJavaArrayFromLoyaltyCards(env, all_loyalty_cards),
-      /*firstTimeUsage=*/false);
+      GetJavaArrayFromLoyaltyCards(env, all_loyalty_cards), first_time_usage);
 
   return true;
 }

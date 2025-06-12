@@ -113,7 +113,8 @@ bool TouchToFillPaymentMethodControllerImpl::ShowLoyaltyCards(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const LoyaltyCard> affiliated_loyalty_cards,
-    base::span<const LoyaltyCard> all_loyalty_cards) {
+    base::span<const LoyaltyCard> all_loyalty_cards,
+    bool first_time_usage) {
   // TODO(crbug.com/404437211): Unify `ShowX()` methods to avoid code
   // duplication.
   if (!keyboard_suppressor_.is_suppressing()) {
@@ -125,8 +126,8 @@ bool TouchToFillPaymentMethodControllerImpl::ShowLoyaltyCards(
     return false;
   }
 
-  if (!view->ShowLoyaltyCards(this, affiliated_loyalty_cards,
-                              all_loyalty_cards)) {
+  if (!view->ShowLoyaltyCards(this, affiliated_loyalty_cards, all_loyalty_cards,
+                              first_time_usage)) {
     ResetJavaObject();
     return false;
   }

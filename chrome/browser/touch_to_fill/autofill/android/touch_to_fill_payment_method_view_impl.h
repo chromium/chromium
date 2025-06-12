@@ -41,10 +41,10 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
                        bool should_show_scan_credit_card) override;
   bool ShowIbans(TouchToFillPaymentMethodViewController* controller,
                  base::span<const autofill::Iban> ibans_to_suggest) override;
-  bool ShowLoyaltyCards(
-      TouchToFillPaymentMethodViewController* controller,
-      base::span<const LoyaltyCard> affiliated_loyalty_cards,
-      base::span<const LoyaltyCard> all_loyalty_cards) override;
+  bool ShowLoyaltyCards(TouchToFillPaymentMethodViewController* controller,
+                        base::span<const LoyaltyCard> affiliated_loyalty_cards,
+                        base::span<const LoyaltyCard> all_loyalty_cards,
+                        bool first_time_usage) override;
   void Hide() override;
 
   // The corresponding Java TouchToFillPaymentMethodViewBridge.

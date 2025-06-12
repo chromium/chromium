@@ -48,11 +48,11 @@ class TouchToFillPaymentMethodControllerImpl
   bool ShowIbans(std::unique_ptr<TouchToFillPaymentMethodView> view,
                  base::WeakPtr<TouchToFillDelegate> delegate,
                  base::span<const Iban> ibans_to_suggest) override;
-  bool ShowLoyaltyCards(
-      std::unique_ptr<TouchToFillPaymentMethodView> view,
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const LoyaltyCard> affiliated_loyalty_cards,
-      base::span<const LoyaltyCard> all_loyalty_cards) override;
+  bool ShowLoyaltyCards(std::unique_ptr<TouchToFillPaymentMethodView> view,
+                        base::WeakPtr<TouchToFillDelegate> delegate,
+                        base::span<const LoyaltyCard> affiliated_loyalty_cards,
+                        base::span<const LoyaltyCard> all_loyalty_cards,
+                        bool first_time_usage) override;
   void Hide() override;
 
   // content::WebContentsObserver:

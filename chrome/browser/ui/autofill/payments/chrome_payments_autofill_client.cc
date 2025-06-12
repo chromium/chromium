@@ -13,6 +13,7 @@
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,6 +66,8 @@
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
@@ -930,10 +933,18 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
                          return card.HasMatchingMerchantDomain(current_domain);
                        });
 
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  const bool first_time_usage =
+      tracker && tracker->IsInitialized() &&
+      tracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
+
   return GetTouchToFillPaymentMethodController()->ShowLoyaltyCards(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
       delegate, std::move(affiliated_loyalty_cards),
-      std::move(loyalty_cards_to_suggest));
+      std::move(loyalty_cards_to_suggest), first_time_usage);
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
