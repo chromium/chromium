@@ -60,9 +60,6 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
   // Compute the baseline metrics for this linebox.
   FontHeight BaselineMetrics() const;
 
-  // Whether the content soft-wraps to the next line.
-  bool HasSoftWrapToNextLine() const;
-
   // Returns the |LayoutObject| of the container. |GetLayoutObject()| returns
   // |nullptr| because line boxes do not have corresponding |LayoutObject|.
   const LayoutObject* ContainerLayoutObject() const {

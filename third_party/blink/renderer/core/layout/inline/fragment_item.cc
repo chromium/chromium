@@ -469,13 +469,6 @@ bool FragmentItem::HasNonVisibleOverflow() const {
   return false;
 }
 
-bool FragmentItem::IsScrollContainer() const {
-  if (const PhysicalBoxFragment* fragment = BoxFragment()) {
-    return fragment->IsScrollContainer();
-  }
-  return false;
-}
-
 bool FragmentItem::HasSelfPaintingLayer() const {
   if (const PhysicalBoxFragment* fragment = BoxFragment()) {
     return fragment->HasSelfPaintingLayer();
@@ -519,12 +512,6 @@ const PhysicalOffset FragmentItem::ContentOffsetInContainerFragment() const {
     offset += box->ContentOffset();
   }
   return offset;
-}
-
-inline const LayoutBox* FragmentItem::InkOverflowOwnerBox() const {
-  if (Type() == kBox)
-    return DynamicTo<LayoutBox>(GetLayoutObject());
-  return nullptr;
 }
 
 inline LayoutBox* FragmentItem::MutableInkOverflowOwnerBox() {

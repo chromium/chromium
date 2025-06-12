@@ -280,7 +280,6 @@ class CORE_EXPORT FragmentItem final {
   LayoutObject& BlockInInline() const;
 
   bool HasNonVisibleOverflow() const;
-  bool IsScrollContainer() const;
   bool HasSelfPaintingLayer() const;
 
   // TODO(kojii): Avoid using this function in outside of this class as much as
@@ -564,7 +563,6 @@ class CORE_EXPORT FragmentItem final {
   bool HasInkOverflow() const {
     return InkOverflowType() != InkOverflow::Type::kNone;
   }
-  const LayoutBox* InkOverflowOwnerBox() const;
   LayoutBox* MutableInkOverflowOwnerBox();
 
   void InvalidateInkOverflow();

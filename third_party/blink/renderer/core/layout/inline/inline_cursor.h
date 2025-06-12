@@ -502,9 +502,6 @@ class CORE_EXPORT InlineCursor {
   // Returns true if the current position moves to first child.
   bool TryMoveToFirstChild();
 
-  // Returns true if the current position moves to first inline leaf child.
-  bool TryMoveToFirstInlineLeafChild();
-
   // Returns true if the current position moves to last child.
   bool TryMoveToLastChild();
 
@@ -599,7 +596,6 @@ class CORE_EXPORT InlineCursor {
 
   // Index conversions for |IsDescendantsCursor()|.
   wtf_size_t SpanBeginItemIndex() const;
-  wtf_size_t SpanIndexFromItemIndex(unsigned index) const;
 
   // Make the current position points nothing, e.g. cursor moves over start/end
   // fragment, cursor moves to first/last child to parent has no children.

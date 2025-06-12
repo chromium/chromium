@@ -129,7 +129,6 @@ bool ShouldIgnoreForPositionForPoint(const InlineCursor& line) {
       //  * editing/selection/click-after-nested-block.html
       return false;
     }
-    // See also |InlineCursor::TryMoveToFirstInlineLeafChild()|.
     if (cursor.Current().IsInlineLeaf())
       return false;
   }
@@ -944,18 +943,6 @@ inline wtf_size_t InlineCursor::SpanBeginItemIndex() const {
   return delta;
 }
 
-inline wtf_size_t InlineCursor::SpanIndexFromItemIndex(unsigned index) const {
-  DCHECK(HasRoot());
-  DCHECK(!items_.empty());
-  DCHECK(fragment_items_->IsSubSpan(items_));
-  if (items_.data() == fragment_items_->Items().data())
-    return index;
-  const wtf_size_t span_index = base::checked_cast<wtf_size_t>(
-      fragment_items_->Items().data() - items_.data() + index);
-  DCHECK_LT(span_index, items_.size());
-  return span_index;
-}
-
 void InlineCursor::MoveTo(const InlineCursorPosition& position) {
   CheckValid(position);
   current_ = position;
@@ -1294,15 +1281,6 @@ bool InlineCursor::TryMoveToFirstChild() {
     return false;
   MoveToItem(current_.item_iter_ + 1);
   return true;
-}
-
-bool InlineCursor::TryMoveToFirstInlineLeafChild() {
-  while (IsNotNull()) {
-    if (Current().IsInlineLeaf())
-      return true;
-    MoveToNext();
-  }
-  return false;
 }
 
 bool InlineCursor::TryMoveToLastChild() {
