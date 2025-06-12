@@ -44,6 +44,12 @@ extern const char kAppMenuUtmSource[];
 extern const char kExtensionsMenuUtmSource[];
 // From the link in the sidebar in the chrome://extensions page.
 extern const char kExtensionsSidebarUtmSource[];
+// From the Extensions Zero State Promo custom action IPH.
+extern const char kCustomActionIphUtmSource[];
+// From the Extensions Zero State Promo, custom UI IPH, chips variant.
+extern const char kCustomUiChipIphUtmSource[];
+// From the Extensions Zero State Promo, custom UI IPH, text link variant.
+extern const char kCustomUiPlainLinkIphUtmSource[];
 
 // Returns the URL prefix for the extension/apps gallery. Can be set via the
 // --apps-gallery-url switch. The URL returned will not contain a trailing

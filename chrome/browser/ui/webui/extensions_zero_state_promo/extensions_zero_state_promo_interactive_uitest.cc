@@ -106,7 +106,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomActionIphTest,
       InAnyContext(WaitForPromo(
           feature_engagement::kIPHExtensionsZeroStatePromoFeature)),
       PressDefaultPromoButton(),
-      WaitForTabOpenedTo(1, extension_urls::GetWebstoreLaunchURL()));
+      WaitForTabOpenedTo(
+          1, GURL("https://chrome.google.com/"
+                  "webstore?utm_source=ext_zero_state_promo_generic_iph")));
 }
 
 class ExtensionsZeroStateCustomUiChipIphTest
@@ -148,7 +150,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
       ClickElement(kZeroStatePromoWebUiIphId, kCouponButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kCouponWebStoreUrl)),
+      WaitForTabOpenedTo(
+          1,
+          GURL("https://chromewebstore.google.com/category/extensions/"
+               "lifestyle/shopping?utm_source=ext_zero_state_promo_chips_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 1));
 }
@@ -173,7 +178,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
       ClickElement(kZeroStatePromoWebUiIphId, kWritingButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kWritingWebStoreUrl)),
+      WaitForTabOpenedTo(
+          1,
+          GURL("https://chromewebstore.google.com/collection/"
+               "writing_essentials?utm_source=ext_zero_state_promo_chips_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 1));
 }
@@ -199,7 +207,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
       WaitForTabOpenedTo(
-          1, GURL(zero_state_promo::mojom::kProductivityWebStoreUrl)),
+          1, GURL("https://chromewebstore.google.com/category/extensions/"
+                  "productivity/"
+                  "workflow?utm_source=ext_zero_state_promo_chips_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
 }
@@ -224,7 +234,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
       ClickElement(kZeroStatePromoWebUiIphId, kAiButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kAiWebStoreUrl)),
+      WaitForTabOpenedTo(
+          1, GURL("https://chromewebstore.google.com/collection/"
+                  "ai_productivity?utm_source=ext_zero_state_promo_chips_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
 }
@@ -293,7 +305,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
       ClickElement(kZeroStatePromoWebUiIphId, kCouponLink,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kCouponWebStoreUrl)),
+      WaitForTabOpenedTo(
+          1,
+          GURL("https://chromewebstore.google.com/category/extensions/"
+               "lifestyle/shopping?utm_source=ext_zero_state_promo_links_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 1));
 }
@@ -315,7 +330,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
       ClickElement(kZeroStatePromoWebUiIphId, kWritingLink,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kWritingWebStoreUrl)),
+      WaitForTabOpenedTo(
+          1,
+          GURL("https://chromewebstore.google.com/collection/"
+               "writing_essentials?utm_source=ext_zero_state_promo_links_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 1));
 }
@@ -338,7 +356,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
       WaitForTabOpenedTo(
-          1, GURL(zero_state_promo::mojom::kProductivityWebStoreUrl)),
+          1, GURL("https://chromewebstore.google.com/category/extensions/"
+                  "productivity/"
+                  "workflow?utm_source=ext_zero_state_promo_links_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
 }
@@ -360,7 +380,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
       ClickElement(kZeroStatePromoWebUiIphId, kAiLink,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kAiWebStoreUrl)),
+      WaitForTabOpenedTo(
+          1, GURL("https://chromewebstore.google.com/collection/"
+                  "ai_productivity?utm_source=ext_zero_state_promo_links_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
 }
@@ -382,8 +404,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
       ClickElement(kZeroStatePromoWebUiIphId, kDiscoverExtensionsButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabOpenedTo(
-          1, GURL(zero_state_promo::mojom::kDiscoverExtensionWebStoreUrl)),
+      WaitForTabOpenedTo(1, GURL("https://"
+                                 "chromewebstore.google.com?utm_source=ext_"
+                                 "zero_state_promo_links_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kDiscoverExtension, 1));
 }

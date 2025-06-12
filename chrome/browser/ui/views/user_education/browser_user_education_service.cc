@@ -617,9 +617,9 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHExtensionsZeroStatePromoFeature
   user_education::Metadata kIPHExtensionsZeroStatePromoFeatureMetaData =
-      user_education::Metadata(
-          140, "uwyiming@google.com",
-          "Triggered when a user has no extensions installed.");
+      user_education::Metadata(140, "uwyiming@google.com",
+                               "Triggered when a user has no "
+                               "extensions installed.");
   switch (feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.Get()) {
     case feature_engagement::kCustomActionIph:
       registry.RegisterFeature(std::move(
@@ -628,7 +628,9 @@ void MaybeRegisterChromeFeaturePromos(
               kToolbarAppMenuButtonElementId,
               IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_DESCRIPTION,
               IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_ACCEPT,
-              CreateNavigationAction(extension_urls::GetWebstoreLaunchURL()))
+              CreateNavigationAction(extension_urls::AppendUtmSource(
+                  extension_urls::GetWebstoreLaunchURL(),
+                  extension_urls::kCustomActionIphUtmSource)))
               .SetCustomActionIsDefault(true)
               .SetBubbleTitleText(IDS_EXTENSIONS_ZERO_STATE_PROMO_IPH_TITLE)
               .SetMetadata(
