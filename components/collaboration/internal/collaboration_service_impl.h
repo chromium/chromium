@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
+#include "components/collaboration/internal/collaboration_controller.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -33,7 +34,6 @@ class TabGroupSyncService;
 }  // namespace tab_groups
 
 namespace collaboration {
-class CollaborationController;
 
 // The internal implementation of the CollaborationService.
 class CollaborationServiceImpl : public CollaborationService,
@@ -61,7 +61,7 @@ class CollaborationServiceImpl : public CollaborationService,
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const tab_groups::EitherGroupID& either_id,
       CollaborationServiceLeaveOrDeleteEntryPoint entry) override;
-  void CancelAllFlows(base::OnceCallback<void()> finish_callback) override;
+  void CancelAllFlows() override;
   ServiceStatus GetServiceStatus() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
@@ -96,27 +96,23 @@ class CollaborationServiceImpl : public CollaborationService,
   const std::map<data_sharing::GroupToken,
                  std::unique_ptr<CollaborationController>>&
   GetJoinControllersForTesting();
+  int GetDeletingControllersCountForTesting();
 
   // Called to clean up a flow given a GroupToken.
-  void FinishJoinFlow(const data_sharing::GroupToken& token);
-  void FinishCollaborationFlow(const tab_groups::EitherGroupID& group_id);
+  void FinishCollaborationFlow(const void* controller);
 
  private:
   SyncStatus GetSyncStatus();
   SigninStatus GetSigninStatus();
   CollaborationStatus GetCollaborationStatus();
   void RefreshServiceStatus();
-  void StartJoinFlowInternal(
-      std::unique_ptr<CollaborationControllerDelegate> delegate,
-      const data_sharing::GroupToken& token);
-  void StartCollaborationFlowInternal(
-      std::unique_ptr<CollaborationControllerDelegate> delegate,
-      const tab_groups::EitherGroupID& either_id,
-      FlowType type);
   void OnCollaborationGroupRemoved(
       const data_sharing::GroupId& group_id,
       base::OnceCallback<void(bool)> callback,
       data_sharing::DataSharingService::PeopleGroupActionOutcome result);
+  std::unique_ptr<CollaborationController> CreateCollaborationController(
+      CollaborationController::Flow flow,
+      std::unique_ptr<CollaborationControllerDelegate> delegate);
 
   ServiceStatus current_status_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
@@ -151,6 +147,9 @@ class CollaborationServiceImpl : public CollaborationService,
       join_controllers_;
   std::map<tab_groups::EitherGroupID, std::unique_ptr<CollaborationController>>
       collaboration_controllers_;
+
+  // List of pointers that are cleaning up asynchronously.
+  std::set<std::unique_ptr<CollaborationController>> cancelled_controllers_;
 
   THREAD_CHECKER(thread_checker_);
 

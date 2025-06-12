@@ -89,6 +89,7 @@ class CollaborationControllerTest : public testing::Test {
         base::BindOnce(&CollaborationControllerTest::FinishFlow,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(run_on_flow_exit)));
+    task_environment_.RunUntilIdle();
   }
 
   void InitializeJoinController(OnceClosure run_on_flow_exit) {
@@ -97,7 +98,7 @@ class CollaborationControllerTest : public testing::Test {
         Flow(FlowType::kJoin, GroupToken(kGroupId, kAccessToken)));
   }
 
-  void FinishFlow(OnceClosure run_on_flow_exit) {
+  void FinishFlow(OnceClosure run_on_flow_exit, const void* controller) {
     controller_.reset();
     std::move(run_on_flow_exit).Run();
   }

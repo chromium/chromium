@@ -31,7 +31,7 @@ class EmptyCollaborationService : public CollaborationService {
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const tab_groups::EitherGroupID& either_id,
       CollaborationServiceLeaveOrDeleteEntryPoint entry) override;
-  void CancelAllFlows(base::OnceCallback<void()> finish_callback) override;
+  void CancelAllFlows() override;
   ServiceStatus GetServiceStatus() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(

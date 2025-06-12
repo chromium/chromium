@@ -401,16 +401,16 @@ TEST_F(CollaborationServiceImplTest, CancelAllFlows) {
             CollaborationControllerDelegate::Outcome::kSuccess);
         return true;
       });
-
-  base::RunLoop run_loop;
-  service_->CancelAllFlows(base::BindOnce(
-      [](base::RunLoop* run_loop) { run_loop->Quit(); }, &run_loop));
+  service_->CancelAllFlows();
 
   EXPECT_TRUE(cancel_called);
 
   // Wait for post tasks.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return service_->GetJoinControllersForTesting().size() == 0; }));
+  EXPECT_TRUE(service_->GetJoinControllersForTesting().size() == 0);
+  EXPECT_TRUE(service_->GetDeletingControllersCountForTesting() == 1);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return service_->GetDeletingControllersCountForTesting() == 0;
+  }));
 }
 
 TEST_F(CollaborationServiceImplTest,

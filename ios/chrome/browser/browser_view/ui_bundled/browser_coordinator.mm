@@ -1857,7 +1857,7 @@ enum class ToolbarKind {
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(self.profile);
   if (collaborationService) {
-    collaborationService->CancelAllFlows(base::DoNothing());
+    collaborationService->CancelAllFlows();
   }
 }
 

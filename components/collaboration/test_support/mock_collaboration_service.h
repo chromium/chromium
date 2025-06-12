@@ -35,7 +35,7 @@ class MockCollaborationService : public CollaborationService {
                const tab_groups::EitherGroupID& either_id,
                CollaborationServiceLeaveOrDeleteEntryPoint entry),
               (override));
-  MOCK_METHOD(void, CancelAllFlows, (base::OnceCallback<void()>), (override));
+  MOCK_METHOD(void, CancelAllFlows, (), (override));
   MOCK_METHOD(ServiceStatus, GetServiceStatus, (), (override));
   MOCK_METHOD(void,
               OnSyncServiceInitialized,

@@ -133,7 +133,7 @@ class CollaborationController
     data_sharing::GroupToken share_token_;
   };
 
-  using FinishCallback = base::OnceCallback<void()>;
+  using FinishCallback = base::OnceCallback<void(const void*)>;
 
   explicit CollaborationController(
       const Flow& flow,
@@ -354,6 +354,7 @@ class CollaborationController
   void CancelShareOrManageFlow(const tab_groups::EitherGroupID& either_id);
   bool IsValidStateTransition(StateId from, StateId to);
   std::unique_ptr<ControllerState> CreateStateObject(StateId state);
+  void Start();
 
   THREAD_CHECKER(thread_checker_);
 

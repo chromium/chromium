@@ -39,8 +39,7 @@ ServiceStatus EmptyCollaborationService::GetServiceStatus() {
 void EmptyCollaborationService::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {}
 
-void EmptyCollaborationService::CancelAllFlows(
-    base::OnceCallback<void()> finish_callback) {}
+void EmptyCollaborationService::CancelAllFlows() {}
 
 data_sharing::MemberRole EmptyCollaborationService::GetCurrentUserRoleForGroup(
     const data_sharing::GroupId& group_id) {
