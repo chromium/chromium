@@ -743,7 +743,7 @@
 <translation id="2265356434276802347">이 정책의 추천 제공업체는 <ph name="MAX_ITEMS_LIMIT" />개를 넘으면 안 됩니다.</translation>
 <translation id="2266175583972138136">카드 혜택에는 약관이 적용됩니다</translation>
 <translation id="2267047181501709434">본인 확인 중...</translation>
-<translation id="2268044343513325586">상세검색</translation>
+<translation id="2268044343513325586">다듬기</translation>
 <translation id="2268966938956566076"><ph name="MINUTES" />분 후 업로드</translation>
 <translation id="2270484714375784793">전화번호</translation>
 <translation id="2276057643614339130">인쇄 베이스</translation>
@@ -3701,7 +3701,7 @@
 <translation id="7423283032694727565">쿠키 관리 버튼, Chrome 설정에서 쿠키 환경설정을 관리하려면 활성화하세요.</translation>
 <translation id="742435751935045381">직장 프로필에 설치된 앱 및 확장 프로그램</translation>
 <translation id="7424421098814895617">주소 삭제 옵션이 선택됨</translation>
-<translation id="7425037327577270384">작성 지원 기능</translation>
+<translation id="7425037327577270384">글쓰기 도우미</translation>
 <translation id="7425878584435172632">시각 예술 및 디자인</translation>
 <translation id="7426745633088095666">공유된 탭</translation>
 <translation id="7427079287360774240">어학</translation>
@@ -3882,7 +3882,7 @@
 <translation id="7701486038694690341">컨트리 음악</translation>
 <translation id="7701544340847569275">업데이트 완료됨(오류 발생)</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" />(안전하지 않음)<ph name="END_LINK" />(으)로 이동</translation>
-<translation id="7705085181312584869">작성 지원 기능</translation>
+<translation id="7705085181312584869">글쓰기 도우미</translation>
 <translation id="7705992072972338699">광디스크(고광택)</translation>
 <translation id="7706689436519265630">복사하거나 이동한 파일은 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어 파일에 민감한 정보 또는 멀웨어가 있는지 검사하며 회사 정책에 따라 파일을 저장할 수도 있습니다.</translation>
 <translation id="7709911732293795808">보험</translation>
