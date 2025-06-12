@@ -17,6 +17,7 @@
 #include "base/types/strong_alias.h"
 #include "chromeos/ash/components/dbus/chaps/chaps_client.h"
 #include "chromeos/ash/components/kcer/attributes.pb.h"
+#include "chromeos/crosapi/mojom/chaps_service.mojom.h"
 
 namespace kcer {
 

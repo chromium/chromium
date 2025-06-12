@@ -1,0 +1,135 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// This interface is implemented by Ash-Chrome. It allows Ash-Chrome and
+// Lacros-Chrome to communicate with the Chaps system daemon (instead of using
+// D-Bus directly, which doesn't have backwards-compatibility safeguards).
+[Uuid="d1956d76-2141-4638-aee8-fb0e313418e4"]
+interface ChapsService {
+    // PKCS #11 v2.20 section 11.5 page 106.
+    GetSlotList@0(bool token_present) =>
+        (array<uint64> slot_list, uint32 result);
+
+    // PKCS #11 v2.20 section 11.5 page 111.
+    GetMechanismList@1(uint64 slot_id) =>
+        (array<uint64> mechanism_list, uint32 result);
+
+    // PKCS #11 v2.20 section 11.6 page 117.
+    OpenSession@2(uint64 slot_id, uint64 flags) =>
+        (uint64 session_id, uint32 result);
+
+    // PKCS #11 v2.20 section 11.6 page 118.
+    CloseSession@3(uint64 session_id) =>
+        (uint32 result);
+
+    // PKCS #11 v2.20 section 11.7 page 128.
+    // `attributes` is a serialized chaps::AttributeList
+    // (see system_api/dbus/chaps/attributes.proto).
+    CreateObject@4(uint64 session_id, array<uint8> attributes) =>
+        (uint64 new_object_handle, uint32 result);
+
+    // PKCS #11 v2.20 section 11.7 page 131.
+    DestroyObject@5(uint64 session_id, uint64 object_handle) =>
+        (uint32 result);
+
+    // PKCS #11 v2.20 section 11.7 page 133.
+    // `attributes` and `attributes_out` are serialized chaps::AttributeList-s
+    // (see system_api/dbus/chaps/attributes.proto).
+    GetAttributeValue@6(uint64 session_id, uint64 object_handle,
+        array<uint8> attributes) =>
+        (array<uint8> attributes_out, uint32 result);
+
+    // PKCS #11 v2.20 section 11.7 page 135.
+    // `attributes` is a serialized chaps::AttributeList
+    // (see system_api/dbus/chaps/attributes.proto).
+    SetAttributeValue@7(uint64 session_id, uint64 object_handle,
+        array<uint8> attributes) =>
+        (uint32 result);
+
+    // PKCS #11 v2.20 section 11.7 page 136.
+    // `attributes` is a serialized chaps::AttributeList
+    // (see system_api/dbus/chaps/attributes.proto).
+    FindObjectsInit@8(uint64 session_id, array<uint8> attributes) =>
+        (uint32 result);
+
+    // PKCS #11 v2.20 section 11.7 page 137.
+    FindObjects@9(uint64 session_id, uint64 max_object_count) =>
+        (array<uint64> object_list, uint32 result);
+
+    // PKCS #11 v2.20 section 11.7 page 138.
+    FindObjectsFinal@10(uint64 session_id) => (uint32 result);
+
+    // PKCS #11 v2.20 section 11.8 page 139.
+    // `mechanism_parameter` is a buffer containing a C-struct. The type of the
+    // struct depends on the provided `mechanism_type`.
+    EncryptInit@11(uint64 session_id, uint64 mechanism_type,
+        array<uint8> mechanism_parameter, uint64 key_handle) =>
+        (uint32 result);
+
+    // PKCS #11 v2.20 section 11.8 page 140.
+    Encrypt@12(uint64 session_id, array<uint8> data, uint64 max_out_length) =>
+        (uint64 actual_out_length, array<uint8> data, uint32 result);
+
+    // PKCS #11 v2.20 section 11.9 page 144.
+    // `mechanism_parameter` is a buffer containing a C-struct. The type of the
+    // struct depends on the provided `mechanism_type`.
+    DecryptInit@13(uint64 session_id, uint64 mechanism_type,
+        array<uint8> mechanism_parameter, uint64 key_handle) =>
+        (uint32 result);
+
+    // PKCS #11 v2.20 section 11.9 page 145.
+    Decrypt@14(uint64 session_id, array<uint8> data, uint64 max_out_length) =>
+        (uint64 actual_out_length, array<uint8> data, uint32 result);
+
+    // PKCS #11 v2.20 section 11.11 page 152.
+    // `mechanism_parameter` is a buffer containing a C-struct. The type of the
+    // struct depends on the provided `mechanism_type`.
+    SignInit@15(uint64 session_id, uint64 mechanism_type,
+        array<uint8> mechanism_parameter, uint64 key_handle) =>
+        (uint32 result);
+
+    // PKCS #11 v2.20 section 11.11 page 153.
+    Sign@16(uint64 session_id, array<uint8> data, uint64 max_out_length) =>
+        (uint64 actual_out_length, array<uint8> signature, uint32 result);
+
+    // PKCS #11 v2.20 section 11.14 page 175.
+    // `mechanism_parameter` is a buffer containing a C-struct. The type of the
+    // struct depends on the provided `mechanism_type`.
+    // `public_attributes` and `private_attributes` are serialized
+    // chaps::AttributeList-s (see system_api/dbus/chaps/attributes.proto).
+    GenerateKeyPair@17(uint64 session_id, uint64 mechanism_type,
+        array<uint8> mechanism_parameter, array<uint8> public_attributes,
+        array<uint8> private_attributes) =>
+        (uint64 public_key_handle, uint64 private_key_handle, uint32 result);
+
+    // PKCS #11 v2.20 section 11.14 page 178.
+    // `mechanism_parameter` is a buffer containing a C-struct. The type of the
+    // struct depends on the provided `mechanism_type`.
+    WrapKey@18(uint64 session_id, uint64 mechanism_type,
+        array<uint8> mechanism_parameter, uint64 wrapping_key_handle,
+        uint64 key_handle, uint64 max_out_length) =>
+        (uint64 actual_out_length, array<uint8> wrapped_key, uint32 result);
+
+    // PKCS #11 v2.20 section 11.14 page 180.
+    // `mechanism_parameter` is a buffer containing a C-struct. The type of the
+    // struct depends on the provided `mechanism_type`.
+    // `attributes` is a serialized chaps::AttributeList
+    // (see system_api/dbus/chaps/attributes.proto).
+    UnwrapKey@19(uint64 session_id, uint64 mechanism_type,
+        array<uint8> mechanism_parameter, uint64 wrapping_key_handle,
+        array<uint8> wrapped_key, array<uint8> attributes) =>
+        (uint64 key_handle, uint32 result);
+
+    // PKCS #11 v2.20 section 11.14 page 182.
+    // `mechanism_parameter` is a buffer containing a C-struct. The type of the
+    // struct depends on the provided `mechanism_type`.
+    // `attributes` is a serialized chaps::AttributeList
+    // (see system_api/dbus/chaps/attributes.proto).
+    DeriveKey@20(uint64 session_id, uint64 mechanism_type,
+        array<uint8> mechanism_parameter, uint64 base_key_handle,
+        array<uint8> attributes) =>
+        (uint64 key_handle, uint32 result);
+};

@@ -9,6 +9,7 @@ mojom("mojom") {
   sources = [
     "account_manager.mojom",
     "cert_provisioning.mojom",
+    "chaps_service.mojom",
     "chrome_app_kiosk_service.mojom",
     "clipboard_history.mojom",
     "cros_display_config.mojom",
