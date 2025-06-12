@@ -7245,17 +7245,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.MediaIntegrity.GetTokenProviderResponseTime"
-    units="ms" expires_after="2025-09-01">
+<histogram name="Android.WebView.MediaIntegrity.GetTokenProviderResponseTimeV2"
+    units="ms" expires_after="2025-12-31">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records the end-to-end time for a GetTokenProvider call to a successfull
+    Records the end-to-end time for a GetTokenProvider call to a successful
     response. This will be the time observed by a JavaScript client waiting for
     a new token provider.
 
     This includes both responses served from the cache and responses that go to
     Play. This histogram is not logged if the call results in an error.
+
+    This histogram replaces
+    Android.WebView.MediaIntegrity.GetTokenProviderResponseTime by extending the
+    range of valid values from 10 seconds to 3 minutes.
   </summary>
 </histogram>
 
@@ -7432,14 +7436,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.MediaIntegrity.TokenProviderCreationTime"
-    units="ms" expires_after="2025-09-01">
+<histogram name="Android.WebView.MediaIntegrity.TokenProviderCreationTimeV2"
+    units="ms" expires_after="2025-12-31">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the time from requesting a new token provider from Play to receiving
     a successful response. This histogram is not emitted if the call results in
     an error.
+
+    This histogram replaces
+    Android.WebView.MediaIntegrity.TokenProviderCreationTimeV2 by extending the
+    range of valid values from 10 seconds to 3 minutes.
   </summary>
 </histogram>
 
