@@ -1333,12 +1333,13 @@ CrostiniManager::CrostiniManager(Profile* profile)
   // prefs. Note: This means changes only take effect after a restart,
   // which is fine, since e.g. force-quitting a running VM because policy
   // changed isn't something we're going to do.
-  for (const auto& container :
-       guest_os::GetContainers(profile_, kCrostiniDefaultVmType)) {
-    if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
-      RegisterContainer(container);
-    } else {
-      RegisterContainerTerminal(container);
+  for (const auto& vm_type : {kCrostiniDefaultVmType, kBaguetteDefaultVmType}) {
+    for (const auto& container : guest_os::GetContainers(profile_, vm_type)) {
+      if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
+        RegisterContainer(container);
+      } else {
+        RegisterContainerTerminal(container);
+      }
     }
   }
   // TODO(crbug.com/377377749): only instantiate baguette_installer_ if we care
