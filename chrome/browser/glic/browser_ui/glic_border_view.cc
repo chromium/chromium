@@ -375,10 +375,16 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
        .value = UseDarkMode(theme_service_) ? 1 : 0}};
 
   views::View::OnPaint(canvas);
+
   cc::PaintFlags flags;
-  flags.setShader(cc::PaintShader::MakeSkSLCommand(
+  auto shader = cc::PaintShader::MakeSkSLCommand(
       shader_, std::move(float_uniforms), std::move(float2_uniforms),
-      /*float4_uniforms=*/{}, std::move(int_uniforms)));
+      /*float4_uniforms=*/{}, std::move(int_uniforms), cached_paint_shader_);
+  flags.setShader(shader);
+
+  if (base::FeatureList::IsEnabled(features::kGlicUseShaderCache)) {
+    cached_paint_shader_ = shader;
+  }
 
   // TODO(liuwilliam): This will create a hard clip at the boundary. Figure out
   // a better way of the falloff.

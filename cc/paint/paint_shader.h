@@ -152,7 +152,8 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
       std::vector<FloatUniform> float_uniforms,
       std::vector<Float2Uniform> float2_uniforms,
       std::vector<Float4Uniform> float4_uniforms,
-      std::vector<IntUniform> int_uniforms);
+      std::vector<IntUniform> int_uniforms,
+      sk_sp<PaintShader> cached_paint_shader);
 
   static size_t GetSerializedSize(const PaintShader* shader);
 
@@ -206,6 +207,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   bool IsValid() const;
 
   bool EqualsForTesting(const PaintShader& other) const;
+  bool MatchingCachedRuntimeEffectForTesting(const PaintShader& other) const;
 
   RecordShaderId paint_record_shader_id() const {
     DCHECK(id_ == kInvalidRecordShaderId || shader_type_ == Type::kPaintRecord);
