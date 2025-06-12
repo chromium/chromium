@@ -4,7 +4,6 @@
 
 #include "ash/system/toast/toast_overlay.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -216,17 +215,15 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   keyboard::KeyboardUIController::Get()->AddObserver(this);
   shelf_observation_.Observe(Shelf::ForWindow(overlay_window));
 
-  if (features::AreSideAlignedToastsEnabled()) {
-    auto* window_controller = RootWindowController::ForWindow(root_window_);
-    if (window_controller->GetStatusAreaWidget()) {
-      // `UnifiedSystemTray` is observed when side aligned toasts are enabled so
-      // we can shift the toast baseline up when slider bubbles are visible.
-      // The observation is safe on external monitor disconnect because
-      // ToastManagerImpl deletes the ToastOverlay before the root window is
-      // destroyed.
-      scoped_unified_system_tray_observer_.Observe(
-          window_controller->GetStatusAreaWidget()->unified_system_tray());
-    }
+  auto* window_controller = RootWindowController::ForWindow(root_window_);
+  if (window_controller->GetStatusAreaWidget()) {
+    // `UnifiedSystemTray` is observed when side aligned toasts are enabled so
+    // we can shift the toast baseline up when slider bubbles are visible.
+    // The observation is safe on external monitor disconnect because
+    // ToastManagerImpl deletes the ToastOverlay before the root window is
+    // destroyed.
+    scoped_unified_system_tray_observer_.Observe(
+        window_controller->GetStatusAreaWidget()->unified_system_tray());
   }
 }
 
@@ -285,10 +282,7 @@ bool ToastOverlay::IsButtonFocused() const {
 }
 
 void ToastOverlay::OnSliderBubbleHeightChanged() {
-  // We only update toast baseline if they are aligned to the side.
-  if (features::AreSideAlignedToastsEnabled()) {
-    UpdateOverlayBounds();
-  }
+  UpdateOverlayBounds();
 }
 
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {
@@ -310,38 +304,25 @@ gfx::Rect ToastOverlay::CalculateOverlayBounds() {
     AdjustWorkAreaBoundsForHotseatState(bounds, hotseat_widget);
   }
 
-  if (features::AreSideAlignedToastsEnabled()) {
-    // Toasts should always follow the status area and will usually show on the
-    // bottom-right of the screen. They will show at the bottom-left whenever
-    // the shelf is left-aligned or for RTL when the shelf is not right aligned.
-    auto alignment = window_controller->shelf()->alignment();
-    const int target_x =
-        ((base::i18n::IsRTL() && alignment != ShelfAlignment::kRight) ||
-         alignment == ShelfAlignment::kLeft)
-            ? bounds.x() + ToastOverlay::kOffset
-            : bounds.right() - widget_size.width() - ToastOverlay::kOffset;
+  // Toasts should always follow the status area and will usually show on the
+  // bottom-right of the screen. They will show at the bottom-left whenever
+  // the shelf is left-aligned or for RTL when the shelf is not right aligned.
+  auto alignment = window_controller->shelf()->alignment();
+  const int target_x =
+      ((base::i18n::IsRTL() && alignment != ShelfAlignment::kRight) ||
+       alignment == ShelfAlignment::kLeft)
+          ? bounds.x() + ToastOverlay::kOffset
+          : bounds.right() - widget_size.width() - ToastOverlay::kOffset;
 
-    const int target_y = bounds.bottom() - widget_size.height() -
-                         ToastOverlay::kOffset - CalculateSliderBubbleOffset();
+  const int target_y = bounds.bottom() - widget_size.height() -
+                       ToastOverlay::kOffset - CalculateSliderBubbleOffset();
 
-    return gfx::Rect(gfx::Point(target_x, target_y), widget_size);
-  }
-
-  const int target_y =
-      bounds.bottom() - widget_size.height() - ToastOverlay::kOffset;
-  bounds.ClampToCenteredSize(widget_size);
-  bounds.set_y(target_y);
-  return bounds;
+  return gfx::Rect(gfx::Point(target_x, target_y), widget_size);
 }
 
 // Calculates the y offset used to shift side aligned toasts up whenever case a
 // slider bubble is visible.
 int ToastOverlay::CalculateSliderBubbleOffset() {
-  // Slider bubble offset is only used for side aligned toasts.
-  if (!features::AreSideAlignedToastsEnabled()) {
-    return 0;
-  }
-
   auto* window_controller = RootWindowController::ForWindow(root_window_);
   if (!window_controller) {
     return 0;

@@ -5,7 +5,6 @@
 #include "ash/system/tray/tray_event_filter.h"
 
 #include "ash/bubble/bubble_event_filter.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -98,8 +97,7 @@ void TrayEventFilter::OnWindowActivated(ActivationReason reason,
 
   // If the activated window is a popup notification, interacting with it
   // should not close the bubble.
-  if (features::IsNotifierCollisionEnabled() &&
-      StatusAreaWidget::ForWindow(bubble_window)
+  if (StatusAreaWidget::ForWindow(bubble_window)
           ->notification_center_tray()
           ->popup_collection()
           ->IsWidgetAPopupNotification(

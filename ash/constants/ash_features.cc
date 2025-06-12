@@ -2048,12 +2048,6 @@ BASE_FEATURE(kNotificationLimit,
              "NotificationLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Notifier Collision to allow popup notifications and tray bubbles not
-// overlap when showing on a display.
-BASE_FEATURE(kNotifierCollision,
-             "NotifierCollision",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a bugfix for devices with a null custom top row property.
 BASE_FEATURE(kNullTopRowFix, "NullTopRowFix", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3357,14 +3351,6 @@ bool ArePromiseIconsForWebAppsEnabled() {
          ArePromiseIconsEnabled();
 }
 
-bool AreSideAlignedToastsEnabled() {
-  // Side aligned toasts are launching together with Notifier Collision.
-  // TODO(b/342455518): Remove `kSideAlignedToasts` and its usage and just use
-  // kNotifierCollision to avoid confusions.
-  return IsNotifierCollisionEnabled() ||
-         base::FeatureList::IsEnabled(kSideAlignedToasts);
-}
-
 bool ForceOnDeviceAppControlsForAllRegions() {
   return base::FeatureList::IsEnabled(kForceOnDeviceAppControlsForAllRegions);
 }
@@ -4230,10 +4216,6 @@ bool IsNearbyPresenceEnabled() {
 
 bool IsNotificationLimitEnabled() {
   return base::FeatureList::IsEnabled(kNotificationLimit);
-}
-
-bool IsNotifierCollisionEnabled() {
-  return base::FeatureList::IsEnabled(kNotifierCollision);
 }
 
 bool IsOAuthIppEnabled() {

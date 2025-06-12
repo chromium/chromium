@@ -5,7 +5,6 @@
 #include "ash/system/tray/tray_event_filter.h"
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -28,7 +27,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/size.h"
@@ -237,9 +235,6 @@ TEST_F(TrayEventFilterTest, ClickOnPopupWhenBubbleOpen) {
   // Update display so that the screen is height enough and expand/collapse
   // notification is allowed on top of the tray bubble.
   UpdateDisplay("901x900");
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kNotifierCollision);
 
   ShowQuickSettingsBubble();
   EXPECT_TRUE(IsQuickSettingsBubbleShown());
