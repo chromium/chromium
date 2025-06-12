@@ -159,8 +159,17 @@
   CHECK(!_activityOverlayCoordinator, base::NotFatalUntil::M145);
   CHECK(!_identityChooserCoordinator, base::NotFatalUntil::M145);
   _signinLogger = nil;
-  [_mediator disconnect];
+  // Methods on mediator's delegate should not be called anymore. If the sign-in
+  // is progress, when calling the mediator disconnect method, it will call
+  // `-[<InstantSigninMediatorDelegate> instantSigninMediator:
+  // didSigninWithResult]` on this coordinator.
+  // That will trigger the signinCompletion block. And the coordinator's oner
+  // will dealloc this self.
+  // Result, at the end of `[_mediator disconnect]`, self would be deallocated.
+  // The owner is already aware that InstantSigninCoordinator is aborted since
+  // stop is called.
   _mediator.delegate = nil;
+  [_mediator disconnect];
   _mediator = nil;
   [super stopAnimated:animated];
 }

@@ -892,10 +892,8 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)disconnect {
-  // While the sign-in is in progress, the UI should be frozen, with the
-  // exception of the part of the UI used for sign-in. So it should not be
-  // possible to disconnect the mediator.
-  CHECK(!self.signinInProgress, base::NotFatalUntil::M145);
+  // It is possible to interrupt sign-in in progress even if the UI is blocked.
+  // This can happen if the user opens an external URL during sign-in.
   [self signinPromoViewIsRemoved];
   self.consumer = nil;
   _accountManagerService = nullptr;
