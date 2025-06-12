@@ -1,5 +1,9 @@
 # `bytemuck` changelog
 
+## 1.23.1
+
+* Added a windows-only `ZeroableInOption` impl for "stdcall" functions.
+
 ## 1.23
 
 * `impl_core_error` crate feature adds `core::error::Error` impl.
