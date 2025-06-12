@@ -78,32 +78,8 @@ class NotificationContentDetectionBrowserTestBase
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class NotificationContentDetectionDisabledBrowserTest
-    : public NotificationContentDetectionBrowserTestBase {
- public:
-  NotificationContentDetectionDisabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, /*disabled_features=*/{
-            safe_browsing::kOnDeviceNotificationContentDetectionModel});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(NotificationContentDetectionDisabledBrowserTest,
-                       NoNotificationContentDetectionService) {
-  EXPECT_EQ(nullptr, NotificationContentDetectionServiceFactory::GetForProfile(
-                         browser()->profile()));
-}
-
-class NotificationContentDetectionServiceFactoryBrowserTest
-    : public NotificationContentDetectionBrowserTestBase {
- public:
-  NotificationContentDetectionServiceFactoryBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{safe_browsing::
-                                  kOnDeviceNotificationContentDetectionModel},
-        /*disabled_features=*/{});
-  }
-};
+using NotificationContentDetectionServiceFactoryBrowserTest =
+    NotificationContentDetectionBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionServiceFactoryBrowserTest,
                        EnabledForRegularProfiles) {
@@ -143,8 +119,7 @@ class NotificationContentDetectionBrowserTest
     // flaky test failures, since these tests may prompt models and obtaining
     // the result can take a long time.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{safe_browsing::
-                                  kOnDeviceNotificationContentDetectionModel},
+        /*enabled_features=*/{},
         /*disabled_features=*/{
             optimization_guide::features::kPreventLongRunningPredictionModels,
             safe_browsing::kShowWarningsForSuspiciousNotifications});
@@ -282,34 +257,6 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
   test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SiteEngagementLevel");
 }
 
-IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
-                       AllowlistedSiteDoesNotExecuteModel_ByDefault) {
-  UpdateNotificationContentDetectionModel();
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  blink::PlatformNotificationData data =
-      CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
-  service()->DisplayPersistentNotification(
-      kNotificationId, GURL(kAllowlistedUrl) /* service_worker_scope */,
-      GURL(kAllowlistedUrl), data, blink::NotificationResources());
-
-  optimization_guide::RetryForHistogramUntilCountReached(
-      &histogram_tester(),
-      "OptimizationGuide.ModelExecutor.ExecutionStatus."
-      "NotificationContentDetection",
-      0);
-
-  histogram_tester().ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.ExecutionStatus."
-      "NotificationContentDetection",
-      0);
-  histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
-  // Check that we are not recording UMA nor UKM data.
-  histogram_tester().ExpectTotalCount(kSuspiciousScoreHistogram, 0);
-  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::PermissionUsage_NotificationShown::kEntryName);
-  EXPECT_EQ(0u, ukm_entries.size());
-}
-
 class NotificationContentDetectionAllowlistedChecksEnabledBrowserTest
     : public NotificationContentDetectionBrowserTest {
  public:
@@ -319,11 +266,8 @@ class NotificationContentDetectionAllowlistedChecksEnabledBrowserTest
     // Disable the `kPreventLongRunningPredictionModels` feature to prevent
     // flaky test failures, since these tests may prompt models and obtaining
     // the result can take a long time.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{safe_browsing::kOnDeviceNotificationContentDetectionModel,
-          {{"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
-            "100"}}}},
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
         /*disabled_features=*/{
             optimization_guide::features::kPreventLongRunningPredictionModels,
             safe_browsing::kShowWarningsForSuspiciousNotifications});
@@ -404,10 +348,7 @@ class NotificationContentDetectionShowWarningsEnabledBrowserTest
     // the result can take a long time.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{safe_browsing::kOnDeviceNotificationContentDetectionModel,
-          {{"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
-            GetAllowlistSamplingRate()}}},
-         {safe_browsing::kShowWarningsForSuspiciousNotifications,
+        {{safe_browsing::kShowWarningsForSuspiciousNotifications,
           {{"ShowWarningsForSuspiciousNotificationsScoreThreshold",
             GetSuspiciousNotificationThreshold()}}}},
         /*disabled_features=*/{
@@ -673,10 +614,7 @@ class NotificationContentDetectionLoggingEnabledBrowserTest
     // the result can take a long time.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{safe_browsing::kOnDeviceNotificationContentDetectionModel,
-          {{"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
-            "100"}}},
-         {safe_browsing::kShowWarningsForSuspiciousNotifications,
+        {{safe_browsing::kShowWarningsForSuspiciousNotifications,
           {{"ShowWarningsForSuspiciousNotificationsScoreThreshold", "0"}}},
          {safe_browsing::kReportNotificationContentDetectionData, {}}},
         /*disabled_features=*/{

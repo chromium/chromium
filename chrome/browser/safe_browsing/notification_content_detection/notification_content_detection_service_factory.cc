@@ -52,10 +52,6 @@ std::unique_ptr<KeyedService> NotificationContentDetectionServiceFactory::
         content::BrowserContext* context) const {
   auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(context));
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kOnDeviceNotificationContentDetectionModel)) {
-    return nullptr;
-  }
   if (!opt_guide) {
     return nullptr;
   }

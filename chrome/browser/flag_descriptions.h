@@ -1833,9 +1833,6 @@ extern const char kOmniboxMaxURLMatchesDescription[];
 extern const char kOmniboxDynamicMaxAutocompleteName[];
 extern const char kOmniboxDynamicMaxAutocompleteDescription[];
 
-extern const char kOnDeviceNotificationContentDetectionModelName[];
-extern const char kOnDeviceNotificationContentDetectionModelDescription[];
-
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 

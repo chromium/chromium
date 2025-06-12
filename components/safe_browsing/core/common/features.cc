@@ -255,19 +255,9 @@ constexpr base::FeatureParam<std::string>
                                                  /*default_value=*/""};
 #endif
 
-BASE_FEATURE(kOnDeviceNotificationContentDetectionModel,
-             "OnDeviceNotificationContentDetectionModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNotificationTelemetry,
              "NotificationTelemetry",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int>
-    kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate{
-        &kOnDeviceNotificationContentDetectionModel,
-        "OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
-        /*default_value=*/0};
 
 BASE_FEATURE(kRedWarningSurvey,
              "RedWarningSurvey",
@@ -377,7 +367,6 @@ base::Value::List GetFeatureStatusList() {
       &kHashPrefixRealTimeLookups,
       &kLocalIpAddressInEvents,
       &kLocalListsUseSBv5,
-      &kOnDeviceNotificationContentDetectionModel,
       &kReportNotificationContentDetectionData,
       &kSafetyHubAbusiveNotificationRevocation,
       &kShowWarningsForSuspiciousNotifications,

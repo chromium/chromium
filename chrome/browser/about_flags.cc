@@ -2470,20 +2470,6 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam
-    kOnDeviceNotificationContentDetectionModelAllowlistSampleRate100[] = {
-        {"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
-         "100"}};
-
-const FeatureEntry::FeatureVariation
-    kOnDeviceNotificationContentDetectionModelVariations[] = {
-        {"with allowlist sample rate 100",
-         kOnDeviceNotificationContentDetectionModelAllowlistSampleRate100,
-         std::size(
-             kOnDeviceNotificationContentDetectionModelAllowlistSampleRate100),
-         nullptr},
-};
-
 const FeatureEntry::FeatureParam kDataSharingShowSendFeedbackDisabled[] = {
     {"show_send_feedback", "false"}};
 const FeatureEntry::FeatureParam kDataSharingShowSendFeedbackEnabled[] = {
@@ -10182,15 +10168,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyHubHaTSOneOffSurveyDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSafetyHubHaTSOneOffSurvey)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
-    {"on-device-notification-content-detection-model",
-     flag_descriptions::kOnDeviceNotificationContentDetectionModelName,
-     flag_descriptions::kOnDeviceNotificationContentDetectionModelDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         safe_browsing::kOnDeviceNotificationContentDetectionModel,
-         kOnDeviceNotificationContentDetectionModelVariations,
-         "OnDeviceNotificationContentDetectionModel")},
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {"enable-web-bluetooth-confirm-pairing-support",

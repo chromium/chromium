@@ -7515,11 +7515,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "on-device-notification-content-detection-model",
-    "owners": ["skrakowi@chromium.org", "chrome-counter-abuse-alerts@google.com"],
-    "expiry_milestone": 137
-  },
-  {
     "name": "one-group-per-renderer",
     "owners": ["youssefesmat@chromium.org", "baseos-perf@google.com"],
     "expiry_milestone": 120

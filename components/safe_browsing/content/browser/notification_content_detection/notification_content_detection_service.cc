@@ -74,21 +74,12 @@ void NotificationContentDetectionService::OnCheckUrlForHighConfidenceAllowlist(
       did_match_allowlist || is_allowlisted_by_user;
   if (should_skip_notification_warning) {
     // If the `origin` is on the high confidence allowlist or was allowlisted by
-    // the user, then display the notification before checking the model.
+    // the user, then display the notification before checking the model for
+    // logging metrics.
     std::move(model_verdict_callback)
         .Run(/*is_suspicious=*/false,
              NotificationContentDetectionModel::GetSerializedMetadata(
                  did_match_allowlist, is_allowlisted_by_user, std::nullopt));
-    // The model check should happen at a sampled rate for notifications from
-    // allowlisted sites for collecting metrics. This rate is defined by the
-    // `kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate` feature
-    // parameter.
-    if (did_match_allowlist &&
-        base::RandDouble() * 100 >=
-            kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate
-                .Get()) {
-      return;
-    }
     // Perform inference with model on `notification_contents` for metrics.
     // Since `model_verdict_callback` was already run above, use `DoNothing()`
     // as the callback.

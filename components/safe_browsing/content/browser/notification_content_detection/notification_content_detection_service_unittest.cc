@@ -113,14 +113,6 @@ class NotificationContentDetectionServiceTest : public ::testing::Test {
         std::move(test_notification_content_detection_model));
   }
 
-  void SetAllowistedSiteSampleRateToOneHundred() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        safe_browsing::kOnDeviceNotificationContentDetectionModel,
-        {{"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
-          /* Override to 100% to make sure it will be sampled. */
-          "100"}});
-  }
-
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager() {
     return database_manager_;
   }
@@ -209,7 +201,6 @@ TEST_F(NotificationContentDetectionServiceTest,
 
 TEST_F(NotificationContentDetectionServiceTest,
        CheckNotificationModelForAllowlistedUrl_FeatureParamRateIsOneHundred) {
-  SetAllowistedSiteSampleRateToOneHundred();
   // Setup allowlisted URL.
   const GURL origin("allowlisted_url.com");
   database_manager()->SetAllowlistLookupDetailsForUrl(origin, /*match=*/true);
@@ -220,31 +211,6 @@ TEST_F(NotificationContentDetectionServiceTest,
               Execute(_, origin, /*is_allowlisted_by_user=*/false,
                       /*did_match_allowlist=*/true, _))
       .Times(1);
-  EXPECT_CALL(model_verdict_callback_,
-              Run(/*is_suspicious=*/false,
-                  testing::Eq("{\"is-origin-allowlisted-by-user\":false,\"is-"
-                              "origin-on-global-cache-list\":true}")))
-      .Times(1);
-  notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(
-          notification_data, origin, /*is_allowlisted_by_user=*/false,
-          model_verdict_callback_.Get());
-
-  // Check that histograms logging happens as expected.
-  histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
-}
-
-TEST_F(NotificationContentDetectionServiceTest,
-       DontCheckNotificationModelForAllowlistedUrl_ByDefault) {
-  // Setup allowlisted URL.
-  const GURL origin("allowlisted_url.com");
-  database_manager()->SetAllowlistLookupDetailsForUrl(origin, /*match=*/true);
-
-  // Model should not be checked.
-  blink::PlatformNotificationData notification_data;
-  SetUpTestNotificationContentDetectionModel();
-  EXPECT_CALL(*notification_content_detection_model(), Execute(_, _, _, _, _))
-      .Times(0);
   EXPECT_CALL(model_verdict_callback_,
               Run(/*is_suspicious=*/false,
                   testing::Eq("{\"is-origin-allowlisted-by-user\":false,\"is-"

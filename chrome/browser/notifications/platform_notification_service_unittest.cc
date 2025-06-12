@@ -119,8 +119,7 @@ class PlatformNotificationServiceTest : public testing::Test {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {}, {safe_browsing::kOnDeviceNotificationContentDetectionModel,
-             safe_browsing::kReportNotificationContentDetectionData});
+        {}, {safe_browsing::kReportNotificationContentDetectionData});
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
@@ -751,7 +750,7 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
 
 class PlatformNotificationServiceTest_NotificationContentDetection
     : public PlatformNotificationServiceTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -759,15 +758,6 @@ class PlatformNotificationServiceTest_NotificationContentDetection
         HistoryServiceFactory::GetInstance(),
         HistoryServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
-    if (IsNotificationContentDetectionEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {safe_browsing::kOnDeviceNotificationContentDetectionModel},
-          {safe_browsing::kReportNotificationContentDetectionData});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {safe_browsing::kOnDeviceNotificationContentDetectionModel,
-               safe_browsing::kReportNotificationContentDetectionData});
-    }
     if (IsSafeBrowsingEnabled()) {
       profile_->GetTestingPrefService()->SetManagedPref(
           prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
@@ -793,11 +783,7 @@ class PlatformNotificationServiceTest_NotificationContentDetection
     PlatformNotificationServiceTest::TearDown();
   }
 
-  bool IsSafeBrowsingEnabled() { return std::get<0>(GetParam()); }
-
-  bool IsNotificationContentDetectionEnabled() {
-    return std::get<1>(GetParam());
-  }
+  bool IsSafeBrowsingEnabled() { return GetParam(); }
 
  protected:
   raw_ptr<safe_browsing::MockNotificationContentDetectionService>
@@ -808,7 +794,7 @@ class PlatformNotificationServiceTest_NotificationContentDetection
 INSTANTIATE_TEST_SUITE_P(
     ,
     PlatformNotificationServiceTest_NotificationContentDetection,
-    testing::Combine(testing::Bool(), testing::Bool()));
+    testing::Bool());
 
 TEST_P(PlatformNotificationServiceTest_NotificationContentDetection,
        PerformNotificationContentDetectionWhenEnabled) {
@@ -817,7 +803,7 @@ TEST_P(PlatformNotificationServiceTest_NotificationContentDetection,
   data.body = u"Hello, world!";
 
   int expected_number_of_calls = 0;
-  if (IsSafeBrowsingEnabled() && IsNotificationContentDetectionEnabled()) {
+  if (IsSafeBrowsingEnabled()) {
     expected_number_of_calls = 1;
   }
   EXPECT_CALL(*mock_notification_content_detection_service_,
@@ -838,9 +824,7 @@ class PlatformNotificationServiceTest_ReportNotificationContentDetectionData
         HistoryServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
     scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kOnDeviceNotificationContentDetectionModel,
-         safe_browsing::kReportNotificationContentDetectionData},
-        {});
+        {safe_browsing::kReportNotificationContentDetectionData}, {});
     profile_->GetTestingPrefService()->SetManagedPref(
         prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
     mock_notification_content_detection_service_ = static_cast<

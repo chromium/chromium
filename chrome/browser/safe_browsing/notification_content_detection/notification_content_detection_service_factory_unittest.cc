@@ -34,9 +34,6 @@ class NotificationContentDetectionServiceFactoryTest : public testing::Test {
   NotificationContentDetectionServiceFactoryTest() = default;
   ~NotificationContentDetectionServiceFactoryTest() override = default;
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kOnDeviceNotificationContentDetectionModel},
-        /*disabled_features=*/{});
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -56,7 +53,6 @@ class NotificationContentDetectionServiceFactoryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;

@@ -247,14 +247,6 @@ extern const base::FeatureParam<std::string>
     kMaliciousApkDownloadCheckServiceUrlOverride;
 #endif
 
-// Killswitch for fetching and executing the notification content detection
-// model. This also gates logging metrics related to this model.
-BASE_DECLARE_FEATURE(kOnDeviceNotificationContentDetectionModel);
-// Determines the percentage of notifications from allowlisted sites that we
-// will check the model for. The value should be between 0 and 100.
-extern const base::FeatureParam<int>
-    kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate;
-
 // Enable the collection of Notification Telemetry to track potentially abusive
 // notifications.
 BASE_DECLARE_FEATURE(kNotificationTelemetry);
