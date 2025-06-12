@@ -5431,7 +5431,7 @@ crbug.com/40732030 http/tests/devtools/sources/debugger-ui/inline-scope-variable
 crbug.com/1087242 crbug.com/1271141 http/tests/inspector-protocol/service-worker/network-extrainfo-main-request.js [ Pass Timeout ]
 
 #Sheriff 2020-11-26
-crbug.com/931646 [ Mac ] virtual/viewport-and-meta-enabled/http/tests/preload/meta-viewport-link-headers-imagesrcset.php [ Failure Pass ]
+crbug.com/931646 crbug.com/424347610 [ Mac ] virtual/viewport-and-meta-enabled/http/tests/preload/meta-viewport-link-headers-imagesrcset.php [ Failure Pass Timeout ]
 
 # DevTools roll
 crbug.com/40155405 http/tests/devtools/report-API-errors.js [ Crash Failure Pass Timeout ]
