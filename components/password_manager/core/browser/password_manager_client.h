@@ -27,7 +27,6 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/sync/service/sync_service.h"
 #include "net/cert/cert_status_flags.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
@@ -68,6 +67,10 @@ class IdentityManager;
 namespace signin_metrics {
 enum class AccessPoint;
 }  // namespace signin_metrics
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace url {
 class Origin;

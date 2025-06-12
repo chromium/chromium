@@ -6,13 +6,12 @@
 
 #import <algorithm>
 
-#import "base/containers/flat_set.h"
 #import "base/containers/span.h"
-#import "base/notreached.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/sync/service/sync_service.h"
 
 namespace password_manager {
 
