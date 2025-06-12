@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
-import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -114,7 +113,9 @@ public class StorageSummaryProvider implements OfflineItemFilterObserver {
         long totalSize = 0;
         for (OfflineItem item : items) {
             // Dangerous items should not count as "downloaded" in the UI.
-            if (UiUtils.shouldDisplayAsDangerous(item)) continue;
+            if (DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)) {
+                continue;
+            }
             totalSize += item.receivedBytes;
         }
         return totalSize;

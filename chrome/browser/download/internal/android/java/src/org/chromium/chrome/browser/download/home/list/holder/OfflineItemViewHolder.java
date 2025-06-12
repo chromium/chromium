@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.home.view.SelectionView;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
@@ -235,7 +236,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     }
 
     private boolean canShowWarningBypassDialog(OfflineItem item) {
-        return UiUtils.shouldDisplayAsDangerous(item);
+        return DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state);
     }
 
     /**

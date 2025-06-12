@@ -15,8 +15,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
@@ -148,5 +150,21 @@ public class DownloadUtils {
         // The origin is too long. Strip down to eTLD+1.
         return UrlUtilities.getDomainAndRegistry(
                 url.getSpec(), /* includePrivateRegistries= */ false);
+    }
+
+    /**
+     * @return Whether a download should be displayed as "dangerous" throughout the Android download
+     *     UI. Used for items with Safe Browsing download warnings.
+     */
+    public static boolean shouldDisplayDownloadAsDangerous(
+            @DownloadDangerType int dangerType, @OfflineItemState int state) {
+        // TODO(crbug.com/397407934): These are the only danger types which we currently choose to
+        // show warning UI for. In the future, this may or may not expand to other danger types.
+        // Note that this is a stricter subset of danger types than we count as
+        // {@link OfflineItem#isDangerous}.
+        boolean dangerTypeShouldDisplayAsDangerous =
+                dangerType == DownloadDangerType.DANGEROUS_CONTENT
+                        || dangerType == DownloadDangerType.POTENTIALLY_UNWANTED;
+        return dangerTypeShouldDisplayAsDangerous && state != OfflineItemState.CANCELLED;
     }
 }

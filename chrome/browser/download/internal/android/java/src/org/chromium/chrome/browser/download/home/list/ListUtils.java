@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
 import org.chromium.chrome.browser.download.home.list.ListItem.ViewListItem;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -135,7 +136,9 @@ public class ListUtils {
 
         if (item instanceof OfflineItemListItem) {
             OfflineItemListItem offlineItem = (OfflineItemListItem) item;
-            if (config.showDangerousItems && UiUtils.shouldDisplayAsDangerous(offlineItem.item)) {
+            if (config.showDangerousItems
+                    && DownloadUtils.shouldDisplayDownloadAsDangerous(
+                            offlineItem.item.dangerType, offlineItem.item.state)) {
                 // Dangerous UI is handled by GenericViewHolder.
                 return ViewType.GENERIC;
             }

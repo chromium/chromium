@@ -27,7 +27,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1266,6 +1265,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         boolean featureEnabled =
                 ChromeFeatureList.sMaliciousApkDownloadCheck.isEnabled()
                         && !ChromeFeatureList.sMaliciousApkDownloadCheckTelemetryOnly.getValue();
-        return featureEnabled && UiUtils.shouldDisplayAsDangerous(item);
+        return featureEnabled
+                && DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state);
     }
 }
