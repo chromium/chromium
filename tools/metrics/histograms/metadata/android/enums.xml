@@ -1238,6 +1238,7 @@ chromium-metrics-reviews@google.com.
   <int value="58" label="CctAccountMismatchNotice"/>
   <int value="59" label="PromptHatsClearBrowsingData"/>
   <int value="60" label="OsAdvancedProtectionSettingChangedMessage"/>
+  <int value="61" label="MultiInstanceRestorationOnDowngradedLimit"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->

@@ -373,6 +373,8 @@ public class MessagesMetrics {
                 return "PromptHatsClearBrowsingData";
             case MessageIdentifier.OS_ADVANCED_PROTECTION_SETTING_CHANGED_MESSAGE:
                 return "OsAdvancedProtectionSettingChangedMessage";
+            case MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT:
+                return "MultiInstanceRestorationOnDowngradedLimit";
             default:
                 return "Unknown";
         }

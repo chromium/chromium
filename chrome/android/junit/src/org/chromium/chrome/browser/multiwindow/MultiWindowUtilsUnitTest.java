@@ -8,7 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_DESKTOP_WINDOW_COUNT_EXISTING_INSTANCE_SUFFIX;
@@ -18,8 +23,11 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build.VERSION_CODES;
 import android.util.SparseIntArray;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -27,6 +35,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -36,10 +45,12 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -50,6 +61,10 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -194,6 +209,8 @@ public class MultiWindowUtilsUnitTest {
     public void tearDown() {
         ShadowMultiInstanceManagerApi31.reset();
         mOverrideOpenInNewWindowSupported = false;
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN);
     }
 
     @Test
@@ -732,6 +749,108 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testRecordTabCountForRelaunchWhenActivityPaused_MultiInstanceApi31Disabled() {
         testRecordTabCountForRelaunchWhenActivityPausedImpl(/* windowId= */ 0);
+    }
+
+    @Test
+    public void testInstanceRestorationMessage() {
+        MultiWindowUtils.setInstanceCountForTesting(5);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        MessageDispatcher messageDispatcher = mock(MessageDispatcher.class);
+        Context context = ApplicationProvider.getApplicationContext();
+        CallbackHelper primaryActionCallbackHelper = new CallbackHelper();
+        int primaryActionClickCount = primaryActionCallbackHelper.getCallCount();
+
+        boolean shown =
+                MultiWindowUtils.maybeShowInstanceRestorationMessage(
+                        messageDispatcher, context, primaryActionCallbackHelper::notifyCalled);
+
+        assertTrue("Message should be enqueued.", shown);
+        assertTrue(
+                "SharedPreferences should be updated.",
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
+                                false));
+        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(messageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
+
+        Resources resources = context.getResources();
+        Assert.assertEquals(
+                "Message identifier should match.",
+                MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT,
+                message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+        Assert.assertEquals(
+                "Message title should match.",
+                resources.getString(R.string.multi_instance_restoration_message_title, 3),
+                message.getValue().get(MessageBannerProperties.TITLE));
+        Assert.assertEquals(
+                "Message description should match.",
+                resources.getString(R.string.multi_instance_restoration_message_description),
+                message.getValue().get(MessageBannerProperties.DESCRIPTION));
+        Assert.assertEquals(
+                "Message primary button text should match.",
+                resources.getString(R.string.multi_instance_restoration_message_button),
+                message.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+        Assert.assertEquals(
+                "Message icon resource ID should match.",
+                R.drawable.ic_chrome,
+                message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
+
+        // Simulate and verify primary button click.
+        message.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        assertEquals(
+                "Primary action callback was not called.",
+                primaryActionClickCount + 1,
+                primaryActionCallbackHelper.getCallCount());
+    }
+
+    @Test
+    public void testInstanceRestorationMessage_InstanceCountWithinLimit() {
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        MessageDispatcher messageDispatcher = mock(MessageDispatcher.class);
+        Context context = ApplicationProvider.getApplicationContext();
+        CallbackHelper primaryActionCallbackHelper = new CallbackHelper();
+
+        boolean shown =
+                MultiWindowUtils.maybeShowInstanceRestorationMessage(
+                        messageDispatcher, context, primaryActionCallbackHelper::notifyCalled);
+        assertFalse("Message should not be enqueued.", shown);
+        assertFalse(
+                "SharedPreferences should not be updated.",
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
+                                false));
+        verify(messageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+    }
+
+    @Test
+    public void testInstanceRestorationMessage_ShownExactlyOnce() {
+        MultiWindowUtils.setInstanceCountForTesting(5);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        MessageDispatcher messageDispatcher = mock(MessageDispatcher.class);
+        Context context = ApplicationProvider.getApplicationContext();
+        CallbackHelper primaryActionCallbackHelper = new CallbackHelper();
+
+        boolean shown =
+                MultiWindowUtils.maybeShowInstanceRestorationMessage(
+                        messageDispatcher, context, primaryActionCallbackHelper::notifyCalled);
+        assertTrue("Message should be enqueued.", shown);
+        assertTrue(
+                "SharedPreferences should be updated.",
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
+                                false));
+
+        // Simulate second request to show message.
+        shown =
+                MultiWindowUtils.maybeShowInstanceRestorationMessage(
+                        messageDispatcher, context, primaryActionCallbackHelper::notifyCalled);
+        assertFalse("Message should not be enqueued.", shown);
+
+        verify(messageDispatcher, times(1)).enqueueWindowScopedMessage(any(), anyBoolean());
     }
 
     private void testRecordTabCountForRelaunchWhenActivityPausedImpl(int windowId) {

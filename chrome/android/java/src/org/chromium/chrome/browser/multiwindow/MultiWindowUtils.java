@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.provider.Browser;
 import android.text.TextUtils;
@@ -22,6 +23,7 @@ import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -56,7 +58,12 @@ import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -969,6 +976,67 @@ public class MultiWindowUtils implements ActivityStateListener {
     static String getTabCountForRelaunchKey(int windowId) {
         return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.createKey(
                 String.valueOf(windowId));
+    }
+
+    /**
+     * Creates and shows a message to notify a user about instance restoration when the number of
+     * persisted instances exceeds the max instance count after an instance limit downgrade.
+     *
+     * @param messageDispatcher The {@link MessageDispatcher} to enqueue the message.
+     * @param context The current context.
+     * @param primaryActionRunnable The {@link Runnable} that will be executed when the message
+     *     primary action button is clicked.
+     * @return Whether the message was shown.
+     */
+    public static boolean maybeShowInstanceRestorationMessage(
+            MessageDispatcher messageDispatcher,
+            @NonNull Context context,
+            @NonNull Runnable primaryActionRunnable) {
+        if (messageDispatcher == null) return false;
+
+        // Show the message only when the number of persisted instances exceeds the instance limit.
+        if (getInstanceCount() <= getMaxInstances()) {
+            return false;
+        }
+
+        // Show the message only if the message is not already shown.
+        if (ChromeSharedPreferences.getInstance()
+                .contains(ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN)) {
+            return false;
+        }
+
+        Resources resources = context.getResources();
+        PropertyModel message =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT)
+                        .with(
+                                MessageBannerProperties.TITLE,
+                                resources.getString(
+                                        R.string.multi_instance_restoration_message_title,
+                                        getMaxInstances()))
+                        .with(
+                                MessageBannerProperties.DESCRIPTION,
+                                resources.getString(
+                                        R.string.multi_instance_restoration_message_description))
+                        .with(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.ic_chrome)
+                        .with(
+                                MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                resources.getString(
+                                        R.string.multi_instance_restoration_message_button))
+                        .with(
+                                MessageBannerProperties.ON_PRIMARY_ACTION,
+                                () -> {
+                                    primaryActionRunnable.run();
+                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .build();
+
+        messageDispatcher.enqueueWindowScopedMessage(message, false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN, true);
+        return true;
     }
 
     public static void setInstanceForTesting(MultiWindowUtils instance) {

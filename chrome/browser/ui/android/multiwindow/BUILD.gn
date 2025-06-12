@@ -38,6 +38,7 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
     "//components/feature_engagement/public:public_java",
+    "//components/messages/android:java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",

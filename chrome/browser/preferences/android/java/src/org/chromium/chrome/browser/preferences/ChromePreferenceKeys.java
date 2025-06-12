@@ -429,6 +429,8 @@ public final class ChromePreferenceKeys {
     public static final String MULTI_WINDOW_START_TIME = "Chrome.MultiWindow.StartTime";
     public static final String MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM =
             "Chrome.MultiWindow.CloseWindowSkipConfirm";
+    public static final String MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN =
+            "Chrome.MultiWindow.RestorationMessageShown";
 
     public static final String MULTI_INSTANCE_START_TIME = "Chrome.MultiInstance.StartTime";
 
@@ -1068,6 +1070,7 @@ public final class ChromePreferenceKeys {
                 LOCALE_MANAGER_PROMO_V3_CHECKED,
                 MULTI_WINDOW_START_TIME,
                 MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM,
+                MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
                 MULTI_INSTANCE_IS_INCOGNITO_SELECTED.pattern(),
                 MULTI_INSTANCE_INCOGNITO_TAB_COUNT.pattern(),
                 MULTI_INSTANCE_MAX_COUNT_TIME,
