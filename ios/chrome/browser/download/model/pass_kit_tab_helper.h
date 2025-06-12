@@ -7,16 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-#include <set>
+#import <memory>
+#import <set>
 
-#include "base/containers/unique_ptr_adapters.h"
+#import "base/containers/unique_ptr_adapters.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "ios/web/public/download/download_task_observer.h"
-#include "ios/web/public/lazy_web_state_user_data.h"
+#import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/shared/model/utils/rust_unzipper.h"
+#import "ios/web/public/download/download_task_observer.h"
+#import "ios/web/public/lazy_web_state_user_data.h"
 
-@class JSUnzipper;
+@class RustUnzipper;
 @protocol WebContentCommands;
 namespace web {
 class DownloadTask;
@@ -90,14 +91,18 @@ class PassKitTabHelper : public web::LazyWebStateUserData<PassKitTabHelper>,
                              DownloadPassKitResult uma_result,
                              NSArray<NSData*>* all_data);
 
+  // Handles the result of the UnzipData operation.
+  void OnUnzipCompleted(DownloadPassKitResult uma_result,
+                        UnzipResultData result);
+
   raw_ptr<web::WebState> web_state_;
   __weak id<WebContentCommands> handler_ = nil;
   // Set of unfinished download tasks.
   std::set<std::unique_ptr<web::DownloadTask>, base::UniquePtrComparator>
       tasks_;
 
-  // Util used for unzipping through JavaScript.
-  JSUnzipper* unzipper_;
+  // Util used for unzipping through Rust.
+  RustUnzipper* unzipper_;
 
   base::WeakPtrFactory<PassKitTabHelper> weak_factory_{this};
 };

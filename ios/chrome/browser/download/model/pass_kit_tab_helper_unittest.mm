@@ -9,6 +9,7 @@
 #import <memory>
 
 #import "base/functional/callback_helpers.h"
+#import "base/task/current_thread.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/test/fakes/fake_web_content_handler.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "net/base/io_buffer.h"
 #import "net/base/net_errors.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +43,7 @@ class PassKitTabHelperTest : public PlatformTest {
     return PassKitTabHelper::GetOrCreateForWebState(&web_state_);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   web::FakeWebState web_state_;
   FakeWebContentHandler* handler_;
   base::HistogramTester histogram_tester_;
@@ -54,6 +56,9 @@ TEST_F(PassKitTabHelperTest, EmptyBundledFile) {
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   task_ptr->SetDone(true);
+
+  base::test::RunUntil([&]() { return handler_.called; });
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
         return handler_.called;
@@ -82,6 +87,9 @@ TEST_F(PassKitTabHelperTest, ValidBundledPassKitFile) {
                                 length:pass_data.size()];
   task_ptr->SetResponseData(data);
   task_ptr->SetDone(true);
+
+  base::test::RunUntil([&]() { return handler_.called; });
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
         return handler_.called;
@@ -121,6 +129,9 @@ TEST_F(PassKitTabHelperTest, SemiValidBundledPassKitFile) {
                                 length:pass_data.size()];
   task_ptr->SetResponseData(data);
   task_ptr->SetDone(true);
+
+  base::test::RunUntil([&]() { return handler_.called; });
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
         return handler_.called;
@@ -154,6 +165,9 @@ TEST_F(PassKitTabHelperTest, InvalidBundledPassKitFile) {
                                 length:pass_data.size()];
   task_ptr->SetResponseData(data);
   task_ptr->SetDone(true);
+
+  base::test::RunUntil([&]() { return handler_.called; });
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
         return handler_.called;
