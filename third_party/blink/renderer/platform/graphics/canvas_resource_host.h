@@ -67,8 +67,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
     return resource_provider_.get();
   }
 
-  void FlushRecording(FlushReason reason);
-
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
       std::unique_ptr<CanvasResourceProvider>);
 

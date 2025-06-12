@@ -67,10 +67,4 @@ RasterMode CanvasResourceHost::GetRasterMode() const {
   return ShouldTryToUseGpuRaster() ? RasterMode::kGPU : RasterMode::kCPU;
 }
 
-void CanvasResourceHost::FlushRecording(FlushReason reason) {
-  if (resource_provider_) {
-    resource_provider_->FlushCanvas(reason);
-  }
-}
-
 }  // namespace blink

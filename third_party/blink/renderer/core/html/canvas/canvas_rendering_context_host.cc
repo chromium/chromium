@@ -497,4 +497,10 @@ bool CanvasRenderingContextHost::IsContextLost() const {
   return !context || context->isContextLost();
 }
 
+void CanvasRenderingContextHost::FlushRecording(FlushReason reason) {
+  if (auto* provider = ResourceProvider()) {
+    provider->FlushCanvas(reason);
+  }
+}
+
 }  // namespace blink
