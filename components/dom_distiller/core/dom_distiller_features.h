@@ -15,7 +15,12 @@ bool IsDomDistillerEnabled();
 
 bool ShouldStartDistillabilityService();
 
+BASE_DECLARE_FEATURE(kReaderModeUseReadability);
+bool ShouldUseReadabilityDistiller();
+bool ShouldUseReadabilityHeuristic();
+
 #if BUILDFLAG(IS_ANDROID)
+// Feature declarations below -- alphabetical order.
 BASE_DECLARE_FEATURE(kReaderModeAutoDistill);
 BASE_DECLARE_FEATURE(kReaderModeImprovements);
 #endif
