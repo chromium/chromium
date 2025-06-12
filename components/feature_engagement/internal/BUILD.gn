@@ -34,6 +34,8 @@ static_library("internal") {
     "event_model.h",
     "event_model_impl.cc",
     "event_model_impl.h",
+    "event_model_reader.h",
+    "event_model_writer.h",
     "event_storage_validator.h",
     "event_store.h",
     "feature_config_condition_validator.cc",
