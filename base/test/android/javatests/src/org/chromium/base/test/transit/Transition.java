@@ -300,9 +300,9 @@ public abstract class Transition {
             }
 
             if (primary.mRunTriggerOnUiThread != null) {
-                builder.withPossiblyAlreadyFulfilled(primary.mRunTriggerOnUiThread);
+                builder.withRunTriggerOnUiThread(primary.mRunTriggerOnUiThread);
             } else if (secondary.mRunTriggerOnUiThread != null) {
-                builder.withPossiblyAlreadyFulfilled(secondary.mRunTriggerOnUiThread);
+                builder.withRunTriggerOnUiThread(secondary.mRunTriggerOnUiThread);
             }
 
             return builder.build();
