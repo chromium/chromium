@@ -4113,7 +4113,7 @@
     },
     {
       name: "RTCEncodedFrameAudioLevel",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RTCEncodedFrameSetMetadata",
