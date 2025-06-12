@@ -1892,7 +1892,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
   PaintRenderingResultsToCanvas(source_buffer);
   if (has_dispatcher && was_dirty &&
       Host()->GetOrCreateCanvasResourceProviderForWebGL()) {
-    return Host()->ResourceProvider()->ProduceCanvasResource(reason);
+    return Host()->GetResourceProviderForWebGL()->ProduceCanvasResource(reason);
   }
   return nullptr;
 }
@@ -1906,21 +1906,23 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvasInternal(
   resource_provider_was_updated = false;
 
   if (isContextLost() || !GetDrawingBuffer()) {
-    return Host()->ResourceProvider();
+    return Host()->GetResourceProviderForWebGL();
   }
 
   bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
 
-  if (Host()->ResourceProvider() &&
-      Host()->ResourceProvider()->Size() != GetDrawingBuffer()->Size()) {
+  if (Host()->GetResourceProviderForWebGL() &&
+      Host()->GetResourceProviderForWebGL()->Size() !=
+          GetDrawingBuffer()->Size()) {
     Host()->DiscardResourceProvider();
   }
 
   // The host's ResourceProvider is purged to save memory when the tab
   // is backgrounded.
 
-  if (!must_paint_to_canvas_ && !must_clear_now && Host()->ResourceProvider()) {
-    return Host()->ResourceProvider();
+  if (!must_paint_to_canvas_ && !must_clear_now &&
+      Host()->GetResourceProviderForWebGL()) {
+    return Host()->GetResourceProviderForWebGL();
   }
 
   must_paint_to_canvas_ = false;
@@ -1957,7 +1959,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvasInternal(
     return resource_provider;
 
   resource_provider_was_updated = CopyRenderingResultsFromDrawingBuffer(
-      Host()->ResourceProvider(), source_buffer);
+      Host()->GetResourceProviderForWebGL(), source_buffer);
   return resource_provider;
 }
 
@@ -9048,7 +9050,7 @@ int WebGLRenderingContextBase::AllocatedBufferCountPerPixel() {
     }
   }
 
-  if (Host()->ResourceProvider()) {
+  if (Host()->GetResourceProviderForWebGL()) {
     buffer_count++;
   }
 
