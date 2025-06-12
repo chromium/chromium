@@ -216,6 +216,8 @@ class NodeLink : public msg::NodeMessageListener {
   // memory.
   void Transmit(Message& message);
 
+  void AcceptEarlyParcelsForSublink(SublinkId sublink_id);
+
  private:
   friend class RefCounted<NodeLink>;
 
@@ -342,6 +344,11 @@ class NodeLink : public msg::NodeMessageListener {
   using SubparcelTrackerMap =
       absl::flat_hash_map<SubparcelTrackerKey, SubparcelTracker>;
   SubparcelTrackerMap subparcel_trackers_ ABSL_GUARDED_BY(mutex_);
+
+  // A queue for parcels arriving before their corresponding Router.
+  using SublinkEarlyParcelsMap =
+      absl::flat_hash_map<SublinkId, std::vector<std::unique_ptr<Parcel>>>;
+  SublinkEarlyParcelsMap early_parcels_for_sublink_ ABSL_GUARDED_BY(mutex_);
 
   // Tracks pending referrals sent to the broker.
   uint64_t next_referral_id_ = 0;

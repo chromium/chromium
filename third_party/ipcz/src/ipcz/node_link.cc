@@ -352,6 +352,25 @@ void NodeLink::Transmit(Message& message) {
   transport_->Transmit(message);
 }
 
+void NodeLink::AcceptEarlyParcelsForSublink(SublinkId sublink_id) {
+  std::vector<std::unique_ptr<Parcel>> early_parcels;
+  {
+    absl::MutexLock lock(&mutex_);
+    auto it = early_parcels_for_sublink_.find(sublink_id);
+    if (it != early_parcels_for_sublink_.end()) {
+      // TODO(crbug.com/410594534): Add CQ coverage for this condition. As of
+      // 2025-06 one known way to exercise it is to "upgrade" ChannelLinux to
+      // sending messages using eventfd and an additional shared memory region
+      // (crrev.com/c/6316751). A simpler reproducer is needed.
+      early_parcels.swap(it->second);
+      early_parcels_for_sublink_.erase(it);
+    }
+  }
+  for (auto& early_parcel : early_parcels) {
+    AcceptCompleteParcel(sublink_id, std::move(early_parcel));
+  }
+}
+
 SequenceNumber NodeLink::GenerateOutgoingSequenceNumber() {
   return SequenceNumber(next_outgoing_sequence_number_generator_.fetch_add(
       1, std::memory_order_relaxed));
@@ -972,10 +991,12 @@ bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink,
                                     std::unique_ptr<Parcel> parcel) {
   const std::optional<Sublink> sublink = GetSublink(for_sublink);
   if (!sublink) {
-    DVLOG(4) << "Dropping " << parcel->Describe() << " at "
+    DVLOG(4) << "Queuing " << parcel->Describe() << " at "
              << local_node_name_.ToString() << ", arriving from "
              << remote_node_name_.ToString() << " via unknown sublink "
              << for_sublink;
+    absl::MutexLock lock(&mutex_);
+    early_parcels_for_sublink_[for_sublink].emplace_back(std::move(parcel));
     return true;
   }
 

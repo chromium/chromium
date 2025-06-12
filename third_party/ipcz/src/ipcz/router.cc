@@ -810,6 +810,8 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
     }
   }
 
+  from_node_link.AcceptEarlyParcelsForSublink(descriptor.new_sublink);
+
   if (!new_outward_link) {
     // The new portal is DOA, either because the associated NodeLink is dead, or
     // or the sublink ID was already in use. The latter implies a bug or bad
