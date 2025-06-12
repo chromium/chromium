@@ -1,16 +1,10 @@
-    <style include="settings-shared"></style>
-    <settings-animated-pages id="reset-pages" section="reset">
-      <div route-path="default">
-        <cr-link-row id="resetProfile" label="$i18n{resetTrigger}"
-            on-click="onShowResetProfileDialog_"></cr-link-row>
-        <!-- Keep a single instance of reset-profile-dialog on purpose, to
-          preserve state across show/hide operations. -->
-        <cr-lazy-render id="resetProfileDialog">
-          <template>
-            <settings-reset-profile-dialog
-                on-close="onResetProfileDialogClose_">
-            </settings-reset-profile-dialog>
-          </template>
-        </cr-lazy-render>
-      </div>
-    </settings-animated-pages>
+<cr-link-row id="resetProfile" label="$i18n{resetTrigger}"
+    on-click="onShowResetProfileDialog_"></cr-link-row>
+<!-- Keep a single instance of reset-profile-dialog on purpose, to
+  preserve state across show/hide operations. -->
+<cr-lazy-render id="resetProfileDialog">
+  <template>
+    <settings-reset-profile-dialog on-close="onResetProfileDialogClose_">
+    </settings-reset-profile-dialog>
+  </template>
+</cr-lazy-render>

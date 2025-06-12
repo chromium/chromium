@@ -308,9 +308,6 @@ function createRoutes(): SettingsRoutes {
       r.TRIGGERED_RESET_DIALOG =
           r.RESET.createChild('/triggeredResetProfileSettings');
       r.TRIGGERED_RESET_DIALOG.isNavigableDialog = true;
-      // <if expr="_google_chrome and is_win">
-      r.CHROME_CLEANUP = r.RESET.createChild('/cleanup');
-      // </if>
     }
 
     if (visibility.performance !== false) {
