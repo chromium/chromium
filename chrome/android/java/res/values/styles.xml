@@ -354,12 +354,6 @@ found in the LICENSE file.
     </style>
 
     <!-- Misc styles -->
-    <style name="TabBarLineShadow">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:src">@macro/divider_line_bg_color</item>
-        <item name="android:scaleType">fitXY</item>
-    </style>
     <style name="TextAppearance.UpdateMenuItem">
         <item name="android:textColor">@color/update_menu_item_text_color</item>
         <item name="android:textSize">@dimen/text_size_large</item>

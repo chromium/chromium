@@ -28,7 +28,7 @@ found in the LICENSE file.
     <macro name="default_text_color_link">?attr/colorPrimary</macro>
 
     <macro name="hairline_stroke_color">?attr/colorOutline</macro>
-    <macro name="divider_line_bg_color">?attr/colorSurfaceContainerHighest</macro>
+    <macro name="divider_line_bg_color">@color/drag_handlebar_color_list</macro>
     <macro name="drag_handlebar_color">@color/drag_handlebar_color_list</macro>
 
     <macro name="chip_bg_color">@macro/default_bg_color</macro>

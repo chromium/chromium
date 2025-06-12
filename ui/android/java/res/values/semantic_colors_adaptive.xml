@@ -122,7 +122,6 @@ found in the LICENSE file.
     <color name="menu_list_item_icon_color_disabled">@color/baseline_neutral_10</color>
     <color name="menu_list_item_text_color">@color/baseline_neutral_10</color>
     <color name="menu_list_item_text_color_disabled">@color/baseline_neutral_10</color>
-    <color name="menu_list_item_divider_color">@color/baseline_neutral_variant_90</color>
 
     <!-- Commerce colors -->
     <color name="price_drop_annotation_bg_color">@color/price_drop_annotation_bg_color_light</color>

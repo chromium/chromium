@@ -175,10 +175,7 @@ public class StripLayoutTabTest {
         @ColorInt int expectedColor;
 
         // Normal.
-        expectedColor =
-                ColorUtils.setAlphaComponentWithFloat(
-                        SemanticColorUtils.getDefaultIconColorAccent1(mContext),
-                        DIVIDER_FOLIO_LIGHT_OPACITY);
+        expectedColor = SemanticColorUtils.getDividerLineBgColor(mContext);
         assertEquals(
                 "Light mode divider uses 20% icon color",
                 expectedColor, mNormalTab.getDividerTint());

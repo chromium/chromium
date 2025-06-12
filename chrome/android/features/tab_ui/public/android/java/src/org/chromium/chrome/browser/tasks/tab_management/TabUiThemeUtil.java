@@ -27,7 +27,6 @@ import org.chromium.ui.util.ColorUtils;
 public class TabUiThemeUtil {
     public static final float FOLIO_FOOT_LENGTH_DP = 16.f;
     private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
-    private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.3f;
 
     /**
      * Returns the tab strip background color based on the windowing mode and activity focus state.
@@ -164,17 +163,6 @@ public class TabUiThemeUtil {
     public static @ColorInt int getDividerTint(Context context, boolean isIncognito) {
         if (isIncognito) {
             return context.getColor(R.color.tab_strip_tablet_divider_bg_incognito);
-        }
-
-        if (!ColorUtils.inNightMode(context)) {
-            // This color will not be used at full opacity. We can't set this using the alpha
-            // component of the {@code @ColorInt}, since it is ignored when loading resources
-            // with a specified tint in the CC layer (instead retaining the alpha of the original
-            // image). Instead, this is reflected by setting the opacity of the divider itself.
-            // See https://crbug.com/1373634.
-            return ColorUtils.setAlphaComponentWithFloat(
-                    SemanticColorUtils.getDefaultIconColorAccent1(context),
-                    DIVIDER_FOLIO_LIGHT_OPACITY);
         }
 
         return SemanticColorUtils.getDividerLineBgColor(context);

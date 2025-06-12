@@ -42,7 +42,10 @@ found in the LICENSE file.
         android:paddingTop="16dp"/>
 
     <ImageView
-        style="@style/TabBarLineShadow"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:src="@drawable/divider_line_bg"
+        android:scaleType="fitXY"
         android:layout_below="@+id/tabs"
         android:importantForAccessibility="no"/>
 

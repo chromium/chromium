@@ -19,6 +19,6 @@ found in the LICENSE file.
     <View
         style="@style/HorizontalDivider"
         android:layout_width="match_parent"
-        android:background="@macro/divider_line_bg_color" />
+        android:background="@drawable/divider_line_bg" />
 
 </LinearLayout>

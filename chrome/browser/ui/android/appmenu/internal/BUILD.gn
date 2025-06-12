@@ -57,6 +57,7 @@ android_resources("java_resources") {
   # all be accessed through the same custom_package.
   deps = [
     "//chrome/browser/ui/android/appmenu:java_resources",
+    "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
   ]
 }
