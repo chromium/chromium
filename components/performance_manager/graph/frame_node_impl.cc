@@ -450,6 +450,13 @@ void FrameNodeImpl::SetViewportIntersection(
 
   viewport_intersection_.SetAndMaybeNotify(this, viewport_intersection);
 
+  // Inherit the state from the parent or outer document or embedder if
+  // SetIsIntersectingLargeArea() was not called for this frame.
+  if (!has_is_intersecting_large_area_updates_) {
+    is_intersecting_large_area_ =
+        parent_or_outer_document_or_embedder()->IsIntersectingLargeArea();
+  }
+
   if (was_intersecting_large_area != IsIntersectingLargeArea()) {
     for (auto& observer : GetObservers()) {
       observer.OnIsIntersectingLargeAreaChanged(this);
