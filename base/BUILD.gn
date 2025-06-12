@@ -2488,6 +2488,8 @@ component("base") {
     "trace_event/tracing_agent.h",
     "trace_event/typed_macros.h",
     "trace_event/typed_macros_embedder_support.h",
+    "trace_event/user_action.cc",
+    "trace_event/user_action.h",
     "tracing/perfetto_platform.cc",
     "tracing/perfetto_platform.h",
     "tracing/perfetto_task_runner.cc",

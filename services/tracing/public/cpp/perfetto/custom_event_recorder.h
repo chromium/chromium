@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/metrics/histogram_samples.h"
-#include "base/metrics/user_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/typed_macros.h"
@@ -45,11 +44,6 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
     active_processes_callback_ = callback;
   }
 
-  // Registered as a callback to receive every action recorded using
-  // base::RecordAction(), when tracing is enabled with a histogram category.
-  static void OnUserActionSampleCallback(const std::string& action,
-                                         base::TimeTicks action_time);
-  bool IsPrivacyFilteringEnabled();
   // Thread can restart in Linux and ChromeOS when entering sandbox, so rebind
   // sequence checker.
   void DetachFromSequence();
@@ -75,12 +69,7 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
   std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>
       startup_histogram_samples_;
   std::vector<std::string> histograms_;
-  base::ActionCallback user_action_callback_ =
-      base::BindRepeating(&CustomEventRecorder::OnUserActionSampleCallback);
   ActiveProcessesCallback active_processes_callback_;
-
-  base::Lock lock_;
-  bool privacy_filtering_enabled_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace tracing

@@ -13,7 +13,6 @@
 #include "base/pickle.h"
 #include "base/process/current_process.h"
 #include "base/sequence_checker.h"
-#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/typed_macros.h"
@@ -36,20 +35,13 @@ using TraceConfig = base::trace_event::TraceConfig;
 using perfetto::protos::pbzero::ChromeProcessDescriptor;
 
 namespace tracing {
-namespace {
-
-constexpr char kUserActionSamplesCategory[] =
-    TRACE_DISABLED_BY_DEFAULT("user_action_samples");
-
-}  // namespace
 
 CustomEventRecorder::CustomEventRecorder() {
   DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
   base::TrackEvent::AddSessionObserver(this);
 }
 
-CustomEventRecorder::~CustomEventRecorder()
-{
+CustomEventRecorder::~CustomEventRecorder() {
   base::TrackEvent::RemoveSessionObserver(this);
 }
 
@@ -97,24 +89,6 @@ void CustomEventRecorder::OnSetup(
 void CustomEventRecorder::OnStart(const perfetto::DataSourceBase::StartArgs&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
   EmitRecurringUpdates();
-
-  bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kUserActionSamplesCategory, &enabled);
-  if (enabled) {
-    auto task_runner = base::GetRecordActionTaskRunner();
-    if (task_runner) {
-      task_runner->PostTask(
-          FROM_HERE, base::BindOnce([]() {
-            // Attempt to remove an existing callback (this will do nothing if
-            // there's no callback), to ensure that at most one callback is
-            // registered in the presence of multiple active tracing sessions.
-            base::RemoveActionCallback(
-                CustomEventRecorder::GetInstance()->user_action_callback_);
-            base::AddActionCallback(
-                CustomEventRecorder::GetInstance()->user_action_callback_);
-          }));
-    }
-  }
 }
 
 void CustomEventRecorder::OnStop(const perfetto::DataSourceBase::StopArgs&) {
@@ -122,42 +96,11 @@ void CustomEventRecorder::OnStop(const perfetto::DataSourceBase::StopArgs&) {
 
   // Write metadata events etc.
   LogHistograms();
-
-  bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kUserActionSamplesCategory, &enabled);
-  if (!enabled) {
-    auto task_runner = base::GetRecordActionTaskRunner();
-    if (task_runner) {
-      task_runner->PostTask(
-          FROM_HERE, base::BindOnce([]() {
-            base::RemoveActionCallback(
-                CustomEventRecorder::GetInstance()->user_action_callback_);
-          }));
-    }
-  }
 }
 
 void CustomEventRecorder::WillClearIncrementalState(
     const perfetto::DataSourceBase::ClearIncrementalStateArgs&) {
   EmitRecurringUpdates();
-}
-
-void CustomEventRecorder::OnUserActionSampleCallback(
-    const std::string& action,
-    base::TimeTicks action_time) {
-  constexpr uint64_t kGlobalInstantTrackId = 0;
-  TRACE_EVENT_INSTANT(
-      kUserActionSamplesCategory, "UserAction",
-      perfetto::NamedTrack("UserAction", 0,
-                           perfetto::Track::Global(kGlobalInstantTrackId)),
-      [&](perfetto::EventContext ctx) {
-        perfetto::protos::pbzero::ChromeUserEvent* new_sample =
-            ctx.event()->set_chrome_user_event();
-        if (!ctx.ShouldFilterDebugAnnotations()) {
-          new_sample->set_action(action);
-        }
-        new_sample->set_action_hash(base::HashMetricName(action));
-      });
 }
 
 void CustomEventRecorder::LogHistogram(base::HistogramBase* histogram) {
