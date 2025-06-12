@@ -34,9 +34,6 @@
 #include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -530,14 +527,6 @@ void ChromeShellDelegate::ForceSkipWarningUserOnClose(
 
 std::string ChromeShellDelegate::GetVersionString() {
   return std::string(version_info::GetVersionNumber());
-}
-
-void ChromeShellDelegate::ShouldExitFullscreenBeforeLock(
-    ChromeShellDelegate::ShouldExitFullscreenCallback callback) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->fullscreen_controller_ash()
-      ->ShouldExitFullscreenBeforeLock(std::move(callback));
 }
 
 void ChromeShellDelegate::OpenMultitaskingSettings() {

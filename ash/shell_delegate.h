@@ -232,12 +232,6 @@ class ASH_EXPORT ShellDelegate {
   // Retrieves the official Chrome version string e.g. 105.0.5178.0.
   virtual std::string GetVersionString() = 0;
 
-  // Forwards the ShouldExitFullscreenBeforeLock() call to the crosapi browser
-  // manager.
-  using ShouldExitFullscreenCallback = base::OnceCallback<void(bool)>;
-  virtual void ShouldExitFullscreenBeforeLock(
-      ShouldExitFullscreenCallback callback);
-
   // Opens the Multitasking OS Settings page.
   virtual void OpenMultitaskingSettings() = 0;
 

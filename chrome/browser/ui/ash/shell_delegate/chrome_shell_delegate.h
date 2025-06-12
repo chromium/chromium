@@ -102,8 +102,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows)
       override;
   std::string GetVersionString() override;
-  void ShouldExitFullscreenBeforeLock(
-      ShouldExitFullscreenCallback callback) override;
   void OpenMultitaskingSettings() override;
   bool IsNoFirstRunSwitchOn() const override;
 };

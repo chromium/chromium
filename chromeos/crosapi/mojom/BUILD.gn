@@ -22,7 +22,6 @@ mojom("mojom") {
     "file_system_access_cloud_identifier.mojom",
     "file_system_provider.mojom",
     "full_restore.mojom",
-    "fullscreen_controller.mojom",
     "guest_os_sk_forwarder.mojom",
     "identity_manager.mojom",
     "keystore_error.mojom",

@@ -35,11 +35,6 @@ const GURL& ShellDelegate::GetLastCommittedURLForWindowIfAny(
   return GURL::EmptyGURL();
 }
 
-void ShellDelegate::ShouldExitFullscreenBeforeLock(
-    ShellDelegate::ShouldExitFullscreenCallback callback) {
-  std::move(callback).Run(false);
-}
-
 bool ShellDelegate::IsNoFirstRunSwitchOn() const {
   return false;
 }

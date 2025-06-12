@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
-#include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
@@ -108,7 +107,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
       file_system_provider_service_ash_(
           std::make_unique<FileSystemProviderServiceAsh>()),
-      fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       login_ash_(std::make_unique<LoginAsh>()),
@@ -203,11 +201,6 @@ void CrosapiAsh::BindFileSystemAccessCloudIdentifierProvider(
         crosapi::mojom::FileSystemAccessCloudIdentifierProvider> receiver) {
   file_system_access_cloud_identifier_provider_ash_->BindReceiver(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindFullscreenController(
-    mojo::PendingReceiver<crosapi::mojom::FullscreenController> receiver) {
-  fullscreen_controller_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindHidManager(

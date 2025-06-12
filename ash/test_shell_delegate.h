@@ -104,8 +104,6 @@ class TestShellDelegate : public ShellDelegate {
   GetBrowserProcessUrlLoaderFactory() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
   void SetTabScrubberEnabled(bool enabled) override;
-  void ShouldExitFullscreenBeforeLock(
-      ShouldExitFullscreenCallback callback) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   int GetBrowserWebUITabStripHeight() override;
   void OpenMultitaskingSettings() override;
@@ -121,8 +119,6 @@ class TestShellDelegate : public ShellDelegate {
       override {}
 
   void SetCanGoBack(bool can_go_back);
-  void SetShouldExitFullscreenBeforeLock(
-      bool should_exit_fullscreen_before_lock);
   void SetShouldWaitForTouchAck(bool should_wait_for_touch_ack);
   void SetSessionRestoreInProgress(bool in_progress);
   bool IsLoggingRedirectDisabled() const override;
@@ -153,9 +149,6 @@ class TestShellDelegate : public ShellDelegate {
 
   // True if the tab scrubber is enabled.
   bool tab_scrubber_enabled_ = true;
-
-  // False if it is allowed by policy to keep fullscreen after unlock.
-  bool should_exit_fullscreen_before_lock_ = true;
 
   // True if when performing back gesture on the top window, we should handle
   // the event after the touch ack is received. Please refer to
