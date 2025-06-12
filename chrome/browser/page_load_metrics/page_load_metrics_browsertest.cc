@@ -3795,19 +3795,12 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestTerminatedPage,
 // This class is used to verify page load metrics are recorded in case of
 // crashes of different kinds. These crashes are simulated by navigating to the
 // chrome debug urls.
-class PageLoadMetricsBrowserTestCrashedPage
+class PageLoadMetricsBrowserTestRendererCrashedPage
     : public PageLoadMetricsBrowserTestTerminatedPage,
       public ::testing::WithParamInterface<const char*> {};
 
-IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestRendererCrashedPage,
                        UkmIsRecordedForCrashedTabPage) {
-  base::test::ScopedCommandLine scoped_command_line;
-  if (GetParam() == blink::kChromeUIGpuCrashURL) {
-    // This flag must be enabled to log metrics for blink::kChromeUIGpuCrashURL.
-    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-        switches::kEnableGpuBenchmarking);
-  }
-
   // Open a new foreground tab and navigate.
   content::WebContents* contents = OpenTabAndNavigate();
 
@@ -3832,14 +3825,71 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
                              WindowOpenDisposition::CURRENT_TAB,
                              ui::PAGE_TRANSITION_TYPED, false),
       /*navigation_handle_callback=*/{});
-  crash_observer.Wait();
 
-  // Page being crashed is only verifiable in these crashes.
-  if (GetParam() == blink::kChromeUIKillURL ||
-      GetParam() == blink::kChromeUICrashURL) {
-    EXPECT_TRUE(web_contents()->IsCrashed());
-    EXPECT_FALSE(crash_observer.did_exit_normally());
+  crash_observer.Wait();
+  EXPECT_FALSE(crash_observer.did_exit_normally());
+  EXPECT_TRUE(web_contents()->IsCrashed());
+
+  // Verify page load metric is recorded.
+  EXPECT_NEAR(
+      GetUKMPageLoadMetric(
+          PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name),
+      lcp_time, 10);
+}
+
+INSTANTIATE_TEST_SUITE_P(RendererCrashCases,
+                         PageLoadMetricsBrowserTestRendererCrashedPage,
+                         testing::ValuesIn({blink::kChromeUIKillURL,
+                                            blink::kChromeUICrashURL}));
+
+// Similar to the crashes above, this test verifies page load metrics are
+// recorded in case severe errors that don't actually crash the
+// renderer process (e.g. only the GPU process may crash), but rather cause
+// the renderer to be terminated.
+class PageLoadMetricsBrowserTestNoRendererCrashedPage
+    : public PageLoadMetricsBrowserTestTerminatedPage,
+      public ::testing::WithParamInterface<const char*> {};
+
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestNoRendererCrashedPage,
+                       UkmIsRecordedForCrashedTabPage) {
+  base::test::ScopedCommandLine scoped_command_line;
+  if (GetParam() == blink::kChromeUIGpuCrashURL) {
+    // This flag must be enabled to log metrics for blink::kChromeUIGpuCrashURL.
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableGpuBenchmarking);
   }
+
+  // Open a new foreground tab and navigate.
+  content::WebContents* contents = OpenTabAndNavigate();
+
+  // The back/forward cache is disabled because page load metrics can also be
+  // recorded when entering into the bfcache. We want to test that page load
+  // metrics are recorded via the PageLoadTracker destructor which is called in
+  // all crash cases.
+  content::DisableBackForwardCacheForTesting(
+      contents, content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  // Wait for LCP emission and observation. This is to ensure there is an LCP
+  // entry to report at the time of killing the page.
+  double lcp_time = GetLCPTimeFromEmittedLCPEntry(contents);
+
+  // Wait for the destruction of the RenderProcessHost, which is triggered by
+  // the navigation to the chrome debug url; then assert that we've navigated
+  // to the correct URL.
+  content::RenderProcessHostWatcher destruction_observer(contents,
+      content::RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+
+  browser()->OpenURL(
+      content::OpenURLParams(GURL(GetParam()), content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
+
+  destruction_observer.Wait();
+  EXPECT_TRUE(web_contents() == contents);
+  EXPECT_FALSE(contents->IsCrashed());
+  EXPECT_EQ(GURL(GetParam()), contents->GetLastCommittedURL());
+  EXPECT_FALSE(contents->HasUncommittedNavigationInPrimaryMainFrame());
 
   // Verify page load metric is recorded.
   EXPECT_NEAR(
@@ -3849,10 +3899,9 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    CrashCases,
-    PageLoadMetricsBrowserTestCrashedPage,
-    testing::ValuesIn({blink::kChromeUIKillURL, blink::kChromeUICrashURL,
-                       blink::kChromeUIGpuCrashURL,
+    NoRendererCrashCases,
+    PageLoadMetricsBrowserTestNoRendererCrashedPage,
+    testing::ValuesIn({blink::kChromeUIGpuCrashURL,
                        blink::kChromeUINetworkErrorURL,
                        blink::kChromeUIProcessInternalsURL}));
 
