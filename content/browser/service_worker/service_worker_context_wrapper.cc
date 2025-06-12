@@ -749,7 +749,9 @@ size_t ServiceWorkerContextWrapper::CountExternalRequestsForTest(
 bool ServiceWorkerContextWrapper::MaybeHasRegistrationForStorageKey(
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return context() ? context()->MaybeHasRegistrationForStorageKey(key) : true;
+  return context()
+             ? context()->registry().MaybeHasRegistrationForStorageKey(key)
+             : true;
 }
 
 void ServiceWorkerContextWrapper::GetAllStorageKeysInfo(

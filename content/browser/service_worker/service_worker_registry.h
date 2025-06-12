@@ -100,7 +100,8 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   ServiceWorkerRegistry(ServiceWorkerContextCore& context,
                         storage::QuotaManagerProxy* quota_manager_proxy,
-                        storage::SpecialStoragePolicy* special_storage_policy);
+                        storage::SpecialStoragePolicy* special_storage_policy,
+                        base::TimeTicks start_time);
 
   // For re-creating the registry from the old one. This is called when
   // something went wrong during storage access.
@@ -275,6 +276,18 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // The set doesn't include installing/uninstalling/uninstalled registrations.
   void GetRegisteredStorageKeys(GetRegisteredStorageKeysCallback callback);
 
+  // Returns false only when we are sure that there's no service worker
+  // registrations for the given storage key. If we are not sure, this function
+  // must return true to suggest that we need to check the service worker
+  // registration specifically (e.g. by calling FindRegistrationForClientUrl()).
+  // This function is a lot faster than FindRegistrationForClientUrl().
+  bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key);
+
+  // This method waits for service worker registrations to be initialized, and
+  // depends on |on_registrations_initialized_| and |registrations_initialized_|
+  // which are called in InitializeRegisteredOrigins().
+  void WaitForRegistrationsInitializedForTest();
+
   // Performs internal storage cleanup. Operations to the storage in the past
   // (e.g. deletion) are usually recorded in disk for a certain period until
   // compaction happens. This method wipes them out to ensure that the deleted
@@ -300,7 +313,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerRegistryTest,
                            RetryInflightCalls_ApplyPolicyUpdates);
 
-  void Start();
+  void Start(base::TimeTicks start_time);
   void FindRegistrationForIdInternal(
       int64_t registration_id,
       const std::optional<blink::StorageKey>& key,
@@ -455,6 +468,16 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidGetRegisteredStorageKeysOnStartup(
       const std::vector<blink::StorageKey>& storage_keys);
+
+  // This is used as a callback of GetRegisteredStorageKeys when initialising to
+  // store a list of storage keys that have registered service workers.
+  void DidGetRegisteredStorageKeysOnStartupDeprecated(
+      base::TimeTicks start_time,
+      const std::vector<blink::StorageKey>& storage_keys);
+
+  void SetRegisteredStorageKeys(
+      const std::vector<blink::StorageKey>& storage_keys);
+
   void ApplyPolicyUpdates(
       std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates);
   bool ShouldPurgeOnShutdownForTesting(const blink::StorageKey& key);
@@ -514,6 +537,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       remote_storage_control_;
 
   bool is_storage_disabled_ = false;
+
+  // A set of StorageKeys that have at least one registration.
+  std::set<blink::StorageKey> registered_storage_keys_;
+  bool registrations_initialized_ = false;
+  base::OnceClosure on_registrations_initialized_for_test_;
 
   // TODO(crbug.com/40103974): Consider moving QuotaManagerProxy to
   // ServiceWorkerStorage once QuotaManager gets mojofied.
