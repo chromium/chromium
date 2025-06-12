@@ -93,11 +93,11 @@ impl<W: Write> GzEncoder<W> {
         while self.crc_bytes_written < 8 {
             let (sum, amt) = (self.crc.sum(), self.crc.amount());
             let buf = [
-                (sum >> 0) as u8,
+                sum as u8,
                 (sum >> 8) as u8,
                 (sum >> 16) as u8,
                 (sum >> 24) as u8,
-                (amt >> 0) as u8,
+                amt as u8,
                 (amt >> 8) as u8,
                 (amt >> 16) as u8,
                 (amt >> 24) as u8,
@@ -294,11 +294,11 @@ impl<W: Write> GzDecoder<W> {
             return Err(corrupt());
         }
 
-        let crc = ((self.crc_bytes[0] as u32) << 0)
+        let crc = (self.crc_bytes[0] as u32)
             | ((self.crc_bytes[1] as u32) << 8)
             | ((self.crc_bytes[2] as u32) << 16)
             | ((self.crc_bytes[3] as u32) << 24);
-        let amt = ((self.crc_bytes[4] as u32) << 0)
+        let amt = (self.crc_bytes[4] as u32)
             | ((self.crc_bytes[5] as u32) << 8)
             | ((self.crc_bytes[6] as u32) << 16)
             | ((self.crc_bytes[7] as u32) << 24);

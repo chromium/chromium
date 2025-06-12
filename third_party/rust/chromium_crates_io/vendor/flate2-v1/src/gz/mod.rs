@@ -135,7 +135,7 @@ impl GzHeaderParser {
                     if self.flags & FRESERVED != 0 {
                         return Err(bad_header());
                     }
-                    self.header.mtime = ((buffer[4] as u32) << 0)
+                    self.header.mtime = (buffer[4] as u32)
                         | ((buffer[5] as u32) << 8)
                         | ((buffer[6] as u32) << 16)
                         | ((buffer[7] as u32) << 24);
@@ -402,8 +402,7 @@ impl GzBuilder {
         let mut header = vec![0u8; 10];
         if let Some(v) = extra {
             flg |= FEXTRA;
-            header.push((v.len() >> 0) as u8);
-            header.push((v.len() >> 8) as u8);
+            header.extend((v.len() as u16).to_le_bytes());
             header.extend(v);
         }
         if let Some(filename) = filename {
@@ -418,7 +417,7 @@ impl GzBuilder {
         header[1] = 0x8b;
         header[2] = 8;
         header[3] = flg;
-        header[4] = (mtime >> 0) as u8;
+        header[4] = mtime as u8;
         header[5] = (mtime >> 8) as u8;
         header[6] = (mtime >> 16) as u8;
         header[7] = (mtime >> 24) as u8;

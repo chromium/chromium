@@ -287,6 +287,7 @@ impl InflateBackend for Inflate {
                 MZ_OK => Ok(Status::Ok),
                 MZ_BUF_ERROR => Ok(Status::BufError),
                 MZ_STREAM_END => Ok(Status::StreamEnd),
+                #[allow(clippy::unnecessary_cast)]
                 MZ_NEED_DICT => mem::decompress_need_dict((*raw).adler as u32),
                 c => panic!("unknown return code: {}", c),
             }
@@ -465,11 +466,11 @@ mod c_backend {
     pub const MZ_DEFAULT_WINDOW_BITS: c_int = 15;
 
     #[cfg(feature = "zlib-ng")]
-    const ZLIB_VERSION: &'static str = "2.1.0.devel\0";
+    const ZLIB_VERSION: &str = "2.1.0.devel\0";
     #[cfg(all(not(feature = "zlib-ng"), feature = "zlib-rs"))]
-    const ZLIB_VERSION: &'static str = "1.3.0-zlib-rs-0.5.0\0";
+    const ZLIB_VERSION: &str = "1.3.0-zlib-rs-0.5.1\0";
     #[cfg(not(any(feature = "zlib-ng", feature = "zlib-rs")))]
-    const ZLIB_VERSION: &'static str = "1.2.8\0";
+    const ZLIB_VERSION: &str = "1.2.8\0";
 
     pub unsafe extern "C" fn mz_deflateInit2(
         stream: *mut mz_stream,
