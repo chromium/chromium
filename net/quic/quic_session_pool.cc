@@ -79,6 +79,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
@@ -1972,6 +1973,9 @@ QuicSessionPool::CreateSessionHelper(
     config.SetIdleNetworkTimeout(quic::QuicTime::Delta::FromSeconds(
         connection_management_config->keep_alive_config
             ->idle_timeout_in_seconds));
+    config.AddConnectionOptionsToSend(
+        quic::ParseQuicTagVector(connection_management_config->keep_alive_config
+                                     ->quic_connection_options));
     keep_alive_timeout = quic::QuicTime::Delta::FromSeconds(
         connection_management_config->keep_alive_config
             ->ping_interval_in_seconds);
