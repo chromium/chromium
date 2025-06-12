@@ -2816,8 +2816,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, AccessibilityLabels) {
   EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
 }
 
+// TODO(crbug.com/359995696): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PassphraseErrorSignedIn DISABLED_PassphraseErrorSignedIn
+#else
+#define MAYBE_PassphraseErrorSignedIn PassphraseErrorSignedIn
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       PassphraseErrorSignedIn) {
+                       MAYBE_PassphraseErrorSignedIn) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
