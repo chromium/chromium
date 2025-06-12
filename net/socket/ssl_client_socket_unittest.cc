@@ -2770,6 +2770,28 @@ TEST_P(SSLClientSocketVersionTest, ConnectWithTrustAnchorIDs) {
   EXPECT_TRUE(ran_callback);
 }
 
+TEST_P(SSLClientSocketVersionTest, ConnectToServerWithTrustAnchorIDs) {
+  SSLServerConfig server_config;
+  SSLConfig client_config;
+  server_config.intermediate_trust_anchor_id = {0x01, 0x02, 0x03};
+
+  ASSERT_TRUE(StartEmbeddedTestServer(
+      EmbeddedTestServer::CERT_OK_BY_INTERMEDIATE, server_config));
+
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  SSLInfo ssl_info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(1u, ssl_info.unverified_cert->intermediate_buffers().size());
+
+  client_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03};
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(0u, ssl_info.unverified_cert->intermediate_buffers().size());
+}
+
 // Tests that OCSP stapling is requested, as per Certificate Transparency (RFC
 // 6962).
 TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsEnablesOCSP) {

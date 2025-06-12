@@ -145,6 +145,18 @@ struct NET_EXPORT SSLServerConfig {
 
   // If not nullptr, an ECH configuration to use on the server.
   ECHKeysContainer ech_keys;
+
+  // If non-empty, the intermediate certificate will be elided when possible
+  // via TLS Trust Anchor Identifiers. That is, the server will be configured
+  // to serve not just the full chain with which it is configured, but also a
+  // shorter version of that chain formed by eliding the intermediate
+  // certificate. If the client signals that it trusts this intermediate via
+  // the TLS Trust Anchor IDs extension, then the server will serve the
+  // corresponding elided chain instead of the full chain.
+  //
+  // It is an error if this is non-empty when the server certificate chain does
+  // not have exactly one intermediate.
+  std::vector<uint8_t> intermediate_trust_anchor_id;
 };
 
 }  // namespace net

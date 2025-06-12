@@ -248,20 +248,79 @@ bool SetSSLChainAndKey(SSL* ssl,
   return true;
 }
 
-bool SetSSLChainAndKey(
+bool ConfigureSSLCredential(
     SSL* ssl,
     base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
     EVP_PKEY* pkey,
-    const SSL_PRIVATE_KEY_METHOD* custom_key) {
+    const SSL_PRIVATE_KEY_METHOD* custom_key,
+    base::span<const uint16_t> signing_algorithm_prefs,
+    base::span<const uint8_t> ocsp_response,
+    base::span<const uint8_t> signed_cert_timestamp_list,
+    base::span<const uint8_t> trust_anchor_id) {
+  bssl::UniquePtr<SSL_CREDENTIAL> credential(SSL_CREDENTIAL_new_x509());
+  if (!credential) {
+    return false;
+  }
+
   std::vector<CRYPTO_BUFFER*> chain_raw;
   chain_raw.reserve(cert_chain.size());
   for (const auto& handle : cert_chain) {
     chain_raw.push_back(handle.get());
   }
 
-  if (!SSL_set_chain_and_key(ssl, chain_raw.data(), chain_raw.size(), pkey,
-                             custom_key)) {
-    LOG(WARNING) << "Failed to set client certificate";
+  if (!SSL_CREDENTIAL_set1_cert_chain(credential.get(), chain_raw.data(),
+                                      chain_raw.size())) {
+    return false;
+  }
+  if (!signing_algorithm_prefs.empty()) {
+    if (!SSL_CREDENTIAL_set1_signing_algorithm_prefs(
+            credential.get(), signing_algorithm_prefs.data(),
+            signing_algorithm_prefs.size())) {
+      return false;
+    }
+  }
+
+  DCHECK(pkey || custom_key);
+  if (pkey) {
+    DCHECK(!custom_key);
+    if (!SSL_CREDENTIAL_set1_private_key(credential.get(), pkey)) {
+      return false;
+    }
+  } else if (custom_key) {
+    DCHECK(!pkey);
+    if (!SSL_CREDENTIAL_set_private_key_method(credential.get(), custom_key)) {
+      return false;
+    }
+  }
+
+  if (!ocsp_response.empty()) {
+    bssl::UniquePtr<CRYPTO_BUFFER> buf(
+        CRYPTO_BUFFER_new(ocsp_response.data(), ocsp_response.size(), nullptr));
+    if (!SSL_CREDENTIAL_set1_ocsp_response(credential.get(), buf.get())) {
+      return false;
+    }
+  }
+
+  if (!signed_cert_timestamp_list.empty()) {
+    bssl::UniquePtr<CRYPTO_BUFFER> buf(
+        CRYPTO_BUFFER_new(signed_cert_timestamp_list.data(),
+                          signed_cert_timestamp_list.size(), nullptr));
+    if (!SSL_CREDENTIAL_set1_signed_cert_timestamp_list(credential.get(),
+                                                        buf.get())) {
+      return false;
+    }
+  }
+
+  if (!trust_anchor_id.empty()) {
+    if (!SSL_CREDENTIAL_set1_trust_anchor_id(
+            credential.get(), trust_anchor_id.data(), trust_anchor_id.size())) {
+      return false;
+    }
+    SSL_CREDENTIAL_set_must_match_issuer(credential.get(), 1);
+  }
+
+  if (!SSL_add1_credential(ssl, credential.get())) {
+    LOG(WARNING) << "Failed to set certificate";
     return false;
   }
 
