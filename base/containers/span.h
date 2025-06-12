@@ -575,7 +575,7 @@ class GSL_POINTER span {
         for (size_t i = 0; i < extent; ++i) {
           // SAFETY: `buffers` is allocated with `extent` elements, and the loop
           // body only executes if `i < extent`.
-          UNSAFE_BUFFERS(buffer[i]).value = other[i];
+          std::construct_at(&UNSAFE_BUFFERS(buffer[i]).value, other[i]);
         }
         for (size_t i = 0; i < extent; ++i) {
           // SAFETY: `buffers` is allocated with `extent` elements, and the loop
@@ -1087,7 +1087,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
       for (size_t i = 0; i < other.size(); ++i) {
         // SAFETY: `buffers` is allocated with `other.size()` elements, and the
         // loop body only executes if `i < other.size()`.
-        UNSAFE_BUFFERS(buffer[i]).value = other[i];
+        std::construct_at(&UNSAFE_BUFFERS(buffer[i]).value, other[i]);
       }
       for (size_t i = 0; i < other.size(); ++i) {
         // SAFETY: `buffers` is allocated with `other.size()` elements, and the
