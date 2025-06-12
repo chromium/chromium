@@ -45,7 +45,7 @@ class ChangePasswordFormWaiter
   void OnTimeout();
 
   base::OneShotTimer timeout_timer_;
-  base::WeakPtr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   PasswordFormFoundCallback callback_;
 
   base::WeakPtrFactory<ChangePasswordFormWaiter> weak_ptr_factory_{this};

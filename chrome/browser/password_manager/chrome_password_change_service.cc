@@ -117,7 +117,8 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
 
   std::unique_ptr<PasswordChangeDelegate> delegate =
       std::make_unique<PasswordChangeDelegateImpl>(
-          std::move(change_pwd_url), username, password, web_contents);
+          std::move(change_pwd_url), username, password,
+          tabs::TabInterface::GetFromContents(web_contents));
   delegate->AddObserver(this);
   password_change_delegates_.push_back(std::move(delegate));
 

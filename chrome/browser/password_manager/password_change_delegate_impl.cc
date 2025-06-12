@@ -34,7 +34,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -73,31 +72,29 @@ std::u16string GeneratePassword(
 }
 
 void NotifyPasswordChangeFinishedSuccessfully(
-    base::WeakPtr<content::WebContents> web_contents) {
+    content::WebContents* web_contents) {
   if (web_contents) {
-    ManagePasswordsUIController::FromWebContents(web_contents.get())
+    ManagePasswordsUIController::FromWebContents(web_contents)
         ->OnPasswordChangeFinishedSuccessfully();
   }
 }
 
 void DisplayChangePasswordBubbleAutomatically(
-    base::WeakPtr<content::WebContents> web_contents) {
-  if (!web_contents) {
-    return;
-  }
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
   if (auto* manage_controller =
-          ManagePasswordsUIController::FromWebContents(web_contents.get())) {
+          ManagePasswordsUIController::FromWebContents(web_contents)) {
     manage_controller->ShowChangePasswordBubble();
   }
 }
 
 std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
-    base::WeakPtr<content::WebContents> web_contents) {
+    content::WebContents* web_contents) {
   if (!web_contents) {
     return nullptr;
   }
   auto* client = static_cast<password_manager::PasswordManagerClient*>(
-      ChromePasswordManagerClient::FromWebContents(web_contents.get()));
+      ChromePasswordManagerClient::FromWebContents(web_contents));
   if (!client) {
     return nullptr;
   }
@@ -136,26 +133,28 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     GURL change_password_url,
     std::u16string username,
     std::u16string password,
-    content::WebContents* originator)
+    tabs::TabInterface* tab_interface)
     : change_password_url_(std::move(change_password_url)),
       username_(std::move(username)),
       original_password_(std::move(password)),
-      profile_(Profile::FromBrowserContext(originator->GetBrowserContext())),
-      originator_(originator->GetWeakPtr()),
-      ui_controller_(std::make_unique<PasswordChangeUIController>(
-          this,
-          originator->GetWeakPtr())) {
+      originator_(tab_interface->GetContents()),
+      profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())),
+      ui_controller_(
+          std::make_unique<PasswordChangeUIController>(this, tab_interface)) {
+  tab_will_detach_subscription_ = tab_interface->RegisterWillDetach(
+      base::BindRepeating(&PasswordChangeDelegateImpl::OnTabWillDetach,
+                          weak_ptr_factory_.GetWeakPtr()));
+
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogMessage(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STARTED);
   }
-  Observe(originator);
 }
 
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
   base::UmaHistogramEnumeration(kFinalPasswordChangeStatusHistogram,
                                 current_state_);
-  if (auto logger = GetLoggerIfAvailable(originator_)) {
+  if (auto logger = GetLoggerIfAvailable(executor_.get())) {
     logger->LogBoolean(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_FINISHED,
         current_state_ == State::kPasswordSuccessfullyChanged);
@@ -215,17 +214,23 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
   UpdateState(PasswordChangeDelegate::State::kChangingPassword);
 }
 
-void PasswordChangeDelegateImpl::WebContentsDestroyed() {
-  // PasswordFormManager keeps raw pointers to PasswordManagerClient reset it
-  // immediately to avoid keeping dangling pointer.
-  submission_verifier_.reset();
-  Stop();
+void PasswordChangeDelegateImpl::OnTabWillDetach(
+    tabs::TabInterface* tab_interface,
+    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    // Reset pointers immediately to avoid keeping dangling pointer to the tab.
+    originator_ = nullptr;
+    submission_verifier_.reset();
+    ui_controller_.reset();
+    form_finder_.reset();
+    submission_verifier_.reset();
+    Stop();
+  }
 }
-
 
 bool PasswordChangeDelegateImpl::IsPasswordChangeOngoing(
     content::WebContents* web_contents) {
-  return (originator_ && originator_.get() == web_contents) ||
+  return (originator_ == web_contents) ||
          (executor_ && executor_.get() == web_contents);
 }
 
@@ -274,7 +279,7 @@ void PasswordChangeDelegateImpl::OnOtpFieldDetected(
 
 void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   CHECK(originator_);
-  auto* tab_interface = tabs::TabInterface::GetFromContents(originator_.get());
+  auto* tab_interface = tabs::TabInterface::GetFromContents(originator_);
   CHECK(tab_interface);
 
   auto* tabs_strip =

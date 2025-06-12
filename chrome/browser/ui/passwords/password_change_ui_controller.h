@@ -10,9 +10,9 @@
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 #include "ui/views/widget/widget.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace ui {
 class DialogModel;
@@ -23,7 +23,7 @@ class DialogModel;
 class PasswordChangeUIController {
  public:
   PasswordChangeUIController(PasswordChangeDelegate* password_change_delegate,
-                             base::WeakPtr<content::WebContents> web_contents);
+                             tabs::TabInterface* tab_interface);
   virtual ~PasswordChangeUIController();
 
   // Updates the `state_` and the UI.
@@ -32,20 +32,26 @@ class PasswordChangeUIController {
   const views::Widget* dialog_widget() const { return dialog_widget_.get(); }
 
  private:
-  // Handles clicking accept button on the currently displayed dialog.
-  void OnDialogAccepted();
+  std::variant<PasswordChangeToast::ToastOptions,
+               std::unique_ptr<ui::DialogModel>>
+  GetDialogOrToastConfiguration(PasswordChangeDelegate::State state);
+
+  void ShowToast(PasswordChangeToast::ToastOptions options);
+  void ShowDialog(std::unique_ptr<ui::DialogModel> dialog_model);
+
+  void OpenPasswordChangeTab();
+  void StartPasswordChangeFlow();
 
   // Closes the dialog and logs the `reason`.
   // TODO(crbug.com/407504591): Actually log the reason.
   void CloseDialogWidget(views::Widget::ClosedReason reason);
 
-  void ShowToast(PasswordChangeToast::ToastOptions options);
-  void ShowDialog(std::unique_ptr<ui::DialogModel> dialog_model);
-
   void CloseToastWidget(views::Widget::ClosedReason reason);
 
   // Controls password change process. Owns this class.
   const raw_ptr<PasswordChangeDelegate> password_change_delegate_;
+  // A tab where a toast and a modal dialog is displayed.
+  const raw_ptr<tabs::TabInterface> tab_interface_;
 
   raw_ptr<PasswordChangeToast> toast_view_;
   std::unique_ptr<views::Widget> toast_widget_;

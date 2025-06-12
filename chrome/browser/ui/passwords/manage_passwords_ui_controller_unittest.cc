@@ -23,6 +23,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
+#include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -280,6 +281,26 @@ std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManagerWithBestMatches(
       .WillRepeatedly(Return(nullptr));
   return form_manager;
 }
+
+class MockPasswordChangeService : public ChromePasswordChangeService {
+ public:
+  MockPasswordChangeService()
+      : ChromePasswordChangeService(/*affiliation_service=*/nullptr,
+                                    /*optimization_keyed_service=*/nullptr,
+                                    /*feature_manager=*/nullptr) {}
+
+  MOCK_METHOD(void,
+              OfferPasswordChangeUi,
+              (const GURL&,
+               const std::u16string&,
+               const std::u16string&,
+               content::WebContents*),
+              (override));
+  MOCK_METHOD(PasswordChangeDelegate*,
+              GetPasswordChangeDelegate,
+              (content::WebContents*),
+              (override));
+};
 
 }  // namespace
 
@@ -1926,26 +1947,15 @@ TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyNotAcceptedBubble) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
-  testing::StrictMock<affiliations::MockAffiliationService>
-      mock_affiliation_service;
-  testing::StrictMock<MockOptimizationGuideKeyedService>
-      mock_optimization_service;
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile(),
-      base::BindLambdaForTesting([&mock_affiliation_service,
-                                  &mock_optimization_service](
-                                     content::BrowserContext* context)
+      base::BindLambdaForTesting([](content::BrowserContext* context)
                                      -> std::unique_ptr<KeyedService> {
-        return std::make_unique<ChromePasswordChangeService>(
-            &mock_affiliation_service, &mock_optimization_service,
-            std::make_unique<password_manager::MockPasswordFeatureManager>());
+        return std::make_unique<MockPasswordChangeService>();
       }));
 
-  const GURL kUrl = GURL("https://example.com/");
-  EXPECT_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))
-      .WillOnce(testing::Return(GURL("https://example.com/password/")));
-  auto* password_change_service =
-      PasswordChangeServiceFactory::GetForProfile(profile());
+  auto* password_change_service = static_cast<MockPasswordChangeService*>(
+      PasswordChangeServiceFactory::GetForProfile(profile()));
 
   // Assuming, the password form was just submitted and this is a new password.
   std::vector<PasswordForm> best_matches;
@@ -1955,18 +1965,19 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
   ASSERT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
 
-  // Password change flow is started.
-  password_change_service->OfferPasswordChangeUi(
-      kUrl, u"new_username", u"new_password", web_contents());
+  // Emulate password change flow has started.
+  PasswordChangeDelegateMock mock_delegate;
+  EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
+      .WillOnce(Return(&mock_delegate));
+
   ASSERT_EQ(password_manager::ui::PASSWORD_CHANGE_STATE,
             controller()->GetState());
 
-  // Password change flow is finished successfully. The state should change to
+  // Password change flow has finished successfully. The state should change to
   // `MANAGE_STATE`.
   controller()->OnPasswordChangeFinishedSuccessfully();
-  static_cast<PasswordChangeDelegate::Observer*>(password_change_service)
-      ->OnPasswordChangeStopped(
-          password_change_service->GetPasswordChangeDelegate(web_contents()));
+  EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
+      .WillOnce(Return(nullptr));
   ASSERT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
 }
 

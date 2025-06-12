@@ -109,7 +109,7 @@ class ChangePasswordFormFillingSubmissionHelper {
   void OnSubmissionDetectedOrTimeout();
 
   base::OneShotTimer timeout_timer_;
-  base::WeakPtr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   base::OnceCallback<void(bool)> callback_;
   raw_ptr<ModelQualityLogsUploader> logs_uploader_;
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;

@@ -30,8 +30,7 @@ PasswordFormCache& GetFormCache(content::WebContents* web_contents) {
 ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     content::WebContents* web_contents,
     PasswordFormFoundCallback callback)
-    : web_contents_(web_contents->GetWeakPtr()),
-      callback_(std::move(callback)) {
+    : web_contents_(web_contents), callback_(std::move(callback)) {
   GetFormCache(web_contents).SetObserver(weak_ptr_factory_.GetWeakPtr());
   if (web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     DocumentOnLoadCompletedInPrimaryMainFrame();
@@ -41,9 +40,8 @@ ChangePasswordFormWaiter::ChangePasswordFormWaiter(
 }
 
 ChangePasswordFormWaiter::~ChangePasswordFormWaiter() {
-  if (web_contents_) {
-    GetFormCache(web_contents_.get()).ResetObserver();
-  }
+  CHECK(web_contents_);
+  GetFormCache(web_contents_).ResetObserver();
 }
 
 void ChangePasswordFormWaiter::OnPasswordFormParsed(

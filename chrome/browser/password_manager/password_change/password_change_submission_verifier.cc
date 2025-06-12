@@ -118,7 +118,7 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
 PasswordChangeSubmissionVerifier::PasswordChangeSubmissionVerifier(
     content::WebContents* web_contents,
     ModelQualityLogsUploader* logs_uploader)
-    : web_contents_(web_contents->GetWeakPtr()),
+    : web_contents_(web_contents),
       capture_annotated_page_content_(
           base::BindOnce(&optimization_guide::GetAIPageContent,
                          web_contents,

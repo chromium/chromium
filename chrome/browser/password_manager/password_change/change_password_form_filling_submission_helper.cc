@@ -36,7 +36,7 @@ ChangePasswordFormFillingSubmissionHelper::
         content::WebContents* web_contents,
         ModelQualityLogsUploader* logs_uploader,
         base::OnceCallback<void(bool)> callback)
-    : web_contents_(web_contents->GetWeakPtr()),
+    : web_contents_(web_contents),
       callback_(std::move(callback)),
       logs_uploader_(logs_uploader) {
   capture_annotated_page_content_ =
@@ -52,7 +52,7 @@ ChangePasswordFormFillingSubmissionHelper::
         base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
             capture_annotated_page_content,
         base::OnceCallback<void(bool)> result_callback)
-    : web_contents_(web_contents->GetWeakPtr()),
+    : web_contents_(web_contents),
       callback_(std::move(result_callback)),
       logs_uploader_(logs_uploader),
       capture_annotated_page_content_(
@@ -98,10 +98,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnPasswordFormSubmission(
   if (!submission_verifier_) {
     return;
   }
-  if (!web_contents_) {
-    return;
-  }
-  if (web_contents != web_contents_.get()) {
+  if (web_contents != web_contents_) {
     return;
   }
   if (std::exchange(submission_detected_, true)) {
@@ -194,7 +191,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
 
 void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
     std::optional<optimization_guide::AIPageContentResult> content) {
-  if (!content || !web_contents_) {
+  if (!content) {
     return;
   }
 
@@ -223,7 +220,8 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data) {
-  if (!web_contents_ || !execution_result.response.has_value()) {
+  CHECK(web_contents_);
+  if (!execution_result.response.has_value()) {
     return;
   }
   std::optional<optimization_guide::proto::PasswordChangeResponse> response =
@@ -239,7 +237,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
 
 void ChangePasswordFormFillingSubmissionHelper::OnFormSubmitted() {
   submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents_.get(), logs_uploader_);
+      web_contents_, logs_uploader_);
 }
 
 void ChangePasswordFormFillingSubmissionHelper::

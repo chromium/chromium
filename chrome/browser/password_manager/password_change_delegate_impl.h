@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "url/gurl.h"
@@ -33,8 +34,7 @@ class Profile;
 // This class controls password change process including acceptance of privacy
 // notice, opening of a new tab, navigation to the change password url, password
 // generation and form submission.
-class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
-                                   public content::WebContentsObserver {
+class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
  public:
   static constexpr char kFinalPasswordChangeStatusHistogram[] =
       "PasswordManager.FinalPasswordChangeStatus";
@@ -42,7 +42,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   PasswordChangeDelegateImpl(GURL change_password_url,
                              std::u16string username,
                              std::u16string password,
-                             content::WebContents* originator);
+                             tabs::TabInterface* tab_interface);
   ~PasswordChangeDelegateImpl() override;
 
   PasswordChangeDelegateImpl(const PasswordChangeDelegateImpl&) = delete;
@@ -81,8 +81,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   const std::u16string& GetUsername() const override;
   const std::u16string& GetGeneratedPassword() const override;
 
-  // content::WebContentsObserver Impl
-  void WebContentsDestroyed() override;
+  void OnTabWillDetach(tabs::TabInterface* tab_interface,
+                       tabs::TabInterface::DetachReason reason);
 
   // Opens the tab for password change and start looking for change password
   // form.
@@ -104,10 +104,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   std::u16string generated_password_;
 
-  raw_ptr<Profile> profile_;
-
-  base::WeakPtr<content::WebContents> originator_;
+  raw_ptr<content::WebContents> originator_;
   std::unique_ptr<content::WebContents> executor_;
+
+  const raw_ptr<Profile> profile_;
 
   // Helper class which uploads model quality logs.
   std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
@@ -127,6 +127,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   // The controller for password change views.
   std::unique_ptr<PasswordChangeUIController> ui_controller_;
+
+  base::CallbackListSubscription tab_will_detach_subscription_;
 
   base::WeakPtrFactory<PasswordChangeDelegateImpl> weak_ptr_factory_{this};
 };

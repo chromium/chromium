@@ -67,7 +67,7 @@ class ChangePasswordFormFinder {
   void OnSubsequentFormWaitingResult(
       password_manager::PasswordFormManager* form_manager);
 
-  base::WeakPtr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   ChangePasswordFormWaiter::PasswordFormFoundCallback callback_;
   base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
       capture_annotated_page_content_;
