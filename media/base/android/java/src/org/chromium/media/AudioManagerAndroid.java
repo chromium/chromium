@@ -323,13 +323,6 @@ class AudioManagerAndroid {
                 case AudioDeviceInfo.TYPE_TELEPHONY:
                     // Unusable device types.
                     continue;
-                case AudioDeviceInfo.TYPE_BLUETOOTH_A2DP:
-                case AudioDeviceInfo.TYPE_BLUETOOTH_SCO:
-                    // TODO(crbug.com/405955144): Bluetooth Classic output streams do not work
-                    // correctly, as they do not react to SCO state changes.
-                    if (!inputs) {
-                        continue;
-                    }
             }
 
             int id = deviceInfo.getId();

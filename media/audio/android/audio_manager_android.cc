@@ -19,7 +19,9 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "build/android_buildflags.h"
+#include "media/audio/android/aaudio_bluetooth_output.h"
 #include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/aaudio_output.h"
 #include "media/audio/android/audio_device.h"
@@ -158,6 +160,7 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
   }
 
   void MaybeSetBluetoothScoState(bool state) override {
+    DVLOG(1) << __func__ << "(" << base::ToString(state) << ")";
     return Java_AudioManagerAndroid_maybeSetBluetoothScoState(
         AttachCurrentThread(), j_audio_manager_, state);
   }
@@ -652,7 +655,12 @@ AudioInputStream* AudioManagerAndroid::MakeAudioInputStream(
 
 void AudioManagerAndroid::ReleaseOutputStream(AudioOutputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
   output_streams_.erase(static_cast<MuteableAudioOutputStream*>(stream));
+  if (__builtin_available(android AAUDIO_MIN_API, *)) {
+    bluetooth_output_streams_.erase(stream);
+  }
+
   AudioManagerBase::ReleaseOutputStream(stream);
 }
 
@@ -676,8 +684,11 @@ AudioOutputStream* AudioManagerAndroid::MakeLinearOutputStream(
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioOutput()) {
-      return new AAudioOutputStream(this, params, AudioDevice::Default(),
-                                    AAUDIO_USAGE_MEDIA);
+      return new AAudioOutputStream(
+          this, params, AudioDevice::Default(), AAUDIO_USAGE_MEDIA,
+          base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                              base::Unretained(this),
+                              /*trace_start=*/false));
     }
   }
 #if BUILDFLAG(USE_OPENSLES)
@@ -710,17 +721,26 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
                                        ? AAUDIO_USAGE_VOICE_COMMUNICATION
                                        : AAUDIO_USAGE_MEDIA;
 
+      auto peak_detected_cb = base::BindRepeating(
+          &AudioManager::TraceAmplitudePeak, base::Unretained(this),
+          /*trace_start=*/false);
       if (device->GetAssociatedScoDevice().has_value()) {
-        // TODO(crbug.com/405955144): Implement Bluetooth Classic output
-        // streams.
+        // Use a specialized stream implementation to handle "combined" A2DP/SCO
+        // devices.
 
-        // For now, fall back to the default device if a Bluetooth Classic
-        // stream is requested.
-        device = AudioDevice::Default();
+        // TODO(crbug.com/405955144): Set `use_sco_device` based on the SCO
+        // state as reported by the system in order to handle SCO management by
+        // other apps.
+        auto* stream = new AAudioBluetoothOutputStream(
+            *this, params, std::move(device).value(),
+            /*use_sco_device=*/!input_streams_requiring_sco_.empty(), usage,
+            peak_detected_cb);
+        bluetooth_output_streams_.insert(stream);
+        return stream;
       }
 
       return new AAudioOutputStream(this, params, std::move(device).value(),
-                                    usage);
+                                    usage, peak_detected_cb);
     }
   }
 
@@ -828,6 +848,15 @@ void AudioManagerAndroid::OnStartAAudioInputStream(AAudioInputStream* stream) {
 
   // SCO can safely be re-enabled even if it is already on.
   GetJniDelegate().MaybeSetBluetoothScoState(true);
+
+  // TODO(crbug.com/405955144): Call this in response to an appropriate system
+  // broadcast instead, in order to correctly react to SCO state changes caused
+  // by other apps.
+  DVLOG(1) << "Calling SetUseSco(true) for " << bluetooth_output_streams_.size()
+           << " Bluetooth streams";
+  for (auto bluetooth_output_stream : bluetooth_output_streams_) {
+    bluetooth_output_stream->SetUseSco(true);
+  }
 }
 
 void AudioManagerAndroid::OnStopAAudioInputStream(AAudioInputStream* stream) {
@@ -844,6 +873,15 @@ void AudioManagerAndroid::OnStopAAudioInputStream(AAudioInputStream* stream) {
   }
 
   GetJniDelegate().MaybeSetBluetoothScoState(false);
+
+  // TODO(crbug.com/405955144): Call this in response to an appropriate system
+  // broadcast instead, in order to correctly react to SCO state changes caused
+  // by other apps.
+  DVLOG(1) << "Calling SetUseSco(false) for "
+           << bluetooth_output_streams_.size() << " Bluetooth streams";
+  for (auto bluetooth_output_stream : bluetooth_output_streams_) {
+    bluetooth_output_stream->SetUseSco(false);
+  }
 }
 
 void AudioManagerAndroid::SetMute(JNIEnv* env,

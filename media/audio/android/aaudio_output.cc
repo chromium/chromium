@@ -5,6 +5,7 @@
 #include "media/audio/android/aaudio_output.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
@@ -17,21 +18,20 @@
 
 namespace media {
 
-AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
-                                       const AudioParameters& params,
-                                       android::AudioDevice device,
-                                       aaudio_usage_t usage)
+AAudioOutputStream::AAudioOutputStream(
+    AudioManagerAndroid* manager,
+    const AudioParameters& params,
+    android::AudioDevice device,
+    aaudio_usage_t usage,
+    AmplitudePeakDetector::PeakDetectedCB peak_detected_cb)
     : audio_manager_(manager),
       params_(params),
-      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
-                                         base::Unretained(audio_manager_),
-                                         /*trace_start=*/false)),
+      peak_detector_(std::move(peak_detected_cb)),
       stream_wrapper_(this,
                       AAudioStreamWrapper::StreamType::kOutput,
                       params,
                       std::move(device),
                       usage) {
-  CHECK(manager);
   CHECK(params_.IsValid());
 }
 
@@ -60,8 +60,10 @@ void AAudioOutputStream::Close() {
   Stop();
   stream_wrapper_.Close();
 
-  // Note: This must be last, it will delete |this|.
-  audio_manager_->ReleaseOutputStream(this);
+  if (audio_manager_) {
+    // Note: This must be last, it will delete |this|.
+    audio_manager_->ReleaseOutputStream(this);
+  }
 }
 
 void AAudioOutputStream::Start(AudioSourceCallback* callback) {
@@ -185,7 +187,8 @@ void AAudioOutputStream::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   double volume_override = 0;
-  if (audio_manager_->HasOutputVolumeOverride(&volume_override)) {
+  if (audio_manager_ &&
+      audio_manager_->HasOutputVolumeOverride(&volume_override)) {
     volume = volume_override;
   }
 

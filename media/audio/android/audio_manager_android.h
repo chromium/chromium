@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "media/audio/android/aaudio_bluetooth_output.h"
 #include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/audio_device.h"
 #include "media/audio/android/audio_device_id.h"
@@ -148,6 +149,7 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
   // Sets a volume that applies to all this manager's output audio streams.
   // This overrides other SetVolume calls (e.g. through AudioHostMsg_SetVolume).
+  // TODO(https://crbug.com/422733084): this functionality is likely unused.
   void SetOutputVolumeOverride(double volume);
   bool HasOutputVolumeOverride(double* out_volume) const;
 
@@ -183,6 +185,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       base::flat_map<android::AudioDeviceId, android::AudioDevice>;
   using OutputStreams =
       base::flat_set<raw_ptr<MuteableAudioOutputStream, CtnExperimental>>;
+  REQUIRES_ANDROID_API(AAUDIO_MIN_API)
+  typedef base::flat_set<raw_ptr<AAudioBluetoothOutputStream, CtnExperimental>>
+      BluetoothOutputStreams;  // `REQUIRES_ANDROID_API` appears to be
+                               // incompatible with using-declarations.
   using InputStreams =
       base::flat_set<raw_ptr<AudioInputStream, CtnExperimental>>;
 
@@ -230,6 +236,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   DeviceCache output_device_cache_;
 
   OutputStreams output_streams_;
+  REQUIRES_ANDROID_API(AAUDIO_MIN_API)
+  BluetoothOutputStreams bluetooth_output_streams_;
 
   InputStreams input_streams_requiring_sco_;
 
