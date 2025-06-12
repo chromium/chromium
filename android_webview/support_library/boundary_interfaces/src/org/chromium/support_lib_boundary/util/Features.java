@@ -363,4 +363,10 @@ public class Features {
 
     // Profile.warmUpRendererProcess
     public static final String WARM_UP_RENDERER_PROCESS = "WARM_UP_RENDERER_PROCESS";
+
+    // Profile.setExtraHeaderForOrigins
+    // Profile.hasExtraHeaderForOrigins
+    // Profile.clearExtraHeaderForOrigins
+    // Profile.clearAllExtraHeadersForOrigins
+    public static final String EXTRA_HEADER_FOR_ORIGINS = "EXTRA_HEADER_FOR_ORIGINS";
 }

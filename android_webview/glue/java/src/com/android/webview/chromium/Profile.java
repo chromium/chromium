@@ -19,6 +19,7 @@ import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
@@ -176,5 +177,26 @@ public class Profile {
                 TraceEvent.scoped("WebView.Profile.ApiCall.WARM_UP_RENDERER_PROCESS")) {
             mBrowserContext.warmUpSpareRenderer();
         }
+    }
+
+    @UiThread
+    public void setOriginMatchedHeader(
+            String headerName, String headerValue, Set<String> originRules) {
+        mBrowserContext.setOriginMatchedHeader(headerName, headerValue, originRules);
+    }
+
+    @UiThread
+    public boolean hasOriginMatchedHeader(String headerName) {
+        return mBrowserContext.hasOriginMatchedHeader(headerName);
+    }
+
+    @UiThread
+    public void clearOriginMatchedHeader(String headerName) {
+        mBrowserContext.clearOriginMatchedHeader(headerName);
+    }
+
+    @UiThread
+    public void clearAllOriginMatchedHeaders() {
+        mBrowserContext.clearAllOriginMatchedHeaders();
     }
 }

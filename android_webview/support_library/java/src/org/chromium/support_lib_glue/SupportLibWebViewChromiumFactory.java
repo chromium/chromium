@@ -115,6 +115,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEBVIEW_BUILDER + Features.DEV_SUFFIX,
                 Features.COOKIE_INTERCEPT,
                 Features.WARM_UP_RENDERER_PROCESS,
+                Features.EXTRA_HEADER_FOR_ORIGINS + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -275,6 +276,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT,
         ApiCall.SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT,
         ApiCall.PROFILE_WARM_UP_RENDERER_PROCESS,
+        ApiCall.SET_ORIGIN_MATCHED_HEADER,
+        ApiCall.HAS_ORIGIN_MATCHED_HEADER,
+        ApiCall.CLEAR_ORIGIN_MATCHED_HEADER,
+        ApiCall.CLEAR_ALL_ORIGIN_MATCHED_HEADERS,
 
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
@@ -435,9 +440,13 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT = 148;
         int SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT = 149;
         int PROFILE_WARM_UP_RENDERER_PROCESS = 150;
+        int SET_ORIGIN_MATCHED_HEADER = 151;
+        int HAS_ORIGIN_MATCHED_HEADER = 152;
+        int CLEAR_ORIGIN_MATCHED_HEADER = 153;
+        int CLEAR_ALL_ORIGIN_MATCHED_HEADERS = 154;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 151;
+        int COUNT = 155;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

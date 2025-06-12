@@ -24,6 +24,7 @@ import com.android.webview.chromium.SpeculativeLoadingConfig;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.PrefetchOperationCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.ProfileBoundaryInterface;
 import org.chromium.support_lib_boundary.SpeculativeLoadingConfigBoundaryInterface;
@@ -32,6 +33,7 @@ import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
@@ -225,5 +227,44 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
         assert ThreadUtils.runningOnUiThread();
         recordApiCall(ApiCall.PROFILE_WARM_UP_RENDERER_PROCESS);
         mProfileImpl.warmUpRendererProcess();
+    }
+
+    @Override
+    public void setOriginMatchedHeader(
+            @NonNull String headerName,
+            @NonNull String headerValue,
+            @NonNull Set<String> originRules) {
+        recordApiCall(ApiCall.SET_ORIGIN_MATCHED_HEADER);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_ORIGIN_MATCHED_HEADER")) {
+            mProfileImpl.setOriginMatchedHeader(headerName, headerValue, originRules);
+        }
+    }
+
+    @Override
+    public boolean hasOriginMatchedHeader(@NonNull String headerName) {
+        recordApiCall(ApiCall.HAS_ORIGIN_MATCHED_HEADER);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.HAS_ORIGIN_MATCHED_HEADER")) {
+            return mProfileImpl.hasOriginMatchedHeader(headerName);
+        }
+    }
+
+    @Override
+    public void clearOriginMatchedHeader(@NonNull String headerName) {
+        recordApiCall(ApiCall.CLEAR_ORIGIN_MATCHED_HEADER);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.CLEAR_ORIGIN_MATCHED_HEADER")) {
+            mProfileImpl.clearOriginMatchedHeader(headerName);
+        }
+    }
+
+    @Override
+    public void clearAllOriginMatchedHeaders() {
+        recordApiCall(ApiCall.CLEAR_ALL_ORIGIN_MATCHED_HEADERS);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.CLEAR_ALL_ORIGIN_MATCHED_HEADERS")) {
+            mProfileImpl.clearAllOriginMatchedHeaders();
+        }
     }
 }

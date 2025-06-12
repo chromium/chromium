@@ -659,6 +659,10 @@ chromium-metrics-reviews@google.com.
   <int value="149"
       label="ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept"/>
   <int value="150" label="Profile.warmUpRendererProcess"/>
+  <int value="151" label="Profile.setOriginMatchedHeader"/>
+  <int value="152" label="Profile.hasOriginMatchedHeader"/>
+  <int value="153" label="Profile.clearOriginMatchedHeader"/>
+  <int value="154" label="Profile.clearAllOriginMatchedHeaders"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

@@ -14,6 +14,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.InvocationHandler;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 /** Boundary interface for Profile. */
@@ -50,4 +51,12 @@ public interface ProfileBoundaryInterface {
     void setSpeculativeLoadingConfig(/* SpeculativeLoadingConfig */ InvocationHandler config);
 
     void warmUpRendererProcess();
+
+    void setOriginMatchedHeader(String headerName, String headerValue, Set<String> originRules);
+
+    boolean hasOriginMatchedHeader(String headerName);
+
+    void clearOriginMatchedHeader(String headerName);
+
+    void clearAllOriginMatchedHeaders();
 }
