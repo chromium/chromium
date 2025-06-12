@@ -102,7 +102,7 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
 
     if (should_resample_scroll_events_) {
       ResampleEvent(frame_time, frame_interval,
-                    event_with_callback->event_pointer());
+                    event_with_callback->event_pointer(), trace_id);
       // Sync the predicted `delta_y` to `metrics` for AverageLag metric.
       auto* metrics = event_with_callback->metrics()
                           ? event_with_callback->metrics()->AsScrollUpdate()
@@ -135,11 +135,11 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
   }
   WebGestureEvent gesture_event(WebInputEvent::Type::kGestureScrollUpdate,
                                 modifiers, frame_time, gesture_device);
-
-  ResampleEvent(frame_time, frame_interval, &gesture_event);
-
   ui::LatencyInfo latency_info;
   latency_info.set_trace_id(base::trace_event::GetNextGlobalTraceId());
+  ResampleEvent(frame_time, frame_interval, &gesture_event,
+                latency_info.trace_id());
+
   // TODO(b/329346768): We should also add a new `BEGIN` stage, instead of
   // re-using the one that is explicitly about the `content::RenderWidgetHost`.
   latency_info.AddLatencyNumberWithTraceName(
@@ -224,15 +224,22 @@ void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
 
 void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
                                     base::TimeDelta frame_interval,
-                                    WebInputEvent* event) {
+                                    WebInputEvent* event,
+                                    int64_t trace_id) {
   DCHECK(event->GetType() == WebInputEvent::Type::kGestureScrollUpdate);
   WebGestureEvent* gesture_event = static_cast<WebGestureEvent*>(event);
 
-  TRACE_EVENT_BEGIN1("input", "ScrollPredictor::ResampleScrollEvents",
-                     "OriginalDelta",
-                     gfx::PointF(gesture_event->data.scroll_update.delta_x,
-                                 gesture_event->data.scroll_update.delta_y)
-                         .ToString());
+  TRACE_EVENT_BEGIN(
+      "input", "ScrollPredictor::ResampleScrollEvents",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* scroll_data = event->set_scroll_deltas();
+        scroll_data->set_trace_id(trace_id);
+        scroll_data->set_original_delta_x(
+            gesture_event->data.scroll_update.delta_x);
+        scroll_data->set_original_delta_y(
+            gesture_event->data.scroll_update.delta_y);
+      });
   gfx::PointF predicted_accumulated_delta =
       last_predicted_accumulated_delta_ +
       gfx::Vector2dF(gesture_event->data.scroll_update.delta_x,
@@ -277,12 +284,14 @@ void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
       (new_delta.y() * gesture_event->data.scroll_update.delta_y < 0)
           ? 0
           : new_delta.y();
-
-  TRACE_EVENT_END1("input", "ScrollPredictor::ResampleScrollEvents",
-                   "PredictedDelta",
-                   gfx::PointF(gesture_event->data.scroll_update.delta_x,
-                               gesture_event->data.scroll_update.delta_y)
-                       .ToString());
+  TRACE_EVENT_END("input", [&](perfetto::EventContext ctx) {
+    auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+    auto* scroll_data = event->set_scroll_deltas();
+    scroll_data->set_provided_to_compositor_delta_x(
+        gesture_event->data.scroll_update.delta_x);
+    scroll_data->set_provided_to_compositor_delta_y(
+        gesture_event->data.scroll_update.delta_y);
+  });
   last_predicted_accumulated_delta_.Offset(
       gesture_event->data.scroll_update.delta_x,
       gesture_event->data.scroll_update.delta_y);

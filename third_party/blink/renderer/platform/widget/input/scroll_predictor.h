@@ -66,7 +66,8 @@ class PLATFORM_EXPORT ScrollPredictor {
   // Apply resampled deltaX/deltaY to gesture events.
   void ResampleEvent(base::TimeTicks frame_time,
                      base::TimeDelta frame_interval,
-                     WebInputEvent* event);
+                     WebInputEvent* event,
+                     int64_t trace_id);
 
   // Reports metrics scores UMA histogram based on the metrics defined
   // in |PredictionMetricsHandler|
