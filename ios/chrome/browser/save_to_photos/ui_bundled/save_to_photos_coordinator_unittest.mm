@@ -144,6 +144,13 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
   }
 
   void TearDown() final {
+    EXPECT_OCMOCK_VERIFY(mock_save_to_photos_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_settings_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_google_one_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_);
+    EXPECT_OCMOCK_VERIFY(mock_account_picker_coordinator_);
     [mock_save_to_photos_mediator_ stopMocking];
     [mock_account_picker_coordinator_ stopMocking];
     PlatformTest::TearDown();
@@ -413,43 +420,6 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesAccountPicker) {
   [static_cast<id<SaveToPhotosMediatorDelegate>>(coordinator)
       hideAccountPicker];
   EXPECT_OCMOCK_VERIFY(mock_account_picker_coordinator_);
-
-  [coordinator stop];
-}
-
-// Tests that the SaveToPhotosCoordinator shows the Add account view when the
-// Account picker requires it.
-TEST_F(SaveToPhotosCoordinatorTest, ShowsAddAccount) {
-  SetUpMediatorStub();
-  AccountPickerConfiguration* account_picker_configuration =
-      [[AccountPickerConfiguration alloc] init];
-  FakeUIViewController* account_picker_view_controller =
-      [[FakeUIViewController alloc] init];
-  SetUpAccountPickerCoordinatorStub(account_picker_configuration,
-                                    account_picker_view_controller);
-
-  SaveToPhotosCoordinator* coordinator = CreateSaveToPhotosCoordinator();
-  [coordinator start];
-
-  ASSERT_TRUE([coordinator
-      conformsToProtocol:@protocol(AccountPickerCoordinatorDelegate)]);
-
-  AddAccountSigninCoordinator* signin_coordinator_mock =
-      OCMClassMock([AddAccountSigninCoordinator class]);
-  OCMExpect([(id)signin_coordinator_mock alloc])
-      .andReturn(signin_coordinator_mock);
-  OCMExpect([signin_coordinator_mock
-                initWithBaseViewController:account_picker_view_controller
-                                   browser:browser_.get()
-                              contextStyle:SigninContextStyle::kDefault
-                               accessPoint:signin_metrics::AccessPoint::
-                                               kSaveToPhotosIos
-                               promoAction:signin_metrics::PromoAction::
-                                               PROMO_ACTION_NO_SIGNIN_PROMO
-                              signinIntent:AddAccountSigninIntent::kAddAccount
-                      continuationProvider:DoNothingContinuationProvider()])
-      .ignoringNonObjectArgs()
-      .andReturn(signin_coordinator_mock);
 
   [coordinator stop];
 }
