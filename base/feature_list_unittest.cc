@@ -311,8 +311,9 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromFieldTrial) {
   EXPECT_FALSE(feature_list->IsFeatureOverridden(kFeatureOnByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverridden(kFeatureOffByDefaultName));
 
-  // Now, register a field trial to override |kFeatureOnByDefaultName| state
-  // and check that the function still returns false for that feature.
+  // Now, register field trials to override `kFeatureOnByDefaultName` state and
+  // keeping `kFeatureOffByDefault` as the default. Check that both are
+  // considered overridden.
   feature_list->RegisterFieldTrialOverride(
       kFeatureOffByDefaultName, FeatureList::OVERRIDE_USE_DEFAULT,
       FieldTrialList::CreateFieldTrial("Trial1", "A"));

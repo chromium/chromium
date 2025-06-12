@@ -366,7 +366,8 @@ class BASE_EXPORT FeatureList {
 
   // Returns true if the state of |feature_name| has been overridden (regardless
   // of whether the overridden value is the same as the default value) for any
-  // reason (e.g. command line or field trial).
+  // reason (e.g. command line or field trial). Note: This will return true even
+  // when a feature is overridden with OVERRIDE_USE_DEFAULT (default group).
   bool IsFeatureOverridden(std::string_view feature_name) const;
 
   // Returns true if the state of |feature_name| has been overridden via
