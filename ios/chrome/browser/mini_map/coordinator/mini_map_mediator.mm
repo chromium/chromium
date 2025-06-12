@@ -119,7 +119,7 @@ enum class MiniMapOutcome {
                                 MiniMapOutcome::kOpenedQuery);
 }
 
-- (void)userDisabledSettingFromMiniMap {
+- (void)userDisabledOneTapSettingFromMiniMap {
   base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
                                 MiniMapOutcome::kUserDisabled);
   if (!self.prefService) {
@@ -134,6 +134,14 @@ enum class MiniMapOutcome {
       manager->RemoveDecorationsWithType(kDecorationAddress);
     }
   }
+}
+
+- (void)userDisabledURLSettingFromMiniMap {
+  // TODO(crbug.com/420402648): Add metrics.
+  if (!self.prefService) {
+    return;
+  }
+  self.prefService->SetBoolean(prefs::kIosMiniMapShowNativeMap, false);
 }
 
 - (void)userOpenedSettingsFromDisableConfirmation {
