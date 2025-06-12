@@ -7,12 +7,17 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -34,7 +39,13 @@ constexpr base::TimeDelta kToastDisplayTime = base::Seconds(4);
 // specifies whether an additional privacy paragraph should be displayed.
 std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
     base::OnceClosure accept_callback,
-    bool with_privacy_notice) {
+    base::RepeatingClosure navigate_to_settings_callback,
+    bool with_privacy_notice,
+    std::u16string email) {
+  ui::DialogModelLabel::TextReplacement link = ui::DialogModelLabel::CreateLink(
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
+      std::move(navigate_to_settings_callback));
+
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetBannerImage(
       ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_WARNING),
@@ -43,8 +54,9 @@ std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
       ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon()));
   dialog_builder.SetTitle(l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_TITLE));
-  dialog_builder.AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_DETAILS)));
+  dialog_builder.AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_DETAILS,
+      {link, ui::DialogModelLabel::CreatePlainText(std::move(email))}));
   dialog_builder.AddCancelButton(base::DoNothing(),
                                  ui::DialogModel::Button::Params().SetLabel(
                                      l10n_util::GetStringUTF16(IDS_NO_THANKS)));
@@ -154,18 +166,29 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
   auto cancel_password_change_callback =
       base::BindOnce(&PasswordChangeUIController::CancelPasswordChange,
                      weak_ptr_factory_.GetWeakPtr());
+  auto navigate_to_settings_callback = base::BindRepeating(
+      &PasswordChangeUIController::NavigateToPasswordChangeSettings,
+      base::Unretained(this));
+  Profile* profile = Profile::FromBrowserContext(
+      tab_interface_->GetContents()->GetBrowserContext());
+  std::u16string email = base::UTF8ToUTF16(GetDisplayableAccountName(
+      SyncServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile)));
+
   switch (state) {
     /* Dialogs */
     case PasswordChangeDelegate::State::kWaitingForAgreement:
       return CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeDelegate::OnPrivacyNoticeAccepted,
                          password_change_delegate_->AsWeakPtr()),
-          /*with_privacy_notice=*/true);
+          std::move(navigate_to_settings_callback),
+          /*with_privacy_notice=*/true, std::move(email));
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
       return CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeUIController::StartPasswordChangeFlow,
                          weak_ptr_factory_.GetWeakPtr()),
-          /*with_privacy_notice=*/false);
+          std::move(navigate_to_settings_callback),
+          /*with_privacy_notice=*/false, std::move(email));
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
       return CreatePasswordChangeFailedDialog(
           std::move(open_password_change_tab_callback),
@@ -286,6 +309,14 @@ void PasswordChangeUIController::CancelPasswordChange() {
       base::BindOnce(&PasswordChangeDelegate::Stop,
                      password_change_delegate_->AsWeakPtr()),
       kToastDisplayTime);
+}
+
+void PasswordChangeUIController::NavigateToPasswordChangeSettings() {
+  ShowSingletonTabOverwritingNTP(
+      Profile::FromBrowserContext(
+          tab_interface_->GetContents()->GetBrowserContext()),
+      GURL(chrome::kChromeUiPasswordChangeUrl),
+      NavigateParams::IGNORE_AND_NAVIGATE);
 }
 
 void PasswordChangeUIController::CloseDialogWidget(

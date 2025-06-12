@@ -16,7 +16,7 @@ class TabInterface;
 
 namespace ui {
 class DialogModel;
-}
+}  // namespace ui
 
 // Responsible for creating and displaying appropriate views based on the
 // current state of the password change flow.
@@ -47,22 +47,24 @@ class PasswordChangeUIController {
   void StartPasswordChangeFlow();
   void ShowPasswordDetails();
   void CancelPasswordChange();
+  void NavigateToPasswordChangeSettings();
 
-  // Closes the dialog and logs the `reason`.
+  // Closes the dialog or widget and logs the `reason`.
   // TODO(crbug.com/407504591): Actually log the reason.
   void CloseDialogWidget(views::Widget::ClosedReason reason);
-
   void CloseToastWidget(views::Widget::ClosedReason reason);
 
   // Controls password change process. Owns this class.
   const raw_ptr<PasswordChangeDelegate> password_change_delegate_;
+
   // A tab where a toast and a modal dialog is displayed.
   const raw_ptr<tabs::TabInterface> tab_interface_;
 
+  // View displaying the progress of password change.
   raw_ptr<PasswordChangeToast> toast_view_;
-  std::unique_ptr<views::Widget> toast_widget_;
 
-  base::WeakPtr<content::WebContents> web_contents_;
+  // Widget containing the currently open toast, if any.
+  std::unique_ptr<views::Widget> toast_widget_;
 
   // Widget containing the currently open dialog, if any.
   std::unique_ptr<views::Widget> dialog_widget_;
