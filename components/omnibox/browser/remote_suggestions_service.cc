@@ -482,9 +482,10 @@ void RemoteSuggestionsService::
         const std::u16string& query,
         const GURL& suggest_url,
         metrics::OmniboxEventProto::PageClassification page_classification,
+        std::vector<int> callback_indexes,
+        std::vector<std::vector<int>> suggestion_types,
         IndexedStartCallback start_callback,
-        IndexedCompletionCallback completion_callback,
-        std::vector<std::vector<int>> suggestion_types) {
+        IndexedCompletionCallback completion_callback) {
   if (!enterprise_search_aggregator_suggestions_service_) {
     return;
   }
@@ -494,7 +495,7 @@ void RemoteSuggestionsService::
 
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
-          query, suggest_url,
+          query, suggest_url, callback_indexes, suggestion_types,
           base::BindRepeating(&RemoteSuggestionsService::OnRequestCreated,
                               weak_ptr_factory_.GetWeakPtr(), request_id),
           base::BindRepeating(
@@ -509,8 +510,7 @@ void RemoteSuggestionsService::
               /*request_type=*/
               RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
               metrics::OmniboxEventProto::INVALID_SPEC, base::TimeTicks::Now(),
-              std::move(completion_callback)),
-          suggestion_types);
+              std::move(completion_callback)));
 }
 
 void RemoteSuggestionsService::

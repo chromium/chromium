@@ -46,31 +46,6 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
     std::string source;
   };
 
-  // Holds the matches and loader for a single request.
-  struct SearchAggregatorRequest {
-    SearchAggregatorRequest();
-    ~SearchAggregatorRequest();
-
-    SearchAggregatorRequest(SearchAggregatorRequest&&);
-
-    SearchAggregatorRequest(const SearchAggregatorRequest&) = delete;
-
-    // Logs how long it has been since a request started at `start_time` sliced
-    // by whether the request was completed or interrupted.
-    void LogResponseTime(const std::string& histogram_suffix, bool interrupted);
-
-    SuggestionType type = SuggestionType::NONE;
-    base::TimeTicks start_time;
-    std::vector<AutocompleteMatch> matches;
-    std::unique_ptr<network::SimpleURLLoader> loader;
-    // Can't use `loader != nullptr` as a proxy for `done` because loader is
-    // null both before the request starts and after the request completes.
-    bool done = false;
-    // Only used for logging. Can't use `matches.size()` as it may contain a
-    // filtered down set of results from the response.
-    int result_count = 0;
-  };
-
   EnterpriseSearchAggregatorProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener);
 
@@ -81,6 +56,104 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
  private:
   friend class FakeEnterpriseSearchAggregatorProvider;
 
+  // Tracks state for `Request` declared below.
+  enum class RequestState {
+    kNotStarted,
+    kStarted,
+    kCompleted,
+  };
+
+  // When parsing response JSONs, we need to track not only the parsed matches
+  // but also how many results the response included. We can't simply use
+  // `matches.size()`, because some response results might be filtered out.
+  // `RequestParsed` is a helper to track those 2.
+  struct RequestParsed {
+    RequestParsed();
+    RequestParsed(std::vector<AutocompleteMatch> matches, size_t result_count);
+    RequestParsed(RequestParsed&&) noexcept;
+    RequestParsed(const RequestParsed&) = delete;
+    ~RequestParsed();
+    RequestParsed& operator=(RequestParsed&&) noexcept;
+    RequestParsed& operator=(const RequestParsed&) = delete;
+
+    // When `multiple_requests` is false, the single request will be parsed in 3
+    // calls to `ParseResultList()`. `Append()` simply merges the `matches` and
+    // sums the `result_count`s.
+    void Append(RequestParsed parsed);
+
+    std::vector<AutocompleteMatch> matches;
+    size_t result_count = 0;
+  };
+
+  // The provider makes multiple async requests in parallel. This helper handles
+  // the callbacks, logging, and caching for each request.
+  class Request {
+   public:
+    explicit Request(std::vector<SuggestionType> types);
+    ~Request();
+    Request(Request&&);
+    Request(const Request&) = delete;
+
+    // Whether this request should be made. E.g. query requests are not allowed
+    // unscoped.
+    bool Allowed(bool in_keyword_mode) const;
+    // Clears most state. Conditionally doesn't clear `matches` in order to
+    // support caching. `Reset(false)` should be called before `OnStart()` is
+    // called. `Reset(true)` will immediately clear cached matches; it should
+    // only be called if the request will not be started and completed; e.g.
+    // unscoped query request. Will log the previous request if it's being
+    // interrupted; i.e. `OnCompleted()` hadn't been called.
+    void Reset(bool clear_cached_matches);
+    // Called when the real request starts; after the auth request completes.
+    // Should be called before `OnCompleted()` is called.
+    void OnStart(std::unique_ptr<network::SimpleURLLoader> loader);
+    // Called when the real request completes. Will replace cached matches and
+    // log.
+    void OnCompleted(RequestParsed parsed);
+
+    // Logs how long it has been since a request started at `start_time`. Sliced
+    // by request type and completion.
+    static void LogResponseTime(const std::string& type_histogram_suffix,
+                                bool interrupted,
+                                base::TimeTicks start_time);
+    // Logs how many results a response contained. Sliced by request type. Not
+    // logged for interrupted requests.
+    static void LogResultCount(const std::string& type_histogram_suffix,
+                               int count);
+
+    const std::vector<SuggestionType> Types() const;
+    // Map `types_` to the integers the backend understands. Some types like
+    // `CONTENT` map to multiple backend types. And `types_` itself is a vector
+    // Hence this returns a vector.
+    std::vector<int> BackendSuggestionTypes() const;
+    RequestState State() const;
+    base::TimeTicks StartTime() const;
+    const std::vector<AutocompleteMatch>& Matches() const;
+    int ResultCount() const;
+
+   private:
+    // Log all of this request's metrics on completion or interruption; i.e.
+    // response time and result count.
+    void Log(bool interrupted) const;
+    // Map `types_` to a histogram suffix for slicing.
+    std::string TypeHistogramSuffix() const;
+
+    // The type of suggestions to request.
+    // TODO(manukh): After launching multiple_requests, this can be a single
+    //   value instead of a vector.
+    const std::vector<SuggestionType> types_;
+    // State of request. `start_time_` and `loader_` can't differentiate between
+    // `kNotStarted` and `kCompleted`, so this explicit `state_` is necessary.
+    RequestState state_ = RequestState::kCompleted;
+    // Start time of ongoing request. Null before requests start and after they
+    // complete.
+    base::TimeTicks start_time_;
+    // Not null for ongoing requests. Null before requests start and after they
+    // complete.
+    std::unique_ptr<network::SimpleURLLoader> loader_;
+    RequestParsed parsed_;
+  };
+
   ~EnterpriseSearchAggregatorProvider() override;
 
   // Determines whether the profile/session/window meet the feature
@@ -88,7 +161,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   bool IsProviderAllowed(const AutocompleteInput& input);
 
   // Called by `debouncer_`, queued when `Start()` is called.
-  void Run(const AutocompleteInput& input);
+  void Run();
 
   // Callback for when the loader is available with a valid token. Takes
   // ownership of the loader.
@@ -97,32 +170,29 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
 
   // Called when the network request for suggestions has completed.
   // `request_index` corresponds to the type of request sent:
-  // - 0 for people suggesions
-  // - 1 for content suggestions
-  // - 2 for query suggestions.
   void RequestCompleted(int request_index,
                         const network::SimpleURLLoader* source,
                         int response_code,
                         std::unique_ptr<std::string> response_body);
 
-  // The function updates `matches_` with data parsed from `response_value`.
-  // The update is not performed if `response_value` is invalid.
-  virtual void UpdateResults(
-      int request_index,
-      const std::optional<base::Value::Dict>& response_value,
-      int response_code);
-
-  // Callback for handling parsed json from response.
+  // Callback for parsing the response JSON string into `base::Value` in an
+  // isolated process.
   void OnJsonParsedIsolated(int request_index,
                             base::expected<base::Value, std::string> result);
 
-  // Parses enterprise search aggregator response JSON and updates `matches_`.
-  void ParseEnterpriseSearchAggregatorSearchResults(
-      int request_index,
+  // Called after parsing the response JSON string into `base::Value`, either in
+  // the main or an isolated process. Will use the `Parse*()` methods below to
+  // further parse the `base::Value` into `RequestParsed` and update
+  // `requests[request_index]` with the `RequestParsed.
+  void HandleParsedJson(int request_index,
+                        const std::optional<base::Value::Dict>& response_value);
+
+  // Parses the response `base::Value` into `RequestParsed`.
+  RequestParsed ParseEnterpriseSearchAggregatorSearchResults(
+      const std::vector<SuggestionType>& suggestion_types,
       const base::Value::Dict& root_val);
 
-  // Helper method to parse query, people, and content suggestions and populate
-  // `matches_`.
+  // Helper method to parse query, people, and content suggestions.
   // - `input_words` is used for scoring matches.
   // - `suggestion_type` is used for selecting which JSON fields to look for,
   // scoring matches, and creating the match.
@@ -144,11 +214,10 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   //  - `match.image_url` = `icon_url` from EnterpriseSearchAggregatorSettings
   //  policy,
   //  - `match.relevance` = 1001.
-  void ParseResultList(int request_index,
-                       std::set<std::u16string> input_words,
-                       const base::Value::List* results,
-                       SuggestionType suggestion_type,
-                       bool is_navigation);
+  RequestParsed ParseResultList(std::set<std::u16string> input_words,
+                                const base::Value::List* results,
+                                SuggestionType suggestion_type,
+                                bool is_navigation);
 
   // Helper method to get `destination_url` based on `suggestion_type` for
   // `CreateMatch()`.
@@ -196,17 +265,14 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                                 const std::u16string& contents,
                                 const std::u16string& fill_into_edit);
 
-  // Helper function for setting the time when the request started.
-  void SetTimeRequestSent();
+  // Aggregates the `RequestParsed`s of `requests_` into `matches_` and notifies
+  // the provider listener. Called multiple times in each autocomplete pass;
+  // once immediately when `Run()` is called to display the cached matches; then
+  // again as each request completes.
+  void AggregateMatches();
 
-  // Helper function for logging request response times for any `request_index`.
-  // Only handles completed requests as interrupted requests are logged in the
-  // `SearchAggregatorRequest` deconstructor.
-  void LogResponseTime(std::optional<int> request_index);
-
-  // Helper function for logging the number of results received from the
-  // request.
-  void LogResultCounts(std::string histogram_suffix, size_t result_count);
+  // Called when all `requests_` complete or are interrupted.
+  void LogAllRequests(bool interrupted);
 
   // Owned by AutocompleteController.
   const raw_ptr<AutocompleteProviderClient> client_;
@@ -221,8 +287,10 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
 
   raw_ptr<TemplateURLService> template_url_service_;
 
-  // The most recent set of requests.
-  std::vector<SearchAggregatorRequest> requests_;
+  // See comment for `Request`. `requests_` are initialized in the provider
+  // constructor and reused throughout the provider's lifetime. This is
+  // necessary to cache results beyond a single autocomplete pass.
+  std::vector<Request> requests_;
 
   base::WeakPtrFactory<EnterpriseSearchAggregatorProvider> weak_ptr_factory_{
       this};

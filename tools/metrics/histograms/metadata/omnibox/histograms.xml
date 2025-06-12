@@ -2987,13 +2987,21 @@ Keep consistent with active providers. Doesn't need to include every provider in
     name="Omnibox.SuggestRequestsSent.ResponseTime2.RequestState{RemoteRequestType}{RemoteRequestCompleted}"
     units="ms" expires_after="2025-11-30">
   <owner>ananyaseelam@google.com</owner>
+  <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     How long it took in milliseconds to receive responses from the
-    EnterpriseSearchAggregatorProvider suggest backend, sliced by whether the
-    request was completed or interrupted. Recorded once per response received,
-    which is at most one time per Omnibox.SuggestRequestsSent is recorded, since
-    some requests are cancelled.
+    EnterpriseSearchAggregatorProvider suggest backend.
+
+    Sliced by whether the request was completed or interrupted. Sliced by
+    request type.
+
+    Recorded once per response received, which is at most one time per
+    Omnibox.SuggestRequestsSent is recorded, since some requests are cancelled.
+    Recorded for completed, completed with error, completed with empty response,
+    and interrupted requests. Not recorded for requests that were queued but not
+    started (i.e. provider debouncer or auth request did not complete before the
+    provider was interrupted).
   </summary>
   <token key="RemoteRequestType" variants="RemoteRequestType"/>
   <token key="RemoteRequestCompleted" variants="Completed"/>
@@ -3020,11 +3028,22 @@ Keep consistent with active providers. Doesn't need to include every provider in
     name="Omnibox.SuggestRequestsSent.ResultCount.EnterpriseSearchAggregatorSuggest{EnterpriseSuggestionType}"
     units="count" expires_after="2025-11-30">
   <owner>ananyaseelam@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     The number of results returned for each suggestion of type
-    {EnterpriseSuggestionType} and the total number of suggestions. This is
-    logged for successful requests where the result is parsable.
+    {EnterpriseSuggestionType} and the total number of suggestions. Can be more
+    than the matches shown to the user as not every result in the response will
+    be shown.
+
+    Sliced by request type.
+
+    Recorded once per response received, which is at most one time per
+    Omnibox.SuggestRequestsSent is recorded, since some requests are cancelled.
+    Recorded for completed, completed with error, and completed with empty
+    response requests. Not logged for interrupted requests. Not recorded for
+    requests that were queued but not started (i.e. provider debouncer or auth
+    request did not complete before the provider was interrupted).
   </summary>
   <token key="EnterpriseSuggestionType">
     <variant name="" summary="Aggregated across all suggestion types"/>

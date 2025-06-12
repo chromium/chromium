@@ -74,11 +74,13 @@ void EnterpriseSearchAggregatorSuggestionsService::
     CreateEnterpriseSearchAggregatorSuggestionsRequest(
         const std::u16string& query,
         const GURL& suggest_url,
+        std::vector<int> callback_indexes,
+        std::vector<std::vector<int>> suggestion_types,
         CreationCallback creation_callback,
         StartCallback start_callback,
-        CompletionCallback completion_callback,
-        std::vector<std::vector<int>> suggestion_types) {
+        CompletionCallback completion_callback) {
   DCHECK(suggest_url.is_valid());
+  CHECK_EQ(callback_indexes.size(), suggestion_types.size());
 
   auto requests = std::vector<std::unique_ptr<network::ResourceRequest>>{};
   for (size_t i = 0; i < suggestion_types.size(); ++i) {
@@ -148,8 +150,9 @@ void EnterpriseSearchAggregatorSuggestionsService::
       base::BindOnce(
           &EnterpriseSearchAggregatorSuggestionsService::AccessTokenAvailable,
           base::Unretained(this), std::move(requests), std::move(query),
-          std::move(suggestion_types), traffic_annotation,
-          std::move(start_callback), std::move(completion_callback)),
+          std::move(callback_indexes), std::move(suggestion_types),
+          traffic_annotation, std::move(start_callback),
+          std::move(completion_callback)),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
       signin::ConsentLevel::kSignin);
 }
@@ -162,6 +165,7 @@ void EnterpriseSearchAggregatorSuggestionsService::
 void EnterpriseSearchAggregatorSuggestionsService::AccessTokenAvailable(
     std::vector<std::unique_ptr<network::ResourceRequest>> requests,
     const std::u16string& query,
+    std::vector<int> callback_indexes,
     std::vector<std::vector<int>> suggestion_types,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     StartCallback start_callback,
@@ -189,9 +193,10 @@ void EnterpriseSearchAggregatorSuggestionsService::AccessTokenAvailable(
   }
 
   for (size_t i = 0; i < requests.size(); ++i) {
-    StartDownloadAndTransferLoader(
-        std::move(requests[i]), std::move(request_bodies[i]),
-        traffic_annotation, start_callback, completion_callback, i);
+    StartDownloadAndTransferLoader(std::move(requests[i]),
+                                   std::move(request_bodies[i]),
+                                   traffic_annotation, callback_indexes[i],
+                                   start_callback, completion_callback);
   }
 }
 
@@ -203,9 +208,9 @@ void EnterpriseSearchAggregatorSuggestionsService::
         std::unique_ptr<network::ResourceRequest> request,
         std::string request_body,
         net::NetworkTrafficAnnotationTag traffic_annotation,
+        int request_index,
         StartCallback start_callback,
-        CompletionCallback completion_callback,
-        int request_index) {
+        CompletionCallback completion_callback) {
   if (!url_loader_factory_) {
     return;
   }

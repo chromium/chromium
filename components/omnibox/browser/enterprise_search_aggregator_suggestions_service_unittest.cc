@@ -146,10 +146,10 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
 
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
-          query, test_endpoint, request_future.GetRepeatingCallback(),
+          query, test_endpoint, {0}, {{1, 2, 3, 5}},
+          request_future.GetRepeatingCallback(),
           loader_future.GetRepeatingCallback(),
-          complete_future.GetRepeatingCallback(),
-          std::vector<std::vector<int>>{std::vector<int>{1, 2, 3, 5}});
+          complete_future.GetRepeatingCallback());
 
   ASSERT_TRUE(request_future.Wait());
   ASSERT_TRUE(loader_future.Wait());
@@ -215,10 +215,10 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
 
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
-          query, test_endpoint, request_future.GetRepeatingCallback(),
+          query, test_endpoint, {0}, {{2, 3, 5}},
+          request_future.GetRepeatingCallback(),
           loader_future.GetRepeatingCallback(),
-          complete_future.GetRepeatingCallback(),
-          std::vector<std::vector<int>>{std::vector<int>{2, 3, 5}});
+          complete_future.GetRepeatingCallback());
   ASSERT_TRUE(request_future.Wait());
   ASSERT_TRUE(loader_future.Wait());
 

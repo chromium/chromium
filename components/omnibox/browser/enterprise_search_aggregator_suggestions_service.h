@@ -66,10 +66,11 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
   void CreateEnterpriseSearchAggregatorSuggestionsRequest(
       const std::u16string& query,
       const GURL& suggest_url,
+      std::vector<int> callback_indexes,
+      std::vector<std::vector<int>> suggestion_types,
       CreationCallback creation_callback,
       StartCallback start_callback,
-      CompletionCallback completion_callback,
-      std::vector<std::vector<int>> suggestion_types);
+      CompletionCallback completion_callback);
 
   // Stops creating the request. Already created requests aren't affected.
   void StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
@@ -79,6 +80,7 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
   void AccessTokenAvailable(
       std::vector<std::unique_ptr<network::ResourceRequest>> requests,
       const std::u16string& query,
+      std::vector<int> callback_indexes,
       std::vector<std::vector<int>> suggestion_types,
       net::NetworkTrafficAnnotationTag traffic_annotation,
       StartCallback start_callback,
@@ -93,9 +95,9 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
       std::unique_ptr<network::ResourceRequest> request,
       std::string request_body,
       net::NetworkTrafficAnnotationTag traffic_annotation,
+      int request_index,
       StartCallback start_callback,
-      CompletionCallback completion_callback,
-      int request_index);
+      CompletionCallback completion_callback);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

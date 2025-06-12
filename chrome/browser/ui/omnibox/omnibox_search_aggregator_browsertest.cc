@@ -316,8 +316,17 @@ class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
       identity_test_env_adaptor_;
 };
 
-IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
-  scoped_config_.Get().multiple_requests = false;
+class OmniboxSearchAggregatorSingleRequestTest
+    : public OmniboxSearchAggregatorTest {
+ public:
+  void SetUp() override {
+    scoped_config_.Get().multiple_requests = false;
+    OmniboxSearchAggregatorTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
+                       GoodJsonResponse) {
   net::test_server::ControllableHttpResponse search_aggregator_response(
       embedded_test_server(), kSearchAggregatorPolicySuggestPath);
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -395,7 +404,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
                        GoodJsonResponseMultipleRequests) {
-  scoped_config_.Get().multiple_requests = true;
   net::test_server::ControllableHttpResponse search_aggregator_people_response(
       embedded_test_server(), kSearchAggregatorPolicySuggestPath);
   net::test_server::ControllableHttpResponse search_aggregator_content_response(
@@ -420,41 +428,41 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
   input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
   controller()->Start(input);
 
-  // Respond to the first SearchAggregator request (2 - people).
+  // Respond to the first SearchAggregator request (1 - query).
   search_aggregator_people_response.WaitForRequest();
   EXPECT_EQ(search_aggregator_people_response.http_request()->method,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_people_response.http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[2]})",
+                               R"("query":"john d","suggestionTypes":[1]})",
                                kEnterpriseSearchAggregatorExperimentId));
   search_aggregator_people_response.Send(net::HTTP_OK, "application/json",
-                                         kPeopleGoodJsonResponse);
+                                         kQueryGoodJsonResponse);
   search_aggregator_people_response.Done();
 
-  // Respond to the second SearchAggregator request (3,5 - content/Google
-  // Workspace).
+  // Respond to the second SearchAggregator request (2 - people).
   search_aggregator_content_response.WaitForRequest();
   EXPECT_EQ(search_aggregator_content_response.http_request()->method,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_content_response.http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[3,5]})",
+                               R"("query":"john d","suggestionTypes":[2]})",
                                kEnterpriseSearchAggregatorExperimentId));
   search_aggregator_content_response.Send(net::HTTP_OK, "application/json",
-                                          kContentGoodJsonResponse);
+                                          kPeopleGoodJsonResponse);
   search_aggregator_content_response.Done();
 
-  // Respond to the third SearchAggregator request (1 - query).
+  // Respond to the third SearchAggregator request (3,5 - content/Google
+  // Workspace).
   search_aggregator_query_response.WaitForRequest();
   EXPECT_EQ(search_aggregator_query_response.http_request()->method,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_query_response.http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[1]})",
+                               R"("query":"john d","suggestionTypes":[3,5]})",
                                kEnterpriseSearchAggregatorExperimentId));
   search_aggregator_query_response.Send(net::HTTP_OK, "application/json",
-                                        kQueryGoodJsonResponse);
+                                        kContentGoodJsonResponse);
   search_aggregator_query_response.Done();
 
   // Wait for the autocomplete controller to finish.
@@ -478,8 +486,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
           })));
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, RedirectedResponse) {
-  scoped_config_.Get().multiple_requests = false;
+IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
+                       RedirectedResponse) {
   net::test_server::ControllableHttpResponse redirect_response(
       embedded_test_server(), kSearchAggregatorPolicySuggestPath);
   const std::string redirected_path = "/suggest-redirect";
@@ -594,43 +602,42 @@ class OmniboxSearchAggregatorHTTPErrorTest
 #endif
 IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
                        MAYBE_HTTPErrorResponse) {
-  scoped_config_.Get().multiple_requests = true;
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
   controller()->Start(input);
 
-  // Respond to the first SearchAggregator request (2 - people).
+  // Respond to the first SearchAggregator request (1 - query).
   search_aggregator_people_response()->WaitForRequest();
   EXPECT_EQ(search_aggregator_people_response()->http_request()->method,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_people_response()->http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[2]})",
+                               R"("query":"john d","suggestionTypes":[1]})",
                                kEnterpriseSearchAggregatorExperimentId));
   search_aggregator_people_response()->Send(GetHttpStatusCode());
   search_aggregator_people_response()->Done();
 
-  // Respond to the second SearchAggregator request (3,5 - content/Google
-  // Workspace).
+  // Respond to the second SearchAggregator request (2 - people).
   search_aggregator_content_response()->WaitForRequest();
   EXPECT_EQ(search_aggregator_content_response()->http_request()->method,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_content_response()->http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[3,5]})",
+                               R"("query":"john d","suggestionTypes":[2]})",
                                kEnterpriseSearchAggregatorExperimentId));
   search_aggregator_content_response()->Send(GetHttpStatusCode());
   search_aggregator_content_response()->Done();
 
-  // Respond to the third SearchAggregator request (1 - query).
+  // Respond to the third SearchAggregator request (3,5 - content/Google
+  // Workspace).
   search_aggregator_query_response()->WaitForRequest();
   EXPECT_EQ(search_aggregator_query_response()->http_request()->method,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_query_response()->http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[1]})",
+                               R"("query":"john d","suggestionTypes":[3,5]})",
                                kEnterpriseSearchAggregatorExperimentId));
   search_aggregator_query_response()->Send(GetHttpStatusCode());
   search_aggregator_query_response()->Done();

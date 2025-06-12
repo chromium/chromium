@@ -242,9 +242,10 @@ class RemoteSuggestionsService : public KeyedService {
       const std::u16string& query,
       const GURL& suggest_url,
       metrics::OmniboxEventProto::PageClassification page_classification,
+      std::vector<int> callback_indexes,
+      std::vector<std::vector<int>> suggestion_types,
       IndexedStartCallback start_callback,
-      IndexedCompletionCallback completion_callback,
-      std::vector<std::vector<int>> suggestion_types);
+      IndexedCompletionCallback completion_callback);
 
   // Stops creating the request. Already created requests aren't affected.
   void StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
