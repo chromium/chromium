@@ -1,18 +1,19 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 import './content_setting_pattern_source.js';
 import './pref_display.js';
 import './mojo_timedelta.js';
 import './cr_frame_list.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+import './privacy_sandbox_internals.mojom-webui.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {ContentSettingsType} from './content_settings_types.mojom-webui.js';
 import {getTemplate} from './internals_page.html.js';
-import type {PageHandlerRemote} from './privacy_sandbox_internals.mojom-webui.js';
-import {PageHandler} from './privacy_sandbox_internals.mojom-webui.js';
+import {PrivacySandboxInternalsBrowserProxy} from './privacy_sandbox_internals_browser_proxy.js';
 import type {LogicalFn} from './value_display.js';
 import {defaultLogicalFn, timestampLogicalFn} from './value_display.js';
 
@@ -125,8 +126,8 @@ function getPrefLogicalFn(prefName: string) {
 }
 
 export class InternalsPage extends CustomElement {
-  pageHandler: PageHandlerRemote;
-
+  private browserProxy_: PrivacySandboxInternalsBrowserProxy =
+      PrivacySandboxInternalsBrowserProxy.getInstance();
   static get is() {
     return 'internals-page';
   }
@@ -135,16 +136,7 @@ export class InternalsPage extends CustomElement {
     return getTemplate();
   }
 
-  constructor() {
-    super();
-    this.pageHandler = PageHandler.getRemote();
-  }
-
   connectedCallback() {
-    if (!this.pageHandler) {
-      console.error('PageHandler not initialized. Aborting load.');
-      return;
-    }
     this.load();
   }
 
@@ -158,8 +150,9 @@ export class InternalsPage extends CustomElement {
   }
 
   addPrefsToDom(parentElement: HTMLElement, prefNameList: string[]) {
+    const handler = this.browserProxy_.handler;
     prefNameList.forEach(async (prefName) => {
-      const prefValue = await this.pageHandler.readPref(prefName);
+      const prefValue = await handler.readPref(prefName);
       const item = document.createElement('pref-display');
       parentElement.appendChild(item);
       item.configure(prefName, prefValue.s, getPrefLogicalFn(prefName));
@@ -182,6 +175,7 @@ export class InternalsPage extends CustomElement {
     const tabBox =
         this.shadowRoot!.querySelector<HTMLSelectElement>('#ps-page')!;
     const csPanels = new Map<string, HTMLElement>();
+    const handler = this.browserProxy_.handler;
     for (let i = ContentSettingsType.MIN_VALUE;
          i <= ContentSettingsType.MAX_VALUE; i++) {
       const tab = document.createElement('div');
@@ -206,15 +200,15 @@ export class InternalsPage extends CustomElement {
       let mojoResponse;
       if (i === ContentSettingsType.TPCD_METADATA_GRANTS) {
         // This one is special and can't be read through readContentSettings().
-        mojoResponse = await this.pageHandler.getTpcdMetadataGrants();
+        mojoResponse = await handler.getTpcdMetadataGrants();
       } else {
-        mojoResponse = await this.pageHandler.readContentSettings(i);
+        mojoResponse = await handler.readContentSettings(i);
       }
-      mojoResponse.contentSettings.forEach((cs) => {
+      mojoResponse.contentSettings.forEach((cs: any) => {
         const panel = csPanels.get(ContentSettingsType[i])!;
         const item = document.createElement('content-setting-pattern-source');
         panel.appendChild(item);
-        item.configure(this.pageHandler, cs);
+        item.configure(handler, cs);
         item.setAttribute('collapsed', 'true');
       });
     }

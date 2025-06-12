@@ -18,6 +18,8 @@ build_webui("build") {
     "internals_page.ts",
   ]
 
+  ts_files = [ "privacy_sandbox_internals_browser_proxy.ts" ]
+
   mojo_files_deps = [
     "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings_ts__generator",
     "//components/content_settings/core/common:content_settings_enums_ts__generator",
