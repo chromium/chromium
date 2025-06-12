@@ -1584,8 +1584,9 @@
       status: "experimental",
     },
     {
+      // crbug.com/41442840: Enabled by default on M139, remove after M141.
       name: "CSSTransitionNoneRunningTransitionsFix",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support for tree-scoped [1] timeline names (e.g. produced by
