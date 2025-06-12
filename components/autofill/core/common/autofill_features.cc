@@ -311,6 +311,13 @@ BASE_FEATURE(kAutofillFixEmptyFieldAndroidSettingsBug,
              "AutofillFixEmptyFieldAndroidSettingsBug",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, autofill will use FormFieldData::DeepEqual instead of deprecated
+// SameFieldAs().
+// TODO(crbug.com/40183094): Clean up when confirmed that this is safe.
+BASE_FEATURE(kAutofillUseDeepEqualInsteadOfSameFieldAs,
+             "AutofillUseDeepEqualInsteadOfSameFieldAs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, focusing on a credit card number field that was traditionally
 // autofilled will yield all credit card suggestions.
 // TODO(crbug.com/354175563): Remove when launched.
