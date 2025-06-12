@@ -14,12 +14,13 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -31,6 +32,7 @@ import java.lang.annotation.Target;
  *
  * <p>This is created on a per-Activity basis.
  */
+@NullMarked
 public class MediaCapturePickerHeadlessFragment extends Fragment {
     private static final String TAG = "MediaCapturePickerHeadlessFragment";
 
@@ -53,9 +55,9 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
 
     private MediaProjectionManager mMediaProjectionManager;
     private ActivityResultLauncher<Intent> mLauncher;
-    private Delegate mNextDelegate;
+    private @Nullable Delegate mNextDelegate;
 
-    public static MediaCapturePickerHeadlessFragment getInstanceForCurrentActivity() {
+    public static @Nullable MediaCapturePickerHeadlessFragment getInstanceForCurrentActivity() {
         var activity = (FragmentActivity) ApplicationStatus.getLastTrackedFocusedActivity();
         if (activity == null) {
             return null;

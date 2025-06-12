@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.metrics;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 /** Helper class to transition between uma sessions as the android activity type changes. */
+@NullMarked
 public class UmaActivityObserver {
 
     private final UmaSessionStats mUmaSessionStats;

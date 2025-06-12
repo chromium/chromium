@@ -5,10 +5,12 @@ package org.chromium.chrome.browser.media;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Items for the list view in the media capture picker. */
+@NullMarked
 public class MediaCapturePickerItemProperties {
     /** Listener to be called when a tab is selected. */
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
