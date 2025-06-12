@@ -1210,11 +1210,11 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
   if (![self isWebStateSafeToUse]) {
     return;
   }
+  self.backForwardList.navigationManager = _webState->GetNavigationManager();
+
   self.canGoBack = _webState && _webState->GetNavigationManager()->CanGoBack();
   self.canGoForward =
       _webState && _webState->GetNavigationManager()->CanGoForward();
-
-  self.backForwardList.navigationManager = _webState->GetNavigationManager();
 }
 
 - (void)updateCurrentURLs {
