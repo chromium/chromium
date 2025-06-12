@@ -42,8 +42,6 @@ static_library("boca") {
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//google_apis/common",
-    "//remoting/client/common",
-    "//remoting/protocol",
     "//ui/base",
     "//ui/message_center",
   ]
@@ -110,14 +108,22 @@ static_library("spotlight_lib") {
   sources = [
     "spotlight/fake_spotlight_oauth_token_fetcher.cc",
     "spotlight/fake_spotlight_oauth_token_fetcher.h",
+    "spotlight/remoting_client_io_proxy.cc",
+    "spotlight/remoting_client_io_proxy.h",
+    "spotlight/spotlight_constants.h",
     "spotlight/spotlight_frame_consumer.cc",
     "spotlight/spotlight_frame_consumer.h",
     "spotlight/spotlight_oauth_token_fetcher.h",
+    "spotlight/spotlight_remoting_client_manager.cc",
+    "spotlight/spotlight_remoting_client_manager.h",
   ]
   deps = [
+    "//ash/constants",
     "//base",
     "//remoting/client/common",
     "//remoting/protocol",
+    "//services/network/public/cpp",
+    "//skia:skia_core_public_headers",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
@@ -180,6 +186,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp/",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base",
     "//ui/message_center",
     "//ui/message_center:test_support",

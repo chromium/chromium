@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
+
 /**
  * @ fileoverview
  * Types for the ChromeOS Boca App. The same file is consumed by both
@@ -195,6 +197,17 @@ export enum SpeechRecognitionInstallState {
   IN_PROGRESS = 2,
   FAILED = 3,
   READY = 4
+}
+
+/**
+ * Declare Speech Recognition install state enum type
+ */
+export enum CrdConnectionState {
+  UNKNOWN = 0,
+  CONNECTING = 1,
+  CONNECTED = 2,
+  DISCONNECTED = 3,
+  FAILED = 4
 }
 
 /**
@@ -412,6 +425,12 @@ export declare interface ClientApiDelegate {
    * Renotify the student to connect to the session.
    */
   renotifyStudent(id: string): Promise<boolean>;
+
+  /**
+   * Notify the client to start the Spotlight session.
+   * @param crdConnectionCode
+   */
+  startSpotlight(crdConnectionCode: string): Promise<void>;
 }
 
 /**
@@ -459,4 +478,14 @@ export declare interface ClientApi {
    * This can be due to an error or because of an event such as device locked.
    */
   onSessionCaptionDisabled(isError: boolean): void;
+
+  /**
+   * Notify the app that a frame is available to be displayed for Spotlight.
+   */
+  onFrameDataReceived(frameData: BitmapN32): void;
+
+  /**
+   * Notify the app that the CRD session for Spotlight has ended.
+   */
+  onSpotlightCrdSessionStatusUpdated(state: CrdConnectionState): void;
 }

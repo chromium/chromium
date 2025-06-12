@@ -32,13 +32,14 @@
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
-#include "remoting/client/common/remoting_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -56,12 +57,15 @@ const net::BackoffEntry::Policy kStudentHeartbeatBackoffPolicy = {
     .always_use_initial_delay = false};
 }  // namespace
 
-BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
-                                       const PrefService* pref_service,
-                                       AccountId account_id,
-                                       bool is_producer)
+BocaSessionManager::BocaSessionManager(
+    SessionClientImpl* session_client_impl,
+    const PrefService* pref_service,
+    AccountId account_id,
+    bool is_producer,
+    std::unique_ptr<SpotlightRemotingClientManager> remoting_client_manager)
     : is_producer_(is_producer),
       account_id_(std::move(account_id)),
+      remoting_client_manager_(std::move(remoting_client_manager)),
       pref_service_(pref_service),
       session_client_impl_(std::move(session_client_impl)),
       student_heartbeat_retry_backoff_{&kStudentHeartbeatBackoffPolicy} {
@@ -112,10 +116,6 @@ BocaSessionManager::~BocaSessionManager() {
   if (user_manager::UserManager::IsInitialized()) {
     user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
   }
-}
-
-void BocaSessionManager::Reset() {
-  spotlight_token_fetcher_ = nullptr;
 }
 
 void BocaSessionManager::Observer::OnSessionMetadataUpdated(
@@ -395,38 +395,26 @@ BocaSessionManager::SodaStatus BocaSessionManager::GetSodaStatus() {
   return SodaStatus::kUninstalled;
 }
 
-void BocaSessionManager::StartCrdClientForTeacher(
+void BocaSessionManager::StartCrdClient(
+    std::string crd_connection_code,
     base::OnceClosure done_callback,
     SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
-    std::string connection_code) {
+    SpotlightCrdStateUpdatedCallback crd_state_callback) {
   CHECK(ash::features::IsBocaSpotlightRobotRequesterEnabled());
-  CHECK_EQ(connection_code.length(), 12u);
 
-  if (remoting_client_) {
-    LOG(WARNING) << "[Boca] Tried to initiate a Spotight session while another "
-                    "was in progress";
-    return;
-  }
-  frame_consumer_ = std::make_unique<SpotlightFrameConsumer>(
-      std::move(frame_received_callback));
-  remoting_client_ = std::make_unique<remoting::RemotingClient>(
-      std::move(done_callback), frame_consumer_.get(),
-      BocaAppClient::Get()->GetURLLoaderFactory());
-  FetchSpotlightOAuthToken(
-      base::BindOnce(&BocaSessionManager::StartCrdSessionForTeacherInternal,
-                     weak_factory_.GetWeakPtr(), std::move(connection_code)));
+  remoting_client_manager_->StartCrdClient(
+      crd_connection_code, std::move(done_callback),
+      std::move(frame_received_callback), std::move(crd_state_callback));
 }
 
 void BocaSessionManager::EndSpotlightSession() {
-  if (remoting_client_) {
-    remoting_client_->StopSession();
-    remoting_client_.reset();
-    frame_consumer_.reset();
-  }
+  CHECK(ash::features::IsBocaSpotlightRobotRequesterEnabled());
+  remoting_client_manager_->StopCrdClient();
 }
 
 std::string BocaSessionManager::GetDeviceRobotEmail() {
-  return spotlight_token_fetcher_->GetDeviceRobotEmail();
+  CHECK(ash::features::IsBocaSpotlightRobotRequesterEnabled());
+  return remoting_client_manager_->GetDeviceRobotEmail();
 }
 
 void BocaSessionManager::LoadInitialNetworkState() {
@@ -817,26 +805,6 @@ void BocaSessionManager::CloseAllCaptions() {
     }
     observer.OnLocalCaptionClosed();
   }
-}
-
-void BocaSessionManager::StartCrdSessionForTeacherInternal(
-    std::string connection_code,
-    std::optional<std::string> oauth_token) {
-  if (!oauth_token.has_value() || oauth_token->empty()) {
-    LOG(ERROR) << "[Boca] Failed to retrieve OAuth token for Spotlight";
-    return;
-  }
-  VLOG(1) << "[Boca] Starting CRD client for teacher";
-  remoting_client_->StartSession(
-      connection_code,
-      {oauth_token.value(), spotlight_token_fetcher_->GetDeviceRobotEmail()});
-}
-
-void BocaSessionManager::FetchSpotlightOAuthToken(
-    SpotlightOAuthTokenFetcher::OAuthTokenCallback callback) {
-  CHECK(spotlight_token_fetcher_);
-
-  spotlight_token_fetcher_->Start(std::move(callback));
 }
 
 }  // namespace ash::boca

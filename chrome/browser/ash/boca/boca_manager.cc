@@ -32,8 +32,8 @@
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
-#include "chromeos/ash/components/boca/spotlight/fake_spotlight_oauth_token_fetcher.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_crd_manager.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_session_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -44,6 +44,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/browser_thread.h"
 #include "google_apis/google_api_keys.h"
 
 namespace ash {
@@ -128,8 +129,6 @@ BocaManager::BocaManager(
       babel_orca_manager_(std::move(babel_orca_manager)),
       boca_metrics_manager_(std::move(boca_metrics_manager)),
       spotlight_session_manager_(std::move(spotlight_session_manager)) {
-  spotlight_token_fetcher_ =
-      std::make_unique<boca::FakeSpotlightOAuthTokenFetcher>(std::nullopt, "");
   AddObservers(nullptr);
 }
 
@@ -142,9 +141,17 @@ BocaManager::BocaManager(Profile* profile,
   auto* user =
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   bool is_consumer = ash::boca_util::IsConsumer(user);
+  std::unique_ptr<boca::SpotlightRemotingClientManager> remoting_client_manager;
+  if (ash::features::IsBocaSpotlightRobotRequesterEnabled() && !is_consumer) {
+    remoting_client_manager =
+        std::make_unique<boca::SpotlightRemotingClientManager>(
+            std::make_unique<boca::SpotlightOAuthTokenFetcherImpl>(
+                GetOAuthServiceForSpotlight()),
+            profile->GetURLLoaderFactory());
+  }
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), user->GetProfilePrefs(), user->GetAccountId(),
-      /*is_producer=*/!is_consumer);
+      /*is_producer=*/!is_consumer, std::move(remoting_client_manager));
   if (ash::features::IsBabelOrcaAvailable()) {
     const std::string caption_language = speech::GetDefaultLiveCaptionLanguage(
         application_locale, profile->GetPrefs());
@@ -169,11 +176,6 @@ BocaManager::BocaManager(Profile* profile,
 
   spotlight_session_manager_ = std::make_unique<boca::SpotlightSessionManager>(
       std::make_unique<boca::SpotlightCrdManagerImpl>(profile->GetPrefs()));
-  if (ash::features::IsBocaSpotlightRobotRequesterEnabled() && !is_consumer) {
-    spotlight_token_fetcher_ =
-        std::make_unique<boca::SpotlightOAuthTokenFetcherImpl>(
-            GetOAuthServiceForSpotlight());
-  }
 
   gcm::GCMDriver* gcm_driver =
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
@@ -211,11 +213,6 @@ void BocaManager::AddObservers(const user_manager::User* user) {
   }
   boca_session_manager_->AddObserver(boca_metrics_manager_.get());
   boca_session_manager_->AddObserver(spotlight_session_manager_.get());
-  if (ash::features::IsBocaSpotlightRobotRequesterEnabled() &&
-      ash::boca_util::IsProducer(user)) {
-    boca_session_manager_->set_spotlight_token_fetcher(
-        spotlight_token_fetcher_.get());
-  }
 }
 
 }  // namespace ash

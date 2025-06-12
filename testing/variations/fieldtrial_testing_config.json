@@ -21909,6 +21909,21 @@
             ]
         }
     ],
+    "SchoolToolsSpotlightRobotRequester": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BocaSpotlightRobotRequester"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenAIPartitionAllocAdvancedChecksEnabled": [
         {
             "platforms": [

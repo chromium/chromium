@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -27,6 +28,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -48,15 +50,20 @@
 #include "chromeos/ash/components/boca/session_api/renotify_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/wm/constants.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace ash::boca {
@@ -242,6 +249,22 @@ mojom::SpeechRecognitionInstallState GetMojomSodaState(
       return mojom::SpeechRecognitionInstallState::kFailed;
     case BocaSessionManager::SodaStatus::kReady:
       return mojom::SpeechRecognitionInstallState::kReady;
+  }
+  NOTREACHED();
+}
+
+mojom::CrdConnectionState GetMojomCrdConnectionState(CrdConnectionState state) {
+  switch (state) {
+    case CrdConnectionState::kUnknown:
+      return mojom::CrdConnectionState::kUnknown;
+    case CrdConnectionState::kConnecting:
+      return mojom::CrdConnectionState::kConnecting;
+    case CrdConnectionState::kConnected:
+      return mojom::CrdConnectionState::kConnected;
+    case CrdConnectionState::kDisconnected:
+      return mojom::CrdConnectionState::kDisconnected;
+    case CrdConnectionState::kFailed:
+      return mojom::CrdConnectionState::kFailed;
   }
   NOTREACHED();
 }
@@ -611,6 +634,10 @@ void BocaAppHandler::EndViewScreenSession(
     EndViewScreenSessionCallback callback) {
   CHECK(spotlight_service_);
 
+  if (ash::features::IsBocaSpotlightRobotRequesterEnabled()) {
+    GetSessionManager()->EndSpotlightSession();
+  }
+
   spotlight_service_->UpdateViewScreenState(
       id, ::boca::ViewScreenConfig::INACTIVE, base_url_,
       base::BindOnce(
@@ -717,6 +744,23 @@ void BocaAppHandler::GetSpeechRecognitionInstallationStatus(
       GetMojomSodaState(GetSessionManager()->GetSodaStatus()));
 }
 
+void BocaAppHandler::StartSpotlight(const std::string& crd_connection_code,
+                                    StartSpotlightCallback callback) {
+  if (!ash::features::IsBocaSpotlightRobotRequesterEnabled()) {
+    std::move(callback).Run();
+  }
+  GetSessionManager()->StartCrdClient(
+      crd_connection_code,
+      base::BindOnce(&BocaAppHandler::OnCrdConnectionStateUpdated,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     CrdConnectionState::kDisconnected),
+      base::BindRepeating(&BocaAppHandler::OnCrdFrameReceived,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&BocaAppHandler::OnCrdConnectionStateUpdated,
+                          weak_ptr_factory_.GetWeakPtr()));
+  std::move(callback).Run();
+}
+
 void BocaAppHandler::OnStudentActivityUpdated(
     std::vector<mojom::IdentifiedActivityPtr> activities) {
   remote_->OnStudentActivityUpdated(std::move(activities));
@@ -724,6 +768,24 @@ void BocaAppHandler::OnStudentActivityUpdated(
 
 void BocaAppHandler::OnSessionConfigUpdated(mojom::ConfigResultPtr config) {
   remote_->OnSessionConfigUpdated(std::move(config));
+}
+
+void BocaAppHandler::OnCrdFrameReceived(
+    SkBitmap bitmap,
+    std::unique_ptr<webrtc::DesktopFrame> frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!ash::features::IsBocaSpotlightRobotRequesterEnabled()) {
+    return;
+  }
+  OnFrameDataReceived(std::move(bitmap));
+}
+
+void BocaAppHandler::OnCrdConnectionStateUpdated(CrdConnectionState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!ash::features::IsBocaSpotlightRobotRequesterEnabled()) {
+    return;
+  }
+  OnSpotlightCrdSessionStatusUpdated(GetMojomCrdConnectionState(state));
 }
 
 void BocaAppHandler::OnActiveNetworkStateChanged(
@@ -742,6 +804,17 @@ void BocaAppHandler::OnSpeechRecognitionInstallStateUpdated(
     mojom::SpeechRecognitionInstallState) {}
 
 void BocaAppHandler::OnSessionCaptionDisabled(bool is_error) {}
+
+void BocaAppHandler::OnFrameDataReceived(const SkBitmap& frame_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  remote_->OnFrameDataReceived(std::move(frame_data));
+}
+
+void BocaAppHandler::OnSpotlightCrdSessionStatusUpdated(
+    mojom::CrdConnectionState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  remote_->OnSpotlightCrdSessionStatusUpdated(std::move(state));
+}
 
 void BocaAppHandler::OnSessionStarted(const std::string& session_id,
                                       const ::boca::UserIdentity& producer) {

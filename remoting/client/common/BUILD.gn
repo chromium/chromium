@@ -6,6 +6,7 @@ import("//remoting/remoting_options.gni")
 
 source_set("common") {
   sources = [
+    "client_status_observer.h",
     "frame_consumer_wrapper.cc",
     "frame_consumer_wrapper.h",
     "logging.h",

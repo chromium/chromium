@@ -16,6 +16,7 @@ mojom("mojom") {
   public_deps = [
     "//chromeos/services/network_config/public/mojom",
     "//mojo/public/mojom/base",
+    "//skia/public/mojom",
     "//ui/events/ash/mojom",
     "//url/mojom:url_mojom_gurl",
   ]

@@ -14,7 +14,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
-#include "fake_spotlight_oauth_token_fetcher.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -22,7 +21,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
-#include "spotlight_oauth_token_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -99,8 +97,7 @@ class MockSessionManager : public BocaSessionManager {
             AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaId)),
             /*=is_producer*/ false) {}
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
-  //   MOCK_METHOD(SetSpotlightTokenFetcher, (SpotlightOAuthTokenFetcher
-  //   fetcher), (override));
+  MOCK_METHOD((std::string), GetDeviceRobotEmail, (), (override));
 
   ~MockSessionManager() override = default;
 };
@@ -187,13 +184,11 @@ TEST_F(SpotlightServiceTest, TestViewScreenSucceedWithRobotEmail) {
       /*enabled_features=*/{ash::features::kBoca,
                             ash::features::kBocaSpotlightRobotRequester},
       /*disabled_features=*/{});
-  std::unique_ptr<FakeSpotlightOAuthTokenFetcher> fake_token_fetcher =
-      std::make_unique<FakeSpotlightOAuthTokenFetcher>("token",
-                                                       "robot@email.com");
-  boca_session_manager_->set_spotlight_token_fetcher(fake_token_fetcher.get());
   auto session = GetCommonTestSession();
   EXPECT_CALL(*boca_session_manager_, GetCurrentSession())
       .WillOnce(Return(&session));
+  EXPECT_CALL(*boca_session_manager_, GetDeviceRobotEmail())
+      .WillOnce(Return("robot@email.com"));
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
@@ -217,8 +212,6 @@ TEST_F(SpotlightServiceTest, TestViewScreenSucceedWithRobotEmail) {
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_TRUE(result.value());
-
-  boca_session_manager_->set_spotlight_token_fetcher(nullptr);
 }
 
 TEST_F(SpotlightServiceTest, TestViewScreenWithEmptySession) {

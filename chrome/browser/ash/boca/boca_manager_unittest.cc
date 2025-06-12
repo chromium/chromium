@@ -203,49 +203,6 @@ TEST_F(BocaManagerProducerTest,
       boca_manager_->GetSpotlightSessionManagerForTesting()));
 }
 
-TEST_F(BocaManagerProducerTest,
-       VerifySpotlightTokenFetcherWasNotAddedForProducer) {
-  ASSERT_FALSE(
-      boca_manager_->GetBocaSessionManager()->HasSpotlightTokenFetcher());
-}
-
-class BocaManagerProducerTestSpotlightRobotRequesterEnabled
-    : public BocaManagerTest {
- protected:
-  BocaManagerProducerTestSpotlightRobotRequesterEnabled() = default;
-
-  void SetUp() override {
-    BocaManagerTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kBoca,
-                              ash::features::kBocaSpotlightRobotRequester},
-        /*disabled_features=*/{});
-
-    boca_manager_ = std::make_unique<BocaManager>(
-        std::make_unique<boca::OnTaskSessionManager>(
-            /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr),
-        std::move(session_client_impl_), std::move(boca_session_manager_),
-        std::move(invalidation_service_impl_),
-        std::make_unique<boca::BabelOrcaManager>(
-            &pref_service_, identity_test_env_.identity_manager(),
-            url_loader_factory_.GetSafeWeakWrapper(),
-            GetBabelOrcaControllerFactory()),
-        std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/true),
-        std::make_unique<boca::SpotlightSessionManager>(
-            /*spotlight_notification_handler=*/nullptr,
-            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr));
-  }
-
-  std::unique_ptr<BocaManager> boca_manager_;
-  TestingPrefServiceSimple pref_service_;
-};
-
-TEST_F(BocaManagerProducerTestSpotlightRobotRequesterEnabled,
-       VerifySpotlightTokenFetcherWasAddedForProducer) {
-  ASSERT_TRUE(
-      boca_manager_->GetBocaSessionManager()->HasSpotlightTokenFetcher());
-}
-
 class BocaManagerConsumerTest : public BocaManagerTest {
  protected:
   BocaManagerConsumerTest() = default;
@@ -296,12 +253,6 @@ TEST_F(BocaManagerProducerTest,
        VerifySpotlightSessionManagerWasAddedForConsumer) {
   ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
       boca_manager_->GetSpotlightSessionManagerForTesting()));
-}
-
-TEST_F(BocaManagerConsumerTest,
-       VerifySpotlightTokenFetcherWasNotAddedForProducer) {
-  ASSERT_FALSE(
-      boca_manager_->GetBocaSessionManager()->HasSpotlightTokenFetcher());
 }
 
 TEST_F(BocaManagerConsumerTest, VerifyDependenciesTearDownProperly) {

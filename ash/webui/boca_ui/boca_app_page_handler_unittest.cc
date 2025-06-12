@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/boca_ui/mojom/boca.mojom-data-view.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
@@ -69,6 +70,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -360,6 +362,9 @@ class FakePage : public mojom::Page {
     session_caption_disabled_cb_ = std::move(session_caption_disabled_cb);
   }
 
+  void OnSpotlightCrdSessionStatusUpdated(
+      mojom::CrdConnectionState state) override {}
+
  private:
   // mojom::Page:
   void OnStudentActivityUpdated(
@@ -385,6 +390,7 @@ class FakePage : public mojom::Page {
       std::move(session_caption_disabled_cb_).Run(is_error);
     }
   }
+  void OnFrameDataReceived(const SkBitmap& frame_data) override {}
 
   ActivityInterceptorCallback student_activity_updated_cb_;
   SessionConfigInterceptorCallback session_config_updated_cb_;

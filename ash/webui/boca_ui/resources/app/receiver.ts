@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 
-import type {ConfigResult, IdentifiedActivity, NetworkInfo, SpeechRecognitionInstallState} from '../mojom/boca.mojom-webui.js';
+import type {ConfigResult, CrdConnectionState, IdentifiedActivity, NetworkInfo, SpeechRecognitionInstallState} from '../mojom/boca.mojom-webui.js';
 
 import type {ClientApi} from './boca_app.js';
-import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getSpeechRecognitionInstallStateMojomToUI, getStudentActivityMojomToUI} from './client_delegate.js';
+import {ClientDelegateFactory, getCrdConnectionStateMojomToUI, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getSpeechRecognitionInstallStateMojomToUI, getStudentActivityMojomToUI} from './client_delegate.js';
 import {callbackRouter, pageHandler} from './mojo_api_bootstrap.js';
 
 /**
@@ -48,6 +49,13 @@ function initializeApp(app: ClientApi) {
 
   callbackRouter.onSessionCaptionDisabled.addListener(
       (isError: boolean) => app.onSessionCaptionDisabled(isError));
+
+  callbackRouter.onFrameDataReceived.addListener(
+      (frameData: BitmapN32) => app.onFrameDataReceived(frameData));
+
+  callbackRouter.onSpotlightCrdSessionStatusUpdated.addListener(
+      (state: CrdConnectionState) => app.onSpotlightCrdSessionStatusUpdated(
+          getCrdConnectionStateMojomToUI(state)));
 }
 
 /**
