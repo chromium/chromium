@@ -227,6 +227,7 @@
   self.reauthCoordinator.delegate = nil;
   self.reauthCoordinator = nil;
   [self dismissActionSheetCoordinator];
+  [self dismissTrustedVaultReauthenticationCoordinator];
 
   [self.mediator disconnect];
 }
