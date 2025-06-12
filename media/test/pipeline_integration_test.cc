@@ -702,7 +702,8 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed) {
 
   ASSERT_TRUE(WaitUntilOnEnded());
 
-  EXPECT_EQ("f0be120a90a811506777c99a2cdf7cc1", GetVideoHash());
+  EXPECT_EQ("a6dbca10f0730373ab948df04b4bc16d7bca6d3a1593dc989b6e376487544bf5",
+            GetVideoHash());
   EXPECT_AUDIO_HASH("-3.59,-2.06,-0.43,2.15,0.77,-0.95,");
   EXPECT_TRUE(demuxer_->GetTimelineOffset().is_null());
 }
@@ -811,7 +812,8 @@ TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
   ASSERT_TRUE(WaitUntilOnEnded());
 
   // Verify that video has been rendered after being enabled.
-  EXPECT_EQ("dfdb16514f4de957c502690d66e9de80", GetVideoHash());
+  EXPECT_EQ("38b8b5de49e2ada131674f90e4688dfc9309e6d194267e6f11992d25f11ea472",
+            GetVideoHash());
 }
 
 TEST_F(PipelineIntegrationTest, TrackStatusChangesBeforePipelineStarted) {
@@ -1278,7 +1280,8 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackLive) {
 
   ASSERT_TRUE(WaitUntilOnEnded());
 
-  EXPECT_EQ("f0be120a90a811506777c99a2cdf7cc1", GetVideoHash());
+  EXPECT_EQ("a6dbca10f0730373ab948df04b4bc16d7bca6d3a1593dc989b6e376487544bf5",
+            GetVideoHash());
   EXPECT_AUDIO_HASH("-3.59,-2.06,-0.43,2.15,0.77,-0.95,");
   EXPECT_EQ(kLiveTimelineOffset(), demuxer_->GetTimelineOffset());
 }
@@ -2981,7 +2984,8 @@ TEST_F(PipelineIntegrationTest, NegativeVideoTimestamps) {
             Start("sync2-trimmed.mp4", kHashed | kUnreliableDuration));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
-  EXPECT_EQ("aa56bcbc674d2e7a60bbecb77c55bb1e", GetVideoHash());
+  EXPECT_EQ("dd059004f04a4d7a910123e5b306639a4559b5d7df7c0879d523649ff12a8a43",
+            GetVideoHash());
   EXPECT_AUDIO_HASH("89.10,30.04,90.81,29.89,89.55,29.20,");
 }
 
@@ -3013,7 +3017,8 @@ TEST_F(PipelineIntegrationTest, Spherical) {
   ASSERT_EQ(PIPELINE_OK, Start("spherical.mp4", kHashed));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
-  EXPECT_EQ("1cb7f980020d99ea852e22dd6bd8d9de", GetVideoHash());
+  EXPECT_EQ("ebb0ad0c2205c9c797f4303b0ed698a07c647c2f37692f227c12875591885877",
+            GetVideoHash());
 }
 
 TEST_F(PipelineIntegrationTest, BasicPlaybackHi10P) {
@@ -3030,7 +3035,8 @@ TEST_F(PipelineIntegrationTest, HLSMediaPlaylistTSavc1) {
   ASSERT_EQ(PIPELINE_OK, StartPipelineWithHlsManifest("hls/mp_ts_avc1.m3u8"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
-  EXPECT_EQ("6bc0ecac3fea91d9591cb3197d28b196", GetVideoHash());
+  EXPECT_EQ("00df0aa6796123f535402c39c20baa3fe1c2ad02fe1f015f84878977b30931d2",
+            GetVideoHash());
 }
 #endif
 

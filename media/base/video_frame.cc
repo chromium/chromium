@@ -1275,20 +1275,6 @@ size_t VideoFrame::Columns(size_t plane, VideoPixelFormat format, int width) {
 }
 
 // static
-void VideoFrame::HashFrameForTesting(base::MD5Context* context,
-                                     const VideoFrame& frame) {
-  DCHECK(context);
-  for (size_t plane = 0; plane < NumPlanes(frame.format()); ++plane) {
-    for (int row = 0; row < frame.rows(plane); ++row) {
-      base::MD5Update(context,
-                      frame.data_[plane].subspan(
-                          base::checked_cast<size_t>(frame.stride(plane) * row),
-                          base::checked_cast<size_t>(frame.row_bytes(plane))));
-    }
-  }
-}
-
-// static
 void VideoFrame::UpdateHashWithFrameForTesting(crypto::hash::Hasher& hasher,
                                                const VideoFrame& frame) {
   for (size_t plane = 0; plane < NumPlanes(frame.format()); ++plane) {

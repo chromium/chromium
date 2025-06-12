@@ -19,7 +19,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
@@ -516,14 +515,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns the number of columns for the given plane, format, and width.
   // The width may be aligned to format requirements.
   static size_t Columns(size_t plane, VideoPixelFormat format, int width);
-
-  // Used to keep a running hash of seen frames.  Expects an initialized MD5
-  // context.  Calls MD5Update with the context and the contents of the frame.
-  //
-  // Deprecated, do not use this.
-  // TODO(https://crbug.com/419771387): Remove this.
-  static void HashFrameForTesting(base::MD5Context* context,
-                                  const VideoFrame& frame);
 
   // Given a crypto/hash Hasher, hash in the pixels from a single VideoFrame.
   static void UpdateHashWithFrameForTesting(crypto::hash::Hasher& hasher,
