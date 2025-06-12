@@ -288,9 +288,6 @@ extern const base::NotFatalUntil kLensOverlayNotFatalUntil;
 // Feature flag to enable the Lens View Finder Unified experience
 BASE_DECLARE_FEATURE(kEnableLensViewFinderUnifiedExperience);
 
-// Feature flag to enable the Lens Context Menu Unified experience
-BASE_DECLARE_FEATURE(kEnableLensContextMenuUnifiedExperience);
-
 // Whether to enable loading AIM in the lens result page.
 BASE_DECLARE_FEATURE(kLensLoadAIMInLensResultPage);
 

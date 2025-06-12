@@ -195,16 +195,6 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 #pragma mark - Commands
 
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
-  if (lens_availability::IsLensContextMenuUnifiedExperienceEnabled(
-          self.profile->GetPrefs())) {
-    id<LensOverlayCommands> handler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), LensOverlayCommands);
-    [handler searchImageWithLens:command.image
-                      entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu
-                      completion:nil];
-    return;
-  }
-
   const bool isIncognito = self.isOffTheRecord;
   __weak LensCoordinator* weakSelf = self;
 

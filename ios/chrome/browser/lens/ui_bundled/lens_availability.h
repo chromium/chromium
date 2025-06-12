@@ -37,9 +37,6 @@ namespace lens_availability {
 bool CheckAndLogAvailabilityForLensEntryPoint(
     LensEntrypoint entry_point,
     bool is_google_default_search_engine);
-
-// Checks whether the context menu unified experience in enabled;
-bool IsLensContextMenuUnifiedExperienceEnabled(const PrefService* prefs);
 }  // namespace lens_availability
 
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_LENS_AVAILABILITY_H_

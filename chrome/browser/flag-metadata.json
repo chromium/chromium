@@ -3727,11 +3727,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "enable-lens-context-menu-unified-experience",
-    "owners": ["radunitescu@google.com"],
-    "expiry_milestone": 137
-  },
-  {
     "name": "enable-lens-in-omnibox-copied-image",
     "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
     "expiry_milestone": 125
