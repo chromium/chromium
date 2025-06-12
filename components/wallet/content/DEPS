@@ -1,0 +1,6 @@
+include_rules = [
+  # go/keep-sorted start
+  "+content/public/browser",
+  "+content/public/common",
+  # go/keep-sorted end
+]
