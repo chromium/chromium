@@ -611,7 +611,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3557336313807607643">Toevoegen aan contacten</translation>
 <translation id="355765753469272474">Ongedaan maken</translation>
 <translation id="3565930036634619844">Tabblad. <ph name="TAB_INDEX" /> van <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Dubbeltik voor meer wachtwoorden.</translation>
 <translation id="3572607909481582402">In je Google-account</translation>
 <translation id="3575234738189584619">Zoeken met Lens</translation>
 <translation id="3575426792457739946">Deze lijst bevat alle geladen profielen.</translation>
@@ -624,6 +623,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
 <translation id="3602260545951981695">Kies Geoptimaliseerde beveiliging</translation>
 <translation id="3608436266458100337">Lezermodus</translation>
+<translation id="3610041351087301930">Lezer verbergen</translation>
 <translation id="3622175633937495219">Zoekgeschiedenis (<ph name="COUNT" /> gevonden)</translation>
 <translation id="3625008969091706597">Je kunt over de rand swipen om terug te gaan.</translation>
 <translation id="362709345066740529">Pas hier onder andere je kaarten en feed aan</translation>
@@ -654,7 +654,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3779810277399252432">Geen internetverbinding.</translation>
 <translation id="3782614601387961027">Waarschuwing sluiten</translation>
 <translation id="3789841737615482174">Installeren</translation>
-<translation id="3795478177331815672">Tabbladen en tabbladgroepen openen</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803696231112616155">Aanbieden om deze site te vertalen</translation>
 <translation id="3808311849069021992">Zoekmachinegegevens tonen</translation>
@@ -1066,6 +1065,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5431252637281434233">Je wordt uitgelogd</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
 <translation id="5433691172869980887">Gebruikersnaam gekopieerd</translation>
+<translation id="5437480232219631455">Je kunt hier Gemini openen</translation>
 <translation id="5439618055789623719">Ingelogd als <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Standaard beter browsen</translation>
 <translation id="5444892875087332195">Bookmarks</translation>
@@ -1813,6 +1813,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8343993175958086504">Maak een back-up van je gegevens en gebruik deze op elk apparaat.</translation>
 <translation id="8348530355586151720">Tik op het menu met 3 stippen</translation>
 <translation id="8349305172487531364">Bookmarkbalk</translation>
+<translation id="8363484128299778310">Tijdelijk herstel bij problemen</translation>
 <translation id="8364563001733875155">Als je je pincode wilt wijzigen, stel je eerst een toegangscode in op je apparaat.</translation>
 <translation id="8366466717204352506">Check nooit uitgevoerd</translation>
 <translation id="8368001212524806591">Prijs volgen</translation>

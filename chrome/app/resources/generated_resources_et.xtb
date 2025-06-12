@@ -785,7 +785,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1542524755306892917">See võimaldab Google’i assistendil anda kohandatud vastuseid, kui <ph name="SUPERVISED_USER_NAME" /> esitab küsimusi.</translation>
 <translation id="1543284117603151572">Imporditud teenusest Edge</translation>
 <translation id="1543538514740974167">Jõudke siia kiiremini</translation>
-<translation id="154420222899071768">Teie parooli ei värskendatud, aga teil peaks endiselt olema võimalik saidile juurde pääseda oma vana parooliga</translation>
 <translation id="1544588554445317666">Kasutage lühemat failinime või salvestage teise kausta</translation>
 <translation id="1545177026077493356">Automaatne kioskirežiim</translation>
 <translation id="1545749641540134597">QR-koodi skannimine</translation>
@@ -7019,7 +7018,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="594221546068848596">Otsige lehelt rakendusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Seadme nähtavus</translation>
 <translation id="5943127421590245687">Kinnitamine õnnestus. Kohalike andmete avamiseks ja taastamiseks sisestage oma seadme (<ph name="DEVICE_TYPE" />) vana parool.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> haldab teie uut vahelehte</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> võib olla ohtlik. Kas saata see skannimiseks Google'i ohutu sirvimise funktsioonile?</translation>
 <translation id="5945192511027649793">Puuteplaadi keelamine</translation>
 <translation id="5945363896952315544">Teie turvavõtmele ei saa rohkem sõrmejälgi talletada. Uue sõrmejälje lisamiseks kustutage mõni olemasolev.</translation>

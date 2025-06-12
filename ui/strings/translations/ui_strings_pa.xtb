@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 ਦਿਨ ਪਹਿਲਾਂ}one{# ਦਿਨ ਪਹਿਲਾਂ}other{# ਦਿਨ ਪਹਿਲਾਂ}}</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1243314992276662751">ਅਪਲੋਡ ਕਰੋ</translation>
+<translation id="1253734725326687145">ਟੱਚ ਟਾਰਗੇਟ ਨੂੰ ਉੱਪਰਲੇ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਇਆ ਗਿਆ। ਇੱਥੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">ਲਿਖਤ ਨੂੰ ਵਧੇਰੇ ਛੋਟੇ ਹਿੱਸਿਆਂ ਵਿੱਚ ਸਾਂਝਾ ਕਰਕੇ ਦੇਖੋ।</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
 <translation id="24452542372838207">ਸੂਚਨਾ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="2445449901874883781">ਉੱਚ ਘਣਤਾ ਵਰਤੋ</translation>
+<translation id="2448407890032181691">ਟੱਚ ਟਾਰਗੇਟ ਨੂੰ ਹੇਠਲੇ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਇਆ ਗਿਆ। ਇੱਥੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2497284189126895209">ਸਾਰੀਆਂ ਫਾਈਲਾਂ</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">ਟੈਬ</translation>
 <translation id="5613020302032141669">ਖੱਬਾ ਤੀਰ</translation>
 <translation id="5633029987065897167">ਖਾਲੀ</translation>
+<translation id="5651438382973553530">ਟੱਚ ਟਾਰਗੇਟ ਨੂੰ ਹੇਠਲੇ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਇਆ ਗਿਆ। ਇੱਥੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ਮਿੰਟ}one{# ਮਿੰਟ}other{# ਮਿੰਟ}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ਅੱਜ ਕਿਰਿਆਸ਼ੀਲ}=1{1 ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}other{# ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ਦਿਨ ਅਤੇ }one{# ਦਿਨ ਅਤੇ }other{# ਦਿਨ ਅਤੇ }}</translation>

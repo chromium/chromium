@@ -867,6 +867,7 @@
             <ph name="LIST_ITEM" />информације које сте унели у обрасце
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Периферни уређаји прикључени на овај уређај док сте пријављени</translation>
+<translation id="2450019289047528273">Начини плаћања и друге информације из Google новчаника</translation>
 <translation id="2451607499823206582">Прати се</translation>
 <translation id="2452098632681057184">Екологија и животна средина</translation>
 <translation id="2452837234288608067">Нисмо успели да вам помогнемо с тиме. Пробајте поново.</translation>
@@ -1563,6 +1564,7 @@
 <translation id="3641116835972736297">Амерички фудбал</translation>
 <translation id="3642196846309122856">Пробајте да поново преузмете фајлове</translation>
 <translation id="3642638418806704195">Апликација:</translation>
+<translation id="3644768007456662469">Икона ставке за плаћања</translation>
 <translation id="3646643500201740985">Мерење учинка огласа</translation>
 <translation id="3647286794400715637">Унос сваког стринга URL-а мора да садржи између 1 и 2 URL-а.</translation>
 <translation id="3647400963805615193">Дугме Одбаци савет за Chrome, притисните Enter да бисте одбацили, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>

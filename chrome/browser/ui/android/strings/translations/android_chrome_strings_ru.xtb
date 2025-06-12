@@ -109,6 +109,7 @@
 <translation id="1419753403124156396">Перезапустить Chrome?</translation>
 <translation id="1428770807407000502">Отключить синхронизацию?</translation>
 <translation id="1430915738399379752">Печать</translation>
+<translation id="1433478348197382180">Режим чтения</translation>
 <translation id="1435593198351412143">Открывать PDF-файлы автоматически</translation>
 <translation id="1437543266176261764">Выполняется в <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Упорядочивайте отслеживаемые товары в закладках</translation>
@@ -1080,7 +1081,6 @@
 <translation id="5956665950594638604">Открыть Справочный центр Chrome в новой вкладке</translation>
 <translation id="59577092665511740">Выбор аккаунта.</translation>
 <translation id="5958275228015807058">Скачанные файлы и веб-страницы хранятся в одноименном разделе.</translation>
-<translation id="5958994127112619898">Упростить страницу</translation>
 <translation id="5962718611393537961">Нажмите, чтобы свернуть</translation>
 <translation id="5964869237734432770">Не генерировать описания</translation>
 <translation id="5975083100439434680">Уменьшить</translation>
@@ -1884,7 +1884,7 @@
 <translation id="928550791203542716">Вы подписались на сайт "<ph name="SITE_NAME" />".</translation>
 <translation id="930124987204876019">Удалить историю, файлы cookie, данные сайтов, кеш и другие данные</translation>
 <translation id="938850635132480979">Ошибка <ph name="ERROR_CODE" /></translation>
-<translation id="939598580284253335">Введите кодовую фразу</translation>
+<translation id="939598580284253335">Ввести кодовую фразу</translation>
 <translation id="95817756606698420">В Китае Chrome может использовать для поиска <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Это можно изменить в <ph name="BEGIN_LINK" />Настройках<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Удалить данные браузера</translation>
 <translation id="963246339335003378">Открыть диспетчер задач</translation>

@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{১ দিন আগে}one{# দিন আগে}other{# দিন আগে}}</translation>
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1243314992276662751">আপলোড</translation>
+<translation id="1253734725326687145">টাচ টার্গেট একদম উপরে ডানদিকে নিয়ে যাওয়া হয়েছে। এখানে ট্যাপ করুন।</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> শেয়ার করা যায়নি</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">টেক্সটটি ছোট ছোট ভাগে ভাগ করে পাঠানোর চেষ্টা করুন।</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="24452542372838207">বিজ্ঞপ্তি প্রসারিত করুন</translation>
 <translation id="2445449901874883781">উচ্চ রেজোলিউশন ব্যবহার করুন</translation>
+<translation id="2448407890032181691">টাচ টার্গেট একদম নিচে ডানদিকে নিয়ে যাওয়া হয়েছে। এখানে ট্যাপ করুন।</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2497284189126895209">সব ফাইল</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">ট্যাব</translation>
 <translation id="5613020302032141669">Left Arrow</translation>
 <translation id="5633029987065897167">ফাঁকা</translation>
+<translation id="5651438382973553530">টাচ টার্গেট একদম নিচে বাঁদিকে নিয়ে যাওয়া হয়েছে। এখানে ট্যাপ করুন।</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{১ মিনিট}one{# মিনিট}other{# মিনিট}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{আজ ব্যবহার করা হয়েছে}=1{১ দিন আগে ব্যবহার করা হয়েছে}one{# দিন আগে ব্যবহার করা হয়েছে}other{# দিন আগে ব্যবহার করা হয়েছে}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{১ দিন এবং }one{# দিন এবং }other{# দিন এবং }}</translation>

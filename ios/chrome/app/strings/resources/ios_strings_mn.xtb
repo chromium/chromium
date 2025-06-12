@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">Харилцагчид нэмэх</translation>
 <translation id="355765753469272474">Болих</translation>
 <translation id="3565930036634619844">Таб. <ph name="NUMBER_OF_TABS" />-н <ph name="TAB_INDEX" />.</translation>
-<translation id="3570693105179140209">Бусад нууц үгийг авах бол хоёр товшино уу.</translation>
 <translation id="3572607909481582402">Таны Google Бүртгэлд</translation>
 <translation id="3575234738189584619">Lens-р хайх</translation>
 <translation id="3575426792457739946">Энэ жагсаалт бүх ачаалсан профайлыг агуулж байна.</translation>
@@ -654,7 +653,6 @@
 <translation id="3779810277399252432">Интернэт холболт алга.</translation>
 <translation id="3782614601387961027">Сануулгыг хаах</translation>
 <translation id="3789841737615482174">Суулгах</translation>
-<translation id="3795478177331815672">Таб болон табын бүлгүүдийг нээх</translation>
 <translation id="380329542618494757">Нэр</translation>
 <translation id="3803696231112616155">Энэ сайтыг орчуулахыг санал болгох</translation>
 <translation id="3808311849069021992">Хайлтын системийн дэлгэрэнгүй мэдээллийг харуулах</translation>
@@ -1813,6 +1811,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8343993175958086504">Зүйлсээ хуулбарлаж, дурын төхөөрөмж дээр ашиглана уу.</translation>
 <translation id="8348530355586151720">Гурван цэгтэй цэсийг товшино уу</translation>
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
+<translation id="8363484128299778310">Асуудал гарсан тохиолдолд түр сэргээх</translation>
 <translation id="8364563001733875155">ПИН-ээ өөрчлөхийн тулд эхлээд төхөөрөмж дээрээ нууц код тохируулна уу.</translation>
 <translation id="8366466717204352506">Шалгалтыг хэзээ ч явуулаагүй</translation>
 <translation id="8368001212524806591">Үнэ хянах</translation>

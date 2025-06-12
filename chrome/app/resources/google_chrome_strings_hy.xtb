@@ -221,6 +221,7 @@
 <translation id="3716540481907974026">ChromeOS Flex-ի տարբերակը</translation>
 <translation id="3718181793972440140">1 տարր ձեր սարքից կջնջվի: Հետագայում ձեր տվյալներն առբերելու համար մուտք գործեք Chrome <ph name="USER_EMAIL" /> հաշվով:</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome-ը խորհուրդ է տալիս հեռացնել այն։ <ph name="BEGIN_LINK" />Իմանալ ավելին աջակցվող ընդլայնումների մասին<ph name="END_LINK" />}one{Chrome-ը խորհուրդ է տալիս հեռացնել այն։ <ph name="BEGIN_LINK" />Իմանալ ավելին աջակցվող ընդլայնումների մասին<ph name="END_LINK" />}other{Chrome-ը խորհուրդ է տալիս հեռացնել դրանք։ <ph name="BEGIN_LINK" />Իմանալ ավելին աջակցվող ընդլայնումների մասին<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Իմանալ ավելին Chrome-ի տեղադրման մասին</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Մուտքի սխալի պատճառով ChromeOS Flex-ը չկարողացավ համաժամացնել ձեր տվյալները։</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

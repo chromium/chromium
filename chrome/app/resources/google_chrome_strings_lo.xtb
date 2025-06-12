@@ -223,6 +223,7 @@
 <translation id="3716540481907974026">ເວີຊັນ ChromeOS Flex</translation>
 <translation id="3718181793972440140">ນີ້ຈະລຶບ 1 ລາຍການອອກຈາກວິດີໂອນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ເປັນ <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome ແນະນຳໃຫ້ທ່ານລຶບອອກ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບສ່ວນຂະຫຍາຍທີ່ຮອງຮັບ<ph name="END_LINK" />}other{Chrome ແນະນຳໃຫ້ທ່ານລຶບອອກ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບສ່ວນຂະຫຍາຍທີ່ຮອງຮັບ<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຕິດຕັ້ງ Chrome</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກເກີດຄວາມຜິດພາດໃນການເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

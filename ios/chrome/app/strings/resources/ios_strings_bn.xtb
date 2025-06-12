@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">পরিচিতিতে যোগ করুন</translation>
 <translation id="355765753469272474">আগের অবস্থায় ফিরুন</translation>
 <translation id="3565930036634619844">ট্যাব। <ph name="NUMBER_OF_TABS" />টির মধ্যে <ph name="TAB_INDEX" /> নম্বর।</translation>
-<translation id="3570693105179140209">আরও পাসওয়ার্ডের জন্য ডবল ট্যাপ করুন।</translation>
 <translation id="3572607909481582402">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="3575426792457739946">এই তালিকাতে লোড করা সব প্রোফাইল আছে।</translation>
@@ -624,6 +623,7 @@
 <translation id="3596414637720633074">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="3602260545951981695">"উন্নত সুরক্ষা" বিকল্প বেছে নিন</translation>
 <translation id="3608436266458100337">পাঠক মোড</translation>
+<translation id="3610041351087301930">রিডার মোড লুকান</translation>
 <translation id="3622175633937495219">সার্চ ইতিহাস (<ph name="COUNT" />টি পাওয়া গেছে)</translation>
 <translation id="3625008969091706597">পিছনে যেতে প্রান্তটি সোয়াইপ করতে পারবেন।</translation>
 <translation id="362709345066740529">এখান থেকে আপনার কার্ড, ফিড ও আরও অনেক কিছু কাস্টমাইজ করুন</translation>
@@ -654,7 +654,6 @@
 <translation id="3779810277399252432">কোনও ইন্টারনেট সংযোগ নেই৷</translation>
 <translation id="3782614601387961027">সতর্কতা বাতিল করুন</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
-<translation id="3795478177331815672">ট্যাব ও ট্যাব গ্রুপ খুলুন</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই সাইট অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3808311849069021992">সার্চ ইঞ্জিনের বিবরণ দেখুন</translation>
@@ -1066,6 +1065,7 @@
 <translation id="5431252637281434233">আপনি সাইন-আউট হয়ে যাবেন</translation>
 <translation id="543338862236136125">পাসওয়ার্ড এডিট করুন</translation>
 <translation id="5433691172869980887">ইউজারনেম কপি করা হয়েছে</translation>
+<translation id="5437480232219631455">আপনি এখান থেকে Gemini খুলতে পারবেন</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="5443636120437209490">আরও ভালো ব্রাউজিংয়ের জন্য ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="5444892875087332195">বুকমার্ক</translation>
@@ -1814,6 +1814,7 @@
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="8348530355586151720">তিন ডট মেনুতে ট্যাপ করুন</translation>
 <translation id="8349305172487531364">বুকমার্কস বার</translation>
+<translation id="8363484128299778310">সমস্যার ক্ষেত্রে অস্থায়ী ফাইল থেকে পাসওয়ার্ড ফেরানো</translation>
 <translation id="8364563001733875155">আপনার পিন পরিবর্তন করতে, প্রথমে নিজের ডিভাইসে পাসকোড সেট-আপ করুন।</translation>
 <translation id="8366466717204352506">কখনও চেক করা হয়নি</translation>
 <translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>

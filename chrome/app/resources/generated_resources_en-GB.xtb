@@ -785,7 +785,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1542524755306892917">This allows Google Assistant to provide tailored responses when <ph name="SUPERVISED_USER_NAME" /> asks questions.</translation>
 <translation id="1543284117603151572">Imported From Edge</translation>
 <translation id="1543538514740974167">Get here quicker</translation>
-<translation id="154420222899071768">Your password wasn't updated, but you should still be able to access the site with your old password</translation>
 <translation id="1544588554445317666">Try using a shorter file name or saving to a different folder</translation>
 <translation id="1545177026077493356">Automatic Kiosk Mode</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
@@ -7028,7 +7027,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="594221546068848596">Search page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Device visibility</translation>
 <translation id="5943127421590245687">Your verification was successful. To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE" /> password.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> is managing your new tab page</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> may be dangerous. Send to Google Safe Browsing for scanning?</translation>
 <translation id="5945192511027649793">Disable touchpad</translation>
 <translation id="5945363896952315544">Your security key can't store any more fingerprints. To add a new one, first delete an existing fingerprint.</translation>

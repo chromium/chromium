@@ -867,6 +867,7 @@
           <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات
         <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">آپ کے لاگ ان ہونے کے دوران اس آلے سے منسلک کردہ پیریفیرلز</translation>
+<translation id="2450019289047528273">‏‫Google والٹ سے ادائیگی کے طریقے اور دیگر معلومات</translation>
 <translation id="2451607499823206582">ٹریکنگ</translation>
 <translation id="2452098632681057184">ایکولوجی اور ماحول</translation>
 <translation id="2452837234288608067">اس میں مدد نہیں کر سکا۔ دوبارہ کوشش کریں۔</translation>
@@ -2100,11 +2101,13 @@
 <translation id="4530347922939905757">ٹیکسٹ پیغام</translation>
 <translation id="4531477351494678589">ورچوئل کارڈ نمبر:</translation>
 <translation id="4535523368173457420">یہ سرچ انجنز آپ کے علاقے میں مقبول ہیں اور بے ترتیب آرڈر میں دکھائے جاتے ہیں</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{‫1 سال پہلے تخلیق کیا گیا}other{‫{NUM_YEARS} سال پہلے تخلیق کیا گیا}}</translation>
 <translation id="4541810033354695636">افزودہ حقیقت</translation>
 <translation id="4542971377163063093">ٹرے 6</translation>
 <translation id="4543072026714825470">‏اگلی بار زیادہ تیزی سے ادائیگی کرنے کے لیے، اپنے کارڈ اور بلنگ پتہ کو اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="454441086898495030"><ph name="SET" /> میں شامل کریں؟</translation>
 <translation id="4546730006268514143">منتقلی کا وقت ختم ہو گیا</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{‫1 دن پہلے تخلیق کیا گیا}other{‫{NUM_DAYS} دن پہلے تخلیق کیا گیا}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">آپ پاس ورڈز درج کرنے کے لیے اپنا اسکرین لاک استعمال کر رہے ہیں</translation>
 <translation id="4557573143631562971">ہوم انشورنس</translation>
@@ -2898,6 +2901,7 @@
 <translation id="5938153366081463283">ورچوئل کارڈ شامل کریں</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">‏یہ معلومات آزاد جائزہ کی ویب سائٹس جیسے Trustpilot, ScamAdviser, Google اور مزید سے آتی ہے۔ خلاصے AI کے ساتھ بنائے جاتے ہیں۔</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{‫1 منٹ پہلے تخلیق کیا گیا}other{‫{NUM_MINS} منٹ پہلے تخلیق کیا گیا}}</translation>
 <translation id="5944297261866530437">فیبرک (ہائی گلوس)</translation>
 <translation id="5950901984834744590">ریزرز اور شیورز</translation>
 <translation id="5951495562196540101">صارف اکاؤنٹ کے ذریعے اندراج نہیں کر سکتے (پیکیج شدہ لائسنس دستیاب ہے)۔</translation>
@@ -4059,6 +4063,7 @@
 <translation id="7894280532028510793">اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="7901831439558593470">‏‎7 x 9 انچ لفافہ</translation>
 <translation id="7905064834449738336">‏آپ کے پاس ورڈ کا استعمال کرنے پر، Chromium اس کے آن لائن شائع ہونے پر آپ کو متنبہ کرتا ہے۔ ایسا کرتے وقت، آپ کے پاس ورڈز اور صارف نام مرموز ہو جاتے ہیں، تاکہ وہ Google سمیت کسی بھی شخص کے ذریعے نہ پڑھے جا سکیں۔</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{‫1 گھنٹہ پہلے تخلیق کیا گیا}other{‫{NUM_HOURS} گھنٹے پہلے تخلیق کیا گیا}}</translation>
 <translation id="7908648876066812348">ورچوئل کارڈ آن کیا جا رہا ہے</translation>
 <translation id="7909498058929404306">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، ترتیبات میں Chrome سیفٹی چیک صفحہ پر جانے کے لیے Tab پھر Enter دبائیں</translation>
 <translation id="791107458486222637">نتیجے کو دوبارہ تخلیق کیا جا رہا ہے</translation>
@@ -4193,6 +4198,7 @@
 <translation id="8134058435519644366">تقرری اور عملہ سازی</translation>
 <translation id="8135546115396015134">بائیں کلید</translation>
 <translation id="8137456439814903304">توانائی اور یوٹیلیٹیز</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{‫1 ماہ پہلے تخلیق کیا گیا}other{‫{NUM_MONTHS} ماہ پہلے تخلیق کیا گیا}}</translation>
 <translation id="8148608574971654810">‏PDF ورژن:</translation>
 <translation id="8149426793427495338">آپ کا کمپیوٹر سلیپ وضع میں چلا گیا۔</translation>
 <translation id="8150722005171944719"><ph name="URL" /> پر موجود فائل پڑھنے لائق نہیں ہے۔ ممکن ہے اسے ہٹا دیا گیا ہو، منتقل کر دیا گیا ہو یا ممکن ہے فائل کی اجازتیں رسائی روک رہی ہوں۔</translation>

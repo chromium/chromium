@@ -785,7 +785,6 @@
 <translation id="1542524755306892917">이를 통해 <ph name="SUPERVISED_USER_NAME" />님이 질문할 때 Google 어시스턴트가 맞춤형 대답을 제공할 수 있습니다.</translation>
 <translation id="1543284117603151572">Edge에서 가져옴</translation>
 <translation id="1543538514740974167">여기로 더 빠르게 이동하기</translation>
-<translation id="154420222899071768">비밀번호가 업데이트되지 않았으며, 계속해서 이전 비밀번호로 사이트에 액세스할 수 있습니다.</translation>
 <translation id="1544588554445317666">파일 이름을 짧게 줄이거나 다른 폴더에 저장해 보세요</translation>
 <translation id="1545177026077493356">자동 키오스크 모드</translation>
 <translation id="1545749641540134597">QR 코드 스캔</translation>
@@ -7029,7 +7028,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 검색</translation>
 <translation id="5942779427914696408">내 기기 공개 범위</translation>
 <translation id="5943127421590245687">인증이 완료되었습니다. 로컬 데이터를 잠금 해제하고 복원하려면 이전 <ph name="DEVICE_TYPE" /> 비밀번호를 입력하세요</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" />에서 새 탭 페이지를 관리합니다.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 파일은 위험할 수 있습니다. 검사를 위해 Google 세이프 브라우징으로 전송하시겠습니까?</translation>
 <translation id="5945192511027649793">터치패드 사용 중지</translation>
 <translation id="5945363896952315544">보안 키에 지문을 추가로 저장할 수 없습니다. 새 지문을 추가하려면 먼저 기존 지문을 삭제하세요.</translation>
@@ -9084,7 +9082,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" />에 실행 권한 필요</translation>
 <translation id="7424153922653300265">에너지 절약 모드 사용 설정됨</translation>
 <translation id="7424818322350938336">네트워크 추가됨</translation>
-<translation id="7425037327577270384">작성 지원 기능</translation>
+<translation id="7425037327577270384">글쓰기 도우미</translation>
 <translation id="7427348830195639090">백그라운드 페이지: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">관리되는 프로필입니다</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" />에서 전화 걸기</translation>
@@ -9481,7 +9479,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" />에 전송 중지</translation>
 <translation id="7704305437604973648">작업</translation>
 <translation id="7704521324619958564">Play 스토어 열기</translation>
-<translation id="7705085181312584869">작성 지원 기능</translation>
+<translation id="7705085181312584869">글쓰기 도우미</translation>
 <translation id="7705276765467986571">북마크 모델을 로드하지 못했습니다.</translation>
 <translation id="7705334495398865155">다른 사람이 이 기기를 추적하지 못하도록 하드웨어 ID(BSSID)를 무작위로 선택합니다.</translation>
 <translation id="7705524343798198388">VPN</translation>

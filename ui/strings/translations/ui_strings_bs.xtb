@@ -9,7 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{Prije 1 dan}one{Prije # dan}few{Prije # dana}other{Prije # dana}}</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1243314992276662751">Otpremi</translation>
-<translation id="1253734725326687145">Cilj dodira premješten je gore desno. Dodirnite ovdje.</translation>
+<translation id="1253734725326687145">Ciljana površina dodira je premještena u gornji desni ugao. Dodir ovdje.</translation>
 <translation id="1266864766717917324">Nije moguće podijeliti <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Pokušajte podijeliti tekst u manjim dijelovima.</translation>
@@ -57,7 +57,7 @@
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="24452542372838207">Proširi obavještenje</translation>
 <translation id="2445449901874883781">Koristi veću gustoću</translation>
-<translation id="2448407890032181691">Cilj dodira premješten je dolje desno. Dodirnite ovdje.</translation>
+<translation id="2448407890032181691">Ciljana površina dodira je premještena u donji desni ugao. Dodir ovdje.</translation>
 <translation id="2482878487686419369">Obavještenja</translation>
 <translation id="2497284189126895209">Svi fajlovi</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -143,7 +143,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Strelica ulijevo</translation>
 <translation id="5633029987065897167">Prazno</translation>
-<translation id="5651438382973553530">Cilj dodira premješten je dolje lijevo. Dodirnite ovdje.</translation>
+<translation id="5651438382973553530">Ciljana površina dodira je premještena u donji lijevi ugao. Dodir ovdje.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# min}few{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktivan danas}=1{Aktivan prije 1 dan}one{Aktivan prije # dan}few{Aktivan prije # dana}other{Aktivan prije # dana}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dan i }one{# dan i }few{# dana i }other{# dan i }}</translation>

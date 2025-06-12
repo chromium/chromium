@@ -867,6 +867,7 @@
             <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകിയ വിവരങ്ങൾ
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">നിങ്ങൾ ലോഗിൻ ചെയ്‌തിരിക്കുമ്പോൾ ഈ ഉപകരണത്തിൽ അറ്റാച്ച് ചെയ്തിരിക്കുന്ന പെരിഫറലുകൾ</translation>
+<translation id="2450019289047528273">പേയ്മെന്റ് രീതികളും Google Wallet-ൽ നിന്നുള്ള മറ്റ് വിവരങ്ങളും</translation>
 <translation id="2451607499823206582">ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="2452098632681057184">പരിസ്ഥിതി ശാസ്ത്രവും പരിസ്ഥിതിയും</translation>
 <translation id="2452837234288608067">അതുമായി ബന്ധപ്പെട്ട് സഹായിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
@@ -1562,6 +1563,7 @@
 <translation id="3641116835972736297">അമേരിക്കൻ ഫുട്‌ബോൾ</translation>
 <translation id="3642196846309122856">നിങ്ങളുടെ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="3642638418806704195">ആപ്പ്:</translation>
+<translation id="3644768007456662469">പേയ്‌മെന്റ് ഇന ഐക്കൺ</translation>
 <translation id="3646643500201740985">ഒരു പരസ്യം എത്ര നല്ല പ്രകടനം നടത്തി എന്ന് അളക്കൽ</translation>
 <translation id="3647286794400715637">URL-കളുടെ ഓരോ സ്ട്രിംഗ് എൻട്രിയിലും 1 മുതൽ 2 വരെ URL-കൾ ഉണ്ടായിരിക്കണം.</translation>
 <translation id="3647400963805615193">Chrome നുറുങ്ങ് ബട്ടൺ ഡിസ്മിസ് ചെയ്യുക, ഡിസ്മിസ് ചെയ്യാൻ 'Enter' അമർത്തുക, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2098,11 +2100,13 @@
 <translation id="4530347922939905757">ടെക്സ്റ്റ് മെസേജ്</translation>
 <translation id="4531477351494678589">വെർച്വൽ കാർഡ് നമ്പർ:</translation>
 <translation id="4535523368173457420">നിങ്ങളുടെ പ്രദേശത്ത് ജനപ്രിയമായ തിരയൽ യന്ത്രങ്ങൾ ഇവയാണ്, അവ ക്രമരഹിതമായാണ് കാണിച്ചിരിക്കുന്നത്</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{ഒരു വർഷം മുമ്പ് സൃഷ്ടിച്ചത്}other{{NUM_YEARS} വർഷം മുമ്പ് സൃഷ്ടിച്ചത്}}</translation>
 <translation id="4541810033354695636">അനുബന്ധയാഥാർത്ഥ്യം</translation>
 <translation id="4542971377163063093">ട്രേ 6</translation>
 <translation id="4543072026714825470">അടുത്ത പ്രാവശ്യം വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ Google Account-ൽ ഈ കാർഡും ബില്ലിംഗ് വിലാസവും സംരക്ഷിക്കുക</translation>
 <translation id="454441086898495030"><ph name="SET" /> എന്നതിലേക്ക് ചേർക്കണോ?</translation>
 <translation id="4546730006268514143">കൈമാറുന്നത് ടൈംഔട്ട് ആയി</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{ഒരു ദിവസം മുമ്പ് സൃഷ്‌ടിച്ചത്}other{{NUM_DAYS} ദിവസം മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ നിങ്ങൾ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുന്നു</translation>
 <translation id="4557573143631562971">ഭവന ഇൻഷുറൻസ്</translation>
@@ -2896,6 +2900,7 @@
 <translation id="5938153366081463283">വെർച്വൽ കാർഡ് ചേർക്കുക</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">ഈ വിവരങ്ങൾ Trustpilot, ScamAdviser, Google തുടങ്ങിയ സ്വതന്ത്ര റിവ്യൂ വെബ്സൈറ്റുകളിൽ നിന്നുള്ളതാണ്. AI ഉപയോഗിച്ചാണ് സംഗ്രഹങ്ങൾ സൃഷ്ടിച്ചിട്ടുള്ളത്.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{ഒരു മിനിറ്റ് മുമ്പ് സൃഷ്‌ടിച്ചത്}other{{NUM_MINS} മിനിറ്റ് മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="5944297261866530437">ഫാബ്രിക് (ഹൈ ഗ്ലോസ്)</translation>
 <translation id="5950901984834744590">റേസറുകളും ഷേവറുകളും</translation>
 <translation id="5951495562196540101">ഉപയോക്തൃ അക്കൗണ്ട് ഉപയോഗിച്ച് എൻറോൾ ചെയ്യാനാവില്ല (പാക്കേജ് ചെയ്‌ത ലൈസൻസ് ലഭ്യമാണ്).</translation>
@@ -4055,6 +4060,7 @@
 <translation id="7894280532028510793">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ <ph name="BEGIN_LINK" /> നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 ഇഞ്ച്</translation>
 <translation id="7905064834449738336">നിങ്ങൾ ഒരു പാസ്‌വേഡ് ഉപയോഗിക്കുമ്പോൾ, അത് ഓൺലൈനിൽ പ്രസിദ്ധീകരിച്ചിട്ടുണ്ടെങ്കിൽ Chromium മുന്നറിയിപ്പ് നൽകുന്നു. ഇത് ചെയ്യുമ്പോൾ, നിങ്ങളുടെ പാസ്‌വേഡുകളും ഉപയോക്തൃനാമങ്ങളും എൻ‌ക്രിപ്റ്റ് ചെയ്‌ത നിലയിലായിരിക്കും, അതിനാൽ അവ Google ഉൾപ്പെടെ ആർക്കും വായിക്കാൻ കഴിയില്ല.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{ഒരു മണിക്കൂർ മുമ്പ് സൃഷ്‌ടിച്ചത്}other{{NUM_HOURS} മണിക്കൂർ മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="7908648876066812348">വെർച്വൽ കാർഡ് ഓണാക്കുന്നു</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ക്രമീകരണത്തിലെ Chrome സുരക്ഷാ പരിശോധനാ പേജിലേക്ക് പോകാൻ, Tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="791107458486222637">ഫലം വീണ്ടും സൃഷ്‌ടിക്കുന്നു</translation>
@@ -4189,6 +4195,7 @@
 <translation id="8134058435519644366">റിക്രൂട്ട് ചെയ്യലും ജീവനക്കാരെ നിയമിക്കലും</translation>
 <translation id="8135546115396015134">'Left' കീ</translation>
 <translation id="8137456439814903304">ഊർജ്ജവും യൂട്ടിലിറ്റികളും</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{ഒരു മാസം മുമ്പ് സൃഷ്‌ടിച്ചത്}other{{NUM_MONTHS} മാസം മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="8148608574971654810">PDF പതിപ്പ്:</translation>
 <translation id="8149426793427495338">നിങ്ങളുടെ കമ്പ്യൂട്ടർ സ്ലീപ് മോഡിലാണ്.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> എന്നതിലെ ഫയൽ റീഡ് ചെയ്യാനാവുന്നില്ല.  അത് നീക്കംചെയ്‌തിരിക്കുകയോ, നീക്കിയിരിക്കുകയോ ഫയൽ അനുമതികൾ ആക്‌സസ് തടയുകയോ ചെയ്യുന്നുണ്ടാകാം.</translation>

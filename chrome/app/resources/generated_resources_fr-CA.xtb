@@ -785,7 +785,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1542524755306892917">Cette option permet à l'Assistant Google de fournir des réponses personnalisées lorsque <ph name="SUPERVISED_USER_NAME" /> pose des questions.</translation>
 <translation id="1543284117603151572">Importé à partir d'Edge</translation>
 <translation id="1543538514740974167">Arrivez ici plus rapidement</translation>
-<translation id="154420222899071768">Votre mot de passe n'a pas été mis à jour, mais vous devriez toujours pouvoir accéder au site avec votre ancien mot de passe</translation>
 <translation id="1544588554445317666">Essayez d'utiliser un nom de fichier plus court ou de l'enregistrer dans un autre dossier</translation>
 <translation id="1545177026077493356">Mode kiosque automatique</translation>
 <translation id="1545749641540134597">Balayer le code QR</translation>
@@ -7016,7 +7015,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="594221546068848596">Rechercher la page avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Visibilité de l'appareil</translation>
 <translation id="5943127421590245687">Votre vérification a réussi. Pour déverrouiller et restaurer vos données locales, veuillez entrer votre ancien mot de passe <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> gère votre page Nouvel Onglet</translation>
 <translation id="5945002094477276055">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Voulez-vous l'envoyer au service de navigation sécurisée Google pour le faire analyser?</translation>
 <translation id="5945192511027649793">Désactiver le pavé tactile</translation>
 <translation id="5945363896952315544">Votre clé de sécurité ne peut pas stocker davantage d'empreintes digitales. Pour en ajouter une, commencer par supprimer une empreinte digitale existante.</translation>
@@ -7212,7 +7210,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6088475950266477163">Paramètres</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône de favori</translation>
 <translation id="6089289670051481345">Tritanomalie</translation>
-<translation id="6090760257419195752">Mises en garde ignorées</translation>
+<translation id="6090760257419195752">Avertissements ignorés</translation>
 <translation id="609174145569509836">Libérer de l'espace de stockage</translation>
 <translation id="6091761513005122595">Partage correctement configuré.</translation>
 <translation id="6093803049406781019">Supprimer le profil</translation>

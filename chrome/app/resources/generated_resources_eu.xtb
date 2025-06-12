@@ -784,7 +784,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1542524755306892917"><ph name="SUPERVISED_USER_NAME" /> erabiltzaileak galderak egiten dituenean, erantzun pertsonalizatuak eman ahal izango dizkio Google-ren Laguntzailea zerbitzuak.</translation>
 <translation id="1543284117603151572">Edge-tik inportatutakoak</translation>
 <translation id="1543538514740974167">Iritsi hona azkarrago</translation>
-<translation id="154420222899071768">Pasahitza ez da eguneratu, baina webgunean pasahitz zaharrarekin saioa hasteko aukera izan beharko zenuke</translation>
 <translation id="1544588554445317666">Erabili izen laburrago bat edo gorde fitxategia beste karpeta batean</translation>
 <translation id="1545177026077493356">Kiosko modu automatikoa</translation>
 <translation id="1545749641540134597">Eskaneatu QR kodea</translation>
@@ -7009,7 +7008,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="594221546068848596">Bilatu orria <ph name="VISUAL_SEARCH_PROVIDER" /> bidez</translation>
 <translation id="5942779427914696408">Gailuaren ikusgaitasuna</translation>
 <translation id="5943127421590245687">Egiaztatu da. Gailuko datuak desblokeatu eta leheneratzeko, idatzi <ph name="DEVICE_TYPE" /> gailuko pasahitz zaharra.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> da zure fitxa berriaren orriaren kudeatzailea</translation>
 <translation id="5945002094477276055">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea. Google-ren Arakatze segurua zerbitzura bidali nahi duzu aztertzeko?</translation>
 <translation id="5945192511027649793">Desgaitu ukipen-panela</translation>
 <translation id="5945363896952315544">Ezin da hatz-marka gehiagorik gorde segurtasun-giltzan. Beste bat gehitzeko, ezabatu lehendik dagoen bat.</translation>

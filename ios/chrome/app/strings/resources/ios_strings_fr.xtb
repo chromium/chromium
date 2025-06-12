@@ -611,7 +611,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
 <translation id="355765753469272474">Annuler</translation>
 <translation id="3565930036634619844">Onglet. <ph name="TAB_INDEX" /> sur <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Appuyez deux fois pour plus de mots de passe.</translation>
 <translation id="3572607909481582402">Dans votre compte Google</translation>
 <translation id="3575234738189584619">Rechercher avec Lens</translation>
 <translation id="3575426792457739946">Cette liste contient tous les profils chargés.</translation>
@@ -654,7 +653,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3779810277399252432">Aucune connexion Internet.</translation>
 <translation id="3782614601387961027">Fermer l'avertissement</translation>
 <translation id="3789841737615482174">Installer</translation>
-<translation id="3795478177331815672">Ouvrir des onglets et des groupes d'onglets</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803696231112616155">Proposer de traduire ce site</translation>
 <translation id="3808311849069021992">Afficher les informations sur le moteur de recherche</translation>
@@ -1813,6 +1811,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil.</translation>
 <translation id="8348530355586151720">Appuyez sur l'icône du menu à trois points</translation>
 <translation id="8349305172487531364">Barre de favoris</translation>
+<translation id="8363484128299778310">Récupération temporaire en cas de problème</translation>
 <translation id="8364563001733875155">Pour modifier votre code, configurez d'abord un code secret sur votre appareil.</translation>
 <translation id="8366466717204352506">Aucune vérification jusqu'à présent</translation>
 <translation id="8368001212524806591">Suivre les prix</translation>
@@ -2025,7 +2024,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9098541895599151034">Supprimer <ph name="NUMBER_OF_ACCOUNTS" /> mots de passe ?</translation>
 <translation id="9099233023029360602">Demander quel compte utiliser à chaque fois</translation>
 <translation id="9099821309562615674">Assurez-vous que le texte que vous traduisez est clair et bien cadré.</translation>
-<translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
+<translation id="9100610230175265781">Phrase secrète requise</translation>
 <translation id="91023216973987714">Modes de paiement</translation>
 <translation id="9106655997975673326">Provenant de <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>

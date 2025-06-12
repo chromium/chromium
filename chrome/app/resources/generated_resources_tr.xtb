@@ -784,7 +784,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1542524755306892917">Bu sayede Google Asistan, <ph name="SUPERVISED_USER_NAME" /> soru sorduğunda bu kullanıcıya özel hazırlanmış yanıtlar verebilir.</translation>
 <translation id="1543284117603151572">Edge'den Aktarıldı</translation>
 <translation id="1543538514740974167">Buraya daha hızlı ulaşın</translation>
-<translation id="154420222899071768">Şifreniz güncellenmedi ancak siteye eski şifrenizle erişebilirsiniz</translation>
 <translation id="1544588554445317666">Daha kısa bir dosya adı kullanmayı veya farklı bir klasöre kaydetmeyi deneyin</translation>
 <translation id="1545177026077493356">Otomatik Kiosk Modu</translation>
 <translation id="1545749641540134597">QR Kodunu Tara</translation>
@@ -7011,7 +7010,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="594221546068848596">Sayfada <ph name="VISUAL_SEARCH_PROVIDER" /> ile arama yap</translation>
 <translation id="5942779427914696408">Cihaz görünürlüğü</translation>
 <translation id="5943127421590245687">Doğrulama işleminiz başarıyla tamamlandı. Kilidini açıp yerel verilerinizi geri yüklemek için lütfen eski <ph name="DEVICE_TYPE" /> cihazınızın şifresini girin.</translation>
-<translation id="5943209617717087975">Yeni sekme sayfanızı <ph name="THIRD_PARTY_NTP_MANAGER" /> yönetiyor</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> tehlikeli olabilir. Taranmak üzere Google Güvenli Tarama'ya gönderilsin mi?</translation>
 <translation id="5945192511027649793">Dokunmatik alanı devre dışı bırak</translation>
 <translation id="5945363896952315544">Güvenlik anahtarınız, daha fazla parmak izi depolayamaz. Yeni bir parmak izi eklemek için önce mevcut bir tanesini silin.</translation>

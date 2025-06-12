@@ -786,7 +786,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1542524755306892917">Dette giver Google Assistent mulighed for at give dig tilpassede svar, når <ph name="SUPERVISED_USER_NAME" /> stiller spørgsmål.</translation>
 <translation id="1543284117603151572">Importeret fra Edge</translation>
 <translation id="1543538514740974167">Få hurtig adgang</translation>
-<translation id="154420222899071768">Din adgangskode blev ikke opdateret, men du bør stadig kunne tilgå websitet med din gamle adgangskode</translation>
 <translation id="1544588554445317666">Prøv at bruge et kortere filnavn eller gemme i en anden mappe</translation>
 <translation id="1545177026077493356">Automatisk terminaltilstand</translation>
 <translation id="1545749641540134597">Scan QR-kode</translation>
@@ -7030,7 +7029,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="594221546068848596">Søg på siden med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Enhedens synlighed</translation>
 <translation id="5943127421590245687">Verificering er gennemført. Angiv din gamle <ph name="DEVICE_TYPE" /> adgangskode for at låse op for og gendanne dine lokale data.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> administrerer siden Ny fane</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> kan være skadelig. Skal Google Beskyttet browsing scanne den?</translation>
 <translation id="5945192511027649793">Deaktiver touchplade</translation>
 <translation id="5945363896952315544">Din sikkerhedsnøgle kan ikke gemme flere fingeraftryk. Hvis du vil tilføje et nyt, skal du først slette et eksisterende fingeraftryk.</translation>

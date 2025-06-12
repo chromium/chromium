@@ -867,6 +867,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
             <ph name="LIST_ITEM" />informasjon du har lagt inn skjemaer
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Eksterne enheter som er koblet til denne enheten, mens du er pålogget</translation>
+<translation id="2450019289047528273">Betalingsmåter og annen informasjon fra Google Wallet</translation>
 <translation id="2451607499823206582">Sporing</translation>
 <translation id="2452098632681057184">Økologi og miljø</translation>
 <translation id="2452837234288608067">Vi kunne ikke hjelpe deg med det. Prøv på nytt.</translation>
@@ -1563,6 +1564,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3641116835972736297">Amerikansk fotball</translation>
 <translation id="3642196846309122856">Prøv å laste ned filene på nytt</translation>
 <translation id="3642638418806704195">Program:</translation>
+<translation id="3644768007456662469">Ikon for betalingselement</translation>
 <translation id="3646643500201740985">Måling av annonseresultater</translation>
 <translation id="3647286794400715637">Hver nettadresse-strengoppføring må inneholde 1–2 nettadresser.</translation>
 <translation id="3647400963805615193">Knappen «Lukk Chrome-tipset» – trykk på Enter for å lukke, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2099,11 +2101,13 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Virtuelt kortnummer</translation>
 <translation id="4535523368173457420">Disse søkemotorene er populære i regionen din og vises i tilfeldig rekkefølge</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Opprettet for ett år siden}other{Opprettet for {NUM_YEARS} år siden}}</translation>
 <translation id="4541810033354695636">utvidet virkelighet</translation>
 <translation id="4542971377163063093">Skuff 6</translation>
 <translation id="4543072026714825470">For å betale raskere neste gang, lagre kortet og faktureringsadressen i Google-kontoen din</translation>
 <translation id="454441086898495030">Vil du legge til siden i <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Overføringen ble tidsavbrutt</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Opprettet for én dag siden}other{Opprettet for {NUM_DAYS} dager siden}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Du bruker skjermlåsen til å fylle ut passord</translation>
 <translation id="4557573143631562971">Boligforsikring</translation>
@@ -2897,6 +2901,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5938153366081463283">Legg til et virtuelt kort</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Denne informasjonen kommer fra uavhengige anmeldelsesnettsteder som Trustpilot, ScamAdviser, Google med flere. Sammendragene opprettes med AI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Opprettet for ett minutt siden}other{Opprettet for {NUM_MINS} minutter siden}}</translation>
 <translation id="5944297261866530437">Stoff (høyglans)</translation>
 <translation id="5950901984834744590">Barberhøvler og barbermaskiner</translation>
 <translation id="5951495562196540101">Kan ikke registrere med en forbrukerkonto (medfølgende lisens er tilgjengelig).</translation>
@@ -4057,6 +4062,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7894280532028510793">Hvis stavemåten er korrekt, kan du <ph name="BEGIN_LINK" />prøve å kjøre Nettverksdiagnose<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Konvolutt 7 x 9 tommer</translation>
 <translation id="7905064834449738336">Når du bruker et passord, advarer Chromium deg hvis passordet er publisert på nettet. Denne funksjonen holder passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Opprettet for én time siden}other{Opprettet for {NUM_HOURS} timer siden}}</translation>
 <translation id="7908648876066812348">Slår på virtuelt kort</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å gå til siden for Chrome-sikkerhetssjekk i innstillingene</translation>
 <translation id="791107458486222637">Gjør om resultatet</translation>
@@ -4191,6 +4197,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8134058435519644366">Rekruttering og bemanning</translation>
 <translation id="8135546115396015134">venstretast</translation>
 <translation id="8137456439814903304">Energi og infrastruktur</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Opprettet for én måned siden}other{Opprettet for {NUM_MONTHS} måneder siden}}</translation>
 <translation id="8148608574971654810">PDF-versjon:</translation>
 <translation id="8149426793427495338">Datamaskinen din gikk inn i hvilemodus.</translation>
 <translation id="8150722005171944719">Kunne ikke lese filen på <ph name="URL" /> Den kan ha blitt fjernet eller flyttet. Det kan også være filtillatelser som forhindrer tilgang.</translation>

@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">Байланыштарга кошуу</translation>
 <translation id="355765753469272474">Кайтаруу</translation>
 <translation id="3565930036634619844">Өтмөк. <ph name="NUMBER_OF_TABS" /> ичинен <ph name="TAB_INDEX" />.</translation>
-<translation id="3570693105179140209">Көбүрөөк сырсөздөрдү көрүү үчүн эки жолу басыңыз.</translation>
 <translation id="3572607909481582402">Google аккаунтуңузда</translation>
 <translation id="3575234738189584619">Lens менен издөө</translation>
 <translation id="3575426792457739946">Бул тизмеде бардык жүктөлгөн профилдер камтылат.</translation>
@@ -654,7 +653,6 @@
 <translation id="3779810277399252432">Интернет жок.</translation>
 <translation id="3782614601387961027">Эскертүүнү этибарга албоо</translation>
 <translation id="3789841737615482174">Орнотуу</translation>
-<translation id="3795478177331815672">Өтмөктөрдү жана өтмөктөрдүн топторун ачуу</translation>
 <translation id="380329542618494757">Ата-жөнү</translation>
 <translation id="3803696231112616155">Бул сайтты которууну сунуштоо</translation>
 <translation id="3808311849069021992">Издөө куралынын чоо-жайын көрсөтүү</translation>
@@ -1813,6 +1811,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8343993175958086504">Маалыматтын камдык көчүрмөсүн сактап, башка түзмөктө колдоно аласыз.</translation>
 <translation id="8348530355586151720">Үч чекиттүү менюну таптаңыз</translation>
 <translation id="8349305172487531364">Кыстармалар тилкеси</translation>
+<translation id="8363484128299778310">Маселе келип чыкса, убактылуу калыбына келтирүү</translation>
 <translation id="8364563001733875155">PIN-кодуңузду өзгөртүү үчүн алгач түзмөгүңүздө өткөрүүчү кодду тууралап алыңыз.</translation>
 <translation id="8366466717204352506">Эч качан текшерилбейт</translation>
 <translation id="8368001212524806591">Баага көз салуу</translation>

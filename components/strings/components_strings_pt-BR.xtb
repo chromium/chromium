@@ -295,7 +295,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1482372785911828880">Ultrafino</translation>
 <translation id="1482879811280872320">De bicicleta</translation>
 <translation id="1483493594462132177">Enviar</translation>
-<translation id="1484449009683144042">Esta é uma ferramenta experimental de escrita com tecnologia de IA que nem sempre acerta.
+<translation id="1484449009683144042">Esta é uma ferramenta experimental de escrita com tecnologia de IA. Sujeita a erros.
     <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1486096554574027028">Pesquise senhas</translation>
 <translation id="1492194039220927094">Push de políticas:</translation>
@@ -867,6 +867,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
             <ph name="LIST_ITEM" />Informações inseridas em formulários
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Periféricos vinculados a este dispositivo enquanto sua conta está conectada</translation>
+<translation id="2450019289047528273">Formas de pagamento e outras informações da Carteira do Google</translation>
 <translation id="2451607499823206582">Monitoramento</translation>
 <translation id="2452098632681057184">Ecologia e meio ambiente</translation>
 <translation id="2452837234288608067">Não foi possível ajudar. Tente de novo.</translation>

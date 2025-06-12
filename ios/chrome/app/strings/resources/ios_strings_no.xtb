@@ -611,7 +611,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3557336313807607643">Legg til i kontakter</translation>
 <translation id="355765753469272474">Angre</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Dobbelttrykk for å se flere passord.</translation>
 <translation id="3572607909481582402">I Google-kontoen din</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
 <translation id="3575426792457739946">På denne listen finner du alle innlastede profiler.</translation>
@@ -624,6 +623,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3596414637720633074">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="3602260545951981695">Velg «Økt beskyttelse»</translation>
 <translation id="3608436266458100337">Lesermodus</translation>
+<translation id="3610041351087301930">Skjul leser</translation>
 <translation id="3622175633937495219">Søkelogg (fant <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Du kan sveipe på kanten for å gå tilbake.</translation>
 <translation id="362709345066740529">Tilpass kortene, feeden med mer her</translation>
@@ -654,7 +654,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3779810277399252432">Ingen internettilkobling.</translation>
 <translation id="3782614601387961027">Lukk varsel</translation>
 <translation id="3789841737615482174">Installer</translation>
-<translation id="3795478177331815672">Åpne faner og fanegrupper</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803696231112616155">Tilby å oversette dette nettstedet</translation>
 <translation id="3808311849069021992">Vis søkemotordetaljer</translation>
@@ -1066,6 +1065,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5431252637281434233">Du blir logget av</translation>
 <translation id="543338862236136125">Endre passordet</translation>
 <translation id="5433691172869980887">Brukernavnet er kopiert</translation>
+<translation id="5437480232219631455">Du kan åpne Gemini her</translation>
 <translation id="5439618055789623719">Logget på som <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Bedre surfing som standard</translation>
 <translation id="5444892875087332195">Bokmerker</translation>
@@ -1813,6 +1813,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
 <translation id="8348530355586151720">Trykk på menyen med tre prikker</translation>
 <translation id="8349305172487531364">Bokmerkerad</translation>
+<translation id="8363484128299778310">Midlertidig gjenoppretting i tilfelle problemer</translation>
 <translation id="8364563001733875155">For å endre PIN-koden må du først konfigurere en adgangskode på enheten.</translation>
 <translation id="8366466717204352506">Sjekken har aldri vært kjørt</translation>
 <translation id="8368001212524806591">Spor prisen</translation>

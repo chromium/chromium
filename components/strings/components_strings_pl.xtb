@@ -295,7 +295,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1482372785911828880">Bardzo cienka</translation>
 <translation id="1482879811280872320">Jazda na rowerze</translation>
 <translation id="1483493594462132177">Wyślij</translation>
-<translation id="1484449009683144042">To eksperymentalne narzędzie AI do pisania, które nie zawsze działa dobrze.
+<translation id="1484449009683144042">To eksperymentalne narzędzie do pisania oparte na AI, które nie zawsze działa dobrze.
     <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1486096554574027028">Szukaj haseł</translation>
 <translation id="1492194039220927094">Przekazywanie zasad w trybie push:</translation>
@@ -838,7 +838,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2385809941344967209">Aktualizuj Chrome z poziomu ustawień przeglądarki</translation>
 <translation id="2386255080630008482">Certyfikat serwera został unieważniony.</translation>
 <translation id="2388828676877700238">Pomoc i planowanie dotyczące rozliczeń podatkowych</translation>
-<translation id="239203817277685015">Rozwiń twórczo</translation>
+<translation id="239203817277685015">Rozwiń</translation>
 <translation id="239293030466334554">Kabriolety</translation>
 <translation id="2392959068659972793">Pokaż zasady bez ustawionej wartości</translation>
 <translation id="239429038616798445">Ta metoda wysyłki jest niedostępna. Wybierz inną.</translation>
@@ -867,6 +867,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
             <ph name="LIST_ITEM" />informacji podanych w formularzach.
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Urządzenia peryferyjne podłączone do tego urządzenia, gdy jesteś zalogowany(-a)</translation>
+<translation id="2450019289047528273">Formy płatności i inne informacje z Portfela Google</translation>
 <translation id="2451607499823206582">Śledzenie</translation>
 <translation id="2452098632681057184">Ekologia i środowisko</translation>
 <translation id="2452837234288608067">Nie udało się pomóc. Spróbuj ponownie.</translation>
@@ -1563,6 +1564,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3641116835972736297">Futbol amerykański</translation>
 <translation id="3642196846309122856">Spróbuj ponownie pobrać pliki</translation>
 <translation id="3642638418806704195">Aplikacja:</translation>
+<translation id="3644768007456662469">Ikona elementu płatności</translation>
 <translation id="3646643500201740985">Pomiar skuteczności reklamy</translation>
 <translation id="3647286794400715637">Każda pozycja z adresami URL musi zawierać od 1 do 2 takich adresów.</translation>
 <translation id="3647400963805615193">Przycisk zamykający wskazówkę dotyczącą Chrome; naciśnij Enter, aby zamknąć; <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2099,11 +2101,13 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Numer karty wirtualnej:</translation>
 <translation id="4535523368173457420">Te wyszukiwarki są popularne w Twoim regionie – pokazujemy je w kolejności losowej</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Utworzono rok temu}few{Utworzono {NUM_YEARS} lata temu}many{Utworzono {NUM_YEARS} lat temu}other{Utworzono {NUM_YEARS} roku temu}}</translation>
 <translation id="4541810033354695636">rzeczywistość rozszerzona</translation>
 <translation id="4542971377163063093">Taca 8</translation>
 <translation id="4543072026714825470">Aby następnym razem zapłacić szybciej, zapisz kartę oraz adres rozliczeniowy na swoim koncie Google</translation>
 <translation id="454441086898495030">Dodać do: <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Przekroczono limit czasu przesyłania</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Utworzono 1 dzień temu}few{Utworzono {NUM_DAYS} dni temu}many{Utworzono {NUM_DAYS} dni temu}other{Utworzono {NUM_DAYS} dnia temu}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Używasz blokady ekranu do wypełniania haseł</translation>
 <translation id="4557573143631562971">Ubezpieczenia mieszkań i domów</translation>
@@ -2897,6 +2901,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5938153366081463283">Dodaj kartę wirtualną</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Te informacje pochodzą z niezależnych stron z recenzjami, takich jak Trustpilot, ScamAdviser czy Google. Podsumowania są tworzone przez AI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Utworzono minutę temu}few{Utworzono {NUM_MINS} minuty temu}many{Utworzono {NUM_MINS} minut temu}other{Utworzono {NUM_MINS} minuty temu}}</translation>
 <translation id="5944297261866530437">Tkanina (wysoki połysk)</translation>
 <translation id="5950901984834744590">Maszynki do golenia</translation>
 <translation id="5951495562196540101">Nie można zarejestrować się przy użyciu konta klienta (w pakiecie dostępna jest licencja).</translation>
@@ -3776,7 +3781,7 @@ Dodatkowe informacje:
 <translation id="7423283032694727565">Przycisk Zarządzaj plikami cookie; aktywuj, aby zarządzać opcjami plików cookie w ustawieniach Chrome</translation>
 <translation id="742435751935045381">aplikacje i rozszerzenia zainstalowane w profilu służbowym,</translation>
 <translation id="7424421098814895617">Wybrano opcję usunięcia adresu</translation>
-<translation id="7425037327577270384">Pomóż mi w pisaniu</translation>
+<translation id="7425037327577270384">Pomóż mi pisać</translation>
 <translation id="7425878584435172632">Sztuki wizualne i projektowanie</translation>
 <translation id="7426745633088095666">Udostępnione karty</translation>
 <translation id="7427079287360774240">Nauka języków obcych</translation>
@@ -3958,7 +3963,7 @@ Dodatkowe informacje:
 <translation id="7701486038694690341">Muzyka country</translation>
 <translation id="7701544340847569275">Aktualizacja zakończona z błędami</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Otwórz stronę <ph name="SITE" /> (niebezpieczną)<ph name="END_LINK" /></translation>
-<translation id="7705085181312584869">Pomóż mi w pisaniu</translation>
+<translation id="7705085181312584869">Pomóż mi pisać</translation>
 <translation id="7705992072972338699">Dysk optyczny (wysoki połysk)</translation>
 <translation id="7706689436519265630">Kopiowane lub przenoszone pliki są wysyłane do Google Cloud albo innych firm w celu analizy. Na przykład mogą być skanowane pod kątem danych wrażliwych lub złośliwego oprogramowania i przechowywane zgodnie z zasadami firmy.</translation>
 <translation id="7709911732293795808">Ubezpieczenia</translation>
@@ -4058,6 +4063,7 @@ Dodatkowe informacje:
 <translation id="7894280532028510793">Jeśli pisownia jest poprawna, <ph name="BEGIN_LINK" />uruchom Diagnostykę sieci<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Koperta 7 x 9 cali</translation>
 <translation id="7905064834449738336">Gdy użyjesz hasła, które zostało opublikowane online, Chromium wyświetli ostrzeżenie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Utworzono godzinę temu}few{Utworzono {NUM_HOURS} godziny temu}many{Utworzono {NUM_HOURS} godzin temu}other{Utworzono {NUM_HOURS} godziny temu}}</translation>
 <translation id="7908648876066812348">Włączam kartę wirtualną</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby otworzyć w ustawieniach stronę kontroli zabezpieczeń w Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="791107458486222637">Wynik ponownego wykonania</translation>
@@ -4192,6 +4198,7 @@ Dodatkowe informacje:
 <translation id="8134058435519644366">Rekrutacja i zatrudnianie</translation>
 <translation id="8135546115396015134">lewy klawisz</translation>
 <translation id="8137456439814903304">Energetyka i usługi komunalne</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Utworzono miesiąc temu}few{Utworzono {NUM_MONTHS} miesiące temu}many{Utworzono {NUM_MONTHS} miesięcy temu}other{Utworzono {NUM_MONTHS} miesiąca temu}}</translation>
 <translation id="8148608574971654810">Wersja pliku PDF:</translation>
 <translation id="8149426793427495338">Twój komputer przeszedł w tryb uśpienia.</translation>
 <translation id="8150722005171944719">Nie można odczytać pliku <ph name="URL" />. Być może został usunięty lub uprawnienia dostępu uniemożliwiają jego odczyt.</translation>

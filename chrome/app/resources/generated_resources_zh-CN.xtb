@@ -779,7 +779,6 @@
 <translation id="1542524755306892917">这样一来，Google 助理便可在<ph name="SUPERVISED_USER_NAME" />提问时给出量身定制的回答。</translation>
 <translation id="1543284117603151572">从 Edge 导入的书签</translation>
 <translation id="1543538514740974167">更快速地转到此处</translation>
-<translation id="154420222899071768">密码未更新，但您应该仍能使用旧密码访问该网站</translation>
 <translation id="1544588554445317666">请尝试使用一个更短的文件名或保存到另一个文件夹中</translation>
 <translation id="1545177026077493356">自动自助服务终端模式</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
@@ -7000,7 +6999,6 @@
 <translation id="594221546068848596">使用<ph name="VISUAL_SEARCH_PROVIDER" />搜索网页</translation>
 <translation id="5942779427914696408">设备公开范围</translation>
 <translation id="5943127421590245687">验证成功。若要解锁并恢复您的本地数据，请输入您的旧 <ph name="DEVICE_TYPE" />的密码。</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" />正在管理您的新标签页</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 安全浏览服务进行扫描？</translation>
 <translation id="5945192511027649793">停用触控板</translation>
 <translation id="5945363896952315544">您的安全密钥存储的指纹的数量已达到上限。若要添加一个新指纹，请先删除一个现有指纹。</translation>

@@ -784,7 +784,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1542524755306892917">Això permet que l'Assistent de Google proporcioni respostes personalitzades quan <ph name="SUPERVISED_USER_NAME" /> faci preguntes.</translation>
 <translation id="1543284117603151572">Importades d'Edge</translation>
 <translation id="1543538514740974167">Arriba fins aquí més ràpidament</translation>
-<translation id="154420222899071768">No s'ha actualitzat la contrasenya, però hauries de poder continuar accedint al lloc web amb la contrasenya antiga</translation>
 <translation id="1544588554445317666">Prova d'utilitzar un nom de fitxer més curt o desa'l en una altra carpeta</translation>
 <translation id="1545177026077493356">Mode quiosc automàtic</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
@@ -7010,7 +7009,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="594221546068848596">Cerca la pàgina amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Visibilitat del dispositiu</translation>
 <translation id="5943127421590245687">La verificació s'ha dut a terme correctament. Per desbloquejar i restaurar les dades locals, introdueix la contrasenya antiga del dispositiu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> gestiona la teva pàgina Pestanya nova</translation>
 <translation id="5945002094477276055">El fitxer <ph name="FILE_NAME" /> pot ser perillós. Vols enviar-lo a Navegació segura de Google perquè s'escanegi?</translation>
 <translation id="5945192511027649793">Desactiva el ratolí tàctil</translation>
 <translation id="5945363896952315544">La teva clau de seguretat no pot emmagatzemar més empremtes digitals. Per afegir-ne una de nova, primer n'has de suprimir una.</translation>

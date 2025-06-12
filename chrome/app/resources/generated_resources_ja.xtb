@@ -784,7 +784,6 @@
 <translation id="1542524755306892917"><ph name="SUPERVISED_USER_NAME" /> が質問すると、Google アシスタントからカスタマイズされた回答が提供されるようになります。</translation>
 <translation id="1543284117603151572">Edge からインポート</translation>
 <translation id="1543538514740974167">このページにすばやくアクセス</translation>
-<translation id="154420222899071768">パスワードは更新されませんでしたが、古いパスワードでサイトにアクセスできます</translation>
 <translation id="1544588554445317666">ファイル名を短くするか、別のフォルダに保存してください</translation>
 <translation id="1545177026077493356">自動キオスク モード</translation>
 <translation id="1545749641540134597">QR コードをスキャンします</translation>
@@ -6999,7 +6998,6 @@
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> でページを検索</translation>
 <translation id="5942779427914696408">デバイスの公開設定</translation>
 <translation id="5943127421590245687">確認が完了しました。ロックを解除してローカルデータを復元するには、<ph name="DEVICE_TYPE" /> の以前のパスワードを入力してください。</translation>
-<translation id="5943209617717087975">新しいタブページは <ph name="THIRD_PARTY_NTP_MANAGER" /> によって管理されています</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google セーフ ブラウジングに送信してスキャンしますか？</translation>
 <translation id="5945192511027649793">タッチパッドを無効にする</translation>
 <translation id="5945363896952315544">このセキュリティ キーにはこれ以上指紋を保存できません。新たに追加するには、まず既存の指紋を削除してください。</translation>
@@ -8992,6 +8990,7 @@
 <translation id="7387951778417998929">既定と異なる検索エンジンを使用するには、アドレスバーに検索エンジンのショートカットを入力して、設定したキーボード ショートカットを押します。ここで既定の検索エンジンを変更することもできます。</translation>
 <translation id="7388615499319468910">ウェブサイトと広告主は表示された広告の効果を確認できます。この設定は無効になっています。</translation>
 <translation id="738903649531469042">タブをリーディング リストに追加</translation>
+<translation id="7389615853658756494">サイトで変更</translation>
 <translation id="7392118418926456391">ウイルス スキャンに失敗しました</translation>
 <translation id="7392915005464253525">閉じたウィンドウを開く（&amp;E）</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 個のアイテムがコピーされました}other{{COUNT} 個のアイテムがコピーされました}}</translation>
@@ -9121,6 +9120,7 @@
 <translation id="7474043404939621342">ツールバーのカスタマイズ</translation>
 <translation id="747459581954555080">すべて復元</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{今すぐ返却してください}other{{NUM_DAYS} 日以内に <ph name="DEVICE_TYPE" />を返却してください}}</translation>
+<translation id="747557463733380256">ブラウザの管理方法の詳細</translation>
 <translation id="7475671414023905704">Netscape パスワード紛失 URL</translation>
 <translation id="7475742997309661417">ChromeVox は ChromeOS のスクリーン リーダーです。主に目の不自由な方やロービジョンの方が、画面に表示されたテキストを音声合成や点字ディスプレイを使って読む際に使用することを想定しています。ChromeVox をオンにするには、両方の音量キーを 5 秒間長押しします。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="7476454130948140105">更新するには電池残量が少なすぎます（<ph name="BATTERY_PERCENT" />%）</translation>
@@ -10269,6 +10269,7 @@
 <translation id="8265018477030547118">保存先: このデバイスのみ</translation>
 <translation id="826511437356419340">ウィンドウ概観モードに切り替わりました。移動するにはスワイプするか、キーボードの場合は Tab キーを押してください。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{シークレット ウィンドウは、再起動後は自動的には開きません}other{現在開いている {COUNT} 個のシークレット ウィンドウは、再起動後は自動的には開きません}}</translation>
+<translation id="8266430295499893285">パスワードにアクセスするには、本人確認が必要です</translation>
 <translation id="8266947622852630193">すべての入力方法</translation>
 <translation id="8267539814046467575">プリンタの追加</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />送信されるのは、お使いのデバイスとその使用状況（電池残量、システムとアプリのアクティビティ、エラーなど）に関する一般的な情報です。この情報は、Android の改善に使用されます。また一部の集計情報は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。<ph name="END_PARAGRAPH1" />

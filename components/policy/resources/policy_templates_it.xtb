@@ -980,7 +980,6 @@ Le origini che corrispondono a pattern delle policy sia bloccati sia consentiti 
 Le origini non specificate dalla policy o dalle impostazioni utente richiederanno la precedente
 attivazione dall'utente per chiamare questa API.</translation>
 <translation id="1645793986494086629">Schema:</translation>
-<translation id="1647420986475965896">Impostazioni per i suggerimenti di AI Mode nella barra degli indirizzi e nella casella di ricerca della pagina Nuova scheda</translation>
 <translation id="1647558381546345298">La configurazione della policy consente di impostare le dimensioni della cache utilizzate da <ph name="PRODUCT_NAME" /> per archiviare sul disco i file multimediali memorizzati nella cache, a prescindere dal fatto che gli utenti abbiano specificato o meno il flag --media-cache-size. Il valore specificato in questa policy non è un limite rigido, ma un suggerimento per il sistema di memorizzazione nella cache. Tutti i valori inferiori ad alcuni megabyte vengono arrotondati.
 
       Se il valore della policy viene impostato su 0, vengono utilizzate le dimensioni della cache predefinite e gli utenti non possono apportare modifiche.
@@ -1691,25 +1690,6 @@ Se questa policy non viene configurata, equivale ad attivarla per gli utenti nor
 <translation id="2180795125410219364">Le impostazioni di Inizio/Fine sono disattivate</translation>
 <translation id="2180958780733364832">Controlla l'uso della modalità headless</translation>
 <translation id="2182291258410176649">L'utente decide se abilitare il backup e il ripristino</translation>
-<translation id="2182945089357619926">Questa policy consente agli amministratori di impostare un aggregatore di ricerca aziendale designato che fornirà consigli e risultati di ricerca nella barra degli indirizzi quando viene attivato da una parola chiave specifica. Gli utenti possono avviare una ricerca digitando nella barra degli indirizzi la parola chiave specificata nel campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o senza il prefisso @ (ad es. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) e premendo la barra spaziatrice o il tasto Tab.
-
-I seguenti campi sono obbligatori: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Il campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde al nome del motore di ricerca mostrato all'utente nella barra degli indirizzi.
-
-Il campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde alla parola chiave inserita dall'utente per attivare la ricerca. La scorciatoia può includere parole e caratteri semplici, ma non può includere spazi o iniziare con il simbolo @. Le scorciatoie devono essere univoche.
-
-Il campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL in cui cercare. Inserisci l'indirizzo web della pagina dei risultati del motore di ricerca e usa <ph name="SEARCH_TERM_MARKER" /> al posto della query.
-
-Il campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL che fornisce suggerimenti di ricerca. Verrà eseguita una richiesta POST e la query dell'utente verrà inserita nei parametri POST sotto la chiave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-Il campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL di un'immagine che verrà utilizzata nei suggerimenti di ricerca. Se questo campo non viene impostato, verrà utilizzata un'icona predefinita. Consigliamo di utilizzare una favicon (ad esempio <ph name="ICON_URL_EXAMPLE" />). Formati di file immagine supportati: JPEG, PNG e ICO.
-
-Il campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica se la barra degli indirizzi <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> è obbligatoria per visualizzare i suggerimenti di ricerca. Se questo campo non viene configurato, la barra degli indirizzi <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> non sarà obbligatoria.
-
-Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2183338188392346527">Non segnalare i contatori del tempo di esecuzione del dispositivo</translation>
 <translation id="2187372280917024033">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi. Questa policy è molto simile a <ph name="DOH_TEMPLATES_POLICY_NAME" /> e la sostituirà se verrà specificato.
 A differenza della policy <ph name="DOH_TEMPLATES_POLICY_NAME" />, questa policy consente di specificare le informazioni sull'identità.
@@ -2009,9 +1989,6 @@ Se la policy viene impostata su disabled, gli utenti o le varianti <ph name="PRO
 <translation id="2377059627106831967">Consenti il raggruppamento delle finestre in sovraimpressione con AI generativa senza migliorare i modelli di AI.</translation>
 <translation id="2377109572344699022">Controlla l'utilizzo dell'API Direct Sockets</translation>
 <translation id="2382672620906337383">Il valore JavaScript setTimeout() non verrà bloccato finché non viene raggiunta una soglia di nidificazione superiore.</translation>
-<translation id="2384233438419344179">Se la policy è impostata su Attivata, gli elementi della pagina web che non provengono dal dominio presente nella barra degli indirizzi del browser non possono impostare i cookie. Se la policy è impostata su Disattivata, tali elementi possono impostare i cookie e gli utenti non possono modificare l'impostazione.
-
-      Se la policy non viene impostata, i cookie di terze parti vengono attivati, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="2386362615870139244">Consenti Wakelock dello schermo</translation>
 <translation id="2387469539700985783">Questa policy non influisce sui report generati da Android.</translation>
 <translation id="2388701318721126001">Se questa policy viene disattivata, non è possibile selezionare l'immagine di sfondo dell'utente <ph name="PRODUCT_OS_NAME" /> da un album di Google Foto.
@@ -2448,16 +2425,6 @@ Il sistema eseguirà una query sui record AAAA soltanto quando può essere conne
 <translation id="2702682139813393777">Forza l'avvio degli host di messaggistica nativi di Windows tramite cmd.exe</translation>
 <translation id="270582584528242502">Non mostrare una finestra di dialogo di avviso quando l'utente sta tentando di uscire</translation>
 <translation id="2706708761587205154">Consenti la stampa solo con PIN</translation>
-<translation id="2706972066112233185">Questa policy consente di stabilire la visibilità della sezione dei consigli in AI Mode nella barra degli indirizzi e nella casella di ricerca della pagina Nuova scheda.
-
-Questa funzionalità è disponibile per tutti gli utenti che usano Google come motore di ricerca predefinito, a meno che non venga disattivata da questa policy.
-
-Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Se la policy viene impostata su 0 - Attivata o se non viene configurata, la funzionalità sarà disponibile per gli utenti. Se viene impostata su 1 - Disattivata, la funzionalità non sarà disponibile.
-
-0 = Consente di utilizzare la funzionalità
-1 = Non consente di utilizzare la funzionalità.</translation>
 <translation id="2707733461906745082">Separazione profilo</translation>
 <translation id="2707873794476722903">Navigazione sicura è attiva in modalità standard.</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
@@ -4082,7 +4049,6 @@ Tieni presente che questa policy non ha alcun effetto se <ph name="ENTERPRISE_PR
 
  Se la policy non viene configurata oppure se viene impostato un valore vuoto o non valido, non verrà aggiunto un ulteriore valore <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> alle richieste di processi di stampa.
 </translation>
-<translation id="3895626555961466729">Consenti i suggerimenti di AI Mode.</translation>
 <translation id="3896591584655529057">Attiva il salvataggio delle passkey utilizzando Gestore delle password</translation>
 <translation id="3896751141670591496">Se la policy viene attivata o se non viene configurata, vengono mostrati avvisi di sicurezza quando flag della riga di comando potenzialmente pericolosi vengono utilizzati per avviare Chrome.
 
@@ -10504,7 +10470,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
       <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
       </translation>
-<translation id="8309511882585098865">Non consentire i consigli di AI Mode.</translation>
 <translation id="8310392396850884147">Le intestazioni delle richieste CORS senza caratteri jolly sono supportate.</translation>
 <translation id="8312129124898414409">Consente di stabilire se consentire o meno l'utilizzo della generazione di chiavi sui siti web. L'utilizzo della generazione di chiavi può essere consentito o negato per tutti i siti web.
 

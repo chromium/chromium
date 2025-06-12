@@ -611,7 +611,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3557336313807607643">Tambahkan pada kenalan</translation>
 <translation id="355765753469272474">Buat asal</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> daripada <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Dwiketik untuk mendapatkan lebih banyak kata laluan.</translation>
 <translation id="3572607909481582402">Dalam Google Account anda</translation>
 <translation id="3575234738189584619">Cari dengan Lens</translation>
 <translation id="3575426792457739946">Senarai ini mengandungi semua profil yang dimuatkan.</translation>
@@ -624,6 +623,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3596414637720633074">Sekat kuki pihak ketiga dalam Inkognito</translation>
 <translation id="3602260545951981695">Pilih "Perlindungan Dipertingkat"</translation>
 <translation id="3608436266458100337">Mod pembaca</translation>
+<translation id="3610041351087301930">Sembunyikan Pembaca</translation>
 <translation id="3622175633937495219">Sejarah Carian (<ph name="COUNT" /> ditemukan)</translation>
 <translation id="3625008969091706597">Anda boleh meleret bahagian tepi untuk kembali.</translation>
 <translation id="362709345066740529">Sesuaikan kad dan suapan anda serta pelbagai lagi di sini</translation>
@@ -654,7 +654,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3779810277399252432">Tiada sambungan Internet.</translation>
 <translation id="3782614601387961027">Ketepikan amaran</translation>
 <translation id="3789841737615482174">Pasang</translation>
-<translation id="3795478177331815672">Buka tab dan kumpulan tab</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803696231112616155">Tawarkan untuk menterjemahkan tapak ini</translation>
 <translation id="3808311849069021992">Tunjukkan butiran enjin carian</translation>
@@ -1066,6 +1065,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5431252637281434233">Anda akan dilog keluar</translation>
 <translation id="543338862236136125">Edit kata laluan</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
+<translation id="5437480232219631455">Anda boleh membuka Gemini di sini</translation>
 <translation id="5439618055789623719">Dilog masuk sebagai <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Penyemakan imbas yang lebih baik secara lalai</translation>
 <translation id="5444892875087332195">Penanda halaman</translation>
@@ -1813,6 +1813,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
 <translation id="8348530355586151720">Ketik menu tiga titik</translation>
 <translation id="8349305172487531364">Bar penanda halaman</translation>
+<translation id="8363484128299778310">Pemulihan sementara sekiranya berlaku masalah</translation>
 <translation id="8364563001733875155">Untuk menukar PIN anda, sediakan kod laluan pada peranti anda dahulu.</translation>
 <translation id="8366466717204352506">Penyemakan tidak pernah dijalankan</translation>
 <translation id="8368001212524806591">Jejak harga</translation>

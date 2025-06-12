@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">添加到通讯录</translation>
 <translation id="355765753469272474">撤消</translation>
 <translation id="3565930036634619844">标签页。第 <ph name="NUMBER_OF_TABS" /> 个，共 <ph name="TAB_INDEX" /> 个。</translation>
-<translation id="3570693105179140209">点按两次即可查看更多密码。</translation>
 <translation id="3572607909481582402">在您的 Google 账号中</translation>
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
 <translation id="3575426792457739946">此列表包含所有已加载的个人资料。</translation>
@@ -624,6 +623,7 @@
 <translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3602260545951981695">选择“增强型保护”</translation>
 <translation id="3608436266458100337">阅读器模式</translation>
+<translation id="3610041351087301930">隐藏阅读器</translation>
 <translation id="3622175633937495219">在历史记录中搜索（找到 <ph name="COUNT" /> 项结果）</translation>
 <translation id="3625008969091706597">滑动边缘即可返回。</translation>
 <translation id="362709345066740529">在此处自定义卡片、信息流等</translation>
@@ -654,7 +654,6 @@
 <translation id="3779810277399252432">无互联网连接。</translation>
 <translation id="3782614601387961027">忽略警告</translation>
 <translation id="3789841737615482174">安装</translation>
-<translation id="3795478177331815672">打开标签页和标签页分组</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
 <translation id="3808311849069021992">显示搜索引擎详细信息</translation>
@@ -1066,6 +1065,7 @@
 <translation id="5431252637281434233">您将退出账号</translation>
 <translation id="543338862236136125">修改密码</translation>
 <translation id="5433691172869980887">已复制用户名</translation>
+<translation id="5437480232219631455">您可以在此处打开 Gemini</translation>
 <translation id="5439618055789623719">目前登录的账号是 <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">设为默认浏览器，获享更好的体验</translation>
 <translation id="5444892875087332195">书签</translation>
@@ -1813,6 +1813,7 @@
 <translation id="8343993175958086504">备份您的资料，在任何设备上使用</translation>
 <translation id="8348530355586151720">点按三点状菜单</translation>
 <translation id="8349305172487531364">书签栏</translation>
+<translation id="8363484128299778310">出现问题时的临时恢复方法</translation>
 <translation id="8364563001733875155">如要更改 PIN 码，请先在设备上设置密码。</translation>
 <translation id="8366466717204352506">从未检查过</translation>
 <translation id="8368001212524806591">跟踪价格</translation>

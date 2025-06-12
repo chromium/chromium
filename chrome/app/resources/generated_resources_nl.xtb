@@ -784,7 +784,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1542524755306892917">Hierdoor kan de Google Assistent aangepaste antwoorden geven als <ph name="SUPERVISED_USER_NAME" /> vragen stelt.</translation>
 <translation id="1543284117603151572">Geïmporteerd uit Edge</translation>
 <translation id="1543538514740974167">Sneller terugkeren</translation>
-<translation id="154420222899071768">Je wachtwoord is niet geüpdatet, maar je hebt nog steeds toegang tot de site met je oude wachtwoord</translation>
 <translation id="1544588554445317666">Gebruik een kortere bestandsnaam of sla op in een andere map</translation>
 <translation id="1545177026077493356">Automatische kioskmodus</translation>
 <translation id="1545749641540134597">QR-code scannen</translation>
@@ -7008,7 +7007,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="594221546068848596">Pagina zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Zichtbaarheid van apparaat</translation>
 <translation id="5943127421590245687">De verificatie is afgerond. Geef het oude wachtwoord van je <ph name="DEVICE_TYPE" /> op om te ontgrendelen en je lokale gegevens te herstellen.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> beheert je pagina Nieuw tabblad</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> is misschien gevaarlijk. Wil je het bestand naar Google Safe Browsing sturen om het te laten scannen?</translation>
 <translation id="5945192511027649793">Touchpad uitzetten</translation>
 <translation id="5945363896952315544">Je beveiligingssleutel kan geen nieuwe vingerafdrukken meer opslaan. Als je een nieuwe wilt toevoegen, moet je eerst een bestaande vingerafdruk verwijderen.</translation>

@@ -868,6 +868,7 @@
             <ph name="LIST_ITEM" />ফর্মে লেখা তথ্য
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">আপনি লগ-ইন করে থাকার সময় এই ডিভাইসের সাথে অ্যাাটাচ করা ডিভাইস</translation>
+<translation id="2450019289047528273">Google Wallet থেকে পেমেন্ট পদ্ধতি ও অন্যান্য তথ্য</translation>
 <translation id="2451607499823206582">ট্র্যাক করা হচ্ছে</translation>
 <translation id="2452098632681057184">ইকোলজি ও এনভায়রনমেন্ট</translation>
 <translation id="2452837234288608067">এই অনুরোধ সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন।</translation>
@@ -1564,6 +1565,7 @@
 <translation id="3641116835972736297">আমেরিকান ফুটবল</translation>
 <translation id="3642196846309122856">আপনার ফাইল আবার ডাউনলোড করার চেষ্টা করে দেখুন</translation>
 <translation id="3642638418806704195">অ্যাপ্লিকেশন:</translation>
+<translation id="3644768007456662469">পেমেন্ট আইটেমের আইকন</translation>
 <translation id="3646643500201740985">একটি বিজ্ঞাপন কতটা ভালো পারফর্ম করে তা পরিমাপ করা</translation>
 <translation id="3647286794400715637">প্রতিটি URL স্ট্রিং এন্ট্রিতে ১ থেকে ২টি URL থাকতে হবে।</translation>
 <translation id="3647400963805615193">Chrome সম্পর্কিত পরামর্শ বাতিল করার বোতাম, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> বাতিল করতে Enter প্রেস করুন</translation>
@@ -2100,11 +2102,13 @@
 <translation id="4530347922939905757">টেক্সট মেসেজ</translation>
 <translation id="4531477351494678589">ভার্চুয়াল কার্ডের সংখ্যা:</translation>
 <translation id="4535523368173457420">এইসব সার্চ ইঞ্জিন আপনার অঞ্চলে জনপ্রিয় এবং র‍্যান্ডম পদ্ধতিতে দেখানো হয়</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{১ বছর আগে তৈরি করা হয়েছে}one{{NUM_YEARS} বছর আগে তৈরি করা হয়েছে}other{{NUM_YEARS} বছর আগে তৈরি করা হয়েছে}}</translation>
 <translation id="4541810033354695636">অগমেন্টেড রিয়েলিটি</translation>
 <translation id="4542971377163063093">ট্রে ৬</translation>
 <translation id="4543072026714825470">পরের বার আরও দ্রুত পেমেন্ট করতে, আপনার Google অ্যাকাউন্টে কার্ড ও বিলিংয়ের ঠিকানা সেভ করে রাখুন।</translation>
 <translation id="454441086898495030"><ph name="SET" />-এ যোগ করবেন?</translation>
 <translation id="4546730006268514143">ট্রান্সফার করার সময় শেষ হয়ে গেছে</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{১ দিন আগে তৈরি করা হয়েছে}one{{NUM_DAYS} দিন আগে তৈরি করা হয়েছে}other{{NUM_DAYS} দিন আগে তৈরি করা হয়েছে}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">পাসওয়ার্ড পূরণ করার জন্য আপনি স্ক্রিন লক ব্যবহার করছেন</translation>
 <translation id="4557573143631562971">বাড়ির বীমা</translation>
@@ -2898,6 +2902,7 @@
 <translation id="5938153366081463283">ভার্চুয়াল কার্ড যোগ করুন</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Trustpilot, ScamAdviser, Google এবং আরও অনেক ওয়েবসাইটের স্বতন্ত্র রিভিউ থেকে এই তথ্য আসে। সারসংক্ষেপ AI-এর সাহায্যে তৈরি করা হয়।</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{১ মিনিট আগে তৈরি করা হয়েছে}one{{NUM_MINS} মিনিট আগে তৈরি করা হয়েছে}other{{NUM_MINS} মিনিট আগে তৈরি করা হয়েছে}}</translation>
 <translation id="5944297261866530437">ফ্যাব্রিক (হাই-গ্লস)</translation>
 <translation id="5950901984834744590">রেজার এবং ট্রিমার</translation>
 <translation id="5951495562196540101">ক্রেতার অ্যাকাউন্টের মাধ্যমে এনরোল করা যাচ্ছে না (প্যাকেজ লাইসেন্স পাওয়া যাবে)৷</translation>
@@ -4058,6 +4063,7 @@
 <translation id="7894280532028510793">বানান সঠিক হলে, <ph name="BEGIN_LINK" />'নেটওয়ার্ক ডায়াগনস্টিক' টুল চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">এনভেলপ ৭ x ৯ ইঞ্চি</translation>
 <translation id="7905064834449738336">আপনি পাসওয়ার্ড ব্যবহার করার সময়, সেটি অনলাইনে প্রকাশিত হয়েছে কিনা সেই সম্পর্কে Chromium সতর্ক করে। এটি করার সময় আপনার পাসওয়ার্ড ও ব্যবহারকারীর নাম এনক্রিপ্ট করা থাকে, তাই সেগুলি কেউ দেখতে পাবে না, এমনকি Google-ও না।</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{১ ঘণ্টা আগে তৈরি করা হয়েছে}one{{NUM_HOURS} ঘণ্টা আগে তৈরি করা হয়েছে}other{{NUM_HOURS} ঘণ্টা আগে তৈরি করা হয়েছে}}</translation>
 <translation id="7908648876066812348">ভার্চুয়াল কার্ডের সুবিধা চালু করা হচ্ছে</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, প্রথমে Tab, তারপরে Enter প্রেস করে সেটিংসে Chrome-এর 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচারে যান</translation>
 <translation id="791107458486222637">ফলাফল আবার যোগ করা হচ্ছে</translation>
@@ -4192,6 +4198,7 @@
 <translation id="8134058435519644366">রিক্রুটমেন্ট ও স্টাফিং</translation>
 <translation id="8135546115396015134">বাঁদিকের তীরচিহ্নযুক্ত 'কী'</translation>
 <translation id="8137456439814903304">শক্তি ও উপযোগিতা</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{১ মাস আগে তৈরি করা হয়েছে}one{{NUM_MONTHS} মাস আগে তৈরি করা হয়েছে}other{{NUM_MONTHS} মাস আগে তৈরি করা হয়েছে}}</translation>
 <translation id="8148608574971654810">PDF ভার্সন:</translation>
 <translation id="8149426793427495338">আপনার কম্পিউটারটি নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="8150722005171944719"><ph name="URL" />এ ফাইলটি পাঠযোগ্য নয়৷ এটা মুছে ফেলা হয়েছে পারে, সরিয়ে দেওয়া হয়েছে, অথবা ফাইল অনুমতি প্রবেশাধিকার প্রতিরোধ করতে পারে৷</translation>

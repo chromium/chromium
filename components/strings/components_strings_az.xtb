@@ -867,6 +867,7 @@
             <ph name="LIST_ITEM" />Formalarda daxil edilən məlumatlar
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Daxil olduğunuz zaman bu cihaza əlavə edilmiş köməkçi cihazlar</translation>
+<translation id="2450019289047528273">Google Pulqabıdan ödəniş metodları və digər məlumatlar</translation>
 <translation id="2451607499823206582">İzləmə</translation>
 <translation id="2452098632681057184">Ekologiya və Ətraf Mühit</translation>
 <translation id="2452837234288608067">Kömək etmək alınmadı. Yenidən cəhd edin.</translation>
@@ -2095,11 +2096,13 @@
 <translation id="4530347922939905757">Mətn mesajı</translation>
 <translation id="4531477351494678589">Virtual kart nömrəsi:</translation>
 <translation id="4535523368173457420">Bu axtarış mexanizmləri regionda populyardır və təsadüfi sıra ilə göstərilir</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 il əvvəl yaradıldı}other{{NUM_YEARS} il əvvəl yaradıldı}}</translation>
 <translation id="4541810033354695636">artırılmış reallıq</translation>
 <translation id="4542971377163063093">Qab 6</translation>
 <translation id="4543072026714825470">Növbəti dəfə sürətli ödəniş üçün kart və ödəmə ünvanını Google Hesabında yadda saxlayın</translation>
 <translation id="454441086898495030"><ph name="SET" /> bölməsinə əlavə edilsin?</translation>
 <translation id="4546730006268514143">Ötürmə vaxtı bitdi</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 gün əvvəl yaradıldı}other{{NUM_DAYS} gün əvvəl yaradıldı}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Parolları daxil etmək üçün ekran kilidindən istifadə edirsiniz</translation>
 <translation id="4557573143631562971">Ev Sığortası</translation>
@@ -2893,6 +2896,7 @@
 <translation id="5938153366081463283">Virtual kart əlavə edin</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Bu məlumatlar Trustpilot, ScamAdviser, Google və s. kimi sərbəst araşdırma veb-saytlarından əldə edilir. Xülasələr AI ilə yaradılır.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 dəqiqə əvvəl yaradıldı}other{{NUM_MINS} dəqiqə əvvəl yaradıldı}}</translation>
 <translation id="5944297261866530437">Parça (çox parlaq)</translation>
 <translation id="5950901984834744590">Ülgüc və Üzqırxan Aparatlar</translation>
 <translation id="5951495562196540101">Müştəri hesabı (toplu lisenziya əlçatandır) ilə qeydiyyatdan keçmək mümkün deyil.</translation>
@@ -4053,6 +4057,7 @@
 <translation id="7894280532028510793">Yazılış doğrudursa, <ph name="BEGIN_LINK" />Şəbəkə Diaqnostikasını icra edin<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Zərf 7 x 9 düym</translation>
 <translation id="7905064834449738336">İstifadə edilən parol onlayn yayımlanıbsa, Chromium xəbərdarlıq edir. Parol və istifadəçi adları şifrələnir və hətta Google-a da görünmür.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 saat əvvəl yaradıldı}other{{NUM_HOURS} saat əvvəl yaradıldı}}</translation>
 <translation id="7908648876066812348">Virtual kart aktiv edilir</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab, sonra Enter düyməsinə basaraq ayarlarda Chrome təhlükəsizlik yoxlanışı səhifəsinə keçin</translation>
 <translation id="791107458486222637">Təkrarlanır</translation>
@@ -4187,6 +4192,7 @@
 <translation id="8134058435519644366">İşə qəbul və iş heyəti</translation>
 <translation id="8135546115396015134">sol düymə</translation>
 <translation id="8137456439814903304">Enerji və Kommunal Xidmət</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ay əvvəl yaradıldı}other{{NUM_MONTHS} ay əvvəl yaradıldı}}</translation>
 <translation id="8148608574971654810">PDF versiyası:</translation>
 <translation id="8149426793427495338">Kompüteriniz yatmağa getdi.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> linkində olan fayl oxunmur. O, silinmiş, köçürülmüş ola bilər və ya fayl icazələri girişin qarşısını alıb.</translation>

@@ -783,7 +783,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1542524755306892917">Esta opción permite que o Asistente de Google forneza respostas adaptadas cando <ph name="SUPERVISED_USER_NAME" /> lle faga preguntas.</translation>
 <translation id="1543284117603151572">Importados de Edge</translation>
 <translation id="1543538514740974167">Accede aquí máis rápido</translation>
-<translation id="154420222899071768">Non se actualizou o teu contrasinal, pero deberías poder seguindo acceder ao sitio co contrasinal antigo</translation>
 <translation id="1544588554445317666">Proba a poñerlle ao ficheiro un nome máis curto ou a gardalo nun cartafol distinto</translation>
 <translation id="1545177026077493356">Modo de quiosco automático</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
@@ -7015,7 +7014,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="594221546068848596">Buscar na páxina con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Visibilidade do dispositivo</translation>
 <translation id="5943127421590245687">A verificación levouse a cabo correctamente. Para desbloquear e restaurar os teus datos locais, introduce o contrasinal antigo do dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> xestiona a túa páxina Nova pestana</translation>
 <translation id="5945002094477276055">O ficheiro <ph name="FILE_NAME" /> pode ser perigoso. Queres enviarllo á Navegación segura de Google para que o analice?</translation>
 <translation id="5945192511027649793">Desactivar o panel táctil</translation>
 <translation id="5945363896952315544">Non se poden almacenar máis impresións dixitais na chave de seguranza. Se queres engadir unha impresión dixital nova, primeiro elimina unha das que tes gardadas.</translation>

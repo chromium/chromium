@@ -295,7 +295,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1482372785911828880">Extradünn</translation>
 <translation id="1482879811280872320">Radfahren</translation>
 <translation id="1483493594462132177">Senden</translation>
-<translation id="1484449009683144042">Dies ist eine experimentelle KI-Schreibhilfe, die nicht immer richtig funktioniert.
+<translation id="1484449009683144042">Dies ist eine experimentelle KI-Schreibhilfe, die Fehler machen kann.
     <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1486096554574027028">Passwörter suchen</translation>
 <translation id="1492194039220927094">Richtlinien per Push-Benachrichtigung:</translation>
@@ -867,6 +867,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
             <ph name="LIST_ITEM" />In Formulare eingegebene Informationen
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">An dieses Gerät angeschlossene Peripheriegeräte, während du angemeldet bist</translation>
+<translation id="2450019289047528273">Zahlungsmethoden und andere Informationen aus Google Wallet</translation>
 <translation id="2451607499823206582">Tracking</translation>
 <translation id="2452098632681057184">Ökologie und Umwelt</translation>
 <translation id="2452837234288608067">Dabei konnten wir nicht helfen. Bitte versuche es noch einmal.</translation>

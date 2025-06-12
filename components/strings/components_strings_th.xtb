@@ -867,6 +867,7 @@
             <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">มีการเชื่อมต่ออุปกรณ์ต่อพ่วงเข้ากับอุปกรณ์นี้ระหว่างที่คุณอยู่ในระบบ</translation>
+<translation id="2450019289047528273">วิธีการชำระเงินและข้อมูลอื่นๆ จาก Google Wallet</translation>
 <translation id="2451607499823206582">การติดตาม</translation>
 <translation id="2452098632681057184">ระบบนิเวศและสิ่งแวดล้อม</translation>
 <translation id="2452837234288608067">ยังช่วยเรื่องนี้ไม่ได้ โปรดลองอีกครั้ง</translation>
@@ -1562,6 +1563,7 @@
 <translation id="3641116835972736297">อเมริกันฟุตบอล</translation>
 <translation id="3642196846309122856">ลองดาวน์โหลดไฟล์อีกครั้ง</translation>
 <translation id="3642638418806704195">แอปพลิเคชัน:</translation>
+<translation id="3644768007456662469">ไอคอนรายการที่เกี่ยวข้องกับการชำระเงิน</translation>
 <translation id="3646643500201740985">การวัดประสิทธิภาพของโฆษณา</translation>
 <translation id="3647286794400715637">แต่ละรายการในสตริง URL ต้องมี URL 1-2 รายการ</translation>
 <translation id="3647400963805615193">ปุ่ม "ปิดเคล็ดลับสำหรับ Chrome" กด Enter เพื่อปิด <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>

@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">Ավելացնել կոնտակտներում</translation>
 <translation id="355765753469272474">Հետարկել</translation>
 <translation id="3565930036634619844">Ներդիր։ Էջ <ph name="TAB_INDEX" />՝ <ph name="NUMBER_OF_TABS" />-ից։</translation>
-<translation id="3570693105179140209">Կրկնակի հպեք՝ ավելի շատ գաղտնաբառեր տեսնելու համար։</translation>
 <translation id="3572607909481582402">Ձեր Google հաշվում</translation>
 <translation id="3575234738189584619">Որոնել Տեսապակու միջոցով</translation>
 <translation id="3575426792457739946">Այս ցանկը պարունակում է բոլոր բեռնված պրոֆիլները։</translation>
@@ -654,7 +653,6 @@
 <translation id="3779810277399252432">Կապ չկա</translation>
 <translation id="3782614601387961027">Փակել նախազգուշացումը</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
-<translation id="3795478177331815672">Բաց ներդիրներ և ներդիրների խմբեր</translation>
 <translation id="380329542618494757">Անուն</translation>
 <translation id="3803696231112616155">Առաջարկել այս կայքի թագմանությունը</translation>
 <translation id="3808311849069021992">Ցույց տալ որոնողական համակարգի մանրամասները</translation>
@@ -1813,6 +1811,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8343993175958086504">Պահուստավորեք ձեր տվյալները և օգտագործեք դրանք ցանկացած սարքում։</translation>
 <translation id="8348530355586151720">Հպեք եռակետ ընտրացանկին</translation>
 <translation id="8349305172487531364">Էջանիշների գոտի</translation>
+<translation id="8363484128299778310">Ժամանակավոր վերականգնում խնդիրների դեպքում</translation>
 <translation id="8364563001733875155">Ձեր PIN կոդը փոխելու համար նախ սարքում կարգավորեք անցակոդ։</translation>
 <translation id="8366466717204352506">Ստուգում երբեք չի կատարվել</translation>
 <translation id="8368001212524806591">Հետևել գներին</translation>

@@ -323,7 +323,7 @@
 <translation id="2259659629660284697">Exportar contraseñas…</translation>
 <translation id="2265069324308685684">Eliminando datos de navegación…</translation>
 <translation id="2267753748892043616">Añadir cuenta</translation>
-<translation id="2268044343513325586">Restringir</translation>
+<translation id="2268044343513325586">Pulir</translation>
 <translation id="2271452184061378400">Tus grupos de pestañas se guardan aquí</translation>
 <translation id="2273327106802955778">Menú más</translation>
 <translation id="2287614783861766820">{count,plural, =1{Esta dirección se eliminará de este dispositivo.}other{Estas direcciones se eliminarán de este dispositivo.}}</translation>
@@ -611,7 +611,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3557336313807607643">Añadir a contactos</translation>
 <translation id="355765753469272474">Deshacer</translation>
 <translation id="3565930036634619844">Pestaña <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Toca dos veces para ver más contraseñas.</translation>
 <translation id="3572607909481582402">En tu cuenta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3575426792457739946">Esta lista contiene todos los perfiles cargados.</translation>
@@ -654,7 +653,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3779810277399252432">No hay conexión a Internet.</translation>
 <translation id="3782614601387961027">Cerrar advertencia</translation>
 <translation id="3789841737615482174">Instalar</translation>
-<translation id="3795478177331815672">Abrir pestañas y grupos de pestañas</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803696231112616155">Ofrecer traducir este sitio web</translation>
 <translation id="3808311849069021992">Mostrar detalles del buscador</translation>
@@ -1813,6 +1811,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8343993175958086504">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo.</translation>
 <translation id="8348530355586151720">Toca el menú de tres puntos</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
+<translation id="8363484128299778310">Recuperación temporal en caso de problemas</translation>
 <translation id="8364563001733875155">Para cambiar tu PIN, primero debes configurar una contraseña en tu dispositivo.</translation>
 <translation id="8366466717204352506">Comprobación no ejecutada</translation>
 <translation id="8368001212524806591">Seguir precio</translation>

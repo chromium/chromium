@@ -867,6 +867,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
             <ph name="LIST_ITEM" />La información que ingreses en formularios
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Hay periféricos adjuntos a este dispositivo cuando accedes</translation>
+<translation id="2450019289047528273">Formas de pago y otros datos de la Billetera de Google</translation>
 <translation id="2451607499823206582">Seguimiento</translation>
 <translation id="2452098632681057184">Ecología y medioambiente</translation>
 <translation id="2452837234288608067">No pudimos ayudarte con eso. Vuelve a intentarlo.</translation>
@@ -1564,6 +1565,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3641116835972736297">Fútbol americano</translation>
 <translation id="3642196846309122856">Intenta volver a descargar tus archivos</translation>
 <translation id="3642638418806704195">Aplicación:</translation>
+<translation id="3644768007456662469">Ícono de elemento de pagos</translation>
 <translation id="3646643500201740985">Medición del rendimiento de un anuncio</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL debe contener entre 1 y 2 URLs.</translation>
 <translation id="3647400963805615193">Botón para descartar la sugerencia de Chrome, presiona Intro para descartarla, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2102,13 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4530347922939905757">Mensaje de texto</translation>
 <translation id="4531477351494678589">Número de tarjeta virtual:</translation>
 <translation id="4535523368173457420">Estos motores de búsqueda son populares en tu región y se muestran en orden aleatorio.</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Se creó hace 1 año}other{Se creó hace {NUM_YEARS} años}}</translation>
 <translation id="4541810033354695636">realidad aumentada</translation>
 <translation id="4542971377163063093">Bandeja 6</translation>
 <translation id="4543072026714825470">Para realizar pagos de forma más rápida la próxima vez, guarda tu tarjeta y dirección de facturación en tu Cuenta de Google.</translation>
 <translation id="454441086898495030">¿Quieres agregarla a <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Se agotó el tiempo de espera para transferir tus archivos</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Se creó hace 1 día}other{Se creó hace {NUM_DAYS} días}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Estás usando tu bloqueo de pantalla para completar contraseñas</translation>
 <translation id="4557573143631562971">Seguros de vivienda</translation>
@@ -2898,6 +2902,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5938153366081463283">Agregar tarjeta virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Esta información proviene de sitios web de opiniones independientes, como Trustpilot, ScamAdviser, Google y otros. Los resúmenes se crean con IA.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Se creó hace 1 minuto}other{Se creó hace {NUM_MINS} minutos}}</translation>
 <translation id="5944297261866530437">Tela (brillo intenso)</translation>
 <translation id="5950901984834744590">Rasuradoras y afeitadoras</translation>
 <translation id="5951495562196540101">No se puede realizar la inscripción con una cuenta personal (licencia de paquete disponible).</translation>
@@ -4059,6 +4064,7 @@ Detalles adicionales:
 <translation id="7894280532028510793">Si no hay errores, <ph name="BEGIN_LINK" />prueba ejecutar el diagnóstico de red<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Sobre de 17.7 × 22.8 cm</translation>
 <translation id="7905064834449738336">Cuando usas una contraseña, Chromium te advierte si se publicó en línea. Si lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Se creó hace 1 hora}other{Se creó hace {NUM_HOURS} horas}}</translation>
 <translation id="7908648876066812348">Activando la tarjeta virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para ir a la página de verificación de seguridad de Chrome en la configuración</translation>
 <translation id="791107458486222637">Rehaciendo resultado</translation>
@@ -4193,6 +4199,7 @@ Detalles adicionales:
 <translation id="8134058435519644366">Contratación y selección de personal</translation>
 <translation id="8135546115396015134">tecla izquierda</translation>
 <translation id="8137456439814903304">Energía y servicios públicos</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Se creó hace 1 mes}other{Se creó hace {NUM_MONTHS} meses}}</translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>
 <translation id="8149426793427495338">La computadora se suspendió.</translation>
 <translation id="8150722005171944719">El archivo de <ph name="URL" /> no se puede leer. Es posible que se haya eliminado o movido o que se impida el acceso a los permisos del archivo.</translation>

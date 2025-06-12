@@ -847,7 +847,7 @@
 <translation id="2399344929880464793">Код IBAN сохранен в аккаунте Google и может использоваться в наших сервисах.</translation>
 <translation id="2399868464369312507">Google Chrome пытается изменить способы оплаты.</translation>
 <translation id="2400263725572336749">Добавить паспортные данные</translation>
-<translation id="2400271059665846158">Управляйте своими картами постоянного клиента в Google Кошельке</translation>
+<translation id="2400271059665846158">Настроить карты постоянного клиента в Google Кошельке</translation>
 <translation id="2400600116338235695">Разрешено отправлять запрос на подключение к последовательным портам</translation>
 <translation id="2404884497378469141">Попробуйте скопировать файлы ещё раз.</translation>
 <translation id="2413155254802890957">Старый</translation>
@@ -867,6 +867,7 @@
             <ph name="LIST_ITEM" />сведения, указанные в формах.
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Когда вы вошли в систему, к этому устройству были подключены следующие периферийные устройства.</translation>
+<translation id="2450019289047528273">Способы оплаты и другие данные из Google Кошелька</translation>
 <translation id="2451607499823206582">Отслеживание</translation>
 <translation id="2452098632681057184">Экология и окружающая среда</translation>
 <translation id="2452837234288608067">Не удалось выполнить этот запрос. Повторите попытку.</translation>
@@ -2098,11 +2099,13 @@
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Номер виртуальной карты:</translation>
 <translation id="4535523368173457420">Эти поисковые системы популярны в вашей стране. Они расположены в случайном порядке.</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Создано 1 год назад}one{Создано {NUM_YEARS} год назад}few{Создано {NUM_YEARS} года назад}many{Создано {NUM_YEARS} лет назад}other{Создано {NUM_YEARS} года назад}}</translation>
 <translation id="4541810033354695636">Дополненная реальность</translation>
 <translation id="4542971377163063093">Лоток 6</translation>
 <translation id="4543072026714825470">Чтобы оплачивать покупки быстрее, сохраните карту и платежный адрес в аккаунте Google.</translation>
 <translation id="454441086898495030">Добавить в таблицу сравнения "<ph name="SET" />"?</translation>
 <translation id="4546730006268514143">Превышено время ожидания</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Создано 1 день назад}one{Создано {NUM_DAYS} день назад}few{Создано {NUM_DAYS} дня назад}many{Создано {NUM_DAYS} дней назад}other{Создано {NUM_DAYS} дня назад}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Вы используете блокировку экрана для ввода паролей</translation>
 <translation id="4557573143631562971">Страхование жилья</translation>
@@ -2896,6 +2899,7 @@
 <translation id="5938153366081463283">Добавить виртуальную карту</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Эта информация берется с независимых сайтов, содержащих отзывы, например Trustpilot, ScamAdviser и Google. При создании сводок используется ИИ.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Создано 1 минуту назад}one{Создано {NUM_MINS} минуту назад}few{Создано {NUM_MINS} минуты назад}many{Создано {NUM_MINS} минут назад}other{Создано {NUM_MINS} минуты назад}}</translation>
 <translation id="5944297261866530437">Ткань (с высоким лоском)</translation>
 <translation id="5950901984834744590">Бритвы и станки для бритья</translation>
 <translation id="5951495562196540101">Регистрация невозможна, так как тип аккаунта не соответствует лицензии на устройстве.</translation>
@@ -4057,6 +4061,7 @@
 <translation id="7894280532028510793">Если все правильно, <ph name="BEGIN_LINK" />выполните диагностику сети<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Конверт 178 x 229 мм</translation>
 <translation id="7905064834449738336">Chromium предупреждает, если используемый вами пароль был опубликован в интернете. При этом имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Создано 1 час назад}one{Создано {NUM_HOURS} час назад}few{Создано {NUM_HOURS} часа назад}many{Создано {NUM_HOURS} часов назад}other{Создано {NUM_HOURS} часа назад}}</translation>
 <translation id="7908648876066812348">Подключается виртуальная карта</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти на страницу проверки безопасности Chrome в настройках.</translation>
 <translation id="791107458486222637">Повтор действия</translation>
@@ -4191,6 +4196,7 @@
 <translation id="8134058435519644366">Набор персонала и трудоустройство</translation>
 <translation id="8135546115396015134">стрелку влево</translation>
 <translation id="8137456439814903304">Энергетика и коммунальные службы</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Создано 1 месяц назад}one{Создано {NUM_MONTHS} месяц назад}few{Создано {NUM_MONTHS} месяца назад}many{Создано {NUM_MONTHS} месяцев назад}other{Создано {NUM_MONTHS} месяца назад}}</translation>
 <translation id="8148608574971654810">Версия PDF:</translation>
 <translation id="8149426793427495338">Ваш компьютер перешел в спящий режим.</translation>
 <translation id="8150722005171944719">Файл по адресу <ph name="URL" /> недоступен. Возможно, он был удален или перемещен либо права доступа к нему ограничены.</translation>

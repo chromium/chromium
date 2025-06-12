@@ -323,7 +323,7 @@
 <translation id="2259659629660284697">匯出密碼…</translation>
 <translation id="2265069324308685684">正在刪除瀏覽資料…</translation>
 <translation id="2267753748892043616">新增帳戶</translation>
-<translation id="2268044343513325586">修正搜尋</translation>
+<translation id="2268044343513325586">調整文字</translation>
 <translation id="2271452184061378400">你的分頁群組會儲存在這裡</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
 <translation id="2287614783861766820">{count,plural, =1{這個地址將從這部裝置中刪除。}other{這些地址將從這部裝置中刪除。}}</translation>
@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">新增為聯絡人</translation>
 <translation id="355765753469272474">復原</translation>
 <translation id="3565930036634619844">分頁。第 <ph name="NUMBER_OF_TABS" /> 個，共 <ph name="TAB_INDEX" /> 個。</translation>
-<translation id="3570693105179140209">輕觸兩下可查看更多密碼。</translation>
 <translation id="3572607909481582402">在你的 Google 帳戶中</translation>
 <translation id="3575234738189584619">使用智慧鏡頭搜尋</translation>
 <translation id="3575426792457739946">這份清單包含已載入的所有設定檔。</translation>
@@ -654,7 +653,6 @@
 <translation id="3779810277399252432">沒有網際網路連線。</translation>
 <translation id="3782614601387961027">忽略警告</translation>
 <translation id="3789841737615482174">安裝</translation>
-<translation id="3795478177331815672">開啟分頁和分頁群組</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">針對這個網站提供翻譯選項</translation>
 <translation id="3808311849069021992">顯示搜尋引擎詳細資料</translation>
@@ -1813,6 +1811,7 @@
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8348530355586151720">輕觸三點圖示選單</translation>
 <translation id="8349305172487531364">書籤列</translation>
+<translation id="8363484128299778310">發生問題時的臨時救援選項</translation>
 <translation id="8364563001733875155">如要變更 PIN 碼，請先在裝置上設定密碼。</translation>
 <translation id="8366466717204352506">未執行過檢查</translation>
 <translation id="8368001212524806591">追蹤價格</translation>

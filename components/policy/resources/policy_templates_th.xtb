@@ -936,7 +936,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 ต้นทางที่ตรงกับทั้งรูปแบบนโยบายที่บล็อกและอนุญาตไว้จะถูกบล็อก
 ต้นทางที่นโยบายหรือการตั้งค่าของผู้ใช้ไม่ได้ระบุไว้จะต้องมีการกระทำของผู้ใช้ก่อนเพื่อเรียกใช้ API นี้</translation>
 <translation id="1645793986494086629">สคีมา</translation>
-<translation id="1647420986475965896">การตั้งค่าสำหรับคำแนะนำการค้นหาในโหมด AI ในแถบที่อยู่และช่องค้นหาในหน้าแท็บใหม่</translation>
 <translation id="1647558381546345298">การตั้งค่านโยบายจะกำหนดค่าขนาดของแคชที่ <ph name="PRODUCT_NAME" /> ใช้ในการจัดเก็บไฟล์สื่อที่แคชไว้ในดิสก์ ไม่ว่าผู้ใช้จะระบุการตั้งค่าสถานะ --media-cache-size หรือไม่ก็ตาม ค่าที่ระบุในนโยบายนี้ไม่ใช่ขอบเขตตายตัว แต่เป็นค่าที่แนะนำสำหรับระบบการแคช ระบบจะปัดเศษค่าที่ต่ำกว่า 2-3 เมกะไบต์
 
       การตั้งค่าของนโยบายให้เป็น 0 จะทำให้ระบบใช้ขนาดแคชเริ่มต้นและผู้ใช้จะเปลี่ยนแปลงค่านี้ไม่ได้
@@ -1622,25 +1621,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="2180795125410219364">การตั้งค่า Home/End ปิดอยู่</translation>
 <translation id="2180958780733364832">ควบคุมการใช้โหมดไม่มีส่วนหัว</translation>
 <translation id="2182291258410176649">ผู้ใช้ตัดสินใจว่าจะเปิดใช้การสำรองข้อมูลและการกู้คืนหรือไม่</translation>
-<translation id="2182945089357619926">นโยบายนี้อนุญาตให้ผู้ดูแลระบบตั้งค่าเครื่องมือรวบรวมข้อมูลการค้นหาขององค์กรที่กำหนดซึ่งจะแสดงคำแนะนำและผลการค้นหาในแถบที่อยู่เมื่อถูกเรียกให้แสดงโดยคีย์เวิร์ดเฉพาะ ผู้ใช้เริ่มการค้นหาได้โดยการพิมพ์คีย์เวิร์ดที่ระบุในช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> โดยใส่หรือไม่ใส่คำนำหน้า @ (เช่น <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) ตามด้วยการกด Space หรือ Tab ในแถบที่อยู่
-
-ต้องใส่ข้อมูลในช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
-
-ช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับชื่อเครื่องมือค้นหาที่แสดงให้ผู้ใช้เห็นในแถบที่อยู่
-
-ช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับคีย์เวิร์ดที่ผู้ใช้ป้อนเพื่อเรียกใช้การค้นหา ทางลัดมีคำและอักขระธรรมดาได้ แต่ต้องไม่มีการเว้นวรรคหรือเริ่มต้นด้วยสัญลักษณ์ @ และทางลัดต้องไม่ซ้ำกัน
-
-ช่อง <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่จะค้นหา ป้อนที่อยู่เว็บสำหรับหน้าผลการค้นหาของเครื่องมือค้นหา แล้วใช้ <ph name="SEARCH_TERM_MARKER" /> แทนตำแหน่งที่เป็นคำค้นหา
-
-ช่อง <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่ให้การแนะนำการค้นหา ระบบจะสร้างคำขอ POST และส่งคำค้นหาของผู้ใช้ในพารามิเตอร์ POST ภายใต้คีย์ <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />
-
-ช่อง <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ไปยังรูปภาพที่จะใช้ในการแนะนำการค้นหา ระบบจะใช้ไอคอนเริ่มต้นเมื่อไม่ได้ตั้งค่าช่องนี้ ขอแนะนำให้ใช้ไอคอน Fav (ตัวอย่าง <ph name="ICON_URL_EXAMPLE" />) รูปแบบไฟล์ภาพที่รองรับ ได้แก่ JPEG, PNG และ ICO
-
-ช่อง <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุว่าต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> เพื่อดูการแนะนำการค้นหาหรือไม่ หากไม่ได้ตั้งค่าช่องนี้ ก็ไม่จำเป็นต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
-
-ใน <ph name="MS_WIN_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่เข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
-
-ใน <ph name="MAC_OS_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่จัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" /></translation>
 <translation id="2183338188392346527">ไม่รายงานตัวนับรันไทม์ของอุปกรณ์</translation>
 <translation id="2187372280917024033">เทมเพลต URI ของรีโซลเวอร์ DNS-over-HTTPS ที่ต้องการ วิธีระบุรีโซลเวอร์ DNS-over-HTTPS หลายรายการคือเว้นวรรคระหว่างเทมเพลต URI ที่เกี่ยวข้อง นโยบายนี้คล้ายเป็นอย่างมากกับ <ph name="DOH_TEMPLATES_POLICY_NAME" /> ซึ่งจะถูกลบล้างหากระบุ
 นโยบายนี้รองรับการระบุข้อมูลยืนยันตัวตน ซึ่งตรงข้ามกับนโยบาย <ph name="DOH_TEMPLATES_POLICY_NAME" />
@@ -1931,9 +1911,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="2377059627106831967">อนุญาตให้ใช้การจัดกลุ่มหน้าต่างภาพรวมโดย Generative AI โดยไม่มีการปรับปรุงโมเดล AI</translation>
 <translation id="2377109572344699022">ควบคุมการใช้ Direct Sockets API</translation>
 <translation id="2382672620906337383">ระบบจะไม่บีบ setTimeout() ของ JavaScript จนกว่าเกณฑ์ที่ซ้อนอยู่จะสูงขึ้น</translation>
-<translation id="2384233438419344179">การตั้งค่านโยบายเป็น "เปิดใช้" จะป้องกันไม่ให้องค์ประกอบหน้าเว็บที่ไม่ได้มาจากโดเมนในแถบที่อยู่ของเบราว์เซอร์ตั้งค่าคุกกี้ การตั้งค่านโยบายเป็น "ปิดใช้" จะทำให้องค์ประกอบเหล่านั้นตั้งค่าคุกกี้ได้และป้องกันไม่ให้ผู้ใช้เปลี่ยนการตั้งค่านี้
-
-      การไม่ตั้งค่าจะเปิดใช้คุกกี้ของบุคคลที่สาม แต่ผู้ใช้เปลี่ยนการตั้งค่านี้ได้</translation>
 <translation id="2386362615870139244">อนุญาตล็อกปลุกหน้าจอ</translation>
 <translation id="2387469539700985783">นโยบายนี้ไม่มีผลต่อการรายงานที่ดำเนินการโดย Android</translation>
 <translation id="2388701318721126001">หากปิดใช้นโยบายนี้จะทำให้ผู้ใช้ไม่สามารถเลือกรูปภาพวอลเปเปอร์ <ph name="PRODUCT_OS_NAME" /> จากอัลบั้มใน Google Photos ได้
@@ -2370,16 +2347,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="2702682139813393777">บังคับให้โฮสต์การรับส่งข้อความในเครื่องของ Windows เปิดใช้งานผ่าน cmd.exe</translation>
 <translation id="270582584528242502">ไม่ต้องแสดงกล่องคำเตือนเมื่อผู้ใช้พยายามออก</translation>
 <translation id="2706708761587205154">อนุญาตให้พิมพ์เฉพาะเมื่อมี PIN เท่านั้น</translation>
-<translation id="2706972066112233185">นโยบายนี้ควบคุมส่วนคำแนะนำในโหมด AI ในแถบที่อยู่และช่องค้นหาในหน้าแท็บใหม่
-
-ฟีเจอร์นี้พร้อมใช้งานสำหรับผู้ใช้ทุกคนที่ใช้ Google เป็นเครื่องมือค้นหาเริ่มต้น เว้นแต่ว่านโยบายนี้จะปิดใช้ฟีเจอร์นี้
-
-หากไม่ได้ตั้งค่านโยบาย ลักษณะการทำงานจะกำหนดโดยนโยบาย <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />
-
-เมื่อตั้งค่านโยบายเป็น 0 - เปิดใช้หรือไม่ได้ตั้งค่า ฟีเจอร์นี้จะพร้อมใช้งานสำหรับผู้ใช้ เมื่อตั้งค่านโยบายเป็น 1 - ปิดใช้ ฟีเจอร์จะใช้งานไม่ได้
-
-0 = อนุญาตให้ใช้ฟีเจอร์
-1 = ไม่อนุญาตให้ใช้ฟีเจอร์</translation>
 <translation id="2707733461906745082">การแยกโปรไฟล์</translation>
 <translation id="2707873794476722903">Google Safe Browsing ทำงานในโหมดมาตรฐาน</translation>
 <translation id="2709516037105925701">ป้อนอัตโนมัติ</translation>
@@ -3975,7 +3942,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 
  หากไม่ได้ตั้งค่านโยบาย ตั้งเป็นค่าว่างหรือค่าที่ไม่ถูกต้อง ระบบจะไม่เพิ่มค่า <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> เพิ่มเติมในคำของานพิมพ์
 </translation>
-<translation id="3895626555961466729">อนุญาตให้ใช้คำแนะนำในโหมด AI</translation>
 <translation id="3896591584655529057">เปิดใช้การบันทึกพาสคีย์ด้วยเครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="3896751141670591496">การตั้งค่านโยบายเป็น "เปิดใช้" หรือไม่ได้ตั้งค่าหมายความว่าคำเตือนด้านความปลอดภัยจะแสดงเมื่อมีการใช้แฟล็กบรรทัดคำสั่งที่อาจเป็นอันตรายเพื่อเปิด Chrome
 
@@ -10252,7 +10218,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 
       เมื่อปิดใช้นโยบายนี้ การเรียกใช้ API การแชร์หน้าจอจะไม่สำเร็จและมีข้อความแสดงข้อผิดพลาด อย่างไรก็ตาม ระบบจะไม่พิจารณานโยบายนี้ (และเว็บไซต์จะได้รับอนุญาตให้ใช้ API การแชร์หน้าจอ) หากเว็บไซต์ตรงกับรูปแบบต้นทางในนโยบาย <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> หรือ <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />
       </translation>
-<translation id="8309511882585098865">ไม่อนุญาตให้ใช้คำแนะนำในโหมด AI</translation>
 <translation id="8310392396850884147">รองรับส่วนหัวของคำขอที่ไม่มีไวลด์การ์ดสำหรับ CORS</translation>
 <translation id="8312129124898414409">ช่วยให้คุณกำหนดว่าเว็บไซต์ได้รับอนุญาตให้ใช้การสร้างคีย์หรือไม่ โดยสามารถอนุญาตหรือไม่อนุญาตให้เว็บไซต์ทั้งหมดใช้การสร้างคีย์
 

@@ -786,7 +786,6 @@
 <translation id="1542524755306892917">इससे Google Assistant, <ph name="SUPERVISED_USER_NAME" /> के सवाल पूछने पर ज़रूरत के हिसाब से जवाब दे पाती है.</translation>
 <translation id="1543284117603151572">Edge से आयात किया गया</translation>
 <translation id="1543538514740974167">यहां तेज़ी से पहुंचें</translation>
-<translation id="154420222899071768">आपका पासवर्ड अपडेट नहीं किया जा सका. हालांकि, आपके पास अब भी अपने पुराने पासवर्ड से साइट को ऐक्सेस करने का विकल्प है</translation>
 <translation id="1544588554445317666">फ़ाइल का पाथ छोटा करें या इसे किसी दूसरी जगह सेव करके देखें</translation>
 <translation id="1545177026077493356">स्वचालित किओस्क मोड</translation>
 <translation id="1545749641540134597">QR कोड स्कैन करें</translation>
@@ -7026,7 +7025,6 @@
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से पेज खोजें</translation>
 <translation id="5942779427914696408">डिवाइस किसे दिख रहा है</translation>
 <translation id="5943127421590245687">पुष्टि हो गई. अपना स्थानीय डेटा अनलॉक करने और उसे वापस लाने के लिए, अपने <ph name="DEVICE_TYPE" /> का पुराना पासवर्ड डालें.</translation>
-<translation id="5943209617717087975">आपके नए टैब पेज को <ph name="THIRD_PARTY_NTP_MANAGER" /> मैनेज कर रहा है</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या इसे स्कैन करने के लिए Google Safe Browsing को भेजें?</translation>
 <translation id="5945192511027649793">टचपैड को बंद करें</translation>
 <translation id="5945363896952315544">इस सुरक्षा कुंजी में और फ़िंगरप्रिंट सेव नहीं किए जा सकते. नया फ़िंगरप्रिंट जोड़ने के लिए, सबसे पहले मौजूदा फ़िंगरप्रिंट मिटाएं</translation>

@@ -788,7 +788,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1542524755306892917">Tako lahko Pomočnik Google zagotovi prilagojene odgovore, ko <ph name="SUPERVISED_USER_NAME" /> zastavlja vprašanja.</translation>
 <translation id="1543284117603151572">Uvoženo iz brskalnika Edge</translation>
 <translation id="1543538514740974167">Hitrejši pomik sem</translation>
-<translation id="154420222899071768">Geslo ni bilo posodobljeno, vendar bi morali še vedno imeti dostop do spletnega mesta s starim geslom</translation>
 <translation id="1544588554445317666">Poskusite uporabiti krajše ime datoteke ali shraniti v drugo mapo.</translation>
 <translation id="1545177026077493356">Samodejni način kiosk</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
@@ -7033,7 +7032,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="594221546068848596">Išči po strani s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Vidnost naprave</translation>
 <translation id="5943127421590245687">Preverjanje je bilo uspešno. Če želite napravo odkleniti in obnoviti lokalne podatke vnesite staro geslo za napravo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> upravlja stran z novim zavihkom</translation>
 <translation id="5945002094477276055">Datoteka <ph name="FILE_NAME" /> je morda nevarna. Jo želite poslati Google Varnemu brskanju v pregled?</translation>
 <translation id="5945192511027649793">Onemogoči sledilno ploščico</translation>
 <translation id="5945363896952315544">V varnostni ključ ni mogoče shraniti več prstnih odtisov. Če želite dodati novega, najprej izbrišite obstoječi prstni odtis.</translation>

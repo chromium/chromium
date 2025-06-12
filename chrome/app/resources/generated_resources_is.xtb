@@ -786,7 +786,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1542524755306892917">Þetta gerir Google-hjálpara kleift að veita sérsniðin svör þegar <ph name="SUPERVISED_USER_NAME" /> spyr spurninga.</translation>
 <translation id="1543284117603151572">Flutt inn frá Edge</translation>
 <translation id="1543538514740974167">Fljótari leið hingað</translation>
-<translation id="154420222899071768">Ekki tókst að uppfæra aðgangsorðið þitt en þú ættir enn að geta opnað síðuna með gamla aðgangsorðinu þínu.</translation>
 <translation id="1544588554445317666">Prófaðu að nota styttra skráarheiti eða vista í aðra möppu</translation>
 <translation id="1545177026077493356">Sjálfvirk sjálfsalastilling</translation>
 <translation id="1545749641540134597">Skanna QR-kóða</translation>
@@ -7029,7 +7028,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="594221546068848596">Leita á síðu með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Sýnileiki tækis</translation>
 <translation id="5943127421590245687">Staðfestingin tókst. Til að opna og endurheimta staðbundnu gögnin þín skaltu slá inn eldra aðgangsorðið þitt fyrir <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> stjórnar síðu nýrra flipa</translation>
 <translation id="5945002094477276055">Skráin <ph name="FILE_NAME" /> gæti verið hættuleg. Viltu senda hana til öruggrar vefskoðunar Google og láta skanna hana?</translation>
 <translation id="5945192511027649793">Slökkva á snertifleti</translation>
 <translation id="5945363896952315544">Öryggislykillinn þinn getur ekki vistað fleiri fingraför. Þú þarft að eyða fingrafari sem fyrir er til að geta bætt nýju við.</translation>

@@ -785,7 +785,6 @@
 <translation id="1542524755306892917">這可讓「Google 助理」在<ph name="SUPERVISED_USER_NAME" />提問時提供更貼近需要的回覆。</translation>
 <translation id="1543284117603151572">從 EDGE 匯入</translation>
 <translation id="1543538514740974167">輕輕一按，即時到位</translation>
-<translation id="154420222899071768">你的密碼並未更新，但你應該仍能使用舊密碼存取網站</translation>
 <translation id="1544588554445317666">請嘗試使用較短的檔案名稱，或者儲存至其他資料夾</translation>
 <translation id="1545177026077493356">自動 Kiosk 模式</translation>
 <translation id="1545749641540134597">掃描二維條碼</translation>
@@ -7018,7 +7017,6 @@
 <translation id="594221546068848596">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋網頁</translation>
 <translation id="5942779427914696408">裝置分享設定</translation>
 <translation id="5943127421590245687">您已完成驗證程序。如果要解鎖並還原本機資料，請輸入舊的 <ph name="DEVICE_TYPE" /> 密碼。</translation>
-<translation id="5943209617717087975">新分頁頁面由「<ph name="THIRD_PARTY_NTP_MANAGER" />」管理</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能不安全。要傳送到「Google 安全瀏覽」進行掃瞄嗎？</translation>
 <translation id="5945192511027649793">停用觸控板</translation>
 <translation id="5945363896952315544">安全密鑰無法儲存更多指紋。如要新增新指紋，請先刪除現有的指紋。</translation>

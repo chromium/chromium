@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{Dzień temu}few{# dni temu}many{# dni temu}other{# dnia temu}}</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1243314992276662751">Prześlij</translation>
+<translation id="1253734725326687145">Docelowy element dotykowy został przeniesiony w prawy górny róg. Kliknij tutaj.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> – nie udało się udostępnić</translation>
 <translation id="1269641567813814718">Windows</translation>
 <translation id="1291104554099683393">Spróbuj udostępnić jego mniejsze fragmenty.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="24452542372838207">Rozwiń powiadomienie</translation>
 <translation id="2445449901874883781">Użyj dużej gęstości</translation>
+<translation id="2448407890032181691">Docelowy element dotykowy został przeniesiony w prawy dolny róg. Kliknij tutaj.</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2497284189126895209">Wszystkie pliki</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Strzałka w lewo</translation>
 <translation id="5633029987065897167">Puste</translation>
+<translation id="5651438382973553530">Docelowy element dotykowy został przeniesiony w lewy dolny róg. Kliknij tutaj.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}few{# min}many{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktywność dzisiaj}=1{Aktywność 1 dzień temu}few{Aktywność # dni temu}many{Aktywność # dni temu}other{Aktywność # dnia temu}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dzień i }few{# dni i }many{# dni i }other{# dnia i }}</translation>

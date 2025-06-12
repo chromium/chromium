@@ -785,7 +785,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1542524755306892917">Cela permet à l'Assistant Google de fournir des réponses personnalisées lorsque <ph name="SUPERVISED_USER_NAME" /> pose des questions.</translation>
 <translation id="1543284117603151572">Importés depuis Edge</translation>
 <translation id="1543538514740974167">Accédez plus rapidement à cette page</translation>
-<translation id="154420222899071768">Votre mot de passe n'a pas été mis à jour, mais vous devriez toujours pouvoir accéder au site avec votre ancien mot de passe</translation>
 <translation id="1544588554445317666">Essayez d'utiliser un nom de fichier plus court ou de l'enregistrer dans un dossier différent</translation>
 <translation id="1545177026077493356">Mode Kiosque automatique</translation>
 <translation id="1545749641540134597">Scanner le QR code</translation>
@@ -7013,7 +7012,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="594221546068848596">Rechercher sur une page avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Visibilité de l'appareil</translation>
 <translation id="5943127421590245687">La validation a bien abouti. Pour déverrouiller la session et restaurer vos données locales, tapez l'ancien mot de passe de votre <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> gère votre page "Nouvel onglet"</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> est peut-être dangereux. L'envoyer à la navigation sécurisée Google pour analyse ?</translation>
 <translation id="5945192511027649793">Désactiver le pavé tactile</translation>
 <translation id="5945363896952315544">Votre clé de sécurité ne peut pas stocker plus d'empreintes. Pour en ajouter, vous devez en supprimer.</translation>

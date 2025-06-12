@@ -223,6 +223,7 @@
 <translation id="3716540481907974026">ChromeOS Flex версиясы</translation>
 <translation id="3718181793972440140">Ушуну менен түзмөктөгү 1 нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome аны өчүрүүнү сунуштайт. <ph name="BEGIN_LINK" />Колдоого алынган кеңейтүүлөр жөнүндө кеңири маалымат<ph name="END_LINK" />}other{Chrome аларды өчүрүүнү сунуштайт. <ph name="BEGIN_LINK" />Колдоого алынган кеңейтүүлөр жөнүндө кеңири маалымат<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome'ду орнотконду үйрөнүп алыңыз</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Кирүү катасынан улам, ChromeOS Flex дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

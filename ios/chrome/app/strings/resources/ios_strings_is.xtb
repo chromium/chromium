@@ -611,7 +611,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3557336313807607643">Bæta við tengiliði</translation>
 <translation id="355765753469272474">Afturkalla</translation>
 <translation id="3565930036634619844">Flipi. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Ýttu tvisvar til að fá fleiri aðgangsorð.</translation>
 <translation id="3572607909481582402">Á Google-reikningnum þínum</translation>
 <translation id="3575234738189584619">Leita með Linsu</translation>
 <translation id="3575426792457739946">Listinn sýnir alla prófíla sem var hlaðið.</translation>
@@ -654,7 +653,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3779810277399252432">Engin internettenging.</translation>
 <translation id="3782614601387961027">Hunsa viðvörun</translation>
 <translation id="3789841737615482174">Setja upp</translation>
-<translation id="3795478177331815672">Opna flipa og flipahópa</translation>
 <translation id="380329542618494757">Nafn</translation>
 <translation id="3803696231112616155">Bjóðast til að þýða þetta vefsvæði</translation>
 <translation id="3808311849069021992">Sýna upplýsingar um leitarvéla</translation>
@@ -1813,6 +1811,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8343993175958086504">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er.</translation>
 <translation id="8348530355586151720">Ýttu á þriggja punkta valmyndina</translation>
 <translation id="8349305172487531364">Bókamerkjastika</translation>
+<translation id="8363484128299778310">Tímabundin endurheimt ef vandræði koma upp</translation>
 <translation id="8364563001733875155">Til að skipta um PIN-númer skaltu fyrst setja upp aðgangskóða í tækinu þínu.</translation>
 <translation id="8366466717204352506">Athugun aldrei keyrð</translation>
 <translation id="8368001212524806591">Vakta verð</translation>

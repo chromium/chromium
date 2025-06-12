@@ -782,7 +782,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1542524755306892917">Bu Google Assistentga <ph name="SUPERVISED_USER_NAME" /> savollar berganida batafsil javoblarni taqdim etish imkonini beradi.</translation>
 <translation id="1543284117603151572">EDGE brauzeridan import qilinganlar</translation>
 <translation id="1543538514740974167">Tezkor kirish</translation>
-<translation id="154420222899071768">Parolingiz yangilanmadi, lekin saytga eski parolingiz bilan kira olishingiz kerak</translation>
 <translation id="1544588554445317666">Faylga qisqaroq nom bering yoki boshqa jildga saqlang</translation>
 <translation id="1545177026077493356">Kiosk rejimining avtomatik yoqilishi</translation>
 <translation id="1545749641540134597">QR kodni skanerlash</translation>
@@ -7014,7 +7013,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="594221546068848596">Sahifadan <ph name="VISUAL_SEARCH_PROVIDER" /> orqali qidirish</translation>
 <translation id="5942779427914696408">Qurilmaning ochiqligi</translation>
 <translation id="5943127421590245687">Hisobingiz tasdiqlandi. Qulfdan chiqarish va maʼlumotlarni tiklash uchun <ph name="DEVICE_TYPE" /> qurilmasining eski parolini kiriting.</translation>
-<translation id="5943209617717087975">Yangi varaq sahifasi <ph name="THIRD_PARTY_NTP_MANAGER" /> boshqaruvida</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> fayli xavfli boʻlishi mumkin. Tekshiruv uchun Google saytlar xavfsizligi tizimiga yuborilsinmi?</translation>
 <translation id="5945192511027649793">Sensorli panelni faolsizlantirish</translation>
 <translation id="5945363896952315544">Elektron kalitga boshqa barmoq izlari saqlanmaydi. Yangisini kiritish uchun mavjud barmoq izini oʻchiring.</translation>

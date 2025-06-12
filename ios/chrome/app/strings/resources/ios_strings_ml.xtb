@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">കോൺടാക്‌റ്റുകളിലേക്ക് ചേർക്കുക</translation>
 <translation id="355765753469272474">പഴയപടിയാക്കുക</translation>
 <translation id="3565930036634619844">ടാബ്. <ph name="NUMBER_OF_TABS" />-ൽ <ph name="TAB_INDEX" />-ാമത്തേത്.</translation>
-<translation id="3570693105179140209">കൂടുതൽ പാസ്‌വേഡുകൾക്ക് ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="3572607909481582402">നിങ്ങളുടെ Google Account-ൽ</translation>
 <translation id="3575234738189584619">Lens ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="3575426792457739946">ഈ ലിസ്റ്റിൽ ലോഡ് ചെയ്ത എല്ലാ പ്രൊഫൈലുകളും അടങ്ങിയിരിക്കുന്നു.</translation>
@@ -624,6 +623,7 @@
 <translation id="3596414637720633074">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="3602260545951981695">"മെച്ചപ്പെടുത്തിയ പരിരക്ഷ" തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3608436266458100337">റീഡർ മോഡ്</translation>
+<translation id="3610041351087301930">റീഡർ മറയ്‌ക്കുക</translation>
 <translation id="3622175633937495219">തിരയൽ ചരിത്രം (<ph name="COUNT" /> കണ്ടെത്തി)</translation>
 <translation id="3625008969091706597">പിന്നിലേക്ക് പോകാൻ അറ്റത്ത് സ്വൈപ്പ് ചെയ്യാം.</translation>
 <translation id="362709345066740529">നിങ്ങളുടെ കാർഡുകളും ഫീഡും മറ്റും ഇവിടെ ഇഷ്ടാനുസൃതമാക്കുക</translation>
@@ -654,7 +654,6 @@
 <translation id="3779810277399252432">ഇന്റർനെറ്റ് കണക്ഷനില്ല.</translation>
 <translation id="3782614601387961027">മുന്നറിയിപ്പ് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
-<translation id="3795478177331815672">ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും തുറക്കുക</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
 <translation id="3808311849069021992">തിരയൽ എഞ്ചിൻ വിശദാംശങ്ങൾ കാണിക്കുക</translation>
@@ -1066,6 +1065,7 @@
 <translation id="5431252637281434233">നിങ്ങൾ സൈൻ ഔട്ട് ആകും</translation>
 <translation id="543338862236136125">പാസ്‌വേഡ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5433691172869980887">ഉപയോക്തൃനാമം പകർത്തി</translation>
+<translation id="5437480232219631455">നിങ്ങൾക്ക് ഇവിടെ Gemini തുറക്കാനാകും</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="5443636120437209490">ഡിഫോൾട്ടായി കൂടുതൽ മെച്ചപ്പെട്ട ബ്രൗസിംഗ്</translation>
 <translation id="5444892875087332195">ബുക്ക്‌മാർക്കുകൾ</translation>
@@ -1813,6 +1813,7 @@
 <translation id="8343993175958086504">നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഏത് ഉപകരണത്തിലും ഉപയോഗിക്കുക.</translation>
 <translation id="8348530355586151720">'മൂന്ന് കുത്ത്' മെനുവിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="8349305172487531364">ബുക്മാര്‍ക്ക് ബാര്‍</translation>
+<translation id="8363484128299778310">പ്രശ്‌നമുണ്ടാകുമ്പോൾ താൽക്കാലികമായി വീണ്ടെടുക്കുക</translation>
 <translation id="8364563001733875155">പിൻ മാറ്റാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ആദ്യം ഒരു പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="8366466717204352506">പരിശോധന ഒരിക്കലും റൺ ചെയ്യില്ല</translation>
 <translation id="8368001212524806591">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>

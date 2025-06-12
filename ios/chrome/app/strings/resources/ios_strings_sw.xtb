@@ -611,7 +611,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3557336313807607643">Ongeza kwenye anwani</translation>
 <translation id="355765753469272474">Tendua</translation>
 <translation id="3565930036634619844">Kichupo. <ph name="TAB_INDEX" /> kati ya <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Gusa mara mbili ili upate manenosiri zaidi.</translation>
 <translation id="3572607909481582402">Katika Akaunti yako ya Google</translation>
 <translation id="3575234738189584619">Tafuta ukitumia Lenzi</translation>
 <translation id="3575426792457739946">Orodha hii inajumuisha wasifu wote uliopakiwa.</translation>
@@ -624,6 +623,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3596414637720633074">Zuia vidakuzi vya watu au kampuni nyingine katika Hali Fiche</translation>
 <translation id="3602260545951981695">Chagua "Ulinzi Ulioboreshwa"</translation>
 <translation id="3608436266458100337">Hali ya msomaji</translation>
+<translation id="3610041351087301930">Ficha Kisomaji</translation>
 <translation id="3622175633937495219">Historia ya Mambo Uliyotafuta (Yamepatikana <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Unaweza kutelezesha kidole kwenye ukingo ili urudi nyuma.</translation>
 <translation id="362709345066740529">Wekea mapendeleo kadi, mipasho yako na mengineyo hapa</translation>
@@ -654,7 +654,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3779810277399252432">Hakuna muunganisho wa intaneti.</translation>
 <translation id="3782614601387961027">Ondoa onyo</translation>
 <translation id="3789841737615482174">Sakinisha</translation>
-<translation id="3795478177331815672">Fungua vichupo na vikundi vya kichupo</translation>
 <translation id="380329542618494757">Jina</translation>
 <translation id="3803696231112616155">Jitolee kutafsiri tovuti hii</translation>
 <translation id="3808311849069021992">Onyesha maelezo ya mtambo wa kutafuta</translation>
@@ -1066,6 +1065,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5431252637281434233">Utaondolewa kwenye akaunti</translation>
 <translation id="543338862236136125">Badilisha nenosiri</translation>
 <translation id="5433691172869980887">Jina la mtumiaji limenakiliwa</translation>
+<translation id="5437480232219631455">Unaweza kufungua Gemini hapa</translation>
 <translation id="5439618055789623719">Umeingia katika akaunti ukitumia <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Bora ikiwa kivinjari chaguomsingi</translation>
 <translation id="5444892875087332195">Alamisho</translation>
@@ -1813,6 +1813,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8343993175958086504">Hifadhi nakala ya maudhui yako ili uyatumie kwenye kifaa chochote.</translation>
 <translation id="8348530355586151720">Gusa menyu ya nukta tatu</translation>
 <translation id="8349305172487531364">Sehemu ya Alamisho</translation>
+<translation id="8363484128299778310">Urejeshaji wa muda ukikumbana na tatizo</translation>
 <translation id="8364563001733875155">Ili ubadilishe PIN yako, weka kwanza namba ya siri kwenye kifaa chako.</translation>
 <translation id="8366466717204352506">Ukaguzi haukutekelezwa</translation>
 <translation id="8368001212524806591">Fuatilia bei</translation>

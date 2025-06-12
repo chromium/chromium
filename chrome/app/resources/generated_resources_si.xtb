@@ -782,7 +782,6 @@
 <translation id="1542524755306892917"><ph name="SUPERVISED_USER_NAME" /> ප්‍රශ්න අසන විට Google සහායකට ගැළපෙන ප්‍රතිචාර සැපයීමට මෙය ඉඩ දෙයි.</translation>
 <translation id="1543284117603151572">Edge වෙතින් ආයාත කළ</translation>
 <translation id="1543538514740974167">මෙහි වඩා වේගයෙන් පැමිණෙන්න</translation>
-<translation id="154420222899071768">ඔබේ මුරපදය යාවත්කාලීන කර නැත, නමුත් ඔබට තවමත් ඔබේ පැරණි මුරපදය සමග අඩවියට ප්‍රවේශ විය හැක</translation>
 <translation id="1544588554445317666">කෙටි ගොනු නමක් භාවිත කිරීමට හෝ වෙනත් ෆෝල්ඩරයකට සුරැකීමට උත්සාහ කරන්න</translation>
 <translation id="1545177026077493356">ස්වයංක්‍රීය කියොස්ක් මාදිලිය</translation>
 <translation id="1545749641540134597">QR කේතය ස්කෑන් කරන්න</translation>
@@ -7016,7 +7015,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> සමග පිටුව සොයන්න</translation>
 <translation id="5942779427914696408">උපාංග දෘශ්‍යතාව</translation>
 <translation id="5943127421590245687">ඔබගේ සත්‍යාපනය සාර්ථක විය. ඔබගේ ස්ථානීය දත්ත අගුලු හැරීමට සහ ප්‍රතිසාධනය කිරීමට, ඔබගේ පැරණි <ph name="DEVICE_TYPE" /> මුරපදය ඇතුළු කරන්න.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> ඔබේ නව පටිති පිටුව කළමනාකරණය කරයි</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> අනතුරුදායක විය හැකිය. ස්කෑන් කිරීම සඳහා Google ආරක්ෂිත බ්‍රවුස් කිරීම වෙත යවන්නද?</translation>
 <translation id="5945192511027649793">ස්පර්ශ පුවරුව අබල කරන්න</translation>
 <translation id="5945363896952315544">ඔබගේ ආරක්ෂක යතුරට තවත් ඇඟිලි සලකුණු ගබඩා කළ නොහැකිය. නව එකක් එක් කිරීමට, පළමුව පවතින ඇඟිලි සලකුණක් මකන්න.</translation>

@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">เพิ่มในรายชื่อติดต่อ</translation>
 <translation id="355765753469272474">เลิกทำ</translation>
 <translation id="3565930036634619844">แท็บ <ph name="TAB_INDEX" /> จาก <ph name="NUMBER_OF_TABS" /></translation>
-<translation id="3570693105179140209">แตะสองครั้งเพื่อดูรหัสผ่านเพิ่มเติม</translation>
 <translation id="3572607909481582402">ในบัญชี Google</translation>
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
 <translation id="3575426792457739946">รายการนี้มีโปรไฟล์ที่โหลดทั้งหมด</translation>
@@ -624,6 +623,7 @@
 <translation id="3596414637720633074">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="3602260545951981695">เลือก "การปกป้องที่ดียิ่งขึ้น"</translation>
 <translation id="3608436266458100337">โหมดผู้อ่าน</translation>
+<translation id="3610041351087301930">ซ่อนโหมดผู้อ่าน</translation>
 <translation id="3622175633937495219">ประวัติการค้นหา (พบ <ph name="COUNT" /> รายการ)</translation>
 <translation id="3625008969091706597">คุณสามารถปัดขอบเพื่อย้อนกลับได้</translation>
 <translation id="362709345066740529">ปรับแต่งการ์ด ฟีด และอื่นๆ ที่นี่</translation>
@@ -654,7 +654,6 @@
 <translation id="3779810277399252432">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="3782614601387961027">ปิดคำเตือน</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
-<translation id="3795478177331815672">แท็บและกลุ่มแท็บที่เปิดอยู่</translation>
 <translation id="380329542618494757">ชื่อ</translation>
 <translation id="3803696231112616155">เสนอให้แปลเว็บไซต์นี้</translation>
 <translation id="3808311849069021992">แสดงรายละเอียดเครื่องมือค้นหา</translation>
@@ -1066,6 +1065,7 @@
 <translation id="5431252637281434233">คุณจะออกจากระบบ</translation>
 <translation id="543338862236136125">แก้ไขรหัสผ่าน</translation>
 <translation id="5433691172869980887">คัดลอกชื่อผู้ใช้แล้ว</translation>
+<translation id="5437480232219631455">คุณเปิด Gemini ได้ที่นี่</translation>
 <translation id="5439618055789623719">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">การท่องเว็บที่ดีขึ้นโดยค่าเริ่มต้น</translation>
 <translation id="5444892875087332195">บุ๊กมาร์ก</translation>
@@ -1813,6 +1813,7 @@
 <translation id="8343993175958086504">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="8348530355586151720">แตะเมนู 3 จุด</translation>
 <translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
+<translation id="8363484128299778310">การกู้คืนชั่วคราวในกรณีที่มีปัญหา</translation>
 <translation id="8364563001733875155">หากต้องการเปลี่ยน PIN ให้ตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="8366466717204352506">ไม่เคยตรวจสอบ</translation>
 <translation id="8368001212524806591">ติดตามราคา</translation>

@@ -786,7 +786,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1542524755306892917">Tādējādi Google asistents varēs sniegt pielāgotas atbildes, kad <ph name="SUPERVISED_USER_NAME" /> uzdos jautājumus.</translation>
 <translation id="1543284117603151572">Importētas no pārlūkprogrammas Edge</translation>
 <translation id="1543538514740974167">Ātrāka piekļuve</translation>
-<translation id="154420222899071768">Parole netika atjaunināta, taču, visticamāk, joprojām varat piekļūt vietnei ar iepriekšējo paroli.</translation>
 <translation id="1544588554445317666">Mēģiniet saglabāt failu ar īsāku nosaukumu vai citā mapē.</translation>
 <translation id="1545177026077493356">Automātiskais kioska režīms</translation>
 <translation id="1545749641540134597">Skenējiet kvadrātkodu</translation>
@@ -7012,7 +7011,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="594221546068848596">Meklēt lapā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Ierīces redzamība</translation>
 <translation id="5943127421590245687">Verifikācija veikta sekmīgi. Lai atbloķētu un atjaunotu lokālos datus, lūdzu, ievadiet savu iepriekšējo ierīces <ph name="DEVICE_TYPE" /> paroli.</translation>
-<translation id="5943209617717087975">Jūsu jaunas cilnes lapu pārvalda <ph name="THIRD_PARTY_NTP_MANAGER" />.</translation>
 <translation id="5945002094477276055">Fails <ph name="FILE_NAME" />, iespējams, ir bīstams. Vai nosūtīt to pārbaudīšanai Google drošas pārlūkošanas programmā?</translation>
 <translation id="5945192511027649793">Atspējot skārienpaliktni</translation>
 <translation id="5945363896952315544">Jūsu drošības atslēgā nevar saglabāt papildu ciparnospiedumus. Lai pievienotu jaunu ciparnospiedumu, vispirms dzēsiet kādu no esošajiem ciparnospiedumiem.</translation>

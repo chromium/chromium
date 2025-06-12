@@ -522,6 +522,7 @@
 <translation id="1863257867908022953">መሳቢያ 12</translation>
 <translation id="1864927262126810325">ከ<ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">የኬብል እና ሳተላይት አቅራቢዎች</translation>
+<translation id="1866757068250903512"><ph name="READERNAME" /> ተብለው የተሰየሙ ማረጋገጫ መሣሪያዎችን እና ከእነሱ ጋር ጥቅም ላይ የሚውሉ ዘመናዊ ካርዶችን ይቆጣጠሩ</translation>
 <translation id="1870473978371099486">የግል አጋዥ አገልግሎቶች</translation>
 <translation id="1871208020102129563">የ.pac ስክሪፕት ዩአርኤል ሳይሆን ተኪ አገልጋዮችን እንዲጠቀም ነው ተኪ የተዋቀረው።</translation>
 <translation id="1871284979644508959">የሚያስፈልግ መስክ</translation>
@@ -866,6 +867,7 @@
             <ph name="LIST_ITEM" />በቅጾች ውስጥ የገባ መረጃ
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">እርስዎ በመለያ ገብተው ሳለ ተቀጥላዎች ከዚህ መሣሪያ ጋር ተያይዘዋል</translation>
+<translation id="2450019289047528273">የመክፈያ ዘዴዎች እና ሌላ መረጃ ከGoogle Wallet</translation>
 <translation id="2451607499823206582">በመከታተል ላይ</translation>
 <translation id="2452098632681057184">ሥነ ምህዳር እና አካባቢ</translation>
 <translation id="2452837234288608067">በዚህ ላይ ማገዝ አልተቻለም። እንደገና ይሞክሩ።</translation>

@@ -785,7 +785,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1542524755306892917">Việc này giúp Trợ lý Google đưa ra câu trả lời phù hợp khi <ph name="SUPERVISED_USER_NAME" /> đặt câu hỏi.</translation>
 <translation id="1543284117603151572">Đã nhập từ Edge</translation>
 <translation id="1543538514740974167">Truy cập vào trang này nhanh hơn</translation>
-<translation id="154420222899071768">Mật khẩu của bạn chưa được cập nhật, nhưng bạn vẫn có thể truy cập vào trang web này bằng mật khẩu cũ</translation>
 <translation id="1544588554445317666">Hãy thử dùng một tên tệp ngắn hơn hoặc lưu vào một thư mục khác</translation>
 <translation id="1545177026077493356">Chế độ kiosk tự động</translation>
 <translation id="1545749641540134597">Quét mã QR</translation>
@@ -7028,7 +7027,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="594221546068848596">Tìm trên trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Phạm vi hiển thị của thiết bị</translation>
 <translation id="5943127421590245687">Đã xác minh thành công. Để mở khóa và khôi phục dữ liệu trên thiết bị, vui lòng nhập mật khẩu cũ của <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> đang quản lý trang thẻ mới</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> có thể nguy hiểm. Gửi đến tính năng Duyệt web An toàn của Google để quét?</translation>
 <translation id="5945192511027649793">Tắt bàn di chuột</translation>
 <translation id="5945363896952315544">Khóa bảo mật của bạn không thể lưu trữ thêm vân tay. Để thêm một vân tay mới, trước tiên, hãy xóa một vân tay hiện có.</translation>

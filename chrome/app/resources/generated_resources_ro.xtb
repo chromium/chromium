@@ -785,7 +785,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1542524755306892917">Astfel, Asistentul Google poate să ofere răspunsuri personalizate atunci când <ph name="SUPERVISED_USER_NAME" /> pune întrebări.</translation>
 <translation id="1543284117603151572">Importate din Edge</translation>
 <translation id="1543538514740974167">Accesează mai rapid</translation>
-<translation id="154420222899071768">Parola nu s-a actualizat, dar ar trebui să poți accesa în continuare site-ul cu vechea parolă</translation>
 <translation id="1544588554445317666">Încearcă să folosești un nume de fișier mai scurt sau să-l salvezi în alt dosar</translation>
 <translation id="1545177026077493356">Mod chioșc automat</translation>
 <translation id="1545749641540134597">Scanează codul QR</translation>
@@ -7013,7 +7012,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="594221546068848596">Pagină de căutare cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Vizibilitatea dispozitivului</translation>
 <translation id="5943127421590245687">S-a confirmat. Pentru a debloca și a restabili datele locale, introdu parola veche pentru <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> gestionează pagina Filă nouă</translation>
 <translation id="5945002094477276055">Fișierul <ph name="FILE_NAME" /> poate fi periculos. Îl trimiți la Navigare sigură Google pentru scanare?</translation>
 <translation id="5945192511027649793">Dezactivează touchpadul</translation>
 <translation id="5945363896952315544">Cheia de securitate nu poate stoca amprente suplimentare. Pentru a adăuga una nouă, mai întâi șterge o amprentă existentă.</translation>

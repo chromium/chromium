@@ -219,6 +219,7 @@
 <translation id="3716540481907974026">ChromeOS Flex వెర్షన్</translation>
 <translation id="3718181793972440140">ఇది ఈ పరికరం నుండి 1 అంశాన్ని తొలగిస్తుంది. మీ డేటాను తర్వాత తిరిగి పొందడానికి, Chromeకు <ph name="USER_EMAIL" /> లాగా సైన్ ఇన్ చేయండి.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{మీరు దాన్ని తీసివేయవలసిందిగా Chrome సిఫార్సు చేస్తోంది. <ph name="BEGIN_LINK" />సపోర్ట్ చేసే ఎక్స్‌టెన్షన్‌ల గురించి మరింత తెలుసుకోండి<ph name="END_LINK" />}other{మీరు వాటిని తీసివేయవలసిందిగా Chrome సిఫార్సు చేస్తోంది. <ph name="BEGIN_LINK" />సపోర్ట్ చేసే ఎక్స్‌టెన్షన్‌ల గురించి మరింత తెలుసుకోండి<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chromeను ఇన్‌స్టాల్ చేయడం గురించి మరింత తెలుసుకోండి</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">సైన్ ఇన్ చేయడంలో ఎర్రర్ కారణంగా ChromeOS Flex మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

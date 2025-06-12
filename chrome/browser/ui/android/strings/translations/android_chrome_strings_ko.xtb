@@ -109,6 +109,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1419753403124156396">Chrome을 다시 시작하시겠습니까?</translation>
 <translation id="1428770807407000502">동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1430915738399379752">인쇄</translation>
+<translation id="1433478348197382180">읽기 모드</translation>
 <translation id="1435593198351412143">자동으로 PDF 열기</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />에서 실행 중</translation>
 <translation id="1448440926884431741">추적 중인 제품을 북마크로 정리하세요.</translation>
@@ -1080,7 +1081,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5956665950594638604">새 탭에서 Chrome 고객센터 열기</translation>
 <translation id="59577092665511740">계정을 선택합니다.</translation>
 <translation id="5958275228015807058">다운로드에서 파일 및 페이지를 찾아보세요.</translation>
-<translation id="5958994127112619898">페이지 단순화</translation>
 <translation id="5962718611393537961">탭하여 접기</translation>
 <translation id="5964869237734432770">이미지 설명 중지</translation>
 <translation id="5975083100439434680">축소</translation>

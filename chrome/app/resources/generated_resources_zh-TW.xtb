@@ -784,7 +784,6 @@
 <translation id="1542524755306892917">這可讓 Google 助理在<ph name="SUPERVISED_USER_NAME" />提問時提供更貼近個人需求的回覆。</translation>
 <translation id="1543284117603151572">從 Edge 匯入的書籤</translation>
 <translation id="1543538514740974167">快速使用這項服務</translation>
-<translation id="154420222899071768">密碼並未更新，但你應該仍可使用舊密碼存取網站</translation>
 <translation id="1544588554445317666">請嘗試使用較短的檔案名稱，或將檔案儲存至其他資料夾</translation>
 <translation id="1545177026077493356">自動 Kiosk 模式</translation>
 <translation id="1545749641540134597">掃描 QR code</translation>
@@ -7007,7 +7006,6 @@
 <translation id="594221546068848596">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 搜尋網頁</translation>
 <translation id="5942779427914696408">裝置分享設定</translation>
 <translation id="5943127421590245687">你已完成驗證程序。如要解鎖及還原本機資料，請輸入舊的 <ph name="DEVICE_TYPE" /> 密碼。</translation>
-<translation id="5943209617717087975">「<ph name="THIRD_PARTY_NTP_MANAGER" />」正在管理你的新分頁</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能含有危險內容，要送交 Google 安全瀏覽服務進行掃描嗎？</translation>
 <translation id="5945192511027649793">停用觸控板</translation>
 <translation id="5945363896952315544">你的安全金鑰無法再儲存其他指紋。如要新增指紋，請先刪除現有的指紋。</translation>

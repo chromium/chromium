@@ -223,6 +223,7 @@
 <translation id="3716540481907974026">ChromeOS Flexৰ সংস্কৰণ</translation>
 <translation id="3718181793972440140">ইয়াৰ ফলত এই ডিভাইচটোৰ পৰা ১টা বস্তু মচা হ’ব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromeত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chromeএ আপোনাক এইটো আঁতৰাবলৈ চুপাৰিছ কৰে। <ph name="BEGIN_LINK" />সমৰ্থিত এক্সটেনশ্বনসমূহৰ বিষয়ে অধিক জানক<ph name="END_LINK" />}one{Chromeএ আপোনাক এইসমূহ আঁতৰাবলৈ চুপাৰিছ কৰে। <ph name="BEGIN_LINK" />সমৰ্থিত এক্সটেনশ্বনসমূহৰ বিষয়ে অধিক জানক<ph name="END_LINK" />}other{Chromeএ আপোনাক এইসমূহ আঁতৰাবলৈ চুপাৰিছ কৰে। <ph name="BEGIN_LINK" />সমৰ্থিত এক্সটেনশ্বনসমূহৰ বিষয়ে অধিক জানক<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome ইনষ্টল কৰাৰ বিষয়ে অধিক জানক</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ছাইন ইন কৰোঁতে কিবা আসোঁৱাহ হোৱাৰ কাৰণে ChromeOS Flexএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

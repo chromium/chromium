@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">Додај во контакти</translation>
 <translation id="355765753469272474">Врати</translation>
 <translation id="3565930036634619844">Картичка. <ph name="TAB_INDEX" /> од <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Допрете двапати за уште лозинки.</translation>
 <translation id="3572607909481582402">Во вашата сметка на Google</translation>
 <translation id="3575234738189584619">Пребарајте со Lens</translation>
 <translation id="3575426792457739946">Списоков ги содржи сите вчитани профили.</translation>
@@ -654,7 +653,6 @@
 <translation id="3779810277399252432">Нема интернет-врска.</translation>
 <translation id="3782614601387961027">Отфрли го предупредувањето</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
-<translation id="3795478177331815672">Отворени картички и групи картички</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понудувај да го преведеш сајтов</translation>
 <translation id="3808311849069021992">Прикажување на деталите на пребарувачот</translation>
@@ -1813,6 +1811,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8343993175958086504">Направете бекап од вашите работи и користете ги на сите уреди.</translation>
 <translation id="8348530355586151720">Допрете го менито со три точки</translation>
 <translation id="8349305172487531364">Лента со обележувачи</translation>
+<translation id="8363484128299778310">Привремено враќање при проблем</translation>
 <translation id="8364563001733875155">За да го промените PIN-кодот, прво поставете код за најавување на уредот.</translation>
 <translation id="8366466717204352506">Никогаш не е извршена проверка</translation>
 <translation id="8368001212524806591">Следи ја цената</translation>

@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">הוספה לאנשי הקשר</translation>
 <translation id="355765753469272474">ביטול</translation>
 <translation id="3565930036634619844">‏מקש Tab. ‫<ph name="TAB_INDEX" /> מתוך <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">בלחיצה כפולה יוצגו סיסמאות נוספות.</translation>
 <translation id="3572607909481582402">‏בחשבון Google שלך</translation>
 <translation id="3575234738189584619">‏חיפוש באמצעות Lens</translation>
 <translation id="3575426792457739946">הרשימה הזו מכילה את כל הפרופילים שאפשר לעבור אליהם.</translation>
@@ -654,7 +653,6 @@
 <translation id="3779810277399252432">אין חיבור לאינטרנט.</translation>
 <translation id="3782614601387961027">סגירת האזהרה</translation>
 <translation id="3789841737615482174">התקנה</translation>
-<translation id="3795478177331815672">פתיחת כרטיסיות וקבוצות של כרטיסיות</translation>
 <translation id="380329542618494757">שם</translation>
 <translation id="3803696231112616155">הצגה של הצעה לתרגם את הדף הזה</translation>
 <translation id="3808311849069021992">הצגת הפרטים של מנוע החיפוש</translation>
@@ -1813,6 +1811,7 @@
 <translation id="8343993175958086504">כדאי לגבות את הנתונים כדי להשתמש בהם בכל מכשיר.</translation>
 <translation id="8348530355586151720">לוחצים על סמל האפשרויות הנוספות (3 נקודות)</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
+<translation id="8363484128299778310">שחזור זמני במקרה של בעיות</translation>
 <translation id="8364563001733875155">כדי לשנות את קוד האימות, קודם עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="8366466717204352506">מעולם לא נעשתה בדיקה</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>

@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 ದಿನದ ಹಿಂದೆ}one{# ದಿನಗಳ ಹಿಂದೆ}other{# ದಿನಗಳ ಹಿಂದೆ}}</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1243314992276662751">ಅಪ್‌ಲೋಡ್</translation>
+<translation id="1253734725326687145">ಸ್ಪರ್ಶ ಟಾರ್ಗೆಟ್ ಅನ್ನು ಮೇಲಿನ ಬಲಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ. ಇಲ್ಲಿ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">ಪಠ್ಯವನ್ನು ಸಣ್ಣ ಭಾಗಗಳಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="24452542372838207">ವಿಸ್ತರಿಸುವ ನೋಟಿಫಿಕೇಶನ್</translation>
 <translation id="2445449901874883781">ಅಧಿಕ ಸಾಂದ್ರತೆಯನ್ನು ಬಳಸಿ</translation>
+<translation id="2448407890032181691">ಸ್ಪರ್ಶ ಟಾರ್ಗೆಟ್ ಅನ್ನು ಕೆಳಗಿನ ಬಲಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ. ಇಲ್ಲಿ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="2482878487686419369">ಸೂಚನೆಗಳು</translation>
 <translation id="2497284189126895209">ಎಲ್ಲ ಫೈಲ್‌ಗಳು</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">ಟ್ಯಾಬ್</translation>
 <translation id="5613020302032141669">ಎಡ ಬಾಣದ ಗುರುತು</translation>
 <translation id="5633029987065897167">ಖಾಲಿ</translation>
+<translation id="5651438382973553530">ಸ್ಪರ್ಶ ಟಾರ್ಗೆಟ್ ಅನ್ನು ಕೆಳಗಿನ ಎಡಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ. ಇಲ್ಲಿ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ನಿಮಿ}one{# ನಿಮಿಷಗಳು}other{# ನಿಮಿಷಗಳು}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ಇಂದು ಸಕ್ರಿಯ}=1{1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ}one{# ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ}other{# ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ದಿನ ಮತ್ತು }one{# ದಿನಗಳು ಮತ್ತು }other{# ದಿನಗಳು ಮತ್ತು }}</translation>

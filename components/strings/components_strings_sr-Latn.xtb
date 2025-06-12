@@ -867,6 +867,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
             <ph name="LIST_ITEM" />informacije koje ste uneli u obrasce
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Periferni uređaji priključeni na ovaj uređaj dok ste prijavljeni</translation>
+<translation id="2450019289047528273">Načini plaćanja i druge informacije iz Google novčanika</translation>
 <translation id="2451607499823206582">Prati se</translation>
 <translation id="2452098632681057184">Ekologija i životna sredina</translation>
 <translation id="2452837234288608067">Nismo uspeli da vam pomognemo s time. Probajte ponovo.</translation>
@@ -1563,6 +1564,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3641116835972736297">Američki fudbal</translation>
 <translation id="3642196846309122856">Probajte da ponovo preuzmete fajlove</translation>
 <translation id="3642638418806704195">Aplikacija:</translation>
+<translation id="3644768007456662469">Ikona stavke za plaćanja</translation>
 <translation id="3646643500201740985">Merenje učinka oglasa</translation>
 <translation id="3647286794400715637">Unos svakog stringa URL-a mora da sadrži između 1 i 2 URL-a.</translation>
 <translation id="3647400963805615193">Dugme Odbaci savet za Chrome, pritisnite Enter da biste odbacili, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>

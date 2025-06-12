@@ -867,6 +867,7 @@
             <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">لوازم جانبی متصل به این دستگاه در مدت ورود به سیستم</translation>
+<translation id="2450019289047528273">‏روش‌های پرداخت و دیگر اطلاعات از «کیف پول Google»</translation>
 <translation id="2451607499823206582">پیگیری</translation>
 <translation id="2452098632681057184">بوم‌شناسی و محیط زیست</translation>
 <translation id="2452837234288608067">در این مورد نمی‌توانم کمک کنم. دوباره امتحان کنید.</translation>
@@ -2099,11 +2100,13 @@
 <translation id="4530347922939905757">پیام نوشتاری</translation>
 <translation id="4531477351494678589">شماره کارت مجازی:</translation>
 <translation id="4535523368173457420">این موتورهای جستجو در منطقه شما محبوب هستند و به‌ترتیب تصادفی نشان داده می‌شوند</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{‫۱ سال پیش ایجاد شده است}one{‫{NUM_YEARS} سال پیش ایجاد شده است}other{‫{NUM_YEARS} سال پیش ایجاد شده است}}</translation>
 <translation id="4541810033354695636">واقعیت افزوده</translation>
 <translation id="4542971377163063093">سینی ۶</translation>
 <translation id="4543072026714825470">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت و نشانی صورت‌حسابتان را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="454441086898495030">به <ph name="SET" /> اضافه شود؟</translation>
 <translation id="4546730006268514143">مهلت زمانی انتقال تمام شد</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{‫۱ روز پیش ایجاد شده است}one{‫{NUM_DAYS} روز پیش ایجاد شده است}other{‫{NUM_DAYS} روز پیش ایجاد شده است}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">از قفل صفحه برای تکمیل گذرواژه‌ها استفاده می‌کنید</translation>
 <translation id="4557573143631562971">بیمه خانه</translation>
@@ -2897,6 +2900,7 @@
 <translation id="5938153366081463283">افزودن کارت مجازی</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">‏این اطلاعات از وب‌سایت‌های مستقل مرور مانند ‫Trustpilot، ScamAdviser، Google و وب‌سایت‌های دیگر به‌دست آمده است. خلاصه‌ها بااستفاده از هوش مصنوعی ساخته می‌شوند.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{‫۱ دقیقه پیش ایجاد شده است}one{‫{NUM_MINS} دقیقه پیش ایجاد شده است}other{‫{NUM_MINS} دقیقه پیش ایجاد شده است}}</translation>
 <translation id="5944297261866530437">پارچه (خیلی براق)</translation>
 <translation id="5950901984834744590">تیغ و ریش‌تراش</translation>
 <translation id="5951495562196540101">نمی‌توان با حساب مصرف‌کننده ثبت‌نام کرد (مجوز بسته‌بندی دردسترس است).</translation>
@@ -4058,6 +4062,7 @@
 <translation id="7894280532028510793">اگر املا صحیح است، <ph name="BEGIN_LINK" />«عیب‌یابی شبکه» را اجرا کنید<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">پاکت ۹×۷ اینچی</translation>
 <translation id="7905064834449738336">‏وقتی از گذرواژه‌ای استفاده کنید، Chromium به شما هشدار می‌دهد آیا این گذرواژه در فضای آنلاین منتشر شده است یا نه. هنگام انجام این کار، نام‌های کاربری و گذرواژه‌های شما رمزگذاری می‌شود تا اشخاص دیگر، ازجمله Google نتوانند آن‌ها را بخوانند.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{‫۱ ساعت پیش ایجاد شده است}one{‫{NUM_HOURS} ساعت پیش ایجاد شده است}other{‫{NUM_HOURS} ساعت پیش ایجاد شده است}}</translation>
 <translation id="7908648876066812348">درحال روشن کردن کارت مجازی</translation>
 <translation id="7909498058929404306">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای رفتن به صفحه بررسی ایمنی Chrome در تنظیمات، کلید «جهش» و سپس «ورود» را فشار دهید.</translation>
 <translation id="791107458486222637">درحال ازنو انجام دادن نتیجه</translation>
@@ -4192,6 +4197,7 @@
 <translation id="8134058435519644366">استخدام و تأمین نیرو</translation>
 <translation id="8135546115396015134">کلید چپ</translation>
 <translation id="8137456439814903304">انرژی و تأسیسات</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{‫۱ ماه پیش ایجاد شده است}one{‫{NUM_MONTHS} ماه پیش ایجاد شده است}other{‫{NUM_MONTHS} ماه پیش ایجاد شده است}}</translation>
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
 <translation id="8149426793427495338">رایانه‌تان به خواب رفته است.</translation>
 <translation id="8150722005171944719">این فایل در <ph name="URL" /> قابل خواندن نیست. ممکن است حذف شده، جابجا شده باشد و یا مجوزهای فایل از دسترسی جلوگیری می‌کنند.</translation>

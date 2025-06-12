@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{قبل يوم واحد}zero{قبل # يوم}two{قبل يومَين}few{قبل # أيام}many{قبل # يومًا}other{قبل # يوم}}</translation>
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1243314992276662751">تحميل</translation>
+<translation id="1253734725326687145">تم نقل مساحة اللمس إلى أعلى يمين الشاشة. يُرجى النقر هنا.</translation>
 <translation id="1266864766717917324">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">يُرجى تجربة مشاركة النص في مجموعات أصغر.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="24452542372838207">توسيع الإشعار</translation>
 <translation id="2445449901874883781">استخدام كثافة عالية</translation>
+<translation id="2448407890032181691">تم نقل مساحة اللمس إلى أسفل يمين الشاشة. يُرجى النقر هنا.</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2497284189126895209">الملفّات كلّها</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">‏مفتاح Tab</translation>
 <translation id="5613020302032141669">مفتاح سهم إلى اليسار</translation>
 <translation id="5633029987065897167">فارغة</translation>
+<translation id="5651438382973553530">تم نقل مساحة اللمس إلى أسفل يسار الشاشة. يُرجى النقر هنا.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{دقيقة واحدة}zero{# من الدقائق}two{دقيقتان (#)}few{# دقائق}many{# دقيقة}other{# من الدقائق}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{نشط اليوم}=1{نشط قبل يوم واحد}two{نشط قبل يومين (#)}few{نشط قبل # أيام}many{نشط قبل # يومًا}other{نشط قبل # يوم}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{يوم واحد و }zero{# من الأيام و }two{يومان (#) و }few{# أيام و }many{# يومًا و }other{# من الأيام و }}</translation>

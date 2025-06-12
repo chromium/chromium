@@ -862,6 +862,7 @@
           <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం
         <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">మీరు లాగిన్ చేసినప్పుడు, ఈ పరికరంలో జోడించబడిన పెరిఫెరల్స్</translation>
+<translation id="2450019289047528273">Google Walletలోని పేమెంట్ ఆప్షన్‌లు, ఇతర సమాచారం</translation>
 <translation id="2451607499823206582">ట్రాకింగ్</translation>
 <translation id="2452098632681057184">ఎకాలజీ &amp; పర్యావరణం</translation>
 <translation id="2452837234288608067">దానితో సహాయం చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
@@ -2094,11 +2095,13 @@
 <translation id="4530347922939905757">టెక్స్ట్ మెసేజ్</translation>
 <translation id="4531477351494678589">వర్చువల్ కార్డ్ నంబర్:</translation>
 <translation id="4535523368173457420">ఈ సెర్చ్ ఇంజిన్‌లు మీ ప్రాంతంలో ప్రసిద్ధి చెందినవి, ఇవి ర్యాండమ్‌గా అమర్చిన క్రమంలో చూపబడతాయి</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 సంవత్సరం క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_YEARS} సంవత్సరాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="4541810033354695636">అగ్‌మెంటెడ్ రియాలిటీ</translation>
 <translation id="4542971377163063093">ట్రే 6</translation>
 <translation id="4543072026714825470">తర్వాతిసారి మరింత వేగంగా పేమెంట్ చేయడానికి, మీ కార్డ్, బిల్లింగ్ అడ్రస్‌ను మీ Google ఖాతాకు సేవ్ చేయండి</translation>
 <translation id="454441086898495030"><ph name="SET" />‌కు జోడించాలా?</translation>
 <translation id="4546730006268514143">బదిలీ చేయడానికి సమయం ముగిసింది</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 రోజు క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_DAYS} రోజుల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">పాస్‌వర్డ్‌లను పూరించడానికి మీరు స్క్రీన్ లాక్‌ను ఉపయోగిస్తున్నారు</translation>
 <translation id="4557573143631562971">గృహ బీమా</translation>
@@ -2892,6 +2895,7 @@
 <translation id="5938153366081463283">వర్చువల్ కార్డ్‌ను జోడించండి</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">ఈ సమాచారం Trustpilot, ScamAdviser, Google, అలాగే మరిన్ని ఇటువంటి స్వతంత్ర రివ్యూ వెబ్‌సైట్‌ల నుండి వచ్చింది. సారాంశాలు AIతో క్రియేట్ చేయబడతాయి.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 నిమిషం క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_MINS} నిమిషాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="5944297261866530437">ఫ్యాబ్రిక్ (హై-గ్లాస్)</translation>
 <translation id="5950901984834744590">రేజర్‌లు &amp; షేవర్‌లు</translation>
 <translation id="5951495562196540101">వినియోగదారు ఖాతాతో నమోదు చేయడం సాధ్యపడదు (ప్యాకేజ్డ్ లైసెన్స్ అందుబాటులో ఉంది).</translation>
@@ -4053,6 +4057,7 @@
 <translation id="7894280532028510793">స్పెల్లింగ్ సరైనది అయితే, <ph name="BEGIN_LINK" />నెట్‌వర్క్ సమస్య విశ్లేషణలను రన్ చేయడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">7 x 9 అంగుళాల ఎన్వలప్</translation>
 <translation id="7905064834449738336">మీరు పాస్‌వర్డ్‌ను ఉపయోగించినప్పుడు, అది ఆన్‌లైన్‌లో పబ్లిష్ చేయబడితే Chromium మిమ్మల్ని హెచ్చరిస్తుంది. Chrome ఈ ప్రాసెస్‌ను చేస్తున్నప్పుడు, మీ పాస్‌వర్డ్‌లు, యూజర్‌నేమ్‌లు ఎన్‌క్రిప్ట్ చేయబడతాయి, కాబట్టి వాటిని Googleతో సహా ఎవరు చదవలేరు.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 గంట క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_HOURS} గంటల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="7908648876066812348">వర్చువల్ కార్డ్ ఆన్ అవుతోంది</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tabను నొక్కి, తర్వాత Enterను నొక్కి సెట్టింగ్‌లలో Chrome సేఫ్టీ చెక్ పేజీకి వెళ్లండి</translation>
 <translation id="791107458486222637">ఫలితాన్ని మళ్లీ జెనరేట్ చేస్తోంది</translation>
@@ -4187,6 +4192,7 @@
 <translation id="8134058435519644366">నియామకాలు &amp; స్టాఫింగ్</translation>
 <translation id="8135546115396015134">ఎడమవైపు కీ</translation>
 <translation id="8137456439814903304">ఎనర్జీ &amp; యుటిలిటీస్</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 నెల క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_MONTHS} నెలల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="8148608574971654810">PDF వెర్షన్:</translation>
 <translation id="8149426793427495338">మీ కంప్యూటర్ నిద్రావస్థకి వెళ్లింది.</translation>
 <translation id="8150722005171944719"><ph name="URL" />లో ఫైల్ చదవగలిగేది కాదు. దీన్ని తీసివేసి ఉండవచ్చు, తరలించి ఉండవచ్చు లేదా ఫైల్ అనుమతులు యాక్సెస్‌ను నిరోధిస్తుండవచ్చు.</translation>

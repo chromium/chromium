@@ -784,7 +784,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1542524755306892917">Ciò consente all'Assistente Google di fornire risposte personalizzate alle domande di <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="1543284117603151572">Importati da Edge</translation>
 <translation id="1543538514740974167">Accedi più rapidamente a questa pagina</translation>
-<translation id="154420222899071768">La tua password non è stata aggiornata, ma dovresti comunque riuscire ad accedere al sito con la password precedente</translation>
 <translation id="1544588554445317666">Prova a usare un nome di file più breve o a salvare l'elemento in un'altra cartella</translation>
 <translation id="1545177026077493356">Modalità kiosk automatica</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
@@ -7012,7 +7011,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="594221546068848596">Pagina di ricerca con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Visibilità del dispositivo</translation>
 <translation id="5943127421590245687">La verifica è andata a buon fine. Per sbloccare e ripristinare i dati locali, inserisci la vecchia password del dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> gestisce la pagina Nuova scheda</translation>
 <translation id="5945002094477276055">Il file <ph name="FILE_NAME" /> potrebbe essere pericoloso. Inviare a Google Navigazione sicura per la scansione?</translation>
 <translation id="5945192511027649793">Disattiva touchpad</translation>
 <translation id="5945363896952315544">Impossibile memorizzare altre impronte sul token di sicurezza. Per aggiungere una nuova impronta, devi prima eliminarne una esistente.</translation>

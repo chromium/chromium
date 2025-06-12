@@ -611,7 +611,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3557336313807607643">Pridať do kontaktov</translation>
 <translation id="355765753469272474">Späť</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Ďalšie heslá zobrazíte dvojitým klepnutím.</translation>
 <translation id="3572607909481582402">Vo vašom účte Google</translation>
 <translation id="3575234738189584619">Vyhľadávať pomocou funkcie Lens</translation>
 <translation id="3575426792457739946">Tento zoznam obsahuje všetky načítané profily.</translation>
@@ -654,7 +653,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3779810277399252432">Internetové pripojenie nie je k dispozícii.</translation>
 <translation id="3782614601387961027">Zavrieť varovanie</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
-<translation id="3795478177331815672">Otvoriť karty a skupiny kariet</translation>
 <translation id="380329542618494757">Meno</translation>
 <translation id="3803696231112616155">Ponúkať preklad tohto webu</translation>
 <translation id="3808311849069021992">Zobraziť podrobnosti o vyhľadávači</translation>
@@ -1813,6 +1811,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8343993175958086504">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení.</translation>
 <translation id="8348530355586151720">Klepnite na trojbodkovú ponuku</translation>
 <translation id="8349305172487531364">Panel so záložkami</translation>
+<translation id="8363484128299778310">Dočasné obnovenie v prípade problémov</translation>
 <translation id="8364563001733875155">Ak chcete zmeniť PIN, najprv v zariadení nastavte vstupný kód.</translation>
 <translation id="8366466717204352506">Kontrola nebola nikdy spustená</translation>
 <translation id="8368001212524806591">Sledovať cenu</translation>

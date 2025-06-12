@@ -786,7 +786,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1542524755306892917">To Google asistentu omogućuje da pruži prilagođene odgovore kad <ph name="SUPERVISED_USER_NAME" /> postavi pitanja.</translation>
 <translation id="1543284117603151572">Uvezeno iz Edgea</translation>
 <translation id="1543538514740974167">Brže otvaranje ove stranice</translation>
-<translation id="154420222899071768">Vaša zaporka nije ažurirana, no i dalje biste trebali moći pristupiti web-lokaciji pomoću stare zaporke</translation>
 <translation id="1544588554445317666">Pokušajte upotrijebiti kraći naziv datoteke ili je spremiti u drugu mapu</translation>
 <translation id="1545177026077493356">Automatski način kioska</translation>
 <translation id="1545749641540134597">Skenirajte QR kôd</translation>
@@ -7013,7 +7012,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="594221546068848596">Pretraži stranicu pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Vidljivost uređaja</translation>
 <translation id="5943127421590245687">Potvrda je uspjela. Da biste otključali i vratili lokalne podatke, unesite staru zaporku za uređaj <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> upravlja vašom stranicom nove kartice</translation>
 <translation id="5945002094477276055">Datoteka <ph name="FILE_NAME" /> možda je opasna. Želite li je poslati Google sigurnom pregledavanju na pregled?</translation>
 <translation id="5945192511027649793">Onemogući dodirnu podlogu</translation>
 <translation id="5945363896952315544">Vaš sigurnosni ključ ne može pohraniti više nijedan digitalni otisak. Da biste dodali novi digitalni otisak, trebate izbrisati jedan od postojećih.</translation>

@@ -867,6 +867,7 @@
             <ph name="LIST_ITEM" />在表格中輸入的資料
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">登入時連接至此裝置的周邊裝置</translation>
+<translation id="2450019289047528273">Google Wallet 的付款方式和其他資料</translation>
 <translation id="2451607499823206582">正在追蹤</translation>
 <translation id="2452098632681057184">生態學和環境學</translation>
 <translation id="2452837234288608067">無法提供協助，請再試一次。</translation>
@@ -1562,6 +1563,7 @@
 <translation id="3641116835972736297">美式足球</translation>
 <translation id="3642196846309122856">嘗試再次下載檔案</translation>
 <translation id="3642638418806704195">應用程式：</translation>
+<translation id="3644768007456662469">付款項目圖示</translation>
 <translation id="3646643500201740985">評估廣告成效</translation>
 <translation id="3647286794400715637">每個網址字串都必須包含 1 至 2 個網址。</translation>
 <translation id="3647400963805615193">閂 Chrome 提示按鈕，㩒 Enter 掣就可以閂，<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>

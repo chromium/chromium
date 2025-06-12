@@ -109,6 +109,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1419753403124156396">Redémarrer Chrome ?</translation>
 <translation id="1428770807407000502">Désactiver la synchronisation ?</translation>
 <translation id="1430915738399379752">Imprimer</translation>
+<translation id="1433478348197382180">Mode Lecture</translation>
 <translation id="1435593198351412143">Ouvrir automatiquement les PDF</translation>
 <translation id="1437543266176261764">Exécution dans <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organisez vos produits suivis dans les favoris</translation>
@@ -1080,7 +1081,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5956665950594638604">Ouvrir le centre d'aide dans un nouvel onglet</translation>
 <translation id="59577092665511740">Sélectionnez un compte.</translation>
 <translation id="5958275228015807058">Recherchez vos fichiers et vos pages dans la section "Téléchargements"</translation>
-<translation id="5958994127112619898">Simplifier la page</translation>
 <translation id="5962718611393537961">Appuyer pour réduire</translation>
 <translation id="5964869237734432770">Arrêter descriptions images</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
@@ -1847,7 +1847,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9086455579313502267">Impossible d'accéder au réseau.</translation>
 <translation id="909756639352028172">Pour bénéficier de l'expérience la plus personnalisée, ajoutez Chrome à l'activité sur le Web et les applications, ainsi qu'aux services Google associés</translation>
 <translation id="9099220545925418560">D'après votre historique de navigation. Ce paramètre est désactivé.</translation>
-<translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
+<translation id="9100610230175265781">Phrase secrète requise</translation>
 <translation id="9101137867221042551">Gestion</translation>
 <translation id="9102803872260866941">L'onglet "Aperçu" est ouvert</translation>
 <translation id="9102864637938129124">Les sites et les annonceurs peuvent analyser les performances des annonces. Ce paramètre est activé.</translation>

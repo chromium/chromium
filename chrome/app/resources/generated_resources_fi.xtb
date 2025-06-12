@@ -785,7 +785,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1542524755306892917">Tämän avulla Google Assistant voi tarjota räätälöityjä vastauksia, kun <ph name="SUPERVISED_USER_NAME" /> esittää kysymyksiä.</translation>
 <translation id="1543284117603151572">Edgestä tuodut</translation>
 <translation id="1543538514740974167">Tule tänne nopeammin</translation>
-<translation id="154420222899071768">Salasanaasi ei päivitetty, mutta sinun pitäisi silti päästä sivustolle vanhalla salasanallasi</translation>
 <translation id="1544588554445317666">Kokeile lyhyempää tiedoston nimeä tai tallenna toiseen kansioon</translation>
 <translation id="1545177026077493356">Automaattinen kioskitila</translation>
 <translation id="1545749641540134597">Skannaa QR-koodi</translation>
@@ -7024,7 +7023,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="594221546068848596">Hae sivua tällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Laitteen näkyvyys</translation>
 <translation id="5943127421590245687">Vahvistus onnistui. Jos haluat avata paikallisen datasi lukituksen ja palauttaa sen, anna vanhan laitteen (<ph name="DEVICE_TYPE" />) salasana.</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> hallinnoi uusi välilehti ‐sivua</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> voi olla vaarallinen. Lähetetäänkö se Googlen selaussuojan tarkistettavaksi?</translation>
 <translation id="5945192511027649793">Poista kosketuslevy käytöstä</translation>
 <translation id="5945363896952315544">Suojausavaimeesi ei voi tallentaa enempää sormenjälkiä. Poista aiemmin lisätty sormenjälki, jotta voit lisätä uuden.</translation>
@@ -8376,7 +8374,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6911734910326569517">Käytetty muisti</translation>
 <translation id="6912007319859991306">Mobiiliverkon SIM-lukituksen PIN-koodi</translation>
 <translation id="6912380255120084882">Kokeile toista laitetta</translation>
-<translation id="691289340230098384">Tekstitysvalinnat</translation>
+<translation id="691289340230098384">Tekstitysasetukset</translation>
 <translation id="6913051485529944333">Et enää näe Google Kalenteria tällä sivulla</translation>
 <translation id="6914812290245989348">Älä näytä varoituksia ennen suojaamattomille sivustoille siirtymistä</translation>
 <translation id="6916590542764765824">Hallinnoi laajennuksia</translation>

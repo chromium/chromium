@@ -786,7 +786,6 @@
 <translation id="1542524755306892917">Սա թույլ է տալիս, որ Google Օգնականը <ph name="SUPERVISED_USER_NAME" />-ի հարցերին տրամադրի անհատականացված պատասխաններ։</translation>
 <translation id="1543284117603151572">Edge-ից ներմուծված</translation>
 <translation id="1543538514740974167">Արագ հասանելիություն</translation>
-<translation id="154420222899071768">Գաղտնաբառը չի թարմացվել, սակայն դուք դեռ կարող եք բացել կայքը ձեր հին գաղտնաբառի միջոցով</translation>
 <translation id="1544588554445317666">Ընտրեք ֆայլի ավելի կարճ անվանում կամ փորձեք պահել այլ պանակում</translation>
 <translation id="1545177026077493356">Ավտոմատ Kiosk ռեժիմ</translation>
 <translation id="1545749641540134597">Սկանավորեք QR-կոդը</translation>
@@ -7010,7 +7009,6 @@
 <translation id="594221546068848596">Որոնել էջում <ph name="VISUAL_SEARCH_PROVIDER" /> ծառայության միջոցով</translation>
 <translation id="5942779427914696408">Սարքի տեսանելիությունը</translation>
 <translation id="5943127421590245687">Ձեր հաշիվը հաստատվել է։ Տվյալներն ապակողպելու և վերականգնելու համար մուտքագրեք <ph name="DEVICE_TYPE" />-ի ձեր հին գաղտնաբառը։</translation>
-<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> ծառայությունը կառավարում է ձեր նոր ներդիրի էջը</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> ֆայլը կարող է վտանգավոր լինել։ Ուղարկե՞լ ֆայլը «Google Ապահով դիտարկում» ծառայությանը ստուգման։</translation>
 <translation id="5945192511027649793">Անջատել հպահարթակը</translation>
 <translation id="5945363896952315544">Ձեր անվտանգության բանալու տարածքը բավարար չէ։ Նոր մատնահետք ավելացնելու համար ջնջեք եղածներից մեկը։</translation>

@@ -223,6 +223,7 @@
 <translation id="3716540481907974026">ChromeOS Flex-н хувилбар</translation>
 <translation id="3718181793972440140">Энэ нь төхөөрөмжөөс 1 зүйл устгах болно. Өгөгдлөө дараа сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome танд үүнийг хасахыг зөвлөж байна. <ph name="BEGIN_LINK" />Дэмжигдсэн өргөтгөлийн талаар нэмэлт мэдээлэл авах<ph name="END_LINK" />}other{Chrome танд эдгээрийг хасахыг зөвлөж байна. <ph name="BEGIN_LINK" />Дэмжигдсэн өргөтгөлийн талаар нэмэлт мэдээлэл авах<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome-г суулгах талаар нэмэлт мэдээлэл авах</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Нэвтрэх алдааны улмаас ChromeOS Flex таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

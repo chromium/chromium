@@ -611,7 +611,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3557336313807607643">Adicionar aos contatos</translation>
 <translation id="355765753469272474">Desfazer</translation>
 <translation id="3565930036634619844">Guia. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Toque duas vezes para conferir mais senhas.</translation>
 <translation id="3572607909481582402">Na Conta do Google</translation>
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
 <translation id="3575426792457739946">Esta lista contém todos os perfis carregados.</translation>
@@ -654,7 +653,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3779810277399252432">Sem conexão com a Internet.</translation>
 <translation id="3782614601387961027">Dispensar aviso</translation>
 <translation id="3789841737615482174">Instalar</translation>
-<translation id="3795478177331815672">Abrir guias e grupos de guias</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Oferecer a opção de traduzir esse site</translation>
 <translation id="3808311849069021992">Mostrar detalhes do mecanismo de pesquisa</translation>
@@ -1428,7 +1426,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="672735642903863329">Acesse seus favoritos, senhas e mais em todos os seus dispositivos.</translation>
 <translation id="6729493062119577923">Atividade do grupo de guias compartilhado</translation>
 <translation id="6732087373923685049">câmera</translation>
-<translation id="6746338529702829275">Analise os dados da sua conta</translation>
+<translation id="6746338529702829275">Analise os dados da conta</translation>
 <translation id="6755200887046212842">Gerenciar contas</translation>
 <translation id="6755733078693946548">Acesse senhas e chaves de acesso em qualquer app</translation>
 <translation id="6759709389246683070">Toque e pressione esta guia para definir um lembrete para voltar mais tarde</translation>
@@ -1813,6 +1811,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8343993175958086504">Faça backup e use seus dados em qualquer dispositivo.</translation>
 <translation id="8348530355586151720">Toque no menu de três pontos.</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
+<translation id="8363484128299778310">Recuperação temporária em caso de problemas</translation>
 <translation id="8364563001733875155">Para mudar o PIN, primeiro defina uma senha no dispositivo.</translation>
 <translation id="8366466717204352506">Confirmação nunca executada</translation>
 <translation id="8368001212524806591">Monitorar preço</translation>

@@ -545,7 +545,7 @@
 <translation id="7846076177841592234">선택 취소</translation>
 <translation id="7881140103901777395">Chrome은 대부분의 사이트에서 서드 파티 쿠키를 사용하지 못하도록 제한합니다. 하지만 이 사이트에서는 서드 파티 쿠키를 사용하여 기본 서비스를 제공하기 때문에 서드 파티 쿠키가 허용됩니다.\n\n설정으로 이동하여 <ph name="BEGIN_LINK" />서드 파티 쿠키 액세스를 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="7882806643839505685">특정 사이트에서 소리를 재생하도록 허용합니다.</translation>
-<translation id="7891547341794213004">'이 탭으로 계속 숨기기' 카드</translation>
+<translation id="7891547341794213004">'이 탭 카드로 계속하기' 카드 숨기기</translation>
 <translation id="789180354981963912">시크릿 모드에서 서드 파티 쿠키 차단:</translation>
 <translation id="789722939441020330">사이트에서 여러 개의 파일을 자동으로 다운로드하도록 허용하지 않음</translation>
 <translation id="7940722705963108451">알림</translation>

@@ -611,7 +611,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3557336313807607643">Agregar a contactos</translation>
 <translation id="355765753469272474">Deshacer</translation>
 <translation id="3565930036634619844">Pestaña. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">Presiona dos veces para obtener más contraseñas.</translation>
 <translation id="3572607909481582402">En tu Cuenta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3575426792457739946">Esta lista contiene todos los perfiles cargados.</translation>
@@ -624,6 +623,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3596414637720633074">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="3602260545951981695">Elige "Protección mejorada"</translation>
 <translation id="3608436266458100337">Modo de lectura</translation>
+<translation id="3610041351087301930">Ocultar lector</translation>
 <translation id="3622175633937495219">Buscar Historial (se encontraron <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Puedes deslizar el borde para volver.</translation>
 <translation id="362709345066740529">Personaliza tus tarjetas, tu feed y mucho más aquí</translation>
@@ -654,7 +654,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3779810277399252432">Sin conexión a Internet</translation>
 <translation id="3782614601387961027">Descartar advertencia</translation>
 <translation id="3789841737615482174">Instalar</translation>
-<translation id="3795478177331815672">Abrir pestañas y grupos de pestañas</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803696231112616155">Ofrecer traducir este sitio</translation>
 <translation id="3808311849069021992">Mostrar detalles del motor de búsqueda</translation>
@@ -1066,6 +1065,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5431252637281434233">Saldrás de tu cuenta</translation>
 <translation id="543338862236136125">Editar contraseña</translation>
 <translation id="5433691172869980887">Se copió el nombre de usuario</translation>
+<translation id="5437480232219631455">Puedes abrir Gemini aquí</translation>
 <translation id="5439618055789623719">Accediste como <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Navegación mejorada de forma predeterminada</translation>
 <translation id="5444892875087332195">Favoritos</translation>
@@ -1813,6 +1813,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8343993175958086504">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
 <translation id="8348530355586151720">Presiona el menú de tres puntos.</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
+<translation id="8363484128299778310">Recuperación temporal en caso de problemas</translation>
 <translation id="8364563001733875155">Para cambiar el PIN, primero establece una contraseña en tu dispositivo.</translation>
 <translation id="8366466717204352506">Nunca se ejecutó la verificación</translation>
 <translation id="8368001212524806591">Seguir precio</translation>

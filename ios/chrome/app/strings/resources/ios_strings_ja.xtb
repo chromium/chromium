@@ -611,7 +611,6 @@
 <translation id="3557336313807607643">連絡先に追加</translation>
 <translation id="355765753469272474">元に戻す</translation>
 <translation id="3565930036634619844">タブ <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />。</translation>
-<translation id="3570693105179140209">他のパスワードを表示するにはダブルタップします。</translation>
 <translation id="3572607909481582402">Google アカウント</translation>
 <translation id="3575234738189584619">レンズで検索</translation>
 <translation id="3575426792457739946">読み込まれたすべてのプロフィールのリストです。</translation>
@@ -624,6 +623,7 @@
 <translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="3602260545951981695">[保護強化機能] を選択</translation>
 <translation id="3608436266458100337">リーダーモード</translation>
+<translation id="3610041351087301930">リーダーを非表示</translation>
 <translation id="3622175633937495219">履歴を検索（<ph name="COUNT" /> 件見つかりました）</translation>
 <translation id="3625008969091706597">端をスワイプすると戻れます。</translation>
 <translation id="362709345066740529">カードやフィードなどをここでカスタマイズできます</translation>
@@ -654,7 +654,6 @@
 <translation id="3779810277399252432">インターネットに接続されていません。</translation>
 <translation id="3782614601387961027">警告を閉じる</translation>
 <translation id="3789841737615482174">インストール</translation>
-<translation id="3795478177331815672">開いているタブとタブグループ</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3803696231112616155">このサイトを翻訳するか尋ねる</translation>
 <translation id="3808311849069021992">検索エンジンの詳細を表示</translation>
@@ -1066,6 +1065,7 @@
 <translation id="5431252637281434233">ログアウトします</translation>
 <translation id="543338862236136125">パスワードを編集</translation>
 <translation id="5433691172869980887">ユーザー名がコピーされました</translation>
+<translation id="5437480232219631455">ここで Gemini を開くことができます</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> としてログインしています</translation>
 <translation id="5443636120437209490">デフォルトに設定してブラウジングを効率化</translation>
 <translation id="5444892875087332195">ブックマーク</translation>
@@ -1813,6 +1813,7 @@
 <translation id="8343993175958086504">データをバックアップして、他のデバイスで使用できるようにします。</translation>
 <translation id="8348530355586151720">その他メニューをタップ</translation>
 <translation id="8349305172487531364">ブックマーク バー</translation>
+<translation id="8363484128299778310">問題発生時用の一時的な再設定パスワード</translation>
 <translation id="8364563001733875155">PIN を変更するには、まずデバイスでパスコードを設定してください。</translation>
 <translation id="8366466717204352506">一度も実行されていません</translation>
 <translation id="8368001212524806591">価格のトラッキング</translation>

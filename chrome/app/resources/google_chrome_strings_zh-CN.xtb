@@ -219,6 +219,7 @@
 <translation id="3716540481907974026">ChromeOS Flex 版本</translation>
 <translation id="3718181793972440140">这会从这台设备上删除 1 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome 建议您移除它。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序<ph name="END_LINK" />}other{Chrome 建议您移除它们。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">详细了解如何安装 Chrome</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">登录时发生错误，ChromeOS Flex 无法同步您的数据。</translation>
 <translation id="3795971588916395511">Google Chrome 操作系统</translation>

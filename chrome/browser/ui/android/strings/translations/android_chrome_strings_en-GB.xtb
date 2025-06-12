@@ -109,6 +109,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1419753403124156396">Restart Chrome?</translation>
 <translation id="1428770807407000502">Turn off sync?</translation>
 <translation id="1430915738399379752">Print</translation>
+<translation id="1433478348197382180">Reading mode</translation>
 <translation id="1435593198351412143">Automatically open PDFs</translation>
 <translation id="1437543266176261764">Running in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organise your tracked products in Bookmarks</translation>
@@ -1080,7 +1081,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5956665950594638604">Open the Chrome Help Centre in a new tab</translation>
 <translation id="59577092665511740">Choose an account.</translation>
 <translation id="5958275228015807058">Find your files and pages in Downloads</translation>
-<translation id="5958994127112619898">Simplify page</translation>
 <translation id="5962718611393537961">Tap to collapse</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
 <translation id="5975083100439434680">Zoom out</translation>

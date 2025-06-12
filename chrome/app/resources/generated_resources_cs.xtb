@@ -786,7 +786,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1542524755306892917">Toto Asistentovi Google umožňuje poskytovat přizpůsobené odpovědi, když se <ph name="SUPERVISED_USER_NAME" /> na něco zeptá.</translation>
 <translation id="1543284117603151572">Importováno z aplikace Edge</translation>
 <translation id="1543538514740974167">Rychlejší přístup</translation>
-<translation id="154420222899071768">Heslo nebylo aktualizováno, ale pořád byste k webu měli mít přístup pomocí starého hesla</translation>
 <translation id="1544588554445317666">Zkuste použít kratší název souboru nebo soubor uložit do jiné složky</translation>
 <translation id="1545177026077493356">Automatický režim veřejného terminálu</translation>
 <translation id="1545749641540134597">Naskenujte QR kód</translation>
@@ -7010,7 +7009,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="594221546068848596">Prohledat stránku pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Viditelnost zařízení</translation>
 <translation id="5943127421590245687">Ověření proběhlo úspěšně. Pokud chcete zařízení odemknout a obnovit místní data, zadejte staré heslo zařízení <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5943209617717087975">Vaši stránku Nová karta spravuje <ph name="THIRD_PARTY_NTP_MANAGER" /></translation>
 <translation id="5945002094477276055">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Odeslat ke kontrole pomocí funkce Bezpečného prohlížení Google?</translation>
 <translation id="5945192511027649793">Vypnout touchpad</translation>
 <translation id="5945363896952315544">Do bezpečnostního klíče nelze uložit žádné další otisky. Pokud chcete přidat nový otisk, musíte některý starší smazat.</translation>

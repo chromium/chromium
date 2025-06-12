@@ -109,6 +109,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="1419753403124156396">Chrome yeniden başlatılsın mı?</translation>
 <translation id="1428770807407000502">Senkronizasyon kapatılsın mı?</translation>
 <translation id="1430915738399379752">Yazdır</translation>
+<translation id="1433478348197382180">Okuma Modu</translation>
 <translation id="1435593198351412143">PDF'leri otomatik olarak aç</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> uygulamasında çalışıyor</translation>
 <translation id="1448440926884431741">Takip edilen ürünlerinizi yer işaretlerinde düzenleyin</translation>
@@ -1080,7 +1081,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5956665950594638604">Chrome Yardım Merkezi'ni yeni bir sekmede açar</translation>
 <translation id="59577092665511740">Bir hesap seçin.</translation>
 <translation id="5958275228015807058">Dosyalarınızı ve sayfalarınızı İndirilenler bölümünde bulabilirsiniz</translation>
-<translation id="5958994127112619898">Sayfayı sadeleştir</translation>
 <translation id="5962718611393537961">Daraltmak için dokunun</translation>
 <translation id="5964869237734432770">Resim açıklamasını durdur</translation>
 <translation id="5975083100439434680">Uzaklaştır</translation>
@@ -1647,7 +1647,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8236063039629122676">Artık sağa kaydırdığınızda geri giderek ziyaret ettiğiniz önceki sayfaları görecek, sola kaydırdığınızda ise ileri gideceksiniz</translation>
 <translation id="8236097722223016103">Yer işaretlerine ekle</translation>
 <translation id="8243077599929149377">Kullanıcı adınızı ekleyin</translation>
-<translation id="8244387390464017490">Yeni sekme sayfasını özelleştir</translation>
+<translation id="8244387390464017490">Yeni sekmeyi özelleştir</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>
 <translation id="8255617931166444521">Siteler, çerezlerinizi yalnızca kendi sitelerindeki tarama etkinliğinizi görmek için kullanabilir</translation>
 <translation id="8256087213273124136">Chrome, bildirim aboneliğinizi iptal etti</translation>
