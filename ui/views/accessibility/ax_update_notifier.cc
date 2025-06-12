@@ -8,6 +8,11 @@
 #include "base/observer_list.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/views/accessibility/ax_update_observer.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/tree/widget_ax_manager.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 
@@ -31,32 +36,67 @@ void AXUpdateNotifier::RemoveObserver(AXUpdateObserver* observer) {
 
 void AXUpdateNotifier::NotifyViewEvent(views::View* view,
                                        ax::mojom::Event event_type) {
+  CHECK(view);
   observers_.Notify(&AXUpdateObserver::OnViewEvent, view, event_type);
+
+  // Directly notify the WidgetAXManager of the view's widget, avoiding the
+  // need to register all WidgetAXManagers as observers and broadcasting events
+  // to unrelated widgets.
+  auto* widget = view->GetWidget();
+  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+    widget->ax_manager()->OnEvent(view->GetViewAccessibility(), event_type);
+  }
 }
 
 void AXUpdateNotifier::NotifyVirtualViewEvent(
     views::AXVirtualView* virtual_view,
     ax::mojom::Event event_type) {
+  CHECK(virtual_view);
   observers_.Notify(&AXUpdateObserver::OnVirtualViewEvent, virtual_view,
                     event_type);
+
+  // Directly notify the WidgetAXManager of the virtual view's widget, avoiding
+  // the need to register all WidgetAXManagers as observers and broadcasting
+  // events to unrelated widgets.
+  auto* widget = virtual_view->GetWidget();
+  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+    widget->ax_manager()->OnEvent(*virtual_view, event_type);
+  }
 }
 
 void AXUpdateNotifier::NotifyViewDataChanged(views::View* view) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (::features::IsViewsAccessibilitySerializeOnDataChangeEnabled()) {
-    observers_.Notify(&AXUpdateObserver::OnDataChanged, view);
+  CHECK(view);
+  if (!::features::IsViewsAccessibilitySerializeOnDataChangeEnabled()) {
+    return;
   }
-#endif
+
+  observers_.Notify(&AXUpdateObserver::OnDataChanged, view);
+
+  // Directly notify the WidgetAXManager of the view's widget, avoiding the need
+  // to register all WidgetAXManagers as observers and broadcasting updates to
+  // unrelated widgets.
+  auto* widget = view->GetWidget();
+  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+    widget->ax_manager()->OnDataChanged(view->GetViewAccessibility());
+  }
 }
 
 void AXUpdateNotifier::NotifyVirtualViewDataChanged(
     views::AXVirtualView* virtual_view) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (::features::IsViewsAccessibilitySerializeOnDataChangeEnabled()) {
-    observers_.Notify(&AXUpdateObserver::OnVirtualViewDataChanged,
-                      virtual_view);
+  CHECK(virtual_view);
+  if (!::features::IsViewsAccessibilitySerializeOnDataChangeEnabled()) {
+    return;
   }
-#endif
+
+  observers_.Notify(&AXUpdateObserver::OnVirtualViewDataChanged, virtual_view);
+
+  // Directly notify the WidgetAXManager of the view's widget, avoiding the need
+  // to register all WidgetAXManagers as observers and broadcasting updates to
+  // unrelated widgets.
+  auto* widget = virtual_view->GetWidget();
+  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+    widget->ax_manager()->OnDataChanged(*virtual_view);
+  }
 }
 
 }  // namespace views

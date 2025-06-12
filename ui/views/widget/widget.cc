@@ -515,6 +515,16 @@ void Widget::Init(InitParams params) {
     owned_native_widget_ = base::WrapUnique(native_widget_raw_ptr);
   }
 
+  // The WidgetAXManager must be initialized *before* RootView is created,
+  // because RootView's constructor may access it (e.g., to fire events).
+  // However, the rest of InitAccessibility() depends on `root_view_`, so we
+  // defer calling it until after `root_view_` is initialized.
+  if (::features::IsAccessibilityTreeForViewsEnabled()) {
+    CHECK(!ax_manager_)
+        << "Widget::InitAccessibility() should only be called once";
+    ax_manager_ = std::make_unique<WidgetAXManager>(this);
+  }
+
   root_view_.reset(CreateRootView());
   InitAccessibility();  // Requires `root_view_`.
 
@@ -606,12 +616,6 @@ void Widget::Init(InitParams params) {
 }
 
 void Widget::InitAccessibility() {
-  if (::features::IsAccessibilityTreeForViewsEnabled()) {
-    CHECK(!ax_manager_)
-        << "Widget::InitAccessibility() should only be called once";
-    ax_manager_ = std::make_unique<WidgetAXManager>(this);
-  }
-
   // The root view must always be fully initialized so we at least expose one
   // accessible element to the platform APIs. This is necessary for us to detect
   // accessibility API usage and fully enable accessibility support for all

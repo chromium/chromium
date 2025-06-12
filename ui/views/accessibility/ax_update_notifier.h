@@ -15,7 +15,8 @@ class AXUpdateObserver;
 class AXVirtualView;
 class View;
 
-// AXUpdateNotifier allows observation of accessibility events for all views.
+// AXUpdateNotifier allows observation of accessibility updates for all views
+// and notifies per-widget accessibility managers of changes.
 class VIEWS_EXPORT AXUpdateNotifier {
  public:
   AXUpdateNotifier();
