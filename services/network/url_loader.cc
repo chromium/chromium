@@ -1485,11 +1485,13 @@ void URLLoader::ReadMore() {
     DCHECK_EQ(0u, pending_write_buffer_offset_);
     MojoResult result = NetToMojoPendingBuffer::BeginWrite(
         &response_body_stream_, &pending_write_);
+    mojo_begin_write_count_for_uma_++;
     switch (result) {
       case MOJO_RESULT_OK:
         break;
-      case MOJO_RESULT_SHOULD_WAIT:
+      case MOJO_RESULT_SHOULD_WAIT: {
         CHECK(!pending_write_);
+        bool should_wait = true;
         if (base::FeatureList::IsEnabled(kSlopBucket) && !slop_bucket_) {
           slop_bucket_ = SlopBucket::RequestSlopBucket(url_request_.get());
         }
@@ -1500,6 +1502,7 @@ void URLLoader::ReadMore() {
           std::optional<int> bytes_read_maybe = slop_bucket_->AttemptRead();
           if (bytes_read_maybe.has_value()) {
             url_read_state_ = URLReadState::kURLReadInProgress;
+            should_wait = false;
             int bytes_read = bytes_read_maybe.value();
             if (bytes_read != net::ERR_IO_PENDING) {
               // DidRead() will not delete `this` when `into_slop_bucket` is
@@ -1509,8 +1512,12 @@ void URLLoader::ReadMore() {
             }
           }
         }  // The pipe is full. We need to wait for it to have more space.
+        if (should_wait) {
+          mojo_blocked_write_count_for_uma_++;
+        }
         writable_handle_watcher_.ArmOrNotify();
         return;
+      }
       default:
         // The response body stream is in a bad state. Bail.
         NotifyCompleted(net::ERR_FAILED);
@@ -1901,6 +1908,12 @@ void URLLoader::NotifyCompleted(int error_code) {
   if (total_received > 0) {
     base::UmaHistogramCustomCounts("DataUse.BytesReceived3.Delegate",
                                    total_received, 50, 10 * 1000 * 1000, 50);
+    mojo_begin_write_count_for_uma_ =
+        std::max(mojo_begin_write_count_for_uma_, 1);
+    base::UmaHistogramPercentage(
+        "Net.URLLoader.ProportionOfWritesBlockedByMojo",
+        mojo_blocked_write_count_for_uma_ * 100 /
+            mojo_begin_write_count_for_uma_);
   }
 
   if (total_sent > 0) {

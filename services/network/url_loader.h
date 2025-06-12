@@ -743,6 +743,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // because it is full.
   std::unique_ptr<SlopBucket> slop_bucket_;
 
+  // Internal counters to record UMA for SlopBucket.
+  int mojo_begin_write_count_for_uma_ = 0;
+  int mojo_blocked_write_count_for_uma_ = 0;
+
   // For decoding a small part of the response body to check its type (for ORB
   // and MIME sniffing) when the response might be compressed and client-side
   // content decoding is enabled.
