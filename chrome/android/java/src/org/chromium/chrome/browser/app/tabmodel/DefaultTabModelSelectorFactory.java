@@ -9,6 +9,7 @@ import android.util.Pair;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -22,6 +23,7 @@ import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Default {@link TabModelSelectorFactory} for Chrome. */
+@NullMarked
 public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
     // Do not inline since this uses some APIs only available on Android N versions, which cause
     // verification errors.

@@ -101,7 +101,7 @@ public abstract class TabCreator {
      *     the user in a new window).
      * @return The new Tab or null if a Tab was not created successfully.
      */
-    public abstract Tab createTabWithWebContents(
+    public abstract @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent,
             WebContents webContents,
             @TabLaunchType int type,
@@ -116,7 +116,7 @@ public abstract class TabCreator {
      * @param type The TabLaunchType describing how this Tab was created.
      * @return The new Tab or null if a Tab was not created successfully.
      */
-    public final Tab createTabWithWebContents(
+    public final @Nullable Tab createTabWithWebContents(
             Tab parent, WebContents webContents, @TabLaunchType int type) {
         return createTabWithWebContents(parent, webContents, type, webContents.getVisibleUrl());
     }
@@ -130,7 +130,7 @@ public abstract class TabCreator {
      * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
      * @return The new Tab or null if a Tab was not created successfully.
      */
-    public final Tab createTabWithWebContents(
+    public final @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, GURL url) {
         return createTabWithWebContents(parent, webContents, type, url, true);
     }
@@ -143,8 +143,7 @@ public abstract class TabCreator {
      *     or {@code FROM_HISTORY_NAVIGATION_BACKGROUND}.
      * @return The {@link Tab} which was created.
      */
-    public @Nullable abstract Tab createTabWithHistory(
-            @Nullable Tab parent, @TabLaunchType int type);
+    public @Nullable abstract Tab createTabWithHistory(Tab parent, @TabLaunchType int type);
 
     /** Creates a new tab and loads the NTP. */
     public final void launchNtp() {

@@ -543,7 +543,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public void setArchivedTabModelSelector(TabModelSelector archivedTabModelSelector) {
+    public void setArchivedTabModelSelector(@Nullable TabModelSelector archivedTabModelSelector) {
         mArchivedTabModelSelector = archivedTabModelSelector;
     }
 

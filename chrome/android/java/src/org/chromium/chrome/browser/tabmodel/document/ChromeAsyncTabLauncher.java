@@ -13,6 +13,8 @@ import android.provider.Browser;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Asynchronously creates Tabs by creating/starting up Activities. */
+@NullMarked
 public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     private final boolean mIsIncognito;
 
@@ -44,7 +47,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     /**
      * @return Running Activity that owns the given Tab, null if the Activity couldn't be found.
      */
-    private static Activity getActivityForTabId(int id) {
+    private static @Nullable Activity getActivityForTabId(int id) {
         if (id == Tab.INVALID_TAB_ID) return null;
 
         Tab tab = TabWindowManagerSingleton.getInstance().getTabById(id);
@@ -104,7 +107,8 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     }
 
     @Override
-    public void launchNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent) {
+    public void launchNewTab(
+            LoadUrlParams loadUrlParams, @TabLaunchType int type, @Nullable Tab parent) {
         AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(loadUrlParams);
         launchNewTab(asyncParams, type, parent == null ? Tab.INVALID_TAB_ID : parent.getId());
     }

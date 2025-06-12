@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -41,6 +45,7 @@ import org.chromium.ui.widget.Toast;
  * Glue-level class that manages lifetime of root .tabmodel objects: {@link TabPersistentStore} and
  * {@link TabModelSelectorImpl} for tabbed mode.
  */
+@NullMarked
 public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private final boolean mTabMergingEnabled;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -48,7 +53,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
     // This class is driven by TabbedModeTabModelOrchestrator to prevent duplicate glue code in
     //  ChromeTabbedActivity.
-    private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    private @Nullable ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private @Nullable Supplier<TabModel> mArchivedHistoricalObserverSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -73,7 +78,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     public void destroy() {
         if (mArchivedTabModelOrchestrator != null) {
             mArchivedTabModelOrchestrator.removeHistoricalTabModelObserver(
-                    mArchivedHistoricalObserverSupplier);
+                    assumeNonNull(mArchivedHistoricalObserverSupplier));
             mArchivedTabModelOrchestrator.unregisterTabModelOrchestrator(this);
         }
         super.destroy();
@@ -92,6 +97,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      * @return Whether the creation was successful. It may fail is we reached the limit of number of
      *     windows.
      */
+    @Initializer
     public boolean createTabModels(
             Activity activity,
             ModalDialogManager modalDialogManager,
@@ -118,7 +124,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                                 mismatchedIndicesHandler,
                                 selectorIndex);
         if (selectorAssignment == null) {
-            mTabModelSelector = null;
+            // We will early out and handle this case below.
+            mTabModelSelector = assumeNonNull(null);
         } else {
             mTabModelSelector = (TabModelSelectorBase) selectorAssignment.second;
         }
@@ -134,7 +141,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             return false;
         }
 
-        int assignedIndex = selectorAssignment.first;
+        int assignedIndex = assumeNonNull(selectorAssignment).first;
 
         // Instantiate TabPersistentStore
         mTabPersistencePolicy =

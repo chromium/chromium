@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -25,6 +25,8 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -44,6 +46,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Handles the Tabbed mode specific behaviors of tab persistence. */
+@NullMarked
 public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     private static final String TAG = "tabmodel";
 
@@ -71,15 +74,15 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     //        of activity being merged.
     private static final AtomicBoolean MERGE_IN_PROGRESS = new AtomicBoolean();
 
-    private static AsyncTask<Void> sMigrationTask;
-    private static AsyncTask<Void> sCleanupTask;
+    private static @Nullable AsyncTask<Void> sMigrationTask;
+    private static @Nullable AsyncTask<Void> sCleanupTask;
 
-    private final @NonNull String mMetadataFileName;
+    private final String mMetadataFileName;
     private final @Nullable String mOtherMetadataFileName;
     private final boolean mMergeTabsOnStartup;
     private final int mMaxSelectors;
 
-    private TabContentManager mTabContentManager;
+    private @Nullable TabContentManager mTabContentManager;
     private boolean mDestroyed;
 
     /**
@@ -95,7 +98,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
      *     instance feature in general.
      */
     public TabbedModeTabPersistencePolicy(
-            @NonNull String metadataFileName,
+            String metadataFileName,
             @Nullable String otherMetadataFileName,
             boolean mergeTabsOnStartup,
             boolean tabMergingEnabled) {
@@ -136,7 +139,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     }
 
     @Override
-    public @NonNull String getMetadataFileName() {
+    public String getMetadataFileName() {
         return mMetadataFileName;
     }
 
@@ -454,11 +457,12 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
     private class CleanUpTabStateDataTask extends AsyncTask<Void> {
         private final Callback<TabPersistenceFileInfo> mTabDataToDelete;
-
-        private String[] mTabFileNames;
-        private String[] mThumbnailFileNames;
         private final Supplier<SparseBooleanArray> mOtherTabSupplier;
-        private SparseBooleanArray mOtherTabIds; // Tab in use by other selectors, not be deleted.
+
+        private String @Nullable [] mTabFileNames;
+        private String @Nullable [] mThumbnailFileNames;
+        // Tab in use by other selectors, not be deleted.
+        private @Nullable SparseBooleanArray mOtherTabIds;
 
         CleanUpTabStateDataTask(
                 Callback<TabPersistenceFileInfo> storedTabDataId,
@@ -487,6 +491,12 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         @Override
         protected void onPostExecute(Void unused) {
             if (mDestroyed) return;
+
+            // Populated in doInBackground().
+            assumeNonNull(mTabFileNames);
+            assumeNonNull(mThumbnailFileNames);
+            assumeNonNull(mOtherTabIds);
+
             TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
 
             TabPersistenceFileInfo storedTabDataToDelete = new TabPersistenceFileInfo();
@@ -534,11 +544,12 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         }
 
         private boolean shouldDeleteTabFile(int tabId, TabWindowManager tabWindowManager) {
+            assumeNonNull(mOtherTabIds);
             return tabWindowManager.canTabStateBeDeleted(tabId) && !mOtherTabIds.get(tabId);
         }
 
         @Override
-        protected void onCancelled(Void result) {
+        protected void onCancelled(@Nullable Void result) {
             super.onCancelled(null);
             synchronized (CLEAN_UP_TASK_LOCK) {
                 sCleanupTask = null;

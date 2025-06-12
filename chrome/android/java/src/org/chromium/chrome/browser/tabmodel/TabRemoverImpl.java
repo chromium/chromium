@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
 import org.chromium.chrome.browser.tab.Tab;
@@ -32,6 +34,7 @@ import java.util.List;
  * in the unintentional destruction of tab groups (particularly for collaborations). See {@link
  * TabModelRemover} for additional details.
  */
+@NullMarked
 public class TabRemoverImpl implements TabRemover {
     private final TabModelRemover mTabModelRemover;
 
@@ -41,20 +44,20 @@ public class TabRemoverImpl implements TabRemover {
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
      */
     public TabRemoverImpl(
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            Context context,
+            ModalDialogManager modalDialogManager,
+            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
         this(new TabModelRemover(context, modalDialogManager, tabGroupModelFilterSupplier));
     }
 
     @VisibleForTesting
-    TabRemoverImpl(@NonNull TabModelRemover tabModelRemover) {
+    TabRemoverImpl(TabModelRemover tabModelRemover) {
         mTabModelRemover = tabModelRemover;
     }
 
     @Override
     public void closeTabs(
-            @NonNull TabClosureParams tabClosureParams,
+            TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
         prepareCloseTabs(tabClosureParams, allowDialog, listener, this::forceCloseTabs);
@@ -62,10 +65,10 @@ public class TabRemoverImpl implements TabRemover {
 
     @Override
     public void prepareCloseTabs(
-            @NonNull TabClosureParams tabClosureParams,
+            TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener,
-            @NonNull Callback<TabClosureParams> onPreparedCallback) {
+            Callback<TabClosureParams> onPreparedCallback) {
         CloseTabsHandler closeTabsHandler =
                 new CloseTabsHandler(
                         mTabModelRemover.getTabGroupModelFilter(),
@@ -77,14 +80,13 @@ public class TabRemoverImpl implements TabRemover {
     }
 
     @Override
-    public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
+    public void forceCloseTabs(TabClosureParams tabClosureParams) {
         PassthroughTabRemover.doCloseTabs(
                 mTabModelRemover.getTabGroupModelFilter(), tabClosureParams);
     }
 
     @Override
-    public void removeTab(
-            @NonNull Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
+    public void removeTab(Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
         assert !allowDialog : "removeTab does not support allowDialog.";
 
         RemoveTabHandler removeTabHandler =
@@ -102,11 +104,11 @@ public class TabRemoverImpl implements TabRemover {
         private boolean mPreventUndo;
 
         CloseTabsHandler(
-                @NonNull TabGroupModelFilterInternal tabGroupModelFilter,
-                @NonNull ActionConfirmationManager actionConfirmationManager,
-                @NonNull TabClosureParams originalTabClosureParams,
+                TabGroupModelFilterInternal tabGroupModelFilter,
+                ActionConfirmationManager actionConfirmationManager,
+                TabClosureParams originalTabClosureParams,
                 @Nullable TabModelActionListener listener,
-                @NonNull Callback<TabClosureParams> closeTabsCallback) {
+                Callback<TabClosureParams> closeTabsCallback) {
             mTabGroupModelFilter = tabGroupModelFilter;
             mActionConfirmationManager = actionConfirmationManager;
             mOriginalTabClosureParams = originalTabClosureParams;
@@ -115,19 +117,19 @@ public class TabRemoverImpl implements TabRemover {
         }
 
         @Override
-        public @NonNull GroupsPendingDestroy computeGroupsPendingDestroy() {
+        public GroupsPendingDestroy computeGroupsPendingDestroy() {
             return DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabClosure(
                     mTabGroupModelFilter.getTabModel(), mOriginalTabClosureParams);
         }
 
         @Override
-        public void onPlaceholderTabsCreated(@NonNull List<Tab> placeholderTabs) {
+        public void onPlaceholderTabsCreated(List<Tab> placeholderTabs) {
             mPlaceholderTabs = placeholderTabs;
         }
 
         @Override
         public void showTabGroupDeletionConfirmationDialog(
-                @NonNull Callback<@ActionConfirmationResult Integer> onResult) {
+                Callback<@ActionConfirmationResult Integer> onResult) {
             boolean isTabGroup = mOriginalTabClosureParams.isTabGroup;
             @Nullable TabModelActionListener listener = takeListener();
             if (listener != null) {
@@ -147,9 +149,7 @@ public class TabRemoverImpl implements TabRemover {
 
         @Override
         public void showCollaborationKeepDialog(
-                @MemberRole int memberRole,
-                @NonNull String title,
-                Callback<MaybeBlockingResult> onResult) {
+                @MemberRole int memberRole, String title, Callback<MaybeBlockingResult> onResult) {
             @Nullable TabModelActionListener listener = takeListener();
             if (listener != null) {
                 listener.willPerformActionOrShowDialog(
@@ -195,9 +195,8 @@ public class TabRemoverImpl implements TabRemover {
             return listener;
         }
 
-        private @NonNull Callback<MaybeBlockingResult> adaptCollaborationOnResultCallback(
-                @NonNull Callback<MaybeBlockingResult> callback,
-                @Nullable TabModelActionListener listener) {
+        private Callback<MaybeBlockingResult> adaptCollaborationOnResultCallback(
+                Callback<MaybeBlockingResult> callback, @Nullable TabModelActionListener listener) {
             return (MaybeBlockingResult maybeBlockingResult) -> {
                 callback.onResult(maybeBlockingResult);
                 if (listener != null) {
@@ -207,8 +206,8 @@ public class TabRemoverImpl implements TabRemover {
             };
         }
 
-        private @NonNull Callback<@ActionConfirmationResult Integer> adaptSyncOnResultCallback(
-                @NonNull Callback<@ActionConfirmationResult Integer> callback,
+        private Callback<@ActionConfirmationResult Integer> adaptSyncOnResultCallback(
+                Callback<@ActionConfirmationResult Integer> callback,
                 @Nullable TabModelActionListener listener) {
             return (@ActionConfirmationResult Integer result) -> {
                 boolean isImmediateContinue = result == ActionConfirmationResult.IMMEDIATE_CONTINUE;
@@ -231,8 +230,8 @@ public class TabRemoverImpl implements TabRemover {
         private final @Nullable TabModelActionListener mListener;
 
         RemoveTabHandler(
-                @NonNull TabGroupModelFilter tabGroupModelFilter,
-                @NonNull Tab tabToRemove,
+                TabGroupModelFilter tabGroupModelFilter,
+                Tab tabToRemove,
                 @Nullable TabModelActionListener listener) {
             mTabGroupModelFilter = tabGroupModelFilter;
             mTabToRemove = tabToRemove;
@@ -240,19 +239,19 @@ public class TabRemoverImpl implements TabRemover {
         }
 
         @Override
-        public @NonNull GroupsPendingDestroy computeGroupsPendingDestroy() {
+        public GroupsPendingDestroy computeGroupsPendingDestroy() {
             return DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
                     mTabGroupModelFilter.getTabModel(), Collections.singletonList(mTabToRemove));
         }
 
         @Override
-        public void onPlaceholderTabsCreated(@NonNull List<Tab> placeholderTabs) {
+        public void onPlaceholderTabsCreated(List<Tab> placeholderTabs) {
             // Intentional no-op as there is no possibility to undo this operation so the tabs do
             // not need to be tracked.
         }
 
         @Override
-        public void showTabGroupDeletionConfirmationDialog(@NonNull Callback<Integer> onResult) {
+        public void showTabGroupDeletionConfirmationDialog(Callback<Integer> onResult) {
             assert false : "removeTab does not support tab group deletion dialogs.";
 
             // This behavior is a safe default even if the assert trips.
@@ -261,9 +260,7 @@ public class TabRemoverImpl implements TabRemover {
 
         @Override
         public void showCollaborationKeepDialog(
-                @MemberRole int memberRole,
-                @NonNull String title,
-                Callback<MaybeBlockingResult> onResult) {
+                @MemberRole int memberRole, String title, Callback<MaybeBlockingResult> onResult) {
             assert false : "removeTab does not support collaboration keep dialogs.";
 
             // This behavior is a safe default even if the assert trips.
@@ -291,8 +288,8 @@ public class TabRemoverImpl implements TabRemover {
 
     @VisibleForTesting
     protected static @Nullable TabClosureParams fixupTabClosureParams(
-            @NonNull TabModel tabModel,
-            @NonNull TabClosureParams params,
+            TabModel tabModel,
+            TabClosureParams params,
             @Nullable List<Tab> placeholderTabs,
             boolean preventUndo) {
         boolean createdPlaceholders = placeholderTabs != null && !placeholderTabs.isEmpty();
@@ -313,6 +310,7 @@ public class TabRemoverImpl implements TabRemover {
             tabsToClose = TabModelUtils.convertTabListToListOfTabs(tabModel);
             tabsToClose.removeAll(placeholderTabs);
         }
+        assumeNonNull(tabsToClose);
         // Before proceeding we need to ensure tabs are not being double closed to avoid crashes
         // and asserts. Any tabs that are closing or cannot be found in the tab model need to be
         // skipped.
@@ -331,6 +329,7 @@ public class TabRemoverImpl implements TabRemover {
         if (createdPlaceholders) {
             undoRunnable =
                     () -> {
+                        assumeNonNull(placeholderTabs);
                         if (params.undoRunnable != null) {
                             params.undoRunnable.run();
                         }

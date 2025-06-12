@@ -116,7 +116,7 @@ public class TabContentManager {
 
     /** The interface to get a {@link Tab} from a tab ID. */
     public interface TabFinder {
-        Tab getTabById(int id);
+        @Nullable Tab getTabById(int id);
     }
 
     /**

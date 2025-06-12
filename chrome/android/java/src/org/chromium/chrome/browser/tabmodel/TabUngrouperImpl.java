@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
 import org.chromium.chrome.browser.tab.Tab;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /** Implementation of the {@link TabUngrouper} interface. */
+@NullMarked
 public class TabUngrouperImpl implements TabUngrouper {
     private final TabModelRemover mTabModelRemover;
 
@@ -37,20 +38,20 @@ public class TabUngrouperImpl implements TabUngrouper {
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
      */
     public TabUngrouperImpl(
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            Context context,
+            ModalDialogManager modalDialogManager,
+            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
         this(new TabModelRemover(context, modalDialogManager, tabGroupModelFilterSupplier));
     }
 
     @VisibleForTesting
-    TabUngrouperImpl(@NonNull TabModelRemover tabModelRemover) {
+    TabUngrouperImpl(TabModelRemover tabModelRemover) {
         mTabModelRemover = tabModelRemover;
     }
 
     @Override
     public void ungroupTabs(
-            @NonNull List<Tab> tabs,
+            List<Tab> tabs,
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
@@ -60,7 +61,7 @@ public class TabUngrouperImpl implements TabUngrouper {
 
     @Override
     public void ungroupTabGroup(
-            @NonNull Token tabGroupId,
+            Token tabGroupId,
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
@@ -100,9 +101,9 @@ public class TabUngrouperImpl implements TabUngrouper {
         private @Nullable TabModelActionListener mListener;
 
         UngroupTabsHandler(
-                @NonNull TabGroupModelFilterInternal tabGroupModelFilter,
-                @NonNull ActionConfirmationManager actionConfirmationManager,
-                @NonNull List<Tab> tabsToUngroup,
+                TabGroupModelFilterInternal tabGroupModelFilter,
+                ActionConfirmationManager actionConfirmationManager,
+                List<Tab> tabsToUngroup,
                 boolean trailing,
                 boolean isTabGroup,
                 @Nullable TabModelActionListener listener) {
@@ -115,20 +116,20 @@ public class TabUngrouperImpl implements TabUngrouper {
         }
 
         @Override
-        public @NonNull GroupsPendingDestroy computeGroupsPendingDestroy() {
+        public GroupsPendingDestroy computeGroupsPendingDestroy() {
             return DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
                     mTabGroupModelFilter.getTabModel(), mTabsToUngroup);
         }
 
         @Override
-        public void onPlaceholderTabsCreated(@NonNull List<Tab> placeholderTabs) {
+        public void onPlaceholderTabsCreated(List<Tab> placeholderTabs) {
             // Intentional no-op as there is no possibility to undo this operation so the tabs do
             // not need to be tracked.
         }
 
         @Override
         public void showTabGroupDeletionConfirmationDialog(
-                @NonNull Callback<@ActionConfirmationResult Integer> onResult) {
+                Callback<@ActionConfirmationResult Integer> onResult) {
             @Nullable TabModelActionListener listener = takeListener();
             if (listener != null) {
                 boolean willSkipDialog =
@@ -147,9 +148,7 @@ public class TabUngrouperImpl implements TabUngrouper {
 
         @Override
         public void showCollaborationKeepDialog(
-                @MemberRole int memberRole,
-                @NonNull String title,
-                Callback<MaybeBlockingResult> onResult) {
+                @MemberRole int memberRole, String title, Callback<MaybeBlockingResult> onResult) {
             @Nullable TabModelActionListener listener = takeListener();
             if (listener != null) {
                 listener.willPerformActionOrShowDialog(
@@ -196,9 +195,8 @@ public class TabUngrouperImpl implements TabUngrouper {
         }
     }
 
-    private static @NonNull Callback<MaybeBlockingResult> adaptCollaborationOnResultCallback(
-            @NonNull Callback<MaybeBlockingResult> callback,
-            @Nullable TabModelActionListener listener) {
+    private static Callback<MaybeBlockingResult> adaptCollaborationOnResultCallback(
+            Callback<MaybeBlockingResult> callback, @Nullable TabModelActionListener listener) {
         return (MaybeBlockingResult maybeBlockingResult) -> {
             callback.onResult(maybeBlockingResult);
             if (listener != null) {
@@ -208,8 +206,8 @@ public class TabUngrouperImpl implements TabUngrouper {
         };
     }
 
-    private static @NonNull Callback<@ActionConfirmationResult Integer> adaptSyncOnResultCallback(
-            @NonNull Callback<@ActionConfirmationResult Integer> callback,
+    private static Callback<@ActionConfirmationResult Integer> adaptSyncOnResultCallback(
+            Callback<@ActionConfirmationResult Integer> callback,
             @Nullable TabModelActionListener listener) {
         return (@ActionConfirmationResult Integer result) -> {
             callback.onResult(result);

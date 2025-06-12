@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -11,6 +14,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModelImpl.IncognitoTabMo
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
 /** Stores all the variables needed to create an Incognito TabModelImpl when it is needed. */
+@NullMarked
 class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     private final ProfileProvider mProfileProvider;
     private final TabCreator mRegularTabCreator;
@@ -68,7 +72,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     @Override
     public TabModelInternal createTabModel() {
         return new TabModelImpl(
-                mProfileProvider.getOffTheRecordProfile(true),
+                assumeNonNull(mProfileProvider.getOffTheRecordProfile(true)),
                 mActivityType,
                 mRegularTabCreator,
                 mIncognitoTabCreator,

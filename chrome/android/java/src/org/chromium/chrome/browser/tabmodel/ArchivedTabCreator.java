@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -22,6 +24,7 @@ import org.chromium.url.GURL;
 /**
  * Creates tabs for the archived tab model selector during restore. This only creates frozen tabs.
  */
+@NullMarked
 public class ArchivedTabCreator extends TabCreator implements NeedsTabModel {
     private final WindowAndroid mWindow;
     private TabModel mTabModel;
@@ -33,6 +36,7 @@ public class ArchivedTabCreator extends TabCreator implements NeedsTabModel {
         mWindow = window;
     }
 
+    @Initializer
     @Override
     public void setTabModel(TabModel tabModel) {
         mTabModel = tabModel;
@@ -40,31 +44,32 @@ public class ArchivedTabCreator extends TabCreator implements NeedsTabModel {
 
     @Override
     public @Nullable Tab createNewTab(
-            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent) {
+            LoadUrlParams loadUrlParams, @TabLaunchType int type, @Nullable Tab parent) {
         return createNewTab(loadUrlParams, type, parent, TabList.INVALID_TAB_INDEX);
     }
 
     @Override
     public @Nullable Tab createNewTab(
-            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int index) {
+            LoadUrlParams loadUrlParams, @TabLaunchType int type, @Nullable Tab parent, int index) {
         return createNewTab(loadUrlParams, /* title= */ null, type, parent, index);
     }
 
     @Override
     public @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
-            String title,
+            @Nullable String title,
             @TabLaunchType int type,
-            Tab parent,
+            @Nullable Tab parent,
             int index) {
         // TODO(crbug.com/331827001): Also possible to change the entire restore path.
         assert type == TabLaunchType.FROM_RESTORE
                 : "ArchivedTabCreator only supports #createNewTab calls as a restore fallback.";
         Tab tab =
-                TabBuilder.createForLazyLoad(mTabModel.getProfile(), loadUrlParams, title)
+                TabBuilder.createForLazyLoad(
+                                assumeNonNull(mTabModel.getProfile()), loadUrlParams, title)
                         .setWindow(mWindow)
                         .setLaunchType(TabLaunchType.FROM_RESTORE)
-                        .setTabResolver((tabId) -> mTabModel.getTabById(tabId))
+                        .setTabResolver(mTabModel::getTabById)
                         .setInitiallyHidden(true)
                         .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
                         .build();
@@ -77,11 +82,11 @@ public class ArchivedTabCreator extends TabCreator implements NeedsTabModel {
     public Tab createFrozenTab(TabState state, int id, int index) {
         assert mTabModel != null : "Creating frozen tab before native library initialized.";
         Tab tab =
-                TabBuilder.createFromFrozenState(mTabModel.getProfile())
+                TabBuilder.createFromFrozenState(assumeNonNull(mTabModel.getProfile()))
                         .setWindow(mWindow)
                         .setId(id)
                         .setLaunchType(TabLaunchType.FROM_RESTORE)
-                        .setTabResolver((tabId) -> mTabModel.getTabById(tabId))
+                        .setTabResolver(mTabModel::getTabById)
                         .setInitiallyHidden(true)
                         .setTabState(state)
                         .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
@@ -102,15 +107,15 @@ public class ArchivedTabCreator extends TabCreator implements NeedsTabModel {
             @Nullable Tab parent,
             WebContents webContents,
             @TabLaunchType int type,
-            @NonNull GURL url,
+            GURL url,
             boolean addTabToModel) {
         assert false : "Not reached.";
-        return null;
+        return assumeNonNull(null);
     }
 
     @Override
     public Tab createTabWithHistory(@Nullable Tab parent, int type) {
         assert false : "Not reached.";
-        return null;
+        return assumeNonNull(null);
     }
 }

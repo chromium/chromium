@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
@@ -38,6 +43,7 @@ import java.util.Collections;
  * instantiated and used in the UI Thread. It acts as a TabModel which delegates all TabModel
  * methods to the active model that it contains.
  */
+@NullMarked
 public class TabModelSelectorImpl extends TabModelSelectorBase implements TabModelDelegate {
     public static final int CUSTOM_TABS_SELECTOR_INDEX = -1;
 
@@ -54,7 +60,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private TabContentManager mTabContentManager;
     private RecentlyClosedBridge mRecentlyClosedBridge;
-    private Tab mVisibleTab;
+    private @Nullable Tab mVisibleTab;
     private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     /**
@@ -108,10 +114,12 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     }
 
     /**
-     * Should be called once the native library is loaded so that the actual internals of this
-     * class can be initialized.
+     * Should be called once the native library is loaded so that the actual internals of this class
+     * can be initialized.
+     *
      * @param tabContentProvider A {@link TabContentManager} instance.
      */
+    @Initializer
     @Override
     public void onNativeLibraryReady(TabContentManager tabContentProvider) {
         assert mTabContentManager == null : "onNativeLibraryReady called twice!";
@@ -125,8 +133,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 new RecentlyClosedBridge(profileProvider.getOriginalProfile(), this);
         Supplier<TabGroupModelFilter> regularTabGroupModelFilterSupplier =
                 () ->
-                        getTabGroupModelFilterProvider()
-                                .getTabGroupModelFilter(/* isIncognito= */ false);
+                        assumeNonNull(
+                                getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ false));
         TabRemover regularTabRemover =
                 mModalDialogManager != null
                         ? new TabRemoverImpl(
@@ -157,8 +166,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         TabRemover incognitoTabRemover =
                 new PassthroughTabRemover(
                         () ->
-                                getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(/* isIncognito= */ true));
+                                assumeNonNull(
+                                        getTabGroupModelFilterProvider()
+                                                .getTabGroupModelFilter(/* isIncognito= */ true)));
         IncognitoTabModelImpl incognitoModel =
                 new IncognitoTabModelImpl(
                         new IncognitoTabModelImplCreator(
@@ -182,6 +192,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
     }
 
+    @EnsuresNonNull("mTabContentManager")
     @VisibleForTesting
     void onNativeLibraryReadyInternal(
             TabContentManager tabContentProvider,
@@ -241,6 +252,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                             TabGroupModelFilter filter =
                                     getTabGroupModelFilterProvider()
                                             .getTabGroupModelFilter(tab.isIncognito());
+                            assumeNonNull(filter);
                             if (filter.isTabInTabGroup(tab)) {
                                 filter.getTabUngrouper()
                                         .ungroupTabs(
@@ -331,7 +343,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     }
 
     @Override
-    public void requestToShowTab(Tab tab, @TabSelectionType int type) {
+    public void requestToShowTab(@Nullable Tab tab, @TabSelectionType int type) {
         boolean isFromExternalApp =
                 tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
         if (mVisibleTab != null && mVisibleTab != tab && !mVisibleTab.needsReload()) {

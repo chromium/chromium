@@ -549,12 +549,12 @@ public class TabPersistentStoreUnitTest {
         when(regularTab1.getId()).thenReturn(11);
         when(regularTab1.getUrl()).thenReturn(new GURL(REGULAR_TAB_STRING_1));
         when(regularTab1.isClosing()).thenReturn(false);
-        when(mNormalTabModel.getTabAt(0)).thenReturn(regularTab1);
+        when(mNormalTabModel.getTabAtChecked(0)).thenReturn(regularTab1);
         Tab regularTab2 = mock(Tab.class);
         when(regularTab2.getId()).thenReturn(22);
         when(regularTab2.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_2));
         when(regularTab2.isClosing()).thenReturn(true);
-        when(mNormalTabModel.getTabAt(1)).thenReturn(regularTab2);
+        when(mNormalTabModel.getTabAtChecked(1)).thenReturn(regularTab2);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
 
         TabModelSelectorMetadata metadata =
@@ -573,13 +573,13 @@ public class TabPersistentStoreUnitTest {
         Tab regularTab1 = mock(Tab.class);
         GURL gurl = new GURL(REGULAR_TAB_STRING_1);
         when(regularTab1.getUrl()).thenReturn(gurl);
-        when(mNormalTabModel.getTabAt(0)).thenReturn(regularTab1);
+        when(mNormalTabModel.getTabAtChecked(0)).thenReturn(regularTab1);
 
         Tab regularNtpTab1 = mock(Tab.class);
         GURL ntpGurl = new GURL(UrlConstants.NTP_URL);
         when(regularNtpTab1.getUrl()).thenReturn(ntpGurl);
         when(regularNtpTab1.isNativePage()).thenReturn(true);
-        when(mNormalTabModel.getTabAt(1)).thenReturn(regularNtpTab1);
+        when(mNormalTabModel.getTabAtChecked(1)).thenReturn(regularNtpTab1);
 
         when(mIncognitoTabModel.getCount()).thenReturn(2);
         when(mIncognitoTabModel.index()).thenReturn(1);
@@ -587,13 +587,13 @@ public class TabPersistentStoreUnitTest {
         gurl = new GURL(INCOGNITO_TAB_STRING_1);
         when(incognitoTab1.getUrl()).thenReturn(gurl);
         when(incognitoTab1.isIncognito()).thenReturn(true);
-        when(mIncognitoTabModel.getTabAt(0)).thenReturn(incognitoTab1);
+        when(mIncognitoTabModel.getTabAtChecked(0)).thenReturn(incognitoTab1);
 
         Tab incognitoTab2 = mock(Tab.class);
         gurl = new GURL(INCOGNITO_TAB_STRING_2);
         when(incognitoTab2.getUrl()).thenReturn(gurl);
         when(incognitoTab2.isIncognito()).thenReturn(true);
-        when(mIncognitoTabModel.getTabAt(1)).thenReturn(incognitoTab2);
+        when(mIncognitoTabModel.getTabAtChecked(1)).thenReturn(incognitoTab2);
 
         when(mTabModelSelector.getTotalTabCount()).thenReturn(4);
     }
@@ -607,12 +607,12 @@ public class TabPersistentStoreUnitTest {
         GURL ntpGurl = new GURL(UrlConstants.NTP_URL);
         when(regularNtpTab1.getUrl()).thenReturn(ntpGurl);
         when(regularNtpTab1.isNativePage()).thenReturn(true);
-        when(mNormalTabModel.getTabAt(0)).thenReturn(regularNtpTab1);
+        when(mNormalTabModel.getTabAtChecked(0)).thenReturn(regularNtpTab1);
 
         Tab regularTab1 = mock(Tab.class);
         GURL gurl = new GURL(REGULAR_TAB_STRING_1);
         when(regularTab1.getUrl()).thenReturn(gurl);
-        when(mNormalTabModel.getTabAt(1)).thenReturn(regularTab1);
+        when(mNormalTabModel.getTabAtChecked(1)).thenReturn(regularTab1);
 
         when(mIncognitoTabModel.getCount()).thenReturn(0);
     }
@@ -628,7 +628,7 @@ public class TabPersistentStoreUnitTest {
         when(regularNtpTab1.getId()).thenReturn(0);
         when(regularNtpTab1.getUrl()).thenReturn(ntpGurl);
         when(regularNtpTab1.isNativePage()).thenReturn(true);
-        when(mNormalTabModel.getTabAt(0)).thenReturn(regularNtpTab1);
+        when(mNormalTabModel.getTabAtChecked(0)).thenReturn(regularNtpTab1);
 
         // Non-active NTP with tab group.
         Tab regularNtpTab2 = mock(Tab.class);
@@ -636,13 +636,13 @@ public class TabPersistentStoreUnitTest {
         when(regularNtpTab2.getUrl()).thenReturn(ntpGurl);
         when(regularNtpTab2.isNativePage()).thenReturn(true);
         when(regularNtpTab2.getTabGroupId()).thenReturn(new Token(1L, 2L));
-        when(mNormalTabModel.getTabAt(1)).thenReturn(regularNtpTab2);
+        when(mNormalTabModel.getTabAtChecked(1)).thenReturn(regularNtpTab2);
 
         // Regular selected tab.
         Tab regularTab1 = mock(Tab.class);
         GURL gurl = new GURL(REGULAR_TAB_STRING_1);
         when(regularTab1.getUrl()).thenReturn(gurl);
-        when(mNormalTabModel.getTabAt(2)).thenReturn(regularTab1);
+        when(mNormalTabModel.getTabAtChecked(2)).thenReturn(regularTab1);
 
         when(mIncognitoTabModel.getCount()).thenReturn(0);
     }

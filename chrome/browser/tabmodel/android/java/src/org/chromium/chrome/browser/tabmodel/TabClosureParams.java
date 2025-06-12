@@ -98,7 +98,7 @@ public class TabClosureParams {
         }
 
         /** Sets the undo runnable. */
-        public CloseTabBuilder withUndoRunnable(Runnable undoRunnable) {
+        public CloseTabBuilder withUndoRunnable(@Nullable Runnable undoRunnable) {
             mUndoRunnable = undoRunnable;
             return this;
         }
@@ -159,7 +159,7 @@ public class TabClosureParams {
         }
 
         /** Sets the undo runnable. */
-        public CloseTabsBuilder withUndoRunnable(Runnable undoRunnable) {
+        public CloseTabsBuilder withUndoRunnable(@Nullable Runnable undoRunnable) {
             mUndoRunnable = undoRunnable;
             return this;
         }
@@ -228,7 +228,7 @@ public class TabClosureParams {
         }
 
         /** Sets the undo runnable. */
-        public CloseAllTabsBuilder withUndoRunnable(Runnable undoRunnable) {
+        public CloseAllTabsBuilder withUndoRunnable(@Nullable Runnable undoRunnable) {
             mUndoRunnable = undoRunnable;
             return this;
         }

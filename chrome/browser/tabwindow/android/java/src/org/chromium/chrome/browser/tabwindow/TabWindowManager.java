@@ -181,7 +181,7 @@ public interface TabWindowManager {
     boolean canTabThumbnailBeDeleted(@TabId int tabId);
 
     /** Sets the given archived {@link TabModelSelector} singleton instance. */
-    void setArchivedTabModelSelector(TabModelSelector archivedTabModelSelector);
+    void setArchivedTabModelSelector(@Nullable TabModelSelector archivedTabModelSelector);
 
     /**
      * Starts to initialize tab models for all windows with data. Some may be headless.
