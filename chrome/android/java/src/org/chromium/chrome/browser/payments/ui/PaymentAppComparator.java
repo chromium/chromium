@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.payments.PaymentPreferencesUtil;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.payments.PaymentApp;
@@ -16,6 +17,7 @@ import java.util.Comparator;
  * A comparator that is used to rank the payment apps to be listed on the PaymentRequest
  * UI.
  */
+@NullMarked
 /* package */ class PaymentAppComparator implements Comparator<PaymentApp> {
     private final PaymentRequestParams mParams;
 

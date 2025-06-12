@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -23,6 +25,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
@@ -43,6 +47,7 @@ import java.util.Collection;
  * used by Autofill Assistant.
  * Revert the visibility to package default again when it is no longer used by Autofill Assistant.
  */
+@NullMarked
 /* package */ class DimmingDialog {
     /**
      * Length of the animation to either show the UI or expand it to full height. Note that click of
@@ -58,7 +63,7 @@ import java.util.Collection;
     private final Dialog mDialog;
     private final ViewGroup mFullContainer;
     private final int mAnimatorTranslation;
-    private OnDismissListener mDismissListener;
+    private @Nullable OnDismissListener mDismissListener;
     private boolean mIsAnimatingDisappearance;
 
     /** Listener for the dismissal of the DimmingDialog. */
@@ -91,6 +96,7 @@ import java.util.Collection;
                 mFullContainer,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         Window dialogWindow = mDialog.getWindow();
+        assumeNonNull(dialogWindow);
         dialogWindow.setGravity(Gravity.CENTER);
         dialogWindow.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -292,6 +298,8 @@ import java.util.Collection;
 
     /** Force the Dialog window to refresh its visual state. */
     /* package */ void refresh() {
-        mDialog.getWindow().setAttributes(mDialog.getWindow().getAttributes());
+        Window window = mDialog.getWindow();
+        assumeNonNull(window);
+        window.setAttributes(window.getAttributes());
     }
 }

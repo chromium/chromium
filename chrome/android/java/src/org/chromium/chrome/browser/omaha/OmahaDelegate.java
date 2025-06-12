@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omaha.OmahaBase.PostResult;
 
 /** Delegates calls out from {@link OmahaBase}. */
+@NullMarked
 public abstract class OmahaDelegate {
-    private RequestGenerator mRequestGenerator;
+    private @Nullable RequestGenerator mRequestGenerator;
 
     OmahaDelegate() {}
 

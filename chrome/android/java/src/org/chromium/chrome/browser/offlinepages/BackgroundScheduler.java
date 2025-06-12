@@ -8,11 +8,13 @@ import android.os.PersistableBundle;
 import android.text.format.DateUtils;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
 /** Class responsible for scheduling and canceling offline page related background tasks. */
+@NullMarked
 public class BackgroundScheduler {
     static final long NO_DELAY = 0;
     private static final boolean OVERWRITE = true;

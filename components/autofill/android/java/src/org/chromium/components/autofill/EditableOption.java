@@ -7,6 +7,7 @@ package org.chromium.components.autofill;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -25,7 +26,7 @@ public class EditableOption implements Completable {
     protected @Nullable String mEditMessage;
     protected @Nullable String mEditTitle;
     protected @Nullable String mPromoMessage;
-    private @Nullable String mId;
+    private String mId;
     private @Nullable Drawable mIcon;
     private final @Nullable String[] mLabels = {null, null, null};
     private boolean mIsValid = true;
@@ -54,6 +55,45 @@ public class EditableOption implements Completable {
         updateIdentifierLabelsAndIcon(id, label, sublabel, tertiarylabel, icon);
     }
 
+    /**
+     * Updates the identifier, labels, and icon of this option. Called after the user has
+     * edited this option.
+     *
+     * @param id            The new id to use. Should not be null.
+     * @param label         The new label to use. Should not be null.
+     * @param sublabel      The new sublabel to use. Can be null.
+     * @param tertiarylabel The new tertiary label to use. Can be null.
+     * @param icon          The drawable icon or null.
+     */
+    @Initializer
+    protected void updateIdentifierLabelsAndIcon(
+            String id,
+            @Nullable String label,
+            @Nullable String sublabel,
+            @Nullable String tertiarylabel,
+            @Nullable Drawable icon) {
+        updateIdentifierAndLabels(id, label, sublabel, tertiarylabel);
+        mIcon = icon;
+    }
+
+    /** See {@link #updateIdentifierLabelsAndIcon(String, String, String, String, int)}. */
+    @Initializer
+    protected void updateIdentifierAndLabels(
+            String id,
+            @Nullable String label,
+            @Nullable String sublabel,
+            @Nullable String tertiarylabel) {
+        mId = id;
+        mLabels[0] = label;
+        mLabels[1] = sublabel;
+        mLabels[2] = tertiarylabel;
+    }
+
+    /** See {@link #updateIdentifierAndLabels(String, String, String, String)}. */
+    protected void updateIdentifierAndLabels(String id, String label, @Nullable String sublabel) {
+        updateIdentifierAndLabels(id, label, sublabel, null);
+    }
+
     @Override
     public boolean isComplete() {
         return mIsComplete;
@@ -68,7 +108,7 @@ public class EditableOption implements Completable {
      * The non-human readable identifier for this option. For example, "standard_shipping" or the
      * GUID of an autofill card.
      */
-    public @Nullable String getIdentifier() {
+    public String getIdentifier() {
         return mId;
     }
 
@@ -109,43 +149,6 @@ public class EditableOption implements Completable {
      */
     public @Nullable String getPromoMessage() {
         return mPromoMessage;
-    }
-
-    /** See {@link #updateIdentifierAndLabels(String, String, String, String)}. */
-    protected void updateIdentifierAndLabels(String id, String label, @Nullable String sublabel) {
-        updateIdentifierAndLabels(id, label, sublabel, null);
-    }
-
-    /** See {@link #updateIdentifierLabelsAndIcon(String, String, String, String, int)}. */
-    protected void updateIdentifierAndLabels(
-            String id,
-            @Nullable String label,
-            @Nullable String sublabel,
-            @Nullable String tertiarylabel) {
-        mId = id;
-        mLabels[0] = label;
-        mLabels[1] = sublabel;
-        mLabels[2] = tertiarylabel;
-    }
-
-    /**
-     * Updates the identifier, labels, and icon of this option. Called after the user has
-     * edited this option.
-     *
-     * @param id            The new id to use. Should not be null.
-     * @param label         The new label to use. Should not be null.
-     * @param sublabel      The new sublabel to use. Can be null.
-     * @param tertiarylabel The new tertiary label to use. Can be null.
-     * @param icon          The drawable icon or null.
-     */
-    protected void updateIdentifierLabelsAndIcon(
-            String id,
-            @Nullable String label,
-            @Nullable String sublabel,
-            @Nullable String tertiarylabel,
-            @Nullable Drawable icon) {
-        updateIdentifierAndLabels(id, label, sublabel, tertiarylabel);
-        mIcon = icon;
     }
 
     /**

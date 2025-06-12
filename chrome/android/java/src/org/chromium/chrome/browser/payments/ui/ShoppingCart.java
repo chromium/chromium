@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /** The shopping cart contents and total. */
+@NullMarked
 public class ShoppingCart {
     private LineItem mTotal;
-    @Nullable private List<LineItem> mContents;
-    @Nullable private List<LineItem> mAdditionalContents;
+    private @Nullable List<LineItem> mContents;
+    private @Nullable List<LineItem> mAdditionalContents;
 
     /**
      * Builds the shopping cart UI data model.
@@ -51,8 +53,7 @@ public class ShoppingCart {
      *
      * @return The shopping cart items. Can be null. Should not be modified.
      */
-    @Nullable
-    public List<LineItem> getContents() {
+    public @Nullable List<LineItem> getContents() {
         if (mContents == null && mAdditionalContents == null) return null;
 
         List<LineItem> result = new ArrayList<>();

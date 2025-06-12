@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.payments.handler.toolbar;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -15,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * PaymentHandlerToolbar view binder, which is stateless. It is called to bind a given model to a
  * given view. Should contain as little business logic as possible.
  */
+@NullMarked
 /* package */ class PaymentHandlerToolbarViewBinder {
     /* package */ static void bind(
             PropertyModel model, PaymentHandlerToolbarView view, PropertyKey propertyKey) {

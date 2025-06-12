@@ -8,6 +8,8 @@ import android.os.Handler;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
@@ -22,6 +24,7 @@ import org.chromium.url.GURL;
  * PaymentHandlerToolbar mediator, which is responsible for receiving events from the view and
  * notifies the backend (the coordinator).
  */
+@NullMarked
 /* package */ class PaymentHandlerToolbarMediator extends WebContentsObserver {
     /** The delay (four video frames - for 60Hz) after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = (1000 / 60) * 4;
@@ -35,7 +38,7 @@ import org.chromium.url.GURL;
     private final PropertyModel mModel;
 
     /** The handler to delay hiding the progress bar. */
-    private Handler mHideProgressBarHandler;
+    private @Nullable Handler mHideProgressBarHandler;
 
     /** Postfix with "Ref" to distinguish from mWebContent in WebContentsObserver. */
     private final WebContents mWebContentsRef;
