@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
 
+#include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_bounds_change_animation.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -67,7 +68,9 @@ void PictureInPictureTucker::Tuck() {
                              combined_work_area.width() - kTuckEdgeLength);
   }
 
-  pip_widget_->SetBounds(destination_bounds);
+  animation_ = std::make_unique<PictureInPictureBoundsChangeAnimation>(
+      *pip_widget_, destination_bounds);
+  animation_->Start();
   if (pip_widget_->IsActive()) {
     pip_widget_->Deactivate();
   }
@@ -83,5 +86,13 @@ void PictureInPictureTucker::Untuck() {
   tucking_ = false;
   gfx::Rect destination_bounds = pip_widget_->GetWindowBoundsInScreen();
   destination_bounds.set_origin(pretuck_location_);
-  pip_widget_->SetBounds(destination_bounds);
+  animation_ = std::make_unique<PictureInPictureBoundsChangeAnimation>(
+      *pip_widget_, destination_bounds);
+  animation_->Start();
+}
+
+void PictureInPictureTucker::FinishAnimationForTesting() {
+  if (animation_) {
+    animation_->End();
+  }
 }

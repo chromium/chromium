@@ -28,6 +28,16 @@ class PictureInPictureTuckerTest : public views::ViewsTestBase {
   }
 
  protected:
+  void Tuck() {
+    tucker_->Tuck();
+    tucker_->FinishAnimationForTesting();
+  }
+
+  void Untuck() {
+    tucker_->Untuck();
+    tucker_->FinishAnimationForTesting();
+  }
+
   display::test::TestScreen& test_screen() { return test_screen_; }
   views::Widget* widget() { return widget_.get(); }
   PictureInPictureTucker* tucker() { return tucker_.get(); }
@@ -50,12 +60,12 @@ TEST_F(PictureInPictureTuckerTest, TucksTowardCloserEdge) {
   EXPECT_EQ(initial_leftside_bounds, widget()->GetWindowBoundsInScreen());
 
   // Tuck the widget. This should tuck towards the left side.
-  tucker()->Tuck();
+  Tuck();
   EXPECT_LT(widget()->GetWindowBoundsInScreen().x(),
             initial_leftside_bounds.x());
 
   // Untucking should place the widget back where it started.
-  tucker()->Untuck();
+  Untuck();
   EXPECT_EQ(initial_leftside_bounds, widget()->GetWindowBoundsInScreen());
 
   // Place the widget on the right side of the screen.
@@ -65,12 +75,12 @@ TEST_F(PictureInPictureTuckerTest, TucksTowardCloserEdge) {
   EXPECT_EQ(initial_rightside_bounds, widget()->GetWindowBoundsInScreen());
 
   // Tuck the widget. This should tuck towards the right side.
-  tucker()->Tuck();
+  Tuck();
   EXPECT_GT(widget()->GetWindowBoundsInScreen().x(),
             initial_rightside_bounds.x());
 
   // Untucking should place the widget back where it started.
-  tucker()->Untuck();
+  Untuck();
   EXPECT_EQ(initial_rightside_bounds, widget()->GetWindowBoundsInScreen());
 }
 
@@ -81,16 +91,16 @@ TEST_F(PictureInPictureTuckerTest,
   EXPECT_EQ(initial_bounds, widget()->GetWindowBoundsInScreen());
 
   // Tuck the widget.
-  tucker()->Tuck();
+  Tuck();
   ASSERT_NE(initial_bounds, widget()->GetWindowBoundsInScreen());
 
   // Resize the widget and retuck it.
   gfx::Size new_size = {300, 300};
   widget()->SetSize(new_size);
-  tucker()->Tuck();
+  Tuck();
 
   // Untucking should place the widget back where it started.
-  tucker()->Untuck();
+  Untuck();
   const gfx::Rect expected_bounds(initial_bounds.origin(), new_size);
   EXPECT_EQ(expected_bounds, widget()->GetWindowBoundsInScreen());
 }
@@ -109,26 +119,26 @@ TEST_F(PictureInPictureTuckerTest, TucksTowardCloserEdge_Multiscreen) {
   // Place the widget on the left side of the left screen. This should tuck to
   // left side of the left screen.
   widget()->SetBounds({{20, 50}, {200, 200}});
-  tucker()->Tuck();
+  Tuck();
   EXPECT_LT(widget()->GetWindowBoundsInScreen().x(), display1_bounds.x());
-  tucker()->Untuck();
+  Untuck();
 
   // Place the widget on the right half of the left screen, but still closer to
   // the left edge of the left screen than the right edge of the right screen.
   // This should tuck to the left side of the left screen.
   widget()->SetBounds({{600, 50}, {200, 200}});
-  tucker()->Tuck();
+  Tuck();
   EXPECT_LT(widget()->GetWindowBoundsInScreen().x(), display1_bounds.x());
-  tucker()->Untuck();
+  Untuck();
 
   // Place the widget on the right half of the left screen, and closer to the
   // right side of the right screen than the left side of the left screen. This
   // should tuck to the right side of the right screen.
   widget()->SetBounds({{800, 50}, {200, 200}});
-  tucker()->Tuck();
+  Tuck();
   EXPECT_GT(widget()->GetWindowBoundsInScreen().right(),
             display2_bounds.right());
-  tucker()->Untuck();
+  Untuck();
 
   // Place the widget on the right half of the left screen, and closer to the
   // right side of the right screen than the left side of the left screen, BUT
@@ -136,9 +146,9 @@ TEST_F(PictureInPictureTuckerTest, TucksTowardCloserEdge_Multiscreen) {
   // to the right side of the right screen would be below the right screen. This
   // should tuck to the right side of the left screen.
   widget()->SetBounds({{800, 550}, {200, 200}});
-  tucker()->Tuck();
+  Tuck();
   EXPECT_GT(widget()->GetWindowBoundsInScreen().right(),
             display1_bounds.right());
   EXPECT_LT(widget()->GetWindowBoundsInScreen().x(), display1_bounds.right());
-  tucker()->Untuck();
+  Untuck();
 }

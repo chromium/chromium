@@ -804,11 +804,13 @@ TEST_F(VideoOverlayWindowViewsTest, CanBeTuckedToTheSideOfTheScreen) {
   // If we tell it to force tucking, it should tuck to the left side of the
   // screen.
   overlay_window().SetForcedTucking(true);
+  overlay_window().FinishTuckAnimationForTesting();
   EXPECT_LT(overlay_window().GetWindowBoundsInScreen().x(), 0);
 
   // If we tell it to stop tucking, it should be put back in its original
   // position.
   overlay_window().SetForcedTucking(false);
+  overlay_window().FinishTuckAnimationForTesting();
   EXPECT_EQ(overlay_window().GetWindowBoundsInScreen().x(), 400);
 }
 
@@ -820,6 +822,7 @@ TEST_F(VideoOverlayWindowViewsTest, UntucksWhenReshownIfNecessary) {
 
   // Start tucking via a ScopedTuckPictureInPicture.
   auto scoped_tuck = std::make_unique<ScopedTuckPictureInPicture>();
+  overlay_window().FinishTuckAnimationForTesting();
   EXPECT_LT(overlay_window().GetWindowBoundsInScreen().x(), 0);
 
   // Hide ourselves. This will mean if tucking ends then the
@@ -832,6 +835,7 @@ TEST_F(VideoOverlayWindowViewsTest, UntucksWhenReshownIfNecessary) {
   // Show ourselves. We should check with the PictureInPictureWindowManager and
   // realize we should no longer tuck.
   overlay_window().ShowInactive();
+  overlay_window().FinishTuckAnimationForTesting();
   EXPECT_EQ(overlay_window().GetWindowBoundsInScreen().x(), 400);
 }
 

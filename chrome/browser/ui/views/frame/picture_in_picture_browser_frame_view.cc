@@ -15,11 +15,11 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/frame/browser_frame_bounds_change_animation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_bounds_change_animation.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
@@ -942,8 +942,8 @@ void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
     return;
   }
   bounds_change_animation_ =
-      std::make_unique<BrowserFrameBoundsChangeAnimation>(*frame(),
-                                                          adjusted_bounds);
+      std::make_unique<PictureInPictureBoundsChangeAnimation>(*frame(),
+                                                              adjusted_bounds);
   bounds_change_animation_->Start();
 }
 

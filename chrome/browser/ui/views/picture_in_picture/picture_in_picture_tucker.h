@@ -12,6 +12,8 @@ namespace views {
 class Widget;
 }  // namespace views
 
+class PictureInPictureBoundsChangeAnimation;
+
 // The PictureInPictureTucker temporarily moves a picture-in-picture widget
 // mostly offscreen ("tuck"ed away) so the user can get more screen real estate
 // for another task.
@@ -33,10 +35,14 @@ class PictureInPictureTucker {
   // Moves `pip_widget_` back to where it was when `Tuck()` was called.
   void Untuck();
 
+  // Forces `animation_` to complete. Used in tests to check final state.
+  void FinishAnimationForTesting();
+
  private:
   raw_ref<views::Widget> pip_widget_;
   bool tucking_ = false;
   gfx::Point pretuck_location_;
+  std::unique_ptr<PictureInPictureBoundsChangeAnimation> animation_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_TUCKER_H_

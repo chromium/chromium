@@ -231,6 +231,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
     min_size_ = min_size;
   }
 
+  void FinishTuckAnimationForTesting();
+
  protected:
   explicit VideoOverlayWindowViews(
       content::VideoPictureInPictureWindowController* controller);

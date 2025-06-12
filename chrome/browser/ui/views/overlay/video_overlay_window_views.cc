@@ -785,6 +785,12 @@ bool VideoOverlayWindowViews::IsLayoutPendingForTesting() const {
          update_controls_bounds_timer_->IsRunning();
 }
 
+void VideoOverlayWindowViews::FinishTuckAnimationForTesting() {
+  if (tucker_) {
+    tucker_->FinishAnimationForTesting();  // IN-TEST
+  }
+}
+
 void VideoOverlayWindowViews::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {

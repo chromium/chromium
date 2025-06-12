@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/frame/browser_frame_bounds_change_animation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"

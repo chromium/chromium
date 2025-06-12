@@ -33,7 +33,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_observer.h"
 
-class BrowserFrameBoundsChangeAnimation;
+class PictureInPictureBoundsChangeAnimation;
 class PictureInPictureTucker;
 
 namespace views {
@@ -387,7 +387,8 @@ class PictureInPictureBrowserFrameView
 
   // Animates programmatic changes to bounds (e.g. via `resizeTo()` or
   // `resizeBy()` calls).
-  std::unique_ptr<BrowserFrameBoundsChangeAnimation> bounds_change_animation_;
+  std::unique_ptr<PictureInPictureBoundsChangeAnimation>
+      bounds_change_animation_;
 
   // Used to tuck/untuck this widget into the side of the screen.
   std::unique_ptr<PictureInPictureTucker> tucker_;

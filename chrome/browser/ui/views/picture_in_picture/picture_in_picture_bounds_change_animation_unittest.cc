@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_bounds_change_animation.h"
+#include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_bounds_change_animation.h"
 
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/gfx/geometry/rect.h"
@@ -25,14 +25,14 @@ void ExpectRectBetween(const gfx::Rect& actual_rect,
   EXPECT_LT(actual_rect.height(), higher_rect.height());
 }
 
-using BrowserFrameBoundsChangeAnimationTest = ChromeViewsTestBase;
+using PictureInPictureBoundsChangeAnimationTest = ChromeViewsTestBase;
 
-TEST_F(BrowserFrameBoundsChangeAnimationTest, AnimatesWidgetMove) {
+TEST_F(PictureInPictureBoundsChangeAnimationTest, AnimatesWidgetMove) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetBounds(kInitialBounds);
   widget->Show();
-  BrowserFrameBoundsChangeAnimation animation(*widget, kNewBounds);
+  PictureInPictureBoundsChangeAnimation animation(*widget, kNewBounds);
 
   ASSERT_EQ(kInitialBounds, widget->GetWindowBoundsInScreen());
   animation.Start();
