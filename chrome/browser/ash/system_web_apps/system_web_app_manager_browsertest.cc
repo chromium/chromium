@@ -1801,10 +1801,11 @@ void SystemWebAppAccessibilityTest::EnableChromeVox() {
   speech_monitor_.Call([this]() {
     extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
         browser()->profile(), extension_misc::kChromeVoxExtensionId, R"JS(
-        import('/chromevox/mv2/background/chromevox_state.js').then(
-            module => module.ChromeVoxState.ready().then(() =>
-                window.domAutomationController.send('done')));
-        )JS");
+        (async function() {
+          const imports = TestImportManager.getImports();
+          await imports.ChromeVoxState.ready();
+          window.domAutomationController.send('done');
+        })())JS");
   });
 }
 

@@ -67,7 +67,9 @@ class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
   void PressRepeatedlyUntilUtterance(ui::KeyboardCode key,
                                      const std::string& expected_utterance);
   void RunJSForChromeVox(const std::string& script);
-  void ImportJSModuleForChromeVox(std::string name, std::string path);
+  // Exposes the module, specified by `name`, on the `globalThis` object. This
+  // allows tests to call directly into various ChromeVox methods.
+  void GlobalizeModule(const std::string& name);
 
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 

@@ -37,8 +37,7 @@ class EditorSystemActuatorAccessibilityTest : public InProcessBrowserTest {
     sm_.ExpectSpeechPattern("ChromeVox*");
     // Disable earcons which can be annoying in tests.
     sm_.Call([this]() {
-      ImportJSModuleForChromeVox("ChromeVox",
-                                 "/chromevox/mv2/background/chromevox.js");
+      GlobalizeModuleForChromeVox("ChromeVox");
       DisableEarcons();
     });
   }
@@ -52,17 +51,15 @@ class EditorSystemActuatorAccessibilityTest : public InProcessBrowserTest {
   ash::test::SpeechMonitor sm_;
 
  private:
-  void ImportJSModuleForChromeVox(std::string_view name,
-                                  std::string_view path) {
+  void GlobalizeModuleForChromeVox(const std::string& name) {
+    std::string globalize = "globalThis." + name +
+                            " = TestImportManager.getImports()." + name + ";";
+    std::string done = "window.domAutomationController.send('done');";
+    std::string script = globalize + done;
+
     extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
         ash::AccessibilityManager::Get()->profile(),
-        extension_misc::kChromeVoxExtensionId,
-        base::ReplaceStringPlaceholders(
-            R"(import('$1').then(mod => {
-            globalThis.$2 = mod.$2;
-            window.domAutomationController.send('done');
-          }))",
-            {std::string(path), std::string(name)}, nullptr));
+        extension_misc::kChromeVoxExtensionId, script);
   }
 
   void DisableEarcons() {

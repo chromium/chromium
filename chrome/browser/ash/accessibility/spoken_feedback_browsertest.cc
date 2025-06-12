@@ -245,34 +245,27 @@ void LoggedInSpokenFeedbackTest::DisableEarcons() {
       "ChromeVox.earcons.playEarcon = function() {};");
 }
 
-void LoggedInSpokenFeedbackTest::ImportJSModuleForChromeVox(std::string name,
-                                                            std::string path) {
+void LoggedInSpokenFeedbackTest::GlobalizeModule(const std::string& name) {
+  std::string globalize =
+      "globalThis." + name + " = TestImportManager.getImports()." + name + ";";
+  std::string done = "window.domAutomationController.send('done');";
+  std::string script = globalize + done;
   extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-      GetProfile(), extension_misc::kChromeVoxExtensionId,
-      "import('" + path +
-          "').then(mod => {"
-          "globalThis." +
-          name + " = mod." + name +
-          ";"
-          "window.domAutomationController.send('done')"
-          "})");
+      GetProfile(), extension_misc::kChromeVoxExtensionId, script);
 }
 
 void LoggedInSpokenFeedbackTest::EnableChromeVox(bool check_for_intro) {
   // Test setup.
   // Enable ChromeVox, disable earcons and wait for key mappings to be fetched.
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  // TODO(accessibility): fix console error/warnings and insantiate
+  // TODO(accessibility): fix console error/warnings and instantiate
   // |console_observer_| here.
 
   // Load ChromeVox and block until it's fully loaded.
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   sm_.ExpectSpeechPattern(check_for_intro ? "ChromeVox spoken feedback is ready"
                                           : "*");
-  sm_.Call([this]() {
-    ImportJSModuleForChromeVox("ChromeVox",
-                               "/chromevox/mv2/background/chromevox.js");
-  });
+  sm_.Call([this]() { GlobalizeModule("ChromeVox"); });
   sm_.Call([this]() { DisableEarcons(); });
 }
 
@@ -286,9 +279,7 @@ void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
 
 void LoggedInSpokenFeedbackTest::ExecuteCommandHandlerCommand(
     std::string command) {
-  ImportJSModuleForChromeVox(
-      "CommandHandlerInterface",
-      "/chromevox/mv2/background/input/command_handler_interface.js");
+  GlobalizeModule("CommandHandlerInterface");
   RunJSForChromeVox("CommandHandlerInterface.instance.onCommand('" + command +
                     "');");
 }

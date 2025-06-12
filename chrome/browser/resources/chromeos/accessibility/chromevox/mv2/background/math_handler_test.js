@@ -11,10 +11,8 @@ ChromeVoxMV2MathHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('MathHandler', '/chromevox/mv2/background/math_handler.js'),
-    ]);
+    const imports = TestImportManager.getImports();
+    globalThis.MathHandler = imports.MathHandler;
   }
 
   createMockNode(properties) {

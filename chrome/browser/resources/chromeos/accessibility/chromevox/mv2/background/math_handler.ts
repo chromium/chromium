@@ -7,6 +7,7 @@
  */
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import type {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Msgs} from '../common/msgs.js';
 import {QueueMode} from '../common/tts_types.js';
@@ -98,3 +99,5 @@ export class MathHandler {
     return false;
   }
 }
+
+TestImportManager.exportForTesting(MathHandler);
