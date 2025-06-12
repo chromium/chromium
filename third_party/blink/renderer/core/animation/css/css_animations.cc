@@ -1579,14 +1579,17 @@ AnimationTrigger* CSSAnimations::ComputeTrigger(
       CSSAnimationData::GetRepeated(data->TriggerExitRangeEndList(),
                                     animation_index);
 
+  // TODO(crbug.com/424448496): Verify the spaces of animation triggers:
+  // internally we should store things in physical space, and only expose CSS
+  // space for consistency with the rest of the code.
   Animation::RangeBoundary* new_range_start =
-      Animation::ToRangeBoundary(new_start_offset);
+      Animation::ToRangeBoundary(new_start_offset, 1.f);
   Animation::RangeBoundary* new_range_end =
-      Animation::ToRangeBoundary(new_end_offset);
+      Animation::ToRangeBoundary(new_end_offset, 1.f);
   Animation::RangeBoundary* new_exit_range_start =
-      Animation::ToRangeBoundary(new_exit_start_offset);
+      Animation::ToRangeBoundary(new_exit_start_offset, 1.f);
   Animation::RangeBoundary* new_exit_range_end =
-      Animation::ToRangeBoundary(new_exit_end_offset);
+      Animation::ToRangeBoundary(new_exit_end_offset, 1.f);
 
   bool need_new_trigger = !existing_trigger ||
                           existing_timeline != new_timeline ||

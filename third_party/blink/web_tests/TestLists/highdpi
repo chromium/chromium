@@ -1007,6 +1007,7 @@ external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.ht
 external/wpt/scheduler/post-task-with-signal-from-detached-iframe.html
 external/wpt/scroll-animations/css/progress-based-animation-timeline.html
 external/wpt/scroll-animations/scroll-timelines/setting-playback-rate.html
+external/wpt/scroll-animations/css/animation-range-scroll-timeline.html
 external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html
 external/wpt/secure-contexts/shared-worker-insecure-first.https.html
 external/wpt/selection/addRange-40.html

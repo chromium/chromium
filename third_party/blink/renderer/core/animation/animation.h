@@ -436,8 +436,10 @@ class CORE_EXPORT Animation : public EventTarget,
   using NativePaintWorkletReasons = uint32_t;
   NativePaintWorkletReasons GetNativePaintWorkletReasons() const;
 
-  static RangeBoundary* ToRangeBoundary(std::optional<TimelineOffset> offset);
-  static RangeBoundary* ToRangeBoundary(TimelineOffsetOrAuto offset_or_auto);
+  static RangeBoundary* ToRangeBoundary(std::optional<TimelineOffset> offset,
+                                        float zoom);
+  static RangeBoundary* ToRangeBoundary(TimelineOffsetOrAuto offset_or_auto,
+                                        float zoom);
 
   struct AnimationTriggerData {
     // The most recent `animation-play-state` value for |animation_|. This will
@@ -573,6 +575,10 @@ class CORE_EXPORT Animation : public EventTarget,
       const RangeBoundary* boundary,
       double default_percent,
       ExceptionState& exception_state);
+
+  // Returns the effective zoom for the keyframe effect's target, or 1.f if
+  // there is no keyframe effect or no target with computed style.
+  float GetKeyframeEffectTargetZoom() const;
 
   String id_;
 

@@ -2590,11 +2590,11 @@ void Animation::SetCompositorPending(CompositorPendingReason reason) {
 }
 
 const Animation::RangeBoundary* Animation::rangeStart() {
-  return ToRangeBoundary(range_start_);
+  return ToRangeBoundary(range_start_, GetKeyframeEffectTargetZoom());
 }
 
 const Animation::RangeBoundary* Animation::rangeEnd() {
-  return ToRangeBoundary(range_end_);
+  return ToRangeBoundary(range_end_, GetKeyframeEffectTargetZoom());
 }
 
 void Animation::setRangeStart(const Animation::RangeBoundary* range_start,
@@ -2622,7 +2622,8 @@ std::optional<TimelineOffset> Animation::GetEffectiveTimelineOffset(
 
 /* static */
 Animation::RangeBoundary* Animation::ToRangeBoundary(
-    std::optional<TimelineOffset> timeline_offset) {
+    std::optional<TimelineOffset> timeline_offset,
+    float zoom) {
   if (!timeline_offset) {
     return MakeGarbageCollected<RangeBoundary>("normal");
   }
@@ -2631,19 +2632,20 @@ Animation::RangeBoundary* Animation::ToRangeBoundary(
       MakeGarbageCollected<TimelineRangeOffset>();
   timeline_range_offset->setRangeName(timeline_offset->name);
   CSSPrimitiveValue* value =
-      CSSPrimitiveValue::CreateFromLength(timeline_offset->offset, 1);
+      CSSPrimitiveValue::CreateFromLength(timeline_offset->offset, zoom);
   CSSNumericValue* offset = CSSNumericValue::FromCSSValue(*value);
   timeline_range_offset->setOffset(offset);
   return MakeGarbageCollected<RangeBoundary>(timeline_range_offset);
 }
 
 Animation::RangeBoundary* Animation::ToRangeBoundary(
-    TimelineOffsetOrAuto timeline_offset_or_auto) {
+    TimelineOffsetOrAuto timeline_offset_or_auto,
+    float zoom) {
   if (timeline_offset_or_auto.IsAuto()) {
     return MakeGarbageCollected<RangeBoundary>("auto");
   }
 
-  return ToRangeBoundary(timeline_offset_or_auto.GetTimelineOffset());
+  return ToRangeBoundary(timeline_offset_or_auto.GetTimelineOffset(), zoom);
 }
 
 void Animation::UpdateAutoAlignedStartTime() {
@@ -3658,6 +3660,15 @@ void Animation::ResetPlayback() {
   pause();
 
   SetPausedForTrigger(true);
+}
+
+float Animation::GetKeyframeEffectTargetZoom() const {
+  auto* keyframe_effect = DynamicTo<KeyframeEffect>(effect());
+  if (!keyframe_effect || !keyframe_effect->EffectTarget() ||
+      !keyframe_effect->EffectTarget()->GetComputedStyle()) {
+    return 1.f;
+  }
+  return keyframe_effect->EffectTarget()->ComputedStyleRef().EffectiveZoom();
 }
 
 }  // namespace blink
