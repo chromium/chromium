@@ -866,19 +866,24 @@ void ClipOutHalfCornerWithMiter(GraphicsContext& context,
 
   // When the corners of this side don't intersect, clip a triangle that goes
   // through the miter and the opposite side.
+  const gfx::Vector2dF unadjusted_offset =
+      corner_to_slice.unadjusted_inner_edge - corner_to_slice.outer.Outer();
   const gfx::PointF miter_hypot =
       gfx::LineF(corner_to_slice.outer.Outer(),
                  corner_to_slice.unadjusted_inner_edge)
-          .IntersectionWith({opposite_corner, adjacent_corner})
-          .value();
-  context.ClipPath(PathBuilder()
-                       .MoveTo(corner_to_slice.outer.Outer())
-                       .LineTo(miter_hypot)
-                       .LineTo(adjacent_corner)
-                       .Close()
-                       .Finalize()
-                       .GetSkPath(),
-                   antialias_mode, SkClipOp::kDifference);
+          .IntersectionWith({opposite_corner + unadjusted_offset,
+                             adjacent_corner + unadjusted_offset})
+          .value_or(opposite_corner);
+  context.ClipPath(
+      PathBuilder()
+          .MoveTo(corner_to_slice.outer.Outer() - unadjusted_offset)
+          .LineTo(miter_hypot)
+          .LineTo(adjacent_corner + unadjusted_offset)
+          .LineTo(adjacent_corner - unadjusted_offset)
+          .Close()
+          .Finalize()
+          .GetSkPath(),
+      antialias_mode, SkClipOp::kDifference);
 }
 
 // Make sure corners where the border-width > border-radius take the whole
@@ -908,20 +913,27 @@ void ClipBorderSidePolygonFromCorners(GraphicsContext& context,
                                       AntiAliasingMode first_antialias,
                                       AntiAliasingMode second_antialias,
                                       const gfx::Vector2dF& width_vector) {
+  // The outer corner might be perpendicular to the inner corner when a concave
+  // outline, so to extend it all the way to one border-width distance from the
+  // outer edge, we need to expand it by (at least) width*2. The extra 1.1 is to
+  // allow for stroke expansion, e.g. for dashed stroke.
+  const gfx::Vector2dF outer_edge_outset =
+      gfx::ScaleVector2d(width_vector, 2 * 1.1);
+
   // Clip the full side, including the two full corners, to avoid overlapping
   // with the other sides.
   context.ClipPath(PathBuilder()
-                       .MoveTo(corners[0].outer.Outer())
+                       .MoveTo(corners[0].outer.Outer() - outer_edge_outset)
                        .LineTo(corners[0].outer.Start())
                        .AddCorner(corners[0].inner)
                        .LineTo(corners[0].outer.End() + width_vector)
                        .LineTo(corners[1].outer.Start() + width_vector)
                        .AddCorner(corners[1].inner)
                        .LineTo(corners[1].outer.End())
-                       .LineTo(corners[1].outer.Outer())
+                       .LineTo(corners[1].outer.Outer() - outer_edge_outset)
                        .Close()
-                       .MoveTo(corners[1].outer.Outer())
-                       .LineTo(corners[0].outer.Outer())
+                       .MoveTo(corners[1].outer.Outer() - outer_edge_outset)
+                       .LineTo(corners[0].outer.Outer() - outer_edge_outset)
                        .LineTo(corners[0].outer.Outer() + width_vector)
                        .LineTo(corners[1].outer.Outer() + width_vector)
                        .Close()
@@ -1235,49 +1247,12 @@ void BoxBorderPainter::ComputeBorderProperties() {
   }
 }
 
-bool BoxBorderPainter::ClipOutlineAsStrokeIfNeeded(
-    const ContouredRect& contoured_rect,
-    SkClipOp clip_op) const {
-  // We only use stroke for positive outlines with non-round curvatures.
-  // Negative or convex outlines don't require joins and can use the ordinary
-  // ContouredRect path.
-  if (!is_uniform_width_ || !outer_.IsRounded() || outer_.HasRoundCurvature() ||
-      outer_outsets_.top <= 0) {
-    return false;
-  }
-
-  CHECK(style_.HasOutline());
-
-  // When rendering a uniform outset (e.g. an outline), we use stroking instead
-  // of the normal PathBuilder ContouredRect path, so that appropriate round
-  // joins/caps are rendered.
-  const FloatRoundedRect& origin_rect = contoured_rect.GetOriginRect();
-  const Path origin_path =
-      PathBuilder()
-          .AddContouredRect(
-              ContouredRect(origin_rect, contoured_rect.GetCornerCurvature()))
-          .Close()
-          .Finalize();
-  StrokeData stroke_data;
-  stroke_data.SetThickness(
-      contoured_rect.Rect().InsetsFrom(origin_rect.Rect()).width());
-  stroke_data.SetLineJoin(LineJoin::kRoundJoin);
-  SkPath stroke_path = origin_path.StrokePath(stroke_data, AffineTransform());
-  stroke_path.addPath(origin_path.GetSkPath(), SkPath::kAppend_AddPathMode);
-  context_.ClipPath(stroke_path, kAntiAliased, clip_op);
-  return true;
-}
-
 void BoxBorderPainter::ClipContouredRect(const ContouredRect& rect) const {
-  if (!ClipOutlineAsStrokeIfNeeded(rect, SkClipOp::kIntersect)) {
-    context_.ClipContouredRect(rect);
-  }
+  context_.ClipContouredRect(rect);
 }
 
 void BoxBorderPainter::ClipOutContouredRect(const ContouredRect& rect) const {
-  if (!ClipOutlineAsStrokeIfNeeded(rect, SkClipOp::kDifference)) {
     context_.ClipOutContouredRect(rect);
-  }
 }
 
 void BoxBorderPainter::Paint() const {
@@ -1646,7 +1621,6 @@ void BoxBorderPainter::DrawCurvedDashedDottedBoxSide(
       ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
           style_, border_rect_, CenterOutsets(), sides_to_include_)
           .GetPath();
-
   StyledStrokeData styled_stroke;
   styled_stroke.SetStyle(border_style == EBorderStyle::kDashed ? kDashedStroke
                                                                : kDottedStroke);

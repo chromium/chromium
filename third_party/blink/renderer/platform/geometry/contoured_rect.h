@@ -37,10 +37,13 @@ class PLATFORM_EXPORT ContouredRect {
  public:
   // A corner curvature is the exponent of a superellipse quadrant.
   // e.g. 2 is round, 1 is bevel/angled, infinity is defunct/straight.
+  // This is equivalent to 2^s, where s is the superellipse parameter.
+  // See https://drafts.csswg.org/css-borders-4/#superellipse-parameter
   class CornerCurvature {
    public:
     static constexpr float kRound = 2;
     static constexpr float kBevel = 1;
+    static constexpr float kScoop = 0.5;
     static constexpr float kStraight = 1000;
     static constexpr float kNotch = 1 / kStraight;
 
@@ -181,6 +184,8 @@ class PLATFORM_EXPORT ContouredRect {
              gfx::ScaleVector2d(v4(), normalized_point.y());
     }
 
+    gfx::PointF QuadraticControlPoint() const;
+
     Corner AlignedToOrigin(const Corner& origin) const;
     String ToString() const;
 
@@ -259,8 +264,7 @@ class PLATFORM_EXPORT ContouredRect {
   void SetOriginRect(const FloatRoundedRect& rect) { origin_rect_ = rect; }
 
   constexpr bool IsInnerRect() const {
-    return origin_rect_ && *origin_rect_ != rect_ &&
-           origin_rect_->Rect().Contains(rect_.Rect());
+    return origin_rect_ && *origin_rect_ != rect_;
   }
 
   constexpr Corner TopRightCorner() const {

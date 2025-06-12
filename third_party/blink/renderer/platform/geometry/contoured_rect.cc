@@ -89,6 +89,7 @@ void ContouredRect::OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
   radii.SetBottomLeft(gfx::ScaleSize(radii.BottomLeft(), scale_x, scale_y));
   rect_.SetRadii(radii);
   rect_.SetRect(new_rect);
+  SetOriginRect(rect_);
 }
 
 bool ContouredRect::XInterceptsAtY(float y,
@@ -154,6 +155,26 @@ String ContouredRect::Corner::ToString() const {
                         Start().ToString().c_str(), Outer().ToString().c_str(),
                         End().ToString().c_str(), Center().ToString().c_str(),
                         curvature_);
+}
+
+gfx::PointF ContouredRect::Corner::QuadraticControlPoint() const {
+  if (IsConcave()) {
+    return Inverse().QuadraticControlPoint();
+  }
+
+  // For hyperellipses (round and above), there is no equivalent quadratic, so
+  // we use the outer point.
+  if (Curvature() >= CornerCurvature::kRound) {
+    return Outer();
+  }
+
+  // For hypoellipses (between bevel and round), the quadratic curve is very
+  // close to the superellipse. Given a point (P, P) at t=0.5, the quadratic
+  // control point is at 2 * P - 0.5.
+  const float normalized_control_point =
+      2 * HalfCornerForCurvature(curvature_) - 0.5;
+  return MapPoint(
+      gfx::Vector2dF(normalized_control_point, normalized_control_point));
 }
 
 // This method creates a corner from a target (this) and an origin.
