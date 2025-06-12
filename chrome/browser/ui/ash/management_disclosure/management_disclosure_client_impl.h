@@ -5,12 +5,18 @@
 #ifndef CHROME_BROWSER_UI_ASH_MANAGEMENT_DISCLOSURE_MANAGEMENT_DISCLOSURE_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_MANAGEMENT_DISCLOSURE_MANAGEMENT_DISCLOSURE_CLIENT_IMPL_H_
 
+#include <string>
 #include <unordered_map>
 
 #include "ash/public/cpp/management_disclosure_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+
+class Profile;
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}
 
 // Handles showing the management disclosure calls from ash to chrome.
 class ManagementDisclosureClientImpl : public ash::ManagementDisclosureClient {

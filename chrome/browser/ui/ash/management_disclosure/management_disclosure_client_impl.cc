@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/login_screen.h"
 #include "base/check.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
@@ -46,27 +47,32 @@ std::vector<std::u16string> ManagementDisclosureClientImpl::GetDisclosures() {
   if (policy_map_.empty()) {
     std::vector<webui::LocalizedString> localized_strings;
     ManagementUI::GetLocalizedStrings(localized_strings, /*remove_links=*/true);
-    for (auto pair : localized_strings) {
-      policy_map_.insert(std::make_pair(pair.name, pair.id));
+    for (const auto& [name, id] : localized_strings) {
+      policy_map_.emplace(name, id);
     }
   }
 
-  auto disclosures = ManagementUIHandlerChromeOS::GetDeviceReportingInfo(
+  const auto disclosures = ManagementUIHandlerChromeOS::GetDeviceReportingInfo(
       connector_->GetDeviceCloudPolicyManager(), profile_);
   std::vector<std::u16string> disclosure_list;
   // Add all disclosures to list.
-  for (auto& disclosure : disclosures) {
-    if (disclosure.is_dict()) {
-      auto* message = disclosure.GetDict().Find("messageId");
-      if (message && message->is_string()) {
-        if (policy_map_.contains(message->GetString())) {
-          disclosure_list.push_back(l10n_util::GetStringUTF16(
-              policy_map_.find(message->GetString())->second));
-        } else {
-          LOG(WARNING) << "policy disclosure not found in policy_map";
-        }
-      }
+  for (const auto& disclosure : disclosures) {
+    if (!disclosure.is_dict()) {
+      continue;
     }
+
+    const auto* message = disclosure.GetDict().Find("messageId");
+    if (!message || !message->is_string()) {
+      continue;
+    }
+
+    if (!policy_map_.contains(message->GetString())) {
+      LOG(WARNING) << "policy disclosure not found in policy_map";
+      continue;
+    }
+
+    disclosure_list.push_back(
+        l10n_util::GetStringUTF16(policy_map_[message->GetString()]));
   }
 
   return disclosure_list;
