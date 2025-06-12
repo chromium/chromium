@@ -323,6 +323,10 @@ export class HistoryListElement extends HistoryListElementBase {
     button.focus();
   }
 
+  fillCurrentViewport() {
+    this.$.infiniteList.fillCurrentViewport();
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // Private methods:
 
@@ -644,7 +648,7 @@ export class HistoryListElement extends HistoryListElementBase {
     if (this.scrollTarget) {
       this.resizeObserver_.observe(this.scrollTarget);
       this.scrollTarget.addEventListener('scroll', this.scrollListener_);
-      this.$.infiniteList.fillCurrentViewport();
+      this.fillCurrentViewport();
     }
   }
 

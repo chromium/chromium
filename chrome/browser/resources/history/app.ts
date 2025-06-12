@@ -717,6 +717,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
         // The top-level History page has another inner IronPages element that
         // can toggle between different pages.
         this.scrollTarget = this.$.tabsScrollContainer;
+
+        // Scroll target won't change if history embeddings is enabled as
+        // the scroll target for both Date and Group view is
+        // this.$.tabsScrollContainer, which means history-list's callbacks
+        // to fill the viewport do not get triggered automatically.
+        this.$.history.fillCurrentViewport();
       } else {
         this.scrollTarget = this.$['tabs-content'].selectedItem as HTMLElement;
       }
