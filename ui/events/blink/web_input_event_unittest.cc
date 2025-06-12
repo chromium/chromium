@@ -423,8 +423,6 @@ TEST(WebInputEventTest, TestMakeWebMouseEventWithMultiButtons) {
 
 TEST(WebInputEventTest, TestMakeWebMouseEventNoisyButtonState) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kClickToCapturedPointer);
 
   {
     // Left pressed but the modifier doesn't reflect it.
