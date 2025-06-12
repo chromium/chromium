@@ -60,6 +60,7 @@ ci.builder(
             "blink_symbol",
             "minimal_symbols",
             "x64",
+            "dcheck_always_on",
         ],
     ),
     targets = targets.bundle(

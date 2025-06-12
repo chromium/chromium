@@ -776,6 +776,7 @@ ci.builder(
             "no_treat_warnings_as_errors",
             "cast_receiver_size_optimized",
             "x64",
+            "dcheck_always_on",
         ],
     ),
     targets = targets.bundle(
@@ -870,6 +871,7 @@ ci.builder(
             "static",
             "arm64_host",
             "cast_receiver_size_optimized",
+            "dcheck_always_on",
         ],
     ),
     targets = targets.bundle(
