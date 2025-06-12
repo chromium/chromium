@@ -242,7 +242,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     private void testDisplayModeUMA(@DisplayMode.EnumType int displayMode) {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("CustomTabs.WebAppHeader.DisplayMode", displayMode)
+                        .expectIntRecord("CustomTabs.WebAppHeader.DisplayMode2", displayMode)
                         .build();
 
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
@@ -419,8 +419,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectAnyRecord("CustomTabs.WebAppHeader.ControlsShownTime")
-                        .expectAnyRecord("CustomTabs.WebAppHeader.ControlsHiddenTime")
+                        .expectAnyRecord("CustomTabs.WebAppHeader.ControlsShownTime2")
+                        .expectAnyRecord("CustomTabs.WebAppHeader.ControlsHiddenTime2")
                         .build();
 
         // Emulate maximizing window.

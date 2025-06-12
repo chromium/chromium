@@ -334,14 +334,15 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(WebAppHeaderDisplayMode) -->
 
 <enum name="WebAppHeaderDisplayMode">
-  <int value="0" label="browser"/>
-  <int value="1" label="minimalUI"/>
-  <int value="2" label="standalone"/>
-  <int value="3" label="fullscreen"/>
-  <int value="4" label="windowControlsOverlay"/>
-  <int value="5" label="tabbed"/>
-  <int value="6" label="borderless"/>
-  <int value="7" label="pictureInPicture"/>
+  <int value="0" label="undefined"/>
+  <int value="1" label="browser"/>
+  <int value="2" label="minimalUI"/>
+  <int value="3" label="standalone"/>
+  <int value="4" label="fullscreen"/>
+  <int value="5" label="windowControlsOverlay"/>
+  <int value="6" label="tabbed"/>
+  <int value="7" label="borderless"/>
+  <int value="8" label="pictureInPicture"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/manifest/display_mode.mojom:DisplayMode)-->
