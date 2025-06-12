@@ -50,6 +50,7 @@ build_webui("build") {
     "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/customize_buttons:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/new_tab_page/composebox:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/ntp_microsoft_auth:shared_ts__generator",
   ]
   mojo_files = [
@@ -65,6 +66,7 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_shared_ui.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom-webui.ts",
   ]
 
   if (!is_official_build) {

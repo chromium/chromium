@@ -516,4 +516,10 @@ std::string GetMobilePromoTargetURL() {
       ntp_features::kNtpMobilePromoTargetUrlParam);
   return (field_trial_url.empty()) ? kMobilePromoQRCodeURL : field_trial_url;
 }
+
+bool IsNtpComposeboxEnabled() {
+  return (base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox) &&
+          base::FeatureList::IsEnabled(
+              ntp_features::kNtpSearchboxComposeEntrypoint));
+}
 }  // namespace ntp_features

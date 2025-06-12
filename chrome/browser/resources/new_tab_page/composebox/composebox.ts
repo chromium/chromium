@@ -6,9 +6,12 @@ import './file_carousel.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {ComposeboxPageHandlerRemote} from '../composebox.mojom-webui.js';
+
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
+import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
 export interface ComposeboxElement {
@@ -49,6 +52,13 @@ export class ComposeboxElement extends CrLitElement {
 
   private maxFileSize_: number =
       loadTimeData.getInteger('composeboxFileMaxSize');
+  private pageHandler_: ComposeboxPageHandlerRemote;
+
+  constructor() {
+    super();
+    this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
+    this.pageHandler_.notifySessionStarted();
+  }
 
   protected onDeleteFile_(e: CustomEvent) {
     if (!e.detail.uuid) {

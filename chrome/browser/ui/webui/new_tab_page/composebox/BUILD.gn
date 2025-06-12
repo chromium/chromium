@@ -1,0 +1,24 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+source_set("composebox") {
+  sources = [
+    "composebox_handler.cc",
+    "composebox_handler.h",
+  ]
+  public_deps = [ ":mojo_bindings" ]
+  deps = [
+    "//base",
+    "//components/omnibox/composebox",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "composebox.mojom" ]
+  webui_module_path = "/"
+}

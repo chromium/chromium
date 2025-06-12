@@ -252,6 +252,8 @@ int GetWallpaperSearchButtonAnimationShownThreshold();
 int GetWallpaperSearchButtonHideCondition();
 
 std::string GetMobilePromoTargetURL();
+
+bool IsNtpComposeboxEnabled();
 }  // namespace ntp_features
 
 #endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_

@@ -2,21 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import {ComposeboxPageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
+import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {installMock} from '../test_support.js';
 
 
 suite('NewTabPageComposeboxTest', () => {
   let composeboxElement: ComposeboxElement;
+  let handler: TestMock<ComposeboxPageHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    composeboxElement = new ComposeboxElement();
-    document.body.appendChild(composeboxElement);
+    handler = installMock(
+        ComposeboxPageHandlerRemote,
+        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(mock)));
   });
 
+  function createComposeboxElement() {
+    composeboxElement = new ComposeboxElement();
+    document.body.appendChild(composeboxElement);
+  }
+
   test('upload image', async () => {
+    createComposeboxElement();
+
     // Assert no files.
     assertEquals(composeboxElement.$.carousel.files.length, 0);
 
@@ -36,6 +49,8 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('upload pdf', async () => {
+    createComposeboxElement();
+
     // Assert no files.
     assertEquals(composeboxElement.$.carousel.files.length, 0);
 
@@ -56,6 +71,8 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('delete file', async () => {
+    createComposeboxElement();
+
     // Arrange.
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(
@@ -81,5 +98,15 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert.
     assertEquals(composeboxElement.$.carousel.files.length, 1);
+  });
+
+  test('NotifySessionStarted called on composebox created', () => {
+    // Assert call has not occurred.
+    assertEquals(handler.getCallCount('notifySessionStarted'), 0);
+
+    createComposeboxElement();
+
+    // Assert call occurs.
+    assertEquals(handler.getCallCount('notifySessionStarted'), 1);
   });
 });

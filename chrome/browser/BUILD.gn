@@ -2260,6 +2260,7 @@ static_library("browser") {
     "//components/offline_pages/core/background:background_offliner",
     "//components/offline_pages/core/request_header",
     "//components/omnibox/browser",
+    "//components/omnibox/composebox",
     "//components/onc",
     "//components/open_from_clipboard",
     "//components/optimization_guide/content/browser",

@@ -49,6 +49,7 @@ if (optimize_webui) {
   # Transpiled Mojo JS files to be excluded from the bundle in optimized builds.
   mojo_js_files = [
     "calendar_data.mojom-webui.js",
+    "composebox.mojom-webui.js",
     "customize_buttons.mojom-webui.js",
     "drive_suggestion.mojom-webui.js",
     "file_suggestion.mojom-webui.js",

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ComposeboxPageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
 import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeChromeSection, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
-import {counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
+import {ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, CustomizeButtonsElement} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
@@ -1115,10 +1116,15 @@ suite('NewTabPageAppTest', () => {
   });
 
   suite('Composebox', () => {
+    let composeboxHandler: TestMock<ComposeboxPageHandlerRemote>;
     suiteSetup(() => {
       loadTimeData.overrideValues({
         searchboxShowComposeButton: true,
       });
+      composeboxHandler = installMock(
+          ComposeboxPageHandlerRemote,
+          mock =>
+              ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(mock)));
     });
     test('toggle composebox visibility', async () => {
       // Arrange.
@@ -1141,6 +1147,23 @@ suite('NewTabPageAppTest', () => {
       // Assert.
       assertStyle($$(app, '#searchbox')!, 'visibility', 'visible');
     });
+    test(
+        'Clicking the searchbox composebox button notifies composebox handler',
+        async () => {
+          composeboxHandler.reset();
+          assertEquals(
+              composeboxHandler.getCallCount('notifySessionStarted'), 0);
+
+          // Act.
+          $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
+          await microtasksFinished();
+
+          // Assert.
+          const composebox = app.shadowRoot.querySelector('ntp-composebox');
+          assertTrue(!!composebox);
+          assertEquals(
+              composeboxHandler.getCallCount('notifySessionStarted'), 1);
+        });
   });
 
   suite('WallpaperSearch', () => {

@@ -10,6 +10,7 @@ composebox_ts_files = [
   "composebox/file_carousel.ts",
   "composebox/file_thumbnail.ts",
   "composebox/file_thumbnail.html.ts",
+  "composebox/composebox_proxy.ts",
 ]
 
 composebox_css_files = [

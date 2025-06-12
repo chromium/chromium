@@ -20,6 +20,7 @@ export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_bu
 export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 export {ComposeboxFile} from './composebox/common.js';
 export {ComposeboxElement} from './composebox/composebox.js';
+export {ComposeboxProxyImpl} from './composebox/composebox_proxy.js';
 export {ComposeboxFileCarouselElement} from './composebox/file_carousel.js';
 export {ComposeboxFileThumbnailElement} from './composebox/file_thumbnail.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
