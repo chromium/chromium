@@ -438,15 +438,19 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /**
-     * Replaces any capabilities that have been previously set with the given accountCapabilities.
-     * and notifies AccountsChangeObservers.
+     * Updates the previously set capabilities with the ones in accountCapabilities and notifies
+     * AccountsChangeObservers if there has been a change. New capabilities that were not already
+     * set are added and existing ones are updated with the new values.
      */
-    public void setAccountCapabilities(
+    public void updateAccountCapabilities(
             CoreAccountId accountId, AccountCapabilities accountCapabilities) {
         ThreadUtils.checkUiThread();
         assert accountId != null;
         AccountHolder accountHolder = getAccountHolder(accountId);
-        accountHolder.setAccountCapabilities(accountCapabilities);
-        fireOnAccountsChangedNotification();
+        boolean capabilitiesChanged =
+                accountHolder.getAccountCapabilities().updateWith(accountCapabilities);
+        if (capabilitiesChanged) {
+            fireOnAccountsChangedNotification();
+        }
     }
 }
