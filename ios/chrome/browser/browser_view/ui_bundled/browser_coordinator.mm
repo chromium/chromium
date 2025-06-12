@@ -4317,11 +4317,6 @@ enum class ToolbarKind {
 
 #pragma mark - MiniMapCommands
 
-- (void)presentConsentThenMiniMapForText:(NSString*)text
-                              inWebState:(web::WebState*)webState {
-  [self presentMiniMapWithIPHForText:text];
-}
-
 - (void)presentMiniMapWithIPHForText:(NSString*)text {
   self.miniMapCoordinator =
       [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
@@ -4331,11 +4326,6 @@ enum class ToolbarKind {
                                                      withIPH:YES
                                                         mode:MiniMapMode::kMap];
   [self.miniMapCoordinator start];
-}
-
-- (void)presentMiniMapForText:(NSString*)text
-                   inWebState:(web::WebState*)webState {
-  [self presentMiniMapForText:text];
 }
 
 - (void)presentMiniMapForText:(NSString*)text {
@@ -4349,10 +4339,6 @@ enum class ToolbarKind {
   [self.miniMapCoordinator start];
 }
 
-- (void)presentMiniMapForURL:(NSURL*)URL inWebState:(web::WebState*)webState {
-  [self presentMiniMapForURL:URL];
-}
-
 - (void)presentMiniMapForURL:(NSURL*)URL {
   self.miniMapCoordinator =
       [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
@@ -4362,11 +4348,6 @@ enum class ToolbarKind {
                                                      withIPH:NO
                                                         mode:MiniMapMode::kMap];
   [self.miniMapCoordinator start];
-}
-
-- (void)presentMiniMapDirectionsForText:(NSString*)text
-                             inWebState:(web::WebState*)webState {
-  [self presentMiniMapDirectionsForText:text];
 }
 
 - (void)presentMiniMapDirectionsForText:(NSString*)text {

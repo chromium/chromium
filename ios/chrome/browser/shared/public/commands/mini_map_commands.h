@@ -5,31 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_MINI_MAP_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_MINI_MAP_COMMANDS_H_
 
-namespace web {
-class WebState;
-}
-
 // Commands related to the Mini Map feature.
 @protocol MiniMapCommands <NSObject>
-
-// Shows the interstitial consent if needed then present the minimap for text.
-// DEPRECATED
-- (void)presentConsentThenMiniMapForText:(NSString*)text
-                              inWebState:(web::WebState*)webState;
-
-// Shows the minimap for text.
-// DEPRECATED
-- (void)presentMiniMapForText:(NSString*)text
-                   inWebState:(web::WebState*)webState;
-
-// Shows the minimap for `URL`.
-// DEPRECATED
-- (void)presentMiniMapForURL:(NSURL*)URL inWebState:(web::WebState*)webState;
-
-// Shows the minimap directions for text.
-// DEPRECATED
-- (void)presentMiniMapDirectionsForText:(NSString*)text
-                             inWebState:(web::WebState*)webState;
 
 // Shows the minimap for `text`.
 - (void)presentMiniMapForText:(NSString*)text;
