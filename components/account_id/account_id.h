@@ -26,16 +26,12 @@ enum class AccountType {
   // ACTIVE_DIRECTORY account type was deprecated.
 };
 
-class AccountIdLiteral;
-
 // Type that contains enough information to identify user.
 //
 // TODO(alemate): Rename functions and fields to reflect different types of
 // accounts. (see crbug.com/672253)
 class COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID) AccountId {
  public:
-  using Literal = AccountIdLiteral;
-
   // Creates an empty account id.
   //
   // Note: This constructor is public as it is required for mojo serialization
