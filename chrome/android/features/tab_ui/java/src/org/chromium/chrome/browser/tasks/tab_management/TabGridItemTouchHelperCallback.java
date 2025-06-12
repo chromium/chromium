@@ -46,14 +46,15 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
 import java.util.List;
 
 /**
- * A {@link ItemTouchHelper.SimpleCallback} implementation to host the logic for swipe and drag
+ * A {@link ItemTouchHelper2.SimpleCallback} implementation to host the logic for swipe and drag
  * related actions in grid related layouts.
  */
-public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
+public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallback {
     /** An interface to observe drop tab events on top of an archival message card. */
     @FunctionalInterface
     public interface OnDropOnArchivalMessageCardEventListener {

@@ -1328,7 +1328,9 @@ public class TabGridDialogMediator
             @Nullable TabGridContextMenuCoordinator tabGridContextMenuCoordinator) {
         if (tabGridContextMenuCoordinator != null && cardView != null) {
             tabGridContextMenuCoordinator.showMenu(
-                    new ViewRectProvider(cardView, TabGridViewRectUpdater::new), tabId);
+                    new ViewRectProvider(cardView, TabGridViewRectUpdater::new),
+                    tabId,
+                    /* focusable= */ true);
             return tabGridContextMenuCoordinator::dismiss;
         }
         return null;

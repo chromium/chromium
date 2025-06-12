@@ -17,6 +17,7 @@ feed_deps = [
   "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
   "//third_party/androidx:androidx_media_media_java",
   "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+  "//third_party/androidx:androidx_recyclerview_recyclerview_overrides_java",
   "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
   "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
 ]

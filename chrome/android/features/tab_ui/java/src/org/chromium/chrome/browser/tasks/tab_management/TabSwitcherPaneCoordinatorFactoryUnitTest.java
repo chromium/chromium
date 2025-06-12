@@ -215,7 +215,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mUndoBarThrottle,
                         mPaneManagerSupplier,
                         mTabGroupUiActionHandlerSupplier,
-                        mLayoutStateProviderSupplier);
+                        mLayoutStateProviderSupplier,
+                        /* tabSwitcherDragHandler= */ null);
     }
 
     @Test

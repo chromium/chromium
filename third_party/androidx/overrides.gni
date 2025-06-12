@@ -96,4 +96,20 @@ template("define_override_androidx_targets") {
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
+
+  android_library("androidx_recyclerview_recyclerview_overrides_java") {
+    resources_package = "androidx.recyclerview"
+    sources = [
+      "local_modifications/recyclerview/java/org/chromium/ui/recyclerview/widget/ItemTouchHelper2.java",
+
+      # Need to include this due to "internal" visibilty.
+      "local_modifications/recyclerview/java/org/chromium/ui/recyclerview/widget/ItemTouchUIUtilImpl2.java",
+    ]
+    deps = [
+      "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    ]
+  }
 }

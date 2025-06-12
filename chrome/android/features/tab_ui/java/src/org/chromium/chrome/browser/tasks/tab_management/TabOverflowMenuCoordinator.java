@@ -470,4 +470,15 @@ public abstract class TabOverflowMenuCoordinator<T> {
         // be destroyed, and the test will report a lifecycle error.
         if (mMenuHolder != null) mMenuHolder.destroy();
     }
+
+    /**
+     * Changes the focusability of the menu.
+     *
+     * @param focusable True if the menu is focusable, false otherwise.
+     */
+    public void setMenuFocusable(boolean focusable) {
+        if (mMenuHolder != null) {
+            mMenuHolder.mMenuWindow.setFocusable(focusable);
+        }
+    }
 }

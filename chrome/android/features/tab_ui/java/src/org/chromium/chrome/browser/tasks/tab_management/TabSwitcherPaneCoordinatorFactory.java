@@ -75,6 +75,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final @NonNull Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final @NonNull Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private @Nullable TabSwitcherMessageManager mMessageManager;
+    private final @Nullable TabSwitcherDragHandler mTabSwitcherDragHandler;
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
@@ -102,6 +103,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param tabGroupUiActionHandlerSupplier Used to open hidden tab groups.
      * @param layoutStateProviderSupplier Supplies the LayoutStateProvider, which is used to observe
      *     when the TabSwitcher is hidden.
+     * @param tabSwitcherDragHandler An instance of the {@link TabSwitcherDragHandler}.
      */
     TabSwitcherPaneCoordinatorFactory(
             @NonNull Activity activity,
@@ -125,7 +127,8 @@ public class TabSwitcherPaneCoordinatorFactory {
             UndoBarThrottle undoBarThrottle,
             @NonNull Supplier<PaneManager> paneManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
+            @NonNull Supplier<LayoutStateProvider> layoutStateProviderSupplier,
+            @Nullable TabSwitcherDragHandler tabSwitcherDragHandler) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -149,6 +152,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
+        mTabSwitcherDragHandler = tabSwitcherDragHandler;
     }
 
     /**
@@ -207,7 +211,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mShareDelegateSupplier,
                 mTabBookmarkerSupplier,
                 mUndoBarThrottle,
-                setOverlayViewCallback);
+                setOverlayViewCallback,
+                mTabSwitcherDragHandler);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */
