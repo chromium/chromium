@@ -15,7 +15,6 @@
 #include "components/media_effects/test/fake_audio_service.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
 #include "content/public/browser/audio_service.h"
-#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -77,8 +76,6 @@ class ActiveDevicesMediaCoordinatorTestParameterized
         content::OverrideAudioServiceForTesting(&fake_audio_service_);
     content::OverrideVideoCaptureServiceForTesting(
         &fake_video_capture_service_);
-    background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         &profile_, /*instance=*/nullptr);
     web_contents_tester_ = content::WebContentsTester::For(web_contents_.get());
@@ -138,8 +135,6 @@ class ActiveDevicesMediaCoordinatorTestParameterized
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   ChromeLayoutProvider layout_provider_;
-  std::unique_ptr<content::BackgroundTracingManager>
-      background_tracing_manager_;
   TestingProfile profile_;
   MediaView parent_view_;
   media_effects::FakeAudioService fake_audio_service_;

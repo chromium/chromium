@@ -15,6 +15,7 @@
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/trace_report_database.h"
 #include "content/browser/tracing/trace_upload_list.h"
+#include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -135,7 +136,7 @@ TracesInternalsHandler::TracesInternalsHandler(
       trace_upload_list_(BackgroundTracingManagerImpl::GetInstance()),
       background_tracing_manager_(BackgroundTracingManagerImpl::GetInstance()),
       tracing_delegate_(
-          BackgroundTracingManagerImpl::GetInstance().tracing_delegate()) {
+          TracingControllerImpl::GetInstance()->tracing_delegate()) {
   trace_upload_list_->OpenDatabaseIfExists();
   MaybeSetupPresetTracingFromFieldTrial();
 }

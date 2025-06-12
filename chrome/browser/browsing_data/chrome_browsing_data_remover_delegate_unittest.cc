@@ -1152,7 +1152,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     content::GetNetworkService();
     task_environment_.RunUntilIdle();
     background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance();
+        content::BackgroundTracingManager::CreateInstance(&tracing_delegate_);
 
     // This needs to be done after the test constructor, so that subclasses
     // that initialize a ScopedFeatureList in their constructors can do so
@@ -1385,6 +1385,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   // Cached pointer to BrowsingDataRemover for access to testing methods.
   raw_ptr<content::BrowsingDataRemover> remover_;
 
+  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
 

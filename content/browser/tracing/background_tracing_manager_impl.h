@@ -40,8 +40,6 @@ namespace content {
 namespace mojom {
 class ChildProcess;
 }  // namespace mojom
-
-class BackgroundTracingActiveScenario;
 class TracingDelegate;
 
 class BackgroundTracingManagerImpl
@@ -99,7 +97,8 @@ class BackgroundTracingManagerImpl
 
   CONTENT_EXPORT static BackgroundTracingManagerImpl& GetInstance();
 
-  CONTENT_EXPORT BackgroundTracingManagerImpl();
+  explicit CONTENT_EXPORT BackgroundTracingManagerImpl(
+      TracingDelegate* delegate);
   ~BackgroundTracingManagerImpl() override;
 
   BackgroundTracingManagerImpl(const BackgroundTracingManagerImpl&) = delete;
@@ -202,7 +201,6 @@ class BackgroundTracingManagerImpl
                            const base::Token& uuid);
 
   // For tests
-  CONTENT_EXPORT BackgroundTracingActiveScenario* GetActiveScenarioForTesting();
   CONTENT_EXPORT void InvalidateTriggersCallbackForTesting();
   CONTENT_EXPORT bool IsTracingForTesting();
   CONTENT_EXPORT void AbortScenarioForTesting() override;
@@ -218,10 +216,6 @@ class BackgroundTracingManagerImpl
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);
-
-  // Returns the embedder's tracing delegate, or null if it does not provide
-  // one.
-  TracingDelegate* tracing_delegate() { return delegate_.get(); }
 
  private:
 #if BUILDFLAG(IS_ANDROID)
@@ -263,7 +257,8 @@ class BackgroundTracingManagerImpl
                     bool success);
   void CleanDatabase();
 
-  std::unique_ptr<TracingDelegate> delegate_;
+  raw_ptr<TracingDelegate> delegate_;
+  std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
   std::vector<std::unique_ptr<TracingScenario>> field_scenarios_;
   base::flat_map<std::string, std::unique_ptr<TracingScenario>>
       preset_scenarios_;

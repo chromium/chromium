@@ -5,9 +5,15 @@
 #ifndef CONTENT_PUBLIC_BROWSER_TRACING_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_TRACING_DELEGATE_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+
+namespace tracing {
+class BackgroundTracingStateManager;
+}
 
 namespace content {
 
@@ -22,6 +28,10 @@ class CONTENT_EXPORT TracingDelegate {
 
   // Specifies whether traces that aren't uploaded should still be saved.
   virtual bool ShouldSaveUnuploadedTrace() const;
+
+  // Creates background tracing state manager connected to embedder local state.
+  virtual std::unique_ptr<tracing::BackgroundTracingStateManager>
+  CreateStateManager();
 
 #if BUILDFLAG(IS_WIN)
   // Runs `on_tracing_state` (asynchronously) with the current state of the

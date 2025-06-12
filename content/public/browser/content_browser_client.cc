@@ -963,7 +963,7 @@ ContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
 }
 
 std::unique_ptr<TracingDelegate> ContentBrowserClient::CreateTracingDelegate() {
-  return nullptr;
+  return std::make_unique<TracingDelegate>();
 }
 
 bool ContentBrowserClient::IsSystemWideTracingEnabled() {

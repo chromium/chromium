@@ -128,7 +128,7 @@ class TracesInternalsHandlerTest : public testing::Test {
 
   void SetUp() override {
     background_tracing_manager_ =
-        std::make_unique<BackgroundTracingManagerImpl>();
+        std::make_unique<BackgroundTracingManagerImpl>(&mock_tracing_delegate_);
     // Expect the Database to be opened before executing each test.
     EXPECT_CALL(fake_trace_upload_list_, OpenDatabaseIfExists());
     handler_ = std::make_unique<TracesInternalsHandlerForTesting>(

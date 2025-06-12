@@ -1585,7 +1585,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& site_url);
 
   // Creates a new TracingDelegate. The caller owns the returned value.
-  // It's valid to return nullptr.
   virtual std::unique_ptr<TracingDelegate> CreateTracingDelegate();
 
   // Whether system-wide performance trace collection using the external system

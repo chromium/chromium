@@ -55,8 +55,9 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 
   // content::TracingDelegate implementation:
   bool IsRecordingAllowed(bool requires_anonymized_data) const override;
-
   bool ShouldSaveUnuploadedTrace() const override;
+  std::unique_ptr<tracing::BackgroundTracingStateManager> CreateStateManager()
+      override;
 
 #if BUILDFLAG(IS_WIN)
   void GetSystemTracingState(
@@ -79,8 +80,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 #endif
 
   bool incognito_launched_ = false;
-
-  std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
 };
 
 #endif  // CHROME_BROWSER_TRACING_CHROME_TRACING_DELEGATE_H_

@@ -103,7 +103,7 @@ class SigninManagerAndroidTest : public ::testing::Test {
     profile_ = profile_builder.Build();
 
     background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance();
+        content::BackgroundTracingManager::CreateInstance(&tracing_delegate_);
 
     // Creating a BookmarkModel also a creates a StubOfflinePageModel.
     // We need to replace this with a mock that responds to deletions.
@@ -161,6 +161,7 @@ class SigninManagerAndroidTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<TestingProfile> profile_;
+  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
 };

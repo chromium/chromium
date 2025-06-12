@@ -58,9 +58,7 @@ using tracing::BackgroundTracingStateManager;
 
 }  // namespace
 
-ChromeTracingDelegate::ChromeTracingDelegate()
-    : state_manager_(tracing::BackgroundTracingStateManager::CreateInstance(
-          g_browser_process->local_state())) {
+ChromeTracingDelegate::ChromeTracingDelegate() {
   // Ensure that this code is called on the UI thread, except for
   // tests where a UI thread might not have been initialized at this point.
   DCHECK(
@@ -121,6 +119,12 @@ bool ChromeTracingDelegate::IsRecordingAllowed(
 
 bool ChromeTracingDelegate::ShouldSaveUnuploadedTrace() const {
   return true;
+}
+
+std::unique_ptr<tracing::BackgroundTracingStateManager>
+ChromeTracingDelegate::CreateStateManager() {
+  return tracing::BackgroundTracingStateManager::CreateInstance(
+      g_browser_process->local_state());
 }
 
 #if BUILDFLAG(IS_WIN)

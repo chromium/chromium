@@ -28,6 +28,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
@@ -43,7 +44,6 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/network_change_notifier.h"
@@ -212,8 +212,8 @@ class BackgroundMetadataDataSource
 
 // static
 std::unique_ptr<BackgroundTracingManager>
-BackgroundTracingManager::CreateInstance() {
-  return std::make_unique<BackgroundTracingManagerImpl>();
+BackgroundTracingManager::CreateInstance(TracingDelegate* delegate) {
+  return std::make_unique<BackgroundTracingManagerImpl>(delegate);
 }
 
 // static
@@ -257,8 +257,10 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
                                 child_process_id, std::move(pending_provider)));
 }
 
-BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
-    : delegate_(GetContentClient()->browser()->CreateTracingDelegate()),
+BackgroundTracingManagerImpl::BackgroundTracingManagerImpl(
+    TracingDelegate* delegate)
+    : delegate_(delegate),
+      state_manager_(delegate_->CreateStateManager()),
       database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
@@ -423,10 +425,6 @@ void BackgroundTracingManagerImpl::OnTraceSaved(
 }
 
 void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
-  auto* metadata_source = tracing::TraceEventMetadataSource::GetInstance();
-  metadata_source->AddGeneratorFunction(
-      base::BindRepeating(&BackgroundTracingManagerImpl::GenerateMetadataProto,
-                          base::Unretained(this)));
   BackgroundMetadataDataSource::Register();
   TriggersDataSource::Register();
 }
@@ -699,8 +697,8 @@ bool BackgroundTracingManagerImpl::OnScenarioActive(
       kMaxTracesPerScenario) {
     return false;
   }
-  if (delegate_ && !delegate_->IsRecordingAllowed(
-                       active_scenario->privacy_filter_enabled())) {
+  if (!delegate_->IsRecordingAllowed(
+          active_scenario->privacy_filter_enabled())) {
     return false;
   }
   active_scenario_ = active_scenario;
@@ -732,8 +730,7 @@ bool BackgroundTracingManagerImpl::OnScenarioIdle(
   for (auto& scenario : enabled_scenarios_) {
     scenario->Enable();
   }
-  return !delegate_ ||
-         delegate_->IsRecordingAllowed(idle_scenario->privacy_filter_enabled());
+  return delegate_->IsRecordingAllowed(idle_scenario->privacy_filter_enabled());
 }
 
 void BackgroundTracingManagerImpl::OnScenarioError(
@@ -750,8 +747,8 @@ bool BackgroundTracingManagerImpl::OnScenarioCloned(
   base::UmaHistogramSparse(
       "Tracing.Background.Scenario.Clone",
       variations::HashName(cloned_scenario->scenario_name()));
-  return !delegate_ || delegate_->IsRecordingAllowed(
-                           cloned_scenario->privacy_filter_enabled());
+  return delegate_->IsRecordingAllowed(
+      cloned_scenario->privacy_filter_enabled());
 }
 
 void BackgroundTracingManagerImpl::OnScenarioRecording(
@@ -961,8 +958,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     } else if (serialized_trace.size() > upload_limit_kb_ * 1024) {
       skip_reason = SkipUploadReason::kSizeLimitExceeded;
     }
-    bool should_save_trace =
-        !delegate_ || delegate_->ShouldSaveUnuploadedTrace();
+    bool should_save_trace = delegate_->ShouldSaveUnuploadedTrace();
     if (skip_reason != SkipUploadReason::kNoSkip && !should_save_trace) {
       return;
     }

@@ -191,9 +191,11 @@ TracingController* TracingController::GetInstance() {
   return TracingControllerImpl::GetInstance();
 }
 
-TracingControllerImpl::TracingControllerImpl() {
+TracingControllerImpl::TracingControllerImpl()
+    : delegate_(GetContentClient()->browser()->CreateTracingDelegate()) {
   DCHECK(!g_tracing_controller);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(delegate_);
   // Deliberately leaked, like this class.
   base::FileTracing::SetProvider(new FileTracingProviderImpl);
   InitializeDataSources();

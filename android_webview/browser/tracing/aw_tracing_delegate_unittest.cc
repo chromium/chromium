@@ -29,16 +29,7 @@ class AwTracingDelegateTest : public testing::Test {
         std::make_unique<AwContentBrowserClient>(aw_feature_list_creator);
     browser_process_ = new AwBrowserProcess(aw_content_browser_client.get());
 
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    pref_service_->registry()->RegisterBooleanPref(
-        metrics::prefs::kMetricsReportingEnabled, false);
-    pref_service_->SetBoolean(metrics::prefs::kMetricsReportingEnabled, true);
-    tracing::RegisterPrefs(pref_service_->registry());
-
-    auto state_manager = tracing::BackgroundTracingStateManager::CreateInstance(
-        pref_service_.get());
-    delegate_ = std::make_unique<android_webview::AwTracingDelegate>(
-        std::move(state_manager));
+    delegate_ = std::make_unique<android_webview::AwTracingDelegate>();
   }
 
   void TearDown() override {
@@ -48,7 +39,6 @@ class AwTracingDelegateTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<android_webview::AwBrowserProcess> browser_process_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<android_webview::AwTracingDelegate> delegate_;
 };
 

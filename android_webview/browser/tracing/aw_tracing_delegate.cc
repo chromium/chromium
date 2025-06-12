@@ -17,12 +17,7 @@
 
 namespace android_webview {
 
-AwTracingDelegate::AwTracingDelegate()
-    : state_manager_(tracing::BackgroundTracingStateManager::CreateInstance(
-          AwBrowserProcess::GetInstance()->local_state())) {}
-AwTracingDelegate::AwTracingDelegate(
-    std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager)
-    : state_manager_(std::move(state_manager)) {}
+AwTracingDelegate::AwTracingDelegate() = default;
 AwTracingDelegate::~AwTracingDelegate() = default;
 
 // static
@@ -33,6 +28,12 @@ void AwTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
 bool AwTracingDelegate::IsRecordingAllowed(
     bool requires_anonymized_data) const {
   return true;
+}
+
+std::unique_ptr<tracing::BackgroundTracingStateManager>
+AwTracingDelegate::CreateStateManager() {
+  return tracing::BackgroundTracingStateManager::CreateInstance(
+      AwBrowserProcess::GetInstance()->local_state());
 }
 
 }  // namespace android_webview

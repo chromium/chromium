@@ -12,6 +12,7 @@
 #include "base/token.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 
 namespace content {
@@ -24,7 +25,7 @@ class BackgroundTracingManager {
  public:
   // Creates and return a global BackgroundTracingManager instance.
   CONTENT_EXPORT static std::unique_ptr<BackgroundTracingManager>
-  CreateInstance();
+  CreateInstance(TracingDelegate* delegate);
 
   // Returns the global instance created with CreateInstance().
   CONTENT_EXPORT static BackgroundTracingManager& GetInstance();

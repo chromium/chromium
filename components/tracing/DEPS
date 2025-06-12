@@ -6,7 +6,7 @@ include_rules = [
   "+third_party/perfetto/include",
   "+third_party/perfetto/protos",
   "+content/public/browser/background_tracing_manager.h",
-  "+content/public/browser/background_tracing_config.h",
+  "+content/public/browser/tracing_delegate.h",
   "+content/public/browser/browser_thread.h",
   "+third_party/snappy",
 ]

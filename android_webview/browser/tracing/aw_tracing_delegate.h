@@ -19,17 +19,14 @@ namespace android_webview {
 class AwTracingDelegate : public content::TracingDelegate {
  public:
   AwTracingDelegate();
-  explicit AwTracingDelegate(
-      std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager);
   ~AwTracingDelegate() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // content::TracingDelegate implementation:
   bool IsRecordingAllowed(bool requires_anonymized_data) const override;
-
- private:
-  std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
+  std::unique_ptr<tracing::BackgroundTracingStateManager> CreateStateManager()
+      override;
 };
 
 }  // namespace android_webview

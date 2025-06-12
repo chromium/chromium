@@ -15,6 +15,7 @@
 #include "base/trace_event/named_trigger.h"
 #include "build/build_config.h"
 #include "content/public/browser/background_tracing_manager.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
@@ -300,7 +301,8 @@ class TracingScenarioTest : public testing::Test {
  public:
   TracingScenarioTest()
       : background_tracing_manager_(
-            content::BackgroundTracingManager::CreateInstance()) {}
+            content::BackgroundTracingManager::CreateInstance(
+                &tracing_delegate_)) {}
 
  protected:
   BrowserTaskEnvironment task_environment;
@@ -308,6 +310,7 @@ class TracingScenarioTest : public testing::Test {
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})};
   TestTracingScenarioDelegate delegate;
   TestNestedTracingScenarioDelegate nested_delegate;
+  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
 };
@@ -316,11 +319,13 @@ class NestedTracingScenarioTest : public testing::Test {
  public:
   NestedTracingScenarioTest()
       : background_tracing_manager_(
-            content::BackgroundTracingManager::CreateInstance()) {}
+            content::BackgroundTracingManager::CreateInstance(
+                &tracing_delegate_)) {}
 
  protected:
   BrowserTaskEnvironment task_environment;
   TestNestedTracingScenarioDelegate delegate;
+  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
 };
@@ -905,7 +910,7 @@ class TracingScenarioSystemBackendTest : public testing::Test {
     traced_process_ = std::make_unique<tracing::TracedProcessForTesting>(
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
     background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance();
+        content::BackgroundTracingManager::CreateInstance(&tracing_delegate_);
 
     // Connect the producer to the tracing service.
     system_producer_ = std::make_unique<tracing::MockProducer>();
@@ -936,6 +941,7 @@ class TracingScenarioSystemBackendTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<tracing::TracedProcessForTesting> traced_process_;
   TestTracingScenarioDelegate delegate;
+  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
 

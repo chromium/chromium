@@ -783,8 +783,8 @@ int BrowserMainLoop::PreCreateThreads() {
   // ChromeBrowserMainParts::PreCreateThreads() because it's used in
   // BackgroundTracingMetricsProvider.
   tracing_controller_ = std::make_unique<TracingControllerImpl>();
-  background_tracing_manager_ =
-      BackgroundTracingManagerImpl::CreateInstance();
+  background_tracing_manager_ = BackgroundTracingManagerImpl::CreateInstance(
+      tracing_controller_->tracing_delegate());
 
   // Make sure no accidental call to initialize GpuDataManager earlier.
   DCHECK(!GpuDataManagerImpl::Initialized());

@@ -13,11 +13,16 @@
 namespace content {
 
 bool TracingDelegate::IsRecordingAllowed(bool requires_anonymized_data) const {
-  return false;
+  return true;
 }
 
 bool TracingDelegate::ShouldSaveUnuploadedTrace() const {
-  return false;
+  return true;
+}
+
+std::unique_ptr<tracing::BackgroundTracingStateManager>
+TracingDelegate::CreateStateManager() {
+  return nullptr;
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/network_change_notifier.h"
@@ -91,12 +92,13 @@ class BackgroundTracingManagerTest : public testing::Test {
  public:
   BackgroundTracingManagerTest() {
     background_tracing_manager_ =
-        std::make_unique<BackgroundTracingManagerImpl>();
+        std::make_unique<BackgroundTracingManagerImpl>(&tracing_delegate_);
   }
 
  protected:
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManagerImpl>
       background_tracing_manager_;
 };
@@ -289,9 +291,11 @@ TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
   content::SetBrowserClientForTesting(&browser_client);
 
   {
+    content::TracingDelegate tracing_delegate;
     std::unique_ptr<content::BackgroundTracingManager>
         background_tracing_manager =
-            content::BackgroundTracingManager::CreateInstance();
+            content::BackgroundTracingManager::CreateInstance(
+                &tracing_delegate);
     BackgroundTracingManagerImpl::GetInstance().InitializeTraceReportDatabase();
 
     TestBackgroundTracingHelper background_tracing_helper;
@@ -306,9 +310,11 @@ TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
   task_environment.RunUntilIdle();
 
   {
+    content::TracingDelegate tracing_delegate;
     std::unique_ptr<content::BackgroundTracingManager>
         background_tracing_manager =
-            content::BackgroundTracingManager::CreateInstance();
+            content::BackgroundTracingManager::CreateInstance(
+                &tracing_delegate);
     BackgroundTracingManagerImpl::GetInstance().InitializeTraceReportDatabase();
     task_environment.RunUntilIdle();
     EXPECT_EQ(1U,
@@ -319,9 +325,11 @@ TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
   task_environment.RunUntilIdle();
 
   {
+    content::TracingDelegate tracing_delegate;
     std::unique_ptr<content::BackgroundTracingManager>
         background_tracing_manager =
-            content::BackgroundTracingManager::CreateInstance();
+            content::BackgroundTracingManager::CreateInstance(
+                &tracing_delegate);
     BackgroundTracingManagerImpl::GetInstance().InitializeTraceReportDatabase();
 
     auto now = base::Time::Now();

@@ -62,11 +62,13 @@ class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
  public:
   ChromeBackgroundTracingMetricsProviderTest()
       : background_tracing_manager_(
-            content::BackgroundTracingManager::CreateInstance()),
+            content::BackgroundTracingManager::CreateInstance(
+                &tracing_delegate_)),
         local_state_(TestingBrowserProcess::GetGlobal()) {}
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
   ScopedTestingLocalState local_state_;

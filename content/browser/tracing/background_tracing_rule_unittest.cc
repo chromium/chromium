@@ -51,9 +51,10 @@ class BackgroundTracingRuleTest : public testing::Test {
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  content::TracingDelegate tracing_delegate;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager =
-          content::BackgroundTracingManager::CreateInstance();
+          content::BackgroundTracingManager::CreateInstance(&tracing_delegate);
 };
 
 TEST_F(BackgroundTracingRuleTest, HistogramRuleFromValidProto) {
