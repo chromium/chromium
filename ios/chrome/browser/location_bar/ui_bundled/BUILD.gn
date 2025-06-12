@@ -58,6 +58,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/intelligence/page_action_menu/ui",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/model:presentation_type",
     "//ios/chrome/browser/lens_overlay/ui:entry_point",
     "//ios/chrome/browser/location_bar/model",
     "//ios/chrome/browser/main/model",

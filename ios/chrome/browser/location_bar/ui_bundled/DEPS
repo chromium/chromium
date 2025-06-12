@@ -9,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/infobars/model/infobar_metrics_recorder.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
+  "+ios/chrome/browser/lens_overlay/model/lens_overlay_presentation_type.h",
   "+ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_util.h",
