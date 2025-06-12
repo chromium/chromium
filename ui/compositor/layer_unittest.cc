@@ -635,10 +635,9 @@ TEST(LayerStandaloneTest, ReleaseMailboxOnDestruction) {
   auto layer = std::make_unique<Layer>(LAYER_TEXTURED);
   bool callback_run = false;
 
-  constexpr gfx::Size size(64, 64);
-  auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
-      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+  auto resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
   layer->SetTransferableResource(resource,
                                  base::BindOnce(ReturnMailbox, &callback_run),
                                  gfx::Size(10, 10));
@@ -1219,10 +1218,9 @@ TEST_P(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   cc::Layer* before_layer = l1->cc_layer_for_testing();
 
   bool callback1_run = false;
-  constexpr gfx::Size size(64, 64);
-  auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
-      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+  auto resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback1_run),
                               gfx::Size(10, 10));
@@ -1246,9 +1244,9 @@ TEST_P(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_FALSE(callback1_run);
 
   bool callback2_run = false;
-  resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
-      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+  resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback2_run),
                               gfx::Size(10, 10));
@@ -1272,9 +1270,9 @@ TEST_P(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
 
   // Back to a texture, without changing the bounds of the layer or the texture.
   bool callback3_run = false;
-  resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
-      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+  resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback3_run),
                               gfx::Size(10, 10));
@@ -1618,10 +1616,9 @@ TEST_P(LayerWithNullDelegateTest, EmptyDamagedRect) {
       base::Unretained(&run_loop));
 
   std::unique_ptr<Layer> root = CreateLayer(LAYER_SOLID_COLOR);
-  constexpr gfx::Size size(64, 64);
-  auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
-      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+  auto resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
   root->SetTransferableResource(resource, std::move(callback),
                                 gfx::Size(10, 10));
   compositor()->SetRootLayer(root.get());
@@ -2589,10 +2586,9 @@ TEST_P(LayerWithDelegateTest, ExternalContentMirroring) {
 TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
   std::unique_ptr<Layer> layer = CreateLayer(LAYER_SOLID_COLOR);
 
-  constexpr gfx::Size size(64, 64);
-  auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
-      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+  auto resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
   bool release_callback_run = false;
 
   layer->SetTransferableResource(
@@ -2619,9 +2615,9 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
   EXPECT_FALSE(layer->has_external_content());
   EXPECT_FALSE(mirror->has_external_content());
 
-  resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
-      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+  resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
   release_callback_run = false;
 
   // Setting a transferable resource on the source layer should set it on the
