@@ -5,18 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READING_LIST_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READING_LIST_SIDE_PANEL_COORDINATOR_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 
 class Profile;
-class SidePanelEntryScope;
 class SidePanelRegistry;
 class TabStripModel;
-
-namespace views {
-class View;
-}  // namespace views
 
 // ReadingListSidePanelCoordinator handles the creation and registration of the
 // bookmarks SidePanelEntry.
@@ -33,9 +26,6 @@ class ReadingListSidePanelCoordinator {
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
  private:
-  std::unique_ptr<views::View> CreateReadingListWebView(
-      SidePanelEntryScope& scope);
-
   const raw_ptr<Profile> profile_;
   const raw_ptr<TabStripModel> tab_strip_model_;
 };
