@@ -158,6 +158,12 @@ TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
 }
 
 TEST_F(MacUtilTest, MacOSVersion) {
+  // TODO(https://crbug.com/423933062, https://crbug.com/424162749): Build with
+  // the macOS 26 SDK and enable this test.
+  if (MacOSMajorVersion() >= 26) {
+    GTEST_SKIP();
+  }
+
   int32_t major, minor, bugfix;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
 
@@ -177,8 +183,8 @@ TEST_F(MacUtilTest, ParseOSProductVersion) {
   // without CHECKing.
   EXPECT_EQ(13'04'01, ParseOSProductVersionForTesting("13.4.1 (c)"));
   EXPECT_EQ(14'00'00, ParseOSProductVersionForTesting("14.0.0"));
-  EXPECT_EQ(18'00'00, ParseOSProductVersionForTesting("18"));
-  EXPECT_EQ(18'03'04, ParseOSProductVersionForTesting("18.3.4.3.2.5"));
+  EXPECT_EQ(28'00'00, ParseOSProductVersionForTesting("28"));
+  EXPECT_EQ(28'03'04, ParseOSProductVersionForTesting("28.3.4.3.2.5"));
 
   // Various strings in shapes that are so unexpected that they should not
   // parse.
@@ -191,6 +197,9 @@ TEST_F(MacUtilTest, ParseOSProductVersion) {
   EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("१०.१५.७"), "");
   EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("7.6.1"), "");
   EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("10.16"), "");
+  // TODO(https://crbug.com/423933062, https://crbug.com/424162749): Build with
+  // the macOS 26 SDK and enable this test.
+  // EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("16.0"), "");
 }
 
 TEST_F(MacUtilTest, TestRemoveQuarantineAttribute) {

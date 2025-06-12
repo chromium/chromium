@@ -27,7 +27,7 @@ namespace {
 // MacOSMajorVersion().
 int DarwinMajorVersion() {
   // base::OperatingSystemVersionNumbers() at one time called Gestalt(), which
-  // was observed to be able to spawn threads (see https://crbug.com/53200).
+  // was observed to be able to spawn threads (see https://crbug.com/41201866).
   // Nowadays that function calls -[NSProcessInfo operatingSystemVersion], whose
   // current implementation does things like hit the file system, which is
   // possibly a blocking operation. Either way, it's overkill for what needs to
@@ -88,10 +88,17 @@ int MacOSMajorVersion() {
       return 10;
     }
 
-    // Darwin major version 20 corresponds to macOS version 11.0. Assume a
+    // Darwin major versions 20 through 24 corresponded to macOS versions 11
+    // through 15.
+    if (darwin_major_version <= 24) {
+      return darwin_major_version - 9;
+    }
+
+    // Darwin major version 25 corresponds to macOS version 26. Assume a
     // correspondence between Darwin's major version numbers and macOS major
-    // version numbers.
-    return darwin_major_version - 9;
+    // version numbers. TODO(https://crbug.com/424162749): Verify this before
+    // release.
+    return darwin_major_version + 1;
   }();
   return macos_major_version;
 }

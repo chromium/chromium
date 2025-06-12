@@ -330,11 +330,25 @@ int ParseOSProductVersion(const std::string_view& version) {
     macos_version *= 100;
   }
 
-  // Checks that the value is within expected bounds corresponding to released
-  // OS version numbers. The most important bit is making sure that the "10.16"
-  // compatibility mode isn't engaged.
+  // Check that the value is within expected bounds corresponding to released
+  // OS version numbers. Specifically, ensure that neither the "macOS 10.16" nor
+  // the "macOS 16" compatibility modes are engaged.
   CHECK(macos_version >= 10'00'00);
   CHECK(macos_version < 10'16'00 || macos_version >= 11'00'00);
+
+  // When this code is built with an SDK earlier than the macOS 26 SDK, `sysctl`
+  // lies and returns the value of "kern.osproductversioncompat" (which claims
+  // this is macOS 16) when asked for "kern.osproductversion". Therefore, if a
+  // version of macOS 16 is seen, then this code is seeing compatibility mode,
+  // so adjust the version to match the real macOS version.
+  //
+  // TODO(https://crbug.com/423933062, https://crbug.com/424162749): Build with
+  // the macOS 26 SDK and remove this adjustment code.
+  if (macos_version >= 16'00'00 && macos_version < 17'00'00) {
+    macos_version += 10'00'00;
+  }
+
+  CHECK(macos_version < 16'00'00 || macos_version >= 26'00'00);
 
   return macos_version;
 }
