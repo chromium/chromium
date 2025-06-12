@@ -1840,7 +1840,15 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Gather& gather) {
 std::optional<GraphBuilderTflite::TensorInfo>
 GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Pad& pad) {
   // For edge padding mode, it is not supported in tflite schema.
-  if (pad.mode->which() == mojom::PaddingMode::Tag::kEdge) {
+  //
+  // TODO(crbug.com/421933197): Support constant padding mode by quantize the
+  // constant value to the same data type of input manually.
+  // For constant padding mode, it requires the data type of constant value to
+  // be same with input. But for now WebNN only supports passing a float32
+  // constant value, see crbug.com/328567884.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/pad.cc;l=253;drc=04f1f437aaefbd3bb4e0cdb5911c1ea1e3eb3557
+  if (pad.mode->which() == mojom::PaddingMode::Tag::kConstant ||
+      pad.mode->which() == mojom::PaddingMode::Tag::kEdge) {
     return std::nullopt;
   }
 
@@ -6006,19 +6014,6 @@ auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
   ::tflite::BuiltinOperator operator_code;
   switch (pad.mode->which()) {
     case mojom::PaddingMode::Tag::kConstant: {
-      // Avoid setting the padding value tensor to meet XNNPack's requirements
-      // that the constant value is 0.0f and the operator code is
-      // BuiltinOperator_PAD.
-      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=5025;drc=4e673771b1ee61f0e9f854e2d1420f353c67c401
-      const float constant_value = pad.mode->get_constant()->value;
-      if (constant_value == 0.0f) {
-        operator_code = ::tflite::BuiltinOperator::BuiltinOperator_PAD;
-        builtin_options_type =
-            ::tflite::BuiltinOptions::BuiltinOptions_PadOptions;
-        builtin_options = ::tflite::CreatePadOptions(builder_).Union();
-        break;
-      }
-
       operator_code = ::tflite::BuiltinOperator::BuiltinOperator_PADV2;
       builtin_options_type =
           ::tflite::BuiltinOptions::BuiltinOptions_PadV2Options;
@@ -6030,30 +6025,12 @@ auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
       // though for now WebNN only supports passing a float32 constant value.
       // https://www.tensorflow.org/mlir/tfl_ops#tflpadv2_tflpadv2op specifies
       // that this constant value should match the type of the input operand.
-      const std::array<float, 1> padding_value_buffer = {constant_value};
+      const std::array<float, 1> padding_value_buffer = {
+          pad.mode->get_constant()->value};
       const std::array<int32_t, 1> padding_value_dimensions = {1};
       const TensorIndex padding_value_index = SerializeTensorWithBuffer<float>(
           padding_value_buffer, padding_value_dimensions);
-      if (fuse_dequantize) {
-        // The padding value should be quantized to the same data type of input
-        // to meet the requirements of QDQ fusion and get the correct results.
-        const TensorIndex quantize_output_index = SerializeTemporaryTensor(
-            padding_value_dimensions, quantized_output->data_type,
-            quantized_output->quantize_params);
-        const OperatorCodeIndex operator_code_index =
-            GetOperatorCodeIndex(::tflite::BuiltinOperator_QUANTIZE);
-        const std::array<TensorIndex, 1> quantize_inputs = {
-            padding_value_index};
-        const std::array<TensorIndex, 1> quantize_outputs = {
-            quantize_output_index};
-        operators_.emplace_back(::tflite::CreateOperator(
-            builder_, operator_code_index,
-            builder_.CreateVector<TensorIndex>(quantize_inputs),
-            builder_.CreateVector<TensorIndex>(quantize_outputs)));
-        op_inputs.push_back(quantize_output_index);
-      } else {
-        op_inputs.push_back(padding_value_index);
-      }
+      op_inputs.push_back(padding_value_index);
       break;
     }
     case mojom::PaddingMode::Tag::kEdge:
