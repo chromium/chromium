@@ -40,17 +40,9 @@
 
 namespace gpu {
 
-GpuMemoryBufferSupport::GpuMemoryBufferSupport() {
-#if BUILDFLAG(IS_OZONE)
-  client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
-#endif
-}
+namespace {
 
-GpuMemoryBufferSupport::~GpuMemoryBufferSupport() {}
-
-// static
-gfx::GpuMemoryBufferType
-GpuMemoryBufferSupport::GetNativeGpuMemoryBufferType() {
+gfx::GpuMemoryBufferType GetNativeGpuMemoryBufferType() {
 #if BUILDFLAG(IS_MAC)
   return gfx::IO_SURFACE_BUFFER;
 #elif BUILDFLAG(IS_ANDROID)
@@ -63,6 +55,16 @@ GpuMemoryBufferSupport::GetNativeGpuMemoryBufferType() {
   return gfx::EMPTY_BUFFER;
 #endif
 }
+
+}  // namespace
+
+GpuMemoryBufferSupport::GpuMemoryBufferSupport() {
+#if BUILDFLAG(IS_OZONE)
+  client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
+#endif
+}
+
+GpuMemoryBufferSupport::~GpuMemoryBufferSupport() = default;
 
 // static
 bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(

@@ -56,10 +56,6 @@ class GPU_EXPORT GpuMemoryBufferSupport {
 
   virtual ~GpuMemoryBufferSupport();
 
-  // Returns the native GPU memory buffer factory type. Returns EMPTY_BUFFER
-  // type if native buffers are not supported.
-  static gfx::GpuMemoryBufferType GetNativeGpuMemoryBufferType();
-
   // Returns whether the provided buffer format is supported.
   static bool IsNativeGpuMemoryBufferConfigurationSupported(
       gfx::BufferFormat format,
