@@ -90,6 +90,9 @@ class OmniboxTabHelper
   void MaybeLogNavigationToPopupShownTimings(
       metrics::OmniboxEventProto::PageClassification page_classification);
 
+  // Logs the paywall signal for the current page.
+  void MaybeLogPaywallSignal();
+
   // Whether the current page has a paywall signal in the Annotated Page
   // Content. std::nullopt if the page content wasn't yet extracted and
   // therefore the signal could not be calculated.

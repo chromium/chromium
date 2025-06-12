@@ -21,4 +21,17 @@ return suggest_inputs.has_value() &&
        suggest_inputs->has_encoded_request_id();
 }
 
+// LINT.IfChange(PaywallSignal)
+enum class PaywallSignal {
+  // Whether the paywall signal was unavailable because the page content was
+  // not available.
+  kUnknown = 0,
+  // Whether the paywall signal was present on the current page.
+  kSignalPresent = 1,
+  // Whether the paywall signal was not present on the current page.
+  kSignalNotPresent = 2,
+  kMaxValue = kSignalNotPresent,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:PaywallSignal)
+
 #endif  // COMPONENTS_OMNIBOX_BROWSER_LENS_SUGGEST_INPUTS_UTILS_H_

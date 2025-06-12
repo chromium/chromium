@@ -2036,6 +2036,20 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.OnPopupOpen.PaywallSignal" enum="PaywallSignal"
+    expires_after="2026-01-31">
+  <owner>juanmojica@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded once when the omnibox suggestion popup is opened. Records the
+    current page paywall signal status as of the time the popup was opened.
+    Records the paywall signal if its present, or unavailable if the APC was not
+    available when the popup opened. This does not indicate that contextual
+    suggestions were shown or hidden.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.PaintTime" units="ms" expires_after="2025-11-16">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
