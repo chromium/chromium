@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
@@ -39,9 +40,11 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
   return std::make_unique<syncer::TestSyncService>();
 }
 
+const char kSampleUserEmail[] = "user@gmail.com";
+
 }  // namespace
 
-class NewTabPageUtilBrowserTest : public InProcessBrowserTest {
+class NewTabPageUtilBrowserTest : public SigninBrowserTestBase {
  public:
   void SetUp() override {
     policy_provider_.SetDefaultReturns(
@@ -49,7 +52,7 @@ class NewTabPageUtilBrowserTest : public InProcessBrowserTest {
         /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
-    InProcessBrowserTest::SetUp();
+    SigninBrowserTestBase::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -199,21 +202,24 @@ IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, SyncRequired) {
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest,
                        EnableGoogleCalendarByFlag) {
-  EXPECT_TRUE(IsGoogleCalendarModuleEnabled(true));
+  EXPECT_TRUE(IsGoogleCalendarModuleEnabled(/*is_managed_profile=*/true,
+                                            browser()->profile()));
   CheckInternalsLog(std::string(ntp_features::kNtpCalendarModule.name) +
                     " enabled: feature flag forced on");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
                        DisableGoogleCalendarByFlag) {
-  EXPECT_FALSE(IsGoogleCalendarModuleEnabled(true));
+  EXPECT_FALSE(IsGoogleCalendarModuleEnabled(/*is_managed_profile=*/true,
+                                             browser()->profile()));
   CheckInternalsLog(std::string(ntp_features::kNtpCalendarModule.name) +
                     " disabled: feature flag forced off");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest,
                        GoogleCalendarIsNotManaged) {
-  EXPECT_FALSE(IsGoogleCalendarModuleEnabled(false));
+  EXPECT_FALSE(IsGoogleCalendarModuleEnabled(/*is_managed_profile=*/false,
+                                             browser()->profile()));
   CheckInternalsLog(std::string(ntp_features::kNtpCalendarModule.name) +
                     " disabled: account not managed");
 }
@@ -279,3 +285,68 @@ IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest,
   CheckInternalsLog(std::string(ntp_features::kNtpOutlookCalendarModule.name) +
                     " disabled: disabled by policy");
 }
+
+class NewTabPageUtilSignInRequirementBrowserTest
+    : public NewTabPageUtilBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  NewTabPageUtilSignInRequirementBrowserTest() {
+    features().InitAndEnableFeature(ntp_features::kNtpModuleSignInRequirement);
+  }
+
+  void SetUpOnMainThread() override {
+    NewTabPageUtilBrowserTest::SetUpOnMainThread();
+    if (GetParam()) {
+      SetAccountsCookiesAndTokens({kSampleUserEmail});
+    }
+  }
+
+  void SetSync() {
+    GetTestSyncService()->SetSignedIn(signin::ConsentLevel::kSync);
+  }
+
+ private:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestSyncService));
+  }
+
+  syncer::TestSyncService* GetTestSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(GetProfile()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilSignInRequirementBrowserTest,
+                       DriveWithSignInRequirement) {
+  SetSync();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(
+      IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true, GetProfile()),
+      GetParam());
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    (GetParam() ? " enabled: default feature flag value"
+                                : " disabled: not signed in"));
+#else
+  EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
+                                              GetProfile()));
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " disabled: default feature flag value");
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilSignInRequirementBrowserTest,
+                       GoogleCalendarWithSignInRequirement) {
+  EXPECT_EQ(
+      IsGoogleCalendarModuleEnabled(/*is_managed_profile=*/true, GetProfile()),
+      GetParam());
+  CheckInternalsLog(std::string(ntp_features::kNtpCalendarModule.name) +
+                    (GetParam() ? " enabled: default feature flag value"
+                                : " disabled: not signed in"));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NewTabPageUtilSignInRequirementBrowserTest,
+                         testing::Bool());

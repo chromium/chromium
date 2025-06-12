@@ -29,7 +29,7 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
                                                       Profile* profile) {
   std::vector<ModuleIdDetail> details;
 
-  if (IsGoogleCalendarModuleEnabled(is_managed_profile)) {
+  if (IsGoogleCalendarModuleEnabled(is_managed_profile, profile)) {
     details.emplace_back(ntp_modules::kGoogleCalendarModuleId,
                          IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE);
   }
@@ -56,7 +56,7 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
         IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION);
   }
 
-  if (IsMostRelevantTabResumeModuleEnabled()) {
+  if (IsMostRelevantTabResumeModuleEnabled(profile)) {
     details.emplace_back(ntp_modules::kMostRelevantTabResumptionModuleId,
                          IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE);
   }
@@ -82,6 +82,8 @@ bool HasModulesEnabled(const std::vector<ModuleIdDetail> module_id_details,
          !base::FeatureList::IsEnabled(ntp_features::kNtpModulesLoad) &&
          (base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kSignedOutNtpModulesSwitch) ||
+          base::FeatureList::IsEnabled(
+              ntp_features::kNtpModuleSignInRequirement) ||
           (/* Can be null if Chrome signin is disabled. */ identity_manager &&
            identity_manager->GetAccountsInCookieJar()
                    .GetPotentiallyInvalidSignedInAccounts()

@@ -217,6 +217,32 @@ TEST_F(NewTabPageModulesTest,
                                      identity_test_env.identity_manager()));
 }
 
+TEST_F(NewTabPageModulesTest,
+       HasModulesEnabled_SignedInAccountSignInRequirementFlag) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpModuleSignInRequirement},
+      /*disabled_features=*/{});
+
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.SetCookieAccounts(
+      {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
+  ASSERT_TRUE(ntp::HasModulesEnabled(kSampleModules,
+                                     identity_test_env.identity_manager()));
+}
+
+TEST_F(NewTabPageModulesTest,
+       HasModulesEnabled_NoSignedInAccountSignInRequirementFlag) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpModuleSignInRequirement},
+      /*disabled_features=*/{});
+
+  signin::IdentityTestEnvironment identity_test_env;
+  ASSERT_TRUE(ntp::HasModulesEnabled(kSampleModules,
+                                     identity_test_env.identity_manager()));
+}
+
 TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_MicrosoftCards) {
   profile().GetTestingPrefService()->SetManagedPref(
       prefs::kNtpSharepointModuleVisible, base::Value(true));
