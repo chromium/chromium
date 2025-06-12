@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"

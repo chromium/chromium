@@ -30,7 +30,6 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_aspect_ratio.h"
