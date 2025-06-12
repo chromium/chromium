@@ -41,7 +41,7 @@ public class TabGroupCreationDialogManager {
         private final TabGroupModelFilter mTabGroupModelFilter;
 
         private TabGroupCreationDialogController(
-                Token tabGroupId, TabGroupModelFilter tabGroupModelFilter) {
+                @Nullable Token tabGroupId, TabGroupModelFilter tabGroupModelFilter) {
             assert tabGroupId != null;
 
             mRootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
@@ -128,7 +128,7 @@ public class TabGroupCreationDialogManager {
      * @param tabGroupId The destination tab group id of the new tab group that has been created.
      * @param filter The current TabGroupModelFilter that this group is created on.
      */
-    public void showDialog(Token tabGroupId, TabGroupModelFilter filter) {
+    public void showDialog(@Nullable Token tabGroupId, TabGroupModelFilter filter) {
         mTabGroupCreationDialogController =
                 new TabGroupCreationDialogController(tabGroupId, filter);
         mTabGroupVisualDataDialogManager.showDialog(

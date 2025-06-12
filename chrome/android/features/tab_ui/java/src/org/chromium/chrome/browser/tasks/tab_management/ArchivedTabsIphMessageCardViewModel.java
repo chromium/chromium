@@ -12,12 +12,14 @@ import android.content.Context;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.DismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ReviewActionProvider;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This is a util class for creating the property model of the IphMessageCardView. */
+@NullMarked
 public class ArchivedTabsIphMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for ArchivedTabsIphMessageCardView.

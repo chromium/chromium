@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -29,6 +33,7 @@ import java.util.List;
  * Legacy group action for the {@link TabListEditorMenu}. This menu item will be replaced with new
  * items allowing for more explicit control of merging and creation of tab groups.
  */
+@NullMarked
 public class TabListEditorLegacyGroupAction extends TabListEditorAction {
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
 
@@ -168,11 +173,12 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
     private Tab getDestinationTab(
             List<Tab> tabs, TabGroupModelFilter filter, boolean actionOnRelatedTabs) {
         TabModel model = filter.getTabModel();
-        @Nullable
-        TabGroupSyncService tabGroupSyncService =
+
+        Profile profile = assumeNonNull(model.getProfile());
+        @Nullable TabGroupSyncService tabGroupSyncService =
                 model.isIncognitoBranded()
                         ? null
-                        : TabGroupSyncServiceFactory.getForProfile(model.getProfile());
+                        : TabGroupSyncServiceFactory.getForProfile(profile);
 
         @Nullable Token collaborationTabGroupId = null;
         int greatestTabIndex = TabModel.INVALID_TAB_INDEX;
@@ -199,8 +205,11 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
                 }
             }
         }
-        return model.getTabAt(
-                (groupIndex != TabModel.INVALID_TAB_INDEX) ? groupIndex : greatestTabIndex);
+
+        Tab tab =
+                model.getTabAt(
+                        (groupIndex != TabModel.INVALID_TAB_INDEX) ? groupIndex : greatestTabIndex);
+        return assumeNonNull(tab);
     }
 
     /**
@@ -215,9 +224,9 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
             TabModel tabModel, List<TabListEditorItemSelectionId> itemIds) {
         if (tabModel.isIncognitoBranded()) return false;
 
-        @Nullable
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(tabModel.getProfile());
+        Profile profile = assumeNonNull(tabModel.getProfile());
+        @Nullable TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(profile);
         if (tabGroupSyncService == null) return false;
 
         boolean foundCollaboration = false;

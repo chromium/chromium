@@ -15,10 +15,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TIMESTAMP_EVENT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Forwards changed property values to the view. */
+@NullMarked
 public class TabGroupRowViewBinder {
     /** Propagates one key from the model to the view. */
     public static void bind(PropertyModel model, TabGroupRowView view, PropertyKey propertyKey) {

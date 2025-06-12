@@ -12,10 +12,12 @@ import android.content.Context;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A class to create the property model for the Incognito re-auth promo card. */
+@NullMarked
 public class IncognitoReauthPromoViewModel {
     /**
      * Create a {@link PropertyModel} for incognito re-auth promo card.

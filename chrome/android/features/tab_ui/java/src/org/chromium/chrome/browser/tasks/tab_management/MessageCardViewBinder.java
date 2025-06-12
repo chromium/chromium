@@ -9,10 +9,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for TabGridSecondaryItem. */
+@NullMarked
 class MessageCardViewBinder {
     public static void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         assert view instanceof MessageCardView;

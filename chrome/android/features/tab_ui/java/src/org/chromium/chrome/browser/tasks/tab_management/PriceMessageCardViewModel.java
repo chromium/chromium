@@ -9,14 +9,16 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This is a util class for creating the property model of the PriceMessageCard. */
+@NullMarked
 public class PriceMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for PriceMessageCardView.
@@ -65,38 +67,29 @@ public class PriceMessageCardViewModel {
                         MessageCardViewProperties.MessageCardScope.REGULAR)
                 .with(MessageCardViewProperties.TITLE_TEXT, titleText)
                 .with(MessageCardViewProperties.PRICE_DROP, data.getPriceDrop())
-                .with(
-                        MessageCardViewProperties.ICON_PROVIDER,
-                        (callback) -> {
-                            callback.onResult(getIconDrawable());
-                        })
                 .with(CARD_TYPE, MESSAGE)
                 .with(CARD_ALPHA, 1f)
                 .build();
     }
 
-    private static String getTitle(Context context, @PriceMessageType int type) {
+    private static @Nullable String getTitle(Context context, @PriceMessageType int type) {
         if (type == PriceMessageType.PRICE_WELCOME) {
             return context.getString(R.string.price_drop_spotted_title);
         }
         return null;
     }
 
-    private static String getDescription(Context context, @PriceMessageType int type) {
+    private static @Nullable String getDescription(Context context, @PriceMessageType int type) {
         if (type == PriceMessageType.PRICE_WELCOME) {
             return context.getString(R.string.price_drop_spotted_content);
         }
         return null;
     }
 
-    private static String getActionText(Context context, @PriceMessageType int type) {
+    private static @Nullable String getActionText(Context context, @PriceMessageType int type) {
         if (type == PriceMessageType.PRICE_WELCOME) {
             return context.getString(R.string.price_drop_spotted_show_me);
         }
-        return null;
-    }
-
-    private static Drawable getIconDrawable() {
         return null;
     }
 }

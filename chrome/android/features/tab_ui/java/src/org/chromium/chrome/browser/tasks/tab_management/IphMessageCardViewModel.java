@@ -10,10 +10,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This is a util class for creating the property model of the IphMessageCardView. */
+@NullMarked
 public class IphMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for IphMessageCardView.
@@ -36,11 +38,6 @@ public class IphMessageCardViewModel {
                 .with(
                         MessageCardViewProperties.MESSAGE_IDENTIFIER,
                         MessageService.DEFAULT_MESSAGE_IDENTIFIER)
-                .with(
-                        MessageCardViewProperties.ICON_PROVIDER,
-                        (callback) -> {
-                            callback.onResult(null);
-                        })
                 .with(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, uiDismissActionProvider)
                 .with(
                         MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,

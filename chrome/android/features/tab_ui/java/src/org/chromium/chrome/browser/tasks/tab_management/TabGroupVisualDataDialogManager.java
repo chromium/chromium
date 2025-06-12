@@ -114,7 +114,7 @@ public class TabGroupVisualDataDialogManager {
      */
     @Initializer
     public void showDialog(
-            Token tabGroupId,
+            @Nullable Token tabGroupId,
             TabGroupModelFilter filter,
             ModalDialogProperties.Controller dialogController) {
         // If the model is not null, it indicates a chained double show attempt is occurring.

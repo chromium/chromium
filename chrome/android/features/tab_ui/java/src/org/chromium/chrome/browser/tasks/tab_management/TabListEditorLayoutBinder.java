@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This is a ViewBinder for TabListEditorLayout. */
+@NullMarked
 public class TabListEditorLayoutBinder {
     /**
      * This method binds the given model to the given view.

@@ -27,6 +27,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.PluralsRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.DismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -34,6 +35,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Wrapper around a {@link PropertyModel} for the activity collaboration message card. */
+@NullMarked
 public class CollaborationActivityMessageCardViewModel {
     private final PropertyModel mPropertyModel;
 
