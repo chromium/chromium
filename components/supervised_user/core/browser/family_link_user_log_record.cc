@@ -57,11 +57,13 @@ std::optional<FamilyLinkUserLogRecord::Segment> GetSupervisionStatus(
     auto is_opted_in_to_parental_supervision =
         account_info.capabilities.is_opted_in_to_parental_supervision();
     if (is_opted_in_to_parental_supervision == signin::Tribool::kTrue) {
-      return FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByUser;
+      return FamilyLinkUserLogRecord::Segment::
+          kSupervisionEnabledByFamilyLinkUser;
     } else {
       // Log as a supervised user that has parental supervision enabled
       // by a policy applied to their account, e.g. Unicorn accounts.
-      return FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByPolicy;
+      return FamilyLinkUserLogRecord::Segment::
+          kSupervisionEnabledByFamilyLinkPolicy;
     }
   } else if (account_info.capabilities.can_fetch_family_member_info() ==
              signin::Tribool::kTrue) {

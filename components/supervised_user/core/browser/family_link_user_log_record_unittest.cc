@@ -143,8 +143,9 @@ TEST_F(FamilyLinkUserLogRecordTest, SupervisionEnabledByUser) {
   std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
       CreateFamilyLinkUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
   ASSERT_TRUE(supervision_status.has_value());
-  ASSERT_EQ(supervision_status.value(),
-            FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByUser);
+  ASSERT_EQ(
+      supervision_status.value(),
+      FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkUser);
 }
 
 TEST_F(FamilyLinkUserLogRecordTest, SupervisionEnabledByPolicy) {
@@ -154,8 +155,9 @@ TEST_F(FamilyLinkUserLogRecordTest, SupervisionEnabledByPolicy) {
   std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
       CreateFamilyLinkUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
   ASSERT_TRUE(supervision_status.has_value());
-  ASSERT_EQ(supervision_status.value(),
-            FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByPolicy);
+  ASSERT_EQ(
+      supervision_status.value(),
+      FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkPolicy);
 }
 
 TEST_F(FamilyLinkUserLogRecordTest, NotSupervised) {

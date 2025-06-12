@@ -27,18 +27,18 @@ class FamilyLinkUserLogRecord {
   // These enum values represent the user's supervision type and how the
   // supervision has been enabled.
   // These values are logged to UMA. Entries should not be renumbered and
-  // numeric values should never be reused. Please keep in sync with
-  // "FamilyLinkUserLogSegment" in src/tools/metrics/histograms/enums.xml.
+  // numeric values should never be reused.
+  // LINT.IfChange(FamilyLinkUserLogSegment)
   enum class Segment {
     // User is not a supervised child or parent in FamilyLink.
     kUnsupervised = 0,
     // Profile list contains only users that are required to be supervised
     // by FamilyLink due to child account policies (maps to Unicorn and
     // Griffin accounts).
-    kSupervisionEnabledByPolicy = 1,
+    kSupervisionEnabledByFamilyLinkPolicy = 1,
     // Profile list contains only users that have chosen to be supervised by
     // FamilyLink (maps to Geller accounts).
-    kSupervisionEnabledByUser = 2,
+    kSupervisionEnabledByFamilyLinkUser = 2,
     // Profile list contains at least one primary account that is supervised.
     kMixedProfile = 3,
     // Profile list contains only primary accounts identified as parents in
@@ -49,6 +49,7 @@ class FamilyLinkUserLogRecord {
     // Update kMaxValue to the last value.
     kMaxValue = kParent
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:FamilyLinkUserLogSegment)
 
   // Returns an immutable FamilyLinkUserLogRecord.
   static FamilyLinkUserLogRecord Create(

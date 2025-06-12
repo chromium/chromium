@@ -72,9 +72,9 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
 
   switch (user_log_segment.value()) {
     case supervised_user::FamilyLinkUserLogRecord::Segment::
-        kSupervisionEnabledByPolicy:
+        kSupervisionEnabledByFamilyLinkPolicy:
     case supervised_user::FamilyLinkUserLogRecord::Segment::
-        kSupervisionEnabledByUser:
+        kSupervisionEnabledByFamilyLinkUser:
       // This is a supervised profile. It is not expected for incognito to be
       // available except in some edge cases. Output the edge cases separately
       // from the "unexpected" bucket.

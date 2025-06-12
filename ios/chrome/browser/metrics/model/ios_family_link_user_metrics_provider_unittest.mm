@@ -179,7 +179,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByPolicy,
+          kSupervisionEnabledByFamilyLinkPolicy,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -200,7 +200,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByUser,
+          kSupervisionEnabledByFamilyLinkUser,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -311,7 +311,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByUser,
+          kSupervisionEnabledByFamilyLinkUser,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -333,7 +333,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByUser,
+          kSupervisionEnabledByFamilyLinkUser,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
