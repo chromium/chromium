@@ -33,6 +33,7 @@ public class NativeTest {
     private final StringBuilder mCommandLineFlags = new StringBuilder();
     private TestStatusReporter mReporter;
     private boolean mRunInSubThread;
+    private boolean mKeepUserDataDir;
     private String mStdoutFilePath;
 
     private static class ReportingUncaughtExceptionHandler
@@ -81,6 +82,10 @@ public class NativeTest {
                         mReporter, Thread.getDefaultUncaughtExceptionHandler()));
     }
 
+    public boolean shouldKeepUserDataDir() {
+        return mKeepUserDataDir;
+    }
+
     private void parseArgumentsFromIntent(Activity activity, Intent intent) {
         Log.i(TAG, "Extras:");
         Bundle extras = intent.getExtras();
@@ -106,6 +111,11 @@ public class NativeTest {
         if (commandLineFlags != null) mCommandLineFlags.append(commandLineFlags);
 
         mRunInSubThread = intent.hasExtra(NativeTestIntent.EXTRA_RUN_IN_SUB_THREAD);
+
+        mKeepUserDataDir = intent.getBooleanExtra(NativeTestIntent.EXTRA_KEEP_USER_DATA_DIR, false);
+        if (mKeepUserDataDir) {
+            Log.i(TAG, "user data dir is kept for the tests.");
+        }
 
         String gtestFilter = intent.getStringExtra(NativeTestIntent.EXTRA_GTEST_FILTER);
         if (gtestFilter != null) {

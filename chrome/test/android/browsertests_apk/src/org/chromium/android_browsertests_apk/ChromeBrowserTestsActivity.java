@@ -37,7 +37,12 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
         mTest.appendCommandLineFlags(
                 "--remote-debugging-socket-name android_browsertests_devtools_remote");
 
-        NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
+        // TODO(crbug.com/40200835): Enable PRE_ tests in android_browsertests
+        // Note that android_browsertests does not use this data directory. It
+        // uses a temp dir created by c++ code since https://crrev.com/c/1677591
+        if (!mTest.shouldKeepUserDataDir()) {
+            NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
+        }
 
         // Replace ContentMain() with running our NativeTest suite.
         BrowserStartupController.getInstance()
