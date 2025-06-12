@@ -10,6 +10,11 @@
 
 namespace omnibox {
 
+// The toolbelt appears even lower than IPH, but it keeps high relevance to be
+// preserved on the list. It's almost like a UI element that comes after all the
+// matches, but it works like a match because it still needs to be accessible as
+// a popup selection, follow tab order, read a11y text, etc.
+inline constexpr int kToolbeltRelevance = 2000;
 // Verbatim suggestion is assigned the highest relevance to ensure #1 it appears
 // at the top and #2 duplicate suggestions are merged to the verbatim suggestion
 // and not the other way around.
@@ -49,10 +54,6 @@ inline constexpr int kUnscopedExtensionZeroSuggestRelevance = 400;
 // IPH suggestions get a default relevance of 300 to ensure they appear at the
 // bottom.
 inline constexpr int kIPHZeroSuggestRelevance = 300;
-// The toolbelt appears even lower than IPH. It's almost like a UI element that
-// comes after all the matches, but it works like a match because it still needs
-// to be accessible as a popup selection, follow tab order, read a11y text, etc.
-inline constexpr int kToolbeltRelevance = 200;
 
 using GroupConfigMap = std::unordered_map<GroupId, GroupConfig>;
 

@@ -1614,11 +1614,17 @@ int AutocompleteMatch::GetSortingOrder() const {
     return 2;
   }
 
-  if (type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER)
+  if (type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER) {
     return 8;
+  }
 
-  if (IsIPHSuggestion())
+  if (IsIPHSuggestion()) {
     return 9;
+  }
+
+  if (IsToolbelt()) {
+    return 10;
+  }
 
   return 4;
 }
