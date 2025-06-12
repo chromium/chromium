@@ -88,3 +88,12 @@ bool IsMultiProfilePushNotificationHandlingEnabled() {
   return AreSeparateProfilesForManagedAccountsEnabled() &&
          base::FeatureList::IsEnabled(kIOSPushNotificationMultiProfile);
 }
+
+BASE_FEATURE(kShareExtensionForMultiprofile,
+             "ShareExtensionForMultiprofile",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsShareExtensionForMultiprofileEnabled() {
+  return base::FeatureList::IsEnabled(kShareExtensionForMultiprofile) &&
+         AreSeparateProfilesForManagedAccountsEnabled();
+}

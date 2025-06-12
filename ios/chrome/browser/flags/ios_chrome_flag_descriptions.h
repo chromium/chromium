@@ -791,6 +791,9 @@ extern const char kSendUmaOverAnyNetworkDescription[];
 extern const char kSeparateProfilesForManagedAccountsName[];
 extern const char kSeparateProfilesForManagedAccountsDescription[];
 
+extern const char kShareExtensionForMultiprofileName[];
+extern const char kShareExtensionForMultiprofileDescription[];
+
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
 

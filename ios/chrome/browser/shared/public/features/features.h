@@ -802,6 +802,10 @@ BASE_DECLARE_FEATURE(kChromeStartupParametersAsync);
 // incognito.
 BASE_DECLARE_FEATURE(kYoutubeIncognito);
 
+// Feature flag to have share extension item shared per profile.
+// DO NOT CHECK DIRECTLY, use IsShareExtensionForMultiprofileEnabled().
+BASE_DECLARE_FEATURE(kShareExtensionForMultiprofile);
+
 // Feature param to specify whether the youtube incognito handling is done
 // without the incognito interstitial.
 extern const char

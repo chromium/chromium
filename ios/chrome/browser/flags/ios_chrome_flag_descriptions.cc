@@ -1354,6 +1354,12 @@ const char kSeparateProfilesForManagedAccountsDescription[] =
     "If enabled, each managed account will be assigned to its own separate "
     "profile.";
 
+const char kShareExtensionForMultiprofileName[] =
+    "Enable Share Extension for multiprofile";
+const char kShareExtensionForMultiprofileDescription[] =
+    "When enabled, returning users will see the new per-account share "
+    "extension implementation";
+
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "

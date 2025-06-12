@@ -8898,6 +8898,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "share-extension-for-multiprofile",
+    "owners": [ "erahmaoui@google.com", "olivierrobin@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "share-in-web-context-menu-ios",
     "owners": [ "aliaaborhamy@google.com", "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 132
