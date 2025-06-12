@@ -54,7 +54,7 @@ TabSharingInfoBar::TabSharingInfoBar(
     : InfoBarView(std::move(delegate)) {
   auto* delegate_ptr = GetDelegate();
 
-  status_message_view_ = AddChildView(
+  status_message_view_ = AddContentChildView(
       CreateStatusMessageView(shared_tab_id, capturer_id, shared_tab_name,
                               capturer_name, role, capture_type));
 
@@ -65,10 +65,11 @@ TabSharingInfoBar::TabSharingInfoBar(
           int button_context = views::style::CONTEXT_BUTTON_MD) {
         const bool use_text_color_for_icon =
             type != TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator;
-        auto* button = AddChildView(std::make_unique<views::MdTextButton>(
-            base::BindRepeating(click_function, base::Unretained(this)),
-            delegate_ptr->GetButtonLabel(type), button_context,
-            use_text_color_for_icon));
+        auto* button =
+            AddContentChildView(std::make_unique<views::MdTextButton>(
+                base::BindRepeating(click_function, base::Unretained(this)),
+                delegate_ptr->GetButtonLabel(type), button_context,
+                use_text_color_for_icon));
         button->SetProperty(
             views::kMarginsKey,
             gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -120,7 +121,7 @@ TabSharingInfoBar::TabSharingInfoBar(
 
   // TODO(crbug.com/378107817): It seems like link_ isn't always needed, but
   // it's added regardless. See about only adding when necessary.
-  link_ = AddChildView(CreateLink(delegate_ptr->GetLinkText()));
+  link_ = AddContentChildView(CreateLink(delegate_ptr->GetLinkText()));
 }
 
 TabSharingInfoBar::~TabSharingInfoBar() = default;

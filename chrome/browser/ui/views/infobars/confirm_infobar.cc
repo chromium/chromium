@@ -28,13 +28,13 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     : InfoBarView(std::move(delegate)) {
   SetProperty(views::kElementIdentifierKey, kInfoBarElementId);
   auto* delegate_ptr = GetDelegate();
-  label_ = AddChildView(CreateLabel(delegate_ptr->GetMessageText()));
+  label_ = AddContentChildView(CreateLabel(delegate_ptr->GetMessageText()));
   label_->SetElideBehavior(delegate_ptr->GetMessageElideBehavior());
 
   const int buttons = delegate_ptr->GetButtons();
   const auto create_button = [&](ConfirmInfoBarDelegate::InfoBarButton type,
                                  void (ConfirmInfoBar::*click_function)()) {
-    auto* button = AddChildView(std::make_unique<views::MdTextButton>(
+    auto* button = AddContentChildView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(click_function, base::Unretained(this)),
         GetDelegate()->GetButtonLabel(type)));
     button->SetProperty(
@@ -67,8 +67,8 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
                                 kCancelButtonElementId);
   }
 
-  link_ = AddChildView(CreateLink(delegate_ptr->GetLinkText(),
-                                  delegate_ptr->GetLinkAccessibleText()));
+  link_ = AddContentChildView(CreateLink(
+      delegate_ptr->GetLinkText(), delegate_ptr->GetLinkAccessibleText()));
 }
 
 ConfirmInfoBar::~ConfirmInfoBar() = default;

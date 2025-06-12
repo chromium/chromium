@@ -109,6 +109,9 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     AddChildViewRaw(icon_.get());
   }
 
+  // Create the container that will hold all subclass‑owned children.
+  content_container_ = AddChildView(std::make_unique<views::View>());
+
   if (this->delegate()->IsCloseable()) {
     auto close_button = views::CreateVectorImageButton(base::BindRepeating(
         &InfoBarView::CloseButtonPressed, base::Unretained(this)));
@@ -158,6 +161,10 @@ void InfoBarView::Layout(PassKey) {
     start_x += spacing + content_minimum_width;
   }
 
+  // Ensure the content container spans the full infobar so that its children
+  // can continue to use absolute coordinates unchanged.
+  content_container_->SetBoundsRect(GetLocalBounds());
+
   if (close_button_) {
     const gfx::Insets close_button_spacing = GetCloseButtonSpacing();
     close_button_->SizeToPreferredSize();
@@ -190,19 +197,6 @@ gfx::Size InfoBarView::CalculatePreferredSize(
       close_button_ ? GetCloseButtonSpacing().width() + close_button_->width()
                     : GetElementSpacing();
   return gfx::Size(width + trailing_space, computed_height());
-}
-
-void InfoBarView::ViewHierarchyChanged(
-    const views::ViewHierarchyChangedDetails& details) {
-  View::ViewHierarchyChanged(details);
-
-  // Anything that needs to happen once after all subclasses add their children.
-  // TODO(330923783): Create a container for info bar subclasses to add children
-  // to, so that we don't have to move the close button to the end every time a
-  // child is added.
-  if (details.is_add && (details.child == this) && close_button_) {
-    ReorderChildView(close_button_, children().size());
-  }
 }
 
 void InfoBarView::OnThemeChanged() {
