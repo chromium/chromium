@@ -519,6 +519,9 @@ enum FieldType {
   // the client.
   EMAIL_OR_LOYALTY_MEMBERSHIP_ID = 189,
 
+  // Types 190 to 197 are not used on the client yet, but will likely be added
+  // in the future.
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
