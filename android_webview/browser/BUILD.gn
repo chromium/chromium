@@ -92,6 +92,8 @@ source_set("browser") {
     "aw_metrics_service_client_delegate.h",
     "aw_net_logs_connection.cc",
     "aw_net_logs_connection.h",
+    "aw_origin_matched_header.cc",
+    "aw_origin_matched_header.h",
     "aw_pac_processor.cc",
     "aw_pac_processor.h",
     "aw_pdf_exporter.cc",

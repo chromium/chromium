@@ -19,6 +19,7 @@
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_contents_statics.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
+#include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
@@ -59,6 +60,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
@@ -66,6 +68,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
@@ -139,6 +142,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       std::optional<AwProxyingURLLoaderFactory::SecurityOptions>
           security_options,
       scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+      std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle);
 
   InterceptedRequest(const InterceptedRequest&) = delete;
@@ -189,6 +193,15 @@ class InterceptedRequest : public network::mojom::URLLoader,
       std::optional<bool> xrw_enabled,
       AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback,
       std::string cookie);
+
+  // Applies the `AwOriginMatchedHeaders` that match the current
+  // `request_.url`.
+  // When called from `InterceptedRequest::FollowRedirect`, the caller should
+  // pass in pointers to the vector of headers to remove, as well as the map of
+  // headers to modify.
+  void ApplyOriginMatchedHeaders(
+      std::vector<std::string>* redirect_headers_to_remove,
+      net::HttpRequestHeaders* redirect_headers_to_modify);
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -267,6 +280,8 @@ class InterceptedRequest : public network::mojom::URLLoader,
   mojo::Remote<network::mojom::URLLoader> target_loader_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
+  std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
+  std::vector<std::string> attached_origin_matched_headers_;
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
 
   base::TimeDelta io_thread_client_call_duration_;
@@ -368,6 +383,7 @@ InterceptedRequest::InterceptedRequest(
     bool intercept_only,
     std::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options,
     scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+    std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle)
     : get_cookie_header_(get_cookie_header),
       set_cookie_header_(set_cookie_header),
@@ -385,6 +401,7 @@ InterceptedRequest::InterceptedRequest(
       target_client_(std::move(client)),
       target_factory_(std::move(target_factory)),
       xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)),
+      origin_matched_headers_(std::move(origin_matched_headers)),
       browser_context_handle_(std::move(browser_context_handle)) {
   // If there is a client error, clean up the request.
   target_client_.set_disconnect_handler(base::BindOnce(
@@ -538,6 +555,62 @@ void InterceptedRequest::InterceptWithCookieHeader(
   }
 }
 
+void InterceptedRequest::ApplyOriginMatchedHeaders(
+    std::vector<std::string>* redirect_headers_to_remove,
+    net::HttpRequestHeaders* redirect_headers_to_modify) {
+  // TODO(crbug.com/422368112): Figure out how to handle CORS requests.
+  url::Origin request_origin = url::Origin::Create(request_.url);
+  if (options_ & network::mojom::kURLLoadOptionAsCorsPreflight) {
+    for (const auto& matched_header : origin_matched_headers_) {
+      if (matched_header->MatchesOrigin(request_origin)) {
+        base::UmaHistogramBoolean(
+            "Android.WebView.AndroidX.Profile.ExtraHeaderTargetsCorsPreflight",
+            true);
+        break;
+      }
+    }
+    // For now we simply omit the header on a CORS preflight, but otherwise
+    // attach the header on the GET request.
+    return;
+  }
+
+  if (redirect_headers_to_remove) {
+    redirect_headers_to_remove->insert(redirect_headers_to_remove->end(),
+                                       attached_origin_matched_headers_.begin(),
+                                       attached_origin_matched_headers_.end());
+  }
+
+  // This request might be in the process of being redirected to a different
+  // domain, where we need to apply different headers, so remove previously
+  // attached headers from the canonical set of headers.
+  for (const auto& header_name : attached_origin_matched_headers_) {
+    request_.headers.RemoveHeader(header_name);
+  }
+
+  attached_origin_matched_headers_.clear();
+
+  for (const auto& matched_header : origin_matched_headers_) {
+    if (matched_header->MatchesOrigin(request_origin)) {
+      // TODO(crbug.com/423581920): Follow up to determine what the best merging
+      // strategy is. The current strategy is to only attach if there is no
+      // collision, which is least likely to break existing web pages.
+      bool should_attach = !request_.headers.HasHeader(matched_header->name());
+      base::UmaHistogramBoolean(
+          "Android.WebView.AndroidX.Profile.ExtraHeaderAttached",
+          should_attach);
+      if (should_attach) {
+        request_.headers.SetHeader(matched_header->name(),
+                                   matched_header->value());
+        attached_origin_matched_headers_.emplace_back(matched_header->name());
+        if (redirect_headers_to_modify) {
+          redirect_headers_to_modify->SetHeader(matched_header->name(),
+                                                matched_header->value());
+        }
+      }
+    }
+  }
+}
+
 void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
   TRACE_EVENT0("android_webview", "InterceptedRequest::Restart");
   io_thread_client_call_duration_ = base::TimeDelta();
@@ -550,11 +623,17 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
     return;
   }
 
+  url::Origin request_origin = url::Origin::Create(request_.url);
   if (requested_with_header_mode != AwSettings::APP_PACKAGE_NAME &&
       xrw_allowlist_matcher_ &&
-      xrw_allowlist_matcher_->MatchesOrigin(
-          url::Origin::Create(request_.url))) {
+      xrw_allowlist_matcher_->MatchesOrigin(request_origin)) {
     requested_with_header_mode = AwSettings::APP_PACKAGE_NAME;
+  }
+
+  if (!request_was_redirected_) {
+    // Do not call this if the request has already been redirected, as it will
+    // be called from `FollowRedirect` in that case.
+    ApplyOriginMatchedHeaders(nullptr, nullptr);
   }
 
   request_.load_flags =
@@ -934,9 +1013,29 @@ void InterceptedRequest::FollowRedirect(
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
   LogIoThreadClientTimeSpent();
+
   if (target_loader_) {
-    target_loader_->FollowRedirect(removed_headers, modified_headers,
-                                   modified_cors_exempt_headers, new_url);
+    if (!origin_matched_headers_.empty()) {
+      // Copy the passed in header objects so we can modify the objects before
+      // passing them on.
+      std::vector<std::string> amended_removed_headers = removed_headers;
+      net::HttpRequestHeaders amended_modified_headers = modified_headers;
+      ApplyOriginMatchedHeaders(&amended_removed_headers,
+                                &amended_modified_headers);
+
+      target_loader_->FollowRedirect(amended_removed_headers,
+                                     amended_modified_headers,
+                                     modified_cors_exempt_headers, new_url);
+    } else {
+      // Just pass the arguments directly if we do not have any origin matched
+      // headers to apply.
+      target_loader_->FollowRedirect(removed_headers, modified_headers,
+                                     modified_cors_exempt_headers, new_url);
+    }
+  } else {
+    // Apply any potential headers to the canonical `request_.headers` to keep
+    // it in sync.
+    ApplyOriginMatchedHeaders(nullptr, nullptr);
   }
 
   // If |OnURLLoaderClientError| was called then we're just waiting for the
@@ -1090,6 +1189,7 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
     bool intercept_only,
     std::optional<SecurityOptions> security_options,
     scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+    std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
     std::optional<int64_t> navigation_id)
     : cookie_access_policy_(cookie_access_policy),
@@ -1099,6 +1199,7 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
       intercept_only_(intercept_only),
       security_options_(security_options),
       xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)),
+      origin_matched_headers_(std::move(origin_matched_headers)),
       browser_context_handle_(std::move(browser_context_handle)),
       navigation_id_(navigation_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -1163,6 +1264,7 @@ void AwProxyingURLLoaderFactory::CreateProxy(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     std::optional<SecurityOptions> security_options,
     scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+    std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
     std::optional<int64_t> navigation_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -1172,8 +1274,8 @@ void AwProxyingURLLoaderFactory::CreateProxy(
       std::move(cookie_manager), cookie_access_policy, isolation_info,
       web_contents_key, frame_tree_node_id, std::move(loader_receiver),
       std::move(target_factory_remote), false, security_options,
-      std::move(xrw_allowlist_matcher), std::move(browser_context_handle),
-      navigation_id);
+      std::move(xrw_allowlist_matcher), std::move(origin_matched_headers),
+      std::move(browser_context_handle), navigation_id);
 }
 
 void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
@@ -1290,14 +1392,16 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
         web_contents_key_, frame_tree_node_id_, request_id, options,
         std::move(request), traffic_annotation, std::move(loader),
         std::move(client), std::move(target_factory_clone), intercept_only_,
-        security_options_, xrw_allowlist_matcher_, browser_context_handle_);
+        security_options_, xrw_allowlist_matcher_, origin_matched_headers_,
+        browser_context_handle_);
   } else {
     req = new InterceptedRequest(
         std::move(get_cookie_header), std::move(set_cookie_header),
         web_contents_key_, frame_tree_node_id_, request_id, options, request,
         traffic_annotation, std::move(loader), std::move(client),
         std::move(target_factory_clone), intercept_only_, security_options_,
-        xrw_allowlist_matcher_, browser_context_handle_);
+        xrw_allowlist_matcher_, origin_matched_headers_,
+        browser_context_handle_);
   }
   req->Restart(xrw_enabled);
 }

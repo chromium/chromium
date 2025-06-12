@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "android_webview/browser/aw_cookie_access_policy.h"
+#include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/embedder_support/android/util/android_stream_reader_url_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -84,6 +86,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       bool intercept_only,
       std::optional<SecurityOptions> security_options,
       scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+      std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
 
@@ -116,6 +119,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           target_factory_remote,
       std::optional<SecurityOptions> security_options,
       scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+      std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
 
@@ -168,6 +172,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   std::optional<SecurityOptions> security_options_;
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
+
+  std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
 
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
 

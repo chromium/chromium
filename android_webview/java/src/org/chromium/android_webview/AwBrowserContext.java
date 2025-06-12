@@ -25,6 +25,7 @@ import org.chromium.android_webview.common.MediaIntegrityProvider;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.PermissionStatus;
@@ -32,6 +33,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.Origin;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,6 +51,7 @@ import java.util.regex.Pattern;
 @JNINamespace("android_webview")
 @Lifetime.Profile
 public class AwBrowserContext implements BrowserContextHandle {
+
     private static final String BASE_PREFERENCES = "WebViewProfilePrefs";
 
     /* package */ static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
@@ -291,11 +294,9 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     /**
-     * Check if additional HTTP headers sent along with loadUrl, prefetchUrl, or prerenderUrl
-     * contains invalid characters.
+     * Check if any of the provided HTTP header key-value pairs contains invalid characters.
      *
-     * @param headers The additional HTTP headers to be sent along with loadUrl, prefetchUrl, or
-     *     prerenderUrl.
+     * @param headers Map of HTTP header name-value pairs.
      * @return An exception if validation fails. Otherwise, an empty Optional.
      */
     public static Optional<IllegalArgumentException> validateAdditionalHeaders(
@@ -349,7 +350,46 @@ public class AwBrowserContext implements BrowserContextHandle {
         return Set.of(badRules);
     }
 
-    /** @see android.webkit.WebView#pauseTimers() */
+    public void setOriginMatchedHeader(
+            @NonNull String headerName, String headerValue, @NonNull Set<String> rules) {
+        ThreadUtils.assertOnUiThread();
+        if (headerName.isBlank()) {
+            throw new IllegalArgumentException("Blank HTTP header names are not allowed.");
+        }
+        if (!AwBrowserContextJni.get().isValidHttpHeaderName(headerName)) {
+            throw new IllegalArgumentException("Invalid HTTP header name: " + headerName);
+        }
+        if (!AwBrowserContextJni.get().isValidHttpHeaderValue(headerValue)) {
+            throw new IllegalArgumentException("Invalid HTTP header value: " + headerValue);
+        }
+
+        List<String> rejected =
+                AwBrowserContextJni.get()
+                        .setOriginMatchedHeader(
+                                mNativeAwBrowserContext, headerName, headerValue, rules);
+
+        if (!rejected.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Invalid origin patterns: " + String.join("; ", rejected));
+        }
+    }
+
+    public boolean hasOriginMatchedHeader(@NonNull String headerName) {
+        ThreadUtils.assertOnUiThread();
+        return AwBrowserContextJni.get()
+                .hasOriginMatchedHeader(mNativeAwBrowserContext, headerName);
+    }
+
+    public void clearOriginMatchedHeader(@NonNull String headerName) {
+        ThreadUtils.assertOnUiThread();
+        AwBrowserContextJni.get().clearOriginMatchedHeader(mNativeAwBrowserContext, headerName);
+    }
+
+    public void clearAllOriginMatchedHeaders() {
+        ThreadUtils.assertOnUiThread();
+        AwBrowserContextJni.get().clearAllOriginMatchedHeaders(mNativeAwBrowserContext);
+    }
+
     public void pauseTimers() {
         ContentViewStatics.setWebKitSharedTimersSuspended(true);
     }
@@ -462,6 +502,25 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         void setAllowedPrerenderingCount(long nativeAwBrowserContext, int maxPrerenders);
 
+        @JniType("std::vector<std::string>")
+        List<String> setOriginMatchedHeader(
+                long nativeAwBrowserContext,
+                @JniType("std::string") @NonNull String headerName,
+                @JniType("std::string") @NonNull String headerValue,
+                @JniType("std::vector<std::string>") @NonNull Set<String> rules);
+
+        boolean hasOriginMatchedHeader(
+                long nativeAwBrowserContext, @JniType("std::string") @NonNull String headerName);
+
+        void clearOriginMatchedHeader(
+                long nativeAwBrowserContext, @JniType("std::string") String headerName);
+
+        void clearAllOriginMatchedHeaders(long nativeAwBrowserContext);
+
         void warmUpSpareRenderer(long nativeAwBrowserContext);
+
+        boolean isValidHttpHeaderName(@JniType("std::string") String headerName);
+
+        boolean isValidHttpHeaderValue(@JniType("std::string") String headerValue);
     }
 }

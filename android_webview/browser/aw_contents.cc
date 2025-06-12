@@ -1630,8 +1630,8 @@ void AwContents::SetExtraHeadersForUrl(
     extra_headers = ConvertJavaStringToUTF8(env, jextra_headers);
   auto* browser_context =
       AwBrowserContext::FromWebContents(web_contents_.get());
-  browser_context->SetExtraHeaders(GURL(ConvertJavaStringToUTF8(env, url)),
-                                   extra_headers);
+  browser_context->SetExtraHeadersForUrl(
+      GURL(ConvertJavaStringToUTF8(env, url)), extra_headers);
 }
 
 void AwContents::SetJsOnlineProperty(JNIEnv* env, jboolean network_up) {

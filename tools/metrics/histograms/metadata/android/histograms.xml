@@ -5843,6 +5843,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.AndroidX.Profile.ExtraHeaderAttached"
+    enum="BooleanUsage" expires_after="2026-05-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    This histogram is logged every time a header configured through the AndroidX
+    Profile.setExtraHeaderForOrigins API matches an outgoing request, whether it
+    is the original request or a redirect. The histogram records whether the
+    header was ultimately attached to the request (Used) or skipped because it
+    would have overwritten an existing header on the request (Not Used).
+
+    The histogram is emitted once for each matching header on each request or
+    redirect.
+
+    The histogram is intended to provide data on how often headers configured
+    through this API collides with existing headers, as input for potential
+    future changes to the AndroidX API.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.AndroidX.Profile.ExtraHeaderTargetsCorsPreflight"
+    enum="Boolean" expires_after="2026-05-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    This histogram is logged every time a header configured through the AndroidX
+    Profile.setExtraHeaderForOrigins API matches an outgoing CORS preflight
+    request, and is emitted once per request, even if multiple headers match.
+
+    The histogram is intended to provide data on how often headers configured
+    through this API applies to CORS preflight, to inform if and how to handle
+    preflight request.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ApiCall" enum="WebViewApiCall"
     expires_after="2025-10-25">
   <owner>ntfschr@chromium.org</owner>

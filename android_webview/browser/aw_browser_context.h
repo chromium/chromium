@@ -14,6 +14,7 @@
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_context_permissions_delegate.h"
+#include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_ssl_host_state_delegate.h"
 #include "android_webview/browser/file_system_access/aw_file_system_access_permission_context.h"
@@ -26,6 +27,7 @@
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -187,7 +189,27 @@ class AwBrowserContext : public content::BrowserContext,
 
   scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher();
 
-  void SetExtraHeaders(const GURL& url, const std::string& headers);
+  void SetExtraHeadersForUrl(const GURL& url, const std::string& headers);
+
+  // Set a static header name-value pair to be sent to origins that match the
+  // `origin_rules` patterns. The values of `header_name` and `header_value`
+  // must pass `HttpUtil::IsValidHeaderName()` and
+  // `HttpUtil::IsValidHeaderValue()` respectively. This check is being enforced
+  // in Java by the WebView code.
+  std::vector<std::string> SetOriginMatchedHeader(
+      JNIEnv* env,
+      std::string& header_name,
+      std::string& header_value,
+      const std::vector<std::string>& origin_rules);
+
+  bool HasOriginMatchedHeader(JNIEnv* env, const std::string& header_name);
+
+  void ClearOriginMatchedHeader(JNIEnv* env, const std::string& header_name);
+
+  void ClearAllOriginMatchedHeaders(JNIEnv* env);
+
+  const std::vector<scoped_refptr<AwOriginMatchedHeader>>&
+  GetOriginMatchedHeaders();
 
  private:
   friend class AwBrowserContextIoThreadHandle;
@@ -230,7 +252,9 @@ class AwBrowserContext : public content::BrowserContext,
 
   scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher_;
 
-  std::map<std::string, std::string> extra_headers_;
+  // Map of extra headers for specific URLs supplied through the loadUrl(String,
+  // Map) API.
+  std::map<std::string, std::string> extra_headers_for_urls_;
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 
@@ -256,6 +280,8 @@ class AwBrowserContext : public content::BrowserContext,
   // in-flight requests, only applied to the requests made afterwards. It should
   // be enabled before making any requests.
   bool enable_stale_dns_ = false;
+
+  std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
 
   base::WeakPtrFactory<AwBrowserContext> weak_method_factory_{this};
 };

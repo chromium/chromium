@@ -553,7 +553,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
      * A class to map the TestDelegate for handling the callback checks, see {@link CallbackHelper}
      * javadocs for more details.
      */
-    private static class TestAwPrefetchCallback implements AwPrefetchCallback {
+    static class TestAwPrefetchCallback implements AwPrefetchCallback {
 
         public static class OnStatusUpdatedHelper extends CallbackHelper {
             private int mStatusCode = -1;

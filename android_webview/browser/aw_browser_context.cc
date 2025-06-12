@@ -6,6 +6,7 @@
 
 #include <jni.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -20,6 +21,7 @@
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_download_manager_delegate.h"
 #include "android_webview/browser/aw_form_database_service.h"
+#include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_quota_manager_bridge.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
@@ -40,10 +42,12 @@
 #include "base/base_paths_posix.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
@@ -53,6 +57,7 @@
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/download/public/common/in_progress_download_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
@@ -510,13 +515,16 @@ AwBrowserContext::CreateZoomLevelDelegate(
 }
 
 std::string AwBrowserContext::GetExtraHeadersForUrl(const GURL& url) {
+  // This method of mapping headers to urls supports the WebView.loadUrl with
+  // extra headers method, and should only be used to support this flow, but not
+  // for any other purposes of attaching extra headers to requests.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!url.is_valid()) {
     return std::string();
   }
   std::map<std::string, std::string>::iterator iter =
-      extra_headers_.find(url.spec());
-  return iter != extra_headers_.end() ? iter->second : std::string();
+      extra_headers_for_urls_.find(url.spec());
+  return iter != extra_headers_for_urls_.end() ? iter->second : std::string();
 }
 
 void AwBrowserContext::RebuildTable(
@@ -657,17 +665,92 @@ AwBrowserContext::service_worker_xrw_allowlist_matcher() {
   return service_worker_xrw_allowlist_matcher_;
 }
 
-void AwBrowserContext::SetExtraHeaders(const GURL& url,
-                                       const std::string& headers) {
+void AwBrowserContext::SetExtraHeadersForUrl(const GURL& url,
+                                             const std::string& headers) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!url.is_valid()) {
     return;
   }
   if (!headers.empty()) {
-    extra_headers_[url.spec()] = headers;
+    extra_headers_for_urls_[url.spec()] = headers;
   } else {
-    extra_headers_.erase(url.spec());
+    extra_headers_for_urls_.erase(url.spec());
   }
+}
+
+// static
+jboolean JNI_AwBrowserContext_IsValidHttpHeaderName(JNIEnv* env,
+                                                    std::string& header_name) {
+  return net::HttpUtil::IsValidHeaderName(header_name);
+}
+
+// static
+jboolean JNI_AwBrowserContext_IsValidHttpHeaderValue(
+    JNIEnv* env,
+    std::string& header_value) {
+  return net::HttpUtil::IsValidHeaderValue(header_value);
+}
+
+std::vector<std::string> AwBrowserContext::SetOriginMatchedHeader(
+    JNIEnv* env,
+    std::string& header_name,
+    std::string& header_value,
+    const std::vector<std::string>& rules) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  origin_matcher::OriginMatcher matcher;
+  std::vector<std::string> rejected;
+  for (const std::string& rule : rules) {
+    if (!matcher.AddRuleFromString(rule)) {
+      rejected.emplace_back(rule);
+    }
+  }
+
+  if (!rejected.empty()) {
+    return rejected;
+  }
+
+  // We only maintain a single mapping for each header name by design.
+  auto it = std::ranges::find(origin_matched_headers_, header_name,
+                              &AwOriginMatchedHeader::name);
+  if (it == origin_matched_headers_.end()) {
+    origin_matched_headers_.emplace_back(
+        base::MakeRefCounted<AwOriginMatchedHeader>(std::move(header_name),
+                                                    std::move(header_value),
+                                                    std::move(matcher)));
+  } else {
+    *it = base::MakeRefCounted<AwOriginMatchedHeader>(
+        std::move(header_name), std::move(header_value), std::move(matcher));
+  }
+  return {};
+}
+
+bool AwBrowserContext::HasOriginMatchedHeader(JNIEnv* env,
+                                              const std::string& header_name) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return std::ranges::find(origin_matched_headers_, header_name,
+                           &AwOriginMatchedHeader::name) !=
+         origin_matched_headers_.end();
+}
+
+void AwBrowserContext::ClearOriginMatchedHeader(
+    JNIEnv* env,
+    const std::string& header_name) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::erase_if(origin_matched_headers_, [&header_name](const auto& it) {
+    return it->name() == header_name;
+  });
+}
+
+void AwBrowserContext::ClearAllOriginMatchedHeaders(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  origin_matched_headers_.clear();
+}
+
+const std::vector<scoped_refptr<AwOriginMatchedHeader>>&
+AwBrowserContext::GetOriginMatchedHeaders() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return origin_matched_headers_;
 }
 
 void AwBrowserContext::SetServiceWorkerIoThreadClient(
