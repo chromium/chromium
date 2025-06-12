@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <unordered_set>
 
 #include "base/base64.h"
 #include "base/check_is_test.h"

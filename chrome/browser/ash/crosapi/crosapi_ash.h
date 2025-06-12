@@ -44,7 +44,6 @@ class PrintPreviewWebcontentsAdapterAsh;
 namespace crosapi {
 
 class CertProvisioningAsh;
-class ChapsServiceAsh;
 class DeviceAttributesAsh;
 class DeviceOAuth2TokenServiceAsh;
 class DocumentScanAsh;
@@ -84,8 +83,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindCfmServiceContext(
       mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver)
       override;
-  void BindChapsService(
-      mojo::PendingReceiver<mojom::ChapsService> receiver) override;
   void BindCrosDisplayConfigController(
       mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
       override;
@@ -169,8 +166,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return cert_provisioning_ash_.get();
   }
 
-  ChapsServiceAsh* chaps_service_ash() { return chaps_service_ash_.get(); }
-
   DeviceAttributesAsh* device_attributes_ash() {
     return device_attributes_ash_.get();
   }
@@ -234,7 +229,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void OnDisconnected();
 
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
-  std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;

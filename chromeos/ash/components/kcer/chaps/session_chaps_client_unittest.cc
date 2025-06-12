@@ -11,7 +11,6 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/chaps/fake_chaps_client.h"
 #include "chromeos/constants/pkcs11_definitions.h"
-#include "chromeos/crosapi/mojom/chaps_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/chaps/dbus-constants.h"
