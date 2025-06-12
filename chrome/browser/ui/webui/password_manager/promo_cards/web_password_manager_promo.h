@@ -27,7 +27,6 @@ class WebPasswordManagerPromo : public password_manager::PasswordPromoCardBase {
   std::u16string GetDescription() const override;
 
   bool sync_enabled_ = false;
-  const syncer::SyncService* sync_service_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_WEB_PASSWORD_MANAGER_PROMO_H_

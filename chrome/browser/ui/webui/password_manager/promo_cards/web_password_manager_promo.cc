@@ -17,8 +17,7 @@ WebPasswordManagerPromo::WebPasswordManagerPromo(
     PrefService* prefs,
     const syncer::SyncService* sync_service)
     : password_manager::PasswordPromoCardBase(kWebPasswordManagerPromoId,
-                                              prefs),
-      sync_service_(sync_service) {
+                                              prefs) {
   // TODO(crbug.com/40067296): Migrate away from `ConsentLevel::kSync` on
   // desktop platforms and remove #ifdef below.
 #if BUILDFLAG(IS_ANDROID)
@@ -40,12 +39,6 @@ password_manager::PromoCardType WebPasswordManagerPromo::GetPromoCardType()
 
 bool WebPasswordManagerPromo::ShouldShowPromo() const {
   if (!sync_enabled_) {
-    return false;
-  }
-
-  // Hide promo if a custom passphrase is in use.
-  if (sync_service_ && sync_service_->GetUserSettings() &&
-      sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return false;
   }
 

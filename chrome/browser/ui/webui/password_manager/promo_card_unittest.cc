@@ -398,17 +398,6 @@ TEST_F(PromoCardInWebTest, PromoNotShownAfterDismiss) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardInWebTest, PromoNotShownWithCustomPassphrase) {
-  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
-  sync_service()->GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kCustomPassphrase);
-
-  std::unique_ptr<PasswordPromoCardBase> promo =
-      std::make_unique<WebPasswordManagerPromo>(pref_service(), sync_service());
-
-  EXPECT_FALSE(promo->ShouldShowPromo());
-}
-
 class PromoCardShortcutTest : public WebAppTest {
  public:
   void SetUp() override {
