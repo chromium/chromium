@@ -204,7 +204,7 @@ const tests = [
 
     chrome.test.succeed();
   },
-  async function testRotateNormalHighRes() {
+  async function testRotateExtremeLowRes() {
     window.devicePixelRatio = 1;
 
     await testThumbnailRotations(
@@ -212,7 +212,7 @@ const tests = [
 
     chrome.test.succeed();
   },
-  async function testRotateNormalHighRes() {
+  async function testRotateExtremeHighRes() {
     window.devicePixelRatio = 2;
 
     await testThumbnailRotations(
