@@ -220,6 +220,30 @@ const tests = [
 
     chrome.test.succeed();
   },
+  async function testRotateSquareLowRes() {
+    window.devicePixelRatio = 1;
+
+    await testThumbnailRotations(
+        [100, 100], [[100, 100], [100, 100], [100, 100], [100, 100]]);
+
+    // TODO(crbug.com/424225641): Sizes should always be 140x140.
+    await testThumbnailRotations(
+        [300, 300], [[140, 140], [108, 108], [140, 140], [108, 108]]);
+
+    chrome.test.succeed();
+  },
+  async function testRotateSquareHighRes() {
+    window.devicePixelRatio = 2;
+
+    await testThumbnailRotations(
+        [100, 100], [[50, 50], [50, 50], [50, 50], [50, 50]]);
+
+    // TODO(crbug.com/424225641): Sizes should always be 140x140.
+    await testThumbnailRotations(
+        [300, 300], [[140, 140], [108, 108], [140, 140], [108, 108]]);
+
+    chrome.test.succeed();
+  },
   async function testContextMenuDisabled() {
     // Set some image data so a canvas is created inside the thumbnail.
     const thumbnail = createThumbnail();
