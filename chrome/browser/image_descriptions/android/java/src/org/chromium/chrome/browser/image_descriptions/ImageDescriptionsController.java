@@ -127,10 +127,11 @@ public class ImageDescriptionsController {
 
         if (enabledBeforeMenuItemSelected) {
             // If descriptions are enabled, and the user has selected "only on wifi", and we
-            // currently do not have a wifi connection, then do a "just once" fetch.
+            // currently do not have a wifi or Ethernet connection, then do a "just once" fetch.
+            int currentNetType = DeviceConditions.getCurrentNetConnectionType(context);
             if (onlyOnWifiEnabled(profile)
-                    && DeviceConditions.getCurrentNetConnectionType(context)
-                            != ConnectionType.CONNECTION_WIFI) {
+                    && currentNetType != ConnectionType.CONNECTION_WIFI
+                    && currentNetType != ConnectionType.CONNECTION_ETHERNET) {
                 mDelegate.getImageDescriptionsJustOnce(false, webContents);
                 Toast.makeText(
                                 context,

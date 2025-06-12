@@ -279,8 +279,15 @@ bool AccessibilityLabelsService::GetAndroidEnabledStatus() {
       prefs::kAccessibilityImageLabelsOnlyOnWifi);
 
   if (enabled && only_on_wifi) {
-    enabled = net::NetworkChangeNotifier::GetConnectionType() ==
-              net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI;
+    net::NetworkChangeNotifier::ConnectionType current_connection_type =
+        net::NetworkChangeNotifier::GetConnectionType();
+    bool is_wifi =
+        (current_connection_type ==
+         net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+    bool is_ethernet =
+        (current_connection_type ==
+         net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
+    enabled = (is_wifi || is_ethernet);
   }
 
   return enabled;

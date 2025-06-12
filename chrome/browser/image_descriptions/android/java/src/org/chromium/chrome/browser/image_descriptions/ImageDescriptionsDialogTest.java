@@ -526,6 +526,43 @@ public class ImageDescriptionsDialogTest {
 
     @Test
     @SmallTest
+    public void testUserInteraction_userGetsDescriptions_alwaysOnlyOnWifi_ethernet() {
+        showDialog();
+
+        // User clicks on the "Always" option, keeps the "Only on Wi-Fi" option checked
+        onView(withId(R.id.image_descriptions_dialog_radio_button_always))
+                .inRoot(isDialog())
+                .perform(click());
+
+        // Setup wifi condition.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DeviceConditions.sForceConnectionTypeForTesting = true;
+                    DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_ETHERNET;
+                });
+
+        // User clicks "Get descriptions"
+        clickPositiveButton();
+
+        verify(mDelegate, times(1)).enableImageDescriptions(mProfile);
+        verify(mDelegate, never()).disableImageDescriptions(any());
+        verify(mDelegate, times(1)).setOnlyOnWifiRequirement(true, mProfile);
+        verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
+
+        onView(withText(R.string.image_descriptions_toast_on))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     public void testUserInteraction_userGetsDescriptions_alwaysOnlyOnWifi_noWifi()
             throws Exception {
         showDialog();

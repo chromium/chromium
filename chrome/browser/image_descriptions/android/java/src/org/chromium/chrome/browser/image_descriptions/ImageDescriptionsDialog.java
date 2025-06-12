@@ -223,11 +223,15 @@ public class ImageDescriptionsDialog
                                 ? ImageDescriptionsDialogAction.ENABLED_ONLY_ON_WIFI
                                 : ImageDescriptionsDialogAction.ENABLED;
 
-                // If user requested "only on wifi" and we have no wifi, provide alt toast.
-                if (mOnlyOnWifiState
-                        && (DeviceConditions.getCurrentNetConnectionType(mContext)
-                                != ConnectionType.CONNECTION_WIFI)) {
-                    toastMessage = R.string.image_descriptions_toast_on_no_wifi;
+                // If user requested "only on wifi" and we have no wifi or ethernet,
+                // provide alt toast.
+                if (mOnlyOnWifiState) {
+                    int currentNetType = DeviceConditions.getCurrentNetConnectionType(mContext);
+                    boolean isWifi = (currentNetType == ConnectionType.CONNECTION_WIFI);
+                    boolean isEthernet = (currentNetType == ConnectionType.CONNECTION_ETHERNET);
+                    if (!(isWifi || isEthernet)) {
+                        toastMessage = R.string.image_descriptions_toast_on_no_wifi;
+                    }
                 }
             } else if (mOptionJustOnceRadioButton.isChecked()) {
                 mControllerDelegate.getImageDescriptionsJustOnce(mDontAskAgainState, mWebContents);
