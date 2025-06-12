@@ -30,8 +30,10 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/password_change_info_bubble_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
@@ -54,6 +56,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/test/test_event.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/test/button_test_api.h"
 
 using affiliations::AffiliationService;
 using affiliations::MockAffiliationService;
@@ -911,4 +916,82 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
             delegate->GetCurrentState());
   EXPECT_TRUE(delegate_impl->ui_controller()->dialog_widget()->IsVisible());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+}
+
+// Verify that clicking cancel on the toast, stops the flow
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, CancelFromToast) {
+  SetPrivacyNoticeAcceptedPref();
+
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(
+          embedded_test_server()->GetURL("/password/done.html")));
+
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
+
+  auto* delegate = static_cast<PasswordChangeDelegateImpl*>(
+      password_change_service()->GetPasswordChangeDelegate(WebContents()));
+  EXPECT_TRUE(delegate);
+  EXPECT_TRUE(delegate->ui_controller()->toast_view());
+  // Verify action button is present and visible.
+  EXPECT_TRUE(delegate->ui_controller()->toast_view()->action_button());
+  EXPECT_TRUE(
+      delegate->ui_controller()->toast_view()->action_button()->GetVisible());
+
+  // Click action button, this should cancel the flow.
+  views::test::ButtonTestApi clicker(
+      delegate->ui_controller()->toast_view()->action_button());
+  clicker.NotifyClick(ui::test::TestEvent());
+  delegate = nullptr;
+
+  EXPECT_FALSE(
+      password_change_service()->GetPasswordChangeDelegate(WebContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewDetailsFromToast) {
+  SetPrivacyNoticeAcceptedPref();
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
+
+  MockPasswordChangeOutcome(
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
+
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
+  }));
+
+  EXPECT_TRUE(delegate);
+  auto* toast = static_cast<PasswordChangeDelegateImpl*>(delegate)
+                    ->ui_controller()
+                    ->toast_view();
+  EXPECT_TRUE(toast);
+  // Verify action button is present and visible.
+  EXPECT_TRUE(toast->action_button());
+  EXPECT_TRUE(toast->action_button()->GetVisible());
+
+  // Click action button, this should open Password Management.
+  views::test::ButtonTestApi clicker(toast->action_button());
+  delegate = nullptr;
+  toast = nullptr;
+
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_EQ(0, tab_strip->active_index());
+
+  clicker.NotifyClick(ui::test::TestEvent());
+
+  EXPECT_EQ(2, tab_strip->count());
+  EXPECT_EQ(1, tab_strip->active_index());
+
+  // Verify Password Management UI is opened.
+  EXPECT_EQ(url::Origin::Create(GURL("chrome://password-manager/")),
+            url::Origin::Create(tab_strip->GetActiveWebContents()->GetURL()));
 }

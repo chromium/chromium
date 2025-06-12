@@ -29,7 +29,10 @@ class PasswordChangeUIController {
   // Updates the `state_` and the UI.
   virtual void UpdateState(PasswordChangeDelegate::State state);
 
+#if defined(UNIT_TEST)
   const views::Widget* dialog_widget() const { return dialog_widget_.get(); }
+  PasswordChangeToast* toast_view() const { return toast_view_; }
+#endif
 
  private:
   std::variant<PasswordChangeToast::ToastOptions,
@@ -41,6 +44,7 @@ class PasswordChangeUIController {
 
   void OpenPasswordChangeTab();
   void StartPasswordChangeFlow();
+  void ShowPasswordDetails();
 
   // Closes the dialog and logs the `reason`.
   // TODO(crbug.com/407504591): Actually log the reason.

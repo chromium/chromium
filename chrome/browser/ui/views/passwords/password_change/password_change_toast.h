@@ -33,14 +33,16 @@ class PasswordChangeToast : public views::View, public views::DialogDelegate {
     ToastOptions(const std::u16string& text,
                  const gfx::VectorIcon& icon,
                  const std::u16string& action_button_text,
+                 base::OnceClosure action_button_closure = base::DoNothing(),
                  bool has_close_button = false);
 
     ToastOptions(const std::u16string& text,
                  const std::u16string& action_button_text,
+                 base::OnceClosure action_button_closure = base::DoNothing(),
                  bool has_close_button = false);
 
-    ToastOptions(const ToastOptions&);
-    ToastOptions& operator=(const ToastOptions&);
+    ToastOptions(ToastOptions&& other) noexcept;
+    ToastOptions& operator=(ToastOptions&& other) noexcept;
 
     ~ToastOptions();
 
@@ -48,6 +50,7 @@ class PasswordChangeToast : public views::View, public views::DialogDelegate {
     // If not present, throbber will be shown.
     std::optional<raw_ref<const gfx::VectorIcon>> icon;
     std::optional<std::u16string> action_button_text;
+    base::OnceClosure action_button_closure;
     bool has_close_button = false;
   };
 
@@ -78,6 +81,8 @@ class PasswordChangeToast : public views::View, public views::DialogDelegate {
 
   void OnActionButtonClicked();
   void OnCloseButtonClicked();
+
+  base::OnceClosure action_button_closure_;
 
   raw_ptr<views::Throbber> throbber_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;

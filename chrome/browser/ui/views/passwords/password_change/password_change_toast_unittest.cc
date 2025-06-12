@@ -51,37 +51,37 @@ class PasswordChangeToastTest : public ChromeViewsTestBase {
 
 TEST_F(PasswordChangeToastTest, DisplayedWithOptions) {
   PasswordChangeToast::ToastOptions options(u"Changing password...", u"Cancel");
-  auto* toast_view = ShowToast(options);
+  auto* toast_view = ShowToast(std::move(options));
   EXPECT_TRUE(toast_view->throbber()->GetVisible());
   EXPECT_FALSE(toast_view->icon_view()->GetVisible());
   EXPECT_TRUE(toast_view->label()->GetVisible());
-  EXPECT_EQ(options.text, toast_view->label()->GetText());
+  EXPECT_EQ(u"Changing password...", toast_view->label()->GetText());
   EXPECT_TRUE(toast_view->action_button()->GetVisible());
-  EXPECT_EQ(options.action_button_text, toast_view->action_button()->GetText());
+  EXPECT_EQ(u"Cancel", toast_view->action_button()->GetText());
   EXPECT_FALSE(toast_view->close_button()->GetVisible());
 }
 
 TEST_F(PasswordChangeToastTest, ConfigurationUpdated) {
   PasswordChangeToast::ToastOptions options(u"Checking sign in...", u"Cancel");
-  auto* toast_view = ShowToast(options);
+  auto* toast_view = ShowToast(std::move(options));
   EXPECT_TRUE(toast_view->throbber()->GetVisible());
   EXPECT_FALSE(toast_view->icon_view()->GetVisible());
   EXPECT_TRUE(toast_view->label()->GetVisible());
-  EXPECT_EQ(options.text, toast_view->label()->GetText());
+  EXPECT_EQ(u"Checking sign in...", toast_view->label()->GetText());
   EXPECT_TRUE(toast_view->action_button()->GetVisible());
-  EXPECT_EQ(options.action_button_text, toast_view->action_button()->GetText());
+  EXPECT_EQ(u"Cancel", toast_view->action_button()->GetText());
   EXPECT_FALSE(toast_view->close_button()->GetVisible());
 
   PasswordChangeToast::ToastOptions new_options(
       u"Password changed", vector_icons::kPasswordManagerIcon, u"Details",
+      base::DoNothing(),
       /*has_close_button=*/true);
-  toast_view->UpdateLayout(new_options);
+  toast_view->UpdateLayout(std::move(new_options));
   EXPECT_FALSE(toast_view->throbber()->GetVisible());
   EXPECT_TRUE(toast_view->icon_view()->GetVisible());
   EXPECT_TRUE(toast_view->label()->GetVisible());
-  EXPECT_EQ(new_options.text, toast_view->label()->GetText());
+  EXPECT_EQ(u"Password changed", toast_view->label()->GetText());
   EXPECT_TRUE(toast_view->action_button()->GetVisible());
-  EXPECT_EQ(new_options.action_button_text,
-            toast_view->action_button()->GetText());
+  EXPECT_EQ(u"Details", toast_view->action_button()->GetText());
   EXPECT_TRUE(toast_view->close_button()->GetVisible());
 }

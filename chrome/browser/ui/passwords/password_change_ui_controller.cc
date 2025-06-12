@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -147,6 +149,8 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
   auto open_password_change_tab_callback =
       base::BindOnce(&PasswordChangeUIController::OpenPasswordChangeTab,
                      base::Unretained(this));
+  auto cancel_password_change_callback = base::BindOnce(
+      &PasswordChangeDelegate::Stop, password_change_delegate_->AsWeakPtr());
   switch (state) {
     /* Dialogs */
     case PasswordChangeDelegate::State::kWaitingForAgreement:
@@ -177,13 +181,15 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_SIGN_IN_CHECK),
           l10n_util::GetStringUTF16(
-              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL));
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL),
+          std::move(cancel_password_change_callback));
     case PasswordChangeDelegate::State::kChangingPassword:
       return PasswordChangeToast::ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_CHANGING_PASSWORD),
           l10n_util::GetStringUTF16(
-              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL));
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL),
+          std::move(cancel_password_change_callback));
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
       return PasswordChangeToast::ToastOptions(
           l10n_util::GetStringUTF16(
@@ -191,6 +197,8 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
           vector_icons::kPasswordManagerIcon,
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_VIEW_DETAILS_BUTTON),
+          base::BindOnce(&PasswordChangeUIController::ShowPasswordDetails,
+                         base::Unretained(this)),
           true);
   }
 }
@@ -244,6 +252,18 @@ void PasswordChangeUIController::OpenPasswordChangeTab() {
 void PasswordChangeUIController::StartPasswordChangeFlow() {
   CHECK(password_change_delegate_);
   password_change_delegate_->StartPasswordChangeFlow();
+}
+
+void PasswordChangeUIController::ShowPasswordDetails() {
+  // TODO(crbug.com/338254375): Open password changed successfully bubble when
+  // applicable.
+  NavigateToPasswordDetailsPage(
+      chrome::FindBrowserWithTab(tab_interface_->GetContents()),
+      base::UTF16ToUTF8(password_change_delegate_->GetDisplayOrigin()),
+      password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
+
+  CHECK(password_change_delegate_);
+  password_change_delegate_->Stop();
 }
 
 void PasswordChangeUIController::CloseDialogWidget(

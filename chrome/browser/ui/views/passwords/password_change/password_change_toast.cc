@@ -49,28 +49,31 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordChangeToast,
 PasswordChangeToast::ToastOptions::ToastOptions(
     const std::u16string& text,
     const std::u16string& action_button_text,
+    base::OnceClosure action_button_closure,
     bool has_close_button)
     : text(text),
       icon(std::nullopt),
       action_button_text(action_button_text),
+      action_button_closure(std::move(action_button_closure)),
       has_close_button(has_close_button) {}
 
 PasswordChangeToast::ToastOptions::ToastOptions(
     const std::u16string& text,
     const gfx::VectorIcon& icon,
     const std::u16string& action_button_text,
+    base::OnceClosure action_button_closure,
     bool has_close_button)
     : text(text),
       icon(icon),
       action_button_text(action_button_text),
+      action_button_closure(std::move(action_button_closure)),
       has_close_button(has_close_button) {}
 
 PasswordChangeToast::ToastOptions::~ToastOptions() = default;
-
 PasswordChangeToast::ToastOptions::ToastOptions(
-    const PasswordChangeToast::ToastOptions&) = default;
+    PasswordChangeToast::ToastOptions&& other) noexcept = default;
 PasswordChangeToast::ToastOptions& PasswordChangeToast::ToastOptions::operator=(
-    const PasswordChangeToast::ToastOptions&) = default;
+    PasswordChangeToast::ToastOptions&& other) noexcept = default;
 
 PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -200,6 +203,7 @@ ui::mojom::ModalType PasswordChangeToast::GetModalType() const {
 }
 
 void PasswordChangeToast::UpdateConfiguration(ToastOptions configuration) {
+  action_button_closure_ = std::move(configuration.action_button_closure);
   ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
   icon_view_->SetVisible(configuration.icon.has_value());
   if (configuration.icon.has_value()) {
@@ -240,7 +244,7 @@ void PasswordChangeToast::OnCloseButtonClicked() {
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 void PasswordChangeToast::OnActionButtonClicked() {
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  std::move(action_button_closure_).Run();
 }
 
 BEGIN_METADATA(PasswordChangeToast)
