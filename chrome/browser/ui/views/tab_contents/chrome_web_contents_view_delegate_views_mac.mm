@@ -16,9 +16,11 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "components/remote_cocoa/browser/window.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
@@ -61,6 +63,15 @@ ChromeWebContentsViewDelegateViewsMac::GetDragDestDelegate() {
 void ChromeWebContentsViewDelegateViewsMac::ShowContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  // MacOS doesn't activate the `WebContents` on click by default so it must be
+  // manually configured. This is tied to the `kSideBySide` experiment because
+  // it is common to right click an inactive `WebContents` in split view.
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    if (!tabs::TabInterface::GetFromContents(web_contents_)->IsActivated()) {
+      web_contents_->Focus();
+    }
+  }
+
   ShowMenu(BuildMenu(
       render_frame_host,
       AddContextMenuParamsPropertiesFromPreferences(web_contents_, params)));
