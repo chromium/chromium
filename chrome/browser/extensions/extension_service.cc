@@ -391,9 +391,6 @@ void ExtensionService::LoadExtensionsFromCommandLineFlag(
   }
 
   // Check that --load-extension is allowed.
-  // TODO(crbug.com/419530940): Apply restrictions to
-  // --disable-extensions-except switch once the feature is approved and
-  // implemented.
   if (switch_name == switches::kLoadExtension) {
     if (base::FeatureList::IsEnabled(
             extensions_features::kDisableLoadExtensionCommandLineSwitch)) {
@@ -414,6 +411,13 @@ void ExtensionService::LoadExtensionsFromCommandLineFlag(
           << "ExtensionInstallTypeBlocklist::command_line, ignoring.";
       return;
     }
+  } else if (base::FeatureList::IsEnabled(
+                 extensions_features::
+                     kDisableDisableExtensionsExceptCommandLineSwitch)) {
+    DCHECK_EQ(switch_name, switches::kDisableExtensionsExcept);
+    LOG(WARNING) << "--disable-extensions-except is not allowed in Google "
+                    "Chrome, ignoring.";
+    return;
   }
 
   base::CommandLine::StringType path_list =

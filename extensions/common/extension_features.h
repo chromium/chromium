@@ -246,6 +246,10 @@ BASE_DECLARE_FEATURE(kSilentDebuggerExtensionAPI);
 // nothing breaks.
 BASE_DECLARE_FEATURE(kRemoveCoreSiteInstance);
 
+// Disables loading extensions via the `--disable-extensions-except` command
+// line switch.
+BASE_DECLARE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch);
+
 // Disables loading extensions via the `--load-extension` command line switch.
 BASE_DECLARE_FEATURE(kDisableLoadExtensionCommandLineSwitch);
 

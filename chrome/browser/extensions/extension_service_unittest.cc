@@ -6084,6 +6084,29 @@ TEST_F(ExtensionServiceTest, DisableLoadExtensionCommandLineSwitch) {
   histograms.ExpectTotalCount("Extensions.LoadingFromCommandLine", 0);
 }
 
+TEST_F(ExtensionServiceTest, DisableDisableExtensionsExceptCommandLineSwitch) {
+  base::test::ScopedFeatureList feature_list(
+      /*enable_feature=*/extensions_features::
+          kDisableDisableExtensionsExceptCommandLineSwitch);
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+
+  // Try to load an extension from command line.
+  base::FilePath path =
+      base::MakeAbsoluteFilePath(data_dir().AppendASCII("good_unpacked"));
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      switches::kDisableExtensionsExcept, path);
+  service()->Init();
+
+  ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
+  // Wait until the extension system is ready.
+  base::RunLoop run_loop;
+  extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_EQ(0u, loaded_extensions().size());
+  ValidatePrefKeyCount(0);
+}
+
 // Tests that we generate IDs when they are not specified in the manifest for
 // --load-extension.
 TEST_F(ExtensionServiceTest, GenerateID) {

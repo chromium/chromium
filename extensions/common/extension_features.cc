@@ -198,6 +198,17 @@ BASE_FEATURE(kRemoveCoreSiteInstance,
              "RemoveCoreSiteInstance",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch,
+             "DisableDisableExtensionsExceptCommandLineSwitch",
+// TODO(crbug.com/419530940): Enable feature for Google Chrome Branding once
+// ready.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+);
+
 BASE_FEATURE(kDisableLoadExtensionCommandLineSwitch,
              "DisableLoadExtensionCommandLineSwitch",
 // --load-extension is disabled for chrome-branded release builds except on
