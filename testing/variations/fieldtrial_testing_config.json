@@ -746,12 +746,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledCustomCpaTimeout",
                     "params": {
                         "always_on_entry_point": "false",
                         "custom_cpa_timeout": "300",
                         "custom_cpa_timeout_enabled": "true",
-                        "trigger_on_mobile_friendly_pages": "true"
+                        "trigger_on_mobile_friendly_pages": "false"
                     },
                     "enable_features": [
                         "ReaderModeImprovements"
