@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/search_engines/search_engines_pref_names.h"

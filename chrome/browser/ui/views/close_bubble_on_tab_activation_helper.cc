@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 
