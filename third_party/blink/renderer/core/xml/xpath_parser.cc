@@ -60,17 +60,17 @@ static XMLCat CharCat(UChar a_char) {
 
   if (a_char == '.' || a_char == '-')
     return kNameCont;
-  WTF::unicode::CharCategory category = WTF::unicode::Category(a_char);
-  if (category &
-      (WTF::unicode::kLetter_Uppercase | WTF::unicode::kLetter_Lowercase |
-       WTF::unicode::kLetter_Other | WTF::unicode::kLetter_Titlecase |
-       WTF::unicode::kNumber_Letter))
+  unicode::CharCategory category = unicode::Category(a_char);
+  if (category & (unicode::kLetter_Uppercase | unicode::kLetter_Lowercase |
+                  unicode::kLetter_Other | unicode::kLetter_Titlecase |
+                  unicode::kNumber_Letter)) {
     return kNameStart;
-  if (category &
-      (WTF::unicode::kMark_NonSpacing | WTF::unicode::kMark_SpacingCombining |
-       WTF::unicode::kMark_Enclosing | WTF::unicode::kLetter_Modifier |
-       WTF::unicode::kNumber_DecimalDigit))
+  }
+  if (category & (unicode::kMark_NonSpacing | unicode::kMark_SpacingCombining |
+                  unicode::kMark_Enclosing | unicode::kLetter_Modifier |
+                  unicode::kNumber_DecimalDigit)) {
     return kNameCont;
+  }
   return kNotPartOfName;
 }
 

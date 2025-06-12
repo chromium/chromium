@@ -133,8 +133,9 @@ PositionInFlatTree NextWordPositionInternal(
         // Accumulate punctuation/surrogate pair runs.
         if (static_cast<unsigned>(runner) < text.length() &&
             IsWordBoundary(text[runner])) {
-          if (WTF::unicode::IsAlphanumeric(text[runner - 1]))
+          if (unicode::IsAlphanumeric(text[runner - 1])) {
             return SkipWhitespaceIfNeeded(text, runner);
+          }
           continue;
         }
         // We stop searching in the following conditions:
@@ -166,10 +167,11 @@ PositionInFlatTree NextWordPositionInternal(
         for (unsigned runner = static_cast<unsigned>(offset);
              runner < text.length(); ++runner) {
           if (!(IsWhitespace(text[runner]) ||
-                WTF::unicode::Direction(text[runner]) ==
-                    WTF::unicode::kWhiteSpaceNeutral) ||
-              IsLineBreak(text[runner]))
+                unicode::Direction(text[runner]) ==
+                    unicode::kWhiteSpaceNeutral) ||
+              IsLineBreak(text[runner])) {
             return Position::Before(runner);
+          }
         }
       }
       return Position::Before(offset);
@@ -213,8 +215,9 @@ PositionInFlatTree PreviousWordPositionInternal(
         // Accumulate punctuation/surrogate pair runs.
         if (static_cast<unsigned>(runner) < text.length() &&
             IsWordBoundary(text[runner])) {
-          if (WTF::unicode::IsAlphanumeric(text[runner - 1]))
+          if (unicode::IsAlphanumeric(text[runner - 1])) {
             return Position::Before(runner);
+          }
           punct_runner = runner;
           continue;
         }
@@ -373,14 +376,14 @@ Position MiddleOfWordPosition(const Position& word_start,
 }
 
 bool IsWordBreak(UChar ch) {
-  return (WTF::unicode::IsPrintableChar(ch) && !IsWhitespace(ch)) ||
+  return (unicode::IsPrintableChar(ch) && !IsWhitespace(ch)) ||
          U16_IS_SURROGATE(ch) || IsLineBreak(ch) || ch == kLowLineCharacter;
 }
 
 bool IsWordBoundary(UChar ch) {
-  return WTF::unicode::IsPunct(ch) ||
+  return unicode::IsPunct(ch) ||
          (RuntimeEnabledFeatures::TreatSymbolsAsWordBoundaryEnabled() &&
-          WTF::unicode::IsSymbol(ch)) ||
+          unicode::IsSymbol(ch)) ||
          U16_IS_SURROGATE(ch);
 }
 

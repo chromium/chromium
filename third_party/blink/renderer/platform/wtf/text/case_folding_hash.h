@@ -47,7 +47,7 @@ namespace WTF {
 // always treat data as UTF-16, expanding Latin1 as we go. This means
 // we also don't bother to try to make tricky SIMD implementations
 // for Latin1; we just use the most straightforward code. (Full lookup
-// into WTF::unicode::FoldCase is slow enough that it probably dwarfs
+// into blink::unicode::FoldCase is slow enough that it probably dwarfs
 // all other performance concerns anyway.)
 template <class T>
   requires std::is_same_v<T, LChar> || std::is_same_v<T, UChar>
@@ -82,11 +82,11 @@ struct CaseFoldingHashReader {
     if (std::is_same<T, LChar>::value) {
       return StringImpl::kLatin1CaseFoldTable[ch];
     }
-    // It's possible for WTF::unicode::foldCase() to return a 32-bit value
+    // It's possible for blink::unicode::FoldCase() to return a 32-bit value
     // that's not representable as a UChar.  However, since this is rare and
     // deterministic, and the result of this is merely used for hashing, go
     // ahead and clamp the value.
-    return static_cast<UChar>(WTF::unicode::FoldCase(ch));
+    return static_cast<UChar>(blink::unicode::FoldCase(ch));
   }
 };
 

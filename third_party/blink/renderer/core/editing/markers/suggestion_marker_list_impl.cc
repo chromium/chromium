@@ -35,17 +35,19 @@ ComputeOffsetsAfterNonSuggestionEditingOperating(const DocumentMarker& marker,
   // Text inserted/replaced immediately after the marker, remove marker if first
   // character is a (Unicode) letter or digit
   if (offset == marker_end && new_length > 0) {
-    if (WTF::unicode::IsAlphanumeric(GetCodePointAt(node_text, offset)))
+    if (unicode::IsAlphanumeric(GetCodePointAt(node_text, offset))) {
       return {};
+    }
     return marker.ComputeOffsetsAfterShift(offset, old_length, new_length);
   }
 
   // Text inserted/replaced immediately before the marker, remove marker if
   // first character is a (Unicode) letter or digit
   if (offset == marker_start && new_length > 0) {
-    if (WTF::unicode::IsAlphanumeric(
-            GetCodePointAt(node_text, offset + new_length - 1)))
+    if (unicode::IsAlphanumeric(
+            GetCodePointAt(node_text, offset + new_length - 1))) {
       return {};
+    }
     return marker.ComputeOffsetsAfterShift(offset, old_length, new_length);
   }
 

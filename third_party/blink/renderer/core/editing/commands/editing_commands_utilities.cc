@@ -351,7 +351,7 @@ Position LeadingCollapsibleWhitespacePosition(const Position& position,
   const String& string = anchor_text_node->data();
   const UChar previous_character = string[prev.ComputeOffsetInContainerNode()];
   const bool is_space = option == kConsiderNonCollapsibleWhitespace
-                            ? (IsSpaceOrNewline(previous_character) ||
+                            ? (unicode::IsSpaceOrNewline(previous_character) ||
                                previous_character == kNoBreakSpaceCharacter)
                             : IsCollapsibleWhitespace(previous_character);
   if (!is_space || !IsEditablePosition(prev))

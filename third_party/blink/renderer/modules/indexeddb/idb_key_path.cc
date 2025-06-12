@@ -40,22 +40,20 @@ namespace {
 
 // The following correspond to grammar in ECMA-262.
 const uint32_t kUnicodeLetter =
-    WTF::unicode::kLetter_Uppercase | WTF::unicode::kLetter_Lowercase |
-    WTF::unicode::kLetter_Titlecase | WTF::unicode::kLetter_Modifier |
-    WTF::unicode::kLetter_Other | WTF::unicode::kNumber_Letter;
+    unicode::kLetter_Uppercase | unicode::kLetter_Lowercase |
+    unicode::kLetter_Titlecase | unicode::kLetter_Modifier |
+    unicode::kLetter_Other | unicode::kNumber_Letter;
 const uint32_t kUnicodeCombiningMark =
-    WTF::unicode::kMark_NonSpacing | WTF::unicode::kMark_SpacingCombining;
-const uint32_t kUnicodeDigit = WTF::unicode::kNumber_DecimalDigit;
-const uint32_t kUnicodeConnectorPunctuation =
-    WTF::unicode::kPunctuation_Connector;
+    unicode::kMark_NonSpacing | unicode::kMark_SpacingCombining;
+const uint32_t kUnicodeDigit = unicode::kNumber_DecimalDigit;
+const uint32_t kUnicodeConnectorPunctuation = unicode::kPunctuation_Connector;
 
 static inline bool IsIdentifierStartCharacter(UChar c) {
-  return (WTF::unicode::Category(c) & kUnicodeLetter) || (c == '$') ||
-         (c == '_');
+  return (unicode::Category(c) & kUnicodeLetter) || (c == '$') || (c == '_');
 }
 
 static inline bool IsIdentifierCharacter(UChar c) {
-  return (WTF::unicode::Category(c) &
+  return (unicode::Category(c) &
           (kUnicodeLetter | kUnicodeCombiningMark | kUnicodeDigit |
            kUnicodeConnectorPunctuation)) ||
          (c == '$') || (c == '_') || (c == kZeroWidthNonJoinerCharacter) ||

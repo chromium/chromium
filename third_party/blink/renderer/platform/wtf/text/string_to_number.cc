@@ -59,7 +59,7 @@ static inline IntegralType ToIntegralType(base::span<const CharType> chars,
     goto bye;
 
   if (options.AcceptWhitespace()) {
-    while (length && IsSpaceOrNewline(*data)) {
+    while (length && blink::unicode::IsSpaceOrNewline(*data)) {
       --length;
       ++data;
     }
@@ -126,7 +126,7 @@ static inline IntegralType ToIntegralType(base::span<const CharType> chars,
   }
 
   if (options.AcceptWhitespace()) {
-    while (length && IsSpaceOrNewline(*data)) {
+    while (length && blink::unicode::IsSpaceOrNewline(*data)) {
       --length;
       ++data;
     }

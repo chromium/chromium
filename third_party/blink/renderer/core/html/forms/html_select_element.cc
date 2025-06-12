@@ -1333,7 +1333,7 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kKeypress && keyboard_event) {
     if (!keyboard_event->ctrlKey() && !keyboard_event->altKey() &&
         !keyboard_event->metaKey() &&
-        WTF::unicode::IsPrintableChar(keyboard_event->charCode())) {
+        unicode::IsPrintableChar(keyboard_event->charCode())) {
       TypeAheadFind(*keyboard_event);
       event.SetDefaultHandled();
       return;

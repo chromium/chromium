@@ -49,12 +49,12 @@ namespace {
 // (Pe), "initial" (Pi). "final" (Pf) and "other" (Po) punctuation classes),
 // that precedes or follows the first letter should be included"
 inline bool IsPunctuationForFirstLetter(UChar32 c) {
-  WTF::unicode::CharCategory char_category = WTF::unicode::Category(c);
-  return char_category == WTF::unicode::kPunctuation_Open ||
-         char_category == WTF::unicode::kPunctuation_Close ||
-         char_category == WTF::unicode::kPunctuation_InitialQuote ||
-         char_category == WTF::unicode::kPunctuation_FinalQuote ||
-         char_category == WTF::unicode::kPunctuation_Other;
+  unicode::CharCategory char_category = unicode::Category(c);
+  return char_category == unicode::kPunctuation_Open ||
+         char_category == unicode::kPunctuation_Close ||
+         char_category == unicode::kPunctuation_InitialQuote ||
+         char_category == unicode::kPunctuation_FinalQuote ||
+         char_category == unicode::kPunctuation_Other;
 }
 
 bool IsPunctuationForFirstLetter(const String& string, unsigned offset) {
@@ -74,11 +74,11 @@ inline bool IsSpace(UChar c) {
     return false;
   }
 
-  return IsSpaceOrNewline(c);
+  return unicode::IsSpaceOrNewline(c);
 }
 
 inline bool IsSpaceForFirstLetter(UChar c, bool preserve_breaks) {
-  return (preserve_breaks ? IsSpace(c) : IsSpaceOrNewline(c)) ||
+  return (preserve_breaks ? IsSpace(c) : unicode::IsSpaceOrNewline(c)) ||
          c == WTF::unicode::kNoBreakSpaceCharacter;
 }
 

@@ -51,7 +51,7 @@ class PLATFORM_EXPORT Hyphenation : public RefCounted<Hyphenation> {
     if (word.length() < MinWordLength())
       return false;
     // Avoid hyphenating capitalized words.
-    return hyphenate_capitalized_word_ || !WTF::unicode::IsUpper(word[0]);
+    return hyphenate_capitalized_word_ || !unicode::IsUpper(word[0]);
   }
 
  private:

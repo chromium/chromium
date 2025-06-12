@@ -281,8 +281,8 @@ class PLATFORM_EXPORT SegmentedString {
   }
 
   ALWAYS_INLINE UChar AdvanceAndASSERTIgnoringCase(UChar expected_character) {
-    DCHECK_EQ(WTF::unicode::FoldCase(CurrentChar()),
-              WTF::unicode::FoldCase(expected_character));
+    DCHECK_EQ(unicode::FoldCase(CurrentChar()),
+              unicode::FoldCase(expected_character));
     return Advance();
   }
 

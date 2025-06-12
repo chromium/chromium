@@ -46,8 +46,10 @@ static String StripLeadingWhiteSpace(const String& string) {
 
   unsigned i;
   for (i = 0; i < length; ++i) {
-    if (string[i] != kNoBreakSpaceCharacter && !IsSpaceOrNewline(string[i]))
+    if (string[i] != kNoBreakSpaceCharacter &&
+        !unicode::IsSpaceOrNewline(string[i])) {
       break;
+    }
   }
 
   return string.Substring(i, length - i);

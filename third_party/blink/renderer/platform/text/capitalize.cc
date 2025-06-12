@@ -48,7 +48,7 @@ String Capitalize(const String& string, UChar previous_character) {
       result.Append(
           input[start_of_word - 1] == kNoBreakSpaceCharacter
               ? kNoBreakSpaceCharacter
-              : WTF::unicode::ToTitleCase(string_with_previous[start_of_word]));
+              : unicode::ToTitleCase(string_with_previous[start_of_word]));
     }
     for (int i = start_of_word + 1; i < end_of_word; i++)
       result.Append(input[i - 1]);

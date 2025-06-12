@@ -227,7 +227,7 @@ scoped_refptr<StringImpl> CaseMap::TryFastToLowerInvariant(StringImpl* source) {
       const LChar ch = source8_tail[i];
       LChar lowered_ch;
       if (ch & ~0x7F) [[unlikely]] {
-        lowered_ch = static_cast<LChar>(unicode::ToLower(ch));
+        lowered_ch = static_cast<LChar>(blink::unicode::ToLower(ch));
       } else {
         lowered_ch = ToASCIILower(ch);
       }
@@ -329,7 +329,7 @@ scoped_refptr<StringImpl> CaseMap::ToUpperInvariant(StringImpl* source,
       if (c == kSmallLetterSharpSCharacter) [[unlikely]] {
         ++count_sharp_s_characters;
       }
-      const UChar upper = static_cast<UChar>(unicode::ToUpper(c));
+      const UChar upper = static_cast<UChar>(blink::unicode::ToUpper(c));
       if (upper > 0xff) [[unlikely]] {
         // Since this upper-cased character does not fit in an 8-bit string, we
         // need to take the 16-bit path.
@@ -356,7 +356,7 @@ scoped_refptr<StringImpl> CaseMap::ToUpperInvariant(StringImpl* source,
         if (offset_map)
           offset_map->Append(i + 1, dest_index);
       } else {
-        data8[dest_index++] = static_cast<LChar>(unicode::ToUpper(c));
+        data8[dest_index++] = static_cast<LChar>(blink::unicode::ToUpper(c));
       }
     }
     return new_impl;

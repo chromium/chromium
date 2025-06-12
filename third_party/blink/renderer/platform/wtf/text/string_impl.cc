@@ -489,7 +489,7 @@ scoped_refptr<StringImpl> StringImpl::FoldCase() {
     // Do a slower implementation for cases that include non-ASCII Latin-1
     // characters.
     for (size_t i = 0; i < source8.size(); ++i) {
-      data8[i] = static_cast<LChar>(unicode::ToLower(source8[i]));
+      data8[i] = static_cast<LChar>(blink::unicode::ToLower(source8[i]));
     }
     return new_impl;
   }
@@ -601,7 +601,9 @@ class SpaceOrNewlinePredicate final {
   STACK_ALLOCATED();
 
  public:
-  inline bool operator()(UChar ch) const { return IsSpaceOrNewline(ch); }
+  inline bool operator()(UChar ch) const {
+    return blink::unicode::IsSpaceOrNewline(ch);
+  }
 };
 
 wtf_size_t StringImpl::LengthWithStrippedWhiteSpace() const {
@@ -882,7 +884,7 @@ bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
   while (length--) {
     // SAFETY: The above `CHECK_EQ()` and `while (length--)` guarantees that
     // `a_data` moves inside `a`, and `b_data` moves inside `b`.
-    if (UNSAFE_BUFFERS(unicode::FoldCase(*a_data++) !=
+    if (UNSAFE_BUFFERS(blink::unicode::FoldCase(*a_data++) !=
                        StringImpl::kLatin1CaseFoldTable[*b_data++])) {
       return false;
     }

@@ -224,7 +224,7 @@ static Position TrailingWhitespacePosition(const Position& position,
       CharacterAfter(visible_position);
   const bool is_space =
       option == kConsiderNonCollapsibleWhitespace
-          ? (IsSpaceOrNewline(character_after_visible_position) ||
+          ? (unicode::IsSpaceOrNewline(character_after_visible_position) ||
              character_after_visible_position == kNoBreakSpaceCharacter)
           : IsCollapsibleWhitespace(character_after_visible_position);
   // The space must not be in another paragraph and it must be editable.

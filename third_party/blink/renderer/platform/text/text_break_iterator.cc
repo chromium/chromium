@@ -141,9 +141,9 @@ static inline bool ShouldKeepAfterKeepAll(UChar last_ch,
                                           UChar next_ch) {
   UChar pre_ch = U_MASK(u_charType(ch)) & U_GC_M_MASK ? last_ch : ch;
   return U_MASK(u_charType(pre_ch)) & (U_GC_L_MASK | U_GC_N_MASK) &&
-         !WTF::unicode::HasLineBreakingPropertyComplexContext(pre_ch) &&
+         !unicode::HasLineBreakingPropertyComplexContext(pre_ch) &&
          U_MASK(u_charType(next_ch)) & (U_GC_L_MASK | U_GC_N_MASK) &&
-         !WTF::unicode::HasLineBreakingPropertyComplexContext(next_ch);
+         !unicode::HasLineBreakingPropertyComplexContext(next_ch);
 }
 
 enum class FastBreakResult : uint8_t { kNoBreak, kCanBreak, kUnknown };

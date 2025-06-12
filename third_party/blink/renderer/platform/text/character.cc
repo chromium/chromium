@@ -242,12 +242,12 @@ bool Character::CanTextDecorationSkipInk(UChar32 codepoint) {
 }
 
 bool Character::CanReceiveTextEmphasis(UChar32 c) {
-  WTF::unicode::CharCategory category = WTF::unicode::Category(c);
-  if (category &
-      (WTF::unicode::kSeparator_Space | WTF::unicode::kSeparator_Line |
-       WTF::unicode::kSeparator_Paragraph | WTF::unicode::kOther_NotAssigned |
-       WTF::unicode::kOther_Control | WTF::unicode::kOther_Format))
+  unicode::CharCategory category = unicode::Category(c);
+  if (category & (unicode::kSeparator_Space | unicode::kSeparator_Line |
+                  unicode::kSeparator_Paragraph | unicode::kOther_NotAssigned |
+                  unicode::kOther_Control | unicode::kOther_Format)) {
     return false;
+  }
 
   // Additional word-separator characters listed in CSS Text Level 3 Editor's
   // Draft 3 November 2010.
@@ -262,11 +262,10 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
 
   // Punctuation
   if (category &
-      (WTF::unicode::kPunctuation_Dash | WTF::unicode::kPunctuation_Open |
-       WTF::unicode::kPunctuation_Close | WTF::unicode::kPunctuation_Connector |
-       WTF::unicode::kPunctuation_Other |
-       WTF::unicode::kPunctuation_InitialQuote |
-       WTF::unicode::kPunctuation_FinalQuote)) {
+      (unicode::kPunctuation_Dash | unicode::kPunctuation_Open |
+       unicode::kPunctuation_Close | unicode::kPunctuation_Connector |
+       unicode::kPunctuation_Other | unicode::kPunctuation_InitialQuote |
+       unicode::kPunctuation_FinalQuote)) {
     return false;
   }
   // TODO(layout-dev): css/css-text-decor/text-emphasis-punctuation-3.html
@@ -306,7 +305,7 @@ bool Character::IsCommonOrInheritedScript(UChar32 character) {
 }
 
 bool Character::IsPrivateUse(UChar32 character) {
-  return WTF::unicode::Category(character) & WTF::unicode::kOther_PrivateUse;
+  return unicode::Category(character) & unicode::kOther_PrivateUse;
 }
 
 bool Character::IsNonCharacter(UChar32 character) {

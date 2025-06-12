@@ -494,10 +494,9 @@ void DateTimeEditBuilder::VisitLiteral(const String& text) {
   element->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
                                   CSSValueID::kNormal);
   if (parameters_.locale.IsRTL() && text.length()) {
-    WTF::unicode::CharDirection dir = WTF::unicode::Direction(text[0]);
-    if (dir == WTF::unicode::kSegmentSeparator ||
-        dir == WTF::unicode::kWhiteSpaceNeutral ||
-        dir == WTF::unicode::kOtherNeutral) {
+    unicode::CharDirection dir = unicode::Direction(text[0]);
+    if (dir == unicode::kSegmentSeparator ||
+        dir == unicode::kWhiteSpaceNeutral || dir == unicode::kOtherNeutral) {
       element->AppendChild(
           Text::Create(EditElement().GetDocument(),
                        String(base::span_from_ref(kRightToLeftMarkCharacter))));

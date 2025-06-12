@@ -438,7 +438,7 @@ void AbstractInlineTextBox::GetWordBoundariesForText(
       //
       // At beginning of text, or right after an alphanumeric character or a
       // character that cannot be a word break.
-      if (offset == 0 || WTF::unicode::IsAlphanumeric(text[offset - 1]) ||
+      if (offset == 0 || unicode::IsAlphanumeric(text[offset - 1]) ||
           !IsWordBreak(text[offset - 1])) {
         if (word_start) {
           words.emplace_back(*word_start, offset);

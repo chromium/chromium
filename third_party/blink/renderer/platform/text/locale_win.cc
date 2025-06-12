@@ -419,10 +419,8 @@ unsigned LocaleWin::FirstDayOfWeek() {
 }
 
 bool LocaleWin::IsRTL() {
-  WTF::unicode::CharDirection dir =
-      WTF::unicode::Direction(MonthLabels()[0][0]);
-  return dir == WTF::unicode::kRightToLeft ||
-         dir == WTF::unicode::kRightToLeftArabic;
+  unicode::CharDirection dir = unicode::Direction(MonthLabels()[0][0]);
+  return dir == unicode::kRightToLeft || dir == unicode::kRightToLeftArabic;
 }
 
 String LocaleWin::DateFormat() {

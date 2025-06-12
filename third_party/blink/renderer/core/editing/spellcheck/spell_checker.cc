@@ -71,7 +71,7 @@ bool CheckingRangeCovers(int checking_range_length, int location, int length) {
 }
 
 bool IsWhiteSpaceOrPunctuation(UChar c) {
-  return IsSpaceOrNewline(c) || WTF::unicode::IsPunct(c);
+  return unicode::IsSpaceOrNewline(c) || unicode::IsPunct(c);
 }
 
 }  // namespace
