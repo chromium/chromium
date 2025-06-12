@@ -21,8 +21,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefetch/pref_names.h"
-#include "chrome/browser/preloading/autocomplete_dictionary_preload_service.h"
-#include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -700,15 +698,6 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
   // Do not perform preloading if there is no active tab.
   if (!web_contents)
     return;
-
-  // This preloads dictionaries for AutocompleteResult's `destination_url` which
-  // are not specific to search prefetch.
-  // TODO(crbug.com/423789034): Consider moving somewhere more suitable.
-  if (auto* dictionary_preload_service =
-          AutocompleteDictionaryPreloadServiceFactory::GetForProfile(
-              profile_)) {
-    dictionary_preload_service->MaybePreload(result);
-  }
 
   for (const auto& match : result) {
     // Return early if neither prefetch nor prerender are enabled for the match.

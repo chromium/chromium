@@ -4,8 +4,6 @@
 
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline_manager.h"
 
-#include "chrome/browser/preloading/autocomplete_dictionary_preload_service.h"
-#include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
@@ -90,15 +88,6 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
   CHECK(template_url_service);
   if (!template_url_service->GetDefaultSearchProvider()) {
     return;
-  }
-
-  // This preloads dictionaries for AutocompleteResult's `destination_url` which
-  // are not specific to search prefetch.
-  // TODO(crbug.com/423789034): Consider moving somewhere more suitable.
-  if (auto* dictionary_preload_service =
-          AutocompleteDictionaryPreloadServiceFactory::GetForProfile(
-              &profile)) {
-    dictionary_preload_service->MaybePreload(result);
   }
 
   // Erase to count prefetches.

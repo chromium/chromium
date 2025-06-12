@@ -12,6 +12,8 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/preloading/autocomplete_dictionary_preload_service.h"
+#include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
@@ -86,6 +88,11 @@ void OmniboxPrerender::PrerenderMaybe(
     return;
   if (!profile)
     return;
+
+  if (auto* dictionary_preload_service =
+          AutocompleteDictionaryPreloadServiceFactory::GetForProfile(profile)) {
+    dictionary_preload_service->MaybePreload(*autocomplete_result);
+  }
 
   // TODO(crbug.com/40830195): Consider how to co-work with preconnect.
   if (SearchPrefetchService* search_prefetch_service =

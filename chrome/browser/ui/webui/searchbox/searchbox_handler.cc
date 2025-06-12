@@ -14,6 +14,8 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
+#include "chrome/browser/preloading/autocomplete_dictionary_preload_service.h"
+#include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
@@ -826,6 +828,12 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
   //  AutocompleteController and move this logic to the RealboxOmniboxClient.
   if (owned_controller_) {
     if (autocomplete_controller()->done()) {
+      if (auto* dictionary_preload_service =
+              AutocompleteDictionaryPreloadServiceFactory::GetForProfile(
+                  profile_)) {
+        dictionary_preload_service->MaybePreload(
+            autocomplete_controller()->result());
+      }
       if (SearchPrefetchService* search_prefetch_service =
               SearchPrefetchServiceFactory::GetForProfile(profile_)) {
         search_prefetch_service->OnResultChanged(
