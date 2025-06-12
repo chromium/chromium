@@ -215,7 +215,7 @@ using collaboration::CollaborationControllerDelegate;
   self.mediator.delegate = self.gridMediatorDelegate;
   self.mediator.toolbarsMutator = self.toolbarsMutator;
   self.mediator.tabGridHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), TabGridCommands);
+      HandlerForProtocol(dispatcher, TabGridCommands);
 
   self.gridViewController.tabGridHandler =
       HandlerForProtocol(dispatcher, TabGridCommands);

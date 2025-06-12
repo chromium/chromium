@@ -167,12 +167,15 @@
   if (incognitoBrowser) {
     _browser = incognitoBrowser->AsWeakPtr();
     _tabContextMenuHelper.profile = incognitoBrowser->GetProfile();
-    [incognitoBrowser->GetCommandDispatcher()
-        startDispatchingToTarget:self
-                     forProtocol:@protocol(TabGroupsCommands)];
+
+    CommandDispatcher* dispatcher = incognitoBrowser->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:self
+                             forProtocol:@protocol(TabGroupsCommands)];
     _mediator.tabGroupsHandler = self;
-    _mediator.tabGridHandler = HandlerForProtocol(
-        incognitoBrowser->GetCommandDispatcher(), TabGridCommands);
+    _mediator.tabGridHandler = HandlerForProtocol(dispatcher, TabGridCommands);
+
+    _gridViewController.tabGridHandler =
+        HandlerForProtocol(dispatcher, TabGridCommands);
   } else {
     _tabContextMenuHelper.profile = nullptr;
   }
