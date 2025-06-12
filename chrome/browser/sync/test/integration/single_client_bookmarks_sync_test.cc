@@ -3168,12 +3168,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PRE_ComparisonMetrics) {
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
       "ConsideringAllBookmarks.ByUrl",
-      /*sample=*/4 /*kLocalDataIsStrictSubsetOfAccountData*/,
+      /*sample=*/4 /*kAccountDataIsStrictSubsetOfLocalData*/,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
       "ConsideringAllBookmarks.ByUrlAndUuid",
-      /*sample=*/4 /*kLocalDataIsStrictSubsetOfAccountData*/,
+      /*sample=*/4 /*kAccountDataIsStrictSubsetOfLocalData*/,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
@@ -3183,7 +3183,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PRE_ComparisonMetrics) {
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
       "ConsideringAllBookmarks.ByUrlAndUuid.Between1And19LocalUrlBookmarks",
-      /*sample=*/4 /*kLocalDataIsStrictSubsetOfAccountData*/,
+      /*sample=*/4 /*kAccountDataIsStrictSubsetOfLocalData*/,
       /*expected_bucket_count=*/1);
 
   // Enable Sync with a different account.
