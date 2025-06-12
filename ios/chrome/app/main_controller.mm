@@ -225,6 +225,10 @@ NSString* const kDefaultBrowserStatusCheck = @"DefaultBrowserStatusCheck";
 // Constant for enabling widgets for multi-profile.
 NSString* const kWidgetsForMultiprofileKey = @"WidgetsForMultiprofileKey";
 
+// Constant for enabling share extension for multi-profile.
+NSString* const kShareExtensionForMultiprofileKey =
+    @"ShareExtensionForMultiprofileKey";
+
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
   component_updater::ComponentUpdateService* cus =
@@ -1447,6 +1451,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     },
     kWidgetsForMultiprofileKey : @{
       kFieldTrialValueKey : @(IsWidgetsForMultiprofileEnabled()),
+      kFieldTrialVersionKey : @1,
+    },
+    kShareExtensionForMultiprofileKey : @{
+      kFieldTrialValueKey : @(IsShareExtensionForMultiprofileEnabled()),
       kFieldTrialVersionKey : @1,
     },
   };
