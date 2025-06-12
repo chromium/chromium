@@ -313,4 +313,19 @@ TEST_F(NearbyShareFeaturePodControllerTest,
   EXPECT_TRUE(IsButtonToggled());
 }
 
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_NoButtonToggle_WhenNotOnboarded) {
+  EnableQuickShareV2();
+  SimulateUserLogin(kRegularUserLoginInfo);
+  test_delegate_->SetEnabled(false);
+  test_delegate_->set_is_onboarding_complete(false);
+  SetUpButton();
+
+  PressIcon();
+  EXPECT_FALSE(IsButtonToggled());
+
+  PressLabel();
+  EXPECT_FALSE(IsButtonToggled());
+}
+
 }  // namespace ash

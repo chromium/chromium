@@ -150,8 +150,14 @@ QsFeatureCatalogName NearbyShareFeaturePodController::GetCatalogName() {
 void NearbyShareFeaturePodController::OnIconPressed() {
   if (chromeos::features::IsQuickShareV2Enabled()) {
     CHECK(nearby_share_delegate_);
-    nearby_share_delegate_->SetEnabled(!nearby_share_delegate_->IsEnabled());
-    UpdateQSv2Button();
+
+    if (nearby_share_delegate_->IsOnboardingComplete()) {
+      nearby_share_delegate_->SetEnabled(!nearby_share_delegate_->IsEnabled());
+      UpdateQSv2Button();
+      return;
+    }
+
+    nearby_share_delegate_->ShowOnboardingPage();
     return;
   }
 
@@ -166,7 +172,13 @@ void NearbyShareFeaturePodController::OnIconPressed() {
 
 void NearbyShareFeaturePodController::OnLabelPressed() {
   if (chromeos::features::IsQuickShareV2Enabled()) {
-    tray_controller_->ShowNearbyShareDetailedView();
+    CHECK(nearby_share_delegate_);
+    if (nearby_share_delegate_->IsOnboardingComplete()) {
+      tray_controller_->ShowNearbyShareDetailedView();
+      return;
+    }
+
+    nearby_share_delegate_->ShowOnboardingPage();
     return;
   }
 
