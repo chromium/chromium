@@ -9149,3 +9149,6 @@ crbug.com/415666471 [ Linux ] virtual/speech-with-unified-autoplay/external/wpt/
 # Gardener 2025-06-10
 crbug.com/424009458 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure Pass ]
 crbug.com/423416578 [ Linux ] custom-elements/form-validation-bubble-appearance.html [ Crash Failure Pass ]
+
+# Gardener 2025-06-12
+crbug.com/422636456 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Timeout Pass ]
