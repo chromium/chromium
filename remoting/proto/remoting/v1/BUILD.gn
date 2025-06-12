@@ -43,18 +43,6 @@ proto_library("remote_support_host_messages") {
   ]
 }
 
-proto_library("chromoting_event_proto") {
-  sources = [ "chromoting_event.proto" ]
-}
-
 proto_library("duration") {
   sources = [ "duration.proto" ]
-}
-
-proto_library("telemetry_messages") {
-  sources = [
-    "generic_log_entry.proto",
-    "telemetry_messages.proto",
-  ]
-  deps = [ ":chromoting_event_proto" ]
 }

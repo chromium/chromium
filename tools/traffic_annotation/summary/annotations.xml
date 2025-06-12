@@ -171,7 +171,6 @@ Refer to README.md for content description and update process.
  <item id="remoting_directory_register_host" added_in_milestone="86" content_hash_code="046c936d" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
  <item id="remoting_ice_config_request" added_in_milestone="86" content_hash_code="001d0a98" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/ice_config_fetcher_default.cc" />
  <item id="remoting_register_support_host_request" added_in_milestone="86" content_hash_code="04fd7da8" os_list="linux,windows,chromeos" file_path="remoting/host/remoting_register_support_host_request.cc" />
- <item id="remoting_telemetry_log_writer" added_in_milestone="86" content_hash_code="04df471b" os_list="linux,windows,chromeos,android" file_path="remoting/base/telemetry_log_writer.cc" />
  <item id="render_view_context_menu" added_in_milestone="62" content_hash_code="04240bc2" os_list="linux,windows,chromeos" file_path="chrome/browser/renderer_context_menu/render_view_context_menu.cc" />
  <item id="renderer_initiated_download" added_in_milestone="62" content_hash_code="02417da4" os_list="linux,windows,chromeos,android" file_path="content/browser/renderer_host/render_frame_host_impl.cc" />
  <item id="reporting" added_in_milestone="62" content_hash_code="077eedd0" os_list="linux,windows,chromeos,android" file_path="net/reporting/reporting_uploader.cc" />

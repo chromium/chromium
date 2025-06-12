@@ -46,7 +46,6 @@ static_library("signaling") {
 
   public_deps = [
     "//remoting/proto",
-    "//remoting/proto/remoting/v1:telemetry_messages",
     "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
