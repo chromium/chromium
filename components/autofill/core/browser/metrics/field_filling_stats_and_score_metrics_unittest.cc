@@ -59,18 +59,6 @@ std::vector<test::FieldDescription> GetTestFormDataFields() {
       {.role = CREDIT_CARD_NUMBER, .value = u"", .is_autofilled = false}};
 }
 
-// Expects that `histogram_tester` contains `sample`. The histogram's name is
-// the concatenation of  "Autofill.FieldFillingStats." and
-// `histogram_name_suffix`. The histogram bucket count defaults to 1.
-void ExpectFieldFillingStatsUniqueSample(
-    const base::HistogramTester& histogram_tester,
-    std::string_view histogram_name_suffix,
-    int sample) {
-  histogram_tester.ExpectUniqueSample(
-      base::StrCat({"Autofill.FieldFillingStats.", histogram_name_suffix}),
-      sample, /*expected_bucket_count=*/1);
-}
-
 class AutofillFieldFillingStatsAndScoreMetricsTest
     : public AutofillMetricsBaseTest,
       public testing::Test {
@@ -110,58 +98,6 @@ class AutofillFieldFillingStatsAndScoreMetricsTest
   // a form submission.
   FormData form_data_;
 };
-
-// Test the logging of the field-wise filling stats.
-TEST_F(AutofillFieldFillingStatsAndScoreMetricsTest, FillingStats) {
-  const FormData& form = GetAndAddSeenFormWithFields(GetTestFormDataFields());
-  SimulationOfDefaultUserChangesOnAddedFormTextFields();
-  base::HistogramTester histogram_tester;
-
-  SubmitForm(form);
-
-  // Testing of the FormFillingStats expectations. Note that `form` is an
-  // address form but also a `FormTypeNameForLogging::kPostalAddressForm` form,
-  // as opposed to for example, a `FormTypeNameForLogging::kEmailOnlyForm`.
-  for (std::string_view form_type :
-       {FormTypeNameForLoggingToStringView(
-            FormTypeNameForLogging::kAddressForm),
-        FormTypeNameForLoggingToStringView(
-            FormTypeNameForLogging::kPostalAddressForm)}) {
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".Accepted"}), 5);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".CorrectedToSameType"}), 2);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester,
-        base::StrCat({form_type, ".CorrectedToDifferentType"}), 1);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".CorrectedToUnknownType"}),
-        1);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".CorrectedToEmpty"}), 1);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".LeftEmpty"}), 1);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester,
-        base::StrCat({form_type, ".ManuallyFilledToSameType"}), 2);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester,
-        base::StrCat({form_type, ".ManuallyFilledToDifferentType"}), 1);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester,
-        base::StrCat({form_type, ".ManuallyFilledToUnknownType"}), 3);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".TotalManuallyFilled"}), 6);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".TotalFilled"}), 10);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".TotalCorrected"}), 5);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".TotalUnfilled"}), 7);
-    ExpectFieldFillingStatsUniqueSample(
-        histogram_tester, base::StrCat({form_type, ".Total"}), 17);
-  }
-}
 
 // Test form-wise filling score for the different form types.
 TEST_F(AutofillFieldFillingStatsAndScoreMetricsTest, FillingScores) {
