@@ -2676,9 +2676,41 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
   return result;
 }
 
+namespace {
+
+CalculationOperator ConvertOperator(CSSMathOperator op) {
+  switch (op) {
+    case CSSMathOperator::kAdd:
+      return CalculationOperator::kAdd;
+    case CSSMathOperator::kSubtract:
+      return CalculationOperator::kSubtract;
+    case CSSMathOperator::kMultiply:
+      return CalculationOperator::kMultiply;
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 const CalculationExpressionNode*
 CSSMathExpressionOperation::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
+  if (IsArithmeticOperation() &&
+      !ArithmeticOperationIsAllowedToBeSimplified(*this)) {
+    if (operator_ == CSSMathOperator::kInvert) {
+      return MakeGarbageCollected<CalculationExpressionOperationNode>(
+          CalculationExpressionOperationNode::Children(
+              {operands_[0]->ToCalculationExpression(length_resolver)}),
+          CalculationOperator::kInvert);
+    }
+    CalculationOperator op = ConvertOperator(operator_);
+    return MakeGarbageCollected<CalculationExpressionOperationNode>(
+        CalculationExpressionOperationNode::Children(
+            {operands_[0]->ToCalculationExpression(length_resolver),
+             operands_[1]->ToCalculationExpression(length_resolver)}),
+        op);
+  }
   switch (operator_) {
     case CSSMathOperator::kAdd:
       DCHECK_EQ(operands_.size(), 2u);

@@ -37,13 +37,6 @@ const CalculationExpressionNode* CalculationExpressionNumberNode::Zoom(
   return MakeGarbageCollected<CalculationExpressionNumberNode>(value_);
 }
 
-#if DCHECK_IS_ON()
-CalculationExpressionNode::ResultType
-CalculationExpressionNumberNode::ResolvedResultType() const {
-  return result_type_;
-}
-#endif
-
 // ------ CalculationExpressionSizingKeywordNode ------
 
 CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
@@ -59,9 +52,6 @@ CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
       has_content_or_intrinsic_ = true;
     }
   }
-#if DCHECK_IS_ON()
-  result_type_ = ResultType::kPixelsAndPercent;
-#endif
 }
 
 float CalculationExpressionSizingKeywordNode::Evaluate(
@@ -176,13 +166,6 @@ CalculationExpressionPixelsAndPercentNode::Zoom(double factor) const {
   return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
       result);
 }
-
-#if DCHECK_IS_ON()
-CalculationExpressionNode::ResultType
-CalculationExpressionPixelsAndPercentNode::ResolvedResultType() const {
-  return result_type_;
-}
-#endif
 
 // ------ CalculationExpressionOperationNode ------
 
@@ -498,10 +481,6 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
     Children&& children,
     CalculationOperator op)
     : children_(std::move(children)), operator_(op) {
-#if DCHECK_IS_ON()
-  result_type_ = ResolvedResultType();
-  DCHECK_NE(result_type_, ResultType::kInvalid);
-#endif
   if (op == CalculationOperator::kCalcSize) {
     // "A calc-size() is treated, in all respects, as if it were its
     // calc-size basis."  This is particularly relevant for ignoring the
@@ -793,98 +772,5 @@ bool CalculationExpressionOperationNode::HasFitContent() const {
   const auto& basis = children_[0];
   return basis->HasFitContent();
 }
-
-#if DCHECK_IS_ON()
-CalculationExpressionNode::ResultType
-CalculationExpressionOperationNode::ResolvedResultType() const {
-  switch (operator_) {
-    case CalculationOperator::kAdd:
-    case CalculationOperator::kSubtract: {
-      DCHECK_EQ(children_.size(), 2u);
-      auto left_type = children_[0]->ResolvedResultType();
-      auto right_type = children_[1]->ResolvedResultType();
-      if (left_type == ResultType::kInvalid ||
-          right_type == ResultType::kInvalid || left_type != right_type)
-        return ResultType::kInvalid;
-
-      return left_type;
-    }
-    case CalculationOperator::kMultiply: {
-      DCHECK_EQ(children_.size(), 2u);
-      auto left_type = children_[0]->ResolvedResultType();
-      auto right_type = children_[1]->ResolvedResultType();
-      if (left_type == ResultType::kInvalid ||
-          right_type == ResultType::kInvalid ||
-          (left_type == ResultType::kPixelsAndPercent &&
-           right_type == ResultType::kPixelsAndPercent))
-        return ResultType::kInvalid;
-
-      if ((left_type == ResultType::kPixelsAndPercent &&
-           right_type == ResultType::kNumber) ||
-          (left_type == ResultType::kNumber &&
-           right_type == ResultType::kPixelsAndPercent))
-        return ResultType::kPixelsAndPercent;
-
-      return ResultType::kNumber;
-    }
-    case CalculationOperator::kInvert: {
-      DCHECK_EQ(children_.size(), 1u);
-      auto denominator_type = children_[0]->ResolvedResultType();
-      if (denominator_type == ResultType::kNumber) {
-        return ResultType::kNumber;
-      }
-      return ResultType::kInvalid;
-    }
-    case CalculationOperator::kCalcSize: {
-      DCHECK_EQ(children_.size(), 2u);
-      auto basis_type = children_[0]->ResolvedResultType();
-      auto calculation_type = children_[1]->ResolvedResultType();
-      if (basis_type != ResultType::kPixelsAndPercent ||
-          calculation_type != ResultType::kPixelsAndPercent) {
-        return ResultType::kInvalid;
-      }
-      return ResultType::kPixelsAndPercent;
-    }
-    case CalculationOperator::kMin:
-    case CalculationOperator::kMax:
-    case CalculationOperator::kClamp:
-    case CalculationOperator::kRoundNearest:
-    case CalculationOperator::kRoundUp:
-    case CalculationOperator::kRoundDown:
-    case CalculationOperator::kRoundToZero:
-    case CalculationOperator::kMod:
-    case CalculationOperator::kRem:
-    case CalculationOperator::kSqrt:
-    case CalculationOperator::kHypot:
-    case CalculationOperator::kAbs: {
-      DCHECK(children_.size());
-      auto first_child_type = children_.front()->ResolvedResultType();
-      for (const auto& child : children_) {
-        if (first_child_type != child->ResolvedResultType())
-          return ResultType::kInvalid;
-      }
-
-      return first_child_type;
-    }
-    case CalculationOperator::kSign:
-    case CalculationOperator::kContainerProgress:
-    case CalculationOperator::kProgress:
-    case CalculationOperator::kMediaProgress:
-    case CalculationOperator::kLog:
-    case CalculationOperator::kExp:
-    case CalculationOperator::kSin:
-    case CalculationOperator::kCos:
-    case CalculationOperator::kTan:
-    case CalculationOperator::kAsin:
-    case CalculationOperator::kAcos:
-    case CalculationOperator::kAtan:
-    case CalculationOperator::kAtan2:
-    case CalculationOperator::kPow:
-      return ResultType::kNumber;
-    case CalculationOperator::kInvalid:
-      NOTREACHED();
-  }
-}
-#endif
 
 }  // namespace blink
