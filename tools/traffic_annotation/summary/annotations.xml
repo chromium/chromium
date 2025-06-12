@@ -514,5 +514,5 @@ Refer to README.md for content description and update process.
  <item id="zero_state_suggestions_model_execution" added_in_milestone="138" content_hash_code="04362741" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
  <item id="certificate_verifier_2qwac_loader" added_in_milestone="138" content_hash_code="0267a266" os_list="linux,windows,android,chromeos" file_path="chrome/browser/net/qwac_web_contents_observer.cc" />
  <item id="trusted_vault_cert_request" added_in_milestone="139" content_hash_code="04ea4a98" os_list="linux,windows,chromeos" file_path="components/trusted_vault/recovery_key_store_connection_impl.cc" />
+ <item id="keepalive_fetch_retry" added_in_milestone="138" content_hash_code="023a2a10" os_list="linux,windows,android,chromeos" file_path="content/browser/loader/keep_alive_url_loader.cc" />
 </annotations>
- <item id="keepalive_fetch_retry" added_in_milestone="138" content_hash_code="07e1463e" os_list="linux,windows,android" file_path="content/browser/loader/keep_alive_url_loader.cc" />
