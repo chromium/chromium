@@ -7314,6 +7314,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.MediaIntegrity.NonRecoverableErrorReason"
+    enum="AndroidWebViewMediaIntegrityNonRecoverableErrorReason"
+    expires_after="2025-12-31">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the reason for returning a &quot;Non-recoverable Error&quot; from
+    the Android WebView Media Integrity API, to aid in investigating why clients
+    are seeing a relatively high proportion of this error code.
+
+    The histogram is emitted every time this error code is produced by the
+    implementation.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.MediaIntegrity.TokenProviderCacheEvictionsCumulativeV2"
     units="evictions" expires_after="2025-09-01">

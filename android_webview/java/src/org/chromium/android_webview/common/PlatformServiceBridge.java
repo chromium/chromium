@@ -145,6 +145,8 @@ public abstract class PlatformServiceBridge {
             long cloudProjectNumber,
             @MediaIntegrityApiStatus int apiStatus,
             ValueOrErrorCallback<MediaIntegrityProvider, MediaIntegrityErrorWrapper> callback) {
+        MediaIntegrityNonRecoverableErrorLogger.log(
+                MediaIntegrityNonRecoverableErrorLogger.AOSP_BUILD);
         callback.onError(
                 new MediaIntegrityErrorWrapper(MediaIntegrityErrorCode.NON_RECOVERABLE_ERROR));
     }

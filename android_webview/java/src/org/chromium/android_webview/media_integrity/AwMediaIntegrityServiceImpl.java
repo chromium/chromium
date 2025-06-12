@@ -14,6 +14,7 @@ import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.common.MediaIntegrityErrorCode;
 import org.chromium.android_webview.common.MediaIntegrityErrorWrapper;
+import org.chromium.android_webview.common.MediaIntegrityNonRecoverableErrorLogger;
 import org.chromium.android_webview.common.MediaIntegrityProvider;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.ValueOrErrorCallback;
@@ -143,6 +144,8 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
             // getLastCommittedURL) may not agree on the origin in certain situations, including
             // non-standard URIs and pages loaded via loadDataWithBaseURL. For now, we do not
             // support these or loadDataWithBaseURL.
+            MediaIntegrityNonRecoverableErrorLogger.log(
+                    MediaIntegrityNonRecoverableErrorLogger.MISMATCHED_ORIGINS);
             callback.call(WebViewMediaIntegrityErrorCode.NON_RECOVERABLE_ERROR);
             return;
         }

@@ -387,6 +387,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="TOKEN_REQUEST_MISSING_RESPONSE_PORT"/>
 </enum>
 
+<enum name="AndroidWebViewMediaIntegrityNonRecoverableErrorReason">
+  <int value="0" label="MISMATCHED_ORIGINS"/>
+  <int value="1" label="GET_PROVIDER_SECURITY_EXCEPTION"/>
+  <int value="2" label="AOSP_BUILD"/>
+  <int value="3" label="MAPPED_SERVICE_RESPONSE"/>
+</enum>
+
 <enum name="AndroidWebViewMediaIntegrityStatus">
   <int value="0" label="NO_ERROR"/>
   <int value="1" label="UNKNOWN_ERROR"/>
