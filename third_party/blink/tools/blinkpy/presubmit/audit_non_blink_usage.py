@@ -522,6 +522,7 @@ _CONFIG = [
             'gfx::MapRect',
             'gfx::MapRect',
             'gfx::MaximumCoveredRect',
+            'gfx::NormalizeVector2d',
             'gfx::PointAtOffsetFromOrigin',
             'gfx::PointFToSkPoint',
             'gfx::PointToSkIPoint',

@@ -68,6 +68,11 @@ class PLATFORM_EXPORT ContouredRect {
              bottom_right_ >= kBevel && bottom_left_ >= kBevel;
     }
 
+    constexpr bool IsHyperellipse() const {
+      return top_left_ >= kRound && top_right_ >= kRound &&
+             bottom_right_ >= kRound && bottom_left_ >= kRound;
+    }
+
     constexpr bool IsUniform() const {
       return top_left_ == top_right_ && top_left_ == bottom_right_ &&
              top_left_ == bottom_left_;
