@@ -41,6 +41,7 @@ class VIEWS_EXPORT Throbber : public View {
 
   int GetDiameter() const { return diameter_; }
   void SetColorId(ui::ColorId color) { color_id_ = color; }
+  std::optional<ui::ColorId> GetColorId() { return color_id_; }
 
  protected:
   // Specifies whether the throbber is currently animating or not

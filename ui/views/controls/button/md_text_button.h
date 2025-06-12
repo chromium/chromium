@@ -97,13 +97,16 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void OnBlur() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
+  // Derived classes may have additional colors they need to calculate based on
+  // button state.
+  virtual void UpdateColors();
+
  private:
   void UpdatePadding();
   gfx::Insets CalculateDefaultPadding() const;
 
   void UpdateTextColor();
   void UpdateBackgroundColor() override;
-  void UpdateColors();
   void UpdateIconColor();
 
   // Returns the hover color depending on the button style.
