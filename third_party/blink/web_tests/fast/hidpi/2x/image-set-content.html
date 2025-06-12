@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<style>
+  #standard {
+    content: image-set(
+      url('../resources/blue-100-px-square.png') 1x,
+      url('../resources/green-400-px-square.png') 2x
+    );
+  }
+
+  #prefixed {
+    content: -webkit-image-set(
+      url('../resources/blue-100-px-square.png') 1x,
+      url('../resources/green-400-px-square.png') 2x
+    );
+  }
+</style>
+
+<div>
+  This test passes if the divs below are
+  100px blue squares when the deviceScaleFactor is 1,
+  and 100px green squares when the deviceScaleFactor is 2.
+</div>
+<br>
+<div id="standard"></div>
+<br>
+<div id="prefixed"></div>

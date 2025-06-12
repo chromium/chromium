@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<style>
+  #target {
+    background-color: lime;
+    width: 21px;
+    height: 13px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    transform-origin: 0px 0px;
+    offset-path: path('m 0 0 v 8 h 15 z'); /* length 40 */
+    offset-distance: calc(30px + 75%); /* 60px -> 20px */
+  }
+</style>
+
+<body>
+  <!-- This test passes if the target moves 8px down and 12px across -->
+  <div id="target"></div>
+</body>

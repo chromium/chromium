@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<script>
+    addEventListener("load", function() {
+        shouldBeTrue('document.getElementById("foo").clientWidth==200');
+    }, false);
+</script>
+<div>This test passes if the image below says 1x with a reddish background when the deviceScaleFactor is 1, and if says 2x with a greenish background when the deviceScaleFactor is 2.</div>
+<img id="foo" src="" srcset="../resources/blue-100-px-square.png 1x, ../resources/deleteButton.png 3x, ../resources/green-400-px-square.png 2x">

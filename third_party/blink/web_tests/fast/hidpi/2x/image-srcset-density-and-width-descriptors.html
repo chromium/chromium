@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+    }
+    addEventListener("load", function() {
+        shouldBeTrue('document.getElementById("foo").clientWidth==100');
+    }, false);
+</script>
+<div>This test passes if the image below is a blue square, since the srcset resource doesn't load, as it has both 'w' and 'x' descriptors.</div>
+<img id="foo" src="../resources/blue-100-px-square.png" srcset="../resources/green-400-px-square.png 100w 2x">

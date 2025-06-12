@@ -4432,5 +4432,54 @@
       "--web-settings-for-testing=imagesEnabled:false"
     ],
     "expires": "never"
+  },
+  {
+    "prefix": "target-device-scale-factor-2",
+    "owners": [
+      "leimy@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "Fuchsia"
+    ],
+    "bases": [
+      "fast/hidpi/2x",
+      "fast/dom/HTMLImageElement/image-sizes-2x.html",
+      "fast/dom/HTMLImageElement/image-sizes-js-change.html",
+      "http/tests/loading/link-preload-image-sizes-2x.html",
+      "http/tests/loading/link-preload-image-srcset-2x.html",
+      "http/tests/loading/preload-image-sizes-2x.html",
+      "http/tests/loading/preload-image-srcset-2x.html",
+      "http/tests/loading/preload-picture-sizes-2x.html",
+      "svg/css/svg-resource-fragment-identifier-background-srcset.html",
+      "svg/css/svg-resource-fragment-identifier-img-src.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--target-device-scale-for-testing=2"
+    ],
+    "expires": "never"
+  },
+  {
+    "prefix": "target-device-scale-factor-2_5",
+    "owners": [
+      "leimy@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "Fuchsia"
+    ],
+    "bases": [
+      "fast/hidpi/image-srcset-fraction.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--target-device-scale-for-testing=2.5"
+    ],
+    "expires": "never"
   }
 ]

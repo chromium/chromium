@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>border-image with border-image-repeat in hidpi setting</title>
+<!-- Mimicking hidpi border-image features from buttons in
+     ui/webui/resources/css/apps/common.css -->
+<style>
+  #standard {
+    border-image-source: image-set(
+      url('../resources/black-blue-outline-6-px-square.png') 1x,
+      url('../resources/black-blue-outline-12-px-square.png') 2x
+    );
+  }
+
+  #prefixed {
+    border-image-source: -webkit-image-set(
+      url('../resources/black-blue-outline-6-px-square.png') 1x,
+      url('../resources/black-blue-outline-12-px-square.png') 2x
+    );
+  }
+
+  div {
+    border-image-slice: 2 fill;
+    border-image-width: 2px;
+    border-image-repeat: repeat;
+    width: 100px;
+    height: 20px;
+    border-width: 2px;
+    border-style: solid;
+  }
+</style>
+
+<div id="standard"></div>
+<br>
+<div id="prefixed"></div>

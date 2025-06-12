@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<style>
+  .foo {
+    width: 100px;
+    height: 100px;
+    background-image: url('../resources/green-400-px-square.png');
+  }
+</style>
+
+<div>
+  This test passes if the divs below are
+  100px blue squares when the deviceScaleFactor is 1,
+  and 100px green squares when the deviceScaleFactor is 2.
+</div>
+<div>
+  When run in the test harness,
+  this test is distinct from image-set-background,
+  because it ensures that the green image loads dynamically
+  when the scale factor changes.
+</div>
+<br>
+<div class="foo"></div>
+<br>
+<div class="foo"></div>

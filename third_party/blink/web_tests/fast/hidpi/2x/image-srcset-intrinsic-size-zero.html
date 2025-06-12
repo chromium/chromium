@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<script>
+    var imgWidth;
+    addEventListener("load", function() {
+        imgWidth = document.getElementById("foo").clientWidth;
+        var expected = 33554432; // blink::intMaxForLayoutUnit
+        expected = Math.round(expected / window.devicePixelRatio);
+        shouldBe('imgWidth', '' + expected, /* quiet */ true);
+    }, false);
+</script>
+<div>
+    This test passes if the image is displayed with infinite dimensions.
+</div>
+<img id="foo" srcset="../resources/blue-100-px-square.png 0x">
