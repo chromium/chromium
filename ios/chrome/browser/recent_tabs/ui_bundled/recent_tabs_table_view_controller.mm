@@ -1795,13 +1795,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)showPrimaryAccountReauth {
   [self.presentationDelegate showPrimaryAccountReauth];
-//  auto provider =
-//      base::BindRepeating(&CreateChangeProfileRecentTabsContinuation);
-//  ShowSigninCommand* command = [[ShowSigninCommand
-//      alloc] initWithOperation:AuthenticationOperation::kPrimaryAccountReauth
-//                            accessPoint:signin_metrics::AccessPoint::kRecentTabs
-//      changeProfileContinuationProvider:provider];
-//  [self showSignin:command];
 }
 
 - (void)showSyncPassphraseSettings {
