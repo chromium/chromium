@@ -132,7 +132,6 @@ static_library("common_lib") {
     "chrome_content_client.cc",
     "chrome_content_client.h",
     "chrome_content_client_constants.cc",
-    "chrome_descriptors.h",
     "chrome_isolated_world_ids.h",
     "chrome_result_codes.cc",
     "chrome_result_codes.h",
@@ -352,6 +351,7 @@ static_library("common_lib") {
   if (is_android) {
     sources -= [ "media_galleries/metadata_types.h" ]
     sources += [
+      "chrome_descriptors_android.h",
       "media/chrome_media_drm_bridge_client.cc",
       "media/chrome_media_drm_bridge_client.h",
     ]

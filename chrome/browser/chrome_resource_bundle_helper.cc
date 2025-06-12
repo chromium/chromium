@@ -65,10 +65,10 @@ extern void InitializeLocalState(
 std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
                                                  bool is_running_tests) {
 #if BUILDFLAG(IS_ANDROID)
-  // In order for DetectAndSetLoadSecondaryLocalePaks() to work ResourceBundle
+  // In order for DetectAndSetLoadNonWebViewLocalePaks() to work ResourceBundle
   // must not have been created yet.
   DCHECK(!ui::ResourceBundle::HasSharedInstance());
-  ui::DetectAndSetLoadSecondaryLocalePaks();
+  ui::DetectAndSetLoadNonWebViewLocalePaks();
 #endif
 
   std::string preferred_locale;

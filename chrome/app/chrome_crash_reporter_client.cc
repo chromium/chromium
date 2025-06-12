@@ -36,7 +36,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/common/chrome_descriptors.h"
+#include "chrome/common/chrome_descriptors_android.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

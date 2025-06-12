@@ -44,9 +44,9 @@ const std::vector<ResourceBundle::FdAndRegion>& GetLocalePaks();
 // GetPathForAndroidLocalePakWithinApk rather than looking for them on disk.
 COMPONENT_EXPORT(UI_BASE) void SetLocalePaksStoredInApk(bool value);
 
-// Tell ResourceBundle to determine whether load secondary locale .pak files
-// based on whether secondary locale .pak files exist.
-COMPONENT_EXPORT(UI_BASE) void DetectAndSetLoadSecondaryLocalePaks();
+// Tell ResourceBundle to determine whether load non-webview locale .pak files
+// based on whether non-webview locale .pak files exist.
+COMPONENT_EXPORT(UI_BASE) void DetectAndSetLoadNonWebViewLocalePaks();
 
 // Called in test when there are no locale pak files available.
 COMPONENT_EXPORT(UI_BASE) void SetNoAvailableLocalePaksForTest();

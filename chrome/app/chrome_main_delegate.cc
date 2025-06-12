@@ -172,7 +172,7 @@
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/common/chrome_descriptors.h"
+#include "chrome/common/chrome_descriptors_android.h"
 #include "components/crash/android/pure_java_exception_handler.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
@@ -1392,20 +1392,27 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // Therefore file descriptors to the .pak files that we need are passed in
     // at process creation time.
     auto* global_descriptors = base::GlobalDescriptors::GetInstance();
-    int pak_fd = global_descriptors->Get(kAndroidLocalePakDescriptor);
+    int pak_fd =
+        global_descriptors->Get(kAndroidMainWebViewLocalePakDescriptor);
     base::MemoryMappedFile::Region pak_region =
-        global_descriptors->GetRegion(kAndroidLocalePakDescriptor);
+        global_descriptors->GetRegion(kAndroidMainWebViewLocalePakDescriptor);
     ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(base::File(pak_fd),
                                                             pak_region);
 
-    // Load secondary locale .pak file if it exists.
-    pak_fd = global_descriptors->MaybeGet(kAndroidSecondaryLocalePakDescriptor);
-    if (pak_fd != -1) {
-      pak_region =
-          global_descriptors->GetRegion(kAndroidSecondaryLocalePakDescriptor);
-      ui::ResourceBundle::GetSharedInstance()
-          .LoadSecondaryLocaleDataWithPakFileRegion(base::File(pak_fd),
-                                                    pak_region);
+    int additional_locale_pak_keys[] = {
+        kAndroidMainNonWebViewLocalePakDescriptor,
+        kAndroidFallbackWebViewLocalePakDescriptor,
+        kAndroidFallbackNonWebViewLocalePakDescriptor,
+    };
+    for (int additional_locale_pak_key : additional_locale_pak_keys) {
+      // Load additional locale .pak file if it exists.
+      pak_fd = global_descriptors->MaybeGet(additional_locale_pak_key);
+      if (pak_fd != -1) {
+        pak_region = global_descriptors->GetRegion(additional_locale_pak_key);
+        ui::ResourceBundle::GetSharedInstance()
+            .LoadAdditionalLocaleDataWithPakFileRegion(base::File(pak_fd),
+                                                       pak_region);
+      }
     }
 
     int extra_pak_keys[] = {

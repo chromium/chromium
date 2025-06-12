@@ -2952,6 +2952,8 @@ static_library("browser") {
       "browsing_data/counters/tabs_counter.h",
       "chrome_browser_main_android.cc",
       "chrome_browser_main_android.h",
+      "chrome_content_browser_client_android.cc",
+      "chrome_content_browser_client_android.h",
       "collaboration/android/collaboration_controller_delegate_android.cc",
       "collaboration/android/collaboration_controller_delegate_android.h",
       "collaboration/android/collaboration_service_factory_android.cc",

@@ -385,12 +385,12 @@ ResourceBundle& ResourceBundle::GetSharedInstance() {
   return *g_shared_instance_;
 }
 
-void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
+void ResourceBundle::LoadAdditionalLocaleDataWithPakFileRegion(
     base::File pak_file,
     const base::MemoryMappedFile::Region& region) {
   auto data_pack = std::make_unique<DataPack>(k100Percent);
   CHECK(data_pack->LoadFromFileRegion(std::move(pak_file), region))
-      << "failed to load secondary pak file";
+      << "failed to load additional pak file";
   locale_resources_data_.push_back(std::move(data_pack));
 }
 

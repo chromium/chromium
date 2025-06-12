@@ -69,9 +69,20 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   };
 
 #if BUILDFLAG(IS_ANDROID)
+  // The purpose for a pak file represented by an FdAndRegion. These correspond
+  // to entries in the android_webview/common/aw_descriptors.h and
+  // chrome/common/chrome_descriptors.h enums.
+  enum class LocalePakPurpose {
+    WEBVIEW_MAIN = 0,
+    NON_WEBVIEW_MAIN,
+    WEBVIEW_FALLBACK,
+    NON_WEBVIEW_FALLBACK,
+  };
+
   struct FdAndRegion {
     int fd;
     base::MemoryMappedFile::Region region;
+    LocalePakPurpose purpose;
   };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -248,7 +259,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   ResourceBundle& operator=(const ResourceBundle&) = delete;
 
   // Loads a secondary locale data pack using the given file region.
-  void LoadSecondaryLocaleDataWithPakFileRegion(
+  void LoadAdditionalLocaleDataWithPakFileRegion(
       base::File pak_file,
       const base::MemoryMappedFile::Region& region);
 
@@ -439,6 +450,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   }
 #endif
 
+  const base::FilePath& GetOverriddenPakPath() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleTest, DelegateGetPathForLocalePack);
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleTest, DelegateGetImageNamed);
@@ -532,8 +545,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // bright red bitmap.
   gfx::Image& GetEmptyImage();
   const ui::ImageModel& GetEmptyImageModel();
-
-  const base::FilePath& GetOverriddenPakPath() const;
 
   // If mangling of localized strings is enabled, mangles |str| to make it
   // longer and to add begin and end markers so that any truncation of it is
