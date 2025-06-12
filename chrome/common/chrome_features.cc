@@ -577,13 +577,6 @@ BASE_FEATURE(kGlicClosedCaptioning,
              "GlicClosedCaptioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicPageContextEligibility,
-             "GlicPageContextEligibility",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kGlicPageContextEligibilityAllowNoMetadata{
-    &kGlicPageContextEligibility,
-    "glic-page-context-eligibility-allow-no-metadata", true};
-
 BASE_FEATURE(kGlicUnloadOnClose,
              "GlicUnloadOnClose",
              base::FEATURE_DISABLED_BY_DEFAULT);

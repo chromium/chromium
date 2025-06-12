@@ -11,7 +11,7 @@ package optimization_guide.proto;
 
 // Context in which the items are requested.
 enum RequestContext {
-  reserved 1, 3, 10;
+  reserved 1, 3, 10, 16;
   // Context not specified.
   CONTEXT_UNSPECIFIED = 0;
   // Requesting items on page navigation.
@@ -45,9 +45,6 @@ enum RequestContext {
   // Requesting metadata when user starts glic, to determine if a page is
   // eligible for glic zero state suggestions.
   CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS = 15;
-  // Requesting metadata before glic shares page context to determine if the
-  // page is eligible for glic.
-  CONTEXT_GLIC_PAGE_CONTEXT = 16;
 }
 
 message FieldTrial {

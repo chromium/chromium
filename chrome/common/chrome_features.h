@@ -317,12 +317,6 @@ COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicRollout);
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicClosedCaptioning);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicPageContextEligibility);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool>
-    kGlicPageContextEligibilityAllowNoMetadata;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicUnloadOnClose);
 
 // Causes certain glic API calls to fail or defer when the panel

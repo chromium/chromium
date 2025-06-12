@@ -321,8 +321,6 @@ bool ShouldContextResponsePopulateHintCache(
       return false;
     case proto::RequestContext::CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS:
       return false;
-    case proto::RequestContext::CONTEXT_GLIC_PAGE_CONTEXT:
-      return false;
   }
   NOTREACHED();
 }

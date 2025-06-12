@@ -58,7 +58,6 @@ class ExtensionSidePanelManager;
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
-class GlicPageContextEligibilityObserver;
 class GlicTabIndicatorHelper;
 }
 #endif
@@ -260,13 +259,6 @@ class TabFeatures {
   TabUIHelper* SetTabUIHelperForTesting(
       std::unique_ptr<TabUIHelper> tab_ui_helper);
 
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicPageContextEligibilityObserver*
-  glic_page_context_eligibility_observer() {
-    return glic_page_context_eligibility_observer_.get();
-  }
-#endif
-
   TabAlertController* tab_alert_controller() {
     return tab_alert_controller_.get();
   }
@@ -391,9 +383,6 @@ class TabFeatures {
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
-
-  std::unique_ptr<glic::GlicPageContextEligibilityObserver>
-      glic_page_context_eligibility_observer_;
 #endif
 
   std::unique_ptr<memory_saver::MemorySaverChipController>

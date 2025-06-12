@@ -86,7 +86,6 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/host/context/glic_page_context_eligibility_observer.h"
 #endif
 namespace tabs {
 
@@ -273,10 +272,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab.GetBrowserWindowInterface()->GetProfile())) {
       glic_tab_indicator_helper_ =
           std::make_unique<glic::GlicTabIndicatorHelper>(&tab);
-
-      glic_page_context_eligibility_observer_ =
-          glic::GlicPageContextEligibilityObserver::MaybeCreateForWebContents(
-              tab.GetContents());
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }     // IsInNormalWindow() end.

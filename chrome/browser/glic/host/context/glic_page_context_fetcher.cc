@@ -17,7 +17,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_extraction/inner_text.h"
-#include "chrome/browser/glic/host/context/glic_page_context_eligibility_observer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/media/glic_media_integration.h"
@@ -211,13 +210,6 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
       annotated_page_content_done_ = true;
     }
 
-    // Will only fetch context eligibility if we can observe it.
-    context_eligibility_check_done_ =
-        !(GlicPageContextEligibilityObserver::MaybeGetEligibilityForWebContents(
-            web_contents(),
-            base::BindOnce(&GlicPageContextFetcher::ReceivedContextEligibility,
-                           GetWeakPtr())));
-
     // Note: initialization_done_ guards against processing
     // `RunCallbackIfComplete()` until we reach this point.
     initialization_done_ = true;
@@ -307,26 +299,15 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
     RunCallbackIfComplete();
   }
 
-  void ReceivedContextEligibility(bool is_eligible) {
-    context_eligible_ = is_eligible;
-    context_eligibility_check_done_ = true;
-    base::UmaHistogramTimes("Glic.PageContextFetcher.GetContextEligibility",
-                            base::TimeTicks::Now() - start_time_);
-    base::UmaHistogramBoolean("Glic.PageContextFetcher.PageContextEligible",
-                              *context_eligible_);
-    RunCallbackIfComplete();
-  }
-
   void RunCallbackIfComplete() {
     if (!initialization_done_) {
       return;
     }
 
     // Continue only if the primary page changed or work is complete.
-    bool work_complete =
-        (screenshot_done_ && inner_text_done_ && annotated_page_content_done_ &&
-         pdf_done_ && context_eligibility_check_done_) ||
-        primary_page_changed_;
+    bool work_complete = (screenshot_done_ && inner_text_done_ &&
+                          annotated_page_content_done_ && pdf_done_) ||
+                         primary_page_changed_;
     if (!work_complete) {
       return;
     }
@@ -342,13 +323,6 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
 
     if (!web_contents() || !web_contents()->GetPrimaryMainFrame()) {
       result = mojom::GetContextResult::NewErrorReason("web contents changed");
-      std::move(callback_).Run(std::move(result));
-      return;
-    }
-
-    if (!context_eligible_.value_or(true)) {
-      result =
-          mojom::GetContextResult::NewErrorReason("page context ineligible");
       std::move(callback_).Run(std::move(result));
       return;
     }
@@ -436,7 +410,6 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   bool inner_text_done_ = false;
   bool pdf_done_ = false;
   bool annotated_page_content_done_ = false;
-  bool context_eligibility_check_done_ = false;
   // Whether the primary page has changed since context fetching began.
   bool primary_page_changed_ = false;
   url::Origin pdf_origin_;
@@ -448,7 +421,6 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   std::optional<pdf::mojom::PdfListener_GetPdfBytesStatus> pdf_status_;
   std::optional<optimization_guide::AIPageContentResult>
       annotated_page_content_result_;
-  std::optional<bool> context_eligible_;
   base::TimeTicks start_time_;
 
   base::WeakPtrFactory<GlicPageContextFetcher> weak_ptr_factory_{this};

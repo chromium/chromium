@@ -327,18 +327,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.PageContextFetcher.PageContextEligible"
-    enum="BooleanEligible" expires_after="2026-01-15">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <owner>sophiechang@chromium.org</owner>
-  <summary>
-    Recorded when a page context gets context eligibility and records whether
-    the page is eligible.
-  </summary>
-</histogram>
-
 <histogram name="Glic.PageContextFetcher.Total" units="ms"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
