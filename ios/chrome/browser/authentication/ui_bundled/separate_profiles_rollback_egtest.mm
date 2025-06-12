@@ -20,6 +20,15 @@
 
 @implementation SeparateProfilesRollbackTestCase
 
++ (void)setUpForTestCase {
+  [SigninEarlGrey setUseFakeResponsesForProfileSeparationPolicyRequests];
+}
+
++ (void)tearDown {
+  [SigninEarlGrey clearUseFakeResponsesForProfileSeparationPolicyRequests];
+  [super tearDown];
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
