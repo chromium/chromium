@@ -6090,9 +6090,6 @@ crbug.com/1290978 [ Mac ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-
 crbug.com/1290978 [ Linux ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2022-02-01
-# Flaky test on Mac
-crbug.com/40213268 [ Mac ] http/tests/devtools/console/console-time.js [ Failure Pass ]
-
 crbug.com/1038139 [ Linux ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
 crbug.com/1038139 [ Mac ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
 
