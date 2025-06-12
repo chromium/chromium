@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/exo",
   "+chrome/browser/ash/file_manager",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/local_user_files",
   "+chrome/browser/ash/profiles",
@@ -41,3 +40,9 @@ include_rules = [
   # Dependencies outside of //chrome:
   "+third_party/xdg_shared_mime_info",
 ]
+
+specific_include_rules = {
+  "guest_os_share_path_unittest\\.cc": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
+  ],
+}
