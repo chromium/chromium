@@ -524,19 +524,11 @@ class ConnectionCoordinator::DeleteRequest
     UMA_HISTOGRAM_ENUMERATION(
         indexed_db::kBackingStoreActionUmaName,
         indexed_db::IndexedDBAction::kDatabaseDeleteAttempt);
-    // This is used to check if this class is still alive after the destruction
-    // of the backing store, which can synchronously cause the system to be shut
-    // down if the disk is really bad.
     const int64_t old_version = db_->version();
-    base::WeakPtr<DeleteRequest> weak_ptr = weak_factory_.GetWeakPtr();
     if (db_->backing_store_db()) {
       saved_status_ = db_->backing_store_db()->DeleteDatabase(
           std::move(lock_receiver_.locks), std::move(on_database_deleted_));
       saved_status_.Log("WebCore.IndexedDB.BackingStore.DeleteDatabaseStatus");
-    }
-
-    if (!weak_ptr) {
-      return;
     }
 
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);

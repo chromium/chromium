@@ -4611,11 +4611,8 @@ void BackingStore::Transaction::Rollback() {
   write_state_.reset();
 
   if (transaction_) {
-    // The RollbackAndMaybeTearDown method could tear down the BucketContext,
-    // which would destroy `this`.
-    scoped_refptr<TransactionalLevelDBTransaction> transaction =
-        std::move(transaction_);
-    transaction->Rollback();
+    transaction_->Rollback();
+    transaction_ = nullptr;
   }
 
   if (metadata_before_transaction_) {
