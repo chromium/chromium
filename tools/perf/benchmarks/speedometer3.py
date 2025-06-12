@@ -254,3 +254,4 @@ class Speedometer3NoFieldTrials(Speedometer3):
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--disable-field-trial-config')
+    options.RemoveExtraBrowserArg('--enable-field-trial-config')
