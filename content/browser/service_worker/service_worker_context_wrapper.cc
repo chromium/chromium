@@ -26,7 +26,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
@@ -323,7 +322,6 @@ void ServiceWorkerContextWrapper::Shutdown() {
   ClearRunningServiceWorkers();
   NotifyRunningServiceWorkerStoppedToSynchronousObserver();
   storage_partition_ = nullptr;
-  storage_control_.reset();
   context_core_.reset();
   // Shutdown the `process_manager_` at the end so that the steps above can have
   // a valid browser context pointer through `process_manager_`.
@@ -1619,7 +1617,6 @@ void ServiceWorkerContextWrapper::DidDeleteAndStartOver(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(running_service_workers_.empty());
   is_deleting_and_starting_over_ = false;
-  storage_control_.reset();
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     context_core_.reset();
     return;

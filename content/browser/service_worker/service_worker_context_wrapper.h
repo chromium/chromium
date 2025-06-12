@@ -37,7 +37,6 @@ class FilePath;
 
 namespace storage {
 class QuotaManagerProxy;
-class ServiceWorkerStorageControlImpl;
 class SpecialStoragePolicy;
 }  // namespace storage
 
@@ -598,11 +597,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       running_service_workers_;
 
   std::unique_ptr<ServiceWorkerIdentifiabilityMetrics> identifiability_metrics_;
-
-  // TODO(crbug.com/40120038): Remove `storage_control_` when
-  // ServiceWorkerStorage is sandboxed. An instance of this impl should live in
-  // the storage service, not here.
-  std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
 
   // These fields are used to (re)create `storage_control_`.
   base::FilePath user_data_directory_;
