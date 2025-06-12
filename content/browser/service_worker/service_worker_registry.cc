@@ -21,6 +21,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/service_worker/service_worker_storage.h"
+#include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_info.h"
@@ -2008,10 +2009,9 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
       << "Rebinding is not supported yet.";
 
   if (!remote_storage_control_.is_bound()) {
-    context_->wrapper()->BindStorageControl(
-        remote_storage_control_.BindNewPipeAndPassReceiver(
-            GetUIThreadTaskRunner(
-                {BrowserTaskType::kServiceWorkerStorageControlResponse})));
+    BindStorageControl(remote_storage_control_.BindNewPipeAndPassReceiver(
+        GetUIThreadTaskRunner(
+            {BrowserTaskType::kServiceWorkerStorageControlResponse})));
     DCHECK(remote_storage_control_.is_bound());
     remote_storage_control_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerRegistry::OnRemoteStorageDisconnected,
@@ -2019,6 +2019,36 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
   }
 
   return remote_storage_control_;
+}
+
+void ServiceWorkerRegistry::BindStorageControl(
+    mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
+        receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (context_->wrapper()->storage_control_binder_for_test()) {
+    CHECK_IS_TEST();
+    context_->wrapper()->storage_control_binder_for_test().Run(  // IN-TEST
+        std::move(receiver));
+    return;
+  }
+
+  // The database task runner is BLOCK_SHUTDOWN in order to support
+  // ClearSessionOnlyOrigins() (called due to the "clear on browser exit"
+  // content setting).
+  // The ServiceWorkerStorageControl receiver runs on thread pool by using
+  // |database_task_runner| SequencedTaskRunner.
+  // TODO(falken): Only block shutdown for that particular task, when someday
+  // task runners support mixing task shutdown behaviors.
+  scoped_refptr<base::SequencedTaskRunner> database_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  database_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&storage::ServiceWorkerStorageControlImpl::Create),
+          std::move(receiver), context_->wrapper()->user_data_directory(),
+          context_->wrapper()->storage_shared_buffer()));
 }
 
 void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {

@@ -1827,33 +1827,6 @@ ServiceWorkerContextWrapper::
   return factory_bundle;
 }
 
-void ServiceWorkerContextWrapper::BindStorageControl(
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
-        receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (storage_control_binder_for_test_) {
-    storage_control_binder_for_test_.Run(std::move(receiver));
-    return;
-  }
-
-  // The database task runner is BLOCK_SHUTDOWN in order to support
-  // ClearSessionOnlyOrigins() (called due to the "clear on browser exit"
-  // content setting).
-  // The ServiceWorkerStorageControl receiver runs on thread pool by using
-  // |database_task_runner| SequencedTaskRunner.
-  // TODO(falken): Only block shutdown for that particular task, when someday
-  // task runners support mixing task shutdown behaviors.
-  scoped_refptr<base::SequencedTaskRunner> database_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  database_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(&storage::ServiceWorkerStorageControlImpl::Create),
-          std::move(receiver), user_data_directory_, storage_shared_buffer_));
-}
-
 void ServiceWorkerContextWrapper::SetStorageControlBinderForTest(
     StorageControlBinder binder) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

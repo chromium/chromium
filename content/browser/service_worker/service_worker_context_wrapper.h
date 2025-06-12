@@ -428,10 +428,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       int64_t version_id,
       network::mojom::ClientSecurityStatePtr client_security_state);
 
-  // Binds a ServiceWorkerStorageControl.
-  void BindStorageControl(
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
-          receiver);
+  const base::FilePath& user_data_directory() { return user_data_directory_; }
 
   scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>&
   storage_shared_buffer() {
@@ -442,6 +439,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>)>;
   // Sets a callback to bind ServiceWorkerStorageControl for testing.
   void SetStorageControlBinderForTest(StorageControlBinder binder);
+  StorageControlBinder& storage_control_binder_for_test() {
+    return storage_control_binder_for_test_;
+  }
 
   void SetForceUpdateOnPageLoadForTesting(
       bool force_update_on_page_load) override;

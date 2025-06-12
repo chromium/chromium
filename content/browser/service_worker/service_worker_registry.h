@@ -303,6 +303,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>&
   GetRemoteStorageControl();
 
+  // Binds a ServiceWorkerStorageControl.
+  void BindStorageControl(
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
+          receiver);
+
   // Call storage::mojom::ServiceWorkerStorageControl::Disable() immediately.
   // This method sends an IPC message without using the queuing mechanism.
   void DisableStorageForTesting(base::OnceClosure callback);
