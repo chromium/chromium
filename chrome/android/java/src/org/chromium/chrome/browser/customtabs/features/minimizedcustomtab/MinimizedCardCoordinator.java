@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * Coordinator that manages the showing and hiding of the minimized card that covers the whole
  * Activity.
  */
+@NullMarked
 public class MinimizedCardCoordinator {
     private final ViewGroup mRoot;
     private final int mPreviousImportantForAccessibility;
