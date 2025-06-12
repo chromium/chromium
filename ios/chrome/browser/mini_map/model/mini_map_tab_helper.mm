@@ -106,6 +106,6 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
 
   // TODO(crbug.com/414785597): forward to library for final check of the URL.
 
-  [mini_map_handler_ presentMiniMapForURL:url inWebState:web_state()];
+  [mini_map_handler_ presentMiniMapForURL:url];
   return true;
 }

@@ -4319,51 +4319,63 @@ enum class ToolbarKind {
 
 - (void)presentConsentThenMiniMapForText:(NSString*)text
                               inWebState:(web::WebState*)webState {
+  [self presentMiniMapWithIPHForText:text];
+}
+
+- (void)presentMiniMapWithIPHForText:(NSString*)text {
   self.miniMapCoordinator =
       [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser
-                                                    webState:webState
                                                         text:text
                                                          url:nil
-                                             consentRequired:YES
+                                                     withIPH:YES
                                                         mode:MiniMapMode::kMap];
   [self.miniMapCoordinator start];
 }
 
 - (void)presentMiniMapForText:(NSString*)text
                    inWebState:(web::WebState*)webState {
+  [self presentMiniMapForText:text];
+}
+
+- (void)presentMiniMapForText:(NSString*)text {
   self.miniMapCoordinator =
       [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser
-                                                    webState:webState
                                                         text:text
                                                          url:nil
-                                             consentRequired:NO
+                                                     withIPH:NO
                                                         mode:MiniMapMode::kMap];
   [self.miniMapCoordinator start];
 }
 
 - (void)presentMiniMapForURL:(NSURL*)URL inWebState:(web::WebState*)webState {
+  [self presentMiniMapForURL:URL];
+}
+
+- (void)presentMiniMapForURL:(NSURL*)URL {
   self.miniMapCoordinator =
       [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser
-                                                    webState:webState
                                                         text:nil
                                                          url:URL
-                                             consentRequired:NO
+                                                     withIPH:NO
                                                         mode:MiniMapMode::kMap];
   [self.miniMapCoordinator start];
 }
 
 - (void)presentMiniMapDirectionsForText:(NSString*)text
                              inWebState:(web::WebState*)webState {
+  [self presentMiniMapDirectionsForText:text];
+}
+
+- (void)presentMiniMapDirectionsForText:(NSString*)text {
   self.miniMapCoordinator = [[MiniMapCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                        webState:webState
                             text:text
                              url:nil
-                 consentRequired:NO
+                         withIPH:NO
                             mode:MiniMapMode::kDirections];
   [self.miniMapCoordinator start];
 }

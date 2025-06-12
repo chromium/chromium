@@ -63,7 +63,7 @@ TEST_F(MiniMapMediatorTest, TestNoConsentNeeded) {
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showMapWithIPH:NO]);
-  [mediator_ userInitiatedMiniMapConsentRequired:NO];
+  [mediator_ userInitiatedMiniMapWithIPH:NO];
 }
 
 // Tests that consent screen is not triggered but IPH is displayed.
@@ -75,7 +75,7 @@ TEST_F(MiniMapMediatorTest, TestConsentIPH) {
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showMapWithIPH:YES]);
-  [mediator_ userInitiatedMiniMapConsentRequired:YES];
+  [mediator_ userInitiatedMiniMapWithIPH:YES];
 
   environment_.RunUntilIdle();
   EXPECT_TRUE(

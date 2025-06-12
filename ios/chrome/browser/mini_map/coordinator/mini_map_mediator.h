@@ -30,7 +30,7 @@ class WebState;
 - (void)disconnect;
 
 // The user triggered a minimap.
-- (void)userInitiatedMiniMapConsentRequired:(BOOL)consentRequired;
+- (void)userInitiatedMiniMapWithIPH:(BOOL)showIPH;
 
 // User pressed the content settings from MiniMap screen.
 - (void)userOpenedSettingsFromMiniMap;

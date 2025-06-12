@@ -179,8 +179,7 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
       // If all conditions are true, a command to display the Mini Map should be
       // sent.
       OCMExpect([mini_map_commands_handler_
-          presentMiniMapForURL:[NSURL URLWithString:url]
-                    inWebState:&web_state_]);
+          presentMiniMapForURL:[NSURL URLWithString:url]]);
     }
     bool res = TestShouldAllowRequest(web_state_url, url, feature_enabled,
                                       dse_is_google, !google_maps_not_installed,

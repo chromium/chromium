@@ -71,14 +71,13 @@ enum class MiniMapOutcome {
   self.webState = nullptr;
 }
 
-- (void)userInitiatedMiniMapConsentRequired:(BOOL)consentRequired {
+- (void)userInitiatedMiniMapWithIPH:(BOOL)showIPH {
   if (!self.prefService) {
     return;
   }
 
-  BOOL shouldPresentIPH =
-      consentRequired && ShouldPresentConsentIPH(self.prefService);
-  if (consentRequired) {
+  BOOL shouldPresentIPH = showIPH && ShouldPresentConsentIPH(self.prefService);
+  if (showIPH) {
     if (shouldPresentIPH) {
       base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
                                     ConsentOutcome::kConsentIPH);

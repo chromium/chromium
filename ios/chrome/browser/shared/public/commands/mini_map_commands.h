@@ -13,19 +13,35 @@ class WebState;
 @protocol MiniMapCommands <NSObject>
 
 // Shows the interstitial consent if needed then present the minimap for text.
+// DEPRECATED
 - (void)presentConsentThenMiniMapForText:(NSString*)text
                               inWebState:(web::WebState*)webState;
 
 // Shows the minimap for text.
+// DEPRECATED
 - (void)presentMiniMapForText:(NSString*)text
                    inWebState:(web::WebState*)webState;
 
 // Shows the minimap for `URL`.
+// DEPRECATED
 - (void)presentMiniMapForURL:(NSURL*)URL inWebState:(web::WebState*)webState;
 
 // Shows the minimap directions for text.
+// DEPRECATED
 - (void)presentMiniMapDirectionsForText:(NSString*)text
                              inWebState:(web::WebState*)webState;
+
+// Shows the minimap for `text`.
+- (void)presentMiniMapForText:(NSString*)text;
+
+// Shows the minimap for `text`.
+- (void)presentMiniMapWithIPHForText:(NSString*)text;
+
+// Shows the minimap directions for text.
+- (void)presentMiniMapDirectionsForText:(NSString*)text;
+
+// Shows the minimap for `URL`.
+- (void)presentMiniMapForURL:(NSURL*)URL;
 
 // Hides the minimap.
 - (void)hideMiniMap;

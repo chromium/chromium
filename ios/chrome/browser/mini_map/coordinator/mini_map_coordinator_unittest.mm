@@ -104,14 +104,13 @@ class MiniMapCoordinatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  void SetupCoordinator(BOOL consent_required, MiniMapMode type) {
+  void SetupCoordinator(BOOL iph, MiniMapMode type) {
     coordinator_ = [[MiniMapCoordinator alloc]
         initWithBaseViewController:root_view_controller_
                            browser:browser_.get()
-                          webState:nullptr
                               text:@"Address"
                                url:nil
-                   consentRequired:consent_required
+                           withIPH:iph
                               mode:type];
     [coordinator_ start];
   }

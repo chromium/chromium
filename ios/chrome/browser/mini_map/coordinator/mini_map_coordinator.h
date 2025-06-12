@@ -9,10 +9,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-namespace web {
-class WebState;
-}
-
 enum class MiniMapMode {
   kMap,
   kDirections,
@@ -28,10 +24,9 @@ enum class MiniMapMode {
 // Exactly one of these must be set.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  webState:(web::WebState*)webState
                                       text:(NSString*)text
                                        url:(NSURL*)URL
-                           consentRequired:(BOOL)consentRequired
+                                   withIPH:(BOOL)withIPH
                                       mode:(MiniMapMode)mode
     NS_DESIGNATED_INITIALIZER;
 

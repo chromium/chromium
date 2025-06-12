@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
@@ -39,9 +40,6 @@
 // The WebState that triggered the request.
 @property(assign) base::WeakPtr<web::WebState> webState;
 
-// Whether the consent of the user is required.
-@property(assign) BOOL consentRequired;
-
 // The mode to display the map.
 @property(assign) MiniMapMode mode;
 
@@ -57,24 +55,30 @@
 
   // The Universal link URL to maps to display the MiniMap for.
   NSURL* _url;
+
+  // Whether IPH should be shown (on first presentation).
+  BOOL _showIPH;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  webState:(web::WebState*)webState
                                       text:(NSString*)text
                                        url:(NSURL*)URL
-                           consentRequired:(BOOL)consentRequired
+                                   withIPH:(BOOL)withIPH
                                       mode:(MiniMapMode)mode {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     CHECK_EQ((text ? 1 : 0) + (URL ? 1 : 0), 1);
     _text = text;
     _url = URL;
-    if (webState) {
-      _webState = webState->GetWeakPtr();
+    web::WebState* currentWebState =
+        browser->GetWebStateList()->GetActiveWebState();
+    if (currentWebState) {
+      // Keep track of the WebState so we can remove the annotations if the
+      // user disable the feature.
+      _webState = currentWebState->GetWeakPtr();
     }
-    _consentRequired = consentRequired;
+    _showIPH = withIPH;
     _mode = mode;
   }
   return self;
@@ -87,7 +91,7 @@
   self.mediator = [[MiniMapMediator alloc] initWithPrefs:prefService
                                                 webState:self.webState.get()];
   self.mediator.delegate = self;
-  [self.mediator userInitiatedMiniMapConsentRequired:self.consentRequired];
+  [self.mediator userInitiatedMiniMapWithIPH:_showIPH];
 }
 
 - (void)stop {
