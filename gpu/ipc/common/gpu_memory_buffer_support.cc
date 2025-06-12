@@ -248,7 +248,7 @@ GpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
 #if BUILDFLAG(IS_OZONE)
     case gfx::NATIVE_PIXMAP:
       return GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory(), std::move(handle), size, format,
+          client_native_pixmap_factory_.get(), std::move(handle), size, format,
           usage, std::move(callback));
 #endif
 #if BUILDFLAG(IS_WIN)

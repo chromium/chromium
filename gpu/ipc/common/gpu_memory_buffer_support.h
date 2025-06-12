@@ -65,12 +65,6 @@ class GPU_EXPORT GpuMemoryBufferSupport {
   static GpuMemoryBufferConfigurationSet
   GetNativeGpuMemoryBufferConfigurations();
 
-#if BUILDFLAG(IS_OZONE)
-  gfx::ClientNativePixmapFactory* client_native_pixmap_factory() {
-    return client_native_pixmap_factory_.get();
-  }
-#endif
-
   // Returns whether the provided buffer format is supported.
   bool IsConfigurationSupportedForTest(gfx::GpuMemoryBufferType type,
                                        gfx::BufferFormat format,
