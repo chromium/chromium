@@ -456,7 +456,7 @@ LineBreaker::LineBreaker(InlineNode node,
           (!break_token || !break_token->IsPastFirstFormattedLine()) &&
           node.CanContainFirstFormattedLine()),
       use_first_line_style_(is_first_formatted_line_ &&
-                            node.UseFirstLineStyle()),
+                            node.UseFirstLineStyleItemsData()),
       sticky_images_quirk_(mode != LineBreakerMode::kContent &&
                            node.IsStickyImagesQuirkForContentSize()),
       items_data_(&node.ItemsData(use_first_line_style_)),

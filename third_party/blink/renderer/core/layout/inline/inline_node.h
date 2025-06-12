@@ -60,6 +60,10 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
     return Data().ItemsData(is_first_line);
   }
 
+  // True if `this` should use the first-line `InlineItemsData` for its first
+  // formatted line. See `ItemsData()`. Valid only when pre-layout is clean.
+  bool UseFirstLineStyleItemsData() const;
+
   // There's a special intrinsic size measure quirk for images that are direct
   // children of table cells that have auto inline-size: When measuring
   // intrinsic min/max inline sizes, we pretend that it's not possible to break
@@ -119,7 +123,6 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
     return GetLayoutBlockFlow()->CanContainFirstFormattedLine();
   }
 
-  bool UseFirstLineStyle() const;
   void CheckConsistency() const;
 
   // This function is available after PrepareLayout(), only for SVG <text>.

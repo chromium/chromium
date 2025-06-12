@@ -2131,9 +2131,10 @@ MinMaxSizesResult InlineNode::ComputeMinMaxSizes(
   return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
-bool InlineNode::UseFirstLineStyle() const {
+bool InlineNode::UseFirstLineStyleItemsData() const {
   return GetLayoutBox() &&
-         GetLayoutBox()->GetDocument().GetStyleEngine().UsesFirstLineRules();
+         GetLayoutBox()->GetDocument().GetStyleEngine().UsesFirstLineRules() &&
+         Data().HasFirstLineItems();
 }
 
 void InlineNode::CheckConsistency() const {

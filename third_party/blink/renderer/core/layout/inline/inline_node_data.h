@@ -43,6 +43,8 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
     return is_score_line_break_disabled_;
   }
 
+  bool HasFirstLineItems() const { return first_line_items_; }
+
   const InlineItemsData& ItemsData(bool is_first_line) const {
     return !is_first_line || !first_line_items_ ? (const InlineItemsData&)*this
                                                 : *first_line_items_;
