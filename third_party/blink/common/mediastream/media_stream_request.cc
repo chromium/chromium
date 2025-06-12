@@ -13,12 +13,14 @@
 
 namespace blink {
 namespace {
-// TODO(crbug.com/410466097): Remove this kill switch once it's been confirmed
-// that there are no issues with classifying DISPLAY_AUDIO_CAPTURE as a desktop
-// capture type.
+// TODO(crbug.com/410466097): Disable the kill switch and remove it once
+// restrictOwnAudio has been launched. See
+// https://www.w3.org/TR/screen-capture/#dfn-restrictownaudio.
+// Note: The implementation of this kill switch is inverted, meaning that the
+// kill switch is active when the feature is enabled.
 BASE_FEATURE(kDisplayAudioCaptureKillSwitch,
              "DisplayAudioCaptureKillSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 bool IsAudioInputMediaType(mojom::MediaStreamType type) {
