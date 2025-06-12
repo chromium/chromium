@@ -41,6 +41,92 @@ TEST_F(OAuthLoginDetectorTest, OAuthLoginWithMultipleQueryParams) {
   EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 
+TEST_F(OAuthLoginDetectorTest, OAuthLoginWithParamInRef) {
+  // OAuth start with client_id in ref.
+  // This should no longer be detected as an OAuth start because start params
+  // are not checked in the ref.
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://foo.com/login.html"),
+      {GURL("https://oauth.com/authenticate#client_id=123"),
+       GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+TEST_F(OAuthLoginDetectorTest, OAuthLoginWithCompleteParamInRef) {
+  // OAuth completion with code in ref.
+  EXPECT_EQ(GURL("https://foo.com/"),
+            *oauth_login_detector_->GetSuccessfulLoginFlowSite(
+                GURL("https://foo.com/login.html"),
+                {GURL("https://oauth.com/authenticate?client_id=123"),
+                 GURL("https://foo.com/redirect#code=secret")}));
+
+  EXPECT_EQ(GURL("https://foo.com/"),
+            *oauth_login_detector_->GetSuccessfulLoginFlowSite(
+                GURL("https://foo.com/login.html"),
+                {GURL("https://oauth.com/authenticate?client_id=123"),
+                 GURL("https://foo.com/redirect#access_token=token")}));
+
+  EXPECT_EQ(GURL("https://foo.com/"),
+            *oauth_login_detector_->GetSuccessfulLoginFlowSite(
+                GURL("https://foo.com/login.html"),
+                {GURL("https://oauth.com/authenticate?client_id=123"),
+                 GURL("https://foo.com/redirect#id_token=token")}));
+
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+TEST_F(OAuthLoginDetectorTest, OAuthLoginWithAllParamsInRef) {
+  // OAuth start and completion with params in ref.
+  // This should no longer be detected as an OAuth start because start params
+  // are not checked in the ref. Completion params in ref are still checked.
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://foo.com/login.html"),
+      {GURL("https://oauth.com/authenticate#client_id=123"),
+       GURL("https://foo.com/redirect#code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+TEST_F(OAuthLoginDetectorTest, OAuthLoginWithNonKeyValueRefAtStart) {
+  // OAuth start with a non-key-value ref.
+  // This should not be detected as an OAuth start.
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://foo.com/login.html"),
+      {GURL("https://oauth.com/authenticate#randomstring"),
+       GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+TEST_F(OAuthLoginDetectorTest, OAuthLoginWithNonKeyValueRefAtComplete) {
+  // OAuth completion with a non-key-value ref.
+  // This should not be detected as an OAuth completion.
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://foo.com/login.html"),
+      {GURL("https://oauth.com/authenticate?client_id=123"),
+       GURL("https://foo.com/redirect#randomstring")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+TEST_F(OAuthLoginDetectorTest, OAuthLoginWithNonKeyValueRefAtStartAndComplete) {
+  // OAuth start and completion with non-key-value refs.
+  // This should not be detected as an OAuth flow.
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://foo.com/login.html"),
+      {GURL("https://oauth.com/authenticate#randomstring1"),
+       GURL("https://foo.com/redirect#randomstring2")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+TEST_F(OAuthLoginDetectorTest, OAuthLoginWithMixedRefAtStart) {
+  // OAuth start with a ref that has a valid param and a non-key-value part.
+  // This should no longer be detected as an OAuth start because start params
+  // are not checked in the ref.
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://foo.com/login.html"),
+      {GURL("https://oauth.com/authenticate#client_id=123&random"),
+       GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
 TEST(OAuthLoginDetectorTestWithParams, OAuthLoginRequiringMultipleQueryParams) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -67,7 +153,8 @@ TEST(OAuthLoginDetectorTestWithParams, OAuthLoginMissingMultipleQueryParams) {
        {"oauth_login_complete_request_params", "scope,code"}});
   OAuthLoginDetector detector;
 
-  EXPECT_FALSE(detector.GetSuccessfulLoginFlowSite(
+  // Success if any of the params exist in the URL.
+  EXPECT_TRUE(detector.GetSuccessfulLoginFlowSite(
       GURL("https://foo.com/login.html"),
       {GURL("https://oauth.com/authenticate?client_id=123"),
        GURL("https://foo.com/redirect?code=secret")}));

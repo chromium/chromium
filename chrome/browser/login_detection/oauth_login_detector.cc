@@ -4,6 +4,7 @@
 
 #include "chrome/browser/login_detection/oauth_login_detector.h"
 
+#include "base/strings/string_split.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "net/base/url_util.h"
 
@@ -11,17 +12,52 @@ namespace login_detection {
 
 namespace {
 
-// Returns whether all the given query parameters are found in the URL.
-bool DoAllQueryParamsExist(const std::set<std::string>& request_params,
-                           const GURL& url) {
-  if (!url.has_query())
+constexpr char kQuerySeparator[] = "&";
+constexpr char kKeyValueSeparator[] = "=";
+
+base::flat_map<std::string, std::string> SplitUrl(const std::string& url) {
+  std::vector<std::string> fragments = base::SplitString(
+      url, kQuerySeparator, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  base::flat_map<std::string, std::string> url_map;
+  for (auto& fragment : fragments) {
+    size_t start = fragment.find(kKeyValueSeparator);
+    if (start == std::string::npos) {
+      continue;
+    }
+    std::string key = fragment.substr(0, start);
+    std::string val = fragment.substr(start + 1, fragment.size());
+    url_map.emplace(key, val);
+  }
+
+  return url_map;
+}
+
+// Returns whether any of the given query parameters is found in the URL.
+bool DoesAnyQueryParamExist(const std::set<std::string>& request_params,
+                            const GURL& url,
+                            bool should_check_ref) {
+  bool check_ref = should_check_ref && url.has_ref();
+  if (!url.has_query() && !check_ref) {
     return false;
+  }
+
   for (const auto& param : request_params) {
     std::string param_value;
-    if (!net::GetValueForKeyInQuery(url, param, &param_value))
-      return false;
+    if (net::GetValueForKeyInQuery(url, param, &param_value)) {
+      return true;
+    }
+
+    if (!check_ref) {
+      continue;
+    }
+    std::string url_ref = url.ref();
+    base::flat_map<std::string, std::string> url_map = SplitUrl(url_ref);
+    if (url_map.contains(param)) {
+      return true;
+    }
   }
-  return true;
+
+  return false;
 }
 
 }  // namespace
@@ -65,7 +101,8 @@ std::optional<GURL> OAuthLoginDetector::GetSuccessfulLoginFlowSite(
 
     // Check for start of login flow.
     if (!login_flow_info_ &&
-        DoAllQueryParamsExist(login_flow_start_query_params_, navigation_url)) {
+        DoesAnyQueryParamExist(login_flow_start_query_params_, navigation_url,
+                               /*shoulc_check_ref*/ false)) {
       if (popup_opener_navigation_site_) {
         // When this detector is opened for a popup window, treat the site of
         // the popup opener window site as the OAuth requestor site.
@@ -134,8 +171,8 @@ bool OAuthLoginDetector::CheckSuccessfulLoginCompletion(
   // Check for OAuth login completion parameters. This should not happen for the
   // OAuth provider site, since this returns the authorzation code and token to
   // the OAuth requestor site.
-  if (DoAllQueryParamsExist(login_flow_complete_query_params_,
-                            navigation_url)) {
+  if (DoesAnyQueryParamExist(login_flow_complete_query_params_, navigation_url,
+                             /*should_check_ref=*/true)) {
     return true;
   }
 
