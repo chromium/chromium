@@ -5120,11 +5120,12 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-bfcache@google.com</owner>
   <summary>
     Recorded true when a Fetch keepalive request loader in the {Process}
-    {RequestState}.
+    {RequestState} while the context is already detached.
   </summary>
   <token key="RequestState">
-    <variant name="Started" summary="starts to load."/>
-    <variant name="Succeeded" summary="succeeds to load."/>
+    <variant name="Retried" summary="starts a retry of a failed load"/>
+    <variant name="Started" summary="starts to load (non-retry)"/>
+    <variant name="Succeeded" summary="succeeds to load"/>
   </token>
   <token key="Process">
     <variant name="Browser" summary="browser process"/>
@@ -5147,10 +5148,12 @@ chromium-metrics-reviews@google.com.
                  case of multiple errors, only the first encountered is
                  recorded. Refer to where
                  FetchUtils::LogFetchKeepAliveRequestMetric(...,kFailed) is
-                 called for details."/>
+                 called for details. Note this includes failures that get
+                 retried later."/>
+    <variant name="Retried" summary="starts a retry of a failed load."/>
     <variant name="SentToService"
         summary="gets sent to NetworkService (or Browser)."/>
-    <variant name="Started" summary="starts to load."/>
+    <variant name="Started" summary="starts a load."/>
     <variant name="Succeeded" summary="succeeds to load."/>
     <variant name="Total"
         summary="is created. It does NOT equal to the total number of
@@ -5190,6 +5193,9 @@ chromium-metrics-reviews@google.com.
                  `FetchLater.Browser.Metrics`, as a request may be dropped
                  for other undocumented reasons like browser killed or
                  crashes."/>
+    <variant name=".Retried"
+        summary="a retried attempt for a previously started FetchLater
+                 request is started in browser."/>
     <variant name=".Started"
         summary="a scheduled FetchLater request is started in browser. This
                  number should be the sum of enum values

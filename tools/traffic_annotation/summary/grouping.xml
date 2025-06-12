@@ -380,6 +380,7 @@ after discussions on the right group.
       <annotation id="zero_state_suggestions_model_execution"/>
       <annotation id="certificate_verifier_2qwac_loader"/>
       <annotation id="trusted_vault_cert_request"/>
+      <annotation id="keepalive_fetch_retry"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

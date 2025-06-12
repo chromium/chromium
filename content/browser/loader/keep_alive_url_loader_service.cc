@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -31,6 +32,21 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
 
+namespace {
+
+constexpr size_t kMaxRetryCountsCacheSize = 1000u;
+
+}  // namespace
+
+namespace features {
+
+const base::FeatureParam<size_t> kMaxRetriesPerFactory{
+    &blink::features::kFetchRetry, "max_retries_per_factory", 20};
+const base::FeatureParam<size_t> kMaxRetriesPerNetworkIsolationKey{
+    &blink::features::kFetchRetry, "max_retries_per_nik", 50};
+
+}  // namespace features
+
 namespace content {
 
 KeepAliveURLLoaderService::FactoryContext::FactoryContext(
@@ -47,7 +63,8 @@ KeepAliveURLLoaderService::FactoryContext::FactoryContext(
       weak_document_ptr(other->weak_document_ptr),
       ukm_source_id(other->ukm_source_id),
       policy_container_host(other->policy_container_host),
-      attribution_context(other->attribution_context) {}
+      attribution_context(other->attribution_context),
+      network_isolation_key(other->network_isolation_key) {}
 
 KeepAliveURLLoaderService::FactoryContext::~FactoryContext() = default;
 
@@ -56,6 +73,8 @@ void KeepAliveURLLoaderService::FactoryContext::OnDidCommitNavigation(
   CHECK(navigation_handle);
   weak_document_ptr =
       navigation_handle->GetRenderFrameHost()->GetWeakDocumentPtr();
+  network_isolation_key =
+      navigation_handle->GetRenderFrameHost()->GetNetworkIsolationKey();
 
   auto* rfh = static_cast<RenderFrameHostImpl*>(
       weak_document_ptr.AsRenderFrameHostIfValid());
@@ -148,6 +167,16 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
   }
 
   // For testing only:
+  base::WeakPtr<KeepAliveURLLoader> GetLoaderWithRequestIdForTesting(
+      int32_t request_id) const {
+    for (const auto& [_, weak_ptr_loader] : weak_ptr_loaders_) {
+      if (weak_ptr_loader->request_id() == request_id) {
+        return weak_ptr_loader;
+      }
+    }
+    return nullptr;
+  }
+
   size_t NumLoadersForTesting() const {
     return loader_receivers_.size() + disconnected_loaders_.size();
   }
@@ -205,7 +234,8 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
         // caller renderer is already unloaded, meaning `loader` also needs to
         // hold another refptr to ensure `PolicyContainerHost` alive.
         context->policy_container_host, context->weak_document_ptr,
-        context->ukm_source_id, service_->browser_context_,
+        context->network_isolation_key, context->ukm_source_id,
+        service_->browser_context_,
         base::BindRepeating(&KeepAliveURLLoaderFactoriesBase::CreateThrottles,
                             base::Unretained(this)),
         base::PassKey<KeepAliveURLLoaderService>(),
@@ -224,6 +254,12 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
     raw_loader->set_on_delete_callback(
         base::BindOnce(&KeepAliveURLLoaderFactoriesBase::RemoveLoader,
                        base::Unretained(this), receiver_id));
+    raw_loader->set_check_retry_eligibility_callback(base::BindRepeating(
+        &KeepAliveURLLoaderFactoriesBase::CheckRetryEligibility,
+        base::Unretained(this), context->network_isolation_key));
+    raw_loader->set_on_retry_scheduled_callback(base::BindRepeating(
+        &KeepAliveURLLoaderFactoriesBase::OnRetryScheduled,
+        base::Unretained(this), context->network_isolation_key));
     weak_ptr_loaders_.emplace(receiver_id, std::move(raw_loader->GetWeakPtr()));
 
     if (service_->loader_test_observer_) {
@@ -278,6 +314,22 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
     disconnected_loaders_.erase(loader_receiver_id);
     weak_ptr_loaders_.erase(loader_receiver_id);
   }
+
+  bool CheckRetryEligibility(const net::NetworkIsolationKey& key) {
+    if (retry_count_ < features::kMaxRetriesPerFactory.Get()) {
+      return service_->CheckRetryEligibility(key);
+    }
+    return false;
+  }
+
+  void OnRetryScheduled(const net::NetworkIsolationKey& key) {
+    CHECK(CheckRetryEligibility(key));
+    retry_count_++;
+    service_->OnRetryScheduled(key);
+  }
+
+  // The total amount of retries scheduled for loaders owned by this factory.
+  size_t retry_count_ = 0;
 
   // Guaranteed to exist, as `service_` owns this.
   raw_ptr<KeepAliveURLLoaderService> service_;
@@ -510,7 +562,8 @@ class KeepAliveURLLoaderService::FetchLaterLoaderFactories final
 
 KeepAliveURLLoaderService::KeepAliveURLLoaderService(
     BrowserContext* browser_context)
-    : browser_context_(browser_context) {
+    : browser_context_(browser_context),
+      retry_counts_(kMaxRetryCountsCacheSize) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(browser_context_);
 
@@ -558,6 +611,37 @@ void KeepAliveURLLoaderService::Shutdown() {
   fetch_later_loader_factories_->Shutdown();
   // Notifies fetch keepalive loader factories for it to log debugging metrics.
   url_loader_factories_->Shutdown();
+}
+
+bool KeepAliveURLLoaderService::CheckRetryEligibility(
+    const net::NetworkIsolationKey& key) {
+  auto it = retry_counts_.Get(key);
+  if (it == retry_counts_.end()) {
+    return true;
+  }
+  return it->second < features::kMaxRetriesPerNetworkIsolationKey.Get();
+}
+
+void KeepAliveURLLoaderService::OnRetryScheduled(
+    const net::NetworkIsolationKey& key) {
+  CHECK(CheckRetryEligibility(key));
+  auto it = retry_counts_.Get(key);
+  if (it == retry_counts_.end()) {
+    retry_counts_.Put(key, 1);
+  } else {
+    retry_counts_.Put(key, it->second + 1);
+  }
+}
+
+base::WeakPtr<KeepAliveURLLoader>
+KeepAliveURLLoaderService::GetLoaderWithRequestIdForTesting(
+    int32_t request_id) const {
+  if (auto loader = url_loader_factories_->GetLoaderWithRequestIdForTesting(
+          request_id)) {  // IN-TEST
+    return loader;
+  }
+  return fetch_later_loader_factories_->GetLoaderWithRequestIdForTesting(
+      request_id);  // IN-TEST
 }
 
 size_t KeepAliveURLLoaderService::NumLoadersForTesting() const {

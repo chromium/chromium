@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
@@ -26,10 +27,12 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/url_request.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #include "url/gurl.h"
@@ -100,9 +103,15 @@ class CONTENT_EXPORT KeepAliveURLLoader
  public:
   // A callback type to delete this loader immediately on triggered.
   using OnDeleteCallback = base::OnceCallback<void(void)>;
+  using CheckRetryEligibilityCallback = base::RepeatingCallback<bool(void)>;
+  using OnRetryScheduledCallback = base::RepeatingCallback<void(void)>;
+
   // A callback type to return URLLoaderThrottles to be used by this loader.
   using URLLoaderThrottlesGetter = base::RepeatingCallback<
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(void)>;
+
+  static constexpr char kRetryGuidHeader[] = "Retry-GUID";
+  static constexpr char kRetryAttemptsHeader[] = "Retry-Attempts";
 
   // Must only be constructed by a `KeepAliveURLLoaderService`.
   //
@@ -125,6 +134,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       scoped_refptr<PolicyContainerHost> policy_container_host,
       WeakDocumentPtr weak_document_ptr,
+      net::NetworkIsolationKey network_isolation_key,
       std::optional<ukm::SourceId> ukm_source_id,
       BrowserContext* browser_context,
       URLLoaderThrottlesGetter throttles_getter,
@@ -145,6 +155,15 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Must be called immediately after creating a KeepAliveLoader.
   void set_on_delete_callback(OnDeleteCallback on_delete_callback);
 
+  // Sets the callback to check the eligibility for this loader object to
+  // retry on top of the internal checks done from `IsEligibleToRetry()`.
+  void set_check_retry_eligibility_callback(
+      CheckRetryEligibilityCallback callback);
+
+  // A callback to update the retry limit trackers when a retry is scheduled
+  // after it passes eligibility checks.
+  void set_on_retry_scheduled_callback(OnRetryScheduledCallback callback);
+
   // Kicks off loading the request, including prepare for requests, and setting
   // up communication with network service.
   // This method must only be called when `IsStarted()` is false.
@@ -155,6 +174,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   // Called when the `browser_context_` is shutting down.
   void Shutdown();
+
+  bool IsAttemptingRetry() const;
+
+  int32_t request_id() const { return request_id_; }
 
   base::WeakPtr<KeepAliveURLLoader> GetWeakPtr();
 
@@ -259,9 +282,60 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Called when `disconnected_loader_timer_` is fired.
   void OnDisconnectedLoaderTimerFired();
 
+  // Schedules a retry after failing, if eligible.
+  bool MaybeScheduleRetry(
+      std::optional<network::URLLoaderCompletionStatus> completion_status);
+
+  size_t GetMaxAttemptsForRetry() const;
+  base::TimeDelta GetMaxAgeForRetry() const;
+  base::TimeDelta GetInitialTimeDeltaForRetry() const;
+  double GetBackoffFactorForRetry() const;
+
+  // Whether the request is eligible to retry given the retry limits and the
+  // result of the last attempt.
+  bool IsEligibleForRetry(std::optional<network::URLLoaderCompletionStatus>
+                              completion_status) const;
+
+  // Retries the request if it's allowed, creating a new `loader_`.
+  void AttemptRetryIfAllowed();
+
+  // Calculates the retry delay for the next retry attempt, setting it to
+  // `last_retry_delay_`.
+  base::TimeDelta UpdateNextRetryDelay();
+
+  void StartInternal(bool is_retry);
+
+  void NotifyOnCompleteForTestAndDevTools(
+      const network::URLLoaderCompletionStatus& completion_status);
+
   void DeleteSelf();
 
   friend class KeepAliveRequestBrowserTestBase;
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           AboveRetryLimits);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           BelowRetryLimits);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           RetryLimitsDefaults);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           ErrorCodeRetryEligibility);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           OnCompleteWillBeRetried);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           CancelWithStatusWillBeRetried);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           NoRetryOptionsWillNotBeRetried);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           NonHTTPSWillNotBeRetried);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           POSTWillNotBeRetriedUnlessRequested);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           ReceivedResponseWillNotBeRetried);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           ExceededRedirectLimitWillNotBeRetried);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           SelfDeletionOnMaxAge);
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
@@ -283,19 +357,32 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // https://docs.google.com/document/d/15MHmkf_SN2S9WYra060yEChgjs3pgZW--aHUuiG8Y1Q/edit
   void LogFetchKeepAliveRequestMetric(std::string_view request_state_name);
 
-  // The ID to identify the request being loaded by this loader.
-  const int32_t request_id_;
+  // The ID to identify the request being loaded by this loader. Note that this
+  // is initially assigned a value at construction time, but might be assigned a
+  // new value if the request failed and gets retried.
+  int32_t request_id_;
 
-  // The ID to identify the request used by DevTools
-  const std::string devtools_request_id_;
+  // The ID to identify the request used by DevTools.  Note that this is
+  // initially assigned a value at construction time, but might be assigned a
+  // new value if the request failed and gets retried.
+  std::string devtools_request_id_;
 
   // A bitfield of the options of the request being loaded.
   // See services/network/public/mojom/url_loader_factory.mojom.
   const uint32_t options_;
 
   // The request to be loaded by this loader.
-  // Set in the constructor and updated when redirected.
+  // Set in the constructor and updated when redirected or retries. See also
+  // `original_resource_request_` below.
   network::ResourceRequest resource_request_;
+
+  // The original request to be loaded by this loader. Different from
+  // `resource_request_`, this will not be updated on redirection, preserving
+  // the original request parameters. This can be used on fetch retry attempts
+  // to re-try the request with its original request params. Note that this is
+  // not const because it needs to be set after the `resource_request_` sets
+  // the retry GUID header.
+  network::ResourceRequest original_resource_request_;
 
   // See
   // https://docs.google.com/document/d/1RKPgoLBrrLZBPn01XtwHJiLlH9rA7nIRXQJIR7BUqJA/edit#heading=h.y1og20bzkuf7
@@ -315,7 +402,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
   base::OneShotTimer disconnected_loader_timer_;
 
   // The NetworkTrafficAnnotationTag for the request being loaded.
-  net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
+  net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   // A refptr to the URLLoaderFactory implementation that can actually create a
   // URLLoader. An extra refptr is required here to support deferred loading.
@@ -338,6 +425,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // details.
   WeakDocumentPtr weak_document_ptr_;
 
+  // The network isolation key of the document that initiates this loader.
+  const net::NetworkIsolationKey network_isolation_key_;
+
+  // The UKM source ID used by `request_tracker_`.
+  std::optional<ukm::SourceId> ukm_source_id_;
+
   // The tracker to record the browser-side UKM metrics for this request.
   std::unique_ptr<KeepAliveRequestTracker> request_tracker_;
 
@@ -352,10 +445,52 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // A callback to delete this loader object and clean up resource.
   OnDeleteCallback on_delete_callback_;
 
+  // A callback to check the eligibility for this loader object to retry.
+  CheckRetryEligibilityCallback check_retry_eligibility_callback_;
+
+  // A callback to update the retry limit trackers when a retry is scheduled.
+  OnRetryScheduledCallback on_retry_scheduled_callback_;
+
   // Records the initial request URL to help veryfing redirect request.
   const GURL initial_url_;
   // Records the latest URL to help veryfing redirect request.
   GURL last_url_;
+
+  // Decremented on every redirect received, across all retries. The request
+  // will fail and won't be retriable if we reached 0.
+  size_t redirect_limit_ = net::URLRequest::kMaxRedirects;
+
+  // The number of retries already scheduled for this request .
+  size_t retry_count_ = 0;
+
+  // The timestamp where we initially decided that we're going to retry this
+  // load. Only set once, when `retry_timer_` is initially set.
+  base::TimeTicks first_retry_initiated_time_;
+
+  // The state of retry being attempted (if applicable).
+  enum RetryState {
+    // No retry is being attempted yet.
+    kNotAttemptingRetry,
+    // A retry is scheduled to run through the `retry_timer_`.
+    kRetryScheduled,
+    // A retry is waiting for a same-NetworkIsolationKey document to become
+    // active.
+    kWaitingForSameNetworkIsolationKeyDocument,
+    // A retry is in progress.
+    kRetryInProgress,
+  };
+  RetryState retry_state_ = RetryState::kNotAttemptingRetry;
+
+  // The last delay used for `retry_timer_` to schedule a retry.
+  base::TimeDelta last_retry_delay_;
+
+  // Timer to schedule the next retry.
+  base::OneShotTimer retry_timer_;
+
+  // Timer to schedule self deletion, if we planned to do a retry but a
+  // same-NetworkIsolationKey document never becomes active and we reach the max
+  // age.
+  base::OneShotTimer self_deletion_timer_;
 
   // A callback to obtain URLLoaderThrottle for this loader to start loading.
   URLLoaderThrottlesGetter throttles_getter_;
