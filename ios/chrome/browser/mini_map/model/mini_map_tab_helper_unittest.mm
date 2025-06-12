@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -78,6 +79,9 @@ class MiniMapTabHelperTest : public PlatformTest {
         base::test::ios::kWaitForActionTimeout, ^{
           return template_url_service_->loaded();
         }));
+    mini_map_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(MiniMapCommands));
+    tab_helper_->SetMiniMapCommands(mini_map_commands_handler_);
   }
 
   void TearDown() override {
@@ -143,6 +147,7 @@ class MiniMapTabHelperTest : public PlatformTest {
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   raw_ptr<MiniMapTabHelper> tab_helper_ = nullptr;
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
+  id mini_map_commands_handler_;
   bool google_maps_installed_;
 };
 
@@ -170,9 +175,17 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
         (scenario & transition_type_index)
             ? ui::PageTransition::PAGE_TRANSITION_LINK
             : ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK;
+    if (scenario == total - 1) {
+      // If all conditions are true, a command to display the Mini Map should be
+      // sent.
+      OCMExpect([mini_map_commands_handler_
+          presentMiniMapForURL:[NSURL URLWithString:url]
+                    inWebState:&web_state_]);
+    }
     bool res = TestShouldAllowRequest(web_state_url, url, feature_enabled,
                                       dse_is_google, !google_maps_not_installed,
                                       user_initiated, transition_type);
+    EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
     // Navigation should be blocked only if all conditions are true.
     EXPECT_EQ(scenario != total - 1, res);
   }

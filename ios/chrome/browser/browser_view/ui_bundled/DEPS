@@ -60,6 +60,7 @@ include_rules = [
   "+ios/chrome/browser/main_content/ui_bundled",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/mini_map/coordinator/mini_map_coordinator.h",
+  "+ios/chrome/browser/mini_map/model",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/ui_bundled",
   "+ios/chrome/browser/omnibox/model/omnibox_position",

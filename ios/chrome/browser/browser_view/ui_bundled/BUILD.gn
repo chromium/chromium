@@ -158,6 +158,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/mini_map/coordinator",
+    "//ios/chrome/browser/mini_map/model",
     "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",

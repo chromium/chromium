@@ -10,6 +10,7 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+@protocol MiniMapCommands;
 class MiniMapService;
 
 // Observes navigations to Google maps to show native UI.
@@ -19,6 +20,9 @@ class MiniMapTabHelper : public web::WebStateUserData<MiniMapTabHelper>,
  public:
   explicit MiniMapTabHelper(web::WebState* web_state);
   ~MiniMapTabHelper() override;
+
+  // Sets the MiniMapCommands that can display mini maps.
+  void SetMiniMapCommands(id<MiniMapCommands> mini_map_handler);
 
   // WebStateObserver overrides:
   void PageLoaded(
@@ -41,6 +45,9 @@ class MiniMapTabHelper : public web::WebStateUserData<MiniMapTabHelper>,
 
   // Whether the web_state is currently on Google SRP.
   bool is_on_google_srp_ = false;
+
+  // Command handlers for mini maps commands.
+  id<MiniMapCommands> mini_map_handler_ = nil;
 
   // Service to observe Profile scoped prefs.
   raw_ptr<MiniMapService> mini_map_service_;
