@@ -48,6 +48,7 @@ class CorpSessionAuthzServiceClient : public SessionAuthzServiceClient {
                           VerifySessionTokenCallback callback) override;
   void ReauthorizeHost(std::string_view session_reauth_token,
                        std::string_view session_id,
+                       base::TimeTicks token_expire_time,
                        ReauthorizeHostCallback callback) override;
 
  private:
@@ -56,7 +57,9 @@ class CorpSessionAuthzServiceClient : public SessionAuthzServiceClient {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       std::string_view verb,
       std::unique_ptr<google::protobuf::MessageLite> request_message,
-      CallbackType callback);
+      CallbackType callback,
+      std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy =
+          ProtobufHttpRequestConfig::CreateDefaultRetryPolicy());
 
   std::unique_ptr<OAuthTokenGetter> oauth_token_getter_;
   ProtobufHttpClient http_client_;

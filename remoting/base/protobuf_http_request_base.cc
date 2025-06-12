@@ -4,6 +4,12 @@
 
 #include "remoting/base/protobuf_http_request_base.h"
 
+#include <memory>
+
+#include "base/containers/fixed_flat_set.h"
+#include "base/logging.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
@@ -12,10 +18,23 @@
 
 namespace remoting {
 
+struct ProtobufHttpRequestBase::RetryEntry {
+  explicit RetryEntry(const net::BackoffEntry::Policy* policy)
+      : backoff_entry(policy) {}
+  ~RetryEntry() = default;
+
+  net::BackoffEntry backoff_entry;
+  base::OneShotTimer retry_timer;
+};
+
 ProtobufHttpRequestBase::ProtobufHttpRequestBase(
     std::unique_ptr<ProtobufHttpRequestConfig> config)
     : config_(std::move(config)) {
   config_->Validate();
+  if (config_->retry_policy) {
+    retry_entry_ =
+        std::make_unique<RetryEntry>(config_->retry_policy->backoff_policy);
+  }
 }
 
 ProtobufHttpRequestBase::~ProtobufHttpRequestBase() {
@@ -49,16 +68,52 @@ HttpStatus ProtobufHttpRequestBase::GetUrlLoaderStatus() const {
       url_loader_->ResponseInfo()->headers->response_code()));
 }
 
+bool ProtobufHttpRequestBase::HandleRetry(HttpStatus::Code code) {
+  DCHECK(loader_factory_);
+
+  // SimpleURLLoader supports retries, but it doesn't support retrying on
+  // network error, and uses max retries rather than an absolute deadline for
+  // setting the limit. Hence we use our own retry logic.
+
+  static constexpr auto kRetriableErrorCodes =
+      base::MakeFixedFlatSet<HttpStatus::Code>(
+          {HttpStatus::Code::ABORTED, HttpStatus::Code::UNAVAILABLE,
+           HttpStatus::Code::NETWORK_ERROR});
+
+  if (!retry_entry_ || !kRetriableErrorCodes.contains(code)) {
+    return false;
+  }
+  retry_entry_->backoff_entry.InformOfRequest(false);
+  if (retry_entry_->backoff_entry.GetReleaseTime() >=
+      config_->retry_policy->retry_deadline) {
+    LOG(WARNING) << "No more retries remaining.";
+    return false;
+  }
+  base::TimeDelta retry_delay =
+      retry_entry_->backoff_entry.GetTimeUntilRelease();
+  LOG(WARNING) << "Request failed with error code " << static_cast<int>(code)
+               << ". It will be retried after " << retry_delay;
+  retry_entry_->retry_timer.Start(FROM_HERE, retry_delay, this,
+                                  &ProtobufHttpRequestBase::DoRequest);
+  return true;
+}
+
 void ProtobufHttpRequestBase::StartRequest(
     network::mojom::URLLoaderFactory* loader_factory,
-    std::unique_ptr<network::SimpleURLLoader> url_loader,
+    CreateUrlLoader create_url_loader,
     base::OnceClosure invalidator) {
-  DCHECK(!url_loader_);
+  DCHECK(!create_url_loader_);
   DCHECK(!invalidator_);
 
-  url_loader_ = std::move(url_loader);
+  loader_factory_ = loader_factory;
+  create_url_loader_ = std::move(create_url_loader);
   invalidator_ = std::move(invalidator);
-  StartRequestInternal(loader_factory);
+  DoRequest();
+}
+
+void ProtobufHttpRequestBase::DoRequest() {
+  url_loader_ = create_url_loader_.Run(*config_);
+  StartRequestInternal(loader_factory_);
 
 #if DCHECK_IS_ON()
   base::TimeDelta timeout_duration = GetRequestTimeoutDuration();

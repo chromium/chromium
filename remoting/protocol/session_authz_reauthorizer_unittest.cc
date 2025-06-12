@@ -36,12 +36,12 @@ auto Respond(std::string_view session_reauth_token,
   auto response = std::make_unique<internal::ReauthorizeHostResponseStruct>();
   response->session_reauth_token = session_reauth_token;
   response->session_reauth_token_lifetime = session_reauth_token_lifetime;
-  return base::test::RunOnceCallback<2>(HttpStatus::OK(), std::move(response));
+  return base::test::RunOnceCallback<3>(HttpStatus::OK(), std::move(response));
 }
 
 template <typename CodeType>
 auto RespondError(CodeType code) {
-  return base::test::RunOnceCallbackRepeatedly<2>(HttpStatus(code), nullptr);
+  return base::test::RunOnceCallbackRepeatedly<3>(HttpStatus(code), nullptr);
 }
 
 }  // namespace
@@ -60,12 +60,14 @@ class SessionAuthzReauthorizerTest : public testing::Test {
       on_reauthorization_failed_callback_;
   std::unique_ptr<SessionAuthzReauthorizer> reauthorizer_;
   MockSessionAuthzServiceClient service_client_;
+  base::TimeTicks initial_token_expire_time_;
 };
 
 SessionAuthzReauthorizerTest::SessionAuthzReauthorizerTest() {
   reauthorizer_ = std::make_unique<SessionAuthzReauthorizer>(
       &service_client_, kSessionId, kInitialReauthToken, kInitialTokenLifetime,
       on_reauthorization_failed_callback_.Get());
+  initial_token_expire_time_ = base::TimeTicks::Now() + kInitialTokenLifetime;
   reauthorizer_->Start();
 }
 
@@ -77,70 +79,32 @@ auto SessionAuthzReauthorizerTest::ResetReauthorizer() {
 
 TEST_F(SessionAuthzReauthorizerTest, MultipleSuccessfulReauths) {
   // Reauth is not triggered before half of the token lifetime has passed.
-  EXPECT_CALL(service_client_, ReauthorizeHost(_, _, _)).Times(0);
+  EXPECT_CALL(service_client_, ReauthorizeHost(_, _, _, _)).Times(0);
   task_environment_.FastForwardBy(kInitialTokenLifetime / 2 -
                                   base::Seconds(10));
 
   // Reauth is triggered now.
-  EXPECT_CALL(service_client_,
-              ReauthorizeHost(kInitialReauthToken, kSessionId, _))
+  EXPECT_CALL(service_client_, ReauthorizeHost(kInitialReauthToken, kSessionId,
+                                               initial_token_expire_time_, _))
       .WillOnce(Respond("fake_second_reauth_token", base::Minutes(8)));
   task_environment_.FastForwardBy(base::Seconds(10));
 
-  EXPECT_CALL(service_client_, ReauthorizeHost(_, _, _)).Times(0);
+  EXPECT_CALL(service_client_, ReauthorizeHost(_, _, _, _)).Times(0);
   task_environment_.FastForwardBy(base::Minutes(4) - base::Seconds(10));
 
   EXPECT_CALL(service_client_,
-              ReauthorizeHost("fake_second_reauth_token", kSessionId, _))
+              ReauthorizeHost("fake_second_reauth_token", kSessionId, _, _))
       .WillOnce(Respond("fake_third_reauth_token", base::Minutes(6)));
   task_environment_.FastForwardBy(base::Seconds(10));
 }
 
 TEST_F(SessionAuthzReauthorizerTest,
        ReauthFailedWithNonretriableError_ClosesSession) {
-  EXPECT_CALL(service_client_,
-              ReauthorizeHost(kInitialReauthToken, kSessionId, _))
+  EXPECT_CALL(service_client_, ReauthorizeHost(kInitialReauthToken, kSessionId,
+                                               initial_token_expire_time_, _))
       .WillOnce(RespondError(net::HTTP_FORBIDDEN));
   EXPECT_CALL(on_reauthorization_failed_callback_,
               Run(HttpStatus::Code::PERMISSION_DENIED, _))
-      .WillOnce(ResetReauthorizer());
-  task_environment_.FastForwardBy(kInitialTokenLifetime / 2);
-}
-
-TEST_F(SessionAuthzReauthorizerTest, RetryReauthAndSucceed) {
-  EXPECT_CALL(service_client_,
-              ReauthorizeHost(kInitialReauthToken, kSessionId, _))
-      .WillRepeatedly(RespondError(net::ERR_INTERNET_DISCONNECTED));
-  task_environment_.FastForwardBy(kInitialTokenLifetime / 2);
-  const net::BackoffEntry* backoff_entry =
-      reauthorizer_->GetBackoffEntryForTest();
-  task_environment_.FastForwardBy(backoff_entry->GetTimeUntilRelease());
-  task_environment_.FastForwardBy(backoff_entry->GetTimeUntilRelease());
-
-  EXPECT_CALL(service_client_,
-              ReauthorizeHost(kInitialReauthToken, kSessionId, _))
-      .WillOnce(Respond("fake_second_reauth_token", base::Minutes(8)));
-  task_environment_.FastForwardBy(backoff_entry->GetTimeUntilRelease());
-
-  EXPECT_CALL(service_client_,
-              ReauthorizeHost("fake_second_reauth_token", kSessionId, _))
-      .WillOnce(Respond("fake_third_reauth_token", base::Minutes(6)));
-  task_environment_.FastForwardBy(base::Minutes(4));
-}
-
-TEST_F(SessionAuthzReauthorizerTest, RetriesExceedTokenLifetime_ClosesSession) {
-  EXPECT_CALL(service_client_,
-              ReauthorizeHost(kInitialReauthToken, kSessionId, _))
-      .WillRepeatedly(RespondError(net::ERR_INTERNET_DISCONNECTED));
-  EXPECT_CALL(on_reauthorization_failed_callback_, Run(_, _)).Times(0);
-  task_environment_.FastForwardBy(kInitialTokenLifetime / 2);
-  const net::BackoffEntry* backoff_entry =
-      reauthorizer_->GetBackoffEntryForTest();
-  task_environment_.FastForwardBy(backoff_entry->GetTimeUntilRelease());
-  task_environment_.FastForwardBy(backoff_entry->GetTimeUntilRelease());
-
-  EXPECT_CALL(on_reauthorization_failed_callback_,
-              Run(HttpStatus::Code::NETWORK_ERROR, _))
       .WillOnce(ResetReauthorizer());
   task_environment_.FastForwardBy(kInitialTokenLifetime / 2);
 }

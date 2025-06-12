@@ -160,6 +160,7 @@ void CorpSessionAuthzServiceClient::VerifySessionToken(
 void CorpSessionAuthzServiceClient::ReauthorizeHost(
     std::string_view session_reauth_token,
     std::string_view session_id,
+    base::TimeTicks token_expire_time,
     ReauthorizeHostCallback callback) {
   constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -202,7 +203,8 @@ void CorpSessionAuthzServiceClient::ReauthorizeHost(
   ExecuteRequest(traffic_annotation, internal::GetReauthorizeHostRequestVerb(),
                  internal::GetReauthorizeHostRequest(request),
                  ConvertCallback(std::move(callback),
-                                 &internal::GetReauthorizeHostResponseStruct));
+                                 &internal::GetReauthorizeHostResponseStruct),
+                 GetReauthRetryPolicy(token_expire_time));
 }
 
 template <typename CallbackType>
@@ -210,7 +212,8 @@ void CorpSessionAuthzServiceClient::ExecuteRequest(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     std::string_view verb,
     std::unique_ptr<google::protobuf::MessageLite> request_message,
-    CallbackType callback) {
+    CallbackType callback,
+    std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy) {
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = base::StrCat({session_authz_path_, ":", verb});
@@ -218,6 +221,7 @@ void CorpSessionAuthzServiceClient::ExecuteRequest(
   request_config->authenticated = true;
   request_config->provide_certificate = true;
   request_config->request_message = std::move(request_message);
+  request_config->retry_policy = std::move(retry_policy);
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(std::move(callback));

@@ -425,8 +425,8 @@ TEST_F(SessionAuthzAuthenticatorTest, ReauthorizationFailed_Rejected) {
   ASSERT_EQ(client_->state(), Authenticator::ACCEPTED);
 
   EXPECT_CALL(*mock_service_client_,
-              ReauthorizeHost(kFakeSessionReauthToken, kFakeSessionId, _))
-      .WillOnce(base::test::RunOnceCallback<2>(
+              ReauthorizeHost(kFakeSessionReauthToken, kFakeSessionId, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(
           HttpStatus(net::HttpStatusCode::HTTP_FORBIDDEN), nullptr));
   EXPECT_CALL(state_change_after_accepted_callback, Run());
 

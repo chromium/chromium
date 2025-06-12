@@ -64,7 +64,7 @@ class ProtobufHttpRequest final : public ProtobufHttpRequestBase {
   // Parses |response_body| and writes it to |response_message_|.
   HttpStatus ParseResponse(std::optional<std::string> response_body);
 
-  void RunResponseCallback(const HttpStatus& status);
+  void RunResponseCallback(const HttpStatus& status, bool run_invalidator);
 
   base::TimeDelta timeout_duration_ = base::Seconds(30);
   base::OnceCallback<void(const HttpStatus&)> response_callback_;

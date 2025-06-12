@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "remoting/base/http_status.h"
@@ -92,16 +93,18 @@ std::unique_ptr<ProtobufHttpRequestConfig> CreateDefaultRequestConfig() {
   return request_config;
 }
 
-std::unique_ptr<ProtobufHttpRequest> CreateDefaultTestRequest() {
-  auto request =
-      std::make_unique<ProtobufHttpRequest>(CreateDefaultRequestConfig());
+std::unique_ptr<ProtobufHttpRequest> CreateDefaultTestRequest(
+    std::unique_ptr<ProtobufHttpRequestConfig> config =
+        CreateDefaultRequestConfig()) {
+  auto request = std::make_unique<ProtobufHttpRequest>(std::move(config));
   request->SetResponseCallback(DoNothingResponse());
   return request;
 }
 
-std::unique_ptr<ProtobufHttpStreamRequest> CreateDefaultTestStreamRequest() {
-  auto request =
-      std::make_unique<ProtobufHttpStreamRequest>(CreateDefaultRequestConfig());
+std::unique_ptr<ProtobufHttpStreamRequest> CreateDefaultTestStreamRequest(
+    std::unique_ptr<ProtobufHttpRequestConfig> config =
+        CreateDefaultRequestConfig()) {
+  auto request = std::make_unique<ProtobufHttpStreamRequest>(std::move(config));
   request->SetStreamReadyCallback(base::DoNothing());
   request->SetStreamClosedCallback(base::DoNothing());
   request->SetMessageCallback(
@@ -212,8 +215,7 @@ TEST_F(ProtobufHttpClientTest,
 
   auto request_config = CreateDefaultRequestConfig();
   request_config->authenticated = false;
-  auto request =
-      std::make_unique<ProtobufHttpRequest>(std::move(request_config));
+  auto request = CreateDefaultTestRequest(std::move(request_config));
   request->SetResponseCallback(DoNothingResponse());
   client_.ExecuteRequest(std::move(request));
 
@@ -453,6 +455,125 @@ TEST_F(ProtobufHttpClientTest, DeletesRequestHolderAfterResponseIsReceived) {
   ASSERT_FALSE(test_url_loader_factory_.IsPending(kTestFullUrl));
   ASSERT_FALSE(client_.HasPendingRequests());
   scoped_holder.reset();
+}
+
+TEST_F(ProtobufHttpClientTest,
+       SimpleRequest_UrlLoaderReturnsRetriableError_RetriesRequest) {
+  base::RunLoop run_loop;
+
+  ExpectCallWithTokenSuccess();
+
+  MockEchoResponseCallback response_callback;
+
+  auto request_config = CreateDefaultRequestConfig();
+  request_config->retry_policy =
+      ProtobufHttpRequestConfig::CreateDefaultRetryPolicy();
+  auto request = CreateDefaultTestRequest(std::move(request_config));
+  request->SetResponseCallback(response_callback.Get());
+  client_.ExecuteRequest(std::move(request));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  test_url_loader_factory_.AddResponse(
+      kTestFullUrl, "", net::HttpStatusCode::HTTP_SERVICE_UNAVAILABLE);
+
+  // Clear responses so that the requests don't get automatically responded.
+  test_url_loader_factory_.ClearResponses();
+
+  // The request will be retried after fast forwarding.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+
+  EXPECT_CALL(response_callback,
+              Run(HasErrorCode(HttpStatus::Code::OK), IsDefaultResponseText()))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  test_url_loader_factory_.AddResponse(kTestFullUrl,
+                                       CreateSerializedEchoResponse());
+
+  run_loop.Run();
+  ASSERT_FALSE(client_.HasPendingRequests());
+}
+
+TEST_F(ProtobufHttpClientTest,
+       SimpleRequest_ServerReturnsRetriableError_RetriesRequest) {
+  base::RunLoop run_loop;
+
+  ExpectCallWithTokenSuccess();
+
+  MockEchoResponseCallback response_callback;
+
+  auto request_config = CreateDefaultRequestConfig();
+  request_config->retry_policy =
+      ProtobufHttpRequestConfig::CreateDefaultRetryPolicy();
+  auto request = CreateDefaultTestRequest(std::move(request_config));
+  request->SetResponseCallback(response_callback.Get());
+  client_.ExecuteRequest(std::move(request));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  Status status_message;
+  status_message.set_code(static_cast<int>(HttpStatus::Code::UNAVAILABLE));
+  status_message.set_message("Service unavailable");
+
+  test_url_loader_factory_.AddResponse(
+      kTestFullUrl, status_message.SerializeAsString(),
+      net::HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR);
+
+  // Clear responses so that the requests don't get automatically responded.
+  test_url_loader_factory_.ClearResponses();
+
+  // The request will be retried after fast forwarding.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+
+  EXPECT_CALL(response_callback,
+              Run(HasErrorCode(HttpStatus::Code::OK), IsDefaultResponseText()))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  test_url_loader_factory_.AddResponse(kTestFullUrl,
+                                       CreateSerializedEchoResponse());
+
+  run_loop.Run();
+  ASSERT_FALSE(client_.HasPendingRequests());
+}
+
+TEST_F(ProtobufHttpClientTest,
+       SimpleRequest_MaximumNumberOfRetriesReached_RunsCallbackWithError) {
+  base::RunLoop run_loop;
+
+  ExpectCallWithTokenSuccess();
+
+  MockEchoResponseCallback response_callback;
+
+  auto request_config = CreateDefaultRequestConfig();
+  request_config->retry_policy =
+      ProtobufHttpRequestConfig::CreateDefaultRetryPolicy();
+  auto request = CreateDefaultTestRequest(std::move(request_config));
+  request->SetResponseCallback(response_callback.Get());
+  client_.ExecuteRequest(std::move(request));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  test_url_loader_factory_.AddResponse(
+      kTestFullUrl, "", net::HttpStatusCode::HTTP_SERVICE_UNAVAILABLE);
+
+  EXPECT_CALL(
+      response_callback,
+      Run(HasErrorCode(HttpStatus::Code::UNAVAILABLE), IsNullResponse()))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  // We don't clear the responses so all retry requests will be responded with
+  // HTTP_SERVICE_UNAVAILABLE.
+  task_environment_.FastForwardBy(base::Minutes(10));
+
+  run_loop.Run();
+  ASSERT_FALSE(client_.HasPendingRequests());
 }
 
 // Stream request tests.

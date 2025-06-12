@@ -436,6 +436,7 @@ void CloudServiceClient::ReauthorizeHost(
     const std::string& session_reauth_token,
     const std::string& session_id,
     std::string_view instance_identity_token,
+    std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy,
     ReauthorizeHostCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:reauthorizeHost";
 
@@ -446,7 +447,7 @@ void CloudServiceClient::ReauthorizeHost(
 
   ExecuteRequest(kReauthorizeHostTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod, std::move(request),
-                 std::move(callback));
+                 std::move(callback), std::move(retry_policy));
 }
 
 void CloudServiceClient::CancelPendingRequests() {
@@ -460,7 +461,8 @@ void CloudServiceClient::ExecuteRequest(
     const std::string& api_key,
     const std::string& method,
     std::unique_ptr<google::protobuf::MessageLite> request_message,
-    CallbackType callback) {
+    CallbackType callback,
+    std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy) {
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = path;
@@ -471,6 +473,7 @@ void CloudServiceClient::ExecuteRequest(
     request_config->authenticated = false;
   }
   request_config->method = method;
+  request_config->retry_policy = std::move(retry_policy);
   request_config->request_message = std::move(request_message);
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));

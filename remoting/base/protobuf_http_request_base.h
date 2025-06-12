@@ -10,6 +10,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "remoting/base/http_status.h"
@@ -51,6 +52,7 @@ class ProtobufHttpRequestBase {
   // request has never been started.
   virtual void OnAuthFailed(const HttpStatus& status) = 0;
 
+  // Called to start a request, and whenever the request is retried.
   virtual void StartRequestInternal(
       network::mojom::URLLoaderFactory* loader_factory) = 0;
 
@@ -63,6 +65,12 @@ class ProtobufHttpRequestBase {
   // informs that the request has been completed.
   HttpStatus GetUrlLoaderStatus() const;
 
+  // Subclasses should call this method whenever a request fails.
+  // Returns true if the failure has been handled, in which case do not handle
+  // the response, and expect StartRequestInternal() to be called.
+  // If this method returns true, the subclass should handle the response.
+  bool HandleRetry(HttpStatus::Code code);
+
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // Subclass should run this closure whenever its lifetime ends, e.g. response
@@ -73,14 +81,31 @@ class ProtobufHttpRequestBase {
  private:
   friend class ProtobufHttpClient;
 
+  using CreateUrlLoader =
+      base::RepeatingCallback<std::unique_ptr<network::SimpleURLLoader>(
+          const ProtobufHttpRequestConfig&)>;
+
+  struct RetryEntry;
+
   // Called by ProtobufHttpClient.
   void StartRequest(network::mojom::URLLoaderFactory* loader_factory,
-                    std::unique_ptr<network::SimpleURLLoader> url_loader,
+                    CreateUrlLoader create_url_loader,
                     base::OnceClosure invalidator);
+
+  void DoRequest();
 
   void Invalidate();
 
-  std::unique_ptr<ProtobufHttpRequestConfig> config_;
+  void ResetRequestDeadline();
+
+  std::unique_ptr<const ProtobufHttpRequestConfig> config_;
+
+  // Non-null iff `config_.retry_policy` is configured.
+  std::unique_ptr<RetryEntry> retry_entry_;
+
+  // These are only set after StartRequest() is called.
+  CreateUrlLoader create_url_loader_;
+  raw_ptr<network::mojom::URLLoaderFactory> loader_factory_;
 
 #if DCHECK_IS_ON()
   base::TimeTicks request_deadline_;

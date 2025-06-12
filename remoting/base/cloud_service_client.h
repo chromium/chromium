@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "remoting/base/protobuf_http_client.h"
+#include "remoting/base/protobuf_http_request_config.h"
 
 namespace google::internal::remoting::cloud::v1alpha {
 class Empty;
@@ -122,10 +123,12 @@ class CloudServiceClient {
                           std::string_view instance_identity_token,
                           VerifySessionTokenCallback callback);
 
-  void ReauthorizeHost(const std::string& session_reauth_token,
-                       const std::string& session_id,
-                       std::string_view instance_identity_token,
-                       ReauthorizeHostCallback callback);
+  void ReauthorizeHost(
+      const std::string& session_reauth_token,
+      const std::string& session_id,
+      std::string_view instance_identity_token,
+      std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy,
+      ReauthorizeHostCallback callback);
 
   void CancelPendingRequests();
 
@@ -143,7 +146,9 @@ class CloudServiceClient {
       const std::string& api_key,
       const std::string& method,
       std::unique_ptr<google::protobuf::MessageLite> request_message,
-      CallbackType callback);
+      CallbackType callback,
+      std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy =
+          ProtobufHttpRequestConfig::CreateDefaultRetryPolicy());
 
   // The customer API_KEY to use for calling the Remoting Cloud API.
   std::string api_key_;

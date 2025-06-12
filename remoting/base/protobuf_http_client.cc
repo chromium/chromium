@@ -4,6 +4,7 @@
 
 #include "remoting/base/protobuf_http_client.h"
 
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "net/base/load_flags.h"
@@ -95,28 +96,48 @@ void ProtobufHttpClient::DoExecuteRequest(
     return;
   }
 
+  // SimpleURLLoader can only be used once, so we just bind and pass a creator
+  // callback.
+  // Can't bind a WeakPtr here since the callback returns a value. Using
+  // Unretained is safe since `request` is owned by `this`.
+  auto create_simple_url_loader = base::BindRepeating(
+      &ProtobufHttpClient::CreateSimpleUrlLoader, base::Unretained(this),
+      status == OAuthTokenGetter::Status::SUCCESS ? token_info.access_token()
+                                                  : std::string(),
+      request->GetRequestTimeoutDuration());
+  auto* unowned_request = request.get();
+  base::OnceClosure invalidator = base::BindOnce(
+      &ProtobufHttpClient::CancelRequest, weak_factory_.GetWeakPtr(),
+      pending_requests_.insert(pending_requests_.end(), std::move(request)));
+  unowned_request->StartRequest(url_loader_factory_.get(),
+                                std::move(create_simple_url_loader),
+                                std::move(invalidator));
+}
+
+std::unique_ptr<network::SimpleURLLoader>
+ProtobufHttpClient::CreateSimpleUrlLoader(
+    const std::string& access_token,
+    base::TimeDelta timeout_duration,
+    const ProtobufHttpRequestConfig& config) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url =
-      GURL("https://" + server_endpoint_ + request->config().path);
+  resource_request->url = GURL("https://" + server_endpoint_ + config.path);
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->method = request->config().method;
+  resource_request->method = config.method;
 
-  if (status == OAuthTokenGetter::Status::SUCCESS &&
-      !token_info.access_token().empty()) {
-    resource_request->headers.AddHeaderFromString(base::StringPrintf(
-        kAuthorizationHeaderFormat, token_info.access_token().c_str()));
+  if (!access_token.empty()) {
+    resource_request->headers.AddHeaderFromString(
+        base::StringPrintf(kAuthorizationHeaderFormat, access_token.c_str()));
   } else {
     VLOG(1) << "Attempting to execute request without access token";
   }
 
-  if (!request->config().api_key.empty()) {
-    google_apis::AddAPIKeyToRequest(*resource_request,
-                                    request->config().api_key);
+  if (!config.api_key.empty()) {
+    google_apis::AddAPIKeyToRequest(*resource_request, config.api_key);
   }
 
-  if (request->config().provide_certificate) {
+  if (config.provide_certificate) {
     if (!resource_request->trusted_params.has_value()) {
       resource_request->trusted_params.emplace();
     }
@@ -131,22 +152,14 @@ void ProtobufHttpClient::DoExecuteRequest(
 
   std::unique_ptr<network::SimpleURLLoader> send_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
-                                       request->config().traffic_annotation);
-  base::TimeDelta timeout_duration = request->GetRequestTimeoutDuration();
+                                       config.traffic_annotation);
   if (!timeout_duration.is_zero()) {
-    send_url_loader->SetTimeoutDuration(request->GetRequestTimeoutDuration());
+    send_url_loader->SetTimeoutDuration(timeout_duration);
   }
   send_url_loader->AttachStringForUpload(
-      request->config().request_message->SerializeAsString(),
-      "application/x-protobuf");
+      config.request_message->SerializeAsString(), "application/x-protobuf");
   send_url_loader->SetAllowHttpErrorResults(true);
-  auto* unowned_request = request.get();
-  base::OnceClosure invalidator = base::BindOnce(
-      &ProtobufHttpClient::CancelRequest, weak_factory_.GetWeakPtr(),
-      pending_requests_.insert(pending_requests_.end(), std::move(request)));
-  unowned_request->StartRequest(url_loader_factory_.get(),
-                                std::move(send_url_loader),
-                                std::move(invalidator));
+  return send_url_loader;
 }
 
 void ProtobufHttpClient::CancelRequest(

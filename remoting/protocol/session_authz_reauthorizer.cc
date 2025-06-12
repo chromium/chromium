@@ -19,34 +19,6 @@
 #include "remoting/protocol/session.h"
 
 namespace remoting::protocol {
-namespace {
-
-constexpr net::BackoffEntry::Policy kBackoffPolicy = {
-    .num_errors_to_ignore = 0,
-    .initial_delay_ms = base::Seconds(5).InMilliseconds(),
-    .multiply_factor = 2,
-    .jitter_factor = 0.5,
-    .maximum_backoff_ms = base::Minutes(1).InMilliseconds(),
-    .entry_lifetime_ms = -1,  // never discard.
-    // InformOfRequest() is called before the retry task is scheduled, so the
-    // initial delay is technically used.
-    .always_use_initial_delay = false,
-};
-
-bool IsRetriableError(HttpStatus::Code code) {
-  DCHECK_NE(code, HttpStatus::Code::OK);
-  switch (code) {
-    case HttpStatus::Code::ABORTED:
-    case HttpStatus::Code::UNAVAILABLE:
-    case HttpStatus::Code::NETWORK_ERROR:
-    case HttpStatus::Code::UNKNOWN:
-      return true;
-    default:
-      return false;
-  }
-}
-
-}  // namespace
 
 SessionAuthzReauthorizer::SessionAuthzReauthorizer(
     SessionAuthzServiceClient* service_client,
@@ -68,15 +40,9 @@ void SessionAuthzReauthorizer::Start() {
   ScheduleNextReauth();
 }
 
-const net::BackoffEntry* SessionAuthzReauthorizer::GetBackoffEntryForTest()
-    const {
-  return backoff_entry_.get();
-}
-
 void SessionAuthzReauthorizer::ScheduleNextReauth() {
   base::TimeDelta next_reauth_interval =
-      backoff_entry_ ? backoff_entry_->GetTimeUntilRelease()
-                     : (token_expire_time_ - base::TimeTicks::Now()) / 2;
+      (token_expire_time_ - base::TimeTicks::Now()) / 2;
   reauthorize_timer_.Start(FROM_HERE, next_reauth_interval, this,
                            &SessionAuthzReauthorizer::Reauthorize);
   HOST_LOG << "Next reauthorization scheduled in " << next_reauth_interval;
@@ -85,7 +51,7 @@ void SessionAuthzReauthorizer::ScheduleNextReauth() {
 void SessionAuthzReauthorizer::Reauthorize() {
   HOST_LOG << "Reauthorizing session...";
   service_client_->ReauthorizeHost(
-      session_reauth_token_, session_id_,
+      session_reauth_token_, session_id_, token_expire_time_,
       base::BindOnce(&SessionAuthzReauthorizer::OnReauthorizeResult,
                      base::Unretained(this)));
 }
@@ -97,28 +63,11 @@ void SessionAuthzReauthorizer::OnReauthorizeResult(
     Authenticator::RejectionDetails rejection_details(base::StringPrintf(
         "SessionAuthz reauthorization failed with error. Code: %d Message: %s",
         static_cast<int>(status.error_code()), status.error_message()));
-    if (!IsRetriableError(status.error_code())) {
-      LOG(ERROR) << "Error is non-retriable. Closing the session.";
-      NotifyReauthorizationFailed(status.error_code(), rejection_details);
-      return;
-    }
-    if (!backoff_entry_) {
-      backoff_entry_ = std::make_unique<net::BackoffEntry>(&kBackoffPolicy);
-    }
-    backoff_entry_->InformOfRequest(false);
-    // Add some leeway to account for network latencies.
-    if (backoff_entry_->GetReleaseTime() >
-        (token_expire_time_ - base::Seconds(5))) {
-      LOG(ERROR) << "No more retries remaining. Closing the session.";
-      NotifyReauthorizationFailed(status.error_code(), rejection_details);
-      return;
-    }
-    ScheduleNextReauth();
+    NotifyReauthorizationFailed(status.error_code(), rejection_details);
     return;
   }
 
   DCHECK(response->session_reauth_token_lifetime.is_positive());
-  backoff_entry_.reset();
   session_reauth_token_ = response->session_reauth_token;
   token_expire_time_ =
       base::TimeTicks::Now() + response->session_reauth_token_lifetime;

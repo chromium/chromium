@@ -21,8 +21,15 @@ constexpr base::TimeDelta
     ProtobufHttpStreamRequest::kStreamReadyTimeoutDuration;
 
 ProtobufHttpStreamRequest::ProtobufHttpStreamRequest(
-    std::unique_ptr<ProtobufHttpRequestConfig> config)
-    : ProtobufHttpRequestBase(std::move(config)) {}
+    std::unique_ptr<ProtobufHttpRequestConfig> request_config)
+    : ProtobufHttpRequestBase(std::move(request_config)) {
+  // It's unclear what should be done if a server responds SERVICE_UNAVAILABLE
+  // after the stream is open, since the stream might be stateful so we can't
+  // reopen the stream opaquely. We don't bother to implement retries for
+  // stream requests since they are only used by FTL, which already has its own
+  // retry logic.
+  DCHECK(!config().retry_policy) << "Stream requests don't support retries.";
+}
 
 ProtobufHttpStreamRequest::~ProtobufHttpStreamRequest() = default;
 
@@ -68,7 +75,6 @@ void ProtobufHttpStreamRequest::StartRequestInternal(
   DCHECK(stream_ready_callback_);
   DCHECK(stream_closed_callback_);
   DCHECK(message_callback_);
-  DCHECK(!stream_ready_timeout_timer_.IsRunning());
 
   stream_ready_timeout_timer_.Start(
       FROM_HERE, kStreamReadyTimeoutDuration, this,

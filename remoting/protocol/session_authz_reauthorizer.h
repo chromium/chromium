@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "net/base/backoff_entry.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/session_authz_service_client.h"
 #include "remoting/protocol/authenticator.h"
@@ -47,8 +46,6 @@ class SessionAuthzReauthorizer {
 
   void Start();
 
-  const net::BackoffEntry* GetBackoffEntryForTest() const;
-
   const std::string& session_reauth_token() const {
     return session_reauth_token_;
   }
@@ -69,9 +66,6 @@ class SessionAuthzReauthorizer {
   base::TimeTicks token_expire_time_;
   base::OneShotTimer reauthorize_timer_;
   OnReauthorizationFailedCallback on_reauthorization_failed_;
-
-  // Non-null iff there is an ongoing retry attempt.
-  std::unique_ptr<net::BackoffEntry> backoff_entry_;
 };
 
 }  // namespace protocol

@@ -24,11 +24,13 @@ class ClientCertStore;
 
 namespace network {
 class SharedURLLoaderFactory;
+class SimpleURLLoader;
 }  // namespace network
 
 namespace remoting {
 
 class ProtobufHttpRequestBase;
+struct ProtobufHttpRequestConfig;
 
 // Helper class for executing REST/Protobuf requests over HTTP.
 class ProtobufHttpClient final {
@@ -68,6 +70,11 @@ class ProtobufHttpClient final {
   void DoExecuteRequest(std::unique_ptr<ProtobufHttpRequestBase> request,
                         OAuthTokenGetter::Status status,
                         const OAuthTokenInfo& token_info);
+
+  std::unique_ptr<network::SimpleURLLoader> CreateSimpleUrlLoader(
+      const std::string& access_token,
+      base::TimeDelta timeout_duration,
+      const ProtobufHttpRequestConfig& config);
 
   void CancelRequest(const PendingRequestListIterator& request_iterator);
 

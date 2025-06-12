@@ -4,9 +4,38 @@
 
 #include "remoting/base/protobuf_http_request_config.h"
 
+#include "base/time/time.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace remoting {
+
+// static
+std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy>
+ProtobufHttpRequestConfig::CreateRetryPolicy(
+    const net::BackoffEntry::Policy& backoff_policy,
+    base::TimeTicks retry_deadline) {
+  return std::make_unique<ProtobufHttpRequestConfig::RetryPolicy>(
+      &backoff_policy, retry_deadline);
+}
+
+// static
+std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy>
+ProtobufHttpRequestConfig::CreateDefaultRetryPolicy() {
+  static constexpr net::BackoffEntry::Policy kBackoffPolicy = {
+      .num_errors_to_ignore = 0,
+      .initial_delay_ms = base::Seconds(1).InMilliseconds(),
+      .multiply_factor = 2,
+      .jitter_factor = 0.5,
+      .maximum_backoff_ms = base::Seconds(30).InMilliseconds(),
+      .entry_lifetime_ms = -1,  // never discard.
+      // InformOfRequest() is called before the retry task is scheduled, so the
+      // initial delay is technically used.
+      .always_use_initial_delay = false,
+  };
+
+  return CreateRetryPolicy(kBackoffPolicy,
+                           base::TimeTicks::Now() + base::Minutes(1));
+}
 
 ProtobufHttpRequestConfig::ProtobufHttpRequestConfig(
     const net::NetworkTrafficAnnotationTag& traffic_annotation)

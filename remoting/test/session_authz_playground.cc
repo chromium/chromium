@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/time/time.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -146,7 +147,7 @@ void SessionAuthzPlayground::ReauthorizeHost(const std::string& session_id,
     run_loop_->Quit();
   }
   service_client_->ReauthorizeHost(
-      reauth_token, session_id,
+      reauth_token, session_id, base::TimeTicks::Max(),
       base::BindOnce([](const HttpStatus& status,
                         std::unique_ptr<internal::ReauthorizeHostResponseStruct>
                             response) {
