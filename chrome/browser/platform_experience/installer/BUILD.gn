@@ -10,7 +10,7 @@ assert(is_win)
 source_set("installer_win") {
   public = [ "installer_win.h" ]
   sources = [ "installer_win.cc" ]
-  public_deps = [
+  deps = [
     "//base",
     "//chrome/browser/google",
     "//chrome/common:constants",

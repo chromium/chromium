@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/win/scoped_variant.h"
@@ -16,6 +17,7 @@
 #include "chrome/installer/util/install_util.h"
 
 namespace {
+
 // Switch used to install platform_experience_helper
 const char kPlatformExperienceHelperForceInstallSwitch[] = "force-install";
 // Directory under which platform_experience_helper is installed
