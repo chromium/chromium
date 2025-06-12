@@ -59,10 +59,11 @@ using signin_metrics::PromoAction;
   [self.delegate instantSigninMediator:self didSigninWithResult:result];
 }
 
-- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+- (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
+    (ReadyForProfileSwitchingCompletion)readyCompletion {
   _authenticationFlow = nil;
   [self.delegate instantSigninMediatorWillSwitchProfile:self];
-  return _continuationProvider.Run();
+  std::move(readyCompletion).Run(_continuationProvider.Run());
 }
 
 @end

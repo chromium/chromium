@@ -58,11 +58,12 @@
   signinCompletion(result);
 }
 
-- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+- (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
+    (ReadyForProfileSwitchingCompletion)readyCompletion {
   CHECK(!_callbackCalled);
   _callbackCalled = YES;
   CHECK(_changeProfileContinuationProvider);
-  return _changeProfileContinuationProvider.Run();
+  std::move(readyCompletion).Run(_changeProfileContinuationProvider.Run());
 }
 
 @end

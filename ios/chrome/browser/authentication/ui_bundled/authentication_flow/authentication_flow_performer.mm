@@ -243,11 +243,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                   postSignInActions:(PostSignInActionSet)postSignInActions
                         accessPoint:(signin_metrics::AccessPoint)accessPoint {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  // The continuation specific to the place where the authentication was
-  // launched.
-  ChangeProfileContinuation continuation =
-      [delegate authenticationFlowWillChangeProfile];
-
   std::optional<std::string> profileName =
       GetApplicationContext()
           ->GetAccountProfileMapper()
@@ -263,13 +258,25 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
     return;
   }
 
-  [self switchToProfileWithName:*profileName
-                     sceneState:sceneState
-                         reason:reason
-      changeProfileContinuation:std::move(continuation)
-              postSignInActions:postSignInActions
-                   withIdentity:identity
-                    accessPoint:accessPoint];
+  __weak __typeof(self) weakSelf = self;
+  auto profileSwitchReadyCompletion = base::BindOnce(
+      [](__typeof(self) strongSelf, std::string profile_name,
+         SceneState* scene_state, ChangeProfileReason reason,
+         PostSignInActionSet post_sign_in_actions, id<SystemIdentity> identity,
+         signin_metrics::AccessPoint access_point,
+         ChangeProfileContinuation continuation) {
+        [strongSelf switchToProfileWithName:profile_name
+                                 sceneState:scene_state
+                                     reason:reason
+                  changeProfileContinuation:std::move(continuation)
+                          postSignInActions:post_sign_in_actions
+                               withIdentity:identity
+                                accessPoint:access_point];
+      },
+      weakSelf, *profileName, sceneState, reason, postSignInActions, identity,
+      accessPoint);
+  [delegate authenticationFlowWillSwitchProfileWithReadyCompletion:
+                std::move(profileSwitchReadyCompletion)];
 }
 
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity {

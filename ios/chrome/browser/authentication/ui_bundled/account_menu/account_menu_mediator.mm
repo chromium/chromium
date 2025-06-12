@@ -446,23 +446,31 @@
   _identityToSignin = nil;
 }
 
-- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+- (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
+    (ReadyForProfileSwitchingCompletion)readyCompletion {
   _authenticationFlow = nil;
   [_delegate signinFinished];
+  ChangeProfileContinuation continuation;
   switch (_accessPoint) {
     case AccountMenuAccessPoint::kNewTabPage:
-      return CreateChangeProfileOpensNTPContinuation();
+      continuation = CreateChangeProfileOpensNTPContinuation();
+      break;
     case AccountMenuAccessPoint::kSettings:
-      return CreateChangeProfileSettingsContinuation();
+      continuation = CreateChangeProfileSettingsContinuation();
+      break;
     case AccountMenuAccessPoint::kWeb: {
       GetApplicationContext()->GetLocalState()->SetBoolean(
           prefs::kHasSwitchedAccountsViaWebFlow, true);
       if (_prepareChangeProfile) {
         _prepareChangeProfile();
-      };
-      return CreateChangeProfileOpensURLContinuation(_url);
+      }
+      continuation = CreateChangeProfileOpensURLContinuation(_url);
+      break;
     }
   }
+  // TODO:(crbug.com/422443466): Need to dismiss the account menu before to call
+  // `readyCompletion`.
+  std::move(readyCompletion).Run(std::move(continuation));
 }
 
 #pragma mark - Private

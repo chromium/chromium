@@ -11,6 +11,11 @@
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 
+// Call back used by `-[<AuthenticationFlowDelegate>
+// authenticationFlowWillSwitchProfileWithReadyCompletion:]`.
+using ReadyForProfileSwitchingCompletion =
+    base::OnceCallback<void(ChangeProfileContinuation)>;
+
 @class SceneState;
 
 // Handles callbacks for the end of the sign-in flow.
@@ -20,12 +25,14 @@
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result;
 
-// Returns a callback to be executed once the profile is changed.
-// Calling this method informs the delegate that the Authentication Flow must
-// not be interrupted while the delegate is stopped.
-// It must always be called before the profile switch occurred, as otherwise the
-// delegate will probably be nil.
-- (ChangeProfileContinuation)authenticationFlowWillChangeProfile;
+// Called when the profile switching is going to happen. The delegate can
+// update the UI if needed before the profile switching.
+// Once the delegate is ready, `readyCompletion` needs to be called with a
+// `ChangeProfileContinuation`.
+// The `ChangeProfileContinuation` will be called in the new profile when it
+// will be fully loaded.
+- (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
+    (ReadyForProfileSwitchingCompletion)readyCompletion;
 
 @end
 

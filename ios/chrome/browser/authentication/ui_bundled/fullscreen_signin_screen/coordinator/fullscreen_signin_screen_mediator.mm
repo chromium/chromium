@@ -315,8 +315,9 @@ enum class SigninScreenState {
   [self.delegate fullscreenSigninScreenMediatorDidFinishSignin:self];
 }
 
-- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
-  return _changeProfileContinuationProvider.Run();
+- (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
+    (ReadyForProfileSwitchingCompletion)readyCompletion {
+  std::move(readyCompletion).Run(_changeProfileContinuationProvider.Run());
 }
 
 #pragma mark - Private

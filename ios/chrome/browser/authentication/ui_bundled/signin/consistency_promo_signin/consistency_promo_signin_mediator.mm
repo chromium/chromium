@@ -267,10 +267,11 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       FROM_HERE, _cookieTimeoutClosure.callback(), kSigninTimeout);
 }
 
-- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+- (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
+    (ReadyForProfileSwitchingCompletion)readyCompletion {
   _authenticationFlow.delegate = nil;
   _authenticationFlow = nil;
-  return [self.delegate changeProfileContinuation];
+  std::move(readyCompletion).Run([self.delegate changeProfileContinuation]);
 }
 
 #pragma mark - Private

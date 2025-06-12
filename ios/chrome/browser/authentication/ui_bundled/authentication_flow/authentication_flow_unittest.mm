@@ -353,11 +353,19 @@ class AuthenticationFlowTest : public PlatformTest,
               didSwitchToProfileWithNewProfileBrowser:final_browser
                                            completion:std::move(completion)];
         };
+        __block ReadyForProfileSwitchingCompletion switchingReadyCompletion =
+            base::BindOnce(
+                [](ChangeProfileContinuation* continuation,
+                   ChangeProfileContinuation continuation_from_delegate) {
+                  *continuation = std::move(continuation_from_delegate);
+                },
+                &continuation);
         id delegateChecker = [OCMArg
             checkWithBlock:^(id<AuthenticationFlowDelegate> request_helper) {
               CHECK(request_helper);
-              continuation =
-                  [request_helper authenticationFlowWillChangeProfile];
+              [request_helper
+                  authenticationFlowWillSwitchProfileWithReadyCompletion:
+                      std::move(switchingReadyCompletion)];
               return true;
             }];
         OCMExpect(
