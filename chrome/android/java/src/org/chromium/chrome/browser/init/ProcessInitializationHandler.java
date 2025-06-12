@@ -680,7 +680,11 @@ public class ProcessInitializationHandler {
 
         tasks.add(() -> LocaleManager.getInstance().recordStartupMetrics());
 
-        tasks.add(() -> HomepageManager.getInstance().recordHomepageLocationTypeIfEnabled());
+        tasks.add(
+                () -> {
+                    HomepageManager.getInstance().recordHomepageButtonStatus();
+                    HomepageManager.getInstance().recordHomepageLocationTypeIfEnabled();
+                });
 
         // Record the saved restore state in a histogram
         tasks.add(ChromeBackupAgentImpl::recordRestoreHistogram);

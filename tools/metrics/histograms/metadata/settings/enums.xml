@@ -151,6 +151,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Disabled"/>
 </enum>
 
+<enum name="HomeButtonStatus">
+  <int value="0" label="POLICY_ON"/>
+  <int value="1" label="POLICY_OFF"/>
+  <int value="2" label="USER_ON"/>
+  <int value="3" label="USER_OFF"/>
+</enum>
+
 <enum name="HomepageLocationType">
   <int value="0" label="POLICY_NTP"/>
   <int value="1" label="POLICY_OTHER"/>

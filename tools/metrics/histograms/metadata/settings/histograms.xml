@@ -325,6 +325,18 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram name="Settings.Homepage.HomeButtonStatus"
+    enum="HomepageLocationType" expires_after="2026-06-11">
+  <owner>jthiesen@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    The status of the home button, whether turned on or off, and by who. Is
+    affected by several homepage related policies, as well as user and
+    potentially partner actions. Recorded on deferred startup. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Settings.Homepage.LocationType" enum="HomepageLocationType"
     expires_after="2025-10-26">
   <owner>bttk@chromium.org</owner>

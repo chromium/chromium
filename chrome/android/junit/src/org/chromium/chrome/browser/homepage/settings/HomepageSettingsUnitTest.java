@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
+import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomeButtonStatus;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -84,6 +85,8 @@ public class HomepageSettingsUnitTest {
 
     private static final String ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH =
             "HomepageLocationType is different than test settings.";
+    private static final String ASSERT_HOME_SWITCH_STATUS_MISMATCH =
+            "HomeButtonStatus is different than test settings.";
 
     private static final String TEST_URL_FOO = JUnitTestGURLs.URL_1.getSpec();
     private static final String TEST_URL_BAR = JUnitTestGURLs.URL_2.getSpec();
@@ -201,6 +204,10 @@ public class HomepageSettingsUnitTest {
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.USER_CUSTOMIZED_NTP,
                 HomepageManager.getInstance().getHomepageLocationType());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.USER_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -230,6 +237,10 @@ public class HomepageSettingsUnitTest {
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.USER_CUSTOMIZED_NTP,
                 HomepageManager.getInstance().getHomepageLocationType());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.USER_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -258,6 +269,10 @@ public class HomepageSettingsUnitTest {
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.USER_CUSTOMIZED_OTHER,
                 HomepageManager.getInstance().getHomepageLocationType());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.USER_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -294,6 +309,10 @@ public class HomepageSettingsUnitTest {
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.POLICY_OTHER,
                 HomepageManager.getInstance().getHomepageLocationType());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -324,6 +343,10 @@ public class HomepageSettingsUnitTest {
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.POLICY_NTP,
                 HomepageManager.getInstance().getHomepageLocationType());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -339,6 +362,11 @@ public class HomepageSettingsUnitTest {
 
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
+
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -354,6 +382,11 @@ public class HomepageSettingsUnitTest {
 
         Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_DISABLED, mChromeNtpRadioButton.isEnabled());
         Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_DISABLED, mCustomUriRadioButton.isEnabled());
+
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_OFF,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -378,6 +411,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageManager.getHomepageCharacterizationHelper().isNtp());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -403,6 +440,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageManager.getHomepageCharacterizationHelper().isNtp());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -424,6 +465,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageManager.getHomepageCharacterizationHelper().isNtp());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -451,6 +496,10 @@ public class HomepageSettingsUnitTest {
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.USER_CUSTOMIZED_OTHER,
                 HomepageManager.getInstance().getHomepageLocationType());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -486,6 +535,10 @@ public class HomepageSettingsUnitTest {
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.POLICY_OTHER,
                 HomepageManager.getInstance().getHomepageLocationType());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_OFF,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -521,6 +574,10 @@ public class HomepageSettingsUnitTest {
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.POLICY_OTHER,
                 HomepageManager.getInstance().getHomepageLocationType());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -543,6 +600,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageManager.getHomepageCharacterizationHelper().isNtp());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_OFF,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -565,6 +626,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageManager.getHomepageCharacterizationHelper().isNtp());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -591,6 +656,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertFalse(
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageManager.getHomepageCharacterizationHelper().isNtp());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -617,6 +686,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageManager.getHomepageCharacterizationHelper().isNtp());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.POLICY_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -647,6 +720,10 @@ public class HomepageSettingsUnitTest {
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.PARTNER_PROVIDED_OTHER,
                 HomepageManager.getInstance().getHomepageLocationType());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.USER_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -675,6 +752,10 @@ public class HomepageSettingsUnitTest {
         // When no default homepage provided, the string should just be empty.
         Assert.assertEquals(
                 ASSERT_MESSAGE_EDIT_TEXT, "", mCustomUriRadioButton.getPrimaryText().toString());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.USER_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     @Test
@@ -704,6 +785,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
                 HomepageManager.getInstance().getHomepageGurl().isEmpty());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.USER_OFF,
+                HomepageManager.getInstance().getHomeButtonStatus());
     }
 
     /** Test toggle switch to enable/disable homepage. */
@@ -722,6 +807,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
         Assert.assertTrue("Homepage should be enabled.", homepageManager.isHomepageEnabled());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.USER_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
 
         // Check the widget status
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_NTP_CHECK, mChromeNtpRadioButton.isChecked());
@@ -746,6 +835,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertFalse(
                 "Homepage should be disabled after toggle switch.",
                 homepageManager.isHomepageEnabled());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.USER_OFF,
+                HomepageManager.getInstance().getHomeButtonStatus());
 
         // Check the widget status - everything should remain unchanged.
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_NTP_CHECK, mChromeNtpRadioButton.isChecked());
@@ -761,6 +854,10 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
         Assert.assertTrue("Homepage should be enabled again.", homepageManager.isHomepageEnabled());
+        Assert.assertEquals(
+                ASSERT_HOME_SWITCH_STATUS_MISMATCH,
+                HomeButtonStatus.USER_ON,
+                HomepageManager.getInstance().getHomeButtonStatus());
 
         // Check the widget status - everything should remain unchanged.
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_NTP_CHECK, mChromeNtpRadioButton.isChecked());

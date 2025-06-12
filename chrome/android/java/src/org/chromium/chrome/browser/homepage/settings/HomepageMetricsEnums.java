@@ -63,4 +63,36 @@ public final class HomepageMetricsEnums {
 
         int NUM_ENTRIES = 7;
     }
+
+    /**
+     * Used for Histogram "Settings.Homepage.HomeButtonStatus" recorded in {@link
+     * org.chromium.chrome.browser.homepage.HomepageManager#recordHomepageStatus()}
+     *
+     * <p>Note: There is code {@link HomepageManager#setPrefHomepageEnabled()} that could allow
+     * Partners to control this switch, however it is currently unused and there does not yet exist
+     * a way to differentiate it from user selections.
+     */
+    @IntDef({
+        HomeButtonStatus.POLICY_ON,
+        HomeButtonStatus.POLICY_OFF,
+        HomeButtonStatus.USER_ON,
+        HomeButtonStatus.USER_OFF
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface HomeButtonStatus {
+
+        /** Enterprise force enabled home button. */
+        int POLICY_ON = 0;
+
+        /** Enterprise disabled home button. */
+        int POLICY_OFF = 1;
+
+        /** User/default enabled home button. */
+        int USER_ON = 2;
+
+        /** User disabled home button. */
+        int USER_OFF = 3;
+
+        int NUM_ENTRIES = 4;
+    }
 }

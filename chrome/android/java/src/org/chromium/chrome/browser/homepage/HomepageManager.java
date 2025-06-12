@@ -16,6 +16,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
+import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomeButtonStatus;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.partnercustomizations.HomepageCharacterizationHelper;
@@ -380,6 +381,35 @@ public class HomepageManager
         return UrlUtilities.isNtpUrl(getPrefHomepageCustomGurl())
                 ? HomepageLocationType.USER_CUSTOMIZED_NTP
                 : HomepageLocationType.USER_CUSTOMIZED_OTHER;
+    }
+
+    /**
+     * Record histogram "Settings.Homepage.HomeButtonStatus" with the current homepage location
+     * type.
+     */
+    public void recordHomepageButtonStatus() {
+        int homeButtonStatus = getHomeButtonStatus();
+        RecordHistogram.recordEnumeratedHistogram(
+                "Settings.Homepage.HomeButtonStatus",
+                homeButtonStatus,
+                HomeButtonStatus.NUM_ENTRIES);
+    }
+
+    /**
+     * @return {@link HomeButtonStatus} for current homepage settings.
+     */
+    @VisibleForTesting
+    public @HomeButtonStatus int getHomeButtonStatus() {
+        if (HomepagePolicyManager.isShowHomeButtonManaged()) {
+            return HomepagePolicyManager.getShowHomeButtonValue()
+                    ? HomeButtonStatus.POLICY_ON
+                    : HomeButtonStatus.POLICY_OFF;
+        }
+        if (HomepagePolicyManager.isHomepageLocationManaged()
+                || HomepagePolicyManager.isHomepageNewTabPageManaged()) {
+            return HomeButtonStatus.POLICY_ON;
+        }
+        return getPrefHomepageEnabled() ? HomeButtonStatus.USER_ON : HomeButtonStatus.USER_OFF;
     }
 
     @Override
