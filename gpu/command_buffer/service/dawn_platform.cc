@@ -248,6 +248,9 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
     case dawn::platform::Features::kWebGPUUseVulkanMemoryModel:
       return base::FeatureList::IsEnabled(
           features::kWebGPUUseVulkanMemoryModel);
+    case dawn::platform::Features::kWebGPUEnableRangeAnalysisForRobustness:
+      return base::FeatureList::IsEnabled(
+          features::kWebGPUEnableRangeAnalysisForRobustness);
     default:
       return false;
   }

@@ -94,6 +94,7 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUService);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUBlobCache);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUUseTintIR);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUUseVulkanMemoryModel);
+GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUEnableRangeAnalysisForRobustness);
 GPU_EXPORT extern const base::FeatureParam<std::string> kWebGPUDisabledToggles;
 GPU_EXPORT extern const base::FeatureParam<std::string> kWebGPUEnabledToggles;
 GPU_EXPORT extern const base::FeatureParam<std::string> kWebGPUUnsafeFeatures;

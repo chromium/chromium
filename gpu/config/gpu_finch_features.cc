@@ -275,6 +275,10 @@ BASE_FEATURE(kWebGPUUseVulkanMemoryModel,
              "WebGPUUseVulkanMemoryModel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebGPUEnableRangeAnalysisForRobustness,
+             "WebGPUEnableRangeAnalysisForRobustness",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByHardware{
