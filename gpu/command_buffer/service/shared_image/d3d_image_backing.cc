@@ -10,8 +10,7 @@
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 
 #include <d3d11_3.h>
-
-#include <functional>
+#include <wrl/client.h>
 
 // clang-format off
 #include <dawn/native/D3D11Backend.h>
@@ -22,8 +21,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -38,10 +35,11 @@
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "ui/gfx/color_space_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_restore_texture.h"
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -94,6 +92,38 @@ bool CanUseUpdateSubresource(const std::vector<SkPixmap>& pixmaps) {
   }
 
   return true;
+}
+
+Microsoft::WRL::ComPtr<IDCompositionTexture> CreateDCompTexture(
+    ID3D11Texture2D* d3d11_texture,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space) {
+  HRESULT hr = S_OK;
+
+  Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device =
+      gl::GetDirectCompositionDevice();
+  Microsoft::WRL::ComPtr<IDCompositionDevice4> dcomp_device4;
+  hr = dcomp_device.As(&dcomp_device4);
+  CHECK_EQ(hr, S_OK) << ", QueryInterface failed: "
+                     << logging::SystemErrorCodeToString(hr);
+
+  Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture;
+  hr = dcomp_device4->CreateCompositionTexture(d3d11_texture, &dcomp_texture);
+  CHECK_EQ(hr, S_OK) << ", CreateCompositionTexture failed: "
+                     << logging::SystemErrorCodeToString(hr);
+
+  hr = dcomp_texture->SetAlphaMode(SkAlphaTypeIsOpaque(alpha_type)
+                                       ? DXGI_ALPHA_MODE_IGNORE
+                                       : DXGI_ALPHA_MODE_PREMULTIPLIED);
+  CHECK_EQ(hr, S_OK) << ", SetAlphaMode failed: "
+                     << logging::SystemErrorCodeToString(hr);
+
+  hr = dcomp_texture->SetColorSpace(
+      gfx::ColorSpaceWin::GetDXGIColorSpace(color_space));
+  CHECK_EQ(hr, S_OK) << ", SetColorSpace failed: "
+                     << logging::SystemErrorCodeToString(hr);
+
+  return dcomp_texture;
 }
 
 }  // namespace
@@ -387,7 +417,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
   DCHECK(format.is_single_plane());
   return base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "SwapChainBuffer", std::move(d3d11_texture), /*dcomp_texture=*/nullptr,
+      "SwapChainBuffer", std::move(d3d11_texture),
       /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
       /*array_slice=*/0u, std::move(swap_chain), is_back_buffer));
 }
@@ -415,12 +445,12 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
     size_t array_slice,
     bool use_update_subresource1,
+    bool want_dcomp_texture,
     bool is_thread_safe) {
   const bool has_webgpu_usage = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
                                              SHARED_IMAGE_USAGE_WEBGPU_WRITE);
@@ -429,9 +459,10 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
-      std::move(dcomp_texture), std::move(dxgi_shared_handle_state),
-      gl_format_caps, texture_target, array_slice, /*swap_chain=*/nullptr,
-      /*is_back_buffer=*/false, use_update_subresource1, is_thread_safe));
+      std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
+      array_slice, /*swap_chain=*/nullptr,
+      /*is_back_buffer=*/false, use_update_subresource1, want_dcomp_texture,
+      is_thread_safe));
   return backing;
 }
 
@@ -445,7 +476,6 @@ D3DImageBacking::D3DImageBacking(
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
@@ -453,6 +483,7 @@ D3DImageBacking::D3DImageBacking(
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     bool is_back_buffer,
     bool use_update_subresource1,
+    bool want_dcomp_texture,
     bool is_thread_safe)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
@@ -465,7 +496,11 @@ D3DImageBacking::D3DImageBacking(
                                       format.EstimatedSizeInBytes(size),
                                       is_thread_safe),
       d3d11_texture_(std::move(d3d11_texture)),
-      dcomp_texture_(std::move(dcomp_texture)),
+      dcomp_texture_(want_dcomp_texture && d3d11_texture_
+                         ? CreateDCompTexture(d3d11_texture_.Get(),
+                                              alpha_type,
+                                              color_space)
+                         : nullptr),
       dxgi_shared_handle_state_(std::move(dxgi_shared_handle_state)),
       gl_format_caps_(gl_format_caps),
       texture_target_(texture_target),

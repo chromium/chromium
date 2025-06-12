@@ -1569,9 +1569,8 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
     shared_image_backing = D3DImageBacking::Create(
         mailbox, viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
-        d3d11_texture, /*dcomp_texture=*/nullptr,
-        std::move(dxgi_shared_handle_state), context_state_->GetGLFormatCaps(),
-        GL_TEXTURE_EXTERNAL_OES,
+        d3d11_texture, std::move(dxgi_shared_handle_state),
+        context_state_->GetGLFormatCaps(), GL_TEXTURE_EXTERNAL_OES,
         /*array_slice=*/0, /*plane_index=*/0u);
     // Need to clear the backing created with shared handle.
     shared_image_backing->SetCleared();

@@ -129,9 +129,10 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
       gpu::D3DImageBacking::Create(
           mailbox, metadata.format, metadata.size, metadata.color_space,
           metadata.surface_origin, metadata.alpha_type, metadata.usage,
-          si_info.debug_label, texture, /*dcomp_texture=*/nullptr,
-          std::move(dxgi_shared_handle_state), caps, GL_TEXTURE_EXTERNAL_OES,
-          array_slice, /*use_update_subresource1=*/false, is_thread_safe);
+          si_info.debug_label, texture, std::move(dxgi_shared_handle_state),
+          caps, GL_TEXTURE_EXTERNAL_OES, array_slice,
+          /*use_update_subresource1=*/false,
+          /*want_dcomp_texture=*/false, is_thread_safe);
   if (!backing) {
     return nullptr;
   }

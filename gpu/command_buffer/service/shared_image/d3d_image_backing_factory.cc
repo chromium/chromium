@@ -20,7 +20,6 @@
 #include "ui/gfx/color_space_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
-#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_utils.h"
 
 namespace gpu {
@@ -556,7 +555,6 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
             base::win::ScopedHandle(shared_handle), d3d11_texture);
   }
 
-  Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture;
   if (want_dcomp_texture) {
     // If this trips, it means we're claiming support for SCANOUT when DComp
     // textures is not supported by the system, or an incompatible texture was
@@ -565,43 +563,19 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       LOG(ERROR) << "Composition texture not supported for scanout usage";
       return nullptr;
     }
-
-    Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device =
-        gl::GetDirectCompositionDevice();
-    Microsoft::WRL::ComPtr<IDCompositionDevice4> dcomp_device4;
-    hr = dcomp_device.As(&dcomp_device4);
-    CHECK_EQ(hr, S_OK) << ", QueryInterface failed: "
-                       << logging::SystemErrorCodeToString(hr);
-
-    hr = dcomp_device4->CreateCompositionTexture(d3d11_texture.Get(),
-                                                 &dcomp_texture);
-    CHECK_EQ(hr, S_OK) << ", CreateCompositionTexture failed: "
-                       << logging::SystemErrorCodeToString(hr);
-
-    hr = dcomp_texture->SetAlphaMode(SkAlphaTypeIsOpaque(alpha_type)
-                                         ? DXGI_ALPHA_MODE_IGNORE
-                                         : DXGI_ALPHA_MODE_PREMULTIPLIED);
-    CHECK_EQ(hr, S_OK) << ", SetAlphaMode failed: "
-                       << logging::SystemErrorCodeToString(hr);
-
-    hr = dcomp_texture->SetColorSpace(
-        gfx::ColorSpaceWin::GetDXGIColorSpace(color_space));
-    CHECK_EQ(hr, S_OK) << ", SetColorSpace failed: "
-                       << logging::SystemErrorCodeToString(hr);
   }
 
   // SkiaOutputDeviceDComp will hold onto DComp texture overlay accesses for
   // longer than a frame, due to DWM synchronization requirements. This is
   // incompatible with the assumption that keyed mutex access will be minimal.
-  CHECK(!dcomp_texture || !(dxgi_shared_handle_state &&
-                            dxgi_shared_handle_state->has_keyed_mutex()));
+  CHECK(!want_dcomp_texture || !(dxgi_shared_handle_state &&
+                                 dxgi_shared_handle_state->has_keyed_mutex()));
 
   auto backing = D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
-      std::move(dcomp_texture), std::move(dxgi_shared_handle_state),
-      gl_format_caps_, texture_target, /*array_slice=*/0u,
-      use_update_subresource1_);
+      std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
+      /*array_slice=*/0u, use_update_subresource1_, want_dcomp_texture);
   if (backing && !pixel_data.empty()) {
     backing->SetCleared();
   }
@@ -677,8 +651,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   std::unique_ptr<D3DImageBacking> backing = D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
-      /*dcomp_texture=*/nullptr, std::move(dxgi_shared_handle_state),
-      gl_format_caps_, /*texture_target=*/GL_TEXTURE_2D, /*array_slice=*/0u,
+      std::move(dxgi_shared_handle_state), gl_format_caps_,
+      /*texture_target=*/GL_TEXTURE_2D, /*array_slice=*/0u,
       use_update_subresource1_);
 
   if (backing) {

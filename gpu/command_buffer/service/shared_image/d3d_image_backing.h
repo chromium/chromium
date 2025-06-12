@@ -61,12 +61,12 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
       const GLFormatCaps& gl_format_caps,
       GLenum texture_target,
       size_t array_slice,
       bool use_update_subresource1 = false,
+      bool want_dcomp_texture = false,
       bool is_thread_safe = false);
 
   // Creation method meant for buffer resources originating as ID3D12Resources.
@@ -244,7 +244,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   gpu::SharedImageUsageSet usage,
                   std::string debug_label,
                   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-                  Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
                   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
                   const GLFormatCaps& gl_format_caps,
                   GLenum texture_target = GL_TEXTURE_2D,
@@ -252,6 +251,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
                   bool is_back_buffer = false,
                   bool use_update_subresource1 = false,
+                  bool want_dcomp_texture = false,
                   bool is_thread_safe = false);
 
   D3DImageBacking(const Mailbox& mailbox,
