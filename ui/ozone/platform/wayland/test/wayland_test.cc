@@ -34,7 +34,6 @@
 #endif
 
 using ::testing::_;
-using ::testing::Mock;
 using ::testing::SaveArg;
 
 namespace ui {
@@ -89,10 +88,9 @@ void WaylandTestBase::SetUp() {
 
   // Wait for the client to flush all pending requests from initialization.
   SyncDisplay();
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   // The surface must be activated before buffers are attached.
-  ActivateSurface(delegate_);
+  ActivateSurface(window_->root_surface()->get_surface_id());
 
   EXPECT_EQ(0u,
             DeviceDataManager::GetInstance()->GetTouchscreenDevices().size());
@@ -186,58 +184,10 @@ void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
       });
 }
 
-void WaylandTestBase::ActivateSurface(
-    MockWaylandPlatformWindowDelegate& window_delegate,
-    std::optional<uint32_t> serial) {
-  WaylandWindow* window = window_delegate.window();
-  CHECK(window_delegate.window());
-
-  ASSERT_FALSE(window->IsSurfaceConfigured());
-  EXPECT_CALL(window_delegate,
-              OnWindowStateChanged(PlatformWindowState::kUnknown,
-                                   PlatformWindowState::kNormal));
-
+void WaylandTestBase::ActivateSurface(uint32_t surface_id,
+                                      std::optional<uint32_t> serial) {
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
-  SendConfigureEvent(window->root_surface()->get_surface_id(), gfx::Size(0, 0),
-                     state, serial);
-
-  Mock::VerifyAndClearExpectations(&window_delegate);
-  EXPECT_NE(PlatformWindowState::kUnknown, window->GetPlatformWindowState());
-  EXPECT_FALSE(window->IsSurfaceConfigured());
-}
-
-void WaylandTestBase::MapSurface(
-    MockWaylandPlatformWindowDelegate& window_delegate) {
-  CHECK(window_delegate.window());
-  SyncDisplay();
-
-  WaylandWindow* window = window_delegate.window();
-  ASSERT_FALSE(window->IsSurfaceConfigured());
-  ASSERT_NE(PlatformWindowState::kUnknown, window->GetPlatformWindowState());
-  ASSERT_EQ(0U, window->root_surface()->buffer_id());
-
-  uint32_t surface_id = window->root_surface()->get_surface_id();
-  PostToServerAndWait([surface_id, geometry = window->GetBoundsInDIP()](
-                          wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
-    ASSERT_TRUE(surface);
-    ASSERT_TRUE(surface->xdg_surface());
-    EXPECT_CALL(*surface->xdg_surface(), SetWindowGeometry(geometry));
-    EXPECT_CALL(*surface->xdg_surface(), AckConfigure(_));
-  });
-
-  // This emulates a buffer attachment to `window` by simply triggering
-  // OnSequencePoint, which is the entry point in WaylandWindow for it.
-  // In production, it's called by frame manager, just before attaching the
-  // buffer.
-  window->OnSequencePoint(window_delegate.viz_seq());
-
-  Mock::VerifyAndClearExpectations(&window_delegate);
-  ASSERT_TRUE(window->IsSurfaceConfigured());
-  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
-    Mock::VerifyAndClearExpectations(surface->xdg_surface());
-  });
+  SendConfigureEvent(surface_id, {0, 0}, state, serial);
 }
 
 void WaylandTestBase::MaybeSetUpXkb() {

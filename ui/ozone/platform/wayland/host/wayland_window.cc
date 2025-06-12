@@ -400,6 +400,9 @@ void WaylandWindow::CancelDrag() {
 }
 
 void WaylandWindow::Show(bool inactive) {
+  // Initially send the window geometry. After this, we only update window
+  // geometry when the value in latched_state_ updates.
+  SetWindowGeometry(latched_state_);
   frame_manager_->MaybeProcessPendingFrame();
 }
 
@@ -925,6 +928,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   SetWaylandExtension(this, this);
 
   PlatformWindowDelegate::State state;
+  state.window_state = PlatformWindowState::kUnknown;
   state.bounds_dip = properties.bounds;
 
   // Make sure we don't store empty bounds, or else later on we might send an
@@ -1518,25 +1522,20 @@ gfx::Rect WaylandWindow::AdjustBoundsToConstraintsDIP(
 
 void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   // Latch the most up to date state we have a frame back for.
-  auto old_state = std::exchange(latched_state_, req.state);
-  // Ack is sent when the state request holds a valid serial value.
-  const bool ack_configure = req.serial != -1;
+  auto old_state = latched_state_;
+  latched_state_ = req.state;
 
   // Update the geometry if:
   // - either bounds, tiling or insets has changed since the latest latched
-  //   request; or
-  // - acking state corresponding to the very first configure sequence.
+  //   request.
   if (req.state.bounds_dip.size() != old_state.bounds_dip.size() ||
       req.state.tiled_edges != old_state.tiled_edges ||
       delegate()->CalculateInsetsInDIP(req.state.window_state) !=
-          delegate()->CalculateInsetsInDIP(old_state.window_state) ||
-      (ack_configure &&
-       old_state.window_state == PlatformWindowState::kUnknown &&
-       req.state.window_state != PlatformWindowState::kUnknown)) {
+          delegate()->CalculateInsetsInDIP(old_state.window_state)) {
     SetWindowGeometry(req.state);
   }
   UpdateWindowMask();
-  if (ack_configure) {
+  if (req.serial != -1) {
     AckConfigure(req.serial);
   }
 }

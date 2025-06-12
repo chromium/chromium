@@ -89,18 +89,12 @@ class WaylandTestBase {
                           const wl::ScopedWlArray& states,
                           std::optional<uint32_t> serial = std::nullopt);
 
-  // Sends XDG_TOPLEVEL_STATE_ACTIVATED to associated with `window_deletate` and
+  // Sends XDG_TOPLEVEL_STATE_ACTIVATED to the surface that has |surface_id| and
   // has xdg surface role with width and height set to 0, which results in
   // asking the client to set the width and height of the surface. The client
   // test may pass |serial| that will be used to activate the surface.
-  void ActivateSurface(MockWaylandPlatformWindowDelegate& window_delegate,
+  void ActivateSurface(uint32_t surface_id,
                        std::optional<uint32_t> serial = std::nullopt);
-
-  // Assuming that the window associated with `window_delegate` has just
-  // received the first configure sequence and is waiting for a non-null buffer
-  // to be attached, this emulates such buffer attachment and verifies the
-  // expectations.
-  void MapSurface(MockWaylandPlatformWindowDelegate& window_delegate);
 
   // A helper method that sets up the XKB configuration for tests that require
   // it.

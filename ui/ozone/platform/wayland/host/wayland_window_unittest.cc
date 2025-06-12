@@ -217,9 +217,7 @@ class WaylandWindowTest : public WaylandTest {
     PostToServerAndWait(
         [id = surface_id_](wl::TestWaylandServerThread* server) {
           auto* surface = server->GetObject<wl::MockSurface>(id);
-          ASSERT_TRUE(surface);
           ASSERT_TRUE(surface->xdg_surface());
-          ASSERT_TRUE(surface->xdg_surface()->xdg_toplevel());
         });
   }
 
@@ -603,8 +601,6 @@ TEST_P(WaylandWindowTest, HandleTiledEdges) {
 }
 
 TEST_P(WaylandWindowTest, DisregardUnpassedWindowConfigure) {
-  MapSurface(delegate_);
-
   constexpr gfx::Rect kNormalBounds1{500, 300};
   constexpr gfx::Rect kNormalBounds2{800, 600};
   constexpr gfx::Rect kNormalBounds3{700, 400};
@@ -631,17 +627,13 @@ TEST_P(WaylandWindowTest, DisregardUnpassedWindowConfigure) {
 
   auto state = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(surface_id_, kNormalBounds1.size(), state, ++serial);
-  uint64_t viz_seq1 = delegate_.viz_seq();
-
   state = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(surface_id_, kNormalBounds2.size(), state, ++serial);
-
   state = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(surface_id_, kNormalBounds3.size(), state, ++serial);
-  uint64_t viz_seq3 = delegate_.viz_seq();
 
-  window_->OnSequencePoint(viz_seq1);
-  window_->OnSequencePoint(viz_seq3);
+  window_->OnSequencePoint(/*seq=*/1);
+  window_->OnSequencePoint(/*seq=*/3);
   VerifyAndClearExpectations();
 }
 
@@ -720,14 +712,13 @@ TEST_P(WaylandWindowTest, OnSequencePointClearsPreviousUnackedConfigures) {
   uint32_t serial = 1;
   auto state = InitializeWlArrayWithActivatedState();
 
-  MapSurface(delegate_);
-
   // Send 3 configures. Waiting to advance the frame (and call
   // OnSequencePoint(3)) should mean acking and processing the completion of
   // first two configures will be skipped.
   PostToServerAndWait([id = surface_id_, bounds = kNormalBounds1](
                           wl::TestWaylandServerThread* server) {
     wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
     wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())))
         .Times(0);
@@ -745,6 +736,7 @@ TEST_P(WaylandWindowTest, OnSequencePointClearsPreviousUnackedConfigures) {
         .Times(0);
     EXPECT_CALL(*xdg_surface, AckConfigure(3)).Times(0);
   });
+  state = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(surface_id_, kNormalBounds2.size(), state, ++serial);
   VerifyAndClearExpectations();
 
@@ -756,8 +748,8 @@ TEST_P(WaylandWindowTest, OnSequencePointClearsPreviousUnackedConfigures) {
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())));
     EXPECT_CALL(*xdg_surface, AckConfigure(4));
   });
+  state = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(surface_id_, kNormalBounds3.size(), state, ++serial);
-
   AdvanceFrameToCurrent(window_.get(), delegate_);
   VerifyAndClearExpectations();
 }
@@ -994,10 +986,9 @@ TEST_P(WaylandWindowTest, MaximizeAndRestoreWithInsets) {
 TEST_P(WaylandWindowTest, Minimize) {
   wl::ScopedWlArray states({});
 
-  MapSurface(delegate_);
-
   // Make sure the window is initialized to normal state from the beginning.
-  ASSERT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  SendConfigureEvent(surface_id_, {0, 0}, states);
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
     wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
@@ -1124,21 +1115,23 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
 
   WaylandTestBase::SyncDisplay();
 
-  // Make sure the window is initialized to unknown state initially.
-  EXPECT_EQ(PlatformWindowState::kUnknown, window->GetPlatformWindowState());
+  // Make sure the window is initialized to normal state from the beginning.
+  EXPECT_EQ(PlatformWindowState::kNormal, window->GetPlatformWindowState());
 
   // The state must not be changed to the fullscreen before the surface is
   // activated.
   const uint32_t surface_id = window->root_surface()->get_surface_id();
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
-    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(surface_id);
-    EXPECT_FALSE(surface->xdg_surface());
+    wl::MockSurface* mock_surface =
+        server->GetObject<wl::MockSurface>(surface_id);
+    EXPECT_FALSE(mock_surface->xdg_surface());
   });
 
   // We must receive a state change after SetFullscreen.
   EXPECT_CALL(delegate,
-              OnWindowStateChanged(Eq(PlatformWindowState::kUnknown),
-                                   Eq(PlatformWindowState::kFullScreen)));
+              OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
+                                   Eq(PlatformWindowState::kFullScreen)))
+      .Times(1);
 
   window->SetFullscreen(true, display::kInvalidDisplayId);
   // The state of the window must already be fullscreen one.
@@ -1156,13 +1149,11 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
   EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
   wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
   states.AddStateToWlArray(XDG_TOPLEVEL_STATE_FULLSCREEN);
-  SendConfigureEvent(surface_id, gfx::Size(1920, 1080), states);
+  SendConfigureEvent(surface_id, {0, 0}, states);
 
   // It must be still the same state.
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
   Mock::VerifyAndClearExpectations(&delegate);
-
-  MapSurface(delegate);
 }
 
 TEST_P(WaylandWindowTest, StartMaximized) {
@@ -1181,7 +1172,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
   WaylandTestBase::SyncDisplay();
 
   // Make sure the window is initialized to normal state from the beginning.
-  EXPECT_EQ(PlatformWindowState::kUnknown, window->GetPlatformWindowState());
+  EXPECT_EQ(PlatformWindowState::kNormal, window->GetPlatformWindowState());
 
   // The state gets changed to maximize and the delegate notified.
   const uint32_t surface_id = window->root_surface()->get_surface_id();
@@ -1193,7 +1184,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
 
   // We must receive a state change after Show is called.
   EXPECT_CALL(delegate,
-              OnWindowStateChanged(Eq(PlatformWindowState::kUnknown),
+              OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
                                    Eq(PlatformWindowState::kMaximized)))
       .Times(1);
 
@@ -1216,13 +1207,11 @@ TEST_P(WaylandWindowTest, StartMaximized) {
   // Activate the surface.
   wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
   states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
-  SendConfigureEvent(surface_id, gfx::Size(1920, 1080), states);
+  SendConfigureEvent(surface_id, {0, 0}, states);
 
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kMaximized);
 
   Mock::VerifyAndClearExpectations(&delegate);
-
-  MapSurface(delegate);
 }
 
 TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
@@ -1853,28 +1842,22 @@ TEST_P(WaylandWindowTest, ConfigureEvent) {
 }
 
 TEST_P(WaylandWindowTest, ConfigureEventWithNulledSize) {
-  // Use a new window here as this test case needs to exercise the very first
-  // configure sequence handling, which isn't possible with the original
-  // `window_` set up at WaylandTest::SetUp.
-  window_ = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
-                                          gfx::Rect(400, 400), &delegate_);
-  surface_id_ = window_->root_surface()->get_surface_id();
+  wl::ScopedWlArray states({});
+
+  // |xdg_surface| must receive the following calls in both xdg_shell_v5 and
+  // xdg_shell_v6. Other calls like SetTitle or SetMaximized are received by
+  // xdg_toplevel in xdg_shell_v6 and by xdg_surface in xdg_shell_v5.
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    auto* xdg_surface = server->GetObject<wl::MockSurface>(id)->xdg_surface();
-    EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(400, 400)));
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    auto* xdg_surface = mock_surface->xdg_surface();
     EXPECT_CALL(*xdg_surface, AckConfigure(14u));
   });
 
-  // The first configure sequence (with 0x0 size and activated state) must be
-  // acked and window geometry must be set with the bounds provided by the
-  // embedder at window initialization.
-  wl::ScopedWlArray states({XDG_TOPLEVEL_STATE_ACTIVATED});
-  SendConfigureEvent(surface_id_, gfx::Size(), states, 14u);
-
-  // Emulate the corresponding frame processing at client side, by triggering
-  // WaylandWindow::OnSequencePoint, which, in production, is handled and done
-  // by WaylandFrameManager.
-  window_->OnSequencePoint(delegate_.viz_seq());
+  // If Wayland sends configure event with 0 width and 0 size, client should
+  // call back with desired sizes. In this case, that's the actual size of
+  // the window.
+  SendConfigureEvent(surface_id_, {0, 0}, states, 14u);
 }
 
 TEST_P(WaylandWindowTest, ConfigureEventIsNotAckedMultipleTimes) {
@@ -1960,8 +1943,6 @@ TEST_P(WaylandWindowTest, InitialConfigureFollowedByBoundsChangeCompletesAck) {
   constexpr gfx::Rect kSecondBounds{50, 50, 800, 600};
   constexpr uint32_t kConfigureSerial = 2u;
 
-  MapSurface(delegate_);
-
   // Make sure that we start off with the initial bounds we expect.
   EXPECT_EQ(kFirstBounds, window_->latched_state().bounds_dip);
   EXPECT_EQ(kFirstBounds, window_->applied_state().bounds_dip);
@@ -1973,7 +1954,7 @@ TEST_P(WaylandWindowTest, InitialConfigureFollowedByBoundsChangeCompletesAck) {
     auto* mock_surface = server->GetObject<wl::MockSurface>(id);
     ASSERT_TRUE(mock_surface);
     auto* xdg_surface = mock_surface->xdg_surface();
-    EXPECT_CALL(*xdg_surface, AckConfigure(kConfigureSerial));
+    EXPECT_CALL(*xdg_surface, AckConfigure(kConfigureSerial)).Times(1);
   });
 
   {
@@ -3468,8 +3449,6 @@ TEST_P(WaylandWindowTest, SizeConstraintsExternal) {
   constexpr gfx::Size kMinSize{100, 100};
   constexpr gfx::Size kMaxSize{300, 300};
 
-  MapSurface(delegate_);
-
   EXPECT_CALL(delegate_, GetMinimumSizeForWindow())
       .WillRepeatedly(Return(kMinSize));
   EXPECT_CALL(delegate_, GetMaximumSizeForWindow())
@@ -4395,15 +4374,13 @@ TEST_P(WaylandWindowTest, DoesNotCreateSurfaceSyncOnCommitWithoutBuffers) {
 }
 
 TEST_P(WaylandWindowTest, StartWithMinimized) {
-  MapSurface(delegate_);
-
   // Make sure the window is initialized to normal state from the beginning.
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
 
   SendConfigureEvent(surface_id_, {0, 0},
                      InitializeWlArrayWithActivatedState());
 
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _));
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   window_->Minimize();
   VerifyAndClearExpectations();
 
@@ -4603,8 +4580,6 @@ TEST_P(WaylandWindowTest, ChangeFocusDuringDispatch) {
 }
 
 TEST_P(WaylandWindowTest, WindowMovedResized) {
-  MapSurface(delegate_);
-
   const gfx::Rect initial_bounds = window_->GetBoundsInDIP();
 
   gfx::Rect new_bounds(initial_bounds);
@@ -4720,8 +4695,6 @@ TEST_P(WaylandWindowTest, ReentrantApplyStateWorks) {
   constexpr gfx::Rect kBounds1{123, 234};
   constexpr gfx::Rect kBounds2{234, 345};
   constexpr gfx::Rect kBounds3{345, 456};
-
-  MapSurface(delegate_);
 
   PostToServerAndWait([id = surface_id_,
                        bounds = kBounds1](wl::TestWaylandServerThread* server) {
@@ -4855,7 +4828,6 @@ class PerSurfaceScaleWaylandWindowTest : public WaylandWindowTest {
     enabled_features_.push_back(features::kWaylandPerSurfaceScale);
 
     WaylandWindowTest::SetUp();
-    MapSurface(delegate_);
   }
 
   void TearDown() override {
@@ -5139,44 +5111,22 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_InitScaleAndBounds) {
   EXPECT_CALL(new_window_delegate, OnBoundsChanged(_)).Times(0);
   new_window->Show(/*inactive=*/false);
   Mock::VerifyAndClearExpectations(&new_window_delegate);
+  CreateBufferAndPresentAsNewFrame(new_window.get(), new_window_delegate,
+                                   /*buffer_size=*/gfx::Size(1000, 1000),
+                                   /*buffer_scale=*/1.25f);
   VerifyAndClearExpectations(new_window_delegate, new_window_surface_id);
   EXPECT_EQ(new_window->applied_state(), initial_state);
   EXPECT_EQ(new_window->applied_state(), new_window->latched_state());
   EXPECT_EQ(new_window->root_surface()->state_.buffer_scale_float, 1.0f);
 
-  // Send the initial activation configure events sequence, with (0, 0) size,
-  // such that the client-requested size is used, i.e (1000, 1000) set above.
-  // Then, emulate a new frame coming from Viz and verify the correct Wayland
-  // requests and parameters are used in response to it.
-  constexpr uint32_t kConfigureSerial = 11u;
-  EXPECT_CALL(new_window_delegate, OnBoundsChanged(_)).Times(0);
-  PostToServerAndWait(
-      [id = new_window_surface_id](wl::TestWaylandServerThread* server) {
-        wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
-        EXPECT_CALL(*mock_surface, Damage(0, 0, 1000, 1000));
-        EXPECT_CALL(*mock_surface->xdg_surface(),
-                    AckConfigure(Eq(kConfigureSerial)));
-        EXPECT_CALL(*mock_surface->xdg_surface(),
-                    SetWindowGeometry(gfx::Rect(1000, 1000)));
-      });
-  ActivateSurface(new_window_delegate, kConfigureSerial);
-  CreateBufferAndPresentAsNewFrame(new_window.get(), new_window_delegate,
-                                   /*buffer_size=*/gfx::Size(2000, 2000),
-                                   /*buffer_scale=*/2.5f);
-
-  // Emulate a wayland change of preferred fractional scale of 2.0 for
+  // Emulate a wayland surface preferred fractional scale of 2.0 for
   // `new_window`.
-  EXPECT_CALL(new_window_delegate, OnBoundsChanged(_));
+  EXPECT_CALL(new_window_delegate, OnBoundsChanged(_)).Times(1);
   PostToServerAndWait(
       [id = new_window_surface_id](wl::TestWaylandServerThread* server) {
         wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
         ASSERT_TRUE(mock_surface->fractional_scale());
         mock_surface->fractional_scale()->SendPreferredScale(2.0f);
-        // No new xdg_surface.set_window_geometry requests expected, as DIP
-        // geometry didn't change.
-        EXPECT_CALL(*mock_surface->xdg_surface(), SetWindowGeometry(_))
-            .Times(0);
-        mock_surface->AllowResettingFrameCallback();
       });
   VerifyAndClearExpectations(new_window_delegate, new_window_surface_id);
   EXPECT_EQ(gfx::Size(800, 800), new_window->applied_state().bounds_dip.size());
@@ -5187,6 +5137,26 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_InitScaleAndBounds) {
                      ->GetPreferredScaleFactorForAcceleratedWidget(
                          new_window->GetWidget())
                      .value_or(0.f));
+
+  // Send the initial activation configure events sequence, with (0, 0) size,
+  // such that the client-requested size is used, i.e (1000, 1000) set above.
+  // Then, emulate a new frame coming from Viz and verify the correct Wayland
+  // requests and parameters are used in response to it.
+  constexpr uint32_t kConfigureSerial = 11u;
+  EXPECT_CALL(new_window_delegate, OnBoundsChanged(_)).Times(0);
+  PostToServerAndWait([id = new_window_surface_id](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    EXPECT_CALL(*mock_surface, Damage(0, 0, 1000, 1000));
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                AckConfigure(Eq(kConfigureSerial)));
+    // No new xdg_surface.set_window_geometry requests as DIP geometry
+    // has not changed.
+    EXPECT_CALL(*mock_surface->xdg_surface(), SetWindowGeometry(_)).Times(0);
+  });
+  SendConfigureEvent(new_window_surface_id, gfx::Size(0, 0),
+                     wl::ScopedWlArray({XDG_TOPLEVEL_STATE_ACTIVATED}),
+                     kConfigureSerial);
   CreateBufferAndPresentAsNewFrame(new_window.get(), new_window_delegate,
                                    /*buffer_size=*/gfx::Size(2000, 2000),
                                    /*buffer_scale=*/2.5f);
@@ -5248,7 +5218,6 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandlePopupGeometry) {
   // Emulate a popup configure with empty geometry rectangle, in which case the
   // current popup bounds is expected to be used.
   SendConfigureEvent(menu_surface_id, gfx::Size(0, 0), wl::ScopedWlArray({}));
-  initial_state.window_state = PlatformWindowState::kNormal;
   EXPECT_EQ(initial_state.ToString(), menu_window->applied_state().ToString());
 
   // Now emulate a popup configure with a 100x200 geometry, and verifies that:

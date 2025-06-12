@@ -33,8 +33,7 @@ using XdgActivationTest = WaylandTestSimple;
 
 // Tests that XdgActivation uses the proper surface to request token.
 TEST_F(XdgActivationTest, RequestNewToken) {
-  MockWaylandPlatformWindowDelegate window_delegate1;
-  MockWaylandPlatformWindowDelegate window_delegate2;
+  MockWaylandPlatformWindowDelegate delegate;
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
@@ -44,24 +43,21 @@ TEST_F(XdgActivationTest, RequestNewToken) {
 
   window_.reset();
 
-  auto window1 = CreateWaylandWindowWithParams(
-      PlatformWindowType::kWindow, kDefaultBounds, &window_delegate1);
-  auto window2 = CreateWaylandWindowWithParams(
-      PlatformWindowType::kWindow, kDefaultBounds, &window_delegate2);
-
-  ActivateSurface(window_delegate1);
-  MapSurface(window_delegate1);
-  ActivateSurface(window_delegate2);
-  MapSurface(window_delegate2);
-
-  ASSERT_TRUE(window1->IsSurfaceConfigured());
-  ASSERT_TRUE(window2->IsSurfaceConfigured());
+  auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                               kDefaultBounds, &delegate);
+  auto window2 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                               kDefaultBounds, &delegate);
 
   // When window is shown, it automatically gets keyboard focus. Reset it
   connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
 
-  PostToServerAndWait([surface_id2 = window2->root_surface()->get_surface_id()](
-                          wl::TestWaylandServerThread* server) {
+  auto surface_id1 = window1->root_surface()->get_surface_id();
+  auto surface_id2 = window2->root_surface()->get_surface_id();
+
+  ActivateSurface(surface_id1);
+  ActivateSurface(surface_id2);
+
+  PostToServerAndWait([surface_id2](wl::TestWaylandServerThread* server) {
     auto* const keyboard = server->seat()->keyboard()->resource();
     auto* const xdg_activation = server->xdg_activation_v1();
     auto* const surface2 =
