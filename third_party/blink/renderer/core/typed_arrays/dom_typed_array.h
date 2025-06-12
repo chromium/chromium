@@ -140,10 +140,10 @@ class DOMTypedArray final : public DOMArrayBufferView {
 
 #define DOMTYPEDARRAY_DECLARE_WRAPPERTYPEINFO(val_t, Type, clamped)            \
   template <>                                                                  \
-  const WrapperTypeInfo                                                        \
+  CORE_EXPORT const WrapperTypeInfo                                            \
       DOMTypedArray<val_t, v8::Type##Array, clamped>::wrapper_type_info_body_; \
   template <>                                                                  \
-  const WrapperTypeInfo&                                                       \
+  CORE_EXPORT const WrapperTypeInfo&                                           \
       DOMTypedArray<val_t, v8::Type##Array, clamped>::wrapper_type_info_;
 DOMTYPEDARRAY_FOREACH_VIEW_TYPE(DOMTYPEDARRAY_DECLARE_WRAPPERTYPEINFO)
 #undef DOMTYPEDARRAY_DECLARE_WRAPPERTYPEINFO
