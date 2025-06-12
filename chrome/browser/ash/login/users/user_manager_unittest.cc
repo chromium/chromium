@@ -131,6 +131,8 @@ class UserManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+    CHECK_EQ(std::string_view(user_manager::UserManager::kTestType),
+             std::string_view(::switches::kTestType));
     command_line.AppendSwitch(::switches::kTestType);
     command_line.AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
 

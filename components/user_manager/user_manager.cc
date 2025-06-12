@@ -4,6 +4,7 @@
 
 #include "components/user_manager/user_manager.h"
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -148,6 +149,17 @@ UserManager::~UserManager() = default;
 
 // static
 void UserManager::SetInstance(UserManager* user_manager) {
+  if (!base::CommandLine::ForCurrentProcess()
+           ->GetSwitchValueASCII(kTestType)
+           .empty()) {
+    // Guarding from stacking UserManager instances in tests.
+    // `unit_tests` cannot be checked here because kTestType is empty.
+    CHECK(!UserManager::instance || !user_manager)
+        << "Global UserManager should not be overridden in "
+        << base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+               kTestType)
+        << " tests";
+  }
   UserManager::instance = user_manager;
 }
 
@@ -159,7 +171,7 @@ UserManager* user_manager::UserManager::GetForTesting() {
 // static
 UserManager* UserManager::SetForTesting(UserManager* user_manager) {
   UserManager* previous_instance = UserManager::instance;
-  UserManager::instance = user_manager;
+  SetInstance(user_manager);
   return previous_instance;
 }
 
