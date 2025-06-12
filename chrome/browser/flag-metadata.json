@@ -9896,6 +9896,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-dhcpcd10",
+    "owners": [ "chenzikai@google.com", "cros-networking@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "use-dmsaa-for-tiles",
     "owners": [ "vasilyt@chromium.org", "vikassoni@chromium.org" ],
     "expiry_milestone": 125

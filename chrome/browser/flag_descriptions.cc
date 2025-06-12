@@ -7856,6 +7856,11 @@ const char kUseAnnotatedAccountIdDescription[] =
     "Uses AccountId annotated for BrowserContext to look up between ChromeOS "
     "User and BrowserContext, a.k.a. Profile.";
 
+const char kUseDHCPCD10Name[] = "Use dhcpcd10 for IPv4";
+const char kUseDHCPCD10Description[] =
+    "Use dhcpcd10 for IPv4 provisioning, otherwise the legacy dhcpcd7 "
+    "will be used. Note that IPv6 (DHCPv6-PD) will always use dhcpcd10.";
+
 const char kUseFakeDeviceForMediaStreamName[] = "Use fake video capture device";
 const char kUseFakeDeviceForMediaStreamDescription[] =
     "Forces Chrome to use a fake video capture device (a rolling pacman with a "

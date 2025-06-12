@@ -4626,6 +4626,9 @@ extern const char kUploadOfficeToCloudDescription[];
 extern const char kUseAnnotatedAccountIdName[];
 extern const char kUseAnnotatedAccountIdDescription[];
 
+extern const char kUseDHCPCD10Name[];
+extern const char kUseDHCPCD10Description[];
+
 extern const char kUseFakeDeviceForMediaStreamName[];
 extern const char kUseFakeDeviceForMediaStreamDescription[];
 

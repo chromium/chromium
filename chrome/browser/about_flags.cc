@@ -5321,6 +5321,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"one-group-per-renderer", flag_descriptions::kOneGroupPerRendererName,
      flag_descriptions::kOneGroupPerRendererDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(base::kOneGroupPerRenderer)},
+    {"use-dhcpcd10", flag_descriptions::kUseDHCPCD10Name,
+     flag_descriptions::kUseDHCPCD10Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kUseDHCPCD10)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
     {
         "disable-accelerated-video-decode",

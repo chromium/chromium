@@ -2945,6 +2945,11 @@ BASE_FEATURE(kUseAndroidStagingSmds,
              "UseAndroidStagingSmds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature toggles which dhcpcd version is used for IPv4 provisioning.
+// If it is enabled, dhcpcd10 will be used, otherwise the legacy dhcpcd7 will be
+// used. Note that IPv6 (DHCPv6-PD) always uses dhcpcd10.
+BASE_FEATURE(kUseDHCPCD10, "UseDHCPCD10", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the new `TokenHandleStoreImpl` will be used instead of
 // `TokenHandleUtil`.
 BASE_FEATURE(kUseTokenHandleStore,

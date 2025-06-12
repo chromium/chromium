@@ -9238,6 +9238,7 @@ from previous Chrome versions.
   <int value="-1751562448" label="OmniboxExpandedStateColors:disabled"/>
   <int value="-1751492305" label="SupportTool:enabled"/>
   <int value="-1750933674" label="ObservableAPI:disabled"/>
+  <int value="-1750872580" label="UseDHCPCD10:enabled"/>
   <int value="-1750309491" label="DragWindowToNewDesk:enabled"/>
   <int value="-1750008152" label="UsernameFirstFlow:enabled"/>
   <int value="-1749689559" label="SelectToSpeakNavigationControl:disabled"/>
@@ -10922,6 +10923,7 @@ from previous Chrome versions.
   <int value="-1131848860" label="TilingWindowResize:enabled"/>
   <int value="-1131726331" label="BackGestureRefactorAndroid:disabled"/>
   <int value="-1130835436" label="SuspendStateMachine:disabled"/>
+  <int value="-1130445061" label="UseDHCPCD10:disabled"/>
   <int value="-1129664395" label="AutofillEnableBuyNowPayLaterForZip:disabled"/>
   <int value="-1128981647" label="EnableOAuthIpp:enabled"/>
   <int value="-1128912963" label="MediaControlsExpandGesture:disabled"/>
