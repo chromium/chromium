@@ -2770,12 +2770,12 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win11-arm64 ] external/wpt/orientation-sensor/RelativeOrientationSensor.https.html [ Pass Timeout ]
-[ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/context.py [ Failure ]
-[ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/disable_simulation.py [ Failure ]
-[ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_gatt_connection_response/simulate_gatt_connection_response.py [ Failure ]
-[ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_gatt_disconnection/simulate_gatt_disconnection.py [ Failure ]
-[ Android ] external/wpt/webdriver/tests/classic/new_window/new_window.py [ Failure ]
+crbug.com/424242611 [ Win11-arm64 ] external/wpt/orientation-sensor/RelativeOrientationSensor.https.html [ Pass Timeout ]
+crbug.com/424229863 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/context.py [ Failure ]
+crbug.com/424229863 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/disable_simulation.py [ Failure ]
+crbug.com/424229863 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_gatt_connection_response/simulate_gatt_connection_response.py [ Failure ]
+crbug.com/424229863 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_gatt_disconnection/simulate_gatt_disconnection.py [ Failure ]
+crbug.com/424229863 [ Android ] external/wpt/webdriver/tests/classic/new_window/new_window.py [ Failure ]
 crbug.com/423656972 [ Android ] external/wpt/webdriver/tests/classic/accept_alert/accept.py [ Failure ]
 crbug.com/422832549 [ Win10.20h2 ] external/wpt/css/css-contain/contain-body-dir-004.html [ Timeout ]
 crbug.com/422814959 [ Win10.20h2 ] external/wpt/html/cross-origin-embedder-policy/credentialless/cache.window.html [ Crash ]
