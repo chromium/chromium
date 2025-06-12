@@ -43,6 +43,8 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 const char kAdditionalParam[] = "udm=50";
+// ANDROID_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT = 43;
+const char kAdditionalAepFakeBoxParam[] = "aep=43";
 
 TemplateURLData CreatePlayAPITemplateURLData(
     JNIEnv* env,
@@ -333,7 +335,11 @@ TemplateUrlServiceAndroid::GetComposeplateUrl(
       template_url_service_->GetDefaultSearchProvider()->url_ref();
   TemplateURLRef::SearchTermsArgs search_term_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
-  search_term_args.additional_query_params = kAdditionalParam;
+
+  const std::vector<std::string> params = {kAdditionalParam,
+                                           kAdditionalAepFakeBoxParam};
+  search_term_args.additional_query_params = base::JoinString(params, "&");
+
   GURL gurl = GURL(url_ref.ReplaceSearchTerms(
       search_term_args, template_url_service_->search_terms_data()));
   return url::GURLAndroid::FromNativeGURL(env, gurl);
