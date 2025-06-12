@@ -133,7 +133,7 @@
       expected: {blocked: "", ran: true},
     },
     {
-      description: "Ensure that an about:blank URL script with no integrity runs",
+      description: "Ensure that an about:blank URL script with no integrity does not trigger a report",
       url: "about:blank",
       cross_origin: true,
       integrity: "",
@@ -143,7 +143,7 @@
       expected: {blocked: "", ran: false},
     },
     {
-      description: "Ensure that a no-CORS about:blank URL script with no integrity runs",
+      description: "Ensure that a no-CORS about:blank URL script with no integrity does not trigger a report",
       url: "about:blank",
       cross_origin: false,
       integrity: "",

@@ -62,6 +62,7 @@ bool ShouldBlockOrReport(const network::IntegrityPolicy& integrity_policy) {
 
 }  // namespace
 
+// https://w3c.github.io/webappsec-subresource-integrity/#should-request-be-blocked-by-integrity-policy-section
 // static
 bool IntegrityPolicy::AllowRequest(
     ExecutionContext* context,
@@ -77,9 +78,12 @@ bool IntegrityPolicy::AllowRequest(
     return true;
   }
 
+  // 3. If parsedMetadata is not the empty set and request’s mode is either
+  // "cors" or "same-origin", return "Allowed".
+  // 4. If request’s url is local, return "Allowed".
   if ((!integrity_metadata.empty() &&
        request_mode != network::mojom::RequestMode::kNoCors) ||
-      url.ProtocolIsData() || url.ProtocolIs("blob")) {
+      url.ProtocolIsData() || url.ProtocolIs("blob") || url.ProtocolIsAbout()) {
     return true;
   }
   PolicyContainer* policy_container = context->GetPolicyContainer();
