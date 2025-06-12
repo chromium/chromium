@@ -148,8 +148,10 @@ class VIEWS_EXPORT ViewsDelegate {
 #endif
 
   // Creates a default NonClientFrameView to be used for windows that don't
-  // specify their own. If this function returns NULL, the
-  // views::CustomFrameView type will be used.
+  // specify their own and where no platform frame view is specified.
+  //
+  // Defaults to `DefaultFrameView`. This method should never return null, as a
+  // fallback is needed on all platforms.
   virtual std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
       Widget* widget);
 

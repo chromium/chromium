@@ -2636,7 +2636,7 @@ TEST_F(DesktopWidgetTest, MinimumSizeConstraints) {
 
   if (!widget->ShouldUseNativeFrame()) {
     // The test environment may have dwm disabled on Windows. In this case,
-    // CustomFrameView is used instead of the NativeFrameView, which will
+    // DefaultFrameView is used instead of the NativeFrameView, which will
     // provide a minimum size that includes frame decorations.
     minimum_size = widget->non_client_view()
                        ->GetWindowBoundsForClientBounds(gfx::Rect(minimum_size))

@@ -61,7 +61,6 @@
 #include "ui/views/widget/widget_deletion_observer.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_removals_observer.h"
-#include "ui/views/window/custom_frame_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -1505,11 +1504,8 @@ std::unique_ptr<NonClientFrameView> Widget::CreateNonClientFrameView() {
     frame_view =
         ViewsDelegate::GetInstance()->CreateDefaultNonClientFrameView(this);
   }
-  if (frame_view) {
-    return frame_view;
-  }
-
-  return std::make_unique<CustomFrameView>(this);
+  CHECK(frame_view);
+  return frame_view;
 }
 
 bool Widget::ShouldUseNativeFrame() const {

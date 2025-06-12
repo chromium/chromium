@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/window/custom_frame_view.h"
+#include "ui/views/window/default_frame_view.h"
 
 #include <algorithm>
 #include <utility>
@@ -72,7 +72,7 @@ void LayoutButton(ImageButton* button, const gfx::Rect& bounds) {
 
 }  // namespace
 
-CustomFrameView::CustomFrameView(Widget* frame)
+DefaultFrameView::DefaultFrameView(Widget* frame)
     : frame_(frame), frame_background_(new FrameBackground()) {
   close_button_ = InitWindowCaptionButton(
       base::BindRepeating(&Widget::CloseWithReason, base::Unretained(frame_),
@@ -97,13 +97,13 @@ CustomFrameView::CustomFrameView(Widget* frame)
   }
 }
 
-CustomFrameView::~CustomFrameView() = default;
+DefaultFrameView::~DefaultFrameView() = default;
 
-gfx::Rect CustomFrameView::GetBoundsForClientView() const {
+gfx::Rect DefaultFrameView::GetBoundsForClientView() const {
   return client_view_bounds_;
 }
 
-gfx::Rect CustomFrameView::GetWindowBoundsForClientBounds(
+gfx::Rect DefaultFrameView::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   int top_height = NonClientTopBorderHeight();
   int border_thickness = NonClientBorderThickness();
@@ -113,7 +113,7 @@ gfx::Rect CustomFrameView::GetWindowBoundsForClientBounds(
                    client_bounds.height() + top_height + border_thickness);
 }
 
-int CustomFrameView::NonClientHitTest(const gfx::Point& point) {
+int DefaultFrameView::NonClientHitTest(const gfx::Point& point) {
   // Sanity check.
   if (!bounds().Contains(point)) {
     return HTNOWHERE;
@@ -165,8 +165,8 @@ int CustomFrameView::NonClientHitTest(const gfx::Point& point) {
   return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
 }
 
-void CustomFrameView::GetWindowMask(const gfx::Size& size,
-                                    SkPath* window_mask) {
+void DefaultFrameView::GetWindowMask(const gfx::Size& size,
+                                     SkPath* window_mask) {
   DCHECK(window_mask);
   if (frame_->IsMaximized() || !ShouldShowTitleBarAndBorder()) {
     return;
@@ -175,20 +175,20 @@ void CustomFrameView::GetWindowMask(const gfx::Size& size,
   GetDefaultWindowMask(size, window_mask);
 }
 
-void CustomFrameView::ResetWindowControls() {
+void DefaultFrameView::ResetWindowControls() {
   restore_button_->SetState(Button::STATE_NORMAL);
   minimize_button_->SetState(Button::STATE_NORMAL);
   maximize_button_->SetState(Button::STATE_NORMAL);
   // The close button isn't affected by this constraint.
 }
 
-void CustomFrameView::UpdateWindowIcon() {
+void DefaultFrameView::UpdateWindowIcon() {
   if (window_icon_) {
     window_icon_->SchedulePaint();
   }
 }
 
-void CustomFrameView::UpdateWindowTitle() {
+void DefaultFrameView::UpdateWindowTitle() {
   if (frame_->widget_delegate()->ShouldShowWindowTitle() &&
       // If this is still unset, we haven't laid out window controls yet.
       maximum_title_bar_x_ > -1) {
@@ -197,12 +197,12 @@ void CustomFrameView::UpdateWindowTitle() {
   }
 }
 
-void CustomFrameView::SizeConstraintsChanged() {
+void DefaultFrameView::SizeConstraintsChanged() {
   ResetWindowControls();
   LayoutWindowControls();
 }
 
-void CustomFrameView::OnPaint(gfx::Canvas* canvas) {
+void DefaultFrameView::OnPaint(gfx::Canvas* canvas) {
   if (!ShouldShowTitleBarAndBorder()) {
     return;
   }
@@ -225,7 +225,7 @@ void CustomFrameView::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
-void CustomFrameView::Layout(PassKey) {
+void DefaultFrameView::Layout(PassKey) {
   if (ShouldShowTitleBarAndBorder()) {
     LayoutWindowControls();
     LayoutTitleBar();
@@ -235,7 +235,7 @@ void CustomFrameView::Layout(PassKey) {
   LayoutSuperclass<NonClientFrameView>(this);
 }
 
-gfx::Size CustomFrameView::CalculatePreferredSize(
+gfx::Size DefaultFrameView::CalculatePreferredSize(
     const SizeBounds& available_size) const {
   return frame_->non_client_view()
       ->GetWindowBoundsForClientBounds(
@@ -243,14 +243,14 @@ gfx::Size CustomFrameView::CalculatePreferredSize(
       .size();
 }
 
-gfx::Size CustomFrameView::GetMinimumSize() const {
+gfx::Size DefaultFrameView::GetMinimumSize() const {
   return frame_->non_client_view()
       ->GetWindowBoundsForClientBounds(
           gfx::Rect(frame_->client_view()->GetMinimumSize()))
       .size();
 }
 
-gfx::Size CustomFrameView::GetMaximumSize() const {
+gfx::Size DefaultFrameView::GetMaximumSize() const {
   gfx::Size max_size = frame_->client_view()->GetMaximumSize();
   gfx::Size converted_size =
       frame_->non_client_view()
@@ -260,23 +260,23 @@ gfx::Size CustomFrameView::GetMaximumSize() const {
                    max_size.height() == 0 ? 0 : converted_size.height());
 }
 
-int CustomFrameView::FrameBorderThickness() const {
+int DefaultFrameView::FrameBorderThickness() const {
   return frame_->IsMaximized() ? 0 : kFrameBorderThickness;
 }
 
-int CustomFrameView::NonClientBorderThickness() const {
+int DefaultFrameView::NonClientBorderThickness() const {
   // In maximized mode, we don't show a client edge.
   return FrameBorderThickness() +
          (ShouldShowClientEdge() ? kClientEdgeThickness : 0);
 }
 
-int CustomFrameView::NonClientTopBorderHeight() const {
+int DefaultFrameView::NonClientTopBorderHeight() const {
   return std::max(FrameBorderThickness() + IconSize(),
                   CaptionButtonY() + kCaptionButtonHeightWithPadding) +
          TitlebarBottomThickness();
 }
 
-int CustomFrameView::CaptionButtonY() const {
+int DefaultFrameView::CaptionButtonY() const {
   // Maximized buttons start at window top so that even if their images aren't
   // drawn flush with the screen edge, they still obey Fitts' Law.
 #if BUILDFLAG(IS_LINUX)
@@ -286,12 +286,12 @@ int CustomFrameView::CaptionButtonY() const {
 #endif
 }
 
-int CustomFrameView::TitlebarBottomThickness() const {
+int DefaultFrameView::TitlebarBottomThickness() const {
   return kTitlebarTopAndBottomEdgeThickness +
          (ShouldShowClientEdge() ? kClientEdgeThickness : 0);
 }
 
-int CustomFrameView::IconSize() const {
+int DefaultFrameView::IconSize() const {
 #if BUILDFLAG(IS_WIN)
   // This metric scales up if either the titlebar height or the titlebar font
   // size are increased.
@@ -305,7 +305,7 @@ int CustomFrameView::IconSize() const {
 #endif
 }
 
-gfx::Rect CustomFrameView::IconBounds() const {
+gfx::Rect DefaultFrameView::IconBounds() const {
   int size = IconSize();
   int frame_thickness = FrameBorderThickness();
   // Our frame border has a different "3D look" than Windows'.  Theirs has a
@@ -332,17 +332,17 @@ gfx::Rect CustomFrameView::IconBounds() const {
                    size, size);
 }
 
-bool CustomFrameView::ShouldShowTitleBarAndBorder() const {
+bool DefaultFrameView::ShouldShowTitleBarAndBorder() const {
   return !frame_->IsFullscreen() &&
          !ViewsDelegate::GetInstance()->WindowManagerProvidesTitleBar(
              frame_->IsMaximized());
 }
 
-bool CustomFrameView::ShouldShowClientEdge() const {
+bool DefaultFrameView::ShouldShowClientEdge() const {
   return !frame_->IsMaximized() && ShouldShowTitleBarAndBorder();
 }
 
-void CustomFrameView::PaintRestoredFrameBorder(gfx::Canvas* canvas) {
+void DefaultFrameView::PaintRestoredFrameBorder(gfx::Canvas* canvas) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
 
   frame_background_->SetCornerImages(
@@ -359,7 +359,7 @@ void CustomFrameView::PaintRestoredFrameBorder(gfx::Canvas* canvas) {
   frame_background_->PaintRestored(canvas, this);
 }
 
-void CustomFrameView::PaintMaximizedFrameBorder(gfx::Canvas* canvas) {
+void DefaultFrameView::PaintMaximizedFrameBorder(gfx::Canvas* canvas) {
   frame_background_->PaintMaximized(canvas, this);
 
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
@@ -376,7 +376,7 @@ void CustomFrameView::PaintMaximizedFrameBorder(gfx::Canvas* canvas) {
                        edge_height);
 }
 
-void CustomFrameView::PaintTitleBar(gfx::Canvas* canvas) {
+void DefaultFrameView::PaintTitleBar(gfx::Canvas* canvas) {
   WidgetDelegate* delegate = frame_->widget_delegate();
 
   // It seems like in some conditions we can be asked to paint after the window
@@ -395,7 +395,7 @@ void CustomFrameView::PaintTitleBar(gfx::Canvas* canvas) {
       rect);
 }
 
-void CustomFrameView::PaintRestoredClientEdge(gfx::Canvas* canvas) {
+void DefaultFrameView::PaintRestoredClientEdge(gfx::Canvas* canvas) {
   gfx::Rect client_area_bounds = frame_->client_view()->bounds();
   // The shadows have a 1 pixel gap on the inside, so draw them 1 pixel inwards.
   gfx::Rect shadowed_area_bounds = client_area_bounds;
@@ -447,19 +447,19 @@ void CustomFrameView::PaintRestoredClientEdge(gfx::Canvas* canvas) {
                        shadowed_area_top, left->width(), shadowed_area_height);
 }
 
-SkColor CustomFrameView::GetFrameColor() const {
+SkColor DefaultFrameView::GetFrameColor() const {
   return GetColorProvider()->GetColor(
       frame_->IsActive() ? ui::kColorFrameActive : ui::kColorFrameInactive);
 }
 
-gfx::ImageSkia CustomFrameView::GetFrameImage() const {
+gfx::ImageSkia DefaultFrameView::GetFrameImage() const {
   return *ui::ResourceBundle::GetSharedInstance()
               .GetImageNamed(frame_->IsActive() ? IDR_FRAME
                                                 : IDR_FRAME_INACTIVE)
               .ToImageSkia();
 }
 
-void CustomFrameView::LayoutWindowControls() {
+void DefaultFrameView::LayoutWindowControls() {
   minimum_title_bar_x_ = 0;
   maximum_title_bar_x_ = width();
 
@@ -523,7 +523,7 @@ void CustomFrameView::LayoutWindowControls() {
   }
 }
 
-void CustomFrameView::LayoutTitleBar() {
+void DefaultFrameView::LayoutTitleBar() {
   DCHECK_GE(maximum_title_bar_x_, 0);
   // The window title position is calculated based on the icon position, even
   // when there is no icon.
@@ -554,7 +554,7 @@ void CustomFrameView::LayoutTitleBar() {
       title_height);
 }
 
-void CustomFrameView::LayoutClientView() {
+void DefaultFrameView::LayoutClientView() {
   if (!ShouldShowTitleBarAndBorder()) {
     client_view_bounds_ = bounds();
     return;
@@ -568,7 +568,7 @@ void CustomFrameView::LayoutClientView() {
       std::max(0, height() - top_height - border_thickness));
 }
 
-ImageButton* CustomFrameView::InitWindowCaptionButton(
+ImageButton* DefaultFrameView::InitWindowCaptionButton(
     Button::PressedCallback callback,
     int accessibility_string_id,
     int normal_image_id,
@@ -592,7 +592,7 @@ ImageButton* CustomFrameView::InitWindowCaptionButton(
   return button;
 }
 
-ImageButton* CustomFrameView::GetImageButton(views::FrameButton frame_button) {
+ImageButton* DefaultFrameView::GetImageButton(views::FrameButton frame_button) {
   ImageButton* button = nullptr;
   switch (frame_button) {
     case views::FrameButton::kMinimize: {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/window/custom_frame_view.h"
+#include "ui/views/window/default_frame_view.h"
 
 #include <utility>
 #include <vector>
@@ -18,17 +18,17 @@
 
 namespace views {
 
-class CustomFrameViewTest : public ViewsTestBase {
+class DefaultFrameViewTest : public ViewsTestBase {
  public:
-  CustomFrameViewTest() = default;
+  DefaultFrameViewTest() = default;
 
-  CustomFrameViewTest(const CustomFrameViewTest&) = delete;
-  CustomFrameViewTest& operator=(const CustomFrameViewTest&) = delete;
+  DefaultFrameViewTest(const DefaultFrameViewTest&) = delete;
+  DefaultFrameViewTest& operator=(const DefaultFrameViewTest&) = delete;
 
-  ~CustomFrameViewTest() override = default;
+  ~DefaultFrameViewTest() override = default;
 
-  CustomFrameView* custom_frame_view() {
-    return static_cast<CustomFrameView*>(
+  DefaultFrameView* custom_frame_view() {
+    return static_cast<DefaultFrameView*>(
         widget()->non_client_view()->frame_view());
   }
 
@@ -70,7 +70,7 @@ class CustomFrameViewTest : public ViewsTestBase {
   raw_ptr<Widget> widget_ = nullptr;
 };
 
-void CustomFrameViewTest::SetUp() {
+void DefaultFrameViewTest::SetUp() {
   ViewsTestBase::SetUp();
 
   widget_ = new Widget;
@@ -82,16 +82,16 @@ void CustomFrameViewTest::SetUp() {
   params.remove_standard_frame = true;
   widget_->Init(std::move(params));
   widget_->non_client_view()->SetFrameView(
-      std::make_unique<CustomFrameView>(widget_));
+      std::make_unique<DefaultFrameView>(widget_));
 }
 
-void CustomFrameViewTest::TearDown() {
+void DefaultFrameViewTest::TearDown() {
   widget_.ExtractAsDangling()->CloseNow();
 
   ViewsTestBase::TearDown();
 }
 
-void CustomFrameViewTest::SetWindowButtonOrder(
+void DefaultFrameViewTest::SetWindowButtonOrder(
     const std::vector<views::FrameButton> leading_buttons,
     const std::vector<views::FrameButton> trailing_buttons) {
   WindowButtonOrderProvider::GetInstance()->SetWindowButtonOrder(
@@ -100,7 +100,7 @@ void CustomFrameViewTest::SetWindowButtonOrder(
 
 // Tests that there is a default button ordering before initialization causes
 // a configuration file check.
-TEST_F(CustomFrameViewTest, DefaultButtons) {
+TEST_F(DefaultFrameViewTest, DefaultButtons) {
   const std::vector<views::FrameButton>& trailing = trailing_buttons();
   EXPECT_EQ(trailing.size(), 3u);
   EXPECT_TRUE(leading_buttons().empty());
@@ -111,7 +111,7 @@ TEST_F(CustomFrameViewTest, DefaultButtons) {
 
 // Tests that layout places the buttons in order, that the restore button is
 // hidden and the buttons are placed after the title.
-TEST_F(CustomFrameViewTest, DefaultButtonLayout) {
+TEST_F(DefaultFrameViewTest, DefaultButtonLayout) {
   widget()->SetBounds(gfx::Rect(0, 0, 300, 100));
   widget()->Show();
 
@@ -124,7 +124,7 @@ TEST_F(CustomFrameViewTest, DefaultButtonLayout) {
 }
 
 // Tests that setting the buttons to leading places them before the title.
-TEST_F(CustomFrameViewTest, LeadingButtonLayout) {
+TEST_F(DefaultFrameViewTest, LeadingButtonLayout) {
   std::vector<views::FrameButton> leading;
   leading.push_back(views::FrameButton::kClose);
   leading.push_back(views::FrameButton::kMinimize);
@@ -145,7 +145,7 @@ TEST_F(CustomFrameViewTest, LeadingButtonLayout) {
 
 // Tests that layouts occurring while maximized swap the maximize button for the
 // restore button
-TEST_F(CustomFrameViewTest, MaximizeRevealsRestoreButton) {
+TEST_F(DefaultFrameViewTest, MaximizeRevealsRestoreButton) {
   widget()->SetBounds(gfx::Rect(0, 0, 300, 100));
   widget()->Show();
 
@@ -170,7 +170,7 @@ TEST_F(CustomFrameViewTest, MaximizeRevealsRestoreButton) {
 
 // Tests that when the parent cannot maximize that the maximize button is not
 // visible
-TEST_F(CustomFrameViewTest, CannotMaximizeHidesButton) {
+TEST_F(DefaultFrameViewTest, CannotMaximizeHidesButton) {
   widget()->widget_delegate()->SetCanMaximize(false);
 
   widget()->SetBounds(gfx::Rect(0, 0, 300, 100));
@@ -182,7 +182,7 @@ TEST_F(CustomFrameViewTest, CannotMaximizeHidesButton) {
 
 // Tests that when the parent cannot minimize that the minimize button is not
 // visible
-TEST_F(CustomFrameViewTest, CannotMinimizeHidesButton) {
+TEST_F(DefaultFrameViewTest, CannotMinimizeHidesButton) {
   widget()->widget_delegate()->SetCanMinimize(false);
 
   widget()->SetBounds(gfx::Rect(0, 0, 300, 100));
@@ -192,7 +192,7 @@ TEST_F(CustomFrameViewTest, CannotMinimizeHidesButton) {
 }
 
 // Tests that when maximized that the edge button has an increased width.
-TEST_F(CustomFrameViewTest, LargerEdgeButtonsWhenMaximized) {
+TEST_F(DefaultFrameViewTest, LargerEdgeButtonsWhenMaximized) {
   // Custom ordering to have a button on each edge.
   std::vector<views::FrameButton> leading;
   leading.push_back(views::FrameButton::kClose);

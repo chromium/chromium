@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_WINDOW_CUSTOM_FRAME_VIEW_H_
-#define UI_VIEWS_WINDOW_CUSTOM_FRAME_VIEW_H_
+#ifndef UI_VIEWS_WINDOW_DEFAULT_FRAME_VIEW_H_
+#define UI_VIEWS_WINDOW_DEFAULT_FRAME_VIEW_H_
 
 #include <memory>
 
@@ -22,20 +22,20 @@ class Widget;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// CustomFrameView
+// DefaultNonClientFrameView
 //
-//  A view that provides the non client frame for Windows. This means
-//  rendering the non-standard window caption, border, and controls.
+//  Provides a fallback frame view that manually renders its frame, caption, and
+//  controls. Used on all platforms when no other frame view is specified.
 //
 ////////////////////////////////////////////////////////////////////////////////
-class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
+class VIEWS_EXPORT DefaultFrameView : public NonClientFrameView {
  public:
-  explicit CustomFrameView(Widget* frame);
+  explicit DefaultFrameView(Widget* frame);
 
-  CustomFrameView(const CustomFrameView&) = delete;
-  CustomFrameView& operator=(const CustomFrameView&) = delete;
+  DefaultFrameView(const DefaultFrameView&) = delete;
+  DefaultFrameView& operator=(const DefaultFrameView&) = delete;
 
-  ~CustomFrameView() override;
+  ~DefaultFrameView() override;
 
   // Overridden from NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override;
@@ -57,7 +57,7 @@ class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
   gfx::Size GetMaximumSize() const override;
 
  private:
-  friend class CustomFrameViewTest;
+  friend class DefaultFrameViewTest;
 
   // Returns the thickness of the border that makes up the window frame edges.
   // This does not include any client edge.
@@ -154,10 +154,10 @@ class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
 
   base::CallbackListSubscription paint_as_active_subscription_ =
       frame_->RegisterPaintAsActiveChangedCallback(
-          base::BindRepeating(&CustomFrameView::SchedulePaint,
+          base::BindRepeating(&DefaultFrameView::SchedulePaint,
                               base::Unretained(this)));
 };
 
 }  // namespace views
 
-#endif  // UI_VIEWS_WINDOW_CUSTOM_FRAME_VIEW_H_
+#endif  // UI_VIEWS_WINDOW_DEFAULT_FRAME_VIEW_H_
