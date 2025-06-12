@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -47,10 +49,11 @@ std::optional<AXInspectScenario> AXInspectScenario::From(
     size_t scenario_end = file_contents.find("-->", scenario_start);
     if (scenario_start != std::string::npos &&
         scenario_end != std::string::npos) {
-      auto start = file_contents.begin() + scenario_start;
-      auto end = start + (scenario_end - scenario_start);
-      lines = base::SplitString(base::MakeStringPiece(start, end), "\n",
-                                base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      std::string_view scenario =
+          std::string_view(file_contents)
+              .substr(scenario_start, scenario_end - scenario_start);
+      lines = base::SplitString(scenario, "\n", base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_ALL);
     }
   } else {
     // Otherwise, assume the whole file contains only directives
