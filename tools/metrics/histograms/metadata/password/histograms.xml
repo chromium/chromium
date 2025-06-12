@@ -1026,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.InsecureCredentials.Unmuted.Count"
-    units="credentials" expires_after="2025-07-06">
+    units="credentials" expires_after="2026-07-06">
   <owner>eic@google.com</owner>
   <owner>noemies@google.com</owner>
   <summary>
