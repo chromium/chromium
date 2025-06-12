@@ -273,6 +273,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Blink.LoadURLSynchronouslyDuration" units="ms"
+    expires_after="2025-11-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Duration of a synchronous load by blink::URLLoader. Recorded every time
+    blink::URLLoader::LoadSynchronously performs a load. Synchronous load are
+    discouraged as they block the main thread. This histogram will be used to
+    estimate to which extent they affect Interaction to Next Paint (INP).
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.2DLayerBridge.Compression.DecompressionTime"
     units="ms" expires_after="2025-11-16">
   <owner>lizeb@chromium.org</owner>
