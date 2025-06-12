@@ -613,26 +613,30 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void RunMockOfflineMetaInstall(const std::string& app_id,
                                  const base::Version& version,
+                                 const std::string& tag,
                                  const base::FilePath& installer_path,
                                  const std::string& arguments,
                                  bool is_silent_install,
                                  const std::string& platform,
-                                 int string_resource_id_to_find,
-                                 const std::string& language,
+                                 const std::string& installer_text,
+                                 const bool always_launch_cmd,
+                                 const int expected_exit_code,
                                  bool expect_success) override {
-    RunCommand("run_mock_offline_meta_install",
-               {
-                   Param("app_id", app_id),
-                   Param("version", version.GetString()),
-                   Param("installer_path", installer_path.AsUTF8Unsafe()),
-                   Param("arguments", arguments),
-                   Param("is_silent_install", BoolToString(is_silent_install)),
-                   Param("platform", platform),
-                   Param("string_resource_id_to_find",
-                         base::ToString(string_resource_id_to_find)),
-                   Param("language", language),
-                   Param("expect_success", BoolToString(expect_success)),
-               });
+    RunCommand(
+        "run_mock_offline_meta_install",
+        {
+            Param("app_id", app_id),
+            Param("version", version.GetString()),
+            Param("tag", tag),
+            Param("installer_path", installer_path.AsUTF8Unsafe()),
+            Param("arguments", arguments),
+            Param("is_silent_install", BoolToString(is_silent_install)),
+            Param("platform", platform),
+            Param("installer_text", installer_text),
+            Param("always_launch_cmd", BoolToString(always_launch_cmd)),
+            Param("expected_exit_code", base::ToString(expected_exit_code)),
+            Param("expect_success", BoolToString(expect_success)),
+        });
   }
 
   void DMPushEnrollmentToken(const std::string& enrollment_token) override {

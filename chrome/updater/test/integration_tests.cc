@@ -851,16 +851,19 @@ class IntegrationTest : public ::testing::Test {
 
   void RunMockOfflineMetaInstall(const std::string& app_id,
                                  const base::Version& version,
+                                 const std::string& tag,
                                  const base::FilePath& installer_path,
                                  const std::string& arguments,
                                  bool is_silent_install,
                                  const std::string& platform,
-                                 int string_resource_id_to_find,
-                                 const std::string& language,
+                                 const std::string& installer_text,
+                                 const bool always_launch_cmd,
+                                 const int expected_exit_code,
                                  bool expect_success) {
     test_commands_->RunMockOfflineMetaInstall(
-        app_id, version, installer_path, arguments, is_silent_install, platform,
-        string_resource_id_to_find, language, expect_success);
+        app_id, version, tag, installer_path, arguments, is_silent_install,
+        platform, installer_text, always_launch_cmd, expected_exit_code,
+        expect_success);
   }
 
   void DMPushEnrollmentToken(const std::string& enrollment_token) {
@@ -5422,13 +5425,14 @@ TEST_F(IntegrationTestMsi, RunMockOfflineMetaInstall) {
 
   ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ExpectInstallEvent(*test_server_, kMsiAppId);
-  RunMockOfflineMetaInstall(kMsiAppId, kMsiInitialVersion,
+  RunMockOfflineMetaInstall(kMsiAppId, kMsiInitialVersion, /*tag=*/{},
                             /*installer_path=*/msi_path,
                             /*arguments=*/"INSTALLER_RESULT=0",
                             /*is_silent_install=*/true,
                             /*platform=*/"win",
-                            /*string_resource_id_to_find=*/0,
-                            /*language=*/"en",
+                            /*installer_text=*/{},
+                            /*always_launch_cmd=*/{},
+                            /*expected_exit_code=*/{},
                             /*expect_success=*/true);
 
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -5957,6 +5961,56 @@ TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
   // Cleanup by overinstalling the current version and uninstalling.
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_P(IntegrationInstallerResultsTest, RunMockOfflineMetaInstall) {
+  if (GetSetup().version != base::Version(kUpdaterVersion) ||
+      !GetTestCase().custom_app_response.empty() ||
+      !GetTestCase().interactive_install) {
+    GTEST_SKIP();
+  }
+
+  base::FilePath msi_path;
+  ASSERT_NO_FATAL_FAILURE(GetMsiPathForVersion(kMsiInitialVersion, msi_path));
+
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
+
+  // This can be either a success or a failure, but is always an install event.
+  ExpectInstallEvent(*test_server_, kMsiAppId);
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+
+  const bool always_launch_cmd =
+      GetTestCase().always_launch_cmd.value_or(false);
+  const bool expect_success =
+      !GetTestCase().error_code ||
+      GetTestCase().error_code == ERROR_SUCCESS_REBOOT_REQUIRED;
+
+  RunMockOfflineMetaInstall(
+      kMsiAppId, kMsiInitialVersion, GetTestCase().tag.value_or("usagestats=1"),
+      /*installer_path=*/msi_path,
+      /*arguments=*/GetTestCase().command_line_args,
+      /*is_silent_install=*/!GetTestCase().interactive_install,
+      /*platform=*/"win", GetTestCase().installer_text, always_launch_cmd,
+      /*expected_exit_code=*/GetTestCase().error_code, expect_success);
+
+  if (expect_success) {
+    ExpectAppInstalled(kMsiAppId, kMsiInitialVersion);
+    if (!GetTestCase().installer_cmd_line.empty()) {
+      const std::wstring post_install_launch_command_line =
+          base::UTF8ToWide(GetTestCase().installer_cmd_line);
+      EXPECT_EQ(test::IsProcessRunning(post_install_launch_command_line),
+                GetTestCase().interactive_install || always_launch_cmd);
+      EXPECT_TRUE(test::KillProcesses(post_install_launch_command_line, 0));
+    }
+    ASSERT_NO_FATAL_FAILURE(Uninstall());
+  } else {
+    ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kMsiAppId));
+
+    // Wait for the updater to uninstall itself automatically since the app
+    // failed to install, and there are now no apps to manage.
+    ASSERT_TRUE(WaitForUpdaterExit());
+  }
 }
 
 class IntegrationInstallerResultsNewInstallsTest

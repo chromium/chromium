@@ -504,17 +504,19 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void RunMockOfflineMetaInstall(const std::string& app_id,
                                  const base::Version& version,
+                                 const std::string& tag,
                                  const base::FilePath& installer_path,
                                  const std::string& arguments,
                                  bool is_silent_install,
                                  const std::string& platform,
-                                 int string_resource_id_to_find,
-                                 const std::string& language,
+                                 const std::string& installer_text,
+                                 const bool always_launch_cmd,
+                                 const int expected_exit_code,
                                  bool expect_success) override {
     updater::test::RunMockOfflineMetaInstall(
-        updater_scope_, app_id, version, installer_path, arguments,
-        is_silent_install, platform, string_resource_id_to_find, language,
-        expect_success);
+        updater_scope_, app_id, version, tag, installer_path, arguments,
+        is_silent_install, platform, installer_text, always_launch_cmd,
+        expected_exit_code, expect_success);
   }
 
   void DMPushEnrollmentToken(const std::string& enrollment_token) override {

@@ -2118,12 +2118,14 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
 void RunMockOfflineMetaInstall(UpdaterScope scope,
                                const std::string& app_id,
                                const base::Version& version,
+                               const std::string& tag,
                                const base::FilePath& installer_path,
                                const std::string& arguments,
                                bool is_silent_install,
                                const std::string& platform,
-                               int string_resource_id_to_find,
-                               const std::string& language,
+                               const std::string& installer_text,
+                               const bool always_launch_cmd,
+                               const int expected_exit_code,
                                bool expect_success) {
   if (installer_path.MatchesExtension(L".msi")) {
     ASSERT_EQ(scope, UpdaterScope::kSystem);
@@ -2163,20 +2165,13 @@ void RunMockOfflineMetaInstall(UpdaterScope scope,
       app_id, installer_path, manifest_path, output_metainstaller));
 
   // Trigger offline install.
-  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
-      scope, app_id, is_silent_install,
-      /*tag=*/
-      base::StrCat({"appguid=", app_id,
-                    "&needsadmin=", IsSystemInstall(scope) ? "true" : "false"}),
-      base::WideToUTF8(string_resource_id_to_find
-                           ? GetLocalizedString(string_resource_id_to_find,
-                                                base::UTF8ToWide(language))
-                           : std::wstring()),
-      /*always_launch_cmd=*/false,
-      /*verify_app_logo_loaded=*/false, expect_success,
-      /*wait_for_the_installer=*/true,
-      /*expected_exit_code=*/0,
-      /*additional_switches=*/{}, output_metainstaller));
+  ASSERT_NO_FATAL_FAILURE(
+      InstallUpdaterAndApp(scope, app_id, is_silent_install,
+                           /*tag=*/tag, installer_text, always_launch_cmd,
+                           /*verify_app_logo_loaded=*/false, expect_success,
+                           /*wait_for_the_installer=*/true, expected_exit_code,
+                           /*additional_switches=*/{}, output_metainstaller));
+  ASSERT_TRUE(WaitForUpdaterExit());
 }
 
 base::CommandLine MakeElevated(base::CommandLine command_line) {

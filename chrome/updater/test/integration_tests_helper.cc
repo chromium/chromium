@@ -506,23 +506,27 @@ void AppTestHelper::FirstTaskRun() {
            WithSwitch(
                "expect_success",
                WithSwitch(
-                   "language",
+                   "expected_exit_code",
                    WithSwitch(
-                       "string_resource_id_to_find",
+                       "always_launch_cmd",
                        WithSwitch(
-                           "platform",
+                           "installer_text",
                            WithSwitch(
-                               "is_silent_install",
+                               "platform",
                                WithSwitch(
-                                   "arguments",
+                                   "is_silent_install",
                                    WithSwitch(
-                                       "installer_path",
+                                       "arguments",
                                        WithSwitch(
-                                           "version",
+                                           "installer_path",
                                            WithSwitch(
-                                               "app_id",
-                                               WithSystemScope(Wrap(
-                                                   &RunMockOfflineMetaInstall)))))))))))},  // NOLINT
+                                               "tag",
+                                               WithSwitch(
+                                                   "version",
+                                                   WithSwitch(
+                                                       "app_id",
+                                                       WithSystemScope(Wrap(
+                                                           &RunMockOfflineMetaInstall)))))))))))))},  // NOLINT
           {"dm_push_enrollment_token",
            WithSwitch("enrollment_token", Wrap(DMPushEnrollmentToken))},
           {"dm_deregister_device", WithSystemScope(Wrap(&DMDeregisterDevice))},
