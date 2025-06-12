@@ -1,12 +1,10 @@
 [package]
 name = "cfg-if"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/alexcrichton/cfg-if"
-homepage = "https://github.com/alexcrichton/cfg-if"
-documentation = "https://docs.rs/cfg-if"
+repository = "https://github.com/rust-lang/cfg-if"
 description = """
 A macro to ergonomically define an item depending on a large number of #[cfg]
 parameters. Structured like an if-else chain, the first matching branch is the
@@ -14,12 +12,8 @@ item that gets emitted.
 """
 edition = "2018"
 
-[badges]
-travis-ci = { repository = "alexcrichton/cfg-if" }
-
 [dependencies]
-core = { version = "1.0.0", optional = true, package = 'rustc-std-workspace-core' }
-compiler_builtins = { version = '0.1.2', optional = true }
+core = { version = "1.0.0", optional = true, package = "rustc-std-workspace-core" }
 
 [features]
-rustc-dep-of-std = ['core', 'compiler_builtins']
+rustc-dep-of-std = ["core"]

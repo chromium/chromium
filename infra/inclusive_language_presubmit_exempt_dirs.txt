@@ -641,7 +641,6 @@ third_party/rust/chromium_crates_io/vendor/anyhow-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/autocfg-v1
 third_party/rust/chromium_crates_io/vendor/base64-v0_22
 third_party/rust/chromium_crates_io/vendor/bytes-v1/.github/workflows
-third_party/rust/chromium_crates_io/vendor/cfg-if-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src
 third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src/builder
 third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src/parser
