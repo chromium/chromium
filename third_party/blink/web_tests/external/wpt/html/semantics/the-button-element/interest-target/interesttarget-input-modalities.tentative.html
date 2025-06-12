@@ -18,6 +18,11 @@
 
 <a data-testcase="<a>" href=foo interesttarget=target>Link</a>
 
+<img src="/images/blue.png" usemap="#map" id=areatarget>
+<map id=map>
+  <area data-testcase="<area>" data-hover="areatarget" interesttarget=target href="/" shape=default>
+</map>
+
 <svg viewBox="0 0 100 100" style="width: 100px" xmlns="http://www.w3.org/2000/svg">
   <a data-testcase="SVG <a>" href=foo interesttarget=target>
     <text x=50 y=90>SVG A</text>
@@ -85,7 +90,11 @@ method = urlParams.get('method');
       switch (method) {
         case 'hover':
           preventEvent(cancelTrigger,el,'mouseover');
-          await hoverOver(el);
+          hovertarget = el;
+          if (el.dataset.hover) {
+            hovertarget = document.getElementById(el.dataset.hover);
+          }
+          await hoverOver(hovertarget)
           break;
         case 'focus':
           if (cancelTrigger) {
