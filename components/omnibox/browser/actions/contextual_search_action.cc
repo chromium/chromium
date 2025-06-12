@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -94,3 +95,84 @@ const gfx::VectorIcon& ContextualSearchOpenLensAction::GetVectorIcon() const {
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
 ContextualSearchOpenLensAction::~ContextualSearchOpenLensAction() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+
+StarterPackBookmarksAction::StarterPackBookmarksAction()
+    : OmniboxAction(OmniboxAction::LabelStrings(
+                        IDS_STARTER_PACK_BOOKMARKS_ACTION_HINT,
+                        IDS_STARTER_PACK_BOOKMARKS_ACTION_SUGGESTION_CONTENTS,
+                        IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION_SUFFIX,
+                        IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION),
+                    GURL()) {}
+
+OmniboxActionId StarterPackBookmarksAction::ActionId() const {
+  return OmniboxActionId::STARTER_PACK_BOOKMARKS;
+}
+
+void StarterPackBookmarksAction::Execute(ExecutionContext& context) const {
+  context.enter_starter_pack_id_ =
+      TemplateURLStarterPackData::StarterPackID::kBookmarks;
+}
+
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+const gfx::VectorIcon& StarterPackBookmarksAction::GetVectorIcon() const {
+  return omnibox::kStarActiveChromeRefreshIcon;
+}
+#endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
+
+StarterPackBookmarksAction::~StarterPackBookmarksAction() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+
+StarterPackHistoryAction::StarterPackHistoryAction()
+    : OmniboxAction(OmniboxAction::LabelStrings(
+                        IDS_STARTER_PACK_HISTORY_ACTION_HINT,
+                        IDS_STARTER_PACK_HISTORY_ACTION_SUGGESTION_CONTENTS,
+                        IDS_ACC_STARTER_PACK_HISTORY_ACTION_SUFFIX,
+                        IDS_ACC_STARTER_PACK_HISTORY_ACTION),
+                    GURL()) {}
+
+OmniboxActionId StarterPackHistoryAction::ActionId() const {
+  return OmniboxActionId::STARTER_PACK_HISTORY;
+}
+
+void StarterPackHistoryAction::Execute(ExecutionContext& context) const {
+  context.enter_starter_pack_id_ =
+      TemplateURLStarterPackData::StarterPackID::kHistory;
+}
+
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+const gfx::VectorIcon& StarterPackHistoryAction::GetVectorIcon() const {
+  return vector_icons::kHistoryChromeRefreshIcon;
+}
+#endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
+
+StarterPackHistoryAction::~StarterPackHistoryAction() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+
+StarterPackTabsAction::StarterPackTabsAction()
+    : OmniboxAction(OmniboxAction::LabelStrings(
+                        IDS_STARTER_PACK_TABS_ACTION_HINT,
+                        IDS_STARTER_PACK_TABS_ACTION_SUGGESTION_CONTENTS,
+                        IDS_ACC_STARTER_PACK_TABS_ACTION_SUFFIX,
+                        IDS_ACC_STARTER_PACK_TABS_ACTION),
+                    GURL()) {}
+
+OmniboxActionId StarterPackTabsAction::ActionId() const {
+  return OmniboxActionId::STARTER_PACK_TABS;
+}
+
+void StarterPackTabsAction::Execute(ExecutionContext& context) const {
+  context.enter_starter_pack_id_ =
+      TemplateURLStarterPackData::StarterPackID::kTabs;
+}
+
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+const gfx::VectorIcon& StarterPackTabsAction::GetVectorIcon() const {
+  return omnibox::kProductChromeRefreshIcon;
+}
+#endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
+
+StarterPackTabsAction::~StarterPackTabsAction() = default;

@@ -2625,6 +2625,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
     }
   }
 
+  TemplateURLService* template_url_service =
+      controller_->client()->GetTemplateURLService();
   if (action) {
     OmniboxAction::ExecutionContext context(
         *(autocomplete_controller()->autocomplete_provider_client()),
@@ -2632,6 +2634,19 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                        controller_->client()->AsWeakPtr()),
         match_selection_timestamp, disposition);
     action->Execute(context);
+    if (context.enter_starter_pack_id_ != 0 && template_url_service) {
+      if (const TemplateURL* starter_pack_turl =
+              template_url_service->FindStarterPackTemplateURL(
+                  context.enter_starter_pack_id_)) {
+        // TODO(crbug.com/422575584): Use new KeywordModeEntryMethod.
+        EnterKeywordMode(
+            OmniboxEventProto::SELECT_SUGGESTION, starter_pack_turl,
+            AutocompleteMatch::GetKeywordPlaceholder(
+                starter_pack_turl,
+                controller_->client()->IsHistoryEmbeddingsEnabled()));
+        return;
+      }
+    }
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
@@ -2642,8 +2657,6 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   if (!action) {
     // Track whether the destination URL sends us to a search results page
     // using the default search provider.
-    TemplateURLService* template_url_service =
-        controller_->client()->GetTemplateURLService();
     if (template_url_service &&
         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
             match.destination_url)) {

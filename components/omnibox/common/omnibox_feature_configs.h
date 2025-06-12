@@ -228,8 +228,9 @@ struct Toolbelt : Config<Toolbelt> {
   // Whether the toolbelt is to be included in the omnibox.
   bool enabled;
 
-  // Whether the toolbelt will be preserved after zero suggest when user types.
-  bool keep_toolbelt_after_zps;
+  // Whether the toolbelt will be preserved after user types (after
+  // input clears the zero suggest).
+  bool keep_toolbelt_after_input;
 
   // Whether the lens entrypoint action should stay unconditionally on the
   // toolbelt. When this is false, the regular triggering conditions apply

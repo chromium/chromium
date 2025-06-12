@@ -24,7 +24,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
-#include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -43,6 +42,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -389,7 +389,7 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
     const TemplateURL* input_starter_pack_engine) {
   const auto& config = omnibox_feature_configs::Toolbelt::Get();
   if (!config.enabled ||
-      (!config.keep_toolbelt_after_zps && !input.IsZeroSuggest())) {
+      (!config.keep_toolbelt_after_input && !input.IsZeroSuggest())) {
     return false;
   }
   AutocompleteMatch match(this, omnibox::kToolbeltRelevance, false,
@@ -408,13 +408,24 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
     match.actions.push_back(
         base::MakeRefCounted<ContextualSearchOpenLensAction>());
   }
-  for (const std::u16string query :
-       {u"launch incognito", u"clear data", u"update chrome"}) {
-    if (OmniboxPedal* pedal =
-            client()->GetPedalProvider()->FindPedalMatch(query)) {
-      match.actions.push_back(pedal);
+
+  // Add the starter pack entry actions only if the given starter pack keyword
+  // is enabled.
+  auto check_and_add = [&]<typename T>(int starter_pack_id) {
+    if (const TemplateURL* turl =
+            client()->GetTemplateURLService()->FindStarterPackTemplateURL(
+                starter_pack_id)) {
+      if (turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
+        match.actions.push_back(base::MakeRefCounted<T>());
+      }
     }
-  }
+  };
+  check_and_add.operator()<StarterPackBookmarksAction>(
+      TemplateURLStarterPackData::StarterPackID::kBookmarks);
+  check_and_add.operator()<StarterPackTabsAction>(
+      TemplateURLStarterPackData::StarterPackID::kTabs);
+  check_and_add.operator()<StarterPackHistoryAction>(
+      TemplateURLStarterPackData::StarterPackID::kHistory);
 
   matches_.push_back(match);
   return true;

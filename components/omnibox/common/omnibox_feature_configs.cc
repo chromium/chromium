@@ -189,8 +189,9 @@ BASE_FEATURE(Toolbelt::kOmniboxToolbelt,
 
 Toolbelt::Toolbelt() {
   enabled = base::FeatureList::IsEnabled(kOmniboxToolbelt);
-  keep_toolbelt_after_zps =
-      base::FeatureParam<bool>(&kOmniboxToolbelt, "KeepToolbeltAfterZps", false)
+  keep_toolbelt_after_input =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "KeepToolbeltAfterInput",
+                               false)
           .Get();
   always_include_lens_action =
       base::FeatureParam<bool>(&kOmniboxToolbelt, "AlwaysIncludeLensAction",

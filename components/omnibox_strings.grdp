@@ -36,6 +36,45 @@
     Ask Google about this page button, activate to ask Google about this page
   </message>
 
+  <message name="IDS_STARTER_PACK_BOOKMARKS_ACTION_HINT" desc="The button label for an omnibox action that invokes bookmark search keyword mode." translateable="false">
+    Search Bookmarks
+  </message>
+  <message name="IDS_STARTER_PACK_BOOKMARKS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes bookmark search keyword mode." translateable="false">
+    Search Bookmarks
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke bookmark search." translateable="false">
+    <ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to search bookmarks
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION" desc="Announcement when Search Bookmarks action button is focused" translateable="false">
+    Search Bookmarks button, activate to search bookmarks
+  </message>
+
+  <message name="IDS_STARTER_PACK_HISTORY_ACTION_HINT" desc="The button label for an omnibox action that invokes history search keyword mode." translateable="false">
+    Search History
+  </message>
+  <message name="IDS_STARTER_PACK_HISTORY_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes history search keyword mode." translateable="false">
+    Search History
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_HISTORY_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke history search." translateable="false">
+    <ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to search history
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_HISTORY_ACTION" desc="Announcement when Search History action button is focused" translateable="false">
+    Search History button, activate to search history
+  </message>
+
+  <message name="IDS_STARTER_PACK_TABS_ACTION_HINT" desc="The button label for an omnibox action that invokes bookmark search keyword mode." translateable="false">
+    Search Tabs
+  </message>
+  <message name="IDS_STARTER_PACK_TABS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes bookmark search keyword mode." translateable="false">
+    Search Tabs
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_TABS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke bookmark search." translateable="false">
+    <ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to search tabs
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_TABS_ACTION" desc="Announcement when Search Tabs action button is focused" translateable="false">
+    Search Tabs button, activate to search tabs
+  </message>
+
   <message name="IDS_EMPTY_KEYWORD_VALUE" desc="Shown in the location bar drop down when the user enters a string that matches a chrome keyword, but they haven't entered any text following the chrome keyword">
     &lt;Type search term&gt;
   </message>

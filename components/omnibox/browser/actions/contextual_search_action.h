@@ -43,4 +43,49 @@ class ContextualSearchOpenLensAction : public OmniboxAction {
   ~ContextualSearchOpenLensAction() override;
 };
 
+class StarterPackBookmarksAction : public OmniboxAction {
+ public:
+  StarterPackBookmarksAction();
+
+  // OmniboxAction:
+  OmniboxActionId ActionId() const override;
+  void Execute(ExecutionContext& context) const override;
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+  const gfx::VectorIcon& GetVectorIcon() const override;
+#endif
+
+ protected:
+  ~StarterPackBookmarksAction() override;
+};
+
+class StarterPackHistoryAction : public OmniboxAction {
+ public:
+  StarterPackHistoryAction();
+
+  // OmniboxAction:
+  OmniboxActionId ActionId() const override;
+  void Execute(ExecutionContext& context) const override;
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+  const gfx::VectorIcon& GetVectorIcon() const override;
+#endif
+
+ protected:
+  ~StarterPackHistoryAction() override;
+};
+
+class StarterPackTabsAction : public OmniboxAction {
+ public:
+  StarterPackTabsAction();
+
+  // OmniboxAction:
+  OmniboxActionId ActionId() const override;
+  void Execute(ExecutionContext& context) const override;
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+  const gfx::VectorIcon& GetVectorIcon() const override;
+#endif
+
+ protected:
+  ~StarterPackTabsAction() override;
+};
+
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_CONTEXTUAL_SEARCH_ACTION_H_

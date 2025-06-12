@@ -70,7 +70,8 @@ OmniboxAction::ExecutionContext::ExecutionContext(
     : client_(client),
       open_url_callback_(std::move(callback)),
       match_selection_timestamp_(match_selection_timestamp),
-      disposition_(disposition) {}
+      disposition_(disposition),
+      enter_starter_pack_id_(0) {}
 
 OmniboxAction::ExecutionContext::~ExecutionContext() = default;
 
