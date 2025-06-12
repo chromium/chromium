@@ -114,7 +114,35 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Control",
+                    "disable_features": [
+                        "AccessibilityDeprecateJavaNodecache"
+                    ]
+                },
+                {
+                    "name": "OptimizeScroll",
+                    "params": {
+                        "optimize_scroll": "true"
+                    },
+                    "enable_features": [
+                        "AccessibilityDeprecateJavaNodeCache"
+                    ]
+                },
+                {
+                    "name": "DisableCache",
+                    "params": {
+                        "disable_cache": "true"
+                    },
+                    "enable_features": [
+                        "AccessibilityDeprecateJavaNodeCache"
+                    ]
+                },
+                {
+                    "name": "OptimizeScrollDisableCache",
+                    "params": {
+                        "disable_cache": "true",
+                        "optimize_scroll": "true"
+                    },
                     "enable_features": [
                         "AccessibilityDeprecateJavaNodeCache"
                     ]

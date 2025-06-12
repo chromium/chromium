@@ -122,6 +122,10 @@ public class AccessibilityHistogramRecorder {
     public static final String ACCESSIBILITY_TIME_UNTIL_FIRST_ACCESSIBILITY_FOCUS =
             "Accessibility.Android.Performance.TimeUntilFirstAccessibilityFocus";
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ACCESSIBILITY_TIME_OF_SCROLL_TO_MAKE_VISIBLE =
+            "Accessibility.Android.Performance.TimeOfScrollToMakeVisible";
+
     private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
@@ -167,6 +171,8 @@ public class AccessibilityHistogramRecorder {
     // which happens automatically for screenreaders. Performance improvements around jank should
     // decrease this number. We only want to track this once per instance.
     private boolean mHasRecordedTimeToFirstAccessibilityFocus;
+
+    private long mTimeScrollToMakeVisible = -1;
 
     /** Record that the Auto-disable Accessibility feature has disabled accessibility. */
     public void onDisableCalled(boolean initialCall) {
@@ -273,6 +279,11 @@ public class AccessibilityHistogramRecorder {
     /** Set the time this instance had native initialization called to the current time in ms. */
     public void updateTimeOfNativeInitialization() {
         mTimeOfNativeInitialization = SystemClock.elapsedRealtime();
+    }
+
+    /** Set the time this instance had scroll to make visible called to the current time in ms. */
+    public void updateTimeOfScrollToMakeVisible() {
+        mTimeScrollToMakeVisible = SystemClock.elapsedRealtime();
     }
 
     /** Notify the recorder that this instance was shown, and has previously been auto-disabled. */
@@ -467,5 +478,22 @@ public class AccessibilityHistogramRecorder {
                 80);
 
         mHasRecordedTimeToFirstAccessibilityFocus = true;
+    }
+
+    /**
+     * Record UMA histogram for the time from a scroll to make visible action to the resulting
+     * scroll position change.
+     */
+    public void recordTimeOfScrollToMakeVisible() {
+        if (mTimeScrollToMakeVisible < 0) return;
+
+        RecordHistogram.recordCustomTimesHistogram(
+                ACCESSIBILITY_TIME_OF_SCROLL_TO_MAKE_VISIBLE,
+                SystemClock.elapsedRealtime() - mTimeScrollToMakeVisible,
+                /* min= */ 1,
+                /* max= */ DateUtils.SECOND_IN_MILLIS * 2,
+                /* numBuckets= */ 80);
+
+        mTimeScrollToMakeVisible = -1;
     }
 }

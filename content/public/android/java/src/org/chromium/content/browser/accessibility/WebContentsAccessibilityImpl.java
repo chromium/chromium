@@ -1021,8 +1021,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (WebContentsAccessibilityImplJni.get()
                     .populateAccessibilityNodeInfo(mNativeObj, info, virtualViewId)) {
                 // After successfully populating this node, add it to our cache then return.
-                if (!ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ACCESSIBILITY_DEPRECATE_JAVA_NODE_CACHE)) {
+                if (!ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheDisableCache
+                        .getValue()) {
                     mNodeInfoCache.put(virtualViewId, AccessibilityNodeInfoCompat.obtain(info));
                 }
                 mHistogramRecorder.incrementNodeWasCreatedFromScratch();
@@ -1393,9 +1393,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     WebContentsAccessibilityImplJni.get()
                             .getIdForElementAfterElementHostingAutofillPopup(mNativeObj);
             if (id == 0) return;
-
-            moveAccessibilityFocusToId(id);
-            scrollToMakeNodeVisible(mAccessibilityFocusId);
+            if (ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheOptimizeScroll.getValue()) {
+                scrollToMakeNodeVisible(mAccessibilityFocusId);
+                moveAccessibilityFocusToId(id);
+            } else {
+                moveAccessibilityFocusToId(id);
+                scrollToMakeNodeVisible(mAccessibilityFocusId);
+            }
         }
     }
 
@@ -1440,8 +1444,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @Override
     public void restoreFocus() {
         if (isAccessibilityEnabled() && mLastAccessibilityFocusId != View.NO_ID) {
-            moveAccessibilityFocusToId(mLastAccessibilityFocusId);
-            scrollToMakeNodeVisible(mLastAccessibilityFocusId);
+            if (ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheOptimizeScroll.getValue()) {
+                scrollToMakeNodeVisible(mLastAccessibilityFocusId);
+                moveAccessibilityFocusToId(mLastAccessibilityFocusId);
+            } else {
+                moveAccessibilityFocusToId(mLastAccessibilityFocusId);
+                scrollToMakeNodeVisible(mLastAccessibilityFocusId);
+            }
         }
     }
 
@@ -1492,8 +1501,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             WebContentsAccessibilityImplJni.get().setSequentialFocusStartingPoint(mNativeObj, id);
         }
 
-        moveAccessibilityFocusToId(id);
-        scrollToMakeNodeVisible(mAccessibilityFocusId);
+        if (ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheOptimizeScroll.getValue()) {
+            scrollToMakeNodeVisible(mAccessibilityFocusId);
+            moveAccessibilityFocusToId(id);
+        } else {
+            moveAccessibilityFocusToId(id);
+            scrollToMakeNodeVisible(mAccessibilityFocusId);
+        }
         return true;
     }
 
@@ -1685,6 +1699,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mDelegate.scrollToMakeNodeVisible(getAbsolutePositionForNode(virtualViewId));
         } else {
             mPendingScrollToMakeNodeVisible = true;
+            mHistogramRecorder.updateTimeOfScrollToMakeVisible();
             WebContentsAccessibilityImplJni.get()
                     .scrollToMakeNodeVisible(mNativeObj, virtualViewId);
         }
@@ -2013,6 +2028,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_SCROLLED);
         if (mPendingScrollToMakeNodeVisible) {
             sendAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            mHistogramRecorder.recordTimeOfScrollToMakeVisible();
             mPendingScrollToMakeNodeVisible = false;
         }
     }

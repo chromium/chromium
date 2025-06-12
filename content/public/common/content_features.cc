@@ -1343,10 +1343,18 @@ BASE_FEATURE(kWebPermissionsApi,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// When enabled, will no longer cache java side AccessibilityNodeInfo objects.
 BASE_FEATURE(kAccessibilityDeprecateJavaNodeCache,
              "AccessibilityDeprecateJavaNodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, will optimize scrolling.
+const base::FeatureParam<bool>
+    kAccessibilityDeprecateJavaNodeCacheOptimizeScroll{
+        &kAccessibilityDeprecateJavaNodeCache, "optimize_scroll", false};
+
+// When enabled, will no longer cache java side AccessibilityNodeInfo objects.
+const base::FeatureParam<bool> kAccessibilityDeprecateJavaNodeCacheDisableCache{
+    &kAccessibilityDeprecateJavaNodeCache, "disable_cache", false};
 
 // When enabled, TYPE_ANNOUNCE events will no longer be sent for live regions in
 // the web contents.

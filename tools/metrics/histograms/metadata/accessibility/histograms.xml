@@ -483,6 +483,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.Performance.TimeOfScrollToMakeVisible"
+    units="ms" expires_after="2026-09-01">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the time it takes to request a scroll to make visible action and
+    receive a reply in the form of a scroll position change.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.Android.Performance.TimeUntilFirstAccessibilityFocus"
     units="ms" expires_after="2026-06-01">
