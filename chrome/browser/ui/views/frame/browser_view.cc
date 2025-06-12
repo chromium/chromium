@@ -41,6 +41,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
+#include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -6525,7 +6526,9 @@ bool BrowserView::IsBrowserAWebApp() const {
 
 void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
   if (watermark_view_) {
-    watermark_view_->SetString(watermark_text);
+    watermark_view_->SetString(watermark_text,
+                               enterprise_watermark::GetFillColor(),
+                               enterprise_watermark::GetOutlineColor());
   }
 }
 
