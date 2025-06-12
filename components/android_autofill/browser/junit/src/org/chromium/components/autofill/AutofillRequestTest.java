@@ -217,7 +217,7 @@ public class AutofillRequestTest {
         assertEquals(1, structure.getChildCount());
         TestViewStructure child = structure.getChild(0);
 
-        SparseArray<AutofillValue> valuesToFill = new SparseArray<AutofillValue>();
+        SparseArray<AutofillValue> valuesToFill = new SparseArray<>();
         valuesToFill.append(child.getId(), AutofillValue.forText("new value"));
 
         // The autofill requests succeeds.
@@ -235,7 +235,7 @@ public class AutofillRequestTest {
         assertEquals(1, structure.getChildCount());
         TestViewStructure child = structure.getChild(0);
 
-        SparseArray<AutofillValue> valuesToFill = new SparseArray<AutofillValue>();
+        SparseArray<AutofillValue> valuesToFill = new SparseArray<>();
         valuesToFill.append(child.getId(), AutofillValue.forText("entry2"));
 
         // The autofill requests succeeds.
@@ -253,7 +253,7 @@ public class AutofillRequestTest {
         assertEquals(1, structure.getChildCount());
         TestViewStructure child = structure.getChild(0);
 
-        SparseArray<AutofillValue> valuesToFill = new SparseArray<AutofillValue>();
+        SparseArray<AutofillValue> valuesToFill = new SparseArray<>();
         valuesToFill.append(child.getId(), AutofillValue.forToggle(false));
 
         // The autofill requests succeeds.
@@ -271,7 +271,7 @@ public class AutofillRequestTest {
         assertEquals(1, structure.getChildCount());
         TestViewStructure child = structure.getChild(0);
 
-        SparseArray<AutofillValue> valuesToFill = new SparseArray<AutofillValue>();
+        SparseArray<AutofillValue> valuesToFill = new SparseArray<>();
         valuesToFill.append(child.getId(), AutofillValue.forList(0));
 
         // The autofill requests succeeds.
@@ -301,7 +301,7 @@ public class AutofillRequestTest {
                 createRequest(FORM_SESSION_ID + 1, createTextFieldBuilder().build());
 
         // Use the id from the old request for the autofill call.
-        SparseArray<AutofillValue> valuesToFill = new SparseArray<AutofillValue>();
+        SparseArray<AutofillValue> valuesToFill = new SparseArray<>();
         valuesToFill.append(structure1.getChild(0).getId(), AutofillValue.forText("new text"));
 
         assertFalse(request2.autofill(valuesToFill));
@@ -319,7 +319,7 @@ public class AutofillRequestTest {
         assertEquals(2, structure1.getChildCount());
 
         // Request to autofill a field from the previous request and one from the current.
-        SparseArray<AutofillValue> valuesToFill = new SparseArray<AutofillValue>();
+        SparseArray<AutofillValue> valuesToFill = new SparseArray<>();
         valuesToFill.append(structure1.getChild(0).getId(), AutofillValue.forText("skipped"));
         valuesToFill.append(structure1.getChild(1).getId(), AutofillValue.forText("as expected"));
 
@@ -336,7 +336,7 @@ public class AutofillRequestTest {
         assertEquals(1, structure.getChildCount());
 
         // Increment the id by 1 to generate an invalid id for the autofill call.
-        SparseArray<AutofillValue> valuesToFill = new SparseArray<AutofillValue>();
+        SparseArray<AutofillValue> valuesToFill = new SparseArray<>();
         valuesToFill.append(structure.getChild(0).getId() + 1, AutofillValue.forText("new text"));
 
         assertFalse(request.autofill(valuesToFill));

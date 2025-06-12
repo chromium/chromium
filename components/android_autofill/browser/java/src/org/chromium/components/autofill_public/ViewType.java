@@ -34,7 +34,7 @@ public class ViewType implements Parcelable {
     private final String[] mServerPredictions;
 
     public static final Parcelable.Creator<ViewType> CREATOR =
-            new Parcelable.Creator<ViewType>() {
+            new Parcelable.Creator<>() {
                 @Override
                 public ViewType createFromParcel(Parcel in) {
                     return new ViewType(in);

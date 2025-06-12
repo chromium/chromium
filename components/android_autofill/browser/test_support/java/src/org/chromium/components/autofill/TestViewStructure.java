@@ -57,12 +57,12 @@ public class TestViewStructure extends ViewStructure {
 
         public TestBuilder(String tag) {
             mTag = tag;
-            mAttributes = new ArrayList<Pair<String, String>>();
+            mAttributes = new ArrayList<>();
         }
 
         @Override
         public HtmlInfo.Builder addAttribute(String name, String value) {
-            mAttributes.add(new Pair<String, String>(name, value));
+            mAttributes.add(new Pair<>(name, value));
             return this;
         }
 
@@ -73,7 +73,7 @@ public class TestViewStructure extends ViewStructure {
     }
 
     public TestViewStructure() {
-        mChildren = new ArrayList<TestViewStructure>();
+        mChildren = new ArrayList<>();
     }
 
     @Override

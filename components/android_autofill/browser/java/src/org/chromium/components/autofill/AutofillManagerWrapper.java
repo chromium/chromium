@@ -320,9 +320,9 @@ public class AutofillManagerWrapper {
     public void addInputUiObserver(InputUiObserver observer) {
         if (observer == null) return;
         if (mInputUiObservers == null) {
-            mInputUiObservers = new ArrayList<WeakReference<InputUiObserver>>();
+            mInputUiObservers = new ArrayList<>();
         }
-        mInputUiObservers.add(new WeakReference<InputUiObserver>(observer));
+        mInputUiObservers.add(new WeakReference<>(observer));
     }
 
     @VisibleForTesting

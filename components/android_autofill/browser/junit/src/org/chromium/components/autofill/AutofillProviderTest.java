@@ -142,7 +142,7 @@ public class AutofillProviderTest {
         when(mContainerView.getScrollX()).thenReturn(SCROLL_X);
         when(mContainerView.getScrollY()).thenReturn(SCROLL_Y);
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 Object[] args = invocation.getArguments();
