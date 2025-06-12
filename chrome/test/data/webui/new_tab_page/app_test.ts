@@ -1010,6 +1010,10 @@ suite('NewTabPageAppTest', () => {
 
         // Assert shown histogram not logged.
         assertEquals(0, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
+
+        // Assert compose button shown count is not incremented.
+        assertEquals(
+            0, handler.getCallCount('incrementComposeButtonShownCount'));
       });
     });
 
@@ -1047,6 +1051,7 @@ suite('NewTabPageAppTest', () => {
       test('compose entry point emits histograms when shown', () => {
         // Assert shown histogram logged.
         assertEquals(1, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
+
         // Assert button is present.
         const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
         assertTrue(!!searchboxContainer);
@@ -1054,6 +1059,10 @@ suite('NewTabPageAppTest', () => {
             searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
                 '#composeButton');
         assertTrue(!!composeButton);
+
+        // Assert increment compose button shown count is called on load.
+        assertEquals(
+            1, handler.getCallCount('incrementComposeButtonShownCount'));
       });
       test('compose entry point emits histograms when clicked', () => {
         // Assert compose button is present.

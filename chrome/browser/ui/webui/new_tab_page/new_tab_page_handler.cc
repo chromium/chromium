@@ -561,6 +561,7 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kNtpWallpaperSearchButtonShownCount, 0);
   registry->RegisterBooleanPref(prefs::kNtpOutlookModuleVisible, false);
   registry->RegisterBooleanPref(prefs::kNtpSharepointModuleVisible, false);
+  registry->RegisterIntegerPref(prefs::kNtpComposeButtonShownCountPrefName, 0);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
@@ -1056,6 +1057,13 @@ void NewTabPageHandler::OnDoodleShared(
 
 void NewTabPageHandler::OnPromoLinkClicked() {
   LogEvent(NTP_MIDDLE_SLOT_PROMO_LINK_CLICKED);
+}
+
+void NewTabPageHandler::IncrementComposeButtonShownCount() {
+  const int shown_count = profile_->GetPrefs()->GetInteger(
+      prefs::kNtpComposeButtonShownCountPrefName);
+  profile_->GetPrefs()->SetInteger(prefs::kNtpComposeButtonShownCountPrefName,
+                                   shown_count + 1);
 }
 
 void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {

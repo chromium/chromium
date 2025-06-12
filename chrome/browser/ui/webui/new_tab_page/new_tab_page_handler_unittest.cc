@@ -1281,6 +1281,18 @@ TEST_F(NewTabPageHandlerTest, DoNotShowWebstoreToastOnCountExceeded) {
   mock_page_.FlushForTesting();
 }
 
+TEST_F(NewTabPageHandlerTest, IncrementComposeButtonShownCount) {
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpComposeButtonShownCountPrefName),
+            0);
+
+  handler_->IncrementComposeButtonShownCount();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpComposeButtonShownCountPrefName),
+            1);
+}
+
 class NewTabPageHandlerHaTSTest : public NewTabPageHandlerTest {
  public:
   static constexpr char kSampleModuleId[] = "sample_module_id";
