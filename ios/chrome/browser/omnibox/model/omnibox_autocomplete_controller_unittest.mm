@@ -169,11 +169,11 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
   OmniboxAutocompleteController* controller_;
   raw_ptr<MockAutocompleteController> autocomplete_controller_;
-  std::unique_ptr<MockOmniboxEditModel> omnibox_edit_model_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
+  std::unique_ptr<MockOmniboxEditModel> omnibox_edit_model_;
   id controller_delegate_;
 };
 

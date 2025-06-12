@@ -113,8 +113,8 @@ class OmniboxEditModelIOSTest : public PlatformTest {
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   std::unique_ptr<TestOmniboxViewIOS> view_;
   std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
-  std::unique_ptr<TestOmniboxEditModelIOS> omnibox_edit_model_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
+  std::unique_ptr<TestOmniboxEditModelIOS> omnibox_edit_model_;
 };
 
 TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
