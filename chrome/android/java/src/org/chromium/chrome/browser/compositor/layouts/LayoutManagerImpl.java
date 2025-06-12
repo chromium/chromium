@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -269,12 +270,12 @@ public class LayoutManagerImpl
         }
 
         @Override
-        public void onFinishingTabClosure(Tab tab) {
+        public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
             tabClosed(tab.getId(), tab.isIncognito(), false);
         }
 
         @Override
-        public void tabPendingClosure(Tab tab) {
+        public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
             tabClosed(tab.getId(), tab.isIncognito(), false);
         }
 

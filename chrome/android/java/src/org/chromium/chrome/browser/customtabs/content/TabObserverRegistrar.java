@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 
 import java.util.HashSet;
@@ -136,7 +137,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     }
 
     @Override
-    public void onFinishingTabClosure(Tab tab) {
+    public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
         // We don't need to remove the Tab Observers since it's closed.
         // TODO(peconn): Do we really want to remove the *global* PageLoadMetrics observers here?
         removePageLoadMetricsObservers();

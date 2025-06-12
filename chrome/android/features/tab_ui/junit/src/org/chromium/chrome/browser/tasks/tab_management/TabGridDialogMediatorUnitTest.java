@@ -102,6 +102,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -884,7 +885,7 @@ public class TabGridDialogMediatorUnitTest {
     public void tabPendingClosure_DialogVisible() {
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
-        mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1);
+        mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1, TabClosingSource.UNKNOWN);
 
         verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
     }
@@ -893,7 +894,7 @@ public class TabGridDialogMediatorUnitTest {
     public void tabPendingClosure_DialogInvisible() {
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
 
-        mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1);
+        mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1, TabClosingSource.UNKNOWN);
 
         verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
     }

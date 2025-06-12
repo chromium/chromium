@@ -167,7 +167,8 @@ TEST_F(TabDataCollectionUtilTest, RecordTrainingData) {
         wait_for_collection.QuitClosure().Run();
       });
   base::RecordAction(base::UserMetricsAction("MobileToolbarShowStackView"));
-  tab_model_->GetObserver()->TabPendingClosure(fake_tab_ptr);
+  tab_model_->GetObserver()->TabPendingClosure(
+      fake_tab_ptr, TabModel::TabClosingSource::UNKNOWN);
   wait_for_collection.Run();
 
   TabModelList::RemoveTabModel(tab_model_.get());

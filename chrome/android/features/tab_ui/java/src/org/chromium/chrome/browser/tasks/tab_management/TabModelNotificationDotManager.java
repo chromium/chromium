@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -97,7 +98,7 @@ public class TabModelNotificationDotManager implements Destroyable {
                 }
 
                 @Override
-                public void onFinishingTabClosure(Tab tab) {
+                public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
                     maybeUpdateForTab(tab, /* mayAddDot= */ false);
                 }
 

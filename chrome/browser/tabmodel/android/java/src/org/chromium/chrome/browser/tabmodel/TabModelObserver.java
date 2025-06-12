@@ -52,13 +52,9 @@ public interface TabModelObserver {
      * Called right before {@code tab} will be destroyed. Called for each tab.
      *
      * @param tab The {@link Tab} that was closed.
-     * @param shouldRemoveWindowWithZeroTabs Whether the window should be closed and removed from
-     *     the instance manager if there are no remaining tabs.
+     * @param closingSource The tab closing source, e.g. the tablet tab strip.
      */
-    // TODO(crbug.com/423043174): Update all call sites to take in this new param.
-    default void onFinishingTabClosure(Tab tab, boolean shouldRemoveWindowWithZeroTabs) {
-        onFinishingTabClosure(tab);
-    }
+    default void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {}
 
     /**
      * Called right before each of {@code tabs} will be destroyed. Called as each closure event is
@@ -108,23 +104,9 @@ public interface TabModelObserver {
      * via {@link TabModel#getComprehensiveModel()}.
      *
      * @param tab The tab that is pending closure.
-     * @param pendingToken The token that can be used to commit or undo the tab closure.
+     * @param closingSource The tab closing source, e.g. the tablet tab strip.
      */
-    default void tabPendingClosure(Tab tab) {}
-
-    /**
-     * Called when a tab is pending closure, i.e. the user has just closed it, but it can still be
-     * undone. At this point, the Tab has been removed from the TabModel and can only be accessed
-     * via {@link TabModel#getComprehensiveModel()}.
-     *
-     * @param tab The tab that is pending closure.
-     * @param shouldRemoveWindowWithZeroTabs Whether the window should be closed and removed from
-     *     the instance manager if there are no remaining tabs.
-     */
-    // TODO(crbug.com/423043174): Update all call sites to take in this new param.
-    default void tabPendingClosure(Tab tab, boolean shouldRemoveWindowWithZeroTabs) {
-        tabPendingClosure(tab);
-    }
+    default void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {}
 
     /**
      * Called when multiple tabs are pending closure.

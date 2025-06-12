@@ -74,7 +74,8 @@ public final class TabModelSelectorTabRegistrationObserver {
                     }
 
                     @Override
-                    public void onFinishingTabClosure(Tab tab) {
+                    public void onFinishingTabClosure(
+                            Tab tab, @TabClosingSource int closingSource) {
                         if (mTabsToClose.get(tab.getId()) != null) {
                             mTabsToClose.remove(tab.getId());
                             onTabUnregistered(tab);

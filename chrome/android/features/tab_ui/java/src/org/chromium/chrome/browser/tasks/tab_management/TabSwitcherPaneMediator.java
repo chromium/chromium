@@ -24,6 +24,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -75,12 +76,12 @@ public class TabSwitcherPaneMediator
                 }
 
                 @Override
-                public void tabPendingClosure(Tab tab) {
+                public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
                     notifyBackPressStateChangedInternal();
                 }
 
                 @Override
-                public void onFinishingTabClosure(Tab tab) {
+                public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
                     // If tab is closed by the site itself rather than user's input,
                     // tabPendingClosure & tabClosureCommitted won't be called.
                     notifyBackPressStateChangedInternal();

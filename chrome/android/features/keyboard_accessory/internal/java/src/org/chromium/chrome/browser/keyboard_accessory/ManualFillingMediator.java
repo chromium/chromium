@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -221,7 +222,8 @@ class ManualFillingMediator
                     }
 
                     @Override
-                    public void onFinishingTabClosure(Tab tab) {
+                    public void onFinishingTabClosure(
+                            Tab tab, @TabClosingSource int closingSource) {
                         mObservedTabs.remove(tab);
                         tab.removeObserver(
                                 mTabObserver); // Fails silently if observer isn't registered.

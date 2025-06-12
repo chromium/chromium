@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.TabClosingSource;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -1352,7 +1353,7 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void tabPendingClosure(Tab tab) {
+                    public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
                         getStripLayoutHelper(tab.isIncognitoBranded())
                                 .tabClosed(time(), tab.getId());
                         updateModelSwitcherButton();
@@ -1367,7 +1368,8 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void onFinishingTabClosure(Tab tab) {
+                    public void onFinishingTabClosure(
+                            Tab tab, @TabClosingSource int closingSource) {
                         getStripLayoutHelper(tab.isIncognitoBranded())
                                 .tabClosed(time(), tab.getId());
                         updateModelSwitcherButton();

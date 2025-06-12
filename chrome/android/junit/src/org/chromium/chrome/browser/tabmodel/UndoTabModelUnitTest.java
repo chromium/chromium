@@ -272,7 +272,7 @@ public class UndoTabModelUnitTest {
         model.addObserver(
                 new TabModelObserver() {
                     @Override
-                    public void tabPendingClosure(Tab tab) {
+                    public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
                         didReceivePendingClosureHelper.notifyCalled();
                     }
                 });

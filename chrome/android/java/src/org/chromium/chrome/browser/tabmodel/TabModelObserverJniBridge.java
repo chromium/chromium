@@ -9,6 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabClosingSource;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -64,11 +65,14 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void onFinishingTabClosure(Tab tab) {
+    public final void onFinishingTabClosure(Tab tab, @TabClosingSource int source) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
                 .onFinishingTabClosure(
-                        mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab);
+                        mNativeTabModelObserverJniBridge,
+                        TabModelObserverJniBridge.this,
+                        tab,
+                        source);
     }
 
     @Override
@@ -124,12 +128,15 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void tabPendingClosure(Tab tab) {
+    public final void tabPendingClosure(Tab tab, @TabClosingSource int source) {
         assert mNativeTabModelObserverJniBridge != 0;
         assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .tabPendingClosure(
-                        mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab);
+                        mNativeTabModelObserverJniBridge,
+                        TabModelObserverJniBridge.this,
+                        tab,
+                        source);
     }
 
     @Override
@@ -238,7 +245,10 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
 
         void onFinishingTabClosure(
-                long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
+                long nativeTabModelObserverJniBridge,
+                TabModelObserverJniBridge caller,
+                Tab tab,
+                @TabClosingSource int source);
 
         void onFinishingMultipleTabClosure(
                 long nativeTabModelObserverJniBridge,
@@ -266,7 +276,10 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 int curIndex);
 
         void tabPendingClosure(
-                long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
+                long nativeTabModelObserverJniBridge,
+                TabModelObserverJniBridge caller,
+                Tab tab,
+                @TabClosingSource int source);
 
         void tabClosureUndone(
                 long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);

@@ -151,7 +151,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
         @Override
         public void finalizeClosure(Tab tab) {
-            finalizeTabClosure(tab, true, /* shouldRemoveWindowWithZeroTabs= */ false);
+            finalizeTabClosure(tab, true, TabClosingSource.UNKNOWN);
         }
 
         @Override
@@ -560,10 +560,7 @@ public class TabModelImpl extends TabModelJniBridge {
             mPendingTabClosureManager.addTabClosureEvent(
                     Collections.singletonList(tabToClose), undoRunnable);
             for (TabModelObserver obs : mObservers) {
-                obs.tabPendingClosure(
-                        tabToClose,
-                        /* shouldRemoveWindowWithZeroTabs= */ tabClosingSource
-                                == TabClosingSource.TABLET_TAB_STRIP);
+                obs.tabPendingClosure(tabToClose, tabClosingSource);
             }
         }
         if (!allowUndo) {
@@ -572,10 +569,7 @@ public class TabModelImpl extends TabModelJniBridge {
                         Collections.singletonList(tabToClose), /* saveToTabRestoreService= */ true);
             }
             finalizeTabClosure(
-                    tabToClose,
-                    /* notifyTabClosureCommitted= */ false,
-                    /* shouldRemoveWindowWithZeroTabs= */ tabClosingSource
-                            == TabClosingSource.TABLET_TAB_STRIP);
+                    tabToClose, /* notifyTabClosureCommitted= */ false, tabClosingSource);
         }
         return true;
     }
@@ -949,15 +943,14 @@ public class TabModelImpl extends TabModelJniBridge {
      * @param tab The {@link Tab} to close.
      * @param notifyTabClosureCommitted If true then observers will receive a tabClosureCommitted
      *     notification.
-     * @param shouldRemoveWindowWithZeroTabs Whether the window should be closed and removed from
-     *     the instance manager if there are no remaining tabs.
+     * @param closingSource The source that triggered the tab close (e.g. the tablet tab strip).
      */
     private void finalizeTabClosure(
-            Tab tab, boolean notifyTabClosureCommitted, boolean shouldRemoveWindowWithZeroTabs) {
+            Tab tab, boolean notifyTabClosureCommitted, @TabClosingSource int closingSource) {
         mTabContentManager.removeTabThumbnail(tab.getId());
 
         for (TabModelObserver obs : mObservers) {
-            obs.onFinishingTabClosure(tab, shouldRemoveWindowWithZeroTabs);
+            obs.onFinishingTabClosure(tab, closingSource);
         }
         if (notifyTabClosureCommitted) {
             for (TabModelObserver obs : mObservers) obs.tabClosureCommitted(tab);

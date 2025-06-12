@@ -310,7 +310,8 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
       contents2, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
 
-  tab_model.GetObserver()->OnFinishingTabClosure(tab2.get());
+  tab_model.GetObserver()->OnFinishingTabClosure(
+      tab2.get(), TabModel::TabClosingSource::UNKNOWN);
   tab_model.GetObserver()->DidSelectTab(tab1.get(),
                                         TabModel::TabSelectionType::FROM_USER);
 

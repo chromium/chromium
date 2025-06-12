@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
@@ -1061,7 +1062,7 @@ public class MultiInstanceManagerApi31UnitTest {
         } else {
             mNormalTabCount--;
         }
-        tabModelObserver.onFinishingTabClosure(tab);
+        tabModelObserver.onFinishingTabClosure(tab, TabClosingSource.UNKNOWN);
     }
 
     private void triggerTabRemoved(TabModelObserver tabModelObserver, Tab tab) {

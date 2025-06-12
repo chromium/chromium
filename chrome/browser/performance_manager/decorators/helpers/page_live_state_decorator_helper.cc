@@ -63,7 +63,8 @@ class ActiveTabTracker : public TabModelObserver {
   // OnFinishingTabClosure is not triggered when the tab model goes away. But it
   // does not cause holding a dead tab in active_tab_ because `ActiveTabTracker`
   // itself is removed anyway at `ActiveTabObserver::OnTabModelRemoved()`.
-  void OnFinishingTabClosure(TabAndroid* tab) override {
+  void OnFinishingTabClosure(TabAndroid* tab,
+                             TabModel::TabClosingSource source) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (tab == active_tab_) {
       active_tab_ = nullptr;

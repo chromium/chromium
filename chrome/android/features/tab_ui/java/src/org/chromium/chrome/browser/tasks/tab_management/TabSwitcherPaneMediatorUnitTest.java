@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
@@ -222,11 +223,11 @@ public class TabSwitcherPaneMediatorUnitTest {
         assertTrue(dialogVisibilitySupplier.get());
 
         when(mTabListEditorController.isVisible()).thenReturn(false);
-        observer.tabPendingClosure(null);
+        observer.tabPendingClosure(null, TabClosingSource.UNKNOWN);
         assertFalse(dialogVisibilitySupplier.get());
 
         when(mTabListEditorController.isVisible()).thenReturn(true);
-        observer.onFinishingTabClosure(null);
+        observer.onFinishingTabClosure(null, TabClosingSource.UNKNOWN);
         assertTrue(dialogVisibilitySupplier.get());
 
         when(mTabListEditorController.isVisible()).thenReturn(false);

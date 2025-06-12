@@ -31,7 +31,8 @@ class TabModelObserver {
   virtual void WillCloseTab(TabAndroid* tab);
 
   // Called right before a |tab| has been destroyed.
-  virtual void OnFinishingTabClosure(TabAndroid* tab);
+  virtual void OnFinishingTabClosure(TabAndroid* tab,
+                                     TabModel::TabClosingSource source);
 
   // Called right before all |tabs| are destroyed.
   virtual void OnFinishingMultipleTabClosure(
@@ -51,7 +52,8 @@ class TabModelObserver {
   // Called when a tab is pending closure (ie, the user has just closed it, but
   // it can still be undone). At this point the |tab| has been removed from the
   // TabModel.
-  virtual void TabPendingClosure(TabAndroid* tab);
+  virtual void TabPendingClosure(TabAndroid* tab,
+                                 TabModel::TabClosingSource source);
 
   // Called when all |tabs| closure is undone.
   virtual void OnTabCloseUndone(

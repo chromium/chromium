@@ -21,6 +21,12 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
+// Converts from a Java TabModel.TabClosingSource to a C++
+// TabModel::TabClosingSource.
+TabModel::TabClosingSource GetTabClosingSource(JNIEnv* env, int source) {
+  return static_cast<TabModel::TabClosingSource>(source);
+}
+
 // Converts from a Java TabModel.TabLaunchType to a C++ TabModel::TabLaunchType.
 TabModel::TabLaunchType GetTabLaunchType(JNIEnv* env, int type) {
   return static_cast<TabModel::TabLaunchType>(type);
@@ -75,11 +81,13 @@ void TabModelObserverJniBridge::WillCloseTab(
 void TabModelObserverJniBridge::OnFinishingTabClosure(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,
-    const JavaParamRef<jobject>& jtab) {
+    const JavaParamRef<jobject>& jtab,
+    int jsource) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   CHECK(tab);
+  TabModel::TabClosingSource source = GetTabClosingSource(env, jsource);
   for (auto& observer : observers_) {
-    observer.OnFinishingTabClosure(tab);
+    observer.OnFinishingTabClosure(tab, source);
   }
 }
 
@@ -135,11 +143,13 @@ void TabModelObserverJniBridge::DidMoveTab(JNIEnv* env,
 void TabModelObserverJniBridge::TabPendingClosure(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,
-    const JavaParamRef<jobject>& jtab) {
+    const JavaParamRef<jobject>& jtab,
+    int jsource) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   CHECK(tab);
+  TabModel::TabClosingSource source = GetTabClosingSource(env, jsource);
   for (auto& observer : observers_) {
-    observer.TabPendingClosure(tab);
+    observer.TabPendingClosure(tab, source);
   }
 }
 

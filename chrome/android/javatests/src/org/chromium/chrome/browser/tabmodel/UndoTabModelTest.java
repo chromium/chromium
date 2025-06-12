@@ -135,7 +135,8 @@ public class UndoTabModelTest {
                     model.addObserver(
                             new TabModelObserver() {
                                 @Override
-                                public void tabPendingClosure(Tab tab) {
+                                public void tabPendingClosure(
+                                        Tab tab, @TabClosingSource int closingSource) {
                                     didReceivePendingClosureHelper.notifyCalled();
                                 }
                             });
@@ -192,7 +193,7 @@ public class UndoTabModelTest {
         }
 
         @Override
-        public void onFinishingTabClosure(Tab tab) {
+        public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
             mTabClosedCallback.notifyCalled();
         }
     }

@@ -22,6 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -110,7 +111,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController, Un
                     }
 
                     @Override
-                    public void tabPendingClosure(Tab tab) {
+                    public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
                         if (disableUndo(true)) return;
                         queueUndoBar(new TabClosureEvent(List.of(tab), /* isAllTabs= */ false));
                     }

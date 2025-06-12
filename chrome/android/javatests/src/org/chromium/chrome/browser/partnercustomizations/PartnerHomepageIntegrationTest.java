@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -185,7 +186,8 @@ public class PartnerHomepageIntegrationTest {
                             tabModel.addObserver(
                                     new TabModelObserver() {
                                         @Override
-                                        public void onFinishingTabClosure(Tab tab) {
+                                        public void onFinishingTabClosure(
+                                                Tab tab, @TabClosingSource int closingSource) {
                                             if (tabModel.getCount() == 0) tabClosed.notifyCalled();
                                         }
                                     });

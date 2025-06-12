@@ -16,7 +16,9 @@ void TabModelObserver::DidSelectTab(TabAndroid* tab,
 
 void TabModelObserver::WillCloseTab(TabAndroid* tab) {}
 
-void TabModelObserver::OnFinishingTabClosure(TabAndroid* tab) {}
+void TabModelObserver::OnFinishingTabClosure(
+    TabAndroid* tab,
+    TabModel::TabClosingSource source) {}
 
 void TabModelObserver::OnFinishingMultipleTabClosure(
     const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs,
@@ -32,7 +34,8 @@ void TabModelObserver::DidMoveTab(TabAndroid* tab,
                                   int new_index,
                                   int old_index) {}
 
-void TabModelObserver::TabPendingClosure(TabAndroid* tab) {}
+void TabModelObserver::TabPendingClosure(TabAndroid* tab,
+                                         TabModel::TabClosingSource source) {}
 
 void TabModelObserver::TabClosureUndone(TabAndroid* tab) {}
 

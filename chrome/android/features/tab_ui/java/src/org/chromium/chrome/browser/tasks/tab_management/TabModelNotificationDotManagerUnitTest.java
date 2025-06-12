@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
@@ -266,7 +267,7 @@ public class TabModelNotificationDotManagerUnitTest {
         verifyShown();
 
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(null);
-        mTabModelObserverCaptor.getValue().onFinishingTabClosure(mTab);
+        mTabModelObserverCaptor.getValue().onFinishingTabClosure(mTab, TabClosingSource.UNKNOWN);
         verifyHidden();
 
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);

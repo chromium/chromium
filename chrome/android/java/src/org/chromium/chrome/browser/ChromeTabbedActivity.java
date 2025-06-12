@@ -230,6 +230,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
@@ -741,14 +742,20 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     new TabModelSelectorTabModelObserver(mTabModelSelector) {
                         @Override
                         public void onFinishingTabClosure(
-                                Tab tab, boolean shouldRemoveWindowWithZeroTabs) {
-                            closeIfNoTabsAndHomepageEnabled(false, shouldRemoveWindowWithZeroTabs);
+                                Tab tab, @TabClosingSource int closingSource) {
+                            closeIfNoTabsAndHomepageEnabled(
+                                    false,
+                                    /* shouldRemoveWindowWithZeroTabs= */ closingSource
+                                            == TabClosingSource.TABLET_TAB_STRIP);
                         }
 
                         @Override
                         public void tabPendingClosure(
-                                Tab tab, boolean shouldRemoveWindowWithZeroTabs) {
-                            closeIfNoTabsAndHomepageEnabled(true, shouldRemoveWindowWithZeroTabs);
+                                Tab tab, @TabClosingSource int closingSource) {
+                            closeIfNoTabsAndHomepageEnabled(
+                                    true,
+                                    /* shouldRemoveWindowWithZeroTabs= */ closingSource
+                                            == TabClosingSource.TABLET_TAB_STRIP);
                         }
 
                         @Override

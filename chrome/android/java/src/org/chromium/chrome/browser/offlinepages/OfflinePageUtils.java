@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -750,7 +751,7 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void onFinishingTabClosure(Tab tab) {
+        public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
             Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
             if (bridge == null) return;

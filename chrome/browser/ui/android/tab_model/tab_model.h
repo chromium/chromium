@@ -166,6 +166,18 @@ class TabModel : public TabListInterface {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:TabLaunchType,//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java,//chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/flatbuffer/tab_state_common.fbs,//chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/FlatBufferTabStateSerializer.java)
   // clang-format on
 
+  // Various ways tabs can be closed.
+  // Values must be numbered from 0 and can't have gaps.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
+  enum class TabClosingSource {
+    // Tab closing from all other sources.
+    UNKNOWN,
+    // Tab closing from tablet tab strip.
+    TABLET_TAB_STRIP,
+    // Must be last.
+    SIZE
+  };
+
   // Various ways tabs can be selected.
   // Values must be numbered from 0 and can't have gaps.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab

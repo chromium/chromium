@@ -27,7 +27,8 @@ class TabDataCollectionUtil::LocalTabModelObserver : public TabModelObserver {
   void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override {
     collection_util_->OnTabAction(tab, TabAction::kTabSelected);
   }
-  void TabPendingClosure(TabAndroid* tab) override {
+  void TabPendingClosure(TabAndroid* tab,
+                         TabModel::TabClosingSource source) override {
     collection_util_->OnTabAction(tab, TabAction::kTabClose);
   }
   void AllTabsPendingClosure(
