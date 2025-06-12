@@ -247,7 +247,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     }
 
     @Override
-    public NotificationWrapperBuilder setSound(Uri sound) {
+    public NotificationWrapperBuilder setSound(@Nullable Uri sound) {
         mBuilder.setSound(sound);
         return this;
     }

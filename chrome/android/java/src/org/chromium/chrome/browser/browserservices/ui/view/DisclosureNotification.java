@@ -16,9 +16,9 @@ import static org.chromium.chrome.browser.notifications.NotificationConstants.NO
 
 import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver;
@@ -40,6 +40,7 @@ import org.chromium.ui.modelutil.PropertyObservable;
  * Displays a notification when the user is on the verified domain. The first such notification (per
  * TWA) is urgent priority, subsequent ones are low priority.
  */
+@NullMarked
 public class DisclosureNotification
         implements PropertyObservable.PropertyObserver<PropertyKey>, StartStopWithNativeObserver {
     private final Resources mResources;
@@ -47,7 +48,7 @@ public class DisclosureNotification
     private final BaseNotificationManagerProxy mNotificationManagerProxy =
             BaseNotificationManagerProxyFactory.create();
 
-    private String mCurrentScope;
+    private @Nullable String mCurrentScope;
 
     public DisclosureNotification(
             Resources resources,

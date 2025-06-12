@@ -63,7 +63,7 @@ import java.util.function.Function;
     }
 
     @Override
-    public void cancel(String tag, int id) {
+    public void cancel(@Nullable String tag, int id) {
         runAsync(
                 "AsyncNotificationManagerProxyImpl.cancel(tag, id)",
                 () -> mNotificationManager.cancel(tag, id));

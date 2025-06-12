@@ -99,7 +99,7 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setVibrate(long[] vibratePattern);
 
-    NotificationWrapperBuilder setSound(Uri sound);
+    NotificationWrapperBuilder setSound(@Nullable Uri sound);
 
     NotificationWrapperBuilder setSilent(boolean silent);
 

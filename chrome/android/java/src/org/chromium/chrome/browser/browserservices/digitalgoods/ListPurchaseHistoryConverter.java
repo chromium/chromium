@@ -11,17 +11,18 @@ import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGo
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.BillingResponseCode;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchaseHistory_Response;
 import org.chromium.payments.mojom.PurchaseReference;
 
 /** A converter that deals with the results of ListPurchaseHistory calls. */
+@NullMarked
 class ListPurchaseHistoryConverter {
     private static final String TAG = "DigitalGoods";
 
@@ -38,7 +39,7 @@ class ListPurchaseHistoryConverter {
     static TrustedWebActivityCallback convertCallback(ListPurchaseHistory_Response callback) {
         return new TrustedWebActivityCallback() {
             @Override
-            public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
+            public void onExtraCallback(String callbackName, @Nullable Bundle args) {
                 if (!RESPONSE_COMMAND.equals(callbackName)) {
                     Log.w(TAG, "Wrong callback name given: " + callbackName + ".");
                     returnClientAppError(callback);
@@ -59,6 +60,7 @@ class ListPurchaseHistoryConverter {
 
                 int code = args.getInt(KEY_RESPONSE_CODE);
                 Parcelable[] array = args.getParcelableArray(KEY_PURCHASES_LIST);
+                assert array != null;
 
                 PurchaseReference[] reference =
                         convertParcelableArray(

@@ -75,7 +75,7 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     }
 
     @Override
-    public void cancel(String tag, int id) {
+    public void cancel(@Nullable String tag, int id) {
         runRunnable(
                 TraceEvent.scoped("NotificationManagerProxyImpl.cancel(tag, id)"),
                 () -> mNotificationManager.cancel(tag, id));

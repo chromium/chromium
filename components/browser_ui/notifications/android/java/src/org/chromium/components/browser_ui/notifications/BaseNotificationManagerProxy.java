@@ -35,7 +35,7 @@ public interface BaseNotificationManagerProxy {
      *     href="https://developer.android.com/reference/android/app/NotificationManager#cancel(java.lang.String,%20int)">
      *     https://developer.android.com/reference/android/app/NotificationManager#cancel(java.lang.String,%20int)</a>
      */
-    void cancel(String tag, int id);
+    void cancel(@Nullable String tag, int id);
 
     /**
      * @see <a

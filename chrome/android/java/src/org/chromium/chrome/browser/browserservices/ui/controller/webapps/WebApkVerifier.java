@@ -4,17 +4,20 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.webapps;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Provides WebAPK specific behaviour for the {@link CurrentPageVerifier}. */
+@NullMarked
 public class WebApkVerifier extends WebappVerifier {
     private final WebappExtras mWebappExtras;
 
     public WebApkVerifier(BrowserServicesIntentDataProvider intentDataProvider) {
-        mWebappExtras = intentDataProvider.getWebappExtras();
-        assert mWebappExtras != null;
+        mWebappExtras = assertNonNull(intentDataProvider.getWebappExtras());
     }
 
     @Override
