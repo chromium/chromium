@@ -329,7 +329,7 @@ class MODULES_EXPORT AudioContext final
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-suspended-by-user-slot
   bool suspended_by_user_ = false;
 
-  unsigned context_id_;
+  uint32_t context_id_;
   Member<ScriptPromiseResolver<IDLUndefined>> close_resolver_;
 
   AudioIOPosition output_position_;

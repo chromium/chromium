@@ -106,6 +106,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAudio.AudioContext.ConcurrentAudioContexts" units="count"
+    expires_after="2025-12-01">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    Records the maximum number of concurrently active AudioContexts that existed
+    at one time within a render frame's lifetime (capped at 100 for reporting).
+    This is recorded when the frame is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="WebAudio.AudioContext.CreateTime" units="ms"
     expires_after="2025-11-16">
   <owner>mjwilson@chromium.org</owner>

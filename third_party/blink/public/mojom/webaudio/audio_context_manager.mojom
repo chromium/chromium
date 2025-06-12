@@ -11,9 +11,20 @@ module blink.mojom;
 interface AudioContextManager {
   // AudioContext started producing audible sound.  The id is the ID
   // of the AudioContext.
-  AudioContextAudiblePlaybackStarted(int32 id);
+  AudioContextAudiblePlaybackStarted(uint32 id);
 
   // AudioContext stopped producing audible sound.  The id is the ID
   // of the AudioContext.
-  AudioContextAudiblePlaybackStopped(int32 id);
+  AudioContextAudiblePlaybackStopped(uint32 id);
+
+  // Called by the renderer when an AudioContext is constructed. This allows the
+  // browser to track the number of concurrently active contexts for metrics.
+  // The `id` is the unique identifier for the context.
+  AudioContextCreated(uint32 id);
+
+  // Called by the renderer when an AudioContext's state becomes "closed". This
+  // signals the end of the context's lifetime for tracking purposes. The `id`
+  // must match an `id` from a previous AudioContextCreated call.
+  AudioContextClosed(uint32 id);
+
 };
