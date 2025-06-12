@@ -3,10 +3,13 @@
 const populateFakeMailClientDatabase = async (db) => {
   // Creates object stores for folders, conversations, and messageBodies.
   const foldersStore = db.createObjectStore(folderStoreName, {keyPath: 'id'});
+
   // A conversation can exist in multiple folders, so (folderId, id) is used as
   // the primary key to ensure uniqueness within each folder.
   const conversationsStore = db.createObjectStore(
       conversationStoreName, {keyPath: ['folderId', 'id']});
+
+  // Creates message store and all related indexes
   const messagesStore = db.createObjectStore(messageStoreName, {keyPath: 'id'});
 
   // Adds an index for sender address to optimize message lookups by sender.
@@ -28,6 +31,14 @@ const populateFakeMailClientDatabase = async (db) => {
   // Adds an index to quickly access flagged messages.
   messagesStore.createIndex(
       'flagStatus', 'metaData.isFlagged', {unique: false});
+
+  // Caches all folders, conversations, and messages created during database
+  // population. These in-memory arrays are useful for post-initialization
+  // validation, debugging, or further operations without reading from the
+  // database again.
+  const foldersInMemory = [];
+  const conversationsInMemory = [];
+  const messagesInMemory = [];
 
   // Populates each folder with conversations and messages.
   for (let folderIndex = 0; folderIndex < folderData.length; folderIndex++) {
@@ -55,11 +66,25 @@ const populateFakeMailClientDatabase = async (db) => {
          convGroupIndex++) {
       const conversationGroup = folder.conversations[convGroupIndex];
 
+      // Determines the number of digits needed for zero-padding conversation
+      // indices, ensuring consistent ID length and lexicographical sorting of
+      // conversation IDs.
+      const convPadLength =
+          conversationGroup.conversationCount.toString().length;
+
+      // Determines the number of digits needed for zero-padding message
+      // indices, ensuring consistent ID length and lexicographical sorting of
+      // message IDs.
+      const msgPadLength =
+          conversationGroup.messagesPerConversation.toString().length;
+
       // Loops through each conversation in the conversation group.
       for (let convIndex = 0; convIndex < conversationGroup.conversationCount;
            convIndex++) {
+        const paddedConvIndex =
+            convIndex.toString().padStart(convPadLength, '0');
         const conversationId =
-            `conv-${folderIndex}-${convGroupIndex}-${convIndex}`;
+            `conv-${folderIndex}-${convGroupIndex}-${paddedConvIndex}`;
         const messageCount = conversationGroup.messagesPerConversation;
 
         // Tracks unread messages in this conversation.
@@ -67,8 +92,10 @@ const populateFakeMailClientDatabase = async (db) => {
 
         // Creates messages for the conversation.
         for (let msgIndex = 0; msgIndex < messageCount; msgIndex++) {
-          const messageId =
-              `msg-${folderIndex}-${convGroupIndex}-${convIndex}-${msgIndex}`;
+          const paddedMsgIndex =
+              msgIndex.toString().padStart(msgPadLength, '0');
+          const messageId = `msg-${folderIndex}-${convGroupIndex}-${
+              paddedConvIndex}-${paddedMsgIndex}`;
           const isRead =
               msgIndex >= Math.floor(messageCount * unreadRate) ? 1 : 0;
 
@@ -119,6 +146,7 @@ const populateFakeMailClientDatabase = async (db) => {
 
           // Adds each message to the store directly.
           messagesStore.add(message);
+          messagesInMemory.push(message);
         }
 
         const conversationData = {
@@ -126,12 +154,14 @@ const populateFakeMailClientDatabase = async (db) => {
           folderId,
           messageIds: Array.from(
               {length: messageCount},
-              (_, msgIndex) => `msg-${folderIndex}-${convGroupIndex}-${
-                  convIndex}-${msgIndex}`),
+              (_, msgIndex) =>
+                  `msg-${folderIndex}-${convGroupIndex}-${paddedConvIndex}-${
+                      msgIndex.toString().padStart(msgPadLength, '0')}`),
           unreadCount: conversationUnreadCount,
         };
 
         conversationsStore.add(conversationData);
+        conversationsInMemory.push(conversationData);
       }
     }
 
@@ -139,5 +169,8 @@ const populateFakeMailClientDatabase = async (db) => {
 
     // Adds the folder to the store.
     foldersStore.add(folderDetails);
+    foldersInMemory.push(folderDetails);
   }
+
+  return {foldersInMemory, conversationsInMemory, messagesInMemory};
 };

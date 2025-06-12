@@ -135,6 +135,70 @@ function putIDBValue(transaction, storeName, value) {
         `Failed to put value in '${storeName}' with error '${request.error}'`);
   });
 }
+
+/**
+ * Retrieves multiple values from an IndexedDB object store by their keys.
+ *
+ * This function fetches records corresponding to the provided keys from the
+ * given object store. If any request fails, the promise is rejected.
+ *
+ * @param {IDBObjectStore} store The object store to query.
+ * @param {Array<IDBValidKey>} keys The keys to retrieve.
+ * @return {Promise<Array<Object|undefined>>} Promise resolving to an array of
+ *     retrieved values in the same order as input keys, or rejecting on
+ * failure.
+ */
+function bulkGetIDBValues(store, keys) {
+  return Promise.all(keys.map(
+      key => new Promise((resolve, reject) => {
+        const req = store.get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(
+            `Failed to get key '${key}' from store with error '${req.error}'`);
+      })));
+}
+
+/**
+ * Inserts or updates multiple values in an IndexedDB object store.
+ *
+ * This function puts each value into the given object store and resolves when
+ * all operations succeed.
+ *
+ * @param {IDBObjectStore} store The object store to update.
+ * @param {Array<Object>} values The values to insert or update.
+ * @return {Promise<void>} Promise that resolves on success or rejects on
+ *     failure.
+ */
+function bulkPutIDBValues(store, values) {
+  return Promise.all(values.map(
+      value => new Promise((resolve, reject) => {
+        const req = store.put(value);
+        req.onsuccess = resolve;
+        req.onerror = () =>
+            reject(`Failed to put value in store with error '${req.error}'`);
+      })));
+}
+
+/**
+ * Deletes multiple entries from an IndexedDB object store by their keys.
+ *
+ * This function removes the records for the given keys from the object store.
+ * If any delete operation fails, the promise is rejected.
+ *
+ * @param {IDBObjectStore} store The object store to delete from.
+ * @param {Array<IDBValidKey>} keys The keys to delete.
+ * @return {Promise<void>} Promise that resolves on success or rejects on
+ *     failure.
+ */
+function bulkDeleteIDBValues(store, keys) {
+  return Promise.all(keys.map(
+      key => new Promise((resolve, reject) => {
+        const req = store.delete(key);
+        req.onsuccess = resolve;
+        req.onerror = () =>
+            reject(`Failed to delete key '${key}' from store: ${req.error}`);
+      })));
+}
 function transactionCompletePromise(txn) {
   return new Promise((resolve, reject) => {
     txn.oncomplete = resolve;

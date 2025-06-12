@@ -61,3 +61,44 @@ const batchSize = 50;
 // proportion of messages marked as unread. In this case, 70% of messages
 // are marked as unread.
 const unreadRate = 0.7;
+
+// Sync configuration for the mail client.
+// This configuration defines how conversations and messages are processed
+// during synchronization. Each parameter is explained with an example to help
+// visualize the behavior.
+const syncConfig = {
+  // Number of conversations to delete in each batch.
+  // Example: If `conversationsToDelete` is 5, the first 5 conversations (e.g.,
+  // conv-1-1-1 to conv-1-1-5)
+  // will be removed from the database during each sync batch.
+  conversationsToDelete: 5,
+
+  // Number of conversations to update by appending new messages.
+  // Example: If `conversationsToUpdateMessageCount` is 10, the next 10
+  // conversations (e.g., conv-1-1-6 to conv-1-1-15) will have messages
+  // appended to them.
+  conversationsToUpdateMessageCount: 10,
+
+  // Number of messages to append to each updated conversation.
+  // Example: If `messagesToAppendPerConversation` is 5, each of the updated
+  // conversations will have 5 new messages appended with shared subject
+  // prefixes.
+  messagesToAppendPerConversation: 5,
+
+  // Number of new conversations to add in each batch.
+  // Example: If `conversationsToAdd` is 5, 5 new conversations (e.g.,
+  // conv-1-1-new-1 to conv-1-1-new-5)
+  // will be added to the database after the other operations are complete.
+  conversationsToAdd: 5,
+
+  // Number of messages to add in each new conversation.
+  // Example: If `messagesPerNewConversation` is 2, each new conversation (e.g.,
+  // conv-1-1-new-1 to conv-1-1-new-5)
+  // will have 2 messages added with unique subjects and bodies.
+  messagesPerNewConversation: 2,
+
+  // Maximum number of changes returned in a single operation.
+  // This limits the number of updates, messages, or records returned to avoid
+  // overwhelming the client or server and to ensure consistent performance.
+  maxChangesReturned: 50,
+};
