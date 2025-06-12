@@ -72,6 +72,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_clusters/core/features.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -478,6 +479,17 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddString("composeboxImageFileTypes", "image/*");
   source->AddString("composeboxAttachmentFileTypes", ".pdf,application/pdf");
   source->AddInteger("composeboxFileMaxSize", 1000000);
+
+  source->AddBoolean(
+      "searchboxShowComposeEntrypoint",
+      (base::FeatureList::IsEnabled(
+           ntp_features::kNtpSearchboxComposeEntrypoint) ||
+       base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox)) &&
+          omnibox::IsMiaAllowedByPolicy(profile->GetPrefs()));
+  source->AddBoolean(
+      "searchboxShowComposebox",
+      base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox) &&
+          omnibox::IsMiaAllowedByPolicy(profile->GetPrefs()));
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,
