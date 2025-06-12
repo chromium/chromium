@@ -22,7 +22,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -315,7 +317,7 @@ class SigninViewControllerTestUtil {
     NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
-        browser->signin_view_controller();
+        browser->GetFeatures().signin_view_controller();
     DCHECK(signin_view_controller);
     if (!signin_view_controller->ShowsModalDialog()) {
       return false;
@@ -348,7 +350,7 @@ class SigninViewControllerTestUtil {
     NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
-        browser->signin_view_controller();
+        browser->GetFeatures().signin_view_controller();
     DCHECK(signin_view_controller);
     if (!signin_view_controller->ShowsModalDialog()) {
       return false;
@@ -374,7 +376,7 @@ class SigninViewControllerTestUtil {
 #if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
-    return browser->signin_view_controller()->ShowsModalDialog();
+    return browser->GetFeatures().signin_view_controller()->ShowsModalDialog();
 #endif
   }
 
@@ -384,7 +386,7 @@ class SigninViewControllerTestUtil {
                                     const std::string& app,
                                     const std::string& button_id) {
     SigninViewController* signin_view_controller =
-        browser->signin_view_controller();
+        browser->GetFeatures().signin_view_controller();
     DCHECK(signin_view_controller);
     if (!signin_view_controller->ShowsModalDialog()) {
       return false;
@@ -487,12 +489,12 @@ bool SignInWithUI(Browser* browser,
 
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
-      browser->signin_view_controller()->ShowDiceAddAccountTab(
+      browser->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
           access_point,
           /*email_hint=*/std::string());
       break;
     case signin::ConsentLevel::kSync:
-      browser->signin_view_controller()->ShowDiceEnableSyncTab(
+      browser->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
           access_point,
           signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
           /*email_hint=*/std::string());
@@ -550,7 +552,7 @@ class SiginInModalDialogObserver : public SigninViewController::Observer {
   explicit SiginInModalDialogObserver(Browser* browser) {
     CHECK(SigninViewControllerTestUtil::ShowsModalDialog(browser));
     signin_view_controller_observation_.Observe(
-        browser->signin_view_controller());
+        browser->GetFeatures().signin_view_controller());
   }
 
   void WaitForModalDialogClosed() {

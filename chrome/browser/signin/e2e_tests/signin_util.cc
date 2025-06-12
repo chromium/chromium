@@ -14,7 +14,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
-#include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"

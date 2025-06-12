@@ -32,7 +32,9 @@
 #error This file should only be included on desktop.
 #endif
 
-class Browser;
+class BrowserWindowInterface;
+class Profile;
+class TabStripModel;
 struct AccountInfo;
 struct CoreAccountId;
 
@@ -81,7 +83,7 @@ class SigninViewController {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  explicit SigninViewController(Browser* browser);
+  explicit SigninViewController(BrowserWindowInterface* browser);
 
   SigninViewController(const SigninViewController&) = delete;
   SigninViewController& operator=(const SigninViewController&) = delete;
@@ -208,6 +210,8 @@ class SigninViewController {
 
   base::WeakPtr<SigninViewController> AsWeakPtr();
 
+  void TearDownPreBrowserViewDestruction();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
                            EmailConfirmationDefaultFocus);
@@ -278,8 +282,11 @@ class SigninViewController {
   // Helper to create an on close callback for `SigninModalDialog`.
   base::OnceClosure GetOnModalDialogClosedCallback();
 
-  // Browser owning this controller.
-  raw_ptr<Browser> browser_;
+  // BrowserWindowInterface owning this controller.
+  const raw_ptr<BrowserWindowInterface> browser_;
+
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 
   // Currently displayed modal dialog, or nullptr if none is displayed.
   std::unique_ptr<SigninModalDialog> dialog_;

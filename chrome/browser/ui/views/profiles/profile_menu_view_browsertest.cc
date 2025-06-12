@@ -53,6 +53,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -464,7 +466,8 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (observer.get()) {
       observer->Wait();
-      auto* signin_view_controller = browser()->signin_view_controller();
+      auto* signin_view_controller =
+          browser()->GetFeatures().signin_view_controller();
       auto* signout_ui = SignoutConfirmationUI::GetForTesting(
           signin_view_controller->GetModalDialogWebContentsForTesting());
       if (!signout_ui) {

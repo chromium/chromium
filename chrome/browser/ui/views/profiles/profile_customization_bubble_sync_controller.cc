@@ -9,6 +9,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -25,7 +27,9 @@ void ShowBubble(Browser* browser,
     case ProfileCustomizationBubbleSyncController::Outcome::kAbort:
       return;
     case ProfileCustomizationBubbleSyncController::Outcome::kShowBubble:
-      browser->signin_view_controller()->ShowModalProfileCustomizationDialog();
+      browser->GetFeatures()
+          .signin_view_controller()
+          ->ShowModalProfileCustomizationDialog();
       return;
     case ProfileCustomizationBubbleSyncController::Outcome::kSkipBubble:
       // If the customization bubble is not shown, show the IPH now. Otherwise

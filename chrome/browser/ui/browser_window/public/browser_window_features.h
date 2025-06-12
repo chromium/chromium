@@ -34,6 +34,7 @@ class MemorySaverOptInIPHController;
 class ReadingListSidePanelCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
+class SigninViewController;
 class TabMenuModelDelegate;
 class TabSearchToolbarButtonController;
 class TabStripModel;
@@ -253,6 +254,10 @@ class BrowserWindowFeatures {
     return extension_window_controller_.get();
   }
 
+  SigninViewController* signin_view_controller() {
+    return signin_view_controller_.get();
+  }
+
   // Only fetch the tab_strip_service to register a pending receiver.
   TabStripServiceRegister* tab_strip_service() {
     return tab_strip_service_.get();
@@ -378,6 +383,8 @@ class BrowserWindowFeatures {
 
   // The model for the toolbar view.
   std::unique_ptr<LocationBarModel> location_bar_model_;
+
+  std::unique_ptr<SigninViewController> signin_view_controller_;
 
   std::unique_ptr<new_tab_footer::NewTabFooterController>
       new_tab_footer_controller_;

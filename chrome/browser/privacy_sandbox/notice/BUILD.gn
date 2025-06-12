@@ -109,8 +109,9 @@ if (!is_android) {
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/sync",
       "//chrome/browser/ui:ui",
-      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/privacy_sandbox",
+      "//chrome/browser/ui/signin",
       "//chrome/common",
       "//components/privacy_sandbox:features",
       "//components/regional_capabilities",
@@ -228,7 +229,9 @@ source_set("browser_tests") {
     deps += [
       ":desktop_view_manager",
       "//chrome/browser/sync",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/privacy_sandbox",
+      "//chrome/browser/ui/signin",
       "//chrome/test:test_support_ui",
       "//components/privacy_sandbox:features",
     ]

@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -189,7 +191,8 @@ SignoutConfirmationHandler::~SignoutConfirmationHandler() = default;
 
 void SignoutConfirmationHandler::UpdateViewHeight(uint32_t height) {
   if (browser_) {
-    browser_->signin_view_controller()->SetModalSigninHeight(height);
+    browser_->GetFeatures().signin_view_controller()->SetModalSigninHeight(
+        height);
   }
 }
 
@@ -224,7 +227,7 @@ void SignoutConfirmationHandler::FinishAndCloseDialog(
 
   std::move(completion_callback_).Run(choice, uninstall_account_extensions);
   if (browser_) {
-    browser_->signin_view_controller()->CloseModalSignin();
+    browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
   }
 }
 

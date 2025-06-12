@@ -43,6 +43,7 @@ source_set("impl") {
     "//chrome/browser/ui/commerce",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/lens",
+    "//chrome/browser/ui/signin",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/unowned_user_data",

@@ -26,8 +26,10 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -116,7 +118,9 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
             /*suggested_profile_color=*/new_profile_color.value());
   } else {
     // For non syncing users, simply show the bubble.
-    browser->signin_view_controller()->ShowModalProfileCustomizationDialog();
+    browser->GetFeatures()
+        .signin_view_controller()
+        ->ShowModalProfileCustomizationDialog();
   }
 }
 
@@ -437,8 +441,10 @@ void ShowLocalProfileCustomization(
     BeginFirstWebContentsProfiling(browser, profile_picked_time_on_startup);
   }
 
-  browser->signin_view_controller()->ShowModalProfileCustomizationDialog(
-      /*is_local_profile_creation=*/true);
+  browser->GetFeatures()
+      .signin_view_controller()
+      ->ShowModalProfileCustomizationDialog(
+          /*is_local_profile_creation=*/true);
 }
 
 void MaybeOpenPageInBrowser(Browser* browser,

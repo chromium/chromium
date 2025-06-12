@@ -62,8 +62,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -2138,7 +2140,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   Browser* new_browser = waiter.Wait();
   profile_customization_observer.Wait();
   content::WebContents* dialog_web_contents =
-      new_browser->signin_view_controller()
+      new_browser->GetFeatures()
+          .signin_view_controller()
           ->GetModalDialogWebContentsForTesting();
   EXPECT_EQ(dialog_web_contents->GetLastCommittedURL(),
             kLocalProfileCreationUrl);
@@ -2149,7 +2152,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
           .GetProfileAttributesWithPath(new_browser->profile()->GetPath());
   ASSERT_TRUE(entry->IsEphemeral());
   EXPECT_FALSE(ProfilePicker::IsOpen());
-  EXPECT_TRUE(new_browser->signin_view_controller()->ShowsModalDialog());
+  EXPECT_TRUE(
+      new_browser->GetFeatures().signin_view_controller()->ShowsModalDialog());
 
   // Simulate clicking the "Done" button on the profile customization dialog.
   ConfirmLocalProfileCreation(dialog_web_contents);
@@ -2159,7 +2163,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(2u, g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()
                     .GetNumberOfProfiles());
-  EXPECT_FALSE(new_browser->signin_view_controller()->ShowsModalDialog());
+  EXPECT_FALSE(
+      new_browser->GetFeatures().signin_view_controller()->ShowsModalDialog());
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -2190,7 +2195,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   Browser* new_browser = browser_added_waiter.Wait();
   profile_customization_observer.Wait();
   content::WebContents* dialog_web_contents =
-      new_browser->signin_view_controller()
+      new_browser->GetFeatures()
+          .signin_view_controller()
           ->GetModalDialogWebContentsForTesting();
   EXPECT_EQ(dialog_web_contents->GetLastCommittedURL(),
             kLocalProfileCreationUrl);
@@ -2205,7 +2211,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                     .GetNumberOfProfiles());
   ASSERT_TRUE(entry->IsEphemeral());
   EXPECT_FALSE(ProfilePicker::IsOpen());
-  EXPECT_TRUE(new_browser->signin_view_controller()->ShowsModalDialog());
+  EXPECT_TRUE(
+      new_browser->GetFeatures().signin_view_controller()->ShowsModalDialog());
 
   // Simulate clicking the "Delete profile" button on the profile customization
   // dialog.

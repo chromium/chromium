@@ -20,6 +20,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -229,7 +230,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
   }
 
   SigninViewController* controller() {
-    return browser()->signin_view_controller();
+    return browser()->GetFeatures().signin_view_controller();
   }
 
   SigninInterceptFirstRunExperienceDialog* dialog() {

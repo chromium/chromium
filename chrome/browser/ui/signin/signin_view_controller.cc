@@ -18,6 +18,8 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog_impl.h"
@@ -120,15 +122,17 @@ class NewTabWebContentsObserver : public content::WebContentsObserver {
 };
 
 // Opens a new tab on |url| or reuses the current tab if it is the NTP.
-void ShowTabOverwritingNTP(Browser* browser, const GURL& url) {
-  NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+void ShowTabOverwritingNTP(BrowserWindowInterface* browser,
+                           TabStripModel* tab_strip_model,
+                           const GURL& url) {
+  NavigateParams params(browser->GetBrowserForMigrationOnly(), url,
+                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.window_action = NavigateParams::SHOW_WINDOW;
   params.user_gesture = false;
   params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;
 
-  content::WebContents* contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* contents = tab_strip_model->GetActiveWebContents();
   if (contents) {
     const GURL& contents_url = contents->GetVisibleURL();
     if (contents_url == chrome::kChromeUINewTabURL ||
@@ -182,7 +186,7 @@ bool ShowAccountExtensionsOnSignout(Profile* profile) {
 // Called from `SignoutOrReauthWithPrompt()` after the user made a choice on the
 // confirmation dialog.
 void HandleSignoutConfirmationChoice(
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     signin_metrics::AccessPoint reauth_access_point,
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source,
@@ -192,7 +196,7 @@ void HandleSignoutConfirmationChoice(
     return;
   }
 
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
   switch (user_choice) {
     case ChromeSignoutConfirmationChoice::kCancelSignout:
       return;
@@ -215,7 +219,7 @@ void HandleSignoutConfirmationChoice(
       if (!accounts_in_cookies.AreAccountsFresh() ||
           !accounts_in_cookies.GetPotentiallyInvalidSignedInAccounts()
                .empty()) {
-        browser->signin_view_controller()->ShowGaiaLogoutTab(
+        browser->GetFeatures().signin_view_controller()->ShowGaiaLogoutTab(
             token_signout_source);
       }
 
@@ -270,10 +274,14 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
                                       kHistorySyncOptinViewId);
 
-SigninViewController::SigninViewController(Browser* browser)
-    : browser_(browser) {}
+SigninViewController::SigninViewController(BrowserWindowInterface* browser)
+    : browser_(browser),
+      profile_(browser->GetProfile()),
+      tab_strip_model_(browser->GetTabStripModel()) {}
 
-SigninViewController::~SigninViewController() {
+SigninViewController::~SigninViewController() = default;
+
+void SigninViewController::TearDownPreBrowserViewDestruction() {
   CloseModalSignin();
 }
 
@@ -300,9 +308,8 @@ bool SigninViewController::IsNTPTab(content::WebContents* contents) {
 
 void SigninViewController::ShowSignin(signin_metrics::AccessPoint access_point,
                                       const GURL& redirect_url) {
-  Profile* profile = browser_->profile();
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      IdentityManagerFactory::GetForProfile(profile_);
   signin_metrics::PromoAction promo_action =
       GetPromoActionForNewAccount(identity_manager);
   ShowDiceSigninTab(signin_metrics::Reason::kSigninPrimaryAccount, access_point,
@@ -314,7 +321,7 @@ void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(
     bool is_forced_intercept) {
   CloseModalSignin();
   auto fre_dialog = std::make_unique<SigninInterceptFirstRunExperienceDialog>(
-      browser_, account_id, is_forced_intercept,
+      browser_->GetBrowserForMigrationOnly(), account_id, is_forced_intercept,
       GetOnModalDialogClosedCallback());
   SigninInterceptFirstRunExperienceDialog* raw_dialog = fre_dialog.get();
   // Casts pointer to a base class.
@@ -326,10 +333,9 @@ void SigninViewController::SignoutOrReauthWithPrompt(
     signin_metrics::AccessPoint reauth_access_point,
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source) {
-  Profile* profile = browser_->profile();
-  CHECK(profile->IsRegularProfile());
+  CHECK(profile_->IsRegularProfile());
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile_);
   base::OnceCallback<void(absl::flat_hash_map<syncer::DataType, size_t>)>
       signout_prompt_with_datatypes = base::BindOnce(
           &SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes,
@@ -338,7 +344,7 @@ void SigninViewController::SignoutOrReauthWithPrompt(
   // Fetch the unsynced datatypes, as this is required to decide whether the
   // confirmation prompt is needed.
   if (sync_service &&
-      profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
+      profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
     sync_service->GetTypesWithUnsyncedData(
         syncer::TypesRequiringUnsyncedDataCheckOnSignout(),
         std::move(signout_prompt_with_datatypes));
@@ -354,7 +360,7 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
     base::OnceClosure on_complete) {
   // TODO(b/321900930): Consider using `CHECK()` instead on `DVLOG()`.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_->profile());
+      IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     DVLOG(1) << "Chrome is already signed in.";
     std::move(on_complete).Run();
@@ -363,7 +369,7 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
 
   AccountInfo account_info_for_promos =
       signin_ui_util::GetSingleAccountForPromos(
-          IdentityManagerFactory::GetForProfile(browser_->profile()));
+          IdentityManagerFactory::GetForProfile(profile_));
   if (account_info_for_promos.IsEmpty()) {
     DVLOG(1) << "The user is not signed in on the web.";
     std::move(on_complete).Run();
@@ -371,12 +377,12 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
   }
 
   // Check if there is already a new_tab_page open.
-  TabStripModel* tab_strip = browser_->tab_strip_model();
   int ntp_tab_index = TabStripModel::kNoTab;
-  int active_tab_index = tab_strip->active_index();
-  int tab_count = tab_strip->count();
+  const int active_tab_index = tab_strip_model_->active_index();
+  const int tab_count = tab_strip_model_->count();
   for (int tab_index = 0; tab_index < tab_count; ++tab_index) {
-    content::WebContents* web_contents = tab_strip->GetWebContentsAt(tab_index);
+    content::WebContents* web_contents =
+        tab_strip_model_->GetWebContentsAt(tab_index);
     if (web_contents && SigninViewController::IsNTPTab(web_contents)) {
       ntp_tab_index = tab_index;
       // Prefer to keep the active tab if possible.
@@ -387,17 +393,19 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
   }
 
   if (ntp_tab_index != TabStripModel::kNoTab) {
-    tab_strip->ActivateTabAt(
+    tab_strip_model_->ActivateTabAt(
         ntp_tab_index, TabStripUserGestureDetails(
                            TabStripUserGestureDetails::GestureType::kOther));
     ShowChromeSigninDialogForExtensions(
         extension_name_for_display, std::move(on_complete),
-        account_info_for_promos, tab_strip->GetWebContentsAt(ntp_tab_index));
+        account_info_for_promos,
+        tab_strip_model_->GetWebContentsAt(ntp_tab_index));
     return;
   }
 
   // Create a new tab page and wait for the navigation to complete.
-  NavigateParams params(browser_, GURL(chrome::kChromeUINewTabURL),
+  NavigateParams params(browser_->GetBrowserForMigrationOnly(),
+                        GURL(chrome::kChromeUINewTabURL),
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.window_action = NavigateParams::SHOW_WINDOW;
@@ -421,7 +429,7 @@ void SigninViewController::ShowModalProfileCustomizationDialog(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
-          browser_, is_local_profile_creation,
+          browser_->GetBrowserForMigrationOnly(), is_local_profile_creation,
           /*show_profile_switch_iph=*/true, /*show_supervised_user_iph=*/true),
       GetOnModalDialogClosedCallback());
 }
@@ -432,11 +440,10 @@ void SigninViewController::ShowModalSigninEmailConfirmationDialog(
     SigninEmailConfirmationDialog::Callback callback) {
   CloseModalSignin();
   content::WebContents* active_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
+      tab_strip_model_->GetActiveWebContents();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninEmailConfirmationDialog::AskForConfirmation(
-          active_contents, browser_->profile(), last_email, email,
-          std::move(callback)),
+          active_contents, profile_, last_email, email, std::move(callback)),
       GetOnModalDialogClosedCallback());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -447,7 +454,7 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
-          browser_,
+          browser_->GetBrowserForMigrationOnly(),
           is_signin_intercept ? SyncConfirmationStyle::kSigninInterceptModal
                               : SyncConfirmationStyle::kDefaultModal,
           is_sync_promo),
@@ -459,7 +466,8 @@ void SigninViewController::ShowModalHistorySyncOptInDialog() {
   CHECK(base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin));
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateSyncHistoryOptInDelegate(browser_),
+      SigninViewControllerDelegate::CreateSyncHistoryOptInDelegate(
+          browser_->GetBrowserForMigrationOnly()),
       GetOnModalDialogClosedCallback());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -471,7 +479,7 @@ void SigninViewController::ShowModalManagedUserNoticeDialog(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
-          browser_, std::move(create_param)),
+          browser_->GetBrowserForMigrationOnly(), std::move(create_param)),
       GetOnModalDialogClosedCallback());
 #else
   NOTREACHED() << "Managed user notice dialog modal not supported";
@@ -481,7 +489,8 @@ void SigninViewController::ShowModalManagedUserNoticeDialog(
 void SigninViewController::ShowModalSigninErrorDialog() {
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateSigninErrorDelegate(browser_),
+      SigninViewControllerDelegate::CreateSigninErrorDelegate(
+          browser_->GetBrowserForMigrationOnly()),
       GetOnModalDialogClosedCallback());
 }
 
@@ -522,8 +531,7 @@ void SigninViewController::ShowDiceSigninTab(
     const std::string& email_hint,
     const GURL& redirect_url) {
 #if DCHECK_IS_ON()
-  if (!AccountConsistencyModeManager::IsDiceEnabledForProfile(
-          browser_->profile())) {
+  if (!AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
     // Developers often fall into the trap of not configuring the OAuth client
     // ID and client secret and then attempt to sign in to Chromium, which
     // fail as the account consistency is disabled. Explicitly check that the
@@ -551,46 +559,46 @@ void SigninViewController::ShowDiceSigninTab(
   // error 400. This seems to happen in particular if the continue URL is not a
   // Google-owned domain. Chrome cannot enforce that only valid URLs are used,
   // because the set of valid URLs is not specified.
-  GURL continue_url =
+  const GURL continue_url =
       (redirect_url.is_empty() || !redirect_url.SchemeIsHTTPOrHTTPS())
           ? GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
           : redirect_url;
 
-  GURL signin_url = GetSigninUrlForDiceSigninTab(
-      *IdentityManagerFactory::GetForProfile(browser_->profile()), access_point,
+  const GURL signin_url = GetSigninUrlForDiceSigninTab(
+      *IdentityManagerFactory::GetForProfile(profile_), access_point,
       signin_reason, email_hint, continue_url);
 
   content::WebContents* active_contents = nullptr;
   if (access_point == signin_metrics::AccessPoint::kStartPage) {
-    active_contents = browser_->tab_strip_model()->GetActiveWebContents();
+    active_contents = tab_strip_model_->GetActiveWebContents();
     content::OpenURLParams params(signin_url, content::Referrer(),
                                   WindowOpenDisposition::CURRENT_TAB,
                                   ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
     active_contents->OpenURL(params, /*navigation_handle_callback=*/{});
   } else {
     // Check if there is already a signin-tab open.
-    TabStripModel* tab_strip = browser_->tab_strip_model();
-    int dice_tab_index = FindDiceSigninTab(tab_strip, signin_url);
+    const int dice_tab_index = FindDiceSigninTab(tab_strip_model_, signin_url);
     if (dice_tab_index != -1) {
       if (access_point != signin_metrics::AccessPoint::kExtensions) {
         // Extensions do not activate the tab to prevent misbehaving
         // extensions to keep focusing the signin tab.
-        tab_strip->ActivateTabAt(
+        tab_strip_model_->ActivateTabAt(
             dice_tab_index,
             TabStripUserGestureDetails(
                 TabStripUserGestureDetails::GestureType::kOther));
 
         // Update the access point of the signin tab, so that the next signin
         // is recorded from the latest access point.
-        DiceTabHelper::FromWebContents(tab_strip->GetActiveTab()->GetContents())
+        DiceTabHelper::FromWebContents(
+            tab_strip_model_->GetActiveTab()->GetContents())
             ->SetAccessPoint(access_point);
       }
       // Do not create a new signin tab, because there is already one.
       return;
     }
 
-    ShowTabOverwritingNTP(browser_, signin_url);
-    active_contents = browser_->tab_strip_model()->GetActiveWebContents();
+    ShowTabOverwritingNTP(browser_, tab_strip_model_, signin_url);
+    active_contents = tab_strip_model_->GetActiveWebContents();
   }
 
   // Checks that we have right contents, in which the signin page is being
@@ -621,7 +629,7 @@ void SigninViewController::ShowDiceEnableSyncTab(
   signin_metrics::Reason reason = signin_metrics::Reason::kSigninPrimaryAccount;
   std::string email_to_use = email_hint;
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_->profile());
+      IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // Avoids asking for the Sync consent as it has been already given.
     reason = signin_metrics::Reason::kReauthentication;
@@ -639,7 +647,7 @@ void SigninViewController::ShowDiceAddAccountTab(
     const std::string& email_hint) {
   signin_metrics::Reason reason = signin_metrics::Reason::kAddSecondaryAccount;
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_->profile());
+      IdentityManagerFactory::GetForProfile(profile_);
   if (!email_hint.empty() &&
       !identity_manager->FindExtendedAccountInfoByEmailAddress(email_hint)
            .IsEmpty()) {
@@ -658,7 +666,7 @@ void SigninViewController::ShowGaiaLogoutTab(
   // Since the user may be triggering navigation from another UI element such as
   // a menu, ensure the web contents (and therefore the page that is about to be
   // shown) is focused. (See crbug/926492 for motivation.)
-  auto* const contents = browser_->tab_strip_model()->GetActiveWebContents();
+  auto* const contents = tab_strip_model_->GetActiveWebContents();
   if (contents) {
     contents->Focus();
   }
@@ -666,16 +674,17 @@ void SigninViewController::ShowGaiaLogoutTab(
   // Pass a continue URL when the Web Signin Intercept bubble is shown, so that
   // the bubble and the app picker do not overlap. If the bubble is not shown,
   // open the app picker in case the user is lost.
-  GURL logout_url = GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL());
+  const GURL logout_url =
+      GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL());
 
   // Do not use a singleton tab. A new tab should be opened even if there is
   // already a logout tab.
-  ShowTabOverwritingNTP(browser_, logout_url);
+  ShowTabOverwritingNTP(browser_, tab_strip_model_, logout_url);
 
   // Monitor the logout and fallback to local signout if it fails. The
   // LogoutTabHelper deletes itself.
   content::WebContents* logout_tab_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
+      tab_strip_model_->GetActiveWebContents();
   DCHECK(logout_tab_contents);
   LogoutTabHelper::CreateForWebContents(logout_tab_contents);
 }
@@ -685,32 +694,31 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source,
     absl::flat_hash_map<syncer::DataType, size_t> unsynced_datatypes) {
-  Profile* profile = browser_->profile();
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CoreAccountId primary_account_id =
+      IdentityManagerFactory::GetForProfile(profile_);
+  const CoreAccountId primary_account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (primary_account_id.empty()) {
     return;
   }
 
-  bool needs_reauth =
+  const bool needs_reauth =
       !identity_manager->HasAccountWithRefreshToken(primary_account_id) ||
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id);
   bool sign_out_immediately = unsynced_datatypes.empty() && needs_reauth;
 
   // Do not show the dialog to users with implicit signin.
-  if (!profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
     sign_out_immediately = true;
   }
 
-  if (ShowAccountExtensionsOnSignout(profile)) {
+  if (ShowAccountExtensionsOnSignout(profile_)) {
     sign_out_immediately = false;
   }
 
   SignoutConfirmationCallback callback = base::BindOnce(
-      &HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
+      &HandleSignoutConfirmationChoice, browser_->GetWeakPtr(),
       reauth_access_point, profile_signout_source, token_signout_source);
 
   if (sign_out_immediately) {
@@ -782,7 +790,7 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
               signin_metrics::AccessPoint::kExtensions);
         }
       },
-      browser_->profile()->GetWeakPtr(), account_info_for_promos.account_id);
+      profile_->GetWeakPtr(), account_info_for_promos.account_id);
 
   std::u16string title =
       extension_name_for_display.empty()
@@ -824,7 +832,8 @@ void SigninViewController::ShowSignoutConfirmationPrompt(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(
-          browser_, prompt_variant, std::move(callback)),
+          browser_->GetBrowserForMigrationOnly(), prompt_variant,
+          std::move(callback)),
       GetOnModalDialogClosedCallback());
 }
 

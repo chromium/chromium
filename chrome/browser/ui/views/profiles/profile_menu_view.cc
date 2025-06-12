@@ -47,12 +47,14 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -420,7 +422,10 @@ void ProfileMenuView::OnSigninButtonClicked(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/404807488): Update the button and the dialog strings.
   if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
-    browser().signin_view_controller()->ShowModalHistorySyncOptInDialog();
+    browser()
+        .GetFeatures()
+        .signin_view_controller()
+        ->ShowModalHistorySyncOptInDialog();
     return;
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -449,7 +454,7 @@ void ProfileMenuView::OnSignoutButtonClicked() {
     return;
   }
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-  browser().signin_view_controller()->SignoutOrReauthWithPrompt(
+  browser().GetFeatures().signin_view_controller()->SignoutOrReauthWithPrompt(
       signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt,
       signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
       signin_metrics::SourceForRefreshTokenOperation::

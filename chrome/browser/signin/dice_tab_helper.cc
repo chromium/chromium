@@ -13,6 +13,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
@@ -79,7 +81,9 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
     CHECK(identity_manager);
     CHECK(identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
               .account_id == account_info.account_id);
-    browser->signin_view_controller()->ShowModalHistorySyncOptInDialog();
+    browser->GetFeatures()
+        .signin_view_controller()
+        ->ShowModalHistorySyncOptInDialog();
   });
 }
 

@@ -10,6 +10,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -70,14 +72,15 @@ void HistorySyncOptinHandler::MaybeGetAccountInfo() {
 
 void HistorySyncOptinHandler::UpdateDialogHeight(uint32_t height) {
   if (browser_) {
-    browser_->signin_view_controller()->SetModalSigninHeight(height);
+    browser_->GetFeatures().signin_view_controller()->SetModalSigninHeight(
+        height);
   }
 }
 
 void HistorySyncOptinHandler::FinishAndCloseDialog() {
   // TODO(crbug.com/404806506): Add metrics.
   if (browser_) {
-    browser_->signin_view_controller()->CloseModalSignin();
+    browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
   }
 }
 

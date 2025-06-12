@@ -655,7 +655,6 @@ Browser::Browser(const CreateParams& params)
       command_controller_(new chrome::BrowserCommandController(this)),
       window_has_shown_(false),
       user_title_(params.user_title),
-      signin_view_controller_(this),
       breadcrumb_manager_browser_agent_(
           breadcrumbs::IsEnabled(g_browser_process->local_state())
               ? std::make_unique<BreadcrumbManagerBrowserAgent>(this)

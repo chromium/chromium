@@ -8,7 +8,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome_signout_confirmation_prompt.h"
@@ -49,7 +51,7 @@ class ChromeSignoutConfirmationPromptPixelTest
         views::test::AnyWidgetTestPasskey{},
         "SigninViewControllerDelegateViews");
 
-    auto* controller = browser()->signin_view_controller();
+    auto* controller = browser()->GetFeatures().signin_view_controller();
     controller->ShowSignoutConfirmationPrompt(
         GetVariant(), base::BindOnce([](ChromeSignoutConfirmationChoice choice,
                                         bool uninstall_extensions) {}));

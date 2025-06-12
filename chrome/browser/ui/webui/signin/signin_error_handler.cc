@@ -9,7 +9,9 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
@@ -101,5 +103,5 @@ void SigninErrorHandler::CloseDialog() {
 }
 
 void SigninErrorHandler::CloseBrowserModalSigninDialog() {
-  browser_->signin_view_controller()->CloseModalSignin();
+  browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
 }

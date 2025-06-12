@@ -14,6 +14,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -177,8 +179,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
                        NoPromptProfileSetup) {
   EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(0);
   // Show the profile customization dialog.
-  browser()->signin_view_controller()->ShowModalProfileCustomizationDialog(
-      /*is_local_profile_creation=*/true);
+  browser()
+      ->GetFeatures()
+      .signin_view_controller()
+      ->ShowModalProfileCustomizationDialog(
+          /*is_local_profile_creation=*/true);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,

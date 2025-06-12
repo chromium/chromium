@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
@@ -79,7 +80,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
       LoginUIService::SyncConfirmationUIClosedResult result) override {
     login_ui_service_observation_.Reset();
     result_ = result;
-    browser_->signin_view_controller()->CloseModalSignin();
+    browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
     run_loop_.Quit();
   }
 
@@ -110,7 +111,7 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  browser()->signin_view_controller()->ShowSignin(
+  browser()->GetFeatures().signin_view_controller()->ShowSignin(
       signin_metrics::AccessPoint::kSettings);
 
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
@@ -140,9 +141,11 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   content::TestNavigationObserver content_observer(
       GURL("chrome://sync-confirmation/"));
   content_observer.StartWatchingNewWebContents();
-  browser()->signin_view_controller()->ShowModalSyncConfirmationDialog(
+  auto* signin_view_controller =
+      browser()->GetFeatures().signin_view_controller();
+  signin_view_controller->ShowModalSyncConfirmationDialog(
       /*is_signin_intercept=*/false, /*is_sync_promo=*/false);
-  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
+  EXPECT_TRUE(signin_view_controller->ShowsModalDialog());
   content_observer.Wait();
 
   SyncConfirmationClosedObserver sync_confirmation_observer(browser());
@@ -154,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   LoginUIService::SyncConfirmationUIClosedResult result =
       sync_confirmation_observer.WaitForConfirmationClosed();
   EXPECT_EQ(result, LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-  EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
+  EXPECT_FALSE(signin_view_controller->ShowsModalDialog());
 }
 
 class SignInViewControllerInteractiveBrowserTest
@@ -194,7 +197,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
       // Show the dialog and verify that it has shown.
       Do([&] {
         browser()
-            ->signin_view_controller()
+            ->GetFeatures()
+            .signin_view_controller()
             ->ShowModalSigninEmailConfirmationDialog(
                 "alice@gmail.com", "bob@gmail.com",
                 base::BindLambdaForTesting(
@@ -205,7 +209,10 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
                     }));
       }),
       WaitForShow(kConstrainedDialogWebViewElementId), Check([&] {
-        return browser()->signin_view_controller()->ShowsModalDialog();
+        return browser()
+            ->GetFeatures()
+            .signin_view_controller()
+            ->ShowsModalDialog();
       }),
 
       // Confirm the dialog.
@@ -232,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
                          CheckResult(
                              [&] {
                                return browser()
-                                   ->signin_view_controller()
+                                   ->GetFeatures()
+                                   .signin_view_controller()
                                    ->ShowsModalDialog();
                              },
                              false))));
@@ -245,21 +253,19 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   content::TestNavigationObserver content_observer(
       GURL("chrome://signin-error/"));
   content_observer.StartWatchingNewWebContents();
-  browser()->signin_view_controller()->ShowModalSigninErrorDialog();
-  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
+  auto* signin_view_controller =
+      browser()->GetFeatures().signin_view_controller();
+  signin_view_controller->ShowModalSigninErrorDialog();
+  EXPECT_TRUE(signin_view_controller->ShowsModalDialog());
   content_observer.Wait();
 
   content::WebContentsDestroyedWatcher dialog_destroyed_watcher(
-      browser()
-          ->signin_view_controller()
-          ->GetModalDialogWebContentsForTesting());
+      signin_view_controller->GetModalDialogWebContentsForTesting());
 
   // Before sending key events, make sure paint-holding does not drop input
   // events.
   content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(
-      browser()
-          ->signin_view_controller()
-          ->GetModalDialogWebContentsForTesting());
+      signin_view_controller->GetModalDialogWebContentsForTesting());
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
                                               /*control=*/false,
@@ -267,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                                               /*command=*/false));
   // Default action simply closes the dialog.
   dialog_destroyed_watcher.Wait();
-  EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
+  EXPECT_FALSE(signin_view_controller->ShowsModalDialog());
 }
 
 // Tests that the confirm button is focused by default in the enterprise
@@ -293,7 +299,10 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
       (GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)));
   content_observer.StartWatchingNewWebContents();
   signin::SigninChoice result;
-  browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
+  auto* signin_view_controller =
+      browser()->GetFeatures().signin_view_controller();
+
+  signin_view_controller->ShowModalManagedUserNoticeDialog(
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info, /*is_oidc_account=*/false,
           /*turn_sync_on_signed_profile=*/false, /*force_new_profile=*/true,
@@ -304,14 +313,12 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                          &result),
           /*done_callback=*/
           base::BindOnce(&SigninViewController::CloseModalSignin,
-                         browser()->signin_view_controller()->AsWeakPtr())));
-  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
+                         signin_view_controller->AsWeakPtr())));
+  EXPECT_TRUE(signin_view_controller->ShowsModalDialog());
   content_observer.Wait();
 
   content::WebContentsDestroyedWatcher dialog_destroyed_watcher(
-      browser()
-          ->signin_view_controller()
-          ->GetModalDialogWebContentsForTesting());
+      signin_view_controller->GetModalDialogWebContentsForTesting());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
                                               /*control=*/false,
                                               /*shift=*/false, /*alt=*/false,
@@ -319,5 +326,5 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
 
   dialog_destroyed_watcher.Wait();
   EXPECT_EQ(result, signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
-  EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
+  EXPECT_FALSE(signin_view_controller->ShowsModalDialog());
 }

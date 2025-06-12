@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -527,8 +529,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
 
   // Show the profile customization dialog.
-  browser()->signin_view_controller()->ShowModalProfileCustomizationDialog(
-      /*is_local_profile_creation=*/true);
+  browser()
+      ->GetFeatures()
+      .signin_view_controller()
+      ->ShowModalProfileCustomizationDialog(
+          /*is_local_profile_creation=*/true);
 
   // Navigate to a URL
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(

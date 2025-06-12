@@ -14,6 +14,8 @@
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -285,7 +287,7 @@ class SyncConfirmationUIDialogPixelTest
         views::test::AnyWidgetTestPasskey{},
         "SigninViewControllerDelegateViews");
 
-    auto* controller = browser()->signin_view_controller();
+    auto* controller = browser()->GetFeatures().signin_view_controller();
     controller->ShowModalSyncConfirmationDialog(
         GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal,
         GetParam().is_sync_promo);
@@ -347,7 +349,7 @@ class SyncConfirmationUITest
   // LoginUIService::Observer:
   void OnSyncConfirmationUIClosed(
       LoginUIService::SyncConfirmationUIClosedResult result) override {
-    browser()->signin_view_controller()->CloseModalSignin();
+    browser()->GetFeatures().signin_view_controller()->CloseModalSignin();
   }
 
   [[nodiscard]] AccountInfo FillAccountInfoWithEscapedHtmlCharacters(
@@ -417,8 +419,11 @@ IN_PROC_BROWSER_TEST_P(SyncConfirmationUITest,
   account_info = FillAccountInfoWithEscapedHtmlCharacters(account_info);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
-  browser()->signin_view_controller()->ShowModalSyncConfirmationDialog(
-      IsSigninIntercept(), /*is_sync_promo=*/true);
+  browser()
+      ->GetFeatures()
+      .signin_view_controller()
+      ->ShowModalSyncConfirmationDialog(IsSigninIntercept(),
+                                        /*is_sync_promo=*/true);
   switch (GetAction()) {
     case SyncConfirmationUIAction::kTurnSyncOn:
       EXPECT_TRUE(

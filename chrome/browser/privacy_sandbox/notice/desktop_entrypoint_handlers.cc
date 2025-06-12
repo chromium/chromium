@@ -11,8 +11,10 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/sync/service/sync_service.h"
@@ -106,7 +108,7 @@ void NavigationHandler::HandleNewNavigation(
   // behind flag / remove.
   auto* browser = browser_window_interface->GetBrowserForMigrationOnly();
   bool signin_dialog_showing =
-      browser->signin_view_controller()->ShowsModalDialog();
+      browser->GetFeatures().signin_view_controller()->ShowsModalDialog();
 #if !BUILDFLAG(IS_CHROMEOS)
   signin_dialog_showing =
       signin_dialog_showing ||

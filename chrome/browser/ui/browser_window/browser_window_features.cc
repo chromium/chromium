@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
@@ -217,6 +218,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   reading_list_side_panel_coordinator_ =
       std::make_unique<ReadingListSidePanelCoordinator>(
           browser->GetProfile(), browser->GetTabStripModel());
+
+  signin_view_controller_ = std::make_unique<SigninViewController>(browser);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
@@ -412,6 +415,7 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   }
 
   desktop_browser_window_capabilities_.reset();
+  signin_view_controller_->TearDownPreBrowserViewDestruction();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

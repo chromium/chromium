@@ -11,6 +11,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -101,7 +103,7 @@ void SetInitializedModalHeight(Browser* browser,
   }
 
   double height = args[0].GetDouble();
-  browser->signin_view_controller()->SetModalSigninHeight(
+  browser->GetFeatures().signin_view_controller()->SetModalSigninHeight(
       static_cast<int>(height));
 }
 

@@ -48,6 +48,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -1004,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
   // Signin using the Chrome Sync endpoint.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kSettings;
-  browser()->signin_view_controller()->ShowDiceEnableSyncTab(
+  browser()->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
       access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -1077,7 +1079,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
       https_server_.GetURL(kEnableSyncURL));
 
   // Signin using the Chrome Sync endpoint.
-  browser()->signin_view_controller()->ShowSignin(
+  browser()->GetFeatures().signin_view_controller()->ShowSignin(
       signin_metrics::AccessPoint::kSettings);
 
   // Receive ENABLE_SYNC.
@@ -1135,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
   sync_confirmation_url_observer.StartWatchingNewWebContents();
 
   // Signin using the Chrome Sync endpoint.
-  browser()->signin_view_controller()->ShowDiceEnableSyncTab(
+  browser()->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
       signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
@@ -1315,7 +1317,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
   // Signin from the settings page.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kSettings;
-  browser()->signin_view_controller()->ShowDiceEnableSyncTab(
+  browser()->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
       access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());

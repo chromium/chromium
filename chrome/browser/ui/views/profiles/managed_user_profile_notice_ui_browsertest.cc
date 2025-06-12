@@ -12,6 +12,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -237,7 +239,7 @@ class ManagedUserNoticeUIDialogPixelTest
         views::test::AnyWidgetTestPasskey{},
         "SigninViewControllerDelegateViews");
 
-    auto* controller = browser()->signin_view_controller();
+    auto* controller = browser()->GetFeatures().signin_view_controller();
     controller->ShowModalManagedUserNoticeDialog(
         std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
             account_info, /*is_oidc_account=*/false,

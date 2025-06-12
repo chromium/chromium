@@ -33,7 +33,9 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -1927,14 +1929,16 @@ TEST_F(PeopleHandlerSignoutTest, Signout) {
   EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
 
   CreatePeopleHandler();
-  EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
+  EXPECT_FALSE(
+      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog());
 
   base::Value::List args;
   args.Append(/*value=*/false);
   SimulateSignout(args);
   // The signout confirmation dialog is shown.
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
+  EXPECT_TRUE(
+      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

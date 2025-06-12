@@ -18,8 +18,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
 #include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -165,7 +167,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // TODO(crbug.com/370806609): When we add sign in notice to queue, put this
   // behind flag / remove.
   bool signin_dialog_showing =
-      browser->signin_view_controller()->ShowsModalDialog();
+      browser->GetFeatures().signin_view_controller()->ShowsModalDialog();
 #if !BUILDFLAG(IS_CHROMEOS)
   signin_dialog_showing =
       signin_dialog_showing ||

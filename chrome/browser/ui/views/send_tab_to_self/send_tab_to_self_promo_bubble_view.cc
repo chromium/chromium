@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/manage_account_devices_link_view.h"
@@ -107,7 +108,8 @@ void SendTabToSelfPromoBubbleView::AddedToWidget() {
 void SendTabToSelfPromoBubbleView::OnSignInButtonClicked() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   chrome::FindBrowserWithTab(web_contents())
-      ->signin_view_controller()
+      ->GetFeatures()
+      .signin_view_controller()
       ->ShowDiceAddAccountTab(signin_metrics::AccessPoint::kSendTabToSelfPromo,
                               /*email_hint=*/std::string());
 #else

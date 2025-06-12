@@ -17,7 +17,7 @@ source_set("signout_confirmation") {
   public_deps = [
     ":mojo_bindings",
     "//base",
-    "//chrome/browser/ui/signin:signin",
+    "//chrome/browser/ui/signin",
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",
@@ -35,6 +35,7 @@ source_set("signout_confirmation_impl") {
     ":signout_confirmation",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/signin/signout_confirmation:resources_grit",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui",
   ]
 

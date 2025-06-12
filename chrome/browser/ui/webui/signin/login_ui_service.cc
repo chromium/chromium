@@ -10,6 +10,8 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/common/url_constants.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -64,7 +66,9 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
   // TODO(crbug.com/40225985): Check if the condition should be `!error.IsOk()`
   if (!error.message().empty()) {
     if (browser) {
-      browser->signin_view_controller()->ShowModalSigninErrorDialog();
+      browser->GetFeatures()
+          .signin_view_controller()
+          ->ShowModalSigninErrorDialog();
     } else {
       LOG(ERROR) << "Unable to show Login error message: " << error.message();
     }

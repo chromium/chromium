@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -134,6 +135,7 @@ void BrowserWithTestWindowTest::TearDown() {
   // Close the browser tabs and destroy the browser and window instances.
   if (browser_) {
     browser_->tab_strip_model()->CloseAllTabs();
+    browser_->GetFeatures().TearDownPreBrowserViewDestruction();
     browser_.reset();
   }
   window_.reset();

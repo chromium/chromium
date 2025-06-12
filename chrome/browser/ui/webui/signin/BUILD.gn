@@ -63,6 +63,8 @@ source_set("signin_utils_impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/signin",
     "//chrome/common",
     "//chrome/common:non_code_constants",
     "//components/prefs",
@@ -188,6 +190,7 @@ source_set("signin_impl") {
 
     deps += [
       ":login",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/keyed_service/content",
       "//components/policy/core/browser",
@@ -256,6 +259,8 @@ source_set("login_impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/signin",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/metrics:metrics_pref_names",
@@ -490,6 +495,7 @@ source_set("test_support_ui") {
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/signin",
     "//chrome/test:test_support_ui",
     "//components/signin/public/identity_manager",

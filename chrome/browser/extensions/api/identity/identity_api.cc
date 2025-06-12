@@ -25,6 +25,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/common/extensions/api/identity.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/consent_level.h"
@@ -43,6 +44,7 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"  // nogncheck crbug.com/423799622
 #endif
 
 using signin::ConsentLevel;
@@ -176,10 +178,12 @@ void IdentityAPI::MaybeShowChromeSigninDialog(
   }
   on_chrome_signin_dialog_completed_.push_back(std::move(on_complete));
   is_chrome_signin_dialog_open_ = true;
-  browser->signin_view_controller()->MaybeShowChromeSigninDialogForExtensions(
-      extension_name_for_display,
-      base::BindOnce(&IdentityAPI::OnChromeSigninDialogDestroyed,
-                     weak_ptr_factory_.GetWeakPtr()));
+  browser->GetFeatures()
+      .signin_view_controller()
+      ->MaybeShowChromeSigninDialogForExtensions(
+          extension_name_for_display,
+          base::BindOnce(&IdentityAPI::OnChromeSigninDialogDestroyed,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IdentityAPI::OnChromeSigninDialogDestroyed() {

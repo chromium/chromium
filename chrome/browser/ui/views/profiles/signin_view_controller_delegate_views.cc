@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -97,7 +98,7 @@ void CloseModalSigninInBrowser(
     return;
   }
 
-  browser->signin_view_controller()->CloseModalSignin();
+  browser->GetFeatures().signin_view_controller()->CloseModalSignin();
   if (show_supervised_user_iph) {
     browser->window()->MaybeShowSupervisedUserProfileSignInIPH();
   }

@@ -6,6 +6,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
@@ -103,7 +104,8 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
 
   if (observer.get()) {
     observer->Wait();
-    auto* signin_view_controller = browser()->signin_view_controller();
+    auto* signin_view_controller =
+        browser()->GetFeatures().signin_view_controller();
     CHECK(signin_view_controller->ShowsModalDialog());
 
     auto* signout_ui = SignoutConfirmationUI::GetForTesting(

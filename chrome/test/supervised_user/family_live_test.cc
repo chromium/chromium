@@ -38,6 +38,11 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 namespace supervised_user {
 namespace {
 
@@ -250,7 +255,7 @@ void FamilyLiveTest::TearDownOnMainThread() {
     // notify this client. Explicit sign-out is critical, otherwise server-side
     // data structures can still think that the current client should receive
     // sync updates.
-    user->browser().signin_view_controller()->ShowGaiaLogoutTab(
+    user->browser().GetFeatures().signin_view_controller()->ShowGaiaLogoutTab(
         signin_metrics::SourceForRefreshTokenOperation::
             kUserMenu_SignOutAllAccounts);
   }

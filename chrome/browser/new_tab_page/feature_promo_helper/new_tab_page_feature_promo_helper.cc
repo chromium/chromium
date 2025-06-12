@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -60,6 +62,8 @@ bool NewTabPageFeaturePromoHelper::IsSigninModalDialogOpen(
   auto* browser = chrome::FindBrowserWithTab(web_contents);
   // `browser` might be NULL if the new tab is immediately dragged out of the
   // window.
-  return browser ? browser->signin_view_controller()->ShowsModalDialog()
+  return browser ? browser->GetFeatures()
+                       .signin_view_controller()
+                       ->ShowsModalDialog()
                  : false;
 }
