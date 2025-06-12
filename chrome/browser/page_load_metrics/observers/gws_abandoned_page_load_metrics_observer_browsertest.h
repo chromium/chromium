@@ -135,8 +135,10 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
   // http / https servers depending on the test.
   virtual net::EmbeddedTestServer* current_test_server();
 
- private:
+ protected:
   std::vector<NavigationMilestone> all_milestones_with_performance_mark();
+
+ private:
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
