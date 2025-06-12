@@ -50,6 +50,11 @@ class SigninInProgress;
 
 // The signin is finished.
 - (void)signinFinished;
+
+// Called when the profile switching will happen. `completion` needs to be
+// called once the account menu is dismissed.
+- (void)profileWillSwitchWithCompletion:(void (^)())completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_

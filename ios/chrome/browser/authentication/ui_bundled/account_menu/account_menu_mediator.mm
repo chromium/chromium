@@ -468,9 +468,9 @@
       break;
     }
   }
-  // TODO:(crbug.com/422443466): Need to dismiss the account menu before to call
-  // `readyCompletion`.
-  std::move(readyCompletion).Run(std::move(continuation));
+  void (^completion)() = base::CallbackToBlock(
+      base::BindOnce(std::move(readyCompletion), std::move(continuation)));
+  [self.delegate profileWillSwitchWithCompletion:completion];
 }
 
 #pragma mark - Private

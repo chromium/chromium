@@ -366,6 +366,14 @@ void maybeShowSettingsIPH(Browser* browser) {
   _signinInProgress.reset();
 }
 
+- (void)profileWillSwitchWithCompletion:(void (^)())completion {
+  // There is no point to call the coordinator delegate to be stopped once the
+  // view controller is dismissed.
+  // The profile is going to be destroyed by calling `completion` since the
+  // profile switching will start.
+  [self dismissViewControllerAnimated:YES completion:completion];
+}
+
 #pragma mark - SyncErrorSettingsCommandHandler
 
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
@@ -519,12 +527,13 @@ void maybeShowSettingsIPH(Browser* browser) {
   // Add Account coordinator should be stopped before the Manage Accounts
   // Coordinator, as the former may be presented by the latter.
   [self stopManageAccountsCoordinator];
-  [self dismissViewControllerAnimated:NO];
+  [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 // Unplugs the view and navigation controller. Dismisses the navigation
 // controller as specified by the action.
-- (void)dismissViewControllerAnimated:(BOOL)animated {
+- (void)dismissViewControllerAnimated:(BOOL)animated
+                           completion:(void (^)())completion {
   if (!_navigationController) {
     // The view controller was already dismissed.
     return;
@@ -538,7 +547,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   _viewController = nil;
   [navigationController.presentingViewController
       dismissViewControllerAnimated:animated
-                         completion:nil];
+                         completion:completion];
 }
 
 #pragma mark - TrustedVaultReauthenticationCoordinatorDelegate
