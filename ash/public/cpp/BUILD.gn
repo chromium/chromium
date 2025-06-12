@@ -567,6 +567,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ui/vector_icons",
+    "//components/account_id",
+    "//components/account_id:test_support",
     "//components/prefs:test_support",
     "//mojo/public/cpp/bindings",
     "//services/data_decoder/public/mojom",

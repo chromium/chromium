@@ -15,3 +15,15 @@ component("account_id") {
     "//google_apis",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "account_id_literal.h" ]
+
+  deps = [
+    ":account_id",
+    "//base",
+    "//google_apis",
+  ]
+}
