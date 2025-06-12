@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/timer/timer.h"
+#include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "content/public/browser/prerender_handle.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -16,10 +17,6 @@
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
-
-namespace content {
-class WebContents;
-}
 
 class Browser;
 
@@ -90,9 +87,8 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
   PressedCallback callback_;
   const raw_ref<const GURL> url_;
   const raw_ptr<Browser> browser_;
-  base::WeakPtr<content::PrerenderHandle> prerender_handle_;
   base::RetainingOneShotTimer preloading_timer_;
-  base::WeakPtr<content::WebContents> prerender_web_contents_;
+  base::WeakPtr<BookmarkBarPreloadPipelineManager> bookmarkbar_preload_manager_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

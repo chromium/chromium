@@ -40,8 +40,6 @@ const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[] =
     "Prerender.Experimental.PredictionStatus.DefaultSearchEngine";
 const char kHistogramPrerenderPredictionStatusDirectUrlInput[] =
     "Prerender.Experimental.PredictionStatus.DirectUrlInput";
-const char kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl[] =
-    "Prerender.IsPrerenderingSRPUrl.Embedder_BookmarkBar";
 const char kHistogramPrerenderNTPIsPrerenderingSrpUrl[] =
     "Prerender.IsPrerenderingSRPUrl.Embedder_NewTabPage";
 }  // namespace internal
@@ -63,13 +61,6 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
       static_cast<int>(status) +
       static_cast<int>(content::PreloadingFailureReason::
                            kPreloadingFailureReasonContentEnd));
-}
-
-void AttachBookmarkBarNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle, page_load_metrics::NavigationHandleUserData::
-                             InitiatorLocation::kBookmarkBar);
 }
 
 bool IsSearchUrl(content::WebContents& web_contents, const GURL& url) {
@@ -190,80 +181,6 @@ void PrerenderManager::DidFinishNavigation(
 }
 
 base::WeakPtr<content::PrerenderHandle>
-PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
-  // Helpers to create content::PreloadingAttempt.
-  auto* preloading_data =
-      content::PreloadingData::GetOrCreateForWebContents(web_contents());
-  content::PreloadingURLMatchCallback same_url_matcher =
-      content::PreloadingData::GetSameURLMatcher(prerendering_url);
-  // Create new PreloadingAttempt and pass all the values corresponding to
-  // this prerendering attempt for Prerender.
-  content::PreloadingAttempt* preloading_attempt =
-      preloading_data->AddPreloadingAttempt(
-          chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
-          content::PreloadingType::kPrerender, std::move(same_url_matcher),
-          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
-
-  bool is_search_url = IsSearchUrl(*web_contents(), prerendering_url);
-  base::UmaHistogramBoolean(
-      internal::kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl,
-      is_search_url);
-  if (is_search_url) {
-    preloading_attempt->SetEligibility(ToPreloadingEligibility(
-        ChromePreloadingEligibility::KDisallowSearchUrl));
-    return nullptr;
-  }
-
-  // BookmarkBar only allows https protocol.
-  // TODO(crbug.com/40259793): Add an enum metric to report the protocol scheme
-  // to decide if we should loosen this restriction for the http scheme.
-  if (!prerendering_url.SchemeIs("https")) {
-    preloading_attempt->SetEligibility(
-        content::PreloadingEligibility::kHttpsOnly);
-    return nullptr;
-  }
-
-  if (bookmark_prerender_handle_) {
-    if (bookmark_prerender_handle_->GetInitialPrerenderingUrl() ==
-        prerendering_url) {
-      // In case a prerender is already present for the URL, prerendering is
-      // eligible but mark triggering outcome as a duplicate.
-      preloading_attempt->SetEligibility(
-          content::PreloadingEligibility::kEligible);
-
-      MarkPreloadingAttemptAsDuplicate(preloading_attempt);
-      return bookmark_prerender_handle_->GetWeakPtr();
-    }
-    bookmark_prerender_handle_.reset();
-  }
-
-  base::RepeatingCallback<void(content::NavigationHandle&)>
-      prerender_navigation_handle_callback =
-          base::BindRepeating(&AttachBookmarkBarNavigationHandleUserData);
-
-  bookmark_prerender_handle_ = web_contents()->StartPrerendering(
-      prerendering_url, content::PreloadingTriggerType::kEmbedder,
-      prerender_utils::kBookmarkBarMetricSuffix,
-      /*additional_headers=*/net::HttpRequestHeaders(),
-      /*no_vary_search_hint=*/std::nullopt,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-      // Considering the characteristics of triggers (e.g., the duration from
-      // trigger to activation), warm-up is not enabled for now on this trigger.
-      // Please see crbug and its doc for more details.
-      /*should_warm_up_compositor=*/false,
-      /*should_prepare_paint_tree=*/false,
-      content::PreloadingHoldbackStatus::kUnspecified,
-      content::PreloadPipelineInfo::Create(
-          /*planned_max_preloading_type=*/content::PreloadingType::kPrerender),
-      preloading_attempt,
-      /*url_match_predicate=*/{},
-      std::move(prerender_navigation_handle_callback));
-
-  return bookmark_prerender_handle_ ? bookmark_prerender_handle_->GetWeakPtr()
-                                    : nullptr;
-}
-
-base::WeakPtr<content::PrerenderHandle>
 PrerenderManager::StartPrerenderNewTabPage(
     const GURL& prerendering_url,
     content::PreloadingPredictor predictor) {
@@ -346,16 +263,6 @@ void PrerenderManager::StopPrerenderNewTabPage(
   CHECK_EQ(prerender_handle.get(),
            new_tab_page_prerender_handle_->GetWeakPtr().get());
   new_tab_page_prerender_handle_.reset();
-}
-
-void PrerenderManager::StopPrerenderBookmark(
-    base::WeakPtr<content::PrerenderHandle> prerender_handle) {
-  if (!prerender_handle) {
-    return;
-  }
-  CHECK_EQ(prerender_handle.get(),
-           bookmark_prerender_handle_->GetWeakPtr().get());
-  bookmark_prerender_handle_.reset();
 }
 
 base::WeakPtr<content::PrerenderHandle>
@@ -564,7 +471,6 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
     search_prerender_task_.reset();
   }
 
-  bookmark_prerender_handle_.reset();
   new_tab_page_prerender_handle_.reset();
 }
 

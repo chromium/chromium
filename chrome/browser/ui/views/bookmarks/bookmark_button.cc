@@ -207,12 +207,8 @@ void BookmarkButton::OnMouseExited(const ui::MouseEvent& event) {
   BookmarkButtonBase::OnMouseExited(event);
   if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2)) {
     preloading_timer_.Stop();
-    if (prerender_web_contents_) {
-      auto* prerender_manager =
-          PrerenderManager::FromWebContents(&(*prerender_web_contents_));
-      prerender_manager->StopPrerenderBookmark(prerender_handle_);
-      prerender_handle_ = nullptr;
-      prerender_web_contents_ = nullptr;
+    if (bookmarkbar_preload_manager_) {
+      bookmarkbar_preload_manager_->ResetPrerender();
     }
   }
 }
@@ -242,7 +238,8 @@ void BookmarkButton::OnWidgetBoundsChanged(views::Widget* widget,
 
 void BookmarkButton::StartPreconnecting(GURL url) {
   CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
-  if (prerender_handle_) {
+  if (bookmarkbar_preload_manager_ &&
+      bookmarkbar_preload_manager_->IsPreloadingStarted()) {
     return;
   }
 
@@ -272,20 +269,17 @@ void BookmarkButton::StartPreconnecting(GURL url) {
 
 void BookmarkButton::StartPrerendering(GURL url) {
   CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
-  if (prerender_handle_) {
-    return;
-  }
   auto* active_web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!active_web_contents) {
     return;
   }
 
-  prerender_web_contents_ = active_web_contents->GetWeakPtr();
-  PrerenderManager::CreateForWebContents(prerender_web_contents_.get());
-  auto* prerender_manager =
-      PrerenderManager::FromWebContents(prerender_web_contents_.get());
-  prerender_handle_ = prerender_manager->StartPrerenderBookmark(url);
+  bookmarkbar_preload_manager_ =
+      BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
+          active_web_contents)
+          ->GetWeakPtr();
+  bookmarkbar_preload_manager_->StartPrerender(url);
 }
 
 void BookmarkButton::UpdateMaxTooltipWidth() {

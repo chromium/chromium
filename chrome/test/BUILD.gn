@@ -6785,6 +6785,7 @@ test("unit_tests") {
     "//chrome/browser/prefs:unit_tests",
     "//chrome/browser/prefs:util",
     "//chrome/browser/preloading:prefs",
+    "//chrome/browser/preloading/bookmarkbar_preload:unit_tests",
     "//chrome/browser/preloading/prerender:unit_tests",
     "//chrome/browser/privacy_budget:unit_tests",
     "//chrome/browser/privacy_sandbox",
