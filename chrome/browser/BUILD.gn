@@ -7662,7 +7662,6 @@ static_library("browser") {
       "sync_file_system/drive_backend/uninstall_app_task.h",
       "sync_file_system/file_change.cc",
       "sync_file_system/file_change.h",
-      "sync_file_system/file_status_observer.h",
       "sync_file_system/local/local_file_change_tracker.cc",
       "sync_file_system/local/local_file_change_tracker.h",
       "sync_file_system/local/local_file_sync_context.cc",

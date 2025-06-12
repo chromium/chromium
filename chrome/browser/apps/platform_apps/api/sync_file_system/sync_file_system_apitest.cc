@@ -11,7 +11,6 @@
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync_file_system/file_status_observer.h"
 #include "chrome/browser/sync_file_system/local_change_processor.h"
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
@@ -88,17 +87,8 @@ ACTION_P2(UpdateRemoteChangeQueue, origin, mock_remote_service) {
 struct ReturnWithFakeFileAddedStatusFunctor {
   ReturnWithFakeFileAddedStatusFunctor(
       GURL* origin,
-      MockRemoteFileSyncService* mock_remote_service,
-      sync_file_system::SyncFileType file_type,
-      sync_file_system::SyncFileStatus sync_file_status,
-      sync_file_system::SyncAction sync_action_taken,
-      sync_file_system::SyncDirection sync_direction)
-      : origin_(origin),
-        mock_remote_service_(mock_remote_service),
-        file_type_(file_type),
-        sync_file_status_(sync_file_status),
-        sync_action_taken_(sync_action_taken),
-        sync_direction_(sync_direction) {}
+      MockRemoteFileSyncService* mock_remote_service)
+      : origin_(origin), mock_remote_service_(mock_remote_service) {}
 
   void operator()(sync_file_system::SyncFileCallback callback) {
     FileSystemURL mock_url = sync_file_system::CreateSyncableFileSystemURL(
@@ -107,18 +97,11 @@ struct ReturnWithFakeFileAddedStatusFunctor {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   sync_file_system::SYNC_STATUS_OK, mock_url));
-    mock_remote_service_->NotifyFileStatusChanged(
-        mock_url, file_type_, sync_file_status_, sync_action_taken_,
-        sync_direction_);
   }
 
  private:
   raw_ptr<GURL> origin_;
   raw_ptr<MockRemoteFileSyncService, DanglingUntriaged> mock_remote_service_;
-  sync_file_system::SyncFileType file_type_;
-  sync_file_system::SyncFileStatus sync_file_status_;
-  sync_file_system::SyncAction sync_action_taken_;
-  sync_file_system::SyncDirection sync_direction_;
 };
 
 }  // namespace
@@ -155,10 +138,7 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChanged) {
       .WillOnce(UpdateRemoteChangeQueue(&origin, mock_remote_service()));
   EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
       .WillOnce(WithArg<0>(Invoke(ReturnWithFakeFileAddedStatusFunctor(
-          &origin, mock_remote_service(), sync_file_system::SYNC_FILE_TYPE_FILE,
-          sync_file_system::SYNC_FILE_STATUS_SYNCED,
-          sync_file_system::SYNC_ACTION_ADDED,
-          sync_file_system::SYNC_DIRECTION_REMOTE_TO_LOCAL))));
+          &origin, mock_remote_service()))));
   ASSERT_TRUE(RunExtensionTest("sync_file_system/on_file_status_changed",
                                {.launch_as_platform_app = true}))
       << message_;
@@ -175,10 +155,7 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
       .WillOnce(UpdateRemoteChangeQueue(&origin, mock_remote_service()));
   EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
       .WillOnce(WithArg<0>(Invoke(ReturnWithFakeFileAddedStatusFunctor(
-          &origin, mock_remote_service(), sync_file_system::SYNC_FILE_TYPE_FILE,
-          sync_file_system::SYNC_FILE_STATUS_SYNCED,
-          sync_file_system::SYNC_ACTION_DELETED,
-          sync_file_system::SYNC_DIRECTION_REMOTE_TO_LOCAL))));
+          &origin, mock_remote_service()))));
   ASSERT_TRUE(
       RunExtensionTest("sync_file_system/on_file_status_changed_deleted",
                        {.launch_as_platform_app = true}))

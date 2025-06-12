@@ -127,8 +127,6 @@ class SyncFileSystemServiceTest : public testing::Test {
     EXPECT_CALL(*mock_remote_service(),
                 AddServiceObserver(_)).Times(1);
     EXPECT_CALL(*mock_remote_service(),
-                AddFileStatusObserver(sync_service_.get())).Times(1);
-    EXPECT_CALL(*mock_remote_service(),
                 GetLocalChangeProcessor())
         .WillRepeatedly(Return(&local_change_processor_));
     EXPECT_CALL(*mock_remote_service(),

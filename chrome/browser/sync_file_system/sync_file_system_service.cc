@@ -401,7 +401,6 @@ void SyncFileSystemService::Initialize(
       &GetLocalChangeProcessorAdapter, weak_ptr_factory_.GetWeakPtr()));
 
   remote_service_->AddServiceObserver(remote_syncer.get());
-  remote_service_->AddFileStatusObserver(this);
   remote_service_->SetRemoteChangeProcessor(local_service_.get());
 
   local_sync_runners_.push_back(std::move(local_syncer));
@@ -572,15 +571,6 @@ void SyncFileSystemService::OnExtensionLoaded(
 
 void SyncFileSystemService::OnStateChanged(syncer::SyncService* sync) {
   UpdateSyncEnabledStatus(sync);
-}
-
-void SyncFileSystemService::OnFileStatusChanged(
-    const FileSystemURL& url,
-    SyncFileType file_type,
-    SyncFileStatus sync_status,
-    SyncAction action_taken,
-    SyncDirection direction) {
-  // TODO(crbug.com/396460818): Cleanup, this function is now a no-op.
 }
 
 void SyncFileSystemService::UpdateSyncEnabledStatus(

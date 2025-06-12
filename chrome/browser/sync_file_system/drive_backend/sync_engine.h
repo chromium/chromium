@@ -110,7 +110,6 @@ class SyncEngine
 
   // RemoteFileSyncService overrides.
   void AddServiceObserver(SyncServiceObserver* observer) override;
-  void AddFileStatusObserver(FileStatusObserver* observer) override;
   void RegisterOrigin(const GURL& origin, SyncStatusCallback callback) override;
   void EnableOrigin(const GURL& origin, SyncStatusCallback callback) override;
   void DisableOrigin(const GURL& origin, SyncStatusCallback callback) override;
@@ -217,8 +216,6 @@ class SyncEngine
 
   base::ObserverList<SyncServiceObserver>::UncheckedAndDanglingUntriaged
       service_observers_;
-  base::ObserverList<FileStatusObserver>::UncheckedAndDanglingUntriaged
-      file_status_observers_;
   raw_ptr<leveldb::Env> env_override_;
 
   CallbackTracker callback_tracker_;

@@ -38,7 +38,6 @@
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker_interface.h"
 #include "chrome/browser/sync_file_system/drive_backend/uninstall_app_task.h"
-#include "chrome/browser/sync_file_system/file_status_observer.h"
 #include "chrome/browser/sync_file_system/logger.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "components/drive/drive_uploader.h"
@@ -349,10 +348,6 @@ void SyncEngine::InitializeInternal(
 
 void SyncEngine::AddServiceObserver(SyncServiceObserver* observer) {
   service_observers_.AddObserver(observer);
-}
-
-void SyncEngine::AddFileStatusObserver(FileStatusObserver* observer) {
-  file_status_observers_.AddObserver(observer);
 }
 
 void SyncEngine::RegisterOrigin(const GURL& origin,
@@ -668,10 +663,7 @@ void SyncEngine::OnFileStatusChanged(const storage::FileSystemURL& url,
                                      SyncFileStatus file_status,
                                      SyncAction sync_action,
                                      SyncDirection direction) {
-  for (auto& observer : file_status_observers_) {
-    observer.OnFileStatusChanged(url, file_type, file_status, sync_action,
-                                 direction);
-  }
+  // TODO(crbug.com/396460818): Cleanup, this function is now a no-op.
 }
 
 void SyncEngine::UpdateServiceState(RemoteServiceState state,

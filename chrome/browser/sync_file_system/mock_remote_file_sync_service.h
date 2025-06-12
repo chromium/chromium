@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
-#include "chrome/browser/sync_file_system/file_status_observer.h"
 #include "chrome/browser/sync_file_system/mock_local_change_processor.h"
 #include "chrome/browser/sync_file_system/remote_change_processor.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
@@ -37,8 +36,6 @@ class MockRemoteFileSyncService : public RemoteFileSyncService {
   // RemoteFileSyncService overrides.
   MOCK_METHOD1(AddServiceObserver,
                void(RemoteFileSyncService::Observer* observer));
-  MOCK_METHOD1(AddFileStatusObserver,
-               void(FileStatusObserver* observer));
   MOCK_METHOD2(RegisterOrigin,
                void(const GURL& origin, SyncStatusCallback callback));
   MOCK_METHOD2(EnableOrigin,
@@ -66,15 +63,9 @@ class MockRemoteFileSyncService : public RemoteFileSyncService {
   void NotifyRemoteServiceStateUpdated(
       RemoteServiceState state,
       const std::string& description);
-  void NotifyFileStatusChanged(const storage::FileSystemURL& url,
-                               SyncFileType file_type,
-                               SyncFileStatus sync_status,
-                               SyncAction action_taken,
-                               SyncDirection direction);
 
  private:
   void AddServiceObserverStub(Observer* observer);
-  void AddFileStatusObserverStub(FileStatusObserver* observer);
   void RegisterOriginStub(const GURL& origin, SyncStatusCallback callback);
   void DeleteOriginDirectoryStub(const GURL& origin,
                                  UninstallFlag flag,
@@ -87,8 +78,6 @@ class MockRemoteFileSyncService : public RemoteFileSyncService {
 
   base::ObserverList<Observer>::UncheckedAndDanglingUntriaged
       service_observers_;
-  base::ObserverList<FileStatusObserver>::UncheckedAndDanglingUntriaged
-      file_status_observers_;
 
   RemoteServiceState state_;
 };

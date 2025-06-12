@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/sync_file_system/conflict_resolution_policy.h"
-#include "chrome/browser/sync_file_system/file_status_observer.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/sync_process_runner.h"
@@ -50,7 +49,6 @@ class SyncFileSystemService final
     : public KeyedService,
       public SyncProcessRunner::Client,
       public syncer::SyncServiceObserver,
-      public FileStatusObserver,
       public extensions::ExtensionRegistryObserver {
  public:
   // Uses SyncFileSystemServiceFactory instead.
@@ -128,13 +126,6 @@ class SyncFileSystemService final
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
-
-  // SyncFileStatusObserver implementation.
-  void OnFileStatusChanged(const storage::FileSystemURL& url,
-                           SyncFileType file_type,
-                           SyncFileStatus sync_status,
-                           SyncAction action_taken,
-                           SyncDirection direction) override;
 
   // Check the profile's sync preference settings and call
   // remote_file_service_->SetSyncEnabled() to update the status.

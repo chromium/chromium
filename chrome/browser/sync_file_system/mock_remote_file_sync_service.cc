@@ -24,8 +24,6 @@ MockRemoteFileSyncService::MockRemoteFileSyncService()
   typedef MockRemoteFileSyncService self;
   ON_CALL(*this, AddServiceObserver(_))
       .WillByDefault(Invoke(this, &self::AddServiceObserverStub));
-  ON_CALL(*this, AddFileStatusObserver(_))
-      .WillByDefault(Invoke(this, &self::AddFileStatusObserverStub));
   ON_CALL(*this, RegisterOrigin(_, _))
       .WillByDefault(Invoke(this, &self::RegisterOriginStub));
   ON_CALL(*this, UninstallOrigin(_, _, _))
@@ -58,25 +56,8 @@ void MockRemoteFileSyncService::NotifyRemoteServiceStateUpdated(
     observer.OnRemoteServiceStateUpdated(state, description);
 }
 
-void MockRemoteFileSyncService::NotifyFileStatusChanged(
-    const storage::FileSystemURL& url,
-    SyncFileType file_type,
-    SyncFileStatus sync_status,
-    SyncAction action_taken,
-    SyncDirection direction) {
-  for (auto& observer : file_status_observers_) {
-    observer.OnFileStatusChanged(url, file_type, sync_status, action_taken,
-                                 direction);
-  }
-}
-
 void MockRemoteFileSyncService::AddServiceObserverStub(Observer* observer) {
   service_observers_.AddObserver(observer);
-}
-
-void MockRemoteFileSyncService::AddFileStatusObserverStub(
-    FileStatusObserver* observer) {
-  file_status_observers_.AddObserver(observer);
 }
 
 void MockRemoteFileSyncService::RegisterOriginStub(
