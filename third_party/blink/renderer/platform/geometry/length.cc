@@ -48,17 +48,17 @@ DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_min_intrinsic_length);
 
 // static
 void Length::Initialize() {
-  new (WTF::NotNullTag::kNotNull, (void*)&g_auto_length) Length(kAuto);
-  new (WTF::NotNullTag::kNotNull, (void*)&g_fill_available_length)
+  new (base::NotNullTag::kNotNull, (void*)&g_auto_length) Length(kAuto);
+  new (base::NotNullTag::kNotNull, (void*)&g_fill_available_length)
       Length(kFillAvailable);
-  new (WTF::NotNullTag::kNotNull, (void*)&g_stretch_length) Length(kStretch);
-  new (WTF::NotNullTag::kNotNull, (void*)&g_fit_content_length)
+  new (base::NotNullTag::kNotNull, (void*)&g_stretch_length) Length(kStretch);
+  new (base::NotNullTag::kNotNull, (void*)&g_fit_content_length)
       Length(kFitContent);
-  new (WTF::NotNullTag::kNotNull, (void*)&g_max_content_length)
+  new (base::NotNullTag::kNotNull, (void*)&g_max_content_length)
       Length(kMaxContent);
-  new (WTF::NotNullTag::kNotNull, (void*)&g_min_content_length)
+  new (base::NotNullTag::kNotNull, (void*)&g_min_content_length)
       Length(kMinContent);
-  new (WTF::NotNullTag::kNotNull, (void*)&g_min_intrinsic_length)
+  new (base::NotNullTag::kNotNull, (void*)&g_min_intrinsic_length)
       Length(kMinIntrinsic);
 }
 

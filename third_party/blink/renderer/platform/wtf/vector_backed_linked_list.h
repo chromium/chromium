@@ -111,7 +111,7 @@ class ConstructTraits<VectorBackedLinkedListNode<ValueType, Allocator>,
  public:
   template <typename... Args>
   static Node* Construct(void* location, Args&&... args) {
-    return new (NotNullTag::kNotNull, location)
+    return new (base::NotNullTag::kNotNull, location)
         Node(std::forward<Args>(args)...);
   }
 

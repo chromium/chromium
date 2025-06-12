@@ -25,7 +25,7 @@ struct HashTraits<SkImageInfo> : GenericHashTraits<SkImageInfo> {
   static const bool kEmptyValueIsZero = true;
   static SkImageInfo EmptyValue() { return SkImageInfo::MakeUnknown(); }
   static void ConstructDeletedValue(SkImageInfo& slot) {
-    new (NotNullTag::kNotNull, &slot)
+    new (base::NotNullTag::kNotNull, &slot)
         SkImageInfo(SkImageInfo::MakeUnknown(-1, -1));
   }
   static bool IsDeletedValue(const SkImageInfo& value) {

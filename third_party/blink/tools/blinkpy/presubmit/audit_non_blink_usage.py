@@ -112,6 +112,7 @@ _CONFIG = [
             'base::Minutes',
             'base::Nanoseconds',
             'base::NotFatalUntil',
+            'base::NotNullTag',
             'base::optional_ref',
             'base::OptionalFromPtr',
             'base::OptionalToPtr',

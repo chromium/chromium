@@ -112,7 +112,7 @@ struct HashTraits<blink::PropertyHandle>
   }
 
   static void ConstructDeletedValue(blink::PropertyHandle& slot) {
-    new (NotNullTag::kNotNull, &slot) blink::PropertyHandle(
+    new (base::NotNullTag::kNotNull, &slot) blink::PropertyHandle(
         blink::PropertyHandle::DeletedValueForHashTraits());
   }
   static bool IsDeletedValue(const blink::PropertyHandle& value) {

@@ -101,8 +101,8 @@ NOINLINE unsigned StringImpl::HashSlowCase() const {
 void AtomicString::Init() {
   DCHECK(IsMainThread());
 
-  new (NotNullTag::kNotNull, (void*)&g_null_atom) AtomicString;
-  new (NotNullTag::kNotNull, (void*)&g_empty_atom) AtomicString("");
+  new (base::NotNullTag::kNotNull, (void*)&g_null_atom) AtomicString;
+  new (base::NotNullTag::kNotNull, (void*)&g_empty_atom) AtomicString("");
 }
 
 scoped_refptr<StringImpl> AddStaticASCIILiteral(
@@ -118,7 +118,7 @@ void NewlineThenWhitespaceStringsTable::Init() {
   for (size_t length = 1; length < kTableSize; ++length) {
     auto* string_impl =
         StringImpl::CreateStatic(base::span(whitespace_buffer).first(length));
-    new (NotNullTag::kNotNull, (void*)(&g_table_[length]))
+    new (base::NotNullTag::kNotNull, (void*)(&g_table_[length]))
         String(AtomicString(string_impl).GetString());
   }
 }
@@ -143,22 +143,23 @@ void StringStatics::Init() {
   DCHECK(IsMainThread());
 
   StringImpl::InitStatics();
-  new (NotNullTag::kNotNull, (void*)&g_empty_string) String(StringImpl::empty_);
-  new (NotNullTag::kNotNull, (void*)&g_empty_string16_bit)
+  new (base::NotNullTag::kNotNull, (void*)&g_empty_string)
+      String(StringImpl::empty_);
+  new (base::NotNullTag::kNotNull, (void*)&g_empty_string16_bit)
       String(StringImpl::empty16_bit_);
 
   // FIXME: These should be allocated at compile time.
-  new (NotNullTag::kNotNull, (void*)&g_star_atom) AtomicString("*");
-  new (NotNullTag::kNotNull, (void*)&g_xml_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_star_atom) AtomicString("*");
+  new (base::NotNullTag::kNotNull, (void*)&g_xml_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xml")));
-  new (NotNullTag::kNotNull, (void*)&g_xmlns_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_xmlns_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xmlns")));
-  new (NotNullTag::kNotNull, (void*)&g_xlink_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_xlink_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xlink")));
-  new (NotNullTag::kNotNull, (void*)&g_xmlns_with_colon) String("xmlns:");
-  new (NotNullTag::kNotNull, (void*)&g_http_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_xmlns_with_colon) String("xmlns:");
+  new (base::NotNullTag::kNotNull, (void*)&g_http_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("http")));
-  new (NotNullTag::kNotNull, (void*)&g_https_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_https_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("https")));
 
   NewlineThenWhitespaceStringsTable::Init();

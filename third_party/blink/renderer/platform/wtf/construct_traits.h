@@ -24,7 +24,7 @@ class ConstructTraits {
   // placement new.
   template <typename... Args>
   static T* Construct(void* location, Args&&... args) {
-    return ::new (NotNullTag::kNotNull, location)
+    return ::new (base::NotNullTag::kNotNull, location)
         T(std::forward<Args>(args)...);
   }
 

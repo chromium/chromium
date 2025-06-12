@@ -370,7 +370,7 @@ struct GenericHashTraits<std::unique_ptr<T>>
   static void ConstructDeletedValue(std::unique_ptr<T>& slot) {
     // Dirty trick: implant an invalid pointer to unique_ptr. Destructor isn't
     // called for deleted buckets, so this is okay.
-    new (NotNullTag::kNotNull, &slot)
+    new (base::NotNullTag::kNotNull, &slot)
         std::unique_ptr<T>(reinterpret_cast<T*>(1u));
   }
   static bool IsDeletedValue(const std::unique_ptr<T>& value) {
@@ -409,7 +409,7 @@ struct SimpleClassHashTraits : GenericHashTraits<T> {
     static constexpr bool value = false;
   };
   static void ConstructDeletedValue(T& slot) {
-    new (NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
+    new (base::NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
   }
   static bool IsDeletedValue(const T& value) {
     return value.IsHashTableDeletedValue();
@@ -444,7 +444,7 @@ struct HashTraitsDeletedValueHelper {
     return value == Traits::DeletedValue();
   }
   static void ConstructDeletedValue(typename Traits::TraitType& slot) {
-    new (NotNullTag::kNotNull, &slot)
+    new (base::NotNullTag::kNotNull, &slot)
         typename Traits::TraitType(Traits::DeletedValue());
   }
 };
