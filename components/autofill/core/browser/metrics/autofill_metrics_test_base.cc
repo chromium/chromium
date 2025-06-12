@@ -78,7 +78,12 @@ void TestBrowserAutofillManager::Reset() {
       std::make_unique<MockCreditCardAccessManager>(this));
 }
 
-AutofillMetricsBaseTest::AutofillMetricsBaseTest() = default;
+AutofillMetricsBaseTest::AutofillMetricsBaseTest() {
+  scoped_features_.InitWithFeatures(
+      {features::kAutofillEnableLoyaltyCardsFilling,
+       features::kAutofillEnableEmailOrLoyaltyCardsFilling},
+      {});
+}
 
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 

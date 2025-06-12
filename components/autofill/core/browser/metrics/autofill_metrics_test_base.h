@@ -7,9 +7,11 @@
 
 #include "base/check_deref.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -220,6 +222,16 @@ class AutofillMetricsBaseTest {
         AutofillTriggerSource::kPopup);
   }
 
+  void FillLoyaltyCard(const FormData& form,
+                       const LoyaltyCard& card,
+                       size_t field_index = 0) {
+    autofill_manager().FillOrPreviewField(
+        mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+        form, form.fields()[field_index],
+        base::UTF8ToUTF16(card.loyalty_card_number()),
+        SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
+  }
+
   void UndoAutofill(const FormData& form) {
     autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
                                     form.fields().front());
@@ -264,6 +276,10 @@ class AutofillMetricsBaseTest {
     return autofill_client_->GetPersonalDataManager();
   }
 
+  ValuablesDataManager& valuables_data_manager() {
+    return *autofill_client_->GetValuablesDataManager();
+  }
+
   ukm::TestUkmRecorder& test_ukm_recorder() {
     return *autofill_client_->GetUkmRecorder();
   }
@@ -279,6 +295,7 @@ class AutofillMetricsBaseTest {
   std::unique_ptr<TestAutofillClient> autofill_client_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
+  base::test::ScopedFeatureList scoped_features_;
 
  private:
   void CreateTestAutofillProfiles();
