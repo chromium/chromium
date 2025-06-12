@@ -523,7 +523,7 @@
 <translation id="3435465986463792564">打开了许多窗口？您可在此处管理它们</translation>
 <translation id="3435575784518354875">如需继续使用您的密码，请立即将其导出，更新 Google Play 服务，然后将其重新导入 Google 密码管理工具。<ph name="BEGIN_LINK" />查看完整说明<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全</translation>
-<translation id="3435914367318771664">将标签页添加至新的分组</translation>
+<translation id="3435914367318771664">向新分组添加标签页</translation>
 <translation id="3439276997620616816">此处会显示您近期关闭的标签页</translation>
 <translation id="3443221991560634068">重新加载当前网页</translation>
 <translation id="3444179773590444986">针对为网站开启深色主题分享反馈？</translation>
@@ -1139,7 +1139,7 @@
 <translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" />？</translation>
 <translation id="6211386937064921208">正在预览此页</translation>
-<translation id="6212567362666004597">向分组中添加标签页</translation>
+<translation id="6212567362666004597">向分组添加标签页</translation>
 <translation id="6221633008163990886">需解锁才能导出您的密码</translation>
 <translation id="6225572914528673855">地址栏</translation>
 <translation id="6232535412751077445">如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。

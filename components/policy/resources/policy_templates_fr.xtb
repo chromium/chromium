@@ -2288,6 +2288,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
       Si cette règle n'est pas configurée, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> n'est disponible pour aucune application Web.
 Afin d'améliorer la confidentialité, cette règle ne permet pas de mettre à jour sa valeur en cours de session. Par conséquent, les modifications ne s'appliqueront qu'une fois l'utilisateur déconnecté, puis reconnecté.
 Cela permettra à l'utilisateur de s'assurer qu'aucune appli supplémentaire ne pourra effectuer de captures d'écrans après connexion, sauf celles déjà autorisées au début de la session.</translation>
+<translation id="2614156176932194496">Paramètres des intégrations du Mode IA de Google dans la barre d'adresse et le champ de recherche de la page "Nouvel onglet".</translation>
 <translation id="2615240493030733717">Transmettre le fuseau horaire</translation>
 <translation id="2619258867868873629">Destinations "Enregistrer au format PDF" et "Enregistrer dans Google Drive" sur les appareils <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="262035875928535253">Configurez la liste des domaines sur lesquels <ph name="PRODUCT_NAME" /> doit désactiver le <ph name="PASSWORD_MANAGER_NAME" />. Cela signifie que les workflows d'enregistrement et de remplissage seront désactivés, de sorte que les mots de passe de ces sites Web ne pourront pas être enregistrés ou remplis automatiquement dans des formulaires Web.
@@ -4344,6 +4345,15 @@ Si la règle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (1), les extens
 
           Si cette règle n'est pas configurée, la lecture vocale est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="4173974507809462880">Afficher l'écran de direction du défilement sur le pavé tactile lors de la connexion</translation>
+<translation id="4175770453187201981">Cette règle contrôle les intégrations du Mode IA de Google dans la barre d'adresse et le champ de recherche de la page "Nouvel onglet".
+
+Pour accéder à cette fonctionnalité, l'utilisateur doit avoir défini Google comme moteur de recherche par défaut.
+
+0/Non configurée = La fonctionnalité sera disponible pour les utilisateurs.
+
+1 = Les utilisateurs n'auront pas accès à la fonctionnalité.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="417956245902013347">Permet d'activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie sur l'écran de connexion.
 
           Si cette règle est définie sur "True", la mise en surbrillance du curseur de saisie est toujours activée sur l'écran de connexion.
@@ -4650,6 +4660,7 @@ Cette fonctionnalité a été supprimée dans M112.</translation>
 
       Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="4402887080007986374">Version valide des conditions d'utilisation d'Edu Coexistence</translation>
+<translation id="4405712318246131640">Ne pas autoriser les intégrations du Mode IA.</translation>
 <translation id="4408428864159735559">Liste de partages de fichiers sur le réseau préconfigurés.</translation>
 <translation id="4410236409016356088">Activer la limitation de la bande passante réseau</translation>
 <translation id="4410361389637971319">Autoriser les origines d'applis Web isolées à utiliser Direct Sockets</translation>
@@ -6436,6 +6447,7 @@ Si cette règle n'est pas configurée ou si elle est définie sur une liste vide
 <translation id="5601503069213153581">Code</translation>
 <translation id="5605676983184673391">Autoriser les applis Chrome à s'exécuter en sessions Kiosque.</translation>
 <translation id="5607021831414604820">Activer les rapports sur l'état de stockage de l'appareil</translation>
+<translation id="5607808178576647930">Autoriser les intégrations du Mode IA.</translation>
 <translation id="5608114828230655271">Comportement par défaut de l'appareil</translation>
 <translation id="5609294254185484756">Contrôle l'expérience utilisateur avec les fonctionnalités désactivées listées dans <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> pour les sessions Invité gérées.
 

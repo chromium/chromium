@@ -2406,6 +2406,7 @@ CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan
       Jika kebijakan ini tidak disetel, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> tidak tersedia untuk semua aplikasi web.
 Untuk meningkatkan privasi, kebijakan ini tidak akan mendukung pembaruan nilai kebijakan di tengah sesi. Oleh karena itu, perubahan hanya akan berlaku setelah pengguna logout dan login lagi.
 Pengguna dapat memastikan bahwa tidak ada aplikasi tambahan yang dapat merekam layar setelah login jika tidak diizinkan sejak awal sesi.</translation>
+<translation id="2614156176932194496">Setelan untuk integrasi Mode AI Google di kolom URL dan kotak penelusuran halaman Tab Baru.</translation>
 <translation id="2615240493030733717">Melaporkan Info Zona waktu</translation>
 <translation id="2619258867868873629">Tujuan 'Simpan sebagai PDF', serta tujuan 'Simpan ke Google Drive' di perangkat <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="262035875928535253">Konfigurasi daftar domain tempat <ph name="PRODUCT_NAME" /> harus menonaktifkan <ph name="PASSWORD_MANAGER_NAME" />. Artinya, alur kerja Simpan dan Isi Otomatis akan dinonaktifkan, sehingga sandi untuk situs tersebut tidak dapat disimpan atau diisi otomatis ke formulir web.
@@ -4546,6 +4547,15 @@ Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang t
 
           Jika kebijakan ini tidak ditetapkan, respons lisan mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="4173974507809462880">Tampilkan layar arah scroll touchpad selama login</translation>
+<translation id="4175770453187201981">Kebijakan ini mengontrol integrasi Mode AI Google di kolom URL dan kotak penelusuran halaman Tab Baru.
+
+Untuk mengakses fitur ini, Google harus disetel sebagai mesin telusur default pengguna.
+
+Nilai 0/tidak disetel = Fitur akan tersedia bagi pengguna.
+
+Nilai 1 = Fitur tidak akan tersedia bagi pengguna.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="417956245902013347">Mengaktifkan fitur aksesibilitas sorotan kursor teks di layar login.
 
           Jika kebijakan ini ditetapkan ke true, sorotan kursor teks akan selalu diaktifkan di layar login.
@@ -4862,6 +4872,7 @@ Hal ini dihapus di M112.</translation>
 
       Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="4402887080007986374">Versi Persyaratan Layanan akun sekolah yang valid</translation>
+<translation id="4405712318246131640">Jangan izinkan integrasi Mode AI.</translation>
 <translation id="4408428864159735559">Daftar berbagi file jaringan yang telah dikonfigurasikan sebelumnya.</translation>
 <translation id="4410236409016356088">Aktifkan pembatasan bandwidth jaringan</translation>
 <translation id="4410361389637971319">Izinkan origin Aplikasi Web Terisolasi menggunakan Direct Sockets</translation>
@@ -6706,6 +6717,7 @@ Jika kebijakan ini tidak disetel atau disetel ke daftar kosong, dialog konfirmas
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">Izinkan Aplikasi Chrome berjalan dalam sesi Kiosk.</translation>
 <translation id="5607021831414604820">Aktifkan pelaporan status penyimpanan perangkat</translation>
+<translation id="5607808178576647930">Izinkan integrasi Mode AI.</translation>
 <translation id="5608114828230655271">Perilaku default perangkat</translation>
 <translation id="5609294254185484756">Mengontrol pengalaman pengguna fitur yang dinonaktifkan yang tercantum di <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> untuk Sesi Tamu Terkelola (MGS).
 

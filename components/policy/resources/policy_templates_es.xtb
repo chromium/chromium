@@ -2289,6 +2289,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
       Si la política no se define, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> no estará disponible para ninguna aplicación web.
 Para mejorar la privacidad, esta política no admitirá que se actualice el valor de la política durante una sesión abierta y, por lo tanto, los cambios solo se aplicarán cuando el usuario cierre sesión y vuelva a iniciarla.
 El usuario puede tener la seguridad de que ninguna otra aplicación podrá capturar las pantallas después de iniciar sesión si no se había permitido ya al principio de la sesión.</translation>
+<translation id="2614156176932194496">Configuración de las integraciones del Modo IA de Google en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.</translation>
 <translation id="2615240493030733717">Informar sobre la zona horaria</translation>
 <translation id="2619258867868873629">El destino de Guardar como PDF y de Guardar en Google Drive en dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="262035875928535253">Configura la lista de dominios en los que <ph name="PRODUCT_NAME" /> debe inhabilitar <ph name="PASSWORD_MANAGER_NAME" />. Esto significa que los flujos de trabajo de guardar y rellenar se desactivarán, lo que asegura que las contraseñas de esos sitios web no se puedan guardar ni rellenar automáticamente en formularios web.
@@ -4358,6 +4359,15 @@ Si se le asigna el valor <ph name="DISABLE_UNPUBLISHED" /> (1) a esta política,
 
           Si no se asigna ningún valor a esta política, los mensajes de voz se inhabilitarán inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlos en cualquier momento.</translation>
 <translation id="4173974507809462880">Mostrar la pantalla de dirección de desplazamiento del panel táctil durante el inicio de sesión</translation>
+<translation id="4175770453187201981">Esta política controla las integraciones del Modo IA de Google en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.
+
+Para acceder a esta función, Google debe estar configurado como buscador predeterminado del usuario.
+
+0/sin definir: la función estará disponible para los usuarios.
+
+1: La función no estará disponible para los usuarios.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="417956245902013347">Habilita la función de accesibilidad de resaltado del símbolo de intercalación de texto en la pantalla de inicio de sesión.
 
           Si se asigna el valor "True" a esta política, el resaltado del símbolo de intercalación estará siempre habilitado en la pantalla de inicio de sesión.
@@ -4664,6 +4674,7 @@ Se eliminó en la versión M112.</translation>
 
       Para que se aplique esta política, se necesitan ajustes adicionales. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="4402887080007986374">La versión válida de los Términos del Servicio de Edu Coexistence</translation>
+<translation id="4405712318246131640">No permitir integraciones del Modo IA.</translation>
 <translation id="4408428864159735559">Lista de sistemas de archivos de red compartidos preconfigurados.</translation>
 <translation id="4410236409016356088">Habilitar la limitación de ancho de banda</translation>
 <translation id="4410361389637971319">Permitir que los orígenes de aplicaciones web aisladas usen Direct Sockets</translation>
@@ -6460,6 +6471,7 @@ Si no se define esta política o se le asigna una lista vacía, se le mostrarán
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">Permitir que las aplicaciones de Chrome se ejecuten en sesiones de kiosco.</translation>
 <translation id="5607021831414604820">Habilitar los informes sobre el estado del almacenamiento del dispositivo</translation>
+<translation id="5607808178576647930">Permitir integraciones del Modo IA.</translation>
 <translation id="5608114828230655271">Comportamiento predeterminado del dispositivo</translation>
 <translation id="5609294254185484756">Controla la experiencia de usuario de las funciones inhabilitadas que aparecen en <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> en las sesiones de invitado gestionadas.
 

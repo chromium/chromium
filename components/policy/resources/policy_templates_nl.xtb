@@ -2286,6 +2286,7 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
       Als het beleid niet is ingesteld, is <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> niet beschikbaar voor web-apps.
 Voor de privacy ondersteunt dit beleid geen updates van de beleidswaarde tijdens een sessie. Wijzigingen worden pas toegepast nadat de gebruiker is uitgelogd en weer is ingelogd.
 De gebruiker kan erop vertrouwen dat er geen andere apps zijn die de schermen kunnen vastleggen na het inloggen als dit nog niet was toegestaan bij de start van de sessie.</translation>
+<translation id="2614156176932194496">Instellingen voor integraties van de AI-modus van Google in de adresbalk en het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="2615240493030733717">Informatie over tijdzone rapporteren</translation>
 <translation id="2619258867868873629">De bestemming Opslaan als pdf en de bestemming Opslaan in Google Drive op <ph name="PRODUCT_OS_NAME" />-apparaten</translation>
 <translation id="262035875928535253">Stel de lijst met domeinen in waarvoor <ph name="PRODUCT_NAME" /> <ph name="PASSWORD_MANAGER_NAME" /> moet uitzetten. Dit betekent dat de workflows Opslaan en Invullen worden uitgezet, zodat wachtwoorden voor die websites niet worden opgeslagen of automatisch worden ingevuld in webformulieren.
@@ -4339,6 +4340,15 @@ Als je het beleid instelt op <ph name="DISABLE_UNPUBLISHED" /> (1), worden exten
 
           Als dit beleid niet is ingesteld, staat gesproken feedback op het inlogscherm in eerste instantie uit. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="4173974507809462880">Het scherm met de scrollrichting van de touchpad tonen tijdens het inloggen</translation>
+<translation id="4175770453187201981">Met dit beleid bepaal je of integraties van de AI-modus van Google in de adresbalk en het zoekvak op de pagina Nieuw tabblad beschikbaar zijn.
+
+Voor toegang tot deze functie moet Google zijn ingesteld als de standaard zoekmachine van de gebruiker.
+
+0/niet ingesteld = De functie is beschikbaar voor gebruikers.
+
+1 = De functie is niet beschikbaar voor gebruikers.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="417956245902013347">Zet de toegankelijkheidsfunctie voor de markering van het caret-teken op het inlogscherm aan.
 
           Als dit beleid is ingesteld op True, staat de markering van het caret-teken altijd aan op het inlogscherm.
@@ -4643,6 +4653,7 @@ Dit is verwijderd in M112.</translation>
 
       Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="4402887080007986374">De geldige versie van de servicevoorwaarden van Edu Coexistence</translation>
+<translation id="4405712318246131640">Integraties van de AI-modus niet toestaan.</translation>
 <translation id="4408428864159735559">Lijst met vooraf geconfigureerde netwerkfileshares.</translation>
 <translation id="4410236409016356088">Netwerkbandbreedte beperken</translation>
 <translation id="4410361389637971319">Toestaan dat geïsoleerde web-app-oorsprongen Direct Sockets gebruiken</translation>
@@ -6401,6 +6412,7 @@ Als je het beleid niet instelt of instelt op een lege lijst, worden bevestigings
 <translation id="5601503069213153581">Pincode</translation>
 <translation id="5605676983184673391">Chrome-apps uitvoeren in kiosksessies toestaan.</translation>
 <translation id="5607021831414604820">Rapportage van opslagstatus van apparaat aanzetten</translation>
+<translation id="5607808178576647930">Integraties van de AI-modus toestaan.</translation>
 <translation id="5608114828230655271">Standaard apparaatgedrag</translation>
 <translation id="5609294254185484756">Hiermee beheer je de gebruikerservaring voor uitgezette functies die worden vermeld in <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> voor beheerde gastsessies (MGS).
 

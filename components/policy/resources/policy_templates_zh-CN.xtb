@@ -2278,6 +2278,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果未设置此政策，则任何 Web 应用都不能使用 <ph name="GET_ALL_SCREENS_MEDIA_NAME" />。
 为了加强隐私保护，此政策不支持在会话期间更新政策值，因此只有用户退出并重新登录后，相关更改才会生效。
 如果在会话启动时已禁止截取界面，用户可以确信在其登录后，任何其他应用都将无法截取界面。</translation>
+<translation id="2614156176932194496">地址栏和新标签页搜索框的 Google AI 模式集成设置。</translation>
 <translation id="2615240493030733717">报告时区信息</translation>
 <translation id="2619258867868873629">“另存为 PDF”目的地和 <ph name="PRODUCT_OS_NAME" /> 设备上的“保存到 Google 云端硬盘”目的地</translation>
 <translation id="262035875928535253">配置 <ph name="PRODUCT_NAME" /> 应在哪些网域中停用<ph name="PASSWORD_MANAGER_NAME" />。这意味着“保存和填充”工作流程将被停用，以确保无法将这些网站的密码保存或自动填充到网页表单中。
@@ -4326,6 +4327,15 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 
           如果您未设置此政策，语音反馈在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
 <translation id="4173974507809462880">在用户登录期间显示触控板滚动方向界面</translation>
+<translation id="4175770453187201981">此政策用于控制地址栏和新标签页搜索框的 Google AI 模式集成。
+
+如需使用此功能，必须将 Google 设为用户的默认搜索引擎。
+
+0/未设置表示用户可以使用此功能。
+
+1 表示用户将无法使用此功能。
+
+如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。</translation>
 <translation id="417956245902013347">在登录屏幕上启用“插入符号突出显示”无障碍功能。
 
           如果此政策设为 true、“插入符号突出显示”在登录屏幕上将始终处于启用状态。
@@ -4629,6 +4639,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 
       此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
 <translation id="4402887080007986374">《Edu Coexistence 服务条款》的有效版本</translation>
+<translation id="4405712318246131640">不允许集成 AI 模式。</translation>
 <translation id="4408428864159735559">预先配置的网络文件共享列表。</translation>
 <translation id="4410236409016356088">启用网络带宽限制功能</translation>
 <translation id="4410361389637971319">允许独立式 Web 应用源使用 Direct Sockets</translation>
@@ -6385,6 +6396,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 <translation id="5601503069213153581">PIN 码</translation>
 <translation id="5605676983184673391">允许 Chrome 应用在自助服务终端会话中运行。</translation>
 <translation id="5607021831414604820">启用设备存储状态报告功能</translation>
+<translation id="5607808178576647930">允许集成 AI 模式。</translation>
 <translation id="5608114828230655271">默认设备行为</translation>
 <translation id="5609294254185484756">此政策用于针对受管访客会话 (MGS) 控制 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> 中所列已停用功能的用户体验。
 

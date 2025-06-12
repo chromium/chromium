@@ -2400,6 +2400,7 @@ OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir a
       Se a política for deixada sem definição, a propriedade <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> não ficará disponível para nenhum aplicativo da Web.
 Para melhorar a privacidade, esta política não vai oferecer suporte a atualizações do valor da política no meio da sessão. Portanto, as mudanças só serão aplicadas depois que o usuário sair e fizer login de novo.
 Se a captura de tela não tiver sido permitida no início da sessão, nenhum outro app poderá fazê-la após o login.</translation>
+<translation id="2614156176932194496">Configurações das integrações do Modo IA do Google na barra de endereço e na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="2615240493030733717">Enviar informações de fuso horário</translation>
 <translation id="2619258867868873629">Os destinos "Salvar como PDF" e "Salvar no Google Drive" em dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="262035875928535253">Configure a lista de domínios em que <ph name="PRODUCT_NAME" /> precisa desativar <ph name="PASSWORD_MANAGER_NAME" />. Isso significa que os fluxos de trabalho de salvar e preencher serão desativados, garantindo que as senhas desses sites não sejam salvas nem preenchidas automaticamente em formulários on-line.
@@ -4535,6 +4536,15 @@ Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (1), as exten
 
           Se ela não for definida, a resposta falada fica inicialmente desativada na tela de login, mas pode ser ativada pelo usuário a qualquer momento.</translation>
 <translation id="4173974507809462880">Mostrar a tela de direção de rolagem do touchpad durante o login</translation>
+<translation id="4175770453187201981">Esta política controla as integrações do Modo IA do Google na barra de endereço e na caixa de pesquisa da página "Nova guia".
+
+Para acessar esse recurso, o Google precisa ser definido como o mecanismo de pesquisa padrão do usuário.
+
+"0" ou não definida = o recurso vai ficar disponível para os usuários.
+
+"1" = o recurso não vai ficar disponível para os usuários.
+
+Se não for definida, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="417956245902013347">Ativar o recurso de acessibilidade de destaque de circunflexos na tela de login.
 
           Se esta política for definida como verdadeira, o destaque de circunflexos sempre ficará ativado na tela de login.
@@ -4852,6 +4862,7 @@ A remoção foi feita na versão M112.</translation>
 
       Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
 <translation id="4402887080007986374">A versão válida dos Termos de Serviço do Edu Coexistence</translation>
+<translation id="4405712318246131640">Não permitir integrações do Modo IA.</translation>
 <translation id="4408428864159735559">Lista de compartilhamentos de arquivos de rede pré-configurados.</translation>
 <translation id="4410236409016356088">Ativar o acelerador de largura de banda da rede</translation>
 <translation id="4410361389637971319">Permitir que origens de Apps Isolados da Web usem a API Direct Sockets</translation>
@@ -6693,6 +6704,7 @@ Se a política for deixada sem definição ou definida como uma lista vazia, cai
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">Permitir a execução dos apps do Chrome em sessões de quiosque.</translation>
 <translation id="5607021831414604820">Ativar relatórios de status do armazenamento do dispositivo</translation>
+<translation id="5607808178576647930">Permitir integrações do Modo IA.</translation>
 <translation id="5608114828230655271">Comportamento padrão do dispositivo</translation>
 <translation id="5609294254185484756">Controla a experiência do usuário com recursos desativados em <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> para sessões de visitante gerenciadas (MGS, na sigla em inglês).
 
