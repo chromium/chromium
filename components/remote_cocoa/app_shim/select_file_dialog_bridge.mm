@@ -60,7 +60,11 @@ NSView* CreateAccessoryView() {
                                        IDS_SAVE_PAGE_FILE_FORMAT_PROMPT_MAC)];
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.textColor = NSColor.secondaryLabelColor;
-  label.font = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
+  if (base::mac::MacOSMajorVersion() >= 26) {
+    label.font = [NSFont systemFontOfSize:NSFont.systemFontSize];
+  } else {
+    label.font = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
+  }
 
   // The popup.
   NSPopUpButton* popup = [[NSPopUpButton alloc] initWithFrame:NSZeroRect
