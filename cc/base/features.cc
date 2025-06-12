@@ -102,10 +102,6 @@ BASE_FEATURE(kClearCanvasResourcesInBackground,
              "ClearCanvasResourcesInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMetricsTracingCalculationReduction,
-             "MetricsTracingCalculationReduction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWaitForLateScrollEvents,
              "WaitForLateScrollEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);

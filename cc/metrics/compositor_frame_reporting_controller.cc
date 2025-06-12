@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/dropped_frame_counter.h"
-#include "cc/metrics/event_latency_tracing_recorder.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
@@ -34,15 +33,7 @@ CompositorFrameReportingController::CompositorFrameReportingController(
       predictor_jank_tracker_(std::make_unique<PredictorJankTracker>()),
       scroll_jank_dropped_frame_tracker_(
           std::make_unique<ScrollJankDroppedFrameTracker>()),
-      scroll_jank_ukm_reporter_(std::make_unique<ScrollJankUkmReporter>()),
-      previous_latency_predictions_main_(base::Microseconds(-1)),
-      previous_latency_predictions_impl_(base::Microseconds(-1)),
-      event_latency_predictions_(CompositorFrameReporter::EventLatencyInfo(
-          /*num_dispatch_stages=*/static_cast<int>(
-              EventMetrics::DispatchStage::kMaxValue),
-          /*num_compositor_stages=*/static_cast<int>(
-              StageType::kStageTypeCount) -
-              1)) {
+      scroll_jank_ukm_reporter_(std::make_unique<ScrollJankUkmReporter>()) {
   if (should_report_ukm) {
     // UKM metrics should be reported if and only if `latency_ukm_reporter` is
     // set on `global_trackers_`.
@@ -606,29 +597,6 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     reporter->TerminateFrame(termination_status,
                              details.presentation_feedback.timestamp);
 
-    static constexpr base::TimeDelta
-        kDefaultLatencyPredictionDeviationThreshold =
-            viz::BeginFrameArgs::DefaultInterval() / 2;
-    base::TimeDelta latency_prediction_deviation_threshold;
-    if (EventLatencyTracingRecorder::IsEventLatencyTracingEnabled()) {
-      latency_prediction_deviation_threshold =
-          details.presentation_feedback.interval.is_zero()
-              ? kDefaultLatencyPredictionDeviationThreshold
-              : (details.presentation_feedback.interval) / 2;
-      switch (reporter->get_reporter_type()) {
-        case CompositorFrameReporter::ReporterType::kImpl:
-          reporter->CalculateCompositorLatencyPrediction(
-              previous_latency_predictions_impl_,
-              latency_prediction_deviation_threshold);
-          break;
-        case CompositorFrameReporter::ReporterType::kMain:
-          reporter->CalculateCompositorLatencyPrediction(
-              previous_latency_predictions_main_,
-              latency_prediction_deviation_threshold);
-          break;
-      }
-    }
-
     // If the page was transitioned from invisible to visible, need to throw
     // away EventsMetrics from `events_metrics_from_dropped_frames_` because
     // these measurement would be invalid due to the duration of page being
@@ -645,14 +613,6 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     }
 
     if (termination_status == FrameTerminationStatus::kPresentedFrame) {
-      if (EventLatencyTracingRecorder::IsEventLatencyTracingEnabled()) {
-        // TODO(crbug.com/40228308): Consider using a separate container to
-        // differentiate event predictions with and without a main dispatch
-        // stage.
-        reporter->CalculateEventLatencyPrediction(
-            event_latency_predictions_, latency_prediction_deviation_threshold);
-      }
-
       // For presented frames, if `reporter` was cloned from another reporter,
       // and the original reporter is still alive, then check whether the cloned
       // reporter has a 'partial update decider'. It is still possible for the

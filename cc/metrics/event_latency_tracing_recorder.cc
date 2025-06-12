@@ -411,11 +411,4 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
   TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
 }
 
-// static
-bool EventLatencyTracingRecorder::IsEventLatencyTracingEnabled() {
-  return IsTracingEnabled() ||
-         !base::FeatureList::IsEnabled(
-             ::features::kMetricsTracingCalculationReduction);
-}
-
 }  // namespace cc

@@ -262,15 +262,6 @@ class CC_EXPORT CompositorFrameReportingController {
   // BeginFrameId.
   std::map<uint32_t, EventMetricsSet> events_metrics_from_dropped_frames_;
 
-  CompositorFrameReporter::CompositorLatencyInfo
-      previous_latency_predictions_main_;
-  CompositorFrameReporter::CompositorLatencyInfo
-      previous_latency_predictions_impl_;
-
-  // Container that stores the EventLatency stage latency predictions based on
-  // previous event traces.
-  CompositorFrameReporter::EventLatencyInfo event_latency_predictions_;
-
   // Reporting controller needs to track transition of the page from invisible
   // to visible in order to discard EventsMetrics impacted by duration of page
   // being invisible

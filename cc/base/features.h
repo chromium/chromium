@@ -69,12 +69,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kEvictionThrottlesDraw);
 // that haven't been imported into viz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
 
-// Currently CC Metrics does a lot of calculations for UMA and Tracing. While
-// Traces themselves won't run when we are not tracing, some of the calculation
-// work is done regardless. When enabled this feature reduces extra calculation
-// to when tracing is enabled.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsTracingCalculationReduction);
-
 // Currently there is a race between OnBeginFrames from the GPU process and
 // input arriving from the Browser process. Due to this we can start to produce
 // a frame while scrolling without any input events. Late arriving events are

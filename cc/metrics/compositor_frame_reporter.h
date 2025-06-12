@@ -185,18 +185,6 @@ class CC_EXPORT CompositorFrameReporter {
     ~StageData();
   };
 
-  struct CC_EXPORT EventLatencyInfo {
-    std::vector<base::TimeDelta> dispatch_durations;
-    base::TimeDelta transition_duration;
-    std::vector<base::TimeDelta> compositor_durations;
-    base::TimeDelta total_duration;
-    std::string transition_name;
-    EventLatencyInfo(const int num_dispatch_stages,
-                     const int num_compositor_stages);
-    EventLatencyInfo(const EventLatencyInfo&);
-    ~EventLatencyInfo();
-  };
-
   using SmoothThread = FrameInfo::SmoothThread;
   using SmoothEffectDrivingThread = FrameInfo::SmoothEffectDrivingThread;
 
@@ -290,21 +278,6 @@ class CC_EXPORT CompositorFrameReporter {
 
     bool buffer_ready_available_ = false;
     base::TimeTicks swap_start_;
-  };
-
-  // Wrapper for all level of breakdown stages' prediction
-  struct CC_EXPORT CompositorLatencyInfo {
-    CompositorLatencyInfo();
-    explicit CompositorLatencyInfo(base::TimeDelta init_value);
-    ~CompositorLatencyInfo();
-
-    std::vector<base::TimeDelta> top_level_stages;
-    std::vector<base::TimeDelta> blink_breakdown_stages;
-    std::vector<base::TimeDelta> viz_breakdown_stages;
-
-    base::TimeDelta total_latency;
-    base::TimeDelta total_blink_latency;
-    base::TimeDelta total_viz_latency;
   };
 
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
@@ -446,31 +419,10 @@ class CC_EXPORT CompositorFrameReporter {
   using FrameReportTypes =
       std::bitset<static_cast<size_t>(FrameReportType::kMaxValue) + 1>;
 
-  // This function is called to calculate breakdown stage duration's prediction
-  // based on the `previous_predictions` and update the `previous_predictions`
-  // to the new prediction calculated.
-  void CalculateCompositorLatencyPrediction(
-      CompositorLatencyInfo& previous_predictions,
-      base::TimeDelta prediction_deviation_threshold);
-
-  // Sets EventLatency stage duration predictions based on previous trace
-  // durations using exponentially weighted averages.
-  void CalculateEventLatencyPrediction(
-      CompositorFrameReporter::EventLatencyInfo& predicted_event_latency,
-      base::TimeDelta prediction_deviation_threshold);
-
   ReporterType get_reporter_type() { return reporter_type_; }
 
   void set_reporter_type_to_impl() { reporter_type_ = ReporterType::kImpl; }
   void set_reporter_type_to_main() { reporter_type_ = ReporterType::kMain; }
-
-  const std::vector<std::string>& high_latency_substages_for_testing() {
-    return high_latency_substages_;
-  }
-
-  void ClearHighLatencySubstagesForTesting() {
-    high_latency_substages_.clear();
-  }
 
   std::vector<std::unique_ptr<EventMetrics>>& events_metrics_for_testing() {
     return events_metrics_;
@@ -530,15 +482,6 @@ class CC_EXPORT CompositorFrameReporter {
   FrameInfo GenerateFrameInfo() const;
 
   base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
-
-  void FindHighLatencyAttribution(
-      CompositorLatencyInfo& previous_predictions,
-      CompositorLatencyInfo& current_stage_durations);
-
-  void FindEventLatencyAttribution(
-      EventMetrics* event_metrics,
-      CompositorFrameReporter::EventLatencyInfo& predicted_event_latency,
-      CompositorFrameReporter::EventLatencyInfo& actual_event_latency);
 
   // Whether UMA histograms should be reported or not.
   const bool should_report_histograms_;
@@ -642,8 +585,6 @@ class CC_EXPORT CompositorFrameReporter {
   bool invalidate_raster_scroll_ = false;
 
   const GlobalMetricsTrackers global_trackers_;
-
-  std::vector<std::string> high_latency_substages_;
 
   ReporterType reporter_type_;
 
