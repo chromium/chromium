@@ -13,9 +13,8 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {
+  POWER_BARS_PER_SECOND,
   POWER_SCALE_FACTOR,
-  SAMPLE_RATE,
-  SAMPLES_PER_SLICE,
 } from '../core/audio_constants.js';
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
@@ -61,11 +60,8 @@ function toViewBoxString(viewBox: Rect|null): string|typeof nothing {
 /*
  * There are multiple different coordinate system for the "timestamp" of the
  * waveform used in this component:
- * (1) Time (in seconds). Each second contains SAMPLE_RATE audio samples.
- * (2) Index of the "bar" in the waveform, starting from 0. Each "bar" is an
- *     aggregate of SAMPLES_PER_SLICE audio samples. So index 0 corresponds to
- *     [0, SAMPLES_PER_SLICE) audio samples, index 1 corresponds to
- *     [SAMPLES_PER_SLICE, 2*SAMPLES_PER_SLICE) audio samples, and so on...
+ * (1) Time (in seconds). Each second contains `barsPerSecond` bars.
+ * (2) Index of the "bar" in the waveform, starting from 0.
  * (3) The x coordinate that is rendered in the SVG. Time 0 always corresponds
  *     to x = 0, and the viewBox of the whole SVG is set to show around the
  *     current time.
@@ -81,8 +77,8 @@ function toViewBoxString(viewBox: Rect|null): string|typeof nothing {
  * rendered x coordinate (3) and doesn't corresponds to actual slice of audio
  * samples.
  */
-function timestampToBarIndex(seconds: number): number {
-  return Math.floor((seconds * SAMPLE_RATE) / SAMPLES_PER_SLICE);
+function timestampToBarIndex(seconds: number, barsPerSecond: number): number {
+  return Math.floor(seconds * barsPerSecond);
 }
 
 function getBarX(barIdx: number): number {
@@ -262,6 +258,7 @@ export class AudioWaveform extends ReactiveLitElement {
     values: {attribute: false},
     size: {state: true},
     currentTime: {type: Number},
+    barsPerSecond: {attribute: false},
     transcription: {attribute: false},
   };
 
@@ -270,13 +267,18 @@ export class AudioWaveform extends ReactiveLitElement {
 
   currentTime: number|null = null;
 
+  barsPerSecond: number = POWER_BARS_PER_SECOND;
+
   private readonly currentTimeSignal = this.propSignal('currentTime');
 
   private readonly currentTimeBarIdx = computed(() => {
     if (this.currentTimeSignal.value === null) {
       return null;
     }
-    return timestampToBarIndex(this.currentTimeSignal.value);
+    return timestampToBarIndex(
+      this.currentTimeSignal.value,
+      this.barsPerSecond,
+    );
   });
 
   private size: DOMRect|null = null;
@@ -318,8 +320,9 @@ export class AudioWaveform extends ReactiveLitElement {
       // The timestamps should be increasing.
       assert(startMs <= endMs);
 
-      const startBarIdx = timestampToBarIndex(startMs / 1000);
-      const endBarIdx = timestampToBarIndex(endMs / 1000);
+      const startBarIdx =
+        timestampToBarIndex(startMs / 1000, this.barsPerSecond);
+      const endBarIdx = timestampToBarIndex(endMs / 1000, this.barsPerSecond);
       assert(
         ranges.length === 0 ||
           assertExists(ranges.at(-1)).endBarIdx <= startBarIdx,

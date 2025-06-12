@@ -136,6 +136,11 @@ const audioPowerSchema = z.object({
   // audio samples.
   // TODO(pihsun): Compression. Use a UInt8Array and CompressionStream?
   powers: z.array(z.number()),
+  // The number of audio samples contained in one data point.
+  // The value can be calculated by SAMPLE_RATE / power bars per second.
+  // Since original power bars per second is SAMPLE_RATE / SAMPLES_PER_SLICE, we
+  // set the default value to SAMPLES_PER_SLICE.
+  samplesPerDataPoint: z.withDefault(z.number(), SAMPLES_PER_SLICE),
 });
 
 type AudioPower = Infer<typeof audioPowerSchema>;
@@ -164,16 +169,17 @@ function audioName(id: string) {
   return `${id}.webm`;
 }
 
-function calculatePowerSegments(powers: number[]): TimelineSegment[] {
+function calculatePowerSegments(powers: number[], samplesPerDataPoint: number):
+  TimelineSegment[] {
   const segments: TimelineSegment[] = [];
   for (const power of powers) {
     const label = power < NO_AUDIO_POWER_THRESHOLD ?
       TimelineSegmentKind.NO_AUDIO :
       TimelineSegmentKind.AUDIO;
     if (segments.length === 0 || assertExists(segments.at(-1))[1] !== label) {
-      segments.push([SAMPLES_PER_SLICE, label]);
+      segments.push([samplesPerDataPoint, label]);
     } else {
-      assertExists(segments.at(-1))[0] += SAMPLES_PER_SLICE;
+      assertExists(segments.at(-1))[0] += samplesPerDataPoint;
     }
   }
   return segments;
@@ -379,9 +385,10 @@ function simplifySegments(segments: TimelineSegment[]): TimelineSegment[] {
 
 function calculateTimelineSegments(
   powers: number[],
+  samplesPerDataPoint: number,
   transcription: Transcription|null,
 ): VersionedTimelineSegments {
-  const powerSegments = calculatePowerSegments(powers);
+  const powerSegments = calculatePowerSegments(powers, samplesPerDataPoint);
   const speechSegments = calculateSpeechSegments(transcription);
 
   const segments = simplifySegments(
@@ -495,10 +502,11 @@ export class RecordingDataManager {
     if (meta.timelineSegments === undefined) {
       changed = true;
       const transcription = await getTranscription();
-      const {powers} = await getPowers();
+      const {powers, samplesPerDataPoint} = await getPowers();
       meta = {
         ...meta,
-        timelineSegments: calculateTimelineSegments(powers, transcription),
+        timelineSegments:
+          calculateTimelineSegments(powers, samplesPerDataPoint, transcription),
       };
     }
 
@@ -521,13 +529,15 @@ export class RecordingDataManager {
    * @return The created recording id.
    */
   async createRecording(
-    {transcription, powers, ...meta}: RecordingCreateParams,
+    {transcription, powers, samplesPerDataPoint, ...meta}:
+      RecordingCreateParams,
     audio: Blob,
   ): Promise<string> {
     const id = ulid();
     const numSpeakers = transcription?.getSpeakerLabels().length ?? null;
     const description = transcription?.toShortDescription() ?? '';
-    const timelineSegments = calculateTimelineSegments(powers, transcription);
+    const timelineSegments =
+      calculateTimelineSegments(powers, samplesPerDataPoint, transcription);
     const fullMeta = {
       id,
       description,
@@ -539,7 +549,7 @@ export class RecordingDataManager {
     await Promise.all([
       this.dataDir.write(
         audioPowerName(id),
-        audioPowerSchema.stringifyJson({powers}),
+        audioPowerSchema.stringifyJson({powers, samplesPerDataPoint}),
       ),
       this.dataDir.write(
         transcriptionName(id),

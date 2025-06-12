@@ -43,6 +43,7 @@ import {ExportDialog} from '../components/export-dialog.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {RecordingTitle} from '../components/recording-title.js';
 import {SummarizationView} from '../components/summarization-view.js';
+import {SAMPLE_RATE, SAMPLES_PER_POWER_BAR} from '../core/audio_constants.js';
 import {
   AudioPlayerController,
   ReactiveAudio,
@@ -419,14 +420,32 @@ export class PlaybackPage extends ReactiveLitElement {
     );
   });
 
-  private readonly powers = new ScopedAsyncComputed(this, async () => {
+  private readonly audioPowers = new ScopedAsyncComputed(this, async () => {
     if (this.recordingIdSignal.value === null) {
       return null;
     }
-    const {powers} = await this.recordingDataManager.getAudioPower(
-      this.recordingIdSignal.value,
-    );
-    return powers;
+    const {powers, samplesPerDataPoint} =
+      await this.recordingDataManager.getAudioPower(
+        this.recordingIdSignal.value,
+      );
+    // The target playing speed is POWER_BARS_PER_SECOND.
+    // Under same SAMPLE_RATE, smaller samples per data point will lead to
+    // higher speed, and we can do the down sampling to slow down playing speed.
+    const downSampleStep =
+      Math.round(SAMPLES_PER_POWER_BAR / samplesPerDataPoint);
+    if (downSampleStep <= 1) {
+      // We don't do the up sampling, and play at the lower speed.
+      return {powers, samplesPerDataPoint};
+    }
+    const downSamplePower: number[] = [];
+    for (let i = 0; i < powers.length; i += downSampleStep) {
+      downSamplePower.push(assertExists(powers[i]));
+    }
+
+    return {
+      powers: downSamplePower,
+      samplesPerDataPoint: SAMPLES_PER_POWER_BAR,
+    };
   });
 
   private readonly showTranscription = signal(false);
@@ -504,20 +523,23 @@ export class PlaybackPage extends ReactiveLitElement {
   }
 
   private renderAudioWaveform() {
-    if (this.powers.value === null) {
+    if (this.audioPowers.value === null) {
       return nothing;
     }
     const currentTime = this.audioPlayer.currentTime.value;
     const duration = {seconds: currentTime};
+    const barsPerSecond =
+      SAMPLE_RATE / this.audioPowers.value.samplesPerDataPoint;
     return html`
       <time-duration
         digits=1
         .duration=${duration}
       ></time-duration>
       <audio-waveform
-        .values=${new InteriorMutableArray(this.powers.value)}
+        .values=${new InteriorMutableArray(this.audioPowers.value.powers)}
         .currentTime=${currentTime}
         .transcription=${this.transcription.value}
+        .barsPerSecond=${barsPerSecond}
       >
       </audio-waveform>
     `;

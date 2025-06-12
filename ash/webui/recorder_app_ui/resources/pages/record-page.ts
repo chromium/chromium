@@ -38,6 +38,7 @@ import {LanguagePickerDialog} from '../components/language-picker-dialog.js';
 import {
   TranscriptionConsentDialog,
 } from '../components/transcription-consent-dialog.js';
+import {SAMPLES_PER_POWER_BAR} from '../core/audio_constants.js';
 import {i18n, replacePlaceholderWithHtml} from '../core/i18n.js';
 import {
   useMicrophoneManager,
@@ -581,6 +582,7 @@ export class RecordPage extends ReactiveLitElement {
       title: this.recordingTitle,
       durationMs: Math.round(session.progress.value.length * 1000),
       recordedAt: Date.now(),
+      samplesPerDataPoint: SAMPLES_PER_POWER_BAR,
       powers: session.progress.value.powers.array,
       transcription: session.progress.value.transcription,
     };

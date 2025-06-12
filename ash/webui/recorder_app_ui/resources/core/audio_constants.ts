@@ -13,3 +13,9 @@ export const SAMPLE_RATE = 16000;
 // The window size of samples that is processed by the worklets at one time.
 // This is a fixed value defined in Web Audio API that can't be configured.
 export const SAMPLES_PER_SLICE = 128;
+
+// The number of power bars contained in 1-second range waveform.
+export const POWER_BARS_PER_SECOND = 25;
+
+// The number of audio samples contained in one power bar.
+export const SAMPLES_PER_POWER_BAR = SAMPLE_RATE / POWER_BARS_PER_SECOND;

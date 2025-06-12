@@ -4,6 +4,7 @@
 
 import {RecorderApp} from '../pages/recorder-app.js';
 
+import {SAMPLES_PER_SLICE} from './audio_constants.js';
 import {usePlatformHandler, useRecordingDataManager} from './lit/context.js';
 import {LanguageCode} from './soda/language_info.js';
 import {TextToken, Transcription} from './soda/soda.js';
@@ -118,6 +119,7 @@ export class TestHelper {
         durationMs: durationMs,
         recordedAt: Date.now(),
         powers: powers,
+        samplesPerDataPoint: SAMPLES_PER_SLICE,
         transcription: tokens !== undefined ?
           new Transcription(tokens, stringToLanguageCode(language ?? 'en-US')) :
           null,
