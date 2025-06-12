@@ -394,6 +394,7 @@ public class TabsTest {
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
     @Feature({"Android-TabSwitcher"})
+    @DisabledTest(message = "https://crbug.com/424433654")
     public void testTabSwitcherCollapseSelection() throws Exception {
         mActivityTestRule.loadUrlInNewTab(getUrl(TEST_FILE_PATH), false);
         DOMUtils.longPressNode(mActivityTestRule.getWebContents(), "textarea");
