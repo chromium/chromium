@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -192,8 +193,8 @@ void SecurityKeysPINHandler::HandleSetPIN(const base::Value::List& args) {
 
   DCHECK(callback_id_.empty());
   callback_id_ = args[0].GetString();
-  const std::string old_pin = args[1].GetString();
-  const std::string new_pin = args[2].GetString();
+  const std::string& old_pin = args[1].GetString();
+  const std::string& new_pin = args[2].GetString();
 
   DCHECK((state_ == State::kGatherNewPIN) == old_pin.empty());
 
@@ -396,7 +397,7 @@ void SecurityKeysCredentialHandler::HandlePIN(const base::Value::List& args) {
   DCHECK(callback_id_.empty());
 
   callback_id_ = args[0].GetString();
-  std::string pin = args[1].GetString();
+  const std::string& pin = args[1].GetString();
 
   std::move(credential_management_provide_pin_cb_).Run(pin);
 }
@@ -464,12 +465,11 @@ void SecurityKeysCredentialHandler::HandleUpdateUserInformation(
   if (!base::HexStringToBytes(args[2].GetString(), &user_handle)) {
     NOTREACHED();
   }
-  std::string new_username = args[3].GetString();
-  std::string new_displayname = args[4].GetString();
+  const std::string& new_username = args[3].GetString();
+  const std::string& new_displayname = args[4].GetString();
 
   device::PublicKeyCredentialUserEntity updated_user(
-      std::move(user_handle), std::move(new_username),
-      std::move(new_displayname));
+      std::move(user_handle), new_username, new_displayname);
 
   credential_management_->UpdateUserInformation(
       std::move(credential_id), std::move(updated_user),
@@ -517,14 +517,12 @@ void SecurityKeysCredentialHandler::OnHaveCredentials(
     for (const auto& credential : response.credentials) {
       base::Value::Dict credential_dict;
       std::string credential_id = base::HexEncode(credential.credential_id.id);
-      if (credential_id.empty()) {
-        NOTREACHED();
-      }
-      std::string userHandle = base::HexEncode(credential.user.id);
+      CHECK(!credential_id.empty());
+      std::string user_handle = base::HexEncode(credential.user.id);
 
       credential_dict.Set("credentialId", std::move(credential_id));
       credential_dict.Set("relyingPartyId", response.rp.id);
-      credential_dict.Set("userHandle", std::move(userHandle));
+      credential_dict.Set("userHandle", std::move(user_handle));
       credential_dict.Set("userName", credential.user.name.value_or(""));
       credential_dict.Set("userDisplayName",
                           credential.user.display_name.value_or(""));
@@ -1018,7 +1016,7 @@ void SecurityKeysPhonesHandler::HandleDelete(const base::Value::List& args) {
   DCHECK_EQ(2u, args.size());
 
   AllowJavascript();
-  const std::string public_key_base64 = args[1].GetString();
+  const std::string& public_key_base64 = args[1].GetString();
   std::array<uint8_t, device::kP256X962Length> public_key;
   const bool ok = DecodePublicKey(public_key_base64, &public_key);
   DCHECK(ok);
@@ -1037,8 +1035,8 @@ void SecurityKeysPhonesHandler::HandleRename(const base::Value::List& args) {
   DCHECK_EQ(3u, args.size());
 
   AllowJavascript();
-  const std::string public_key_base64 = args[1].GetString();
-  const std::string new_name = args[2].GetString();
+  const std::string& public_key_base64 = args[1].GetString();
+  const std::string& new_name = args[2].GetString();
   content::BrowserContext* const browser_ctx =
       web_ui()->GetWebContents()->GetBrowserContext();
 
@@ -1262,9 +1260,9 @@ void PasskeysHandler::HandleEdit(const base::Value::List& args) {
   const bool ok = base::HexStringToBytes(args[1].GetString(), &credential_id);
   DCHECK(ok);
 
-  std::string new_username = args[2].GetString();
+  const std::string& new_username = args[2].GetString();
   local_cred_man_->Edit(
-      credential_id, std::move(new_username),
+      credential_id, new_username,
       base::BindOnce(&PasskeysHandler::OnEditComplete,
                      weak_factory_.GetWeakPtr(), args[0].GetString()));
 }
