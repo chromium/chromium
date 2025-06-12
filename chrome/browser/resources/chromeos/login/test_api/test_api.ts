@@ -1157,10 +1157,6 @@ class GaiaInfoScreenTester extends ScreenElementApi {
     this.manualCredentialsButton = new PolymerElementApi(this, '#manualButton');
   }
 
-  override shouldSkip(): boolean {
-    return loadTimeData.getBoolean('testapi_shouldSkipGaiaInfoScreen');
-  }
-
   isCrossDeviceFeatureSuiteAllowed(): boolean {
     return loadTimeData.getBoolean('testapi_isCrossDeviceFeatureSuiteAllowed');
   }

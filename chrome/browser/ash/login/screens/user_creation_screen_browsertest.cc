@@ -152,11 +152,7 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SignInForSelf) {
                    ->GetWizardContextForTesting()
                    ->sign_in_as_child);
   EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN);
-  if (features::IsOobeGaiaInfoScreenEnabled()) {
-    OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
-  } else {
-    OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  }
+  OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SelectChild) {

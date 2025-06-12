@@ -137,9 +137,7 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
     // this local state is set in OnUserCreationScreenExit and in the test we
     // advance directly to the consumerUpdate Screen.
     StartupUtils::SaveScreenAfterConsumerUpdate(
-        ash::features::IsOobeGaiaInfoScreenEnabled()
-            ? GaiaInfoScreenView::kScreenId.name
-            : GaiaScreenHandler::kScreenId.name);
+        GaiaInfoScreenView::kScreenId.name);
 
     LoginDisplayHost::default_host()
         ->GetWizardContextForTesting()
@@ -494,25 +492,7 @@ IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, ResumeFlowWithGaia) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
-class ConsumerUpdateScreenGaiaInfoExpirementTest
-    : public ConsumerUpdateScreenTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  ConsumerUpdateScreenGaiaInfoExpirementTest() : ConsumerUpdateScreenTest() {
-    gaia_info_disabled_ = GetParam();
-    if (gaia_info_disabled_) {
-      feature_list_.InitWithFeatures({}, {ash::features::kOobeGaiaInfoScreen});
-    } else {
-      feature_list_.InitWithFeatures({ash::features::kOobeGaiaInfoScreen}, {});
-    }
-  }
-
- protected:
-  bool gaia_info_disabled_ = false;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(ConsumerUpdateScreenGaiaInfoExpirementTest,
+IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest,
                        ResumeFlowWithGaiaInfoExpirement) {
   SaveScreenAfterConsumerUpdate("gaia-info");
   ShowConsumerUpdateScreen();
@@ -523,16 +503,8 @@ IN_PROC_BROWSER_TEST_P(ConsumerUpdateScreenGaiaInfoExpirementTest,
   ConsumerUpdateScreen::Result result = WaitForScreenExitResult();
   EXPECT_EQ(result, ConsumerUpdateScreen::Result::UPDATE_NOT_REQUIRED);
 
-  if (gaia_info_disabled_) {
-    OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  } else {
-    OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
-  }
+  OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ConsumerUpdateScreenGaiaInfoExpirementTest,
-                         testing::Bool());
 
 }  // namespace
 }  // namespace ash

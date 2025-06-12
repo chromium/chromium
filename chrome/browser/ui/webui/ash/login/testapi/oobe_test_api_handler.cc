@@ -128,8 +128,6 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("testapi_isHPSEnabled", ash::features::IsQuickDimEnabled());
   dict->Set("testapi_shouldSkipDisplaySize",
             !features::IsOobeDisplaySizeEnabled());
-  dict->Set("testapi_shouldSkipGaiaInfoScreen",
-            !features::IsOobeGaiaInfoScreenEnabled());
   dict->Set("testapi_isCrossDeviceFeatureSuiteAllowed",
             features::IsCrossDeviceFeatureSuiteAllowed());
 

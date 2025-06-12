@@ -2336,7 +2336,6 @@ class WizardControllerRemoteActivityNotificationTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
@@ -2393,7 +2392,6 @@ class RemoteActivityNotificationTestWhenNoLoginAccountPresentTest
   PrefService* local_state() { return g_browser_process->local_state(); }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   DeviceStateMixin device_state_{&mixin_host_,
                                  DeviceStateMixin::State::BEFORE_OOBE};
   FakeGaiaMixin gaia_mixin_{&mixin_host_};
@@ -2464,17 +2462,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionTest,
   OobeScreenWaiter(ThemeSelectionScreenView::kScreenId).Wait();
 }
 
-class GaiaInfoTest : public WizardControllerTest {
- public:
-  GaiaInfoTest() {
-    feature_list_.InitAndEnableFeature(features::kOobeGaiaInfoScreen);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class GaiaInfoScreenForEnterpriseEnrollmentTest : public GaiaInfoTest {
+class GaiaInfoScreenForEnterpriseEnrollmentTest : public WizardControllerTest {
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
@@ -2487,7 +2475,7 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenForEnterpriseEnrollmentTest,
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionToGaiaInfo) {
+IN_PROC_BROWSER_TEST_F(WizardControllerTest, TransitionToGaiaInfo) {
   WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       UserCreationView::kScreenId);
@@ -2498,7 +2486,7 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionToGaiaInfo) {
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionFromGaiaInfo) {
+IN_PROC_BROWSER_TEST_F(WizardControllerTest, TransitionFromGaiaInfo) {
   WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       GaiaInfoScreenView::kScreenId);
@@ -2506,7 +2494,7 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionFromGaiaInfo) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccount) {
+IN_PROC_BROWSER_TEST_F(WizardControllerTest, SkipGaiaInfoForChildAccount) {
   WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       UserCreationView::kScreenId);
@@ -2521,7 +2509,7 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccount) {
   OobeScreenWaiter(AddChildScreenView::kScreenId).Wait();
 }
 
-class WizardControllerGaiaTest : public GaiaInfoTest {
+class WizardControllerGaiaTest : public WizardControllerTest {
  protected:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
@@ -2565,7 +2553,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
 }
 
 class GoingBackFromGaiaScreenInChildFlowTest
-    : public GaiaInfoTest,
+    : public WizardControllerTest,
       public testing::WithParamInterface<std::tuple<bool, std::string>> {
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };

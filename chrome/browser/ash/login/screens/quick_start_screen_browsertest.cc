@@ -6,14 +6,12 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shell.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
@@ -151,15 +149,6 @@ class QuickStartBrowserTest : public OobeBaseTest {
  public:
   QuickStartBrowserTest() {
     needs_network_screen_skip_check_ = true;
-
-    // Force enable Gaia Info screen flag, which is the default behaviour
-    // since adding field trial config entry for Gaia Info screen caused
-    // the flag to be disabled and the info screen is not shown.
-    // TODO: b/320870274 - Clean up GaiaInfoScreen flag upon
-    // completion of the Gaia Info screen experiment.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOobeGaiaInfoScreen},
-        /*disabled_features=*/{});
   }
   ~QuickStartBrowserTest() override = default;
 
@@ -426,7 +415,6 @@ class QuickStartBrowserTest : public OobeBaseTest {
 
  private:
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
-  base::test::ScopedFeatureList feature_list_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 

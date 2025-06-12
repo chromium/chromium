@@ -801,12 +801,10 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnPackagedLicenseScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (features::IsOobeGaiaInfoScreenEnabled()) {
-    append(std::make_unique<GaiaInfoScreen>(
-        oobe_ui->GetView<GaiaInfoScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnGaiaInfoScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<GaiaInfoScreen>(
+      oobe_ui->GetView<GaiaInfoScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnGaiaInfoScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<GaiaScreen>(
       oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
@@ -1401,22 +1399,12 @@ void WizardController::OnUserCreationScreenExit(
       break;
     case UserCreationScreen::Result::SIGNIN:
       if (features::IsOobeSoftwareUpdateEnabled()) {
-        if (features::IsOobeGaiaInfoScreenEnabled()) {
-          GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
-          StartupUtils::SaveScreenAfterConsumerUpdate(
-              GaiaInfoScreenView::kScreenId.name);
-          ShowConsumerUpdateScreen();
-        } else {
-          GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
-          StartupUtils::SaveScreenAfterConsumerUpdate(GaiaView::kScreenId.name);
-          ShowConsumerUpdateScreen();
-        }
+        GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
+        StartupUtils::SaveScreenAfterConsumerUpdate(
+            GaiaInfoScreenView::kScreenId.name);
+        ShowConsumerUpdateScreen();
       } else {
-        if (features::IsOobeGaiaInfoScreenEnabled()) {
-          ShowGaiaInfoScreen();
-        } else {
-          AdvanceToScreen(GaiaView::kScreenId);
-        }
+        ShowGaiaInfoScreen();
       }
       break;
     case UserCreationScreen::Result::SKIPPED:
@@ -1468,8 +1456,7 @@ void WizardController::OnConsumerUpdateScreenExit(
   const std::string screen_name =
       GetLocalState()->GetString(prefs::kOobeScreenAfterConsumerUpdate);
   if (screen_name == GaiaInfoScreenView::kScreenId.name) {
-    if (features::IsOobeGaiaInfoScreenEnabled() &&
-        HasScreen(PrefToScreenId(screen_name))) {
+    if (HasScreen(PrefToScreenId(screen_name))) {
       AdvanceToScreen(PrefToScreenId(screen_name));
     } else {
       AdvanceToScreen(GaiaView::kScreenId);
@@ -1503,30 +1490,17 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
           break;
         }
       }
-      if (features::IsOobeGaiaInfoScreenEnabled()) {
-        if (wizard_context_->is_user_creation_enabled) {
-          // `Result::BACK` and `Result::BACK_CHILD` are only triggered when
-          // pressing back button. It goes back to GaiaInfoScreenView if user
-          // creation is enabled; otherwise, it behaves the same as
-          // `Result::CANCEL` which is triggered by pressing ESC key.
-          if (result == GaiaScreen::Result::BACK) {
-            if (wizard_context_->is_add_person_flow) {
-              AdvanceToScreen(UserCreationView::kScreenId);
-            } else {
-              AdvanceToScreen(GaiaInfoScreenView::kScreenId);
-            }
-            break;
+      if (wizard_context_->is_user_creation_enabled) {
+        // `Result::BACK` and `Result::BACK_CHILD` are only triggered when
+        // pressing back button. It goes back to GaiaInfoScreenView if user
+        // creation is enabled; otherwise, it behaves the same as
+        // `Result::CANCEL` which is triggered by pressing ESC key.
+        if (result == GaiaScreen::Result::BACK) {
+          if (wizard_context_->is_add_person_flow) {
+            AdvanceToScreen(UserCreationView::kScreenId);
+          } else {
+            AdvanceToScreen(GaiaInfoScreenView::kScreenId);
           }
-        }
-      } else {
-        // TODO: delete this part after removing the feature flag (b:282728089)
-        if (result == GaiaScreen::Result::BACK &&
-            wizard_context_->is_user_creation_enabled) {
-          // `Result::BACK` is only triggered when pressing back button. It goes
-          // back to UserCreationScreen if screen is enabled; otherwise, it
-          // behaves the same as `Result::CANCEL` which is triggered by pressing
-          // ESC key.
-          AdvanceToScreen(UserCreationView::kScreenId);
           break;
         }
       }

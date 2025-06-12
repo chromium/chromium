@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -44,10 +43,6 @@ constexpr test::UIPath kQuickStartCancelButtonPath = {
 
 class GaiaInfoScreenTest : public OobeBaseTest {
  public:
-  GaiaInfoScreenTest() {
-    feature_list_.InitAndEnableFeature(features::kOobeGaiaInfoScreen);
-  }
-
   ~GaiaInfoScreenTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -73,7 +68,6 @@ class GaiaInfoScreenTest : public OobeBaseTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::test::TestFuture<GaiaInfoScreen::Result> screen_result_waiter_;
   GaiaInfoScreen::ScreenExitCallback original_callback_;
 };
@@ -116,9 +110,6 @@ class GaiaInfoScreenTestQuickStartEnabled : public GaiaInfoScreenTest {
   quick_start::FakeTargetDeviceConnectionBroker::Factory
       connection_broker_factory_;
   base::HistogramTester histogram_tester_;
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled, ForwardFlowManual) {

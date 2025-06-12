@@ -138,11 +138,7 @@ export const commonScreensList: OobeTypes.ScreensList = [
   {tag: 'error-message-element', id: 'error-message'},
   {tag: 'family-link-notice-element', id: 'family-link-notice'},
   {tag: 'fingerprint-setup-element', id: 'fingerprint-setup'},
-  {
-    tag: 'gaia-info-element',
-    id: 'gaia-info',
-    condition: 'isOobeGaiaInfoScreenEnabled',
-  },
+  {tag: 'gaia-info-element', id: 'gaia-info'},
   {tag: 'gaia-signin-element', id: 'gaia-signin'},
   {tag: 'gemini-intro-element', id: 'gemini-intro'},
   {tag: 'gesture-navigation-element', id: 'gesture-navigation'},

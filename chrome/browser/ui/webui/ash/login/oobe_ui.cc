@@ -331,8 +331,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
                      features::IsBootAnimationEnabled());
   source->AddBoolean("isOobeAssistantEnabled",
                      !features::IsOobeSkipAssistantEnabled());
-  source->AddBoolean("isOobeGaiaInfoScreenEnabled",
-                     features::IsOobeGaiaInfoScreenEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
   source->AddBoolean("isSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
@@ -580,9 +578,7 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(std::make_unique<TouchpadScrollScreenHandler>());
   }
 
-  if (features::IsOobeGaiaInfoScreenEnabled()) {
-    AddScreenHandler(std::make_unique<GaiaInfoScreenHandler>());
-  }
+  AddScreenHandler(std::make_unique<GaiaInfoScreenHandler>());
 
   if (features::IsOobeDisplaySizeEnabled()) {
     AddScreenHandler(std::make_unique<DisplaySizeScreenHandler>());
