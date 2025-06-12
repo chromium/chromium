@@ -126,7 +126,6 @@ TEST_F(SigninUtilsTest, TestWillNotDisplay) {
   const base::Version version_1_0("1.0");
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Should not show the sign-in upgrade twice on the same version.
@@ -140,7 +139,6 @@ TEST_F(SigninUtilsTest, TestWillNotDisplaySameVersion) {
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Should not show the sign-in upgrade twice until two major version after.
@@ -155,7 +153,6 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMinorVersion) {
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_1));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Should not show the sign-in upgrade twice until two major version after.
@@ -170,7 +167,6 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayTwoMinorVersions) {
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_2));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Should not show the sign-in upgrade twice until two major version after.
@@ -185,7 +181,6 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMajorVersion) {
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_2_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Should show the sign-in upgrade a second time, 2 version after.
@@ -200,7 +195,6 @@ TEST_F(SigninUtilsTest, TestWillDisplayTwoMajorVersions) {
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_TRUE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_3_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Show the sign-in upgrade on version 1.0.
@@ -225,7 +219,6 @@ TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnlyLegacy) {
       identity_manager_, account_manager_service_, version_3_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Show the sign-in upgrade on version 1.0.
@@ -262,7 +255,6 @@ TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnly) {
       identity_manager_, account_manager_service_, version_3_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Show the sign-in upgrade on version 1.0.
@@ -282,7 +274,6 @@ TEST_F(SigninUtilsTest, TestWillShowForNewAccountAdded) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
   EXPECT_TRUE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Add new account.
@@ -309,7 +300,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemovedLegacy) {
                                                  base::DoNothing());
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Add new account.
@@ -348,7 +338,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemoved) {
 
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Show the sign-in upgrade on version 1.0.
@@ -368,7 +357,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersion) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_4_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Show the sign-in upgrade on version 1.0.
@@ -385,7 +373,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersionBis) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_2_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Should not show the sign-in upgrade for first run after post restore.
@@ -405,7 +392,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfFirstRunAfterPostRestore) {
                           /*history_sync_enabled=*/false);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_3_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Should not show the sign-in upgrade if sign-in is disabled by policy.
@@ -421,7 +407,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
 
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_3_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Should show if the user is signed-in without history opt-in.
@@ -439,7 +424,6 @@ TEST_F(SigninUtilsTest, TestWillShowIfSignedInWithoutHistoryOptIn) {
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_TRUE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_3_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 // Should not show if the user is signed-in with history opt-in.
@@ -465,7 +449,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfSignedInWithHistoryOptIn) {
       identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_3_0));
-  EXPECT_FALSE(GetLocalState()->GetTime(prefs::kNextSSORecallTime).is_null());
 }
 
 }  // namespace

@@ -7,7 +7,6 @@
 #import "base/barrier_closure.h"
 #import "base/command_line.h"
 #import "base/functional/bind.h"
-#import "base/rand_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -18,7 +17,6 @@
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
@@ -62,18 +60,6 @@
 
 namespace {
 
-// Maximum delay to wait for fetching the account capabilities before showing
-// the sign-in upgrade promo. If fetching the account capabilities takes more
-// than the delay, then the promo is suppressed - it may be shown on the next
-// start-up.
-constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
-    base::Milliseconds(200);
-
-// The duration between two signin upgrade promo trigger is randomly chosen
-// between [53..68) days.
-const base::TimeDelta kDurationBetweenPromoTriggers =
-    base::RandTimeDelta(base::Days(53), base::Days(68));
-
 // Initiate synchronously the change to `profile`, then run `continuation`
 // when the change completes asynchronously. The UI (thus `scene_state`)
 // will be destroyed synchronously, so this function should not be called
@@ -98,6 +84,13 @@ void SwitchToProfileSynchronously(const std::string& profile_name,
                              continuation:std::move(continuation)];
   }
 }
+
+// Maximum delay to wait for fetching the account capabilities before showing
+// the sign-in upgrade promo. If fetching the account capabilities takes more
+// than the delay, then the promo is suppressed - it may be shown on the next
+// start-up.
+constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
+    base::Milliseconds(200);
 
 // Converts an array of AccountInfos to a set of gaia ids.
 NSSet<NSString*>* GaiaIdSetWithAccountInfos(
@@ -273,17 +266,8 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
     return true;
   }
 
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  base::Time next_show_time = local_state->GetTime(prefs::kNextSSORecallTime);
-  // We just store the next show time for now to ramp up clients for the
-  // experiment later. See crbug.com/408962000.
-  if (next_show_time.is_null()) {
-    local_state->SetTime(prefs::kNextSSORecallTime,
-                         base::Time::Now() + kDurationBetweenPromoTriggers);
-  }
-
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   // Show the promo at most every two major versions.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   NSString* version_string =
       [defaults stringForKey:kDisplayedSSORecallForMajorVersionKey];
   const base::Version version_shown(base::SysNSStringToUTF8(version_string));
@@ -372,9 +356,6 @@ void RecordUpgradePromoSigninStarted(
   DCHECK(current_version.IsValid());
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetTime(prefs::kNextSSORecallTime,
-                       base::Time::Now() + kDurationBetweenPromoTriggers);
   [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
                forKey:kDisplayedSSORecallForMajorVersionKey];
   std::vector<AccountInfo> account_infos =
