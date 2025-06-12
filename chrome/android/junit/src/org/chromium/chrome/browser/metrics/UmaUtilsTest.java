@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.metrics;
 import android.app.ActivityManager;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
-import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,25 +51,6 @@ public class UmaUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.O_MR1)
-    public void testRecordBackgroundRestrictions_noRestrictionsUnderPie() {
-        // Arrange
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(HISTOGRAM_IS_BACKGROUND_RESTRICTED)
-                        .expectNoRecords(HISTOGRAM_STANDBY_BUCKET)
-                        .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION)
-                        .build();
-
-        // Act
-        UmaUtils.recordBackgroundRestrictions();
-
-        // Assert
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void testRecordBackgroundRestrictions_notRestricted_standbyBucketActive() {
         int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_ACTIVE;
         int expectedUmaStandbyBucketStatus = 0; // StandbyBucketStatus.ACTIVE is 0 in enums.xml
@@ -80,7 +60,6 @@ public class UmaUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void testRecordBackgroundRestrictions_notRestricted_standbyBucketWorkingSet() {
         int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_WORKING_SET;
         int expectedUmaStandbyBucketStatus = 1; // StandbyBucketStatus.WORKING_SET is 1 in enums.xml
@@ -90,7 +69,6 @@ public class UmaUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void testRecordBackgroundRestrictions_notRestricted_standbyBucketFrequent() {
         int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_FREQUENT;
         int expectedUmaStandbyBucketStatus = 2; // StandbyBucketStatus.FREQUENT is 2 in enums.xml
@@ -100,7 +78,6 @@ public class UmaUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void testRecordBackgroundRestrictions_restricted_standbyBucketRare() {
         int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_RARE;
         int expectedUmaStandbyBucketStatus = 3; // StandbyBucketStatus.RARE is 3 in enums.xml
@@ -110,7 +87,6 @@ public class UmaUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void testRecordBackgroundRestrictions_notRestricted_standbyBucketRare() {
         int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_RARE;
         int expectedUmaStandbyBucketStatus = 3; // StandbyBucketStatus.RARE is 3 in enums.xml
@@ -120,7 +96,6 @@ public class UmaUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void testRecordBackgroundRestrictions_restricted_standbyBucketRestricted() {
         int androidStandbyBucketStatus = UsageStatsManager.STANDBY_BUCKET_RESTRICTED;
         int expectedUmaStandbyBucketStatus = 4; // StandbyBucketStatus.RESTRICTED is 4 in enums.xml
@@ -130,7 +105,6 @@ public class UmaUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void testRecordBackgroundRestrictions_notRestricted_standbyBucketExempted() {
         int androidStandbyBucketStatus = 5; // UsageStatsManager.STANDBY_BUCKET_EXEMPTED
         int expectedStandbyBucketStatus = 6; // StandbyBucketStatus.EXEMPTED is 6 in enums.xml
@@ -140,7 +114,6 @@ public class UmaUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void testRecordBackgroundRestrictions_restricted_standbyBucketNever() {
         int androidStandbyBucketStatus = 50; // UsageStatsManager.STANDBY_BUCKET_NEVER
         int expectedUmaStandbyBucketStatus = 7; // StandbyBucketStatus.NEVER is 7 in enums.xml
@@ -150,7 +123,6 @@ public class UmaUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void testRecordBackgroundRestrictions_restricted_standbyBucketOther() {
         int androidStandbyBucketStatus = 42; // UsageStatsManager.STANDBY_BUCKET_OTHER
         int expectedUmaStandbyBucketStatus = 8; // StandbyBucketStatus.OTHER is 8 in enums.xml

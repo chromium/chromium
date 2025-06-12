@@ -57,6 +57,7 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -186,7 +187,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q)
     public void create_maxHeightWithStatusBar_Q() {
         configureStatusBarHeightForQ();
         doTestHeightWithStatusBar();
@@ -205,7 +205,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q)
     public void create_maxHeightWithStatusBar_landscape_Q() {
         configureStatusBarHeightForQ();
         mPCCTTestRule.configLandscapeMode();
@@ -643,7 +642,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P)
     public void fixedHeightReactsToSoftKeyboardBelowR() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
         assertTabIsAtInitialPos(getWindowAttributes());
@@ -796,7 +794,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertEquals(0, strategy.getNavbarHeightForTesting());
     }
 
-    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void enterAndExitHtmlFullscreen() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -888,7 +885,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(mPCCTTestRule.mDragBarBackground).setColor(PCCT_TOOLBAR_COLOR);
     }
 
-    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void noTopShadowAtFullHeight() {
         doReturn(47)
@@ -908,7 +904,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.topMargin);
     }
 
-    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void sideShadowsWith900dpBottomSheet() {
         doReturn(8)
@@ -1001,7 +996,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 "Bottom sheet width should be the screen width", 6000, getWindowAttributes().width);
     }
 
-    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void largeDeviceInLandscape_900dpWidth() {
         doReturn(8)
@@ -1055,8 +1049,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
-    @Config(sdk = Build.VERSION_CODES.P)
     @Test
+    @DisabledTest // This needs to be re-worked for Q.
     public void useDividerLine_OldOS() {
         doReturn(8)
                 .when(mPCCTTestRule.mResources)

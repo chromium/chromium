@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.Window;
 
 import org.junit.Before;
@@ -65,7 +64,6 @@ public class CustomTabNavigationBarControllerTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P) // Android P+ (>=28) is needed for setting divider color.
     public void doesNotSetDividerColorWhenNull() {
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(null);
         // Bar color needs to be null. Otherwise the divider color could still be set if
@@ -78,7 +76,6 @@ public class CustomTabNavigationBarControllerTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.O_MR1)
     // Android P+ (>=28) is needed for setting the divider color.
     public void doesNotSetDividerColorWhenSdkLow() {
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
@@ -91,7 +88,6 @@ public class CustomTabNavigationBarControllerTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.O) // SDK 26 is used to trigger supportDarkButtons=true.
     public void setsCorrectBarColorWhenDarkButtonsSupported() {
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.GREEN);
@@ -104,7 +100,6 @@ public class CustomTabNavigationBarControllerTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P) // Android P+ (>=28) needed for setting divider color.
     public void setsCorrectDividerColor() {
         // The case when divider color is set explicitly.
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
@@ -125,7 +120,6 @@ public class CustomTabNavigationBarControllerTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P) // Android P+ (>=28) needed for setting divider color.
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
     public void setsCorrectDividerColorWhenGoogleBottomBarEnabled() {
         when(mConnection.shouldEnableGoogleBottomBarForIntent(mCustomTabIntentDataProvider))

@@ -178,7 +178,6 @@ public class EdgeToEdgeFieldTrialUnitTest {
     }
 
     @Test
-    @Config(sdk = 28)
     public void testInvalidInputs_unevenLength() {
         ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foobar");
         ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("1,2");
@@ -189,7 +188,6 @@ public class EdgeToEdgeFieldTrialUnitTest {
     }
 
     @Test
-    @Config(sdk = 28)
     public void testInvalidInputs_unevenLength_2() {
         ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo,bar");
         ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("1");
@@ -200,7 +198,6 @@ public class EdgeToEdgeFieldTrialUnitTest {
     }
 
     @Test
-    @Config(sdk = 28)
     public void testInvalidInputs_versionInvalid() {
         ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo,bar");
         ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("1,a");

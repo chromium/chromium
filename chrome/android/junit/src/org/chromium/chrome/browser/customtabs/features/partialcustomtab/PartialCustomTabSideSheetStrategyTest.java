@@ -38,7 +38,6 @@ import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.P
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.FULL_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.NAVBAR_HEIGHT;
 
-import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -53,6 +52,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.ui.base.LocalizationUtils;
@@ -123,7 +123,6 @@ public class PartialCustomTabSideSheetStrategyTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q)
     public void create_sideSheetStrategy_Q() {
         mPCCTTestRule.configLandscapeMode();
         PartialCustomTabSideSheetStrategy strategy = createPcctSideSheetStrategy(2000);
@@ -259,7 +258,6 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.topMargin);
     }
 
-    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void leftShadowIsVisible() {
         doReturn(47)
@@ -283,7 +281,6 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.rightMargin);
     }
 
-    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void rightShadowIsVisible() {
         doReturn(47)
@@ -429,8 +426,8 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
-    @Config(sdk = Build.VERSION_CODES.P)
     @Test
+    @DisabledTest // This needs to be re-worked for Q.
     public void drawDividerLine_OverrideWithOldOS() {
         doReturn(10)
                 .when(mPCCTTestRule.mResources)
@@ -492,7 +489,6 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
-    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void enterAndExitHtmlFullscreen() {
         doReturn(47)

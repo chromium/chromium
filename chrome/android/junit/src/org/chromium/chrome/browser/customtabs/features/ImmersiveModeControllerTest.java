@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UnownedUserDataHost;
@@ -33,13 +31,8 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
-/**
- * Tests for {@link ImmersiveModeController}.
- *
- * <p>sdk = P for the cutout mode (setsLayoutParams) test.
- */
+/** Tests for {@link ImmersiveModeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.P, manifest = Config.NONE)
 public class ImmersiveModeControllerTest {
     // Convenience constants to make the tests  more readable.
     private static final boolean NOT_STICKY = false;

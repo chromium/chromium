@@ -15,8 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +24,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -39,7 +36,6 @@ import org.chromium.components.embedder_support.util.Origin;
 
 /** Tests for {@link NotificationChannelPreserverTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O)
 public class NotificationChannelPreserverTest {
     private static final Origin ORIGIN_WITH_CHANNEL = Origin.create("https://www.red.com");
     private static final String CHANNEL_ID = "red-channel-id";

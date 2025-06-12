@@ -14,7 +14,6 @@ import static org.mockito.Mockito.doCallRealMethod;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -90,7 +89,6 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.O)
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testSetNotificationIcon_lowMem_O() {
         mTabHolder.simulateMediaSessionStateChanged(true, false);

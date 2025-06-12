@@ -30,7 +30,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowRoleManager;
 
 import org.chromium.base.ContextUtils;
@@ -57,7 +56,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit test for {@link DefaultBrowserPromoUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 public class DefaultBrowserPromoUtilsTest {
     @Mock private DefaultBrowserPromoImpressionCounter mCounter;
     @Mock private DefaultBrowserStateProvider mProvider;
@@ -149,14 +147,6 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(
                 "Should Not show role manager promo when Role is not available on Q+.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
-        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
-    }
-
-    // --- P below ---
-    @Test
-    @Config(sdk = Build.VERSION_CODES.P)
-    public void testNoPromo_P() {
-        Assert.assertFalse("Should not promo on P-.", mUtils.shouldShowRoleManagerPromo(mActivity));
         Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 

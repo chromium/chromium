@@ -14,12 +14,10 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
-import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
@@ -32,7 +30,6 @@ import java.util.List;
 
 /** Unit tests for {@link SplitPreloader}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O)
 public class SplitPreloaderTest {
     private static final String SPLIT_A = "split_a";
     private static final String SPLIT_B = "split_b";

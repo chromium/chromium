@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.PowerManager;
 
 import org.junit.Before;
@@ -49,9 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Test FullscreenVideoPictureInPictureController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        sdk = Build.VERSION_CODES.O,
-        shadows = {ShadowPackageManager.class, ShadowPostTask.class, ShadowSystemClock.class})
+@Config(shadows = {ShadowPackageManager.class, ShadowPostTask.class, ShadowSystemClock.class})
 public class FullscreenVideoPictureInPictureControllerUnitTest {
     private static final int TAB_ID = 0;
 
