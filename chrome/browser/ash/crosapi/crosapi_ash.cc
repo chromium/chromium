@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
-#include "chrome/browser/ash/crosapi/login_state_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
@@ -107,7 +106,6 @@ CrosapiAsh::CrosapiAsh()
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       login_ash_(std::make_unique<LoginAsh>()),
-      login_state_ash_(std::make_unique<LoginStateAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
@@ -218,11 +216,6 @@ void CrosapiAsh::BindLocalPrinter(
 void CrosapiAsh::BindLogin(
     mojo::PendingReceiver<crosapi::mojom::Login> receiver) {
   login_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindLoginState(
-    mojo::PendingReceiver<crosapi::mojom::LoginState> receiver) {
-  login_state_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindMachineLearningService(

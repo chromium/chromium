@@ -28,7 +28,6 @@ mojom("mojom") {
     "launcher_search.mojom",
     "local_printer.mojom",
     "login.mojom",
-    "login_state.mojom",
     "magic_boost.mojom",
     "mahi.mojom",
     "media_ui.mojom",

@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/login_state.h"
@@ -15,7 +14,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/test/browser_task_environment.h"
@@ -30,23 +28,17 @@ namespace {
 
 const struct {
   const session_manager::SessionState session_state;
-  const crosapi::mojom::SessionState mapped_mojo_state;
   const extensions::api::login_state::SessionState expected_event;
 } kTestCases[] = {
     {session_manager::SessionState::OOBE,
-     crosapi::mojom::SessionState::kInOobeScreen,
      extensions::api::login_state::SessionState::kInOobeScreen},
     {session_manager::SessionState::LOGIN_PRIMARY,
-     crosapi::mojom::SessionState::kInLoginScreen,
      extensions::api::login_state::SessionState::kInLoginScreen},
     {session_manager::SessionState::ACTIVE,
-     crosapi::mojom::SessionState::kInSession,
      extensions::api::login_state::SessionState::kInSession},
     {session_manager::SessionState::LOCKED,
-     crosapi::mojom::SessionState::kInLockScreen,
      extensions::api::login_state::SessionState::kInLockScreen},
     {session_manager::SessionState::UNKNOWN,
-     crosapi::mojom::SessionState::kUnknown,
      extensions::api::login_state::SessionState::kUnknown},
 };
 
@@ -72,18 +64,6 @@ namespace extensions {
 
 class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
  public:
-  // A mock around the event dispatcher for tracking callbacks.
-  class MockSessionStateChangedEventDispatcher
-      : public SessionStateChangedEventDispatcher {
-   public:
-    explicit MockSessionStateChangedEventDispatcher(
-        content::BrowserContext* context)
-        : SessionStateChangedEventDispatcher(context) {}
-    ~MockSessionStateChangedEventDispatcher() override = default;
-    MOCK_METHOD1(OnSessionStateChanged,
-                 void(crosapi::mojom::SessionState state));
-  };
-
   SessionStateChangedEventDispatcherAshUnittest() = default;
 
   SessionStateChangedEventDispatcherAshUnittest(
@@ -106,7 +86,6 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
         profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
 
     ash::LoginState::Initialize();
-    manager_ = std::make_unique<crosapi::CrosapiManager>();
 
     dispatcher_ =
         std::make_unique<SessionStateChangedEventDispatcher>(testing_profile_);
@@ -118,7 +97,6 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
   void TearDown() override {
     observer_.reset();
     event_router_.reset();
-    manager_.reset();
     testing_profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
     ash::LoginState::Shutdown();
@@ -126,11 +104,10 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
-  std::unique_ptr<crosapi::CrosapiManager> manager_;
   std::unique_ptr<SessionStateChangedEventDispatcher> dispatcher_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<EventRouter> event_router_;
   std::unique_ptr<TestEventRouterObserver> observer_;
 };
@@ -138,27 +115,9 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
 TEST_F(SessionStateChangedEventDispatcherAshUnittest,
        OnSessionStateChangedDispatchesEvent) {
   for (const auto& test : kTestCases) {
-    dispatcher_->OnSessionStateChanged(test.mapped_mojo_state);
+    session_manager_->SetSessionState(test.session_state);
     EXPECT_TRUE(WasSessionStateChangedEventDispatched(observer_.get(),
                                                       test.expected_event));
-  }
-}
-
-TEST_F(SessionStateChangedEventDispatcherAshUnittest,
-       ObservesSessionStateChangedEvent) {
-  // The observer is fired every time the session state changes (to a new mapped
-  // state).
-  for (const auto& test : kTestCases) {
-    testing::StrictMock<MockSessionStateChangedEventDispatcher> mock_dispatcher(
-        testing_profile_);
-    base::RunLoop run_loop;
-
-    EXPECT_CALL(mock_dispatcher, OnSessionStateChanged(test.mapped_mojo_state))
-        .Times(1)
-        .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
-
-    session_manager_->SetSessionState(test.session_state);
-    run_loop.Run();
   }
 }
 

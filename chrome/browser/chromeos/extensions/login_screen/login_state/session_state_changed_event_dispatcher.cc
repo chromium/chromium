@@ -5,10 +5,10 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"
 #include "chrome/common/extensions/api/login_state.h"
-#include "chromeos/crosapi/mojom/login_state.mojom.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -28,14 +28,7 @@ SessionStateChangedEventDispatcher::SessionStateChangedEventDispatcher(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       event_router_(EventRouter::Get(browser_context)) {
-  crosapi::mojom::LoginState* login_state_api = nullptr;
-  // CrosapiManager may not be initialized in tests.
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    login_state_api = GetLoginStateApi();
-  }
-  if (login_state_api) {
-    login_state_api->AddObserver(receiver_.BindNewPipeAndPassRemote());
-  }
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
 }
 
 SessionStateChangedEventDispatcher::~SessionStateChangedEventDispatcher() =
@@ -43,9 +36,9 @@ SessionStateChangedEventDispatcher::~SessionStateChangedEventDispatcher() =
 
 void SessionStateChangedEventDispatcher::Shutdown() {}
 
-void SessionStateChangedEventDispatcher::OnSessionStateChanged(
-    crosapi::mojom::SessionState state) {
-  api::login_state::SessionState new_state = ToApiEnum(state);
+void SessionStateChangedEventDispatcher::OnSessionStateChanged() {
+  api::login_state::SessionState new_state =
+      ToApiEnum(session_manager::SessionManager::Get()->session_state());
 
   std::unique_ptr<Event> event = std::make_unique<Event>(
       events::LOGIN_STATE_ON_SESSION_STATE_CHANGED,

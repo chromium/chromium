@@ -4,14 +4,11 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"
 
-#include "base/functional/bind.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/login_state_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/login_state.h"
-#include "chromeos/crosapi/mojom/login_state.mojom.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "content/public/browser/browser_context.h"
 
 namespace {
@@ -22,26 +19,25 @@ bool IsSigninProfile(const Profile* profile) {
 
 namespace extensions {
 
-api::login_state::SessionState ToApiEnum(crosapi::mojom::SessionState state) {
+api::login_state::SessionState ToApiEnum(session_manager::SessionState state) {
   switch (state) {
-    case crosapi::mojom::SessionState::kUnknown:
+    case session_manager::SessionState::UNKNOWN:
       return api::login_state::SessionState::kUnknown;
-    case crosapi::mojom::SessionState::kInOobeScreen:
+    case session_manager::SessionState::OOBE:
       return api::login_state::SessionState::kInOobeScreen;
-    case crosapi::mojom::SessionState::kInLoginScreen:
+    case session_manager::SessionState::LOGIN_PRIMARY:
+    case session_manager::SessionState::LOGIN_SECONDARY:
+    case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
       return api::login_state::SessionState::kInLoginScreen;
-    case crosapi::mojom::SessionState::kInSession:
+    case session_manager::SessionState::ACTIVE:
       return api::login_state::SessionState::kInSession;
-    case crosapi::mojom::SessionState::kInLockScreen:
+    case session_manager::SessionState::LOCKED:
       return api::login_state::SessionState::kInLockScreen;
-    case crosapi::mojom::SessionState::kInRmaScreen:
+    case session_manager::SessionState::RMA:
       return api::login_state::SessionState::kInRmaScreen;
   }
-  NOTREACHED();
-}
 
-crosapi::mojom::LoginState* GetLoginStateApi() {
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->login_state_ash();
+  NOTREACHED();
 }
 
 ExtensionFunction::ResponseAction LoginStateGetProfileTypeFunction::Run() {
@@ -54,26 +50,8 @@ ExtensionFunction::ResponseAction LoginStateGetProfileTypeFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction LoginStateGetSessionStateFunction::Run() {
-  auto callback =
-      base::BindOnce(&LoginStateGetSessionStateFunction::OnResult, this);
-
-  GetLoginStateApi()->GetSessionState(std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void LoginStateGetSessionStateFunction::OnResult(
-    crosapi::mojom::GetSessionStateResultPtr result) {
-  using Result = crosapi::mojom::GetSessionStateResult;
-  switch (result->which()) {
-    case Result::Tag::kErrorMessage:
-      Respond(Error(result->get_error_message()));
-      return;
-    case Result::Tag::kSessionState:
-      api::login_state::SessionState session_state =
-          ToApiEnum(result->get_session_state());
-      Respond(WithArguments(api::login_state::ToString(session_state)));
-      return;
-  }
+  return RespondNow(WithArguments(api::login_state::ToString(
+      ToApiEnum(session_manager::SessionManager::Get()->session_state()))));
 }
 
 }  // namespace extensions

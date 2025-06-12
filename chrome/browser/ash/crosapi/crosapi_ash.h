@@ -51,7 +51,6 @@ class FileSystemProviderServiceAsh;
 class KeystoreServiceAsh;
 class LocalPrinterAsh;
 class LoginAsh;
-class LoginStateAsh;
 class MediaUIAsh;
 class MultiCaptureServiceAsh;
 class NetworkingAttributesAsh;
@@ -103,8 +102,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
-  void BindLoginState(
-      mojo::PendingReceiver<mojom::LoginState> receiver) override;
   void BindMachineLearningService(
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver)
@@ -183,8 +180,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LoginAsh* login_ash() { return login_ash_.get(); }
 
-  LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
-
   MediaUIAsh* media_ui_ash() { return media_ui_ash_.get(); }
 
   MultiCaptureServiceAsh* multi_capture_service_ash() {
@@ -229,7 +224,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
-  std::unique_ptr<LoginStateAsh> login_state_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
