@@ -13,6 +13,7 @@ ChromeVoxForcedActionPathTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
+    globalThis.keyboardHandler = BackgroundKeyboardHandler.instance;
   }
 
   /**
@@ -34,6 +35,13 @@ ChromeVoxForcedActionPathTest = class extends ChromeVoxE2ETest {
       <p>Start</p>
       <p>End</p>
     `;
+  }
+
+  callOnKeyDown(internalKeyEvent) {
+    keyboardHandler.onKeyDown_(internalKeyEvent, () => {});
+  }
+  callOnKeyUp(internalKeyEvent) {
+    keyboardHandler.onKeyUp_(internalKeyEvent, () => {});
   }
 };
 
@@ -75,7 +83,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'ActionUnitTest', async function() {
       {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
   const keySequenceActionTwo = ForcedActionPath.createAction({
     type: 'key_sequence',
-    value: new KeySequence(TestUtils.createMockKeyEvent(KeyCode.A)),
+    value: new KeySequence(TestUtils.createMockInternalKey(KeyCode.A)),
   });
   const gestureActionOne = ForcedActionPath.createAction(
       {type: 'gesture', value: Gesture.SWIPE_UP1});
@@ -149,7 +157,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'Errors', async function() {
 
   try {
     monitor.onKeySequence(
-        new KeySequence(TestUtils.createMockKeyEvent(KeyCode.SPACE)));
+        new KeySequence(TestUtils.createMockInternalKey(KeyCode.SPACE)));
     assertTrue(false);  // Shouldn't execute.
   } catch (error) {
     assertEquals('ForcedActionPath: actionIndex_ is invalid.', error.message);
@@ -219,7 +227,6 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'Output', async function() {
 // since we don't directly call a ForcedActionPath function.
 AX_TEST_F('ChromeVoxForcedActionPathTest', 'SingleKey', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
-  const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
   const actions =
       [{type: 'key_sequence', value: {'keys': {'keyCode': [KeyCode.SPACE]}}}];
@@ -228,20 +235,20 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'SingleKey', async function() {
   ForcedActionPath.listenFor(actions).then(onFinished);
   let keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
-  keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.LEFT));
-  keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.LEFT));
+  this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.LEFT));
+  this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.LEFT));
   await keyPressReceived;
   assertFalse(finished);
   keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
-  keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.RIGHT));
-  keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.RIGHT));
+  this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.RIGHT));
+  this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.RIGHT));
   await keyPressReceived;
   assertFalse(finished);
   keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
-  keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.SPACE));
-  keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.SPACE));
+  this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.SPACE));
+  this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.SPACE));
   await keyPressReceived;
   assertTrue(finished);
 });
@@ -250,7 +257,6 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'SingleKey', async function() {
 // since we don't directly call a ForcedActionPath function.
 AX_TEST_F('ChromeVoxForcedActionPathTest', 'MultipleKeys', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
-  const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
   const actions = [{
     type: 'key_sequence',
@@ -264,37 +270,37 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'MultipleKeys', async function() {
   // the key press has been processed before checking if onFinished was called.
   let keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
-  keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.O));
-  keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.O));
+  this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.O));
+  this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.O));
   await keyPressReceived;
   assertFalse(finished);
 
   keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
-  keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.B));
-  keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.B));
+  this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.B));
+  this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.B));
   await keyPressReceived;
   assertFalse(finished);
 
   keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
-  keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.SEARCH));
-  keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.SEARCH));
+  this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.SEARCH));
+  this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.SEARCH));
   await keyPressReceived;
   assertFalse(finished);
 
   keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
-  keyboardHandler.onKeyDown(
-      TestUtils.createMockKeyEvent(KeyCode.O, {searchKeyHeld: true}));
+  this.callOnKeyDown(
+      TestUtils.createMockInternalKey(KeyCode.O, {searchKeyHeld: true}));
   await keyPressReceived;
   assertFalse(finished);
 
   keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
-  keyboardHandler.onKeyUp(
-      TestUtils.createMockKeyEvent(KeyCode.O, {searchKeyHeld: true}));
-  keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.B));
+  this.callOnKeyUp(
+      TestUtils.createMockInternalKey(KeyCode.O, {searchKeyHeld: true}));
+  this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.B));
   await keyPressReceived;
   assertTrue(finished);
 });
@@ -325,9 +331,9 @@ AX_TEST_F(
       ];
       const onFinished = () => finished = true;
 
-      const altShiftLSequence = new KeySequence(TestUtils.createMockKeyEvent(
+      const altShiftLSequence = new KeySequence(TestUtils.createMockInternalKey(
           KeyCode.L, {altKey: true, shiftKey: true}));
-      const altShiftSSequence = new KeySequence(TestUtils.createMockKeyEvent(
+      const altShiftSSequence = new KeySequence(TestUtils.createMockInternalKey(
           KeyCode.S, {altKey: true, shiftKey: true}));
       let monitor;
       mockFeedback
@@ -355,7 +361,6 @@ AX_TEST_F(
 AX_TEST_F('ChromeVoxForcedActionPathTest', 'BlockCommands', async function() {
   const mockFeedback = this.createMockFeedback();
   await this.runWithLoadedTree(this.paragraphDoc);
-  const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
   const actions = [
     {
@@ -370,13 +375,13 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'BlockCommands', async function() {
   const onFinished = () => finished = true;
 
   const nextObject =
-      TestUtils.createMockKeyEvent(KeyCode.RIGHT, {searchKeyHeld: true});
+      TestUtils.createMockInternalKey(KeyCode.RIGHT, {searchKeyHeld: true});
   const nextLine =
-      TestUtils.createMockKeyEvent(KeyCode.DOWN, {searchKeyHeld: true});
+      TestUtils.createMockInternalKey(KeyCode.DOWN, {searchKeyHeld: true});
   const previousObject =
-      TestUtils.createMockKeyEvent(KeyCode.LEFT, {searchKeyHeld: true});
+      TestUtils.createMockInternalKey(KeyCode.LEFT, {searchKeyHeld: true});
   const previousLine =
-      TestUtils.createMockKeyEvent(KeyCode.UP, {searchKeyHeld: true});
+      TestUtils.createMockInternalKey(KeyCode.UP, {searchKeyHeld: true});
 
   ForcedActionPath.listenFor(actions).then(onFinished);
   mockFeedback.expectSpeech('Start')
@@ -386,26 +391,26 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'BlockCommands', async function() {
       .call(() => {
         // Calling nextLine doesn't move ChromeVox because ForcedActionPath
         // expects the nextObject command.
-        keyboardHandler.onKeyDown(nextLine);
-        keyboardHandler.onKeyUp(nextLine);
+        this.callOnKeyDown(nextLine);
+        this.callOnKeyUp(nextLine);
         assertEquals('Start', this.getRangeStart().name);
       })
       .call(() => {
-        keyboardHandler.onKeyDown(nextObject);
-        keyboardHandler.onKeyUp(nextObject);
+        this.callOnKeyDown(nextObject);
+        this.callOnKeyUp(nextObject);
         assertEquals('End', this.getRangeStart().name);
       })
       .expectSpeech('End')
       .call(() => {
         // Calling previousLine doesn't move ChromeVox because
         // ForcedActionPath expects the previousObject command.
-        keyboardHandler.onKeyDown(previousLine);
-        keyboardHandler.onKeyUp(previousLine);
+        this.callOnKeyDown(previousLine);
+        this.callOnKeyUp(previousLine);
         assertEquals('End', this.getRangeStart().name);
       })
       .call(() => {
-        keyboardHandler.onKeyDown(previousObject);
-        keyboardHandler.onKeyUp(previousObject);
+        this.callOnKeyDown(previousObject);
+        this.callOnKeyUp(previousObject);
         assertEquals('Start', this.getRangeStart().name);
       })
       .expectSpeech('Start');
@@ -416,7 +421,6 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'BlockCommands', async function() {
 // is active.
 AX_TEST_F('ChromeVoxForcedActionPathTest', 'CloseChromeVox', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
-  const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
   let closed = false;
   const actions =
@@ -430,16 +434,16 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'CloseChromeVox', async function() {
 
   assertFalse(closed);
   assertFalse(finished);
-  keyboardHandler.onKeyDown(
-      TestUtils.createMockKeyEvent(KeyCode.CONTROL, {ctrlKey: true}));
+  this.callOnKeyDown(
+      TestUtils.createMockInternalKey(KeyCode.CONTROL, {ctrlKey: true}));
   assertFalse(closed);
   assertFalse(finished);
-  keyboardHandler.onKeyDown(
-      TestUtils.createMockKeyEvent(KeyCode.ALT, {ctrlKey: true, altKey: true}));
+  this.callOnKeyDown(TestUtils.createMockInternalKey(
+      KeyCode.ALT, {ctrlKey: true, altKey: true}));
   assertFalse(closed);
   assertFalse(finished);
-  keyboardHandler.onKeyDown(
-      TestUtils.createMockKeyEvent(KeyCode.Z, {ctrlKey: true, altKey: true}));
+  this.callOnKeyDown(TestUtils.createMockInternalKey(
+      KeyCode.Z, {ctrlKey: true, altKey: true}));
   assertTrue(closed);
   // |finished| remains false since we didn't press the expected key
   // sequence.
@@ -452,7 +456,6 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'CloseChromeVox', async function() {
 AX_TEST_F(
     'ChromeVoxForcedActionPathTest', 'StopPropagation', async function() {
       await this.runWithLoadedTree(this.simpleDoc);
-      const keyboardHandler = BackgroundKeyboardHandler.instance;
       let finished = false;
       let executedCommand = false;
       const actions = [{
@@ -468,8 +471,8 @@ AX_TEST_F(
       const keyPressReceived = new Promise(
           resolve => ForcedActionPath.postKeyDownEventCallbackForTesting =
               resolve);
-      keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.CONTROL));
-      keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.CONTROL));
+      this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.CONTROL));
+      this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.CONTROL));
       await keyPressReceived;
       assertFalse(executedCommand);
       assertTrue(finished);
