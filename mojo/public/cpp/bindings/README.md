@@ -1197,7 +1197,7 @@ The implementation of `Foo` looks like this:
 ``` cpp
 class FooImpl : public Foo {
   ...
-  void PassBarReceiver(mojo::AssociatedReceiver<Bar> bar) override {
+  void PassBarReceiver(mojo::PendingAssociatedReceiver<Bar> bar) override {
     bar_receiver_.Bind(std::move(bar));
     ...
   }
