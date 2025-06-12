@@ -438,7 +438,7 @@ const FeatureEntry::FeatureVariation kLocalNetworkAccessChecksVariations[] = {
      std::size(kLocalNetworkAccessChecksBlock), nullptr}};
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROME_OS)
+        // BUILDFLAG(IS_CHROMEOS)
 
 const FeatureEntry::Choice kEnableBenchmarkingChoices[] = {
     {flag_descriptions::kEnableBenchmarkingChoiceDisabled, "", ""},
@@ -12530,7 +12530,7 @@ const FeatureEntry kFeatureEntries[] = {
          "LocalNetworkAccessChecks")},
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROME_OS)
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"notebook-lm-app-preinstall",
@@ -12746,7 +12746,7 @@ const FeatureEntry kFeatureEntries[] = {
      tabs::flag_descriptions::kTabGroupHomeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kTabGroupHome)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROME_OS)
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
     {"pinned-tab-toast-on-close", flag_descriptions::kPinnedTabToastOnCloseName,
@@ -12826,7 +12826,7 @@ const FeatureEntry kFeatureEntries[] = {
      static_cast<unsigned short>(kOsCrOS | kOsLinux | kOsMac | kOsWin),
      FEATURE_VALUE_TYPE(omnibox::kEnableSiteSearchAllowUserOverridePolicy)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROME_OS)
+        // BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/40680264): Remove this flag after regression investigation
     // is finished.
     {
