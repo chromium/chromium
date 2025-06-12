@@ -15,6 +15,10 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "content/public/browser/weak_document_ptr.h"
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -40,11 +44,12 @@ class ToolController {
   ToolController(const ToolController&) = delete;
   ToolController& operator=(const ToolController&) = delete;
 
-  // Invokes a tool action.
+  // Invokes a tool action. Both `tab` and `target_frame` can be null.
   void Invoke(const optimization_guide::proto::ActionInformation& action,
               AggregatedJournal& journal,
               TaskId task_id,
-              content::RenderFrameHost& target_frame,
+              tabs::TabInterface* tab,
+              content::RenderFrameHost* target_frame,
               ResultCallback result_callback);
 
  private:
@@ -58,7 +63,8 @@ class ToolController {
   std::unique_ptr<Tool> CreateTool(
       AggregatedJournal& journal,
       TaskId task_id,
-      content::RenderFrameHost& frame,
+      tabs::TabInterface* tab,
+      content::RenderFrameHost* frame,
       const optimization_guide::proto::ActionInformation& action_information);
 
   void ValidationComplete(mojom::ActionResultPtr result);

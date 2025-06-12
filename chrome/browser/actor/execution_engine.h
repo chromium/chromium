@@ -118,8 +118,6 @@ class ExecutionEngine {
   // Synchronously executes the next action. There are several types of actions,
   // including renderer-scoped actions, tab-scoped actions, and global actions.
   void ExecuteNextAction();
-  void ExecuteFrameScopedAction(
-      const optimization_guide::proto::ActionInformation& action);
 
   // Called each time an action finishes.
   void FinishOneAction(mojom::ActionResultPtr result);
@@ -137,6 +135,11 @@ class ExecutionEngine {
                        tabs::TabInterface::DetachReason reason);
 
   const GURL& LastCommittedURLOfCurrentTask();
+
+  const optimization_guide::proto::ActionInformation& GetNextAction();
+  // Returns the tab associated with the action or nullptr.
+  tabs::TabInterface* GetTab(
+      const optimization_guide::proto::ActionInformation& action);
 
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 

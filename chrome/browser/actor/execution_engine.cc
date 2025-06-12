@@ -50,6 +50,129 @@ namespace actor {
 
 namespace {
 
+// Whether we need to run synchronous and asynchronous, tab-scoped safety
+// checks.
+bool ActionRequiresTabScopedSafetyChecks(const ActionInformation& action) {
+  switch (action.action_info_case()) {
+    case ActionInformation::kClick:
+    case ActionInformation::kType:
+    case ActionInformation::kScroll:
+    case ActionInformation::kMoveMouse:
+    case ActionInformation::kDragAndRelease:
+    case ActionInformation::kSelect:
+      return true;
+    // TODO(crbug.com/411462297): It's not clear that navigate and wait requests
+    // should be doing tab safety checks. For now we return `true` to preserve
+    // existing behavior.
+    case ActionInformation::kBack:
+    case ActionInformation::kForward:
+    case ActionInformation::kNavigate:
+    case ActionInformation::kWait:
+      return true;
+    case ActionInformation::kCreateTab:
+    case ActionInformation::kCloseTab:
+    case ActionInformation::kActivateTab:
+    case ActionInformation::kCreateWindow:
+    case ActionInformation::kCloseWindow:
+    case ActionInformation::kActivateWindow:
+    case ActionInformation::kYieldToUser:
+    case ActionInformation::ACTION_INFO_NOT_SET:
+      return false;
+  }
+}
+
+// Whether the action requires a frame.
+bool ActionRequiresFrame(const ActionInformation& action) {
+  switch (action.action_info_case()) {
+    case ActionInformation::kClick:
+    case ActionInformation::kType:
+    case ActionInformation::kScroll:
+    case ActionInformation::kMoveMouse:
+    case ActionInformation::kDragAndRelease:
+    case ActionInformation::kSelect:
+      return true;
+    // TODO(crbug.com/411462297): These requests do not require frames. For now
+    // we return `true` to preserve existing behavior.
+    case ActionInformation::kBack:
+    case ActionInformation::kForward:
+    case ActionInformation::kNavigate:
+    case ActionInformation::kWait:
+      return true;
+
+    case ActionInformation::kCreateTab:
+    case ActionInformation::kCloseTab:
+    case ActionInformation::kActivateTab:
+    case ActionInformation::kCreateWindow:
+    case ActionInformation::kCloseWindow:
+    case ActionInformation::kActivateWindow:
+    case ActionInformation::kYieldToUser:
+    case ActionInformation::ACTION_INFO_NOT_SET:
+      return false;
+  }
+}
+
+tabs::TabHandle GetTabHandleFromAction(
+    const optimization_guide::proto::ActionInformation& action) {
+  switch (action.action_info_case()) {
+    case ActionInformation::kClick:
+      return tabs::TabHandle(action.click().tab_id());
+    case ActionInformation::kType:
+      return tabs::TabHandle(action.type().tab_id());
+    case ActionInformation::kScroll:
+      return tabs::TabHandle(action.scroll().tab_id());
+    case ActionInformation::kMoveMouse:
+      return tabs::TabHandle(action.move_mouse().tab_id());
+    case ActionInformation::kDragAndRelease:
+      return tabs::TabHandle(action.drag_and_release().tab_id());
+    case ActionInformation::kSelect:
+      return tabs::TabHandle(action.select().tab_id());
+    case ActionInformation::kBack:
+      return tabs::TabHandle(action.back().tab_id());
+    case ActionInformation::kForward:
+      return tabs::TabHandle(action.forward().tab_id());
+    case ActionInformation::kNavigate:
+      return tabs::TabHandle(action.navigate().tab_id());
+    case ActionInformation::kCloseTab:
+      return tabs::TabHandle(action.close_tab().tab_id());
+    case ActionInformation::kActivateTab:
+      return tabs::TabHandle(action.activate_tab().tab_id());
+    case ActionInformation::kWait:
+    case ActionInformation::kCreateTab:
+    case ActionInformation::kCreateWindow:
+    case ActionInformation::kCloseWindow:
+    case ActionInformation::kActivateWindow:
+    case ActionInformation::kYieldToUser:
+    case ActionInformation::ACTION_INFO_NOT_SET:
+      return tabs::TabHandle();
+  }
+}
+
+// Whether the action requires a tab.
+bool ActionRequiresTab(const ActionInformation& action) {
+  switch (action.action_info_case()) {
+    case ActionInformation::kClick:
+    case ActionInformation::kType:
+    case ActionInformation::kScroll:
+    case ActionInformation::kMoveMouse:
+    case ActionInformation::kDragAndRelease:
+    case ActionInformation::kSelect:
+    case ActionInformation::kBack:
+    case ActionInformation::kForward:
+    case ActionInformation::kNavigate:
+    case ActionInformation::kWait:
+    case ActionInformation::kCloseTab:
+    case ActionInformation::kActivateTab:
+      return true;
+    case ActionInformation::kCreateTab:
+    case ActionInformation::kCreateWindow:
+    case ActionInformation::kCloseWindow:
+    case ActionInformation::kActivateWindow:
+    case ActionInformation::kYieldToUser:
+    case ActionInformation::ACTION_INFO_NOT_SET:
+      return false;
+  }
+}
+
 void PostTaskForActCallback(ExecutionEngine::ActionResultCallback callback,
                             mojom::ActionResultPtr result) {
   UMA_HISTOGRAM_ENUMERATION("Actor.ExecutionEngine.Action.ResultCode",
@@ -139,14 +262,6 @@ void ExecutionEngine::Act(const BrowserAction& action,
     return;
   }
 
-  if (tab_scoped_actions_deprecated_ && !tab_) {
-    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
-                  "Unable to perform action: tab has been destroyed");
-    PostTaskForActCallback(std::move(callback),
-                           MakeResult(mojom::ActionResultCode::kTabWentAway));
-    return;
-  }
-
   // NOTE: Improve this API by queuing the action instead.
   if (actions_v1_ || actions_v2_) {
     journal_->Log(
@@ -219,25 +334,24 @@ void ExecutionEngine::KickOffNextAction(
     }
   }
 
-  SafetyChecksForNextAction();
+  if (ActionRequiresTabScopedSafetyChecks(GetNextAction())) {
+    SafetyChecksForNextAction();
+  } else {
+    ExecuteNextAction();
+  }
 }
 
 void ExecutionEngine::SafetyChecksForNextAction() {
-  // TODO: populate this properly with either tab_ or the action's tab.
-  tabs::TabInterface* tab = tab_;
-  // TODO: not all actions require a tab.
-  bool action_requires_tab = true;
+  CHECK(ActionRequiresTab(GetNextAction()));
+  tabs::TabInterface* tab = GetTab(GetNextAction());
 
-  if (action_requires_tab && !tab) {
+  if (!tab) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   "The tab is no longer present");
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
                                "The tab is no longer present."));
     return;
   }
-
-  // TODO: support non-tab actions.
-  CHECK(action_requires_tab);
 
   // Asynchronously check if we can act on the tab.
   MayActOnTab(
@@ -254,12 +368,10 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   CHECK(actions_v1_ || actions_v2_);
 
   auto task_id = task_->id();
+  tabs::TabInterface* tab = GetTab(GetNextAction());
+  CHECK(tab);
 
-  // TODO(https://crbug.com/411462297): tabs should not be required for all
-  // actions.
-  CHECK(tab_);
-
-  if (!evaluated_origin.IsSameOriginWith(tab_->GetContents()
+  if (!evaluated_origin.IsSameOriginWith(tab->GetContents()
                                              ->GetPrimaryMainFrame()
                                              ->GetLastCommittedOrigin())) {
     // A cross-origin navigation occurred before we got permission. The result
@@ -287,21 +399,12 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 void ExecutionEngine::ExecuteNextAction() {
   CHECK(actions_v1_ || actions_v2_);
 
-  const ActionInformation* action = nullptr;
-  if (actions_v1_) {
-    action = &actions_v1_->proto.action_information().at(action_index_++);
-  } else {
-    action = &actions_v2_->proto.actions().at(action_index_++);
-  }
+  const ActionInformation& action = GetNextAction();
+  ++action_index_;
 
-  ExecuteFrameScopedAction(*action);
-}
+  tabs::TabInterface* tab = GetTab(action);
 
-void ExecutionEngine::ExecuteFrameScopedAction(
-    const ActionInformation& action) {
-  // TODO(https://crbug.com/411462297): tabs should not be required for all
-  // actions.
-  if (!tab_) {
+  if (ActionRequiresTab(action) && !tab) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   "The tab is no longer present");
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
@@ -309,18 +412,22 @@ void ExecutionEngine::ExecuteFrameScopedAction(
     return;
   }
 
-  RenderFrameHost* target_frame = FindTargetFrame(*tab_->GetContents(), action);
+  RenderFrameHost* target_frame = nullptr;
+  if (ActionRequiresFrame(action)) {
+    target_frame = FindTargetFrame(*tab->GetContents(), action);
 
-  if (!target_frame) {
-    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
-                  "The target frame is no longer present in the tab.");
-    CompleteActions(
-        MakeResult(mojom::ActionResultCode::kFrameWentAway,
-                   "The target frame is no longer present in the tab."));
-    return;
+    if (!target_frame) {
+      journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
+                    "The target frame is no longer present in the tab.");
+      CompleteActions(
+          MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                     "The target frame is no longer present in the tab."));
+      return;
+    }
   }
+
   tool_controller_.Invoke(
-      action, *journal_, task_->id(), *target_frame,
+      action, *journal_, task_->id(), tab, target_frame,
       base::BindOnce(&ExecutionEngine::FinishOneAction, GetWeakPtr()));
 }
 
@@ -419,6 +526,28 @@ const GURL& ExecutionEngine::LastCommittedURLOfCurrentTask() {
     return GURL::EmptyGURL();
   }
   return tab_->GetContents()->GetLastCommittedURL();
+}
+
+const optimization_guide::proto::ActionInformation&
+ExecutionEngine::GetNextAction() {
+  if (actions_v1_) {
+    return actions_v1_->proto.action_information().at(action_index_);
+  } else {
+    return actions_v2_->proto.actions().at(action_index_);
+  }
+}
+
+tabs::TabInterface* ExecutionEngine::GetTab(
+    const optimization_guide::proto::ActionInformation& action) {
+  tabs::TabHandle tab_handle = GetTabHandleFromAction(action);
+  tabs::TabInterface* tab = tab_handle.Get();
+  if (tab) {
+    return tab;
+  }
+  if (tab_scoped_actions_deprecated_) {
+    return tab_;
+  }
+  return nullptr;
 }
 
 }  // namespace actor

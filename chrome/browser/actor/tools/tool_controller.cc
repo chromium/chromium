@@ -44,7 +44,6 @@ ToolController::ActiveState::ActiveState(
       journal_entry(std::move(journal_entry)) {
   CHECK(this->tool);
   CHECK(!this->completion_callback.is_null());
-  CHECK(this->weak_document_ptr.AsRenderFrameHostIfValid());
 }
 ToolController::ActiveState::~ActiveState() = default;
 
@@ -57,11 +56,9 @@ ToolController::~ToolController() = default;
 std::unique_ptr<Tool> ToolController::CreateTool(
     AggregatedJournal& journal,
     TaskId task_id,
-    RenderFrameHost& frame,
+    TabInterface* tab,
+    RenderFrameHost* frame,
     const ActionInformation& action_information) {
-  WebContents* web_contents = WebContents::FromRenderFrameHost(&frame);
-  CHECK(web_contents);
-
   switch (action_information.action_info_case()) {
     case ActionInformation::kClick:
     case ActionInformation::kType:
@@ -71,17 +68,18 @@ std::unique_ptr<Tool> ToolController::CreateTool(
     case ActionInformation::kSelect: {
       // PageTools are all implemented in the renderer so share the PageTool
       // implementation to shuttle them there.
-      return std::make_unique<PageTool>(journal, frame, action_information);
+      return std::make_unique<PageTool>(journal, *frame, action_information);
     }
     case ActionInformation::kNavigate: {
       GURL url(action_information.navigate().url());
-      return std::make_unique<NavigateTool>(*web_contents, url);
+      return std::make_unique<NavigateTool>(*tab->GetContents(), url);
     }
     case ActionInformation::kBack: {
-      return std::make_unique<HistoryTool>(*web_contents, HistoryTool::kBack);
+      return std::make_unique<HistoryTool>(*tab->GetContents(),
+                                           HistoryTool::kBack);
     }
     case ActionInformation::kForward: {
-      return std::make_unique<HistoryTool>(*web_contents,
+      return std::make_unique<HistoryTool>(*tab->GetContents(),
                                            HistoryTool::kForward);
     }
     case ActionInformation::kWait: {
@@ -102,10 +100,11 @@ std::unique_ptr<Tool> ToolController::CreateTool(
 void ToolController::Invoke(const ActionInformation& action_information,
                             AggregatedJournal& journal,
                             TaskId task_id,
-                            RenderFrameHost& target_frame,
+                            tabs::TabInterface* tab,
+                            content::RenderFrameHost* target_frame,
                             ResultCallback result_callback) {
   std::unique_ptr<Tool> created_tool =
-      CreateTool(journal, task_id, target_frame, action_information);
+      CreateTool(journal, task_id, tab, target_frame, action_information);
 
   if (!created_tool) {
     // Tool not found.
@@ -114,12 +113,24 @@ void ToolController::Invoke(const ActionInformation& action_information,
     return;
   }
 
+  std::string url_spec;
+  if (target_frame) {
+    url_spec = target_frame->GetLastCommittedURL().possibly_invalid_spec();
+  } else if (tab) {
+    url_spec =
+        tab->GetContents()->GetLastCommittedURL().possibly_invalid_spec();
+  }
+
   auto journal_event = journal.CreatePendingAsyncEntry(
-      target_frame.GetLastCommittedURL().possibly_invalid_spec(), task_id,
-      created_tool->JournalEvent(), created_tool->DebugString());
+      url_spec, task_id, created_tool->JournalEvent(),
+      created_tool->DebugString());
+
+  content::WeakDocumentPtr document_ptr;
+  if (target_frame) {
+    document_ptr = target_frame->GetWeakDocumentPtr();
+  }
   active_state_.emplace(std::move(created_tool), std::move(result_callback),
-                        target_frame.GetWeakDocumentPtr(),
-                        std::move(journal_event));
+                        document_ptr, std::move(journal_event));
 
   active_state_->tool->Validate(base::BindOnce(
       &ToolController::ValidationComplete, weak_ptr_factory_.GetWeakPtr()));
