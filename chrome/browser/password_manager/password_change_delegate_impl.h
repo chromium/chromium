@@ -67,6 +67,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
  private:
   // PasswordChangeDelegate Impl
   void StartPasswordChangeFlow() override;
+  void CancelPasswordChangeFlow() override;
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
   State GetCurrentState() const override;
   void Stop() override;

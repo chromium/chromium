@@ -32,12 +32,12 @@ class PasswordChangeToast : public views::View, public views::DialogDelegate {
   struct ToastOptions {
     ToastOptions(const std::u16string& text,
                  const gfx::VectorIcon& icon,
-                 const std::u16string& action_button_text,
+                 const std::optional<std::u16string>& action_button_text,
                  base::OnceClosure action_button_closure = base::DoNothing(),
                  bool has_close_button = false);
 
     ToastOptions(const std::u16string& text,
-                 const std::u16string& action_button_text,
+                 const std::optional<std::u16string>& action_button_text,
                  base::OnceClosure action_button_closure = base::DoNothing(),
                  bool has_close_button = false);
 
@@ -78,10 +78,12 @@ class PasswordChangeToast : public views::View, public views::DialogDelegate {
 
   // views::View
   void AddedToWidget() override;
+  void OnThemeChanged() override;
 
   void OnActionButtonClicked();
   void OnCloseButtonClicked();
 
+  std::optional<raw_ref<const gfx::VectorIcon>> icon_;
   base::OnceClosure action_button_closure_;
 
   raw_ptr<views::Throbber> throbber_ = nullptr;

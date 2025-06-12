@@ -173,6 +173,14 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   UpdateState(State::kWaitingForAgreement);
 }
 
+void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
+  submission_verifier_.reset();
+  form_finder_.reset();
+  executor_.reset();
+
+  UpdateState(State::kCanceled);
+}
+
 void PasswordChangeDelegateImpl::StartPasswordChange() {
   flow_start_time_ = base::Time::Now();
   UpdateState(State::kWaitingForChangePasswordForm);
@@ -337,6 +345,7 @@ void PasswordChangeDelegateImpl::UpdateState(
     case State::kChangePasswordFormNotFound:
     case State::kOtpDetected:
     case State::kWaitingForAgreement:
+    case State::kCanceled:
       return;
     case State::kPasswordSuccessfullyChanged:
       NotifyPasswordChangeFinishedSuccessfully(originator_);

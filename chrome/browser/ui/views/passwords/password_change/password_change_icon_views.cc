@@ -137,6 +137,7 @@ const gfx::VectorIcon& PasswordChangeIconViews::GetVectorIcon() const {
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
     case PasswordChangeDelegate::State::kOtpDetected:
+    case PasswordChangeDelegate::State::kCanceled:
       return vector_icons::kPasswordManagerIcon;
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:

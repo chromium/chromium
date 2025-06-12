@@ -47,7 +47,10 @@ class PasswordChangeDelegate {
     // input is required.
     kOtpDetected = 7,
 
-    kMaxValue = kOtpDetected,
+    // Password change was canceled by the user.
+    kCanceled = 8,
+
+    kMaxValue = kCanceled,
   };
 
   // An interface used to notify clients (observers) of delegate state. Register
@@ -66,6 +69,9 @@ class PasswordChangeDelegate {
   // Starts the password change flow (including showing the privacy notice
   // agreement if necessary).
   virtual void StartPasswordChangeFlow() = 0;
+
+  // Cancels any password change operation.
+  virtual void CancelPasswordChangeFlow() = 0;
 
   // Responds whether password change is ongoing for a given |web_contents|.
   // This is true both for originator and a tab where password change is

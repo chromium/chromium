@@ -28,6 +28,8 @@ namespace {
 
 using ToastOptions = PasswordChangeToast::ToastOptions;
 
+constexpr base::TimeDelta kToastDisplayTime = base::Seconds(4);
+
 // Creates dialog offering password change to the user. `with_privacy_notice`
 // specifies whether an additional privacy paragraph should be displayed.
 std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
@@ -148,9 +150,10 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
     PasswordChangeDelegate::State state) {
   auto open_password_change_tab_callback =
       base::BindOnce(&PasswordChangeUIController::OpenPasswordChangeTab,
-                     base::Unretained(this));
-  auto cancel_password_change_callback = base::BindOnce(
-      &PasswordChangeDelegate::Stop, password_change_delegate_->AsWeakPtr());
+                     weak_ptr_factory_.GetWeakPtr());
+  auto cancel_password_change_callback =
+      base::BindOnce(&PasswordChangeUIController::CancelPasswordChange,
+                     weak_ptr_factory_.GetWeakPtr());
   switch (state) {
     /* Dialogs */
     case PasswordChangeDelegate::State::kWaitingForAgreement:
@@ -161,7 +164,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
       return CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeUIController::StartPasswordChangeFlow,
-                         base::Unretained(this)),
+                         weak_ptr_factory_.GetWeakPtr()),
           /*with_privacy_notice=*/false);
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
       return CreatePasswordChangeFailedDialog(
@@ -177,29 +180,33 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
 
     /* Toasts */
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
-      return PasswordChangeToast::ToastOptions(
+      return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_SIGN_IN_CHECK),
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL),
           std::move(cancel_password_change_callback));
     case PasswordChangeDelegate::State::kChangingPassword:
-      return PasswordChangeToast::ToastOptions(
+      return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_CHANGING_PASSWORD),
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL),
           std::move(cancel_password_change_callback));
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-      return PasswordChangeToast::ToastOptions(
+      return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGED_TITLE),
           vector_icons::kPasswordManagerIcon,
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_VIEW_DETAILS_BUTTON),
           base::BindOnce(&PasswordChangeUIController::ShowPasswordDetails,
-                         base::Unretained(this)),
+                         weak_ptr_factory_.GetWeakPtr()),
           true);
+    case PasswordChangeDelegate::State::kCanceled:
+      return ToastOptions(
+          l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_PASSWORD_UNCHANGED),
+          vector_icons::kPasswordManagerIcon, std::nullopt);
   }
 }
 
@@ -216,8 +223,9 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
       tab_interface_->GetTabFeatures()
           ->tab_dialog_manager()
           ->CreateAndShowDialog(toast_view.release(), std::move(params));
-  toast_widget_->MakeCloseSynchronous(base::BindOnce(
-      &PasswordChangeUIController::CloseToastWidget, base::Unretained(this)));
+  toast_widget_->MakeCloseSynchronous(
+      base::BindOnce(&PasswordChangeUIController::CloseToastWidget,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordChangeUIController::ShowDialog(
@@ -238,8 +246,9 @@ void PasswordChangeUIController::ShowDialog(
                        ->CreateAndShowDialog(
                            model_host.release(),
                            std::make_unique<tabs::TabDialogManager::Params>());
-  dialog_widget_->MakeCloseSynchronous(base::BindOnce(
-      &PasswordChangeUIController::CloseDialogWidget, base::Unretained(this)));
+  dialog_widget_->MakeCloseSynchronous(
+      base::BindOnce(&PasswordChangeUIController::CloseDialogWidget,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordChangeUIController::OpenPasswordChangeTab() {
@@ -264,6 +273,19 @@ void PasswordChangeUIController::ShowPasswordDetails() {
 
   CHECK(password_change_delegate_);
   password_change_delegate_->Stop();
+}
+
+void PasswordChangeUIController::CancelPasswordChange() {
+  CHECK(password_change_delegate_);
+  password_change_delegate_->CancelPasswordChangeFlow();
+
+  // Post delayed task to stop password change. This will destroy the
+  // controller.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordChangeDelegate::Stop,
+                     password_change_delegate_->AsWeakPtr()),
+      kToastDisplayTime);
 }
 
 void PasswordChangeUIController::CloseDialogWidget(

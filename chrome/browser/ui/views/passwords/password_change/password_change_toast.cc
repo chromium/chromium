@@ -48,7 +48,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordChangeToast,
 
 PasswordChangeToast::ToastOptions::ToastOptions(
     const std::u16string& text,
-    const std::u16string& action_button_text,
+    const std::optional<std::u16string>& action_button_text,
     base::OnceClosure action_button_closure,
     bool has_close_button)
     : text(text),
@@ -60,7 +60,7 @@ PasswordChangeToast::ToastOptions::ToastOptions(
 PasswordChangeToast::ToastOptions::ToastOptions(
     const std::u16string& text,
     const gfx::VectorIcon& icon,
-    const std::u16string& action_button_text,
+    const std::optional<std::u16string>& action_button_text,
     base::OnceClosure action_button_closure,
     bool has_close_button)
     : text(text),
@@ -168,15 +168,6 @@ PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
       l10n_util::GetStringUTF16(IDS_TOAST_CLOSE_TOOLTIP));
 
   UpdateConfiguration(std::move(toast_configuration));
-
-  const int total_vertical_margins =
-      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT) -
-      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON);
-  set_margins(gfx::Insets::TLBR(
-      total_vertical_margins / 2,
-      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_LEFT),
-      total_vertical_margins / 2,
-      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_ACTION_BUTTON)));
 }
 
 PasswordChangeToast::~PasswordChangeToast() = default;
@@ -205,14 +196,14 @@ ui::mojom::ModalType PasswordChangeToast::GetModalType() const {
 void PasswordChangeToast::UpdateConfiguration(ToastOptions configuration) {
   action_button_closure_ = std::move(configuration.action_button_closure);
   ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
-  icon_view_->SetVisible(configuration.icon.has_value());
-  if (configuration.icon.has_value()) {
+  icon_ = configuration.icon;
+  icon_view_->SetVisible(icon_.has_value());
+  if (icon_.has_value() && GetColorProvider()) {
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        *configuration.icon.value(),
-        GetColorProvider()->GetColor(ui::kColorToastForeground),
+        *icon_.value(), GetColorProvider()->GetColor(ui::kColorToastForeground),
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE)));
   }
-  throbber_->SetVisible(!configuration.icon.has_value());
+  throbber_->SetVisible(!icon_.has_value());
 
   label_->SetText(configuration.text);
 
@@ -230,6 +221,23 @@ void PasswordChangeToast::UpdateConfiguration(ToastOptions configuration) {
   }
   action_button_->SetVisible(configuration.action_button_text.has_value());
   close_button_->SetVisible(configuration.has_close_button);
+
+  const int max_child_height =
+      configuration.action_button_text.has_value()
+          ? lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON)
+          : lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT);
+  const int right_margin_token =
+      configuration.has_close_button
+          ? DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON
+      : configuration.action_button_text.has_value()
+          ? DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_ACTION_BUTTON
+          : DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL;
+  const int total_vertical_margins =
+      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT) - max_child_height;
+  set_margins(gfx::Insets::TLBR(
+      total_vertical_margins / 2,
+      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_LEFT),
+      total_vertical_margins / 2, lp->GetDistanceMetric(right_margin_token)));
 }
 
 void PasswordChangeToast::AddedToWidget() {
@@ -237,6 +245,18 @@ void PasswordChangeToast::AddedToWidget() {
   if (frame_view) {
     frame_view->SetBackgroundColor(ui::kColorToastBackgroundProminent);
     frame_view->bubble_border()->set_draw_border_stroke(false);
+  }
+}
+
+void PasswordChangeToast::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  CHECK(GetColorProvider());
+  if (icon_.has_value()) {
+    icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        *icon_.value(), GetColorProvider()->GetColor(ui::kColorToastForeground),
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            DISTANCE_TOAST_BUBBLE_ICON_SIZE)));
   }
 }
 

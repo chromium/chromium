@@ -929,23 +929,29 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, CancelFromToast) {
 
   StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
 
-  auto* delegate = static_cast<PasswordChangeDelegateImpl*>(
-      password_change_service()->GetPasswordChangeDelegate(WebContents()));
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
   EXPECT_TRUE(delegate);
-  EXPECT_TRUE(delegate->ui_controller()->toast_view());
+  auto* ui_controller =
+      static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
+  EXPECT_TRUE(ui_controller->toast_view());
   // Verify action button is present and visible.
-  EXPECT_TRUE(delegate->ui_controller()->toast_view()->action_button());
-  EXPECT_TRUE(
-      delegate->ui_controller()->toast_view()->action_button()->GetVisible());
+  EXPECT_TRUE(ui_controller->toast_view()->action_button());
+  EXPECT_TRUE(ui_controller->toast_view()->action_button()->GetVisible());
 
   // Click action button, this should cancel the flow.
   views::test::ButtonTestApi clicker(
-      delegate->ui_controller()->toast_view()->action_button());
+      ui_controller->toast_view()->action_button());
   clicker.NotifyClick(ui::test::TestEvent());
-  delegate = nullptr;
 
-  EXPECT_FALSE(
-      password_change_service()->GetPasswordChangeDelegate(WebContents()));
+  EXPECT_EQ(PasswordChangeDelegate::State::kCanceled,
+            delegate->GetCurrentState());
+
+  // Verify toast is displayed.
+  EXPECT_TRUE(ui_controller->toast_view());
+  // Verify the toast has no action button, meaning it's just a
+  // confirmation.
+  EXPECT_FALSE(ui_controller->toast_view()->action_button()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewDetailsFromToast) {

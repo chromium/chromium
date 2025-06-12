@@ -37,6 +37,8 @@ PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
       return new NoPasswordChangeFormView(web_contents, anchor_view);
     case PasswordChangeDelegate::State::kOtpDetected:
       return new OtpDuringPasswordChangeView(web_contents, anchor_view);
+    case PasswordChangeDelegate::State::kCanceled:
+      return new OtpDuringPasswordChangeView(web_contents, anchor_view);
   }
   NOTREACHED();
 }

@@ -41,10 +41,12 @@ class PasswordChangeUIController {
 
   void ShowToast(PasswordChangeToast::ToastOptions options);
   void ShowDialog(std::unique_ptr<ui::DialogModel> dialog_model);
+  void ShowNothingChangedToast();
 
   void OpenPasswordChangeTab();
   void StartPasswordChangeFlow();
   void ShowPasswordDetails();
+  void CancelPasswordChange();
 
   // Closes the dialog and logs the `reason`.
   // TODO(crbug.com/407504591): Actually log the reason.
@@ -68,6 +70,8 @@ class PasswordChangeUIController {
   // Current state of the password change flow.
   PasswordChangeDelegate::State state_ =
       static_cast<PasswordChangeDelegate::State>(-1);
+
+  base::WeakPtrFactory<PasswordChangeUIController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORD_CHANGE_UI_CONTROLLER_H_
