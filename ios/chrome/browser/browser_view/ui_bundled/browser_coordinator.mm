@@ -1388,15 +1388,15 @@ enum class ToolbarKind {
   [self.qrScannerCoordinator stop];
   self.qrScannerCoordinator = nil;
 
-  [_lensCoordinator stop];
-  _lensCoordinator = nil;
+  [_lensOverlayCoordinator stop];
+  _lensOverlayCoordinator = nil;
 
   if (IsLVFUnifiedExperienceEnabled(self.profile->GetPrefs())) {
     [_lensViewFinderCoordinator stop];
     _lensViewFinderCoordinator = nil;
   } else {
-    [_lensOverlayCoordinator stop];
-    _lensOverlayCoordinator = nil;
+    [_lensCoordinator stop];
+    _lensCoordinator = nil;
   }
 
   [self.downloadManagerCoordinator stop];
