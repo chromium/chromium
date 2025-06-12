@@ -250,7 +250,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
       int margin = static_cast<int>((mirror_display_rect.height() -
                                      root_bounds_.height() * inverted_scale) /
                                     2);
-      insets_ = gfx::Insets::TLBR(0, margin, 0, margin);
+      insets_ = gfx::Insets::TLBR(margin, 0, margin, 0);
 
       transform_.Translate(0, margin);
       transform_.Scale(inverted_scale, inverted_scale);
@@ -262,7 +262,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
       int margin = static_cast<int>((mirror_display_rect.width() -
                                      root_bounds_.width() * inverted_scale) /
                                     2);
-      insets_ = gfx::Insets::TLBR(margin, 0, margin, 0);
+      insets_ = gfx::Insets::TLBR(0, margin, 0, margin);
 
       transform_.Translate(margin, 0);
       transform_.Scale(inverted_scale, inverted_scale);
