@@ -77,8 +77,4 @@ void MockStorageArea::GetAll(
   std::move(callback).Run(std::move(entries));
 }
 
-void MockStorageArea::Checkpoint() {
-  ++observed_checkpoints_;
-}
-
 }  // namespace blink

@@ -19,7 +19,6 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -114,35 +113,12 @@ bool CachedStorageArea::SetItem(const String& key,
                       StringToUint8Vector(value, value_format),
                       optional_old_value, source_string,
                       MakeSuccessCallback(source));
-    EnqueueCheckpointMicrotask(source);
   }
   if (!IsSessionStorage())
     EnqueuePendingMutation(key, value, old_value, source_string);
   else if (old_value != value)
     EnqueueStorageEvent(key, old_value, value, page_url, source_id);
   return true;
-}
-
-void CachedStorageArea::EnqueueCheckpointMicrotask(Source* source) {
-  if (checkpoint_queued_) {
-    return;
-  }
-
-  LocalDOMWindow* window = source->GetDOMWindow();
-  if (!window) {
-    return;
-  }
-
-  checkpoint_queued_ = true;
-  window->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
-      &CachedStorageArea::NotifyCheckpoint, weak_factory_.GetWeakPtr()));
-}
-
-void CachedStorageArea::NotifyCheckpoint() {
-  checkpoint_queued_ = false;
-  if (remote_area_) {
-    remote_area_->Checkpoint();
-  }
 }
 
 void CachedStorageArea::RemoveItem(const String& key, Source* source) {
@@ -163,7 +139,6 @@ void CachedStorageArea::RemoveItem(const String& key, Source* source) {
     remote_area_->Delete(StringToUint8Vector(key, GetKeyFormat()),
                          optional_old_value, source_string,
                          MakeSuccessCallback(source));
-    EnqueueCheckpointMicrotask(source);
   }
   if (!IsSessionStorage())
     EnqueuePendingMutation(key, String(), old_value, source_string);
@@ -202,7 +177,6 @@ void CachedStorageArea::Clear(Source* source) {
   if (!is_session_storage_for_prerendering_) {
     remote_area_->DeleteAll(source_string, std::move(new_observer),
                             MakeSuccessCallback(source));
-    EnqueueCheckpointMicrotask(source);
   }
   if (!IsSessionStorage())
     EnqueuePendingMutation(String(), String(), String(), source_string);

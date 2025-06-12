@@ -7,12 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/local_storage_impl.h"
-#include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
@@ -172,22 +169,4 @@ IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, FileUrlWithHost) {
 }
 #endif
 
-class DomStorageSmartFlushingBrowserTest : public DOMStorageBrowserTest {
- private:
-  base::test::ScopedFeatureList feature_{storage::kDomStorageSmartFlushing};
-};
-
-// Flaky on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(DomStorageSmartFlushingBrowserTest, DataWrittenQuickly) {
-  // The first write should get flushed quickly due to Checkpoint().
-  SimpleTest(GetTestUrl("dom_storage", "store_data.html"), kNotIncognito);
-  base::test::TestFuture<bool> result;
-  context_wrapper()->GetLocalStorageControl()->NeedsFlushForTesting(
-      result.GetCallback());
-  EXPECT_FALSE(result.Take());
-  // Subsequent writes usually get delayed a bit due to commit throttling, but
-  // that's difficult to verify in a non-flaky manner.
-}
-#endif
 }  // namespace content

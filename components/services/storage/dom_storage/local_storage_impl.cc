@@ -440,18 +440,6 @@ void LocalStorageImpl::Flush() {
     it.second->storage_area()->ScheduleImmediateCommit();
 }
 
-void LocalStorageImpl::NeedsFlushForTesting(
-    NeedsFlushForTestingCallback callback) {
-  if (connection_state_ != CONNECTION_FINISHED) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  std::move(callback).Run(std::ranges::any_of(areas_, [](const auto& iter) {
-    return iter.second->storage_area()->has_changes_to_commit();
-  }));
-}
-
 void LocalStorageImpl::FlushStorageKeyForTesting(
     const blink::StorageKey& storage_key) {
   if (connection_state_ != CONNECTION_FINISHED)

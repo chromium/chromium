@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_CACHED_STORAGE_AREA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_CACHED_STORAGE_AREA_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -187,9 +186,6 @@ class MODULES_EXPORT CachedStorageArea
                            const String& url,
                            const String& storage_area_id);
 
-  void EnqueueCheckpointMicrotask(Source* source);
-  void NotifyCheckpoint();
-
   static String Uint8VectorToString(const Vector<uint8_t>& input,
                                     FormatOption format_option);
   static Vector<uint8_t> StringToUint8Vector(const String& input,
@@ -234,8 +230,6 @@ class MODULES_EXPORT CachedStorageArea
   // See ShouldSendOldValueOnMutations().
   bool should_send_old_value_on_mutations_ = true;
 
-  bool checkpoint_queued_ = false;
-
   // Connection to the backing implementation of this StorageArea. This is
   // always bound.
   mojo::Remote<mojom::blink::StorageArea> remote_area_;
@@ -245,8 +239,6 @@ class MODULES_EXPORT CachedStorageArea
   mojo::Receiver<mojom::blink::StorageAreaObserver> receiver_{this};
 
   Persistent<GCedHeapHashMap<WeakMember<Source>, String>> areas_;
-
-  base::WeakPtrFactory<CachedStorageArea> weak_factory_{this};
 };
 
 }  // namespace blink
