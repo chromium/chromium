@@ -5,6 +5,7 @@ dtseng@chromium.org
 janewman@microsoft.com
 kschmi@microsoft.com
 nektar@chromium.org
+lucasradaelli@google.com
 # For changes that are pure code refactoring or DOM/layout integration:
 # (if downstream platform a11y API support is affected, please add another
 # owner from the main list above, so that a11y specialist knowledge is
