@@ -21,11 +21,11 @@
 #include "components/cbor/writer.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "crypto/aead.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/ec_signature_creator.h"
+#include "crypto/hash.h"
 #include "crypto/hkdf.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
-#include "crypto/sha2.h"
+#include "crypto/sign.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/attested_credential_data.h"
@@ -234,9 +234,8 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
   specifics.set_creation_time(base::Time::Now().InMillisecondsSinceUnixEpoch());
 
   sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted;
-  auto ec_key = crypto::ECPrivateKey::Create();
-  std::vector<uint8_t> private_key_pkcs8;
-  CHECK(ec_key->ExportPrivateKey(&private_key_pkcs8));
+  auto ec_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  std::vector<uint8_t> private_key_pkcs8 = ec_key.ToPrivateKeyInfo();
   encrypted.set_private_key(
       {private_key_pkcs8.begin(), private_key_pkcs8.end()});
   if (extension_input_data.hasPRF()) {
@@ -251,8 +250,7 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
     *extension_output_data = extension_input_data.ToOutputData(encrypted);
   }
 
-  std::vector<uint8_t> public_key_spki;
-  CHECK(ec_key->ExportPublicKey(&public_key_spki));
+  std::vector<uint8_t> public_key_spki = ec_key.ToSubjectPublicKeyInfo();
   return {std::move(specifics), std::move(public_key_spki)};
 }
 
@@ -360,9 +358,9 @@ std::vector<uint8_t> MakeAuthenticatorDataForAssertion(
   if (extensions.has_value()) {
     flags |= base::strict_cast<uint8_t>(Flag::kExtensionDataIncluded);
   }
-  return device::AuthenticatorData(
-             crypto::SHA256Hash(base::as_byte_span(rp_id)), flags,
-             kSignatureCounter, /*data=*/std::nullopt, std::move(extensions))
+  return device::AuthenticatorData(crypto::hash::Sha256(rp_id), flags,
+                                   kSignatureCounter, /*data=*/std::nullopt,
+                                   std::move(extensions))
       .SerializeToByteArray();
 }
 
@@ -392,7 +390,7 @@ std::vector<uint8_t> MakeAttestationObjectForCreation(
     flags |= base::strict_cast<uint8_t>(Flag::kExtensionDataIncluded);
   }
   device::AuthenticatorData authenticator_data(
-      crypto::SHA256Hash(base::as_byte_span(rp_id)), flags, kSignatureCounter,
+      crypto::hash::Sha256(rp_id), flags, kSignatureCounter,
       std::move(attested_credential_data), std::move(extensions));
   device::AttestationObject attestationObject(
       std::move(authenticator_data),
@@ -405,16 +403,13 @@ std::optional<std::vector<uint8_t>> GenerateEcSignature(
     base::span<const uint8_t> pkcs8_ec_private_key,
     base::span<const uint8_t> signed_over_data) {
   auto ec_private_key =
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(pkcs8_ec_private_key);
-  if (!ec_private_key) {
+      crypto::keypair::PrivateKey::FromPrivateKeyInfo(pkcs8_ec_private_key);
+  if (!ec_private_key || !ec_private_key->IsEc()) {
     return std::nullopt;
   }
-  auto signer = crypto::ECSignatureCreator::Create(ec_private_key.get());
-  std::vector<uint8_t> signature;
-  if (!signer->Sign(signed_over_data, &signature)) {
-    return std::nullopt;
-  }
-  return signature;
+
+  return crypto::sign::Sign(crypto::sign::SignatureKind::ECDSA_SHA256,
+                            *ec_private_key, signed_over_data);
 }
 
 bool IsSupportedAlgorithm(int32_t algorithm) {

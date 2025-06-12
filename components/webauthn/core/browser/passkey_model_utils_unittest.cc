@@ -6,7 +6,7 @@
 
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webauthn::passkey_model_utils {
@@ -166,11 +166,11 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
   ASSERT_TRUE(DecryptWebauthnCredentialSpecificsData(kTestKey, passkey,
                                                      &encrypted_data));
   EXPECT_FALSE(encrypted_data.private_key().empty());
-  auto ec_key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
+  auto ec_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
       base::as_byte_span(encrypted_data.private_key()));
-  EXPECT_NE(ec_key, nullptr);
-  std::vector<uint8_t> ec_key_pub;
-  EXPECT_TRUE(ec_key->ExportPublicKey(&ec_key_pub));
+  ASSERT_TRUE(ec_key.has_value());
+  ASSERT_TRUE(ec_key->IsEc());
+  std::vector<uint8_t> ec_key_pub = ec_key->ToSubjectPublicKeyInfo();
   EXPECT_EQ(ec_key_pub, public_key_spki_der);
 
   EXPECT_TRUE(encrypted_data.hmac_secret().empty());
@@ -208,11 +208,11 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyWithPRFAndEncryptSecrets) {
   ASSERT_TRUE(DecryptWebauthnCredentialSpecificsData(kTestKey, passkey,
                                                      &encrypted_data));
   EXPECT_FALSE(encrypted_data.private_key().empty());
-  auto ec_key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
+  auto ec_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
       base::as_byte_span(encrypted_data.private_key()));
-  EXPECT_NE(ec_key, nullptr);
-  std::vector<uint8_t> ec_key_pub;
-  EXPECT_TRUE(ec_key->ExportPublicKey(&ec_key_pub));
+  ASSERT_TRUE(ec_key.has_value());
+  ASSERT_TRUE(ec_key->IsEc());
+  std::vector<uint8_t> ec_key_pub = ec_key->ToSubjectPublicKeyInfo();
   EXPECT_EQ(ec_key_pub, public_key_spki_der);
 
   EXPECT_EQ(encrypted_data.hmac_secret().size(), 32u);
