@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -63,6 +64,7 @@ class BookmarkBarMediator
     private final PropertyModel mModel;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
+    private @Nullable final Tab mCurrentTab;
     private final BookmarkOpener mBookmarkOpener;
     private final ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
 
@@ -80,6 +82,7 @@ class BookmarkBarMediator
      * @param itemsModel The model for the items which are rendered within the bookmark bar.
      * @param itemsOverflowSupplier The supplier for the current state of items overflow.
      * @param itemMaxWidthChangeCallback A callback to notify of item max width change events.
+     * @param currentTab The current tab if it exists.
      * @param model The model used to read/write bookmark bar properties.
      * @param profileSupplier The supplier for the currently active profile.
      */
@@ -94,6 +97,7 @@ class BookmarkBarMediator
             Callback<Integer> itemMaxWidthChangeCallback,
             PropertyModel model,
             ObservableSupplier<Profile> profileSupplier,
+            @Nullable Tab currentTab,
             BookmarkOpener bookmarkOpener,
             ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
         mActivity = activity;
@@ -143,6 +147,7 @@ class BookmarkBarMediator
         mProfileSupplierObserver = this::onProfileChange;
         mProfileSupplier.addObserver(mProfileSupplierObserver);
 
+        mCurrentTab = currentTab;
         mBookmarkOpener = bookmarkOpener;
         mBookmarkManagerOpenerSupplier = bookmarkManagerOpenerSupplier;
 
@@ -268,6 +273,7 @@ class BookmarkBarMediator
                             .get()
                             .showBookmarkManager(
                                     mActivity,
+                                    mCurrentTab,
                                     profileAfterLoading,
                                     modelAfterLoading.getRootFolderId());
                 });
@@ -281,7 +287,7 @@ class BookmarkBarMediator
         if (item.isFolder()) {
             mBookmarkManagerOpenerSupplier
                     .get()
-                    .showBookmarkManager(mActivity, profile, item.getId());
+                    .showBookmarkManager(mActivity, mCurrentTab, profile, item.getId());
             return;
         }
 
@@ -316,6 +322,7 @@ class BookmarkBarMediator
                             .get()
                             .showBookmarkManager(
                                     mActivity,
+                                    mCurrentTab,
                                     profileAfterLoading,
                                     Optional.ofNullable(
                                                     modelAfterLoading.getAccountDesktopFolderId())

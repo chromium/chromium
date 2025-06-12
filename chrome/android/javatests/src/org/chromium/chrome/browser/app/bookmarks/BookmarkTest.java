@@ -369,6 +369,9 @@ public class BookmarkTest {
                 () -> {
                     mBookmarkManagerOpener.showBookmarkManager(
                             mActivityTestRule.getActivity(),
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getActivityTab(),
                             mActivityTestRule.getProfile(false),
                             mBookmarkModel.getMobileFolderId());
                 });

@@ -1749,6 +1749,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             /* heightChangeCallback= */ (height) -> updateTopControlsHeight(),
                             mProfileSupplier,
                             /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub),
+                            mActivityTabProvider.get(),
                             mBookmarkOpener,
                             mBookmarkManagerOpenerSupplier,
                             mTopControlsStacker);

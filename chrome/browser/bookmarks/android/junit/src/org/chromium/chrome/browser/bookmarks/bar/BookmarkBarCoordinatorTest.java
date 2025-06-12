@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
@@ -91,6 +92,7 @@ public class BookmarkBarCoordinatorTest {
     @Mock private Callback<Integer> mHeightSupplierObserver;
     @Mock private ImageServiceBridgeJni mImageServiceBridgeJni;
     @Mock private Profile mProfile;
+    @Mock private Tab mCurrentTab;
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private TopControlsStacker mTopControlsStacker;
@@ -161,6 +163,7 @@ public class BookmarkBarCoordinatorTest {
                         mHeightChangeCallback,
                         mProfileSupplier,
                         viewStub,
+                        mCurrentTab,
                         mBookmarkOpener,
                         new ObservableSupplierImpl<>(mBookmarkManagerOpener),
                         mTopControlsStacker);

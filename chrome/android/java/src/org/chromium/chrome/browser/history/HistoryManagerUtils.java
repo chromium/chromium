@@ -41,7 +41,7 @@ public class HistoryManagerUtils {
                     && ChromeFeatureList.sAndroidNativePagesInNewTabHistoryEnabled.getValue()) {
                 ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(
                         /* incognito= */ profile.isOffTheRecord());
-                delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
+                delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ tab);
             } else {
                 tab.loadUrl(params);
             }

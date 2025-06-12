@@ -102,7 +102,7 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
         }
         mBookmarkManagerOpenerSupplier
                 .get()
-                .showBookmarkManager(mActivity, tab.getProfile(), mLastUsedParent);
+                .showBookmarkManager(mActivity, tab, tab.getProfile(), mLastUsedParent);
 
         WebContents webContents = tab.getWebContents();
         if (webContents != null) webContents.dispatchBeforeUnload(false);

@@ -164,6 +164,7 @@ public class BookmarkTestRule implements TestRule {
                     mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
                     mBookmarkManagerOpener.showBookmarkManager(
                             chromeActivity,
+                            chromeActivity.getActivityTab(),
                             chromeActivity.getProfileProviderSupplier().get().getOriginalProfile());
                 });
     }

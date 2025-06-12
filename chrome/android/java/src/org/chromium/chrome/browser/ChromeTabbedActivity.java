@@ -3348,6 +3348,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                         .get()
                                         .showBookmarkManager(
                                                 ChromeTabbedActivity.this,
+                                                currentTab,
                                                 getCurrentTabModel().getProfile());
                             });
             if (currentTabIsNtp) {
@@ -3372,7 +3373,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             if (currentTab == null || (ChromeFeatureList.sAndroidNativePagesInNewTab.isEnabled()
                     && ChromeFeatureList.sAndroidNativePagesInNewTabRecentTabsEnabled.getValue())) {
                 getTabCreator(getCurrentTabModel().isIncognito())
-                        .createNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
+                        .createNewTab(params, TabLaunchType.FROM_CHROME_UI, currentTab);
             } else {
                 currentTab.loadUrl(params);
             }
@@ -3744,7 +3745,16 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
 
             ChromeTabCreator tabCreator = getTabCreator(isIncognito);
-            Tab firstTab = tabCreator.createNewTab(loadUrlParams, launchType, null, intent);
+            Tab parentTab = null;
+            if (launchType == TabLaunchType.FROM_CHROME_UI) {
+                int parentIdFromIntent = IntentUtils.safeGetIntExtra(
+                        intent, IntentHandler.EXTRA_PARENT_TAB_ID, Tab.INVALID_TAB_ID);
+                if (parentIdFromIntent != Tab.INVALID_TAB_ID && mTabModelSelector != null) {
+                    parentTab = mTabModelSelector.getTabById(parentIdFromIntent);
+                }
+            }
+
+            Tab firstTab = tabCreator.createNewTab(loadUrlParams, launchType, parentTab, intent);
 
             List<String> additionalUrls =
                     IntentUtils.safeGetSerializableExtra(

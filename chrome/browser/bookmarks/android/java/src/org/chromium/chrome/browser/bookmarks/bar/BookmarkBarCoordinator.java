@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.R;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopContro
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -53,6 +55,7 @@ public class BookmarkBarCoordinator implements TopControlLayer {
      * @param heightChangeCallback A callback to notify of bookmark bar height change events.
      * @param profileSupplier The supplier for the currently active profile.
      * @param viewStub The stub used to inflate the bookmark bar.
+     * @param currentTab The current tab if it exists.
      * @param bookmarkOpener Used to open bookmarks.
      * @param bookmarkManagerOpenerSupplier Used to open the bookmark manager.
      * @param topControlsStacker TopControlsStacker to manage the view's y-offset.
@@ -64,6 +67,7 @@ public class BookmarkBarCoordinator implements TopControlLayer {
             Callback<Integer> heightChangeCallback,
             ObservableSupplier<Profile> profileSupplier,
             ViewStub viewStub,
+            @Nullable Tab currentTab,
             BookmarkOpener bookmarkOpener,
             ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             TopControlsStacker topControlsStacker) {
@@ -107,6 +111,7 @@ public class BookmarkBarCoordinator implements TopControlLayer {
                         itemsLayoutManager::setItemMaxWidth,
                         model,
                         profileSupplier,
+                        currentTab,
                         bookmarkOpener,
                         bookmarkManagerOpenerSupplier);
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);

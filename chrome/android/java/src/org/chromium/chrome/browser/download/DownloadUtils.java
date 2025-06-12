@@ -159,7 +159,7 @@ public class DownloadUtils {
                 // Open a new tab, which pops Chrome into the foreground.
                 ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(
                         /* incognito= */ OtrProfileId.isOffTheRecord(otrProfileId));
-                delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
+                delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ tab);
             } else {
                 // Download Home shows up inside an existing tab, but only if the last Activity was
                 // the ChromeTabbedActivity.
