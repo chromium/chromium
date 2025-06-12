@@ -59,7 +59,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -379,7 +378,6 @@ void OnListFamilyMembersResponse(
 }  // namespace
 
 @interface SceneController () <AccountMenuCoordinatorDelegate,
-                               AuthenticationFlowDelegate,
                                HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
@@ -418,8 +416,6 @@ void OnListFamilyMembersResponse(
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _familyMembersFetcher;
   AccountMenuCoordinator* _accountMenuCoordinator;
-  // The authentication flow, if one is currently running.
-  AuthenticationFlow* _authenticationFlow;
 
   // The coordinator that manages the workflow importing data from Safari.
   SafariDataImportCoordinator* _safariImportCoordinator;
@@ -4440,18 +4436,6 @@ using UserFeedbackDataCallback =
     (AccountMenuCoordinator*)coordinator {
   CHECK_EQ(_accountMenuCoordinator, coordinator, base::NotFatalUntil::M140);
   [self stopAccountMenu];
-}
-
-#pragma mark - AuthenticationFlowDelegate
-
-- (void)authenticationFlowDidSignInInSameProfileWithResult:
-    (SigninCoordinatorResult)result {
-  _authenticationFlow = nil;
-}
-
-- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
-  _authenticationFlow = nil;
-  return DoNothingContinuation();
 }
 
 #pragma mark - SafariImportCoordinatorDelegate
