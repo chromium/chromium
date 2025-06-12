@@ -224,18 +224,6 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNativeObject() const {
   return ax_platform_node_->GetNativeViewAccessible();
 }
 
-void ViewAXPlatformNodeDelegate::OnWidgetUpdated(Widget* widget,
-                                                 Widget* old_widget) {
-  ViewAccessibility::OnWidgetUpdated(widget, old_widget);
-
-  // Initialize the AtomicViewAXTreeManager if necessary when the view gets
-  // added to the widget. We must wait for the widget to become available to
-  // get valid data our of GetData().
-  if (widget && needs_ax_tree_manager()) {
-    EnsureAtomicViewAXTreeManager();
-  }
-}
-
 void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
   DCHECK(ax_platform_node_);
   Widget* const widget = view()->GetWidget();
