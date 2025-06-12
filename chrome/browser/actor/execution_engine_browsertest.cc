@@ -9,6 +9,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/render_frame_host.h"
@@ -150,6 +152,80 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
 
   // Check background color changed to green
   EXPECT_EQ("green", EvalJs(web_contents(), "document.body.bgColor"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
+  const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Check initial background color is red
+  EXPECT_EQ("red", EvalJs(web_contents(), "document.body.bgColor"));
+
+  // Store a pointer to the first tab.
+  content::WebContents* first_tab_contents = web_contents();
+  auto* tab = browser()->GetActiveTabInterface();
+  auto tab_handle = tab->GetHandle();
+
+  // Create a second tab, which will be in the foreground.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // The first tab should now be in the background.
+  ASSERT_TRUE(!tab->IsVisible());
+
+  // Get the ActorKeyedService.
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  ASSERT_TRUE(actor_service);
+
+  // Create an ActorTask and register it.
+  auto execution_engine = std::make_unique<ExecutionEngine>(profile);
+  auto actor_task_owned =
+      std::make_unique<actor::ActorTask>(std::move(execution_engine));
+  auto* actor_task = actor_task_owned.get();
+  const auto task_id = actor_task->id();
+  actor_service->AddTask(std::move(actor_task_owned));
+
+  // Create a single Actions proto with two click actions on the background tab.
+  std::optional<int> button1_id = content::GetDOMNodeId(
+      *first_tab_contents->GetPrimaryMainFrame(), "#button1");
+  std::optional<int> button2_id = content::GetDOMNodeId(
+      *first_tab_contents->GetPrimaryMainFrame(), "#button2");
+  ASSERT_TRUE(button1_id);
+  ASSERT_TRUE(button2_id);
+
+  optimization_guide::proto::Actions actions;
+  actions.set_task_id(task_id.GetUnsafeValue());
+  ClickAction* click1 = actions.add_actions()->mutable_click();
+  click1->mutable_target()->set_content_node_id(button1_id.value());
+  click1->mutable_target()->mutable_document_identifier()->set_serialized_token(
+      *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+          first_tab_contents->GetPrimaryMainFrame()->GetGlobalFrameToken()));
+  click1->set_click_type(ClickAction::LEFT);
+  click1->set_click_count(ClickAction::SINGLE);
+  click1->set_tab_id(tab_handle.raw_value());
+
+  ClickAction* click2 = actions.add_actions()->mutable_click();
+  click2->set_tab_id(tab_handle.raw_value());
+  click2->mutable_target()->set_content_node_id(button2_id.value());
+  click2->mutable_target()->mutable_document_identifier()->set_serialized_token(
+      *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+          first_tab_contents->GetPrimaryMainFrame()->GetGlobalFrameToken()));
+  click2->set_click_type(ClickAction::LEFT);
+  click2->set_click_count(ClickAction::SINGLE);
+  click2->set_tab_id(tab_handle.raw_value());
+
+  // Execute the actions.
+  TestFuture<optimization_guide::proto::ActionsResult> result;
+  actor_task->GetExecutionEngine()->Act(actions, result.GetCallback());
+
+  // Check that the action succeeded.
+  EXPECT_EQ(result.Get().action_result(),
+            static_cast<int>(mojom::ActionResultCode::kOk));
+
+  // Check background color changed to green in the background tab.
+  EXPECT_EQ("green", EvalJs(tab->GetContents(), "document.body.bgColor"));
 }
 
 }  // namespace
