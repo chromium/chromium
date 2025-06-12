@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
@@ -232,12 +233,27 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
     return;
   }
 
-  // TODO(crbug.com/407487665): Click the button specified in execution_result.
+  int dom_node_id = response.value().submit_form_data().dom_node_id_to_click();
+  click_helper_ = std::make_unique<ButtonClickHelper>(
+      web_contents_.get(), dom_node_id,
+      base::BindOnce(
+          &ChangePasswordFormFillingSubmissionHelper::OnButtonClicked,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnFormSubmitted() {
   submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
       web_contents_, logs_uploader_);
+}
+
+void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(bool result) {
+  click_helper_.reset();
+
+  if (!result || !web_contents_) {
+    return;
+  }
+
+  OnFormSubmitted();
 }
 
 void ChangePasswordFormFillingSubmissionHelper::

@@ -620,3 +620,54 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
 
   EXPECT_FALSE(completion_future.Get());
 }
+
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
+       SubmissionWithEnterFailsButClickingButtonWorks) {
+  auto form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+
+  base::test::TestFuture<bool> completion_future;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback(),
+                     capture_annotated_page_content.Get());
+
+  // Filling is triggered in the `verifier` constructor.
+  // Sets up that clicking Enter returns failure.
+  // Expects MES to be called for searching the submit button id.
+  base::RunLoop run_loop;
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(RunOnceCallback<5>(CreateTestPasswordFormData()));
+  EXPECT_CALL(driver(), SubmitFormWithEnter)
+      .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
+                      RunOnceCallback<1>(/*success=*/false)));
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionButtonClick<true>)));
+  run_loop.Run();
+
+  task_environment()->RunUntilIdle();
+
+  // Sets up clicking on the Submit button using MES to find the button.
+  // Expects MES to be called for checking if the submission was successful.
+  verifier->click_helper()->SimulateClickResult(true);
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
+  ASSERT_TRUE(verifier->submission_verifier());
+  verifier->submission_verifier()->set_annotated_page_callback(
+      capture_annotated_page_content.Get());
+
+  // Simulates successful form submission detection.
+  verifier->OnPasswordFormSubmission(web_contents());
+
+  // Expects that form submission succeeded.
+  EXPECT_TRUE(completion_future.Get());
+}
