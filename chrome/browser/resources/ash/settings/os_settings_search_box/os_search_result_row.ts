@@ -706,6 +706,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:clock';
       case SearchResultIcon.kContrast:
         return 'os-settings:contrast';
+      case SearchResultIcon.kCreateImage:
+        return 'ash-internal:lobster';
       case SearchResultIcon.kCursorClick:
         return 'os-settings:cursor-click';
       case SearchResultIcon.kDetailedBuild:

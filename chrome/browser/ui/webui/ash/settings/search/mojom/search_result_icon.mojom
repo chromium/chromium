@@ -23,6 +23,7 @@ enum SearchResultIcon {
   kChrome,
   kClock,
   kContrast,
+  kCreateImage,
   kCursorClick,
   kDetailedBuild,
   kDeveloperTags,

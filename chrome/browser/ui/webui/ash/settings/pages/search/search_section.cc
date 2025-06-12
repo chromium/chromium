@@ -265,6 +265,12 @@ base::span<const SearchConcept> GetMagicBoostSubSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowOrca}},
+      {IDS_OS_SETTINGS_TAG_MAGIC_BOOST_LOBSTER,
+       mojom::kSystemPreferencesSectionPath,
+       mojom::SearchResultIcon::kCreateImage,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kLobsterOnOff}},
   });
   return tags;
 }
