@@ -7692,7 +7692,6 @@ static_library("browser") {
       "sync_file_system/sync_action.h",
       "sync_file_system/sync_callbacks.h",
       "sync_file_system/sync_direction.h",
-      "sync_file_system/sync_event_observer.h",
       "sync_file_system/sync_file_metadata.cc",
       "sync_file_system/sync_file_metadata.h",
       "sync_file_system/sync_file_status.h",

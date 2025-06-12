@@ -34,8 +34,6 @@ source_set("api") {
     "media_galleries/media_galleries_api.h",
     "media_galleries/media_galleries_api_util.cc",
     "media_galleries/media_galleries_api_util.h",
-    "sync_file_system/extension_sync_event_observer.cc",
-    "sync_file_system/extension_sync_event_observer.h",
     "sync_file_system/sync_file_system_api.cc",
     "sync_file_system/sync_file_system_api.h",
     "sync_file_system/sync_file_system_api_helpers.cc",

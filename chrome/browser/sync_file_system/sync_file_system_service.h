@@ -42,7 +42,6 @@ namespace sync_file_system {
 class LocalFileSyncService;
 class LocalSyncRunner;
 class RemoteSyncRunner;
-class SyncEventObserver;
 
 // Service implementing the chrome.syncFileSystem() API for the deprecated
 // Chrome Apps platform.
@@ -70,9 +69,6 @@ class SyncFileSystemService final
   // Returns the file |url|'s sync status.
   void GetFileSyncStatus(const storage::FileSystemURL& url,
                          SyncFileStatusCallback callback);
-
-  void AddSyncEventObserver(SyncEventObserver* observer);
-  void RemoveSyncEventObserver(SyncEventObserver* observer);
 
   LocalChangeProcessor* GetLocalChangeProcessor(const GURL& origin);
 
@@ -162,7 +158,6 @@ class SyncFileSystemService final
   bool sync_enabled_;
 
   TaskLogger task_logger_;
-  base::ObserverList<SyncEventObserver>::Unchecked observers_;
 
   bool promoting_demoted_changes_;
   base::OnceClosure idle_callback_;

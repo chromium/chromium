@@ -2489,17 +2489,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.SyncFileSystem.FileSyncAction"
-    enum="SyncFileSystemSyncAction" expires_after="2025-05-28">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records when a SyncFileSystem change event is fired due to the file being
-    updated remotely by the background sync service. Recorded right before
-    sending the event to the app.
-  </summary>
-</histogram>
-
 <histogram name="websql.OpenDatabase" enum="BooleanSecure"
     expires_after="never">
 <!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->

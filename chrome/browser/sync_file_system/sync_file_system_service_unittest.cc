@@ -24,7 +24,6 @@
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
-#include "chrome/browser/sync_file_system/sync_event_observer.h"
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
 #include "chrome/browser/sync_file_system/sync_file_system_test_util.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
@@ -83,23 +82,6 @@ void VerifyFileError(base::OnceClosure callback, base::File::Error error) {
 }
 
 }  // namespace
-
-class MockSyncEventObserver : public SyncEventObserver {
- public:
-  MockSyncEventObserver() = default;
-  ~MockSyncEventObserver() override = default;
-
-  MOCK_METHOD3(OnSyncStateUpdated,
-               void(const GURL& app_origin,
-                    SyncServiceState state,
-                    const std::string& description));
-  MOCK_METHOD5(OnFileSynced,
-               void(const storage::FileSystemURL& url,
-                    SyncFileType file_type,
-                    SyncFileStatus status,
-                    SyncAction action,
-                    SyncDirection direction));
-};
 
 ACTION_P(RecordState, states) {
   states->push_back(arg1);
@@ -200,18 +182,12 @@ class SyncFileSystemServiceTest : public testing::Test {
   //  1. Notify RemoteFileSyncService's observers of |state_to_notify|
   //  2. Run the given callback with |status_to_return|.
   //
-  // ..and verifies if following conditions are met:
-  //  1. The SyncEventObserver of the service is called with
-  //     |expected_states| service state values.
-  //  2. InitializeForApp's callback is called with |expected_status|
+  // ..and verifies if InitializeForApp's callback is called with
+  // |expected_status|.
   void InitializeAppForObserverTest(
       RemoteServiceState state_to_notify,
       SyncStatusCode status_to_return,
-      const std::vector<SyncServiceState>& expected_states,
       SyncStatusCode expected_status) {
-    StrictMock<MockSyncEventObserver> event_observer;
-    sync_service_->AddSyncEventObserver(&event_observer);
-
     EnableSync();
 
     EXPECT_CALL(*mock_remote_service(), GetCurrentState())
@@ -226,10 +202,6 @@ class SyncFileSystemServiceTest : public testing::Test {
               FROM_HERE, base::BindOnce(std::move(callback), status_to_return));
         }));
 
-    std::vector<SyncServiceState> actual_states;
-    EXPECT_CALL(event_observer, OnSyncStateUpdated(GURL(), _, _))
-        .WillRepeatedly(RecordState(&actual_states));
-
     SyncStatusCode actual_status = SYNC_STATUS_UNKNOWN;
     base::RunLoop run_loop;
     sync_service_->InitializeForApp(
@@ -239,11 +211,6 @@ class SyncFileSystemServiceTest : public testing::Test {
     run_loop.Run();
 
     EXPECT_EQ(expected_status, actual_status);
-    ASSERT_EQ(expected_states.size(), actual_states.size());
-    for (size_t i = 0; i < actual_states.size(); ++i)
-      EXPECT_EQ(expected_states[i], actual_states[i]);
-
-    sync_service_->RemoveSyncEventObserver(&event_observer);
   }
 
   FileSystemURL URL(const std::string& path) const {
@@ -281,41 +248,29 @@ TEST_F(SyncFileSystemServiceTest, InitializeForApp) {
 }
 
 TEST_F(SyncFileSystemServiceTest, InitializeForAppSuccess) {
-  std::vector<SyncServiceState> expected_states;
-  expected_states.push_back(SYNC_SERVICE_RUNNING);
-
   InitializeAppForObserverTest(
       REMOTE_SERVICE_OK,
       SYNC_STATUS_OK,
-      expected_states,
       SYNC_STATUS_OK);
 }
 
 TEST_F(SyncFileSystemServiceTest, InitializeForAppWithNetworkFailure) {
-  std::vector<SyncServiceState> expected_states;
-  expected_states.push_back(SYNC_SERVICE_TEMPORARY_UNAVAILABLE);
-
   // Notify REMOTE_SERVICE_TEMPORARY_UNAVAILABLE and callback with
   // SYNC_STATUS_NETWORK_ERROR.  This should let the
   // InitializeApp fail.
   InitializeAppForObserverTest(
       REMOTE_SERVICE_TEMPORARY_UNAVAILABLE,
       SYNC_STATUS_NETWORK_ERROR,
-      expected_states,
       SYNC_STATUS_NETWORK_ERROR);
 }
 
 // Disabled due to flakiness: crbug.com/1222929
 TEST_F(SyncFileSystemServiceTest, DISABLED_InitializeForAppWithError) {
-  std::vector<SyncServiceState> expected_states;
-  expected_states.push_back(SYNC_SERVICE_DISABLED);
-
   // Notify REMOTE_SERVICE_DISABLED and callback with
   // SYNC_STATUS_FAILED.  This should let the InitializeApp fail.
   InitializeAppForObserverTest(
       REMOTE_SERVICE_DISABLED,
       SYNC_STATUS_FAILED,
-      expected_states,
       SYNC_STATUS_FAILED);
 }
 
