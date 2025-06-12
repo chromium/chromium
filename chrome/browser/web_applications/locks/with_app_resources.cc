@@ -52,10 +52,6 @@ WebAppUiManager& WithAppResources::ui_manager() {
   CHECK(lock_manager_);
   return lock_manager_->provider().ui_manager();
 }
-WebAppOriginAssociationManager& WithAppResources::origin_association_manager() {
-  CHECK(lock_manager_);
-  return lock_manager_->provider().origin_association_manager();
-}
 
 WithAppResources::WithAppResources() = default;
 

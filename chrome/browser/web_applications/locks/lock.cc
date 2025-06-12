@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/visited_manifest_manager.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -77,6 +78,11 @@ WebContentsManager& Lock::web_contents_manager() {
 VisitedManifestManager& Lock::visited_manifest_manager() {
   CHECK(lock_manager_);
   return lock_manager_->provider().visited_manifest_manager();
+}
+
+WebAppOriginAssociationManager& Lock::origin_association_manager() {
+  CHECK(lock_manager_);
+  return lock_manager_->provider().origin_association_manager();
 }
 
 Lock::Lock() : holder_(std::make_unique<PartitionedLockHolder>()) {}

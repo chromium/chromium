@@ -19,6 +19,7 @@ namespace web_app {
 class VisitedManifestManager;
 class WebAppLockManager;
 class WebContentsManager;
+class WebAppOriginAssociationManager;
 struct PartitionedLockHolder;
 
 // Represents a lock in the WebAppProvider system. Locks can be acquired by
@@ -86,6 +87,8 @@ class Lock {
   WebContentsManager& web_contents_manager();
   // This will CHECK-fail if `IsGranted()` returns false.
   VisitedManifestManager& visited_manifest_manager();
+  // Will CHECK-fail if accessed before the lock is granted.
+  WebAppOriginAssociationManager& origin_association_manager();
 
   PartitionedLockHolder& GetLockHolder(base::PassKey<WebAppLockManager>) {
     return *holder_;
