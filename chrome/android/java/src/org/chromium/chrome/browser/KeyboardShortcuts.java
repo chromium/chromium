@@ -581,6 +581,21 @@ public class KeyboardShortcuts {
                     new KeyCombo(KeyEvent.KEYCODE_BUTTON_START, NO_MODIFIER)
                 });
 
+        // Top controls.
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR,
+                new KeyCombo(KeyEvent.KEYCODE_T, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON));
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS,
+                new KeyCombo(KeyEvent.KEYCODE_B, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON));
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
+                new KeyCombo(KeyEvent.KEYCODE_F6, NO_MODIFIER));
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning
+                        .FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
+                new KeyCombo(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON));
+
         // Bookmark shortcuts.
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR,
@@ -685,19 +700,6 @@ public class KeyboardShortcuts {
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_UP,
                 new KeyCombo(KeyEvent.KEYCODE_SPACE, KeyEvent.META_SHIFT_ON));
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR,
-                new KeyCombo(KeyEvent.KEYCODE_T, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON));
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS,
-                new KeyCombo(KeyEvent.KEYCODE_B, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON));
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
-                new KeyCombo(KeyEvent.KEYCODE_F6, NO_MODIFIER));
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning
-                        .FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
-                new KeyCombo(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON));
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning
                         .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT,
