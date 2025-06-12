@@ -781,16 +781,6 @@ class DemoLoginControllerCloudPolicyConnectionTest : public testing::Test {
   }
 
   void TearDown() override {
-    // `BrowserPolicyConnectorAsh` is constructed in
-    // `TestingBrowserProcess::browser_policy_connector()`,
-    // which is called in the ctor of `DemoLoginController` The memory will be
-    // allocated in the scope of `DemoLoginController`.
-    //  `TestingBrowserProcess::ShutdownBrowserPolicyConnector` will get called
-    //  at the end of test, after destructing `DemoLoginController`. Release the
-    //  memory of `BrowserPolicyConnectorAsh` before destructing
-    //  `DemoLoginController` to avoid dangling pointer.
-    TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
-
     demo_login_controller_.reset();
     DeviceSettingsService::Shutdown();
     DBusThreadManager::Shutdown();
@@ -799,9 +789,13 @@ class DemoLoginControllerCloudPolicyConnectionTest : public testing::Test {
   void MockConfigureAutoLogin() { is_auto_login_trigger_ = true; }
 
   base::test::ScopedFeatureList features_;
+
+  // InstallAttributes is created before ThreadPool and destroyed after
+  // ThreadPool.
+  ScopedStubInstallAttributes test_install_attributes_;
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedStubInstallAttributes test_install_attributes_;
   std::unique_ptr<DemoLoginController> demo_login_controller_;
   bool is_auto_login_trigger_ = false;
   base::UserActionTester user_action_tester_;

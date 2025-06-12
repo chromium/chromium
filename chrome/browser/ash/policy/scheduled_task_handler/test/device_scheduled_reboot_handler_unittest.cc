@@ -64,10 +64,6 @@ class DeviceScheduledRebootHandlerForTest
   DeviceScheduledRebootHandlerForTest& operator=(
       const DeviceScheduledRebootHandlerForTest&) = delete;
 
-  ~DeviceScheduledRebootHandlerForTest() override {
-    TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
-  }
-
   int GetRebootTimerExpirations() const { return reboot_timer_expirations_; }
   int GetPolicyChangesProcessedCount() const {
     return policy_changes_processed_;
