@@ -148,8 +148,12 @@ extern __typeof (FcPatternPrint) FcPatternPrint __attribute((alias("IA__FcPatter
 extern __typeof (FcFontSetPrint) FcFontSetPrint __attribute((alias("IA__FcFontSetPrint"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 #endif /* __fcdbg__ */
 #ifdef __fcdefault__
+# undef FcConfigGetDefaultLangs
+extern __typeof (FcConfigGetDefaultLangs) FcConfigGetDefaultLangs __attribute((alias("IA__FcConfigGetDefaultLangs"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcGetDefaultLangs
 extern __typeof (FcGetDefaultLangs) FcGetDefaultLangs __attribute((alias("IA__FcGetDefaultLangs"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
+# undef FcConfigSetDefaultSubstitute
+extern __typeof (FcConfigSetDefaultSubstitute) FcConfigSetDefaultSubstitute __attribute((alias("IA__FcConfigSetDefaultSubstitute"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcDefaultSubstitute
 extern __typeof (FcDefaultSubstitute) FcDefaultSubstitute __attribute((alias("IA__FcDefaultSubstitute"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 #endif /* __fcdefault__ */

@@ -162,3 +162,5 @@
 
 #define WORDS_BIGENDIAN 0
 
+#define _GNU_SOURCE 1
+
