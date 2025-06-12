@@ -1608,6 +1608,10 @@ chromium-metrics-reviews@google.com.
       label="Reading successful, but suspicious bulk deletions were detected.
              To err on the side of safety, drop all password sync metadata
              and start again."/>
+  <int value="7"
+      label="Reading successful, but undecryptable passwords were detected.
+             To err on the side of safety, drop all password sync metadata
+             and start again."/>
 </enum>
 
 <enum name="PasswordSyncState">

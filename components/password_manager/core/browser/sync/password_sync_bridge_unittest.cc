@@ -1091,7 +1091,6 @@ TEST_F(PasswordSyncBridgeTest,
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               GetAllSyncMetadata(syncer::PASSWORDS));
-  EXPECT_CALL(*mock_password_store_sync(), ReadAllCredentials).Times(0);
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               DeleteAllSyncMetadata(syncer::PASSWORDS))
       .Times(0);
@@ -1167,7 +1166,6 @@ TEST_F(
 
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               GetAllSyncMetadata(syncer::PASSWORDS));
-  EXPECT_CALL(*mock_password_store_sync(), ReadAllCredentials).Times(0);
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               DeleteAllSyncMetadata(syncer::PASSWORDS))
       .Times(0);
@@ -1179,6 +1177,187 @@ TEST_F(
 
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       0, 1);
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldRemoveSyncMetadataWhenUndecryptablePasswordsDetectedAndFeatureEnabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kClearUndecryptablePasswordsOnSync,
+       features::kTriggerPasswordResyncWhenUndecryptablePasswordsDetected},
+      /*disabled_features=*/{});
+
+  // 1. Mock GetAllSyncMetadata to return a valid batch that wouldn't trigger
+  //    other metadata clearing conditions.
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
+      .WillByDefault([&]() {
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+        sync_pb::DataTypeState data_type_state;
+        data_type_state.set_initial_sync_state(
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        // Ensure notes_enabled flag is set to avoid triggering notes
+        // redownload.
+        data_type_state.set_notes_enabled_before_initial_sync_for_passwords(
+            true);
+        metadata_batch->SetDataTypeState(data_type_state);
+        // Add some metadata to ensure the batch isn't empty and to verify it
+        // gets cleared. This metadata should not trigger
+        // SyncMetadataCacheContainsSupportedFields or
+        // DoesPasswordStoreContainAccidentalBatchDeletions.
+        sync_pb::EntityMetadata dummy_entity_metadata;
+        metadata_batch->AddMetadata(
+            "some_storage_key",
+            std::make_unique<sync_pb::EntityMetadata>(dummy_entity_metadata));
+        return metadata_batch;
+      });
+
+  // 2. Mock ReadAllCredentials to simulate undecryptable passwords.
+  //    This will make DoesPasswordStoreContainUndecryptablePasswords() return
+  //    true. It will also make WereUndecryptablePasswordsDeleted() return false
+  //    if called, avoiding that specific metadata clearing path.
+  ON_CALL(*mock_password_store_sync(), ReadAllCredentials(_))
+      .WillByDefault(Return(FormRetrievalResult::kEncryptionServiceFailure));
+
+  // Expectations:
+  // - Metadata should be deleted.
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              DeleteAllSyncMetadata(syncer::PASSWORDS));
+  // - ModelReadyToSync should be called with an empty batch.
+  EXPECT_CALL(mock_processor(), ModelReadyToSync(MetadataBatchContains(
+                                    /*state=*/syncer::HasNotInitialSyncDone(),
+                                    /*entities=*/testing::SizeIs(0))));
+
+  // Re-initialize the bridge to trigger Init() with the new mock setups.
+  auto bridge = std::make_unique<PasswordSyncBridge>(
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SyncMetadataReadError2",
+      7,  // SyncMetadataReadError::
+          //   kReadSuccessButClearedDueToUndecryptablePasswords
+      1);
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldNotRemoveSyncMetadataWhenUndecryptablePasswordsDetectedAndFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kClearUndecryptablePasswordsOnSync},
+      /*disabled_features=*/{
+          features::kTriggerPasswordResyncWhenUndecryptablePasswordsDetected});
+
+  // 1. Mock GetAllSyncMetadata to return a valid batch that wouldn't trigger
+  //    other metadata clearing conditions.
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
+      .WillByDefault([&]() {
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+        sync_pb::DataTypeState data_type_state;
+        data_type_state.set_initial_sync_state(
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        // Ensure notes_enabled flag is set to avoid triggering notes
+        // redownload.
+        data_type_state.set_notes_enabled_before_initial_sync_for_passwords(
+            true);
+        metadata_batch->SetDataTypeState(data_type_state);
+        // Add some metadata to ensure the batch isn't empty and to verify it
+        // gets cleared. This metadata should not trigger
+        // SyncMetadataCacheContainsSupportedFields or
+        // DoesPasswordStoreContainAccidentalBatchDeletions.
+        sync_pb::EntityMetadata dummy_entity_metadata;
+        metadata_batch->AddMetadata(
+            "some_storage_key",
+            std::make_unique<sync_pb::EntityMetadata>(dummy_entity_metadata));
+        return metadata_batch;
+      });
+
+  // 2. Mock ReadAllCredentials to simulate undecryptable passwords.
+  //    This will make DoesPasswordStoreContainUndecryptablePasswords() return
+  //    true. It will also make WereUndecryptablePasswordsDeleted() return false
+  //    if called, avoiding that specific metadata clearing path.
+  ON_CALL(*mock_password_store_sync(), ReadAllCredentials(_))
+      .WillByDefault(Return(FormRetrievalResult::kEncryptionServiceFailure));
+
+  // Expectations:
+  // - Metadata should not be deleted.
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              DeleteAllSyncMetadata(syncer::PASSWORDS))
+      .Times(0);
+
+  // Re-initialize the bridge to trigger Init() with the new mock setups.
+  auto bridge = std::make_unique<PasswordSyncBridge>(
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
+                                      0,  // SyncMetadataReadError::kNone
+                                      1);
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldNotRemoveSyncMetadataWhenUndecryptablePasswordsDetectedAndFeatureEnabledButShouldRecoverPasswordsDuringMergeIsFalse) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kTriggerPasswordResyncWhenUndecryptablePasswordsDetected},
+      /*disabled_features=*/{features::kClearUndecryptablePasswordsOnSync});
+
+  // 1. Mock GetAllSyncMetadata to return a valid batch that wouldn't trigger
+  //    other metadata clearing conditions.
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
+      .WillByDefault([&]() {
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+        sync_pb::DataTypeState data_type_state;
+        data_type_state.set_initial_sync_state(
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        // Ensure notes_enabled flag is set to avoid triggering notes
+        // redownload.
+        data_type_state.set_notes_enabled_before_initial_sync_for_passwords(
+            true);
+        metadata_batch->SetDataTypeState(data_type_state);
+        // Add some metadata to ensure the batch isn't empty and to verify it
+        // gets cleared. This metadata should not trigger
+        // SyncMetadataCacheContainsSupportedFields or
+        // DoesPasswordStoreContainAccidentalBatchDeletions.
+        sync_pb::EntityMetadata dummy_entity_metadata;
+        metadata_batch->AddMetadata(
+            "some_storage_key",
+            std::make_unique<sync_pb::EntityMetadata>(dummy_entity_metadata));
+        return metadata_batch;
+      });
+
+  // 2. Mock ReadAllCredentials to simulate undecryptable passwords.
+  //    This will make DoesPasswordStoreContainUndecryptablePasswords() return
+  //    true. It will also make WereUndecryptablePasswordsDeleted() return false
+  //    if called, avoiding that specific metadata clearing path.
+  ON_CALL(*mock_password_store_sync(), ReadAllCredentials(_))
+      .WillByDefault(Return(FormRetrievalResult::kEncryptionServiceFailure));
+
+  // Expectations:
+  // - Metadata should not be deleted.
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              DeleteAllSyncMetadata(syncer::PASSWORDS))
+      .Times(0);
+
+  // Re-initialize the bridge to trigger Init() with the new mock setups.
+  auto bridge = std::make_unique<PasswordSyncBridge>(
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
+                                      0,  // SyncMetadataReadError::kNone
+                                      1);
 }
 
 // This tests that if adding logins to the store fails,
