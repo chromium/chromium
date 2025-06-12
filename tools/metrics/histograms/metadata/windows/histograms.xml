@@ -234,32 +234,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.LegacyDisplayIdAlgorithm" enum="UsedDisplayIdFallback"
-    expires_after="2025-11-16">
-  <owner>btriebw@google.com</owner>
-  <owner>msw@google.com</owner>
-  <summary>
-    Records when a monitor is missing DISPLAYCONFIG_PATH_INFO to derive a
-    display ID and instead used the fallback legacy algorithm. Recorded once for
-    each monitor detected by the OS during startup of chrome and after any
-    monitor topology changes (addition/removal) thereafter.
-  </summary>
-</histogram>
-
-<histogram name="Windows.LegacyDisplayIdAlgorithm2"
-    enum="UsedDisplayIdFallback" expires_after="2025-07-13">
-  <owner>btriebw@google.com</owner>
-  <owner>msw@google.com</owner>
-  <summary>
-    Records when a monitor is missing DISPLAYCONFIG_PATH_INFO to derive a
-    display ID and instead used the fallback legacy algorithm. Recorded once for
-    each monitor detected by the OS during startup of chrome and after any
-    monitor topology changes (addition/removal) thereafter.
-
-    Subsampled to 1/100.
-  </summary>
-</histogram>
-
 <histogram name="Windows.OneDriveSyncState.{SyncedState}" enum="BooleanEnabled"
     expires_after="2025-12-31">
   <owner>koretadaniel@chromium.org</owner>
