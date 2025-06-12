@@ -1157,13 +1157,16 @@ void ServiceWorkerClient::InheritControllerFrom(
          (base::FeatureList::IsEnabled(features::kServiceWorkerSrcdocSupport) &&
           GetClientType() == blink::mojom::ServiceWorkerClientType::kWindow &&
           client_url.IsAboutSrcdoc()));
-  // Only expect srcdoc url or blob url of same origin as creator for
-  // client_url.
-  DCHECK((client_url.SchemeIsBlob() &&
-          url::Origin::Create(client_url)
-              .IsSameOriginWith(creator_host.key().origin())) ||
+  // Only expect srcdoc url or blob url.
+  DCHECK(client_url.SchemeIsBlob() ||
          (base::FeatureList::IsEnabled(features::kServiceWorkerSrcdocSupport) &&
           client_url.IsAboutSrcdoc()));
+  // origins of blob client_url and creator host should be the same or both
+  // opaque.
+  if (client_url.SchemeIsBlob()) {
+    service_worker_security_utils::CheckOnUpdateUrls(client_url,
+                                                     creator_host.key());
+  }
 
   // Let `scope_match_url_for_client_` be the creator's url for scope match
   // because a client should be handled by the service worker of its creator.
