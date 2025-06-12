@@ -58,6 +58,9 @@ namespace glic {
 // clock adjustment if any.
 class GlicUserStatusFetcher {
  public:
+  using FetchOverrideCallback = base::RepeatingCallback<void(
+      base::OnceCallback<void(const CachedUserStatus&)>)>;
+
   explicit GlicUserStatusFetcher(Profile* profile,
                                  base::RepeatingClosure callback);
   ~GlicUserStatusFetcher();
@@ -72,7 +75,15 @@ class GlicUserStatusFetcher {
   void ScheduleUserStatusUpdate(base::TimeDelta time_to_next_update);
   void CancelUserStatusUpdateIfNeeded();
 
+  // Updates the user status when information suggests that it might have
+  // changed recently. This is internally debounced to avoid excessive
+  // requests, for signals that might be received multiple times.
+  void UpdateUserStatusWithDebouncing();
+
   void SetGlicUserStatusUrlForTest(GURL test_url) { endpoint_ = test_url; }
+  void SetFetchOverrideForTest(FetchOverrideCallback fetch_override) {
+    fetch_override_for_test_ = std::move(fetch_override);
+  }
 
  private:
   static std::optional<signin::GaiaIdHash> GetGaiaIdHashForPrimaryAccount(
@@ -80,19 +91,21 @@ class GlicUserStatusFetcher {
 
   void CreateRequestSender();
 
-  void FetchNow();
-
   void ProcessResponse(const std::string& account_id_hash,
-                       CachedUserStatus user_status);
+                       const CachedUserStatus& user_status);
 
   bool is_user_status_waiting_for_refresh_token_ = false;
   raw_ptr<Profile> profile_;
   const base::RepeatingClosure callback_;
   GURL endpoint_;
   std::string oauth2_scope_;
+  base::Time last_update_start_time_;
   base::WallClockTimer refresh_status_timer_;
   std::unique_ptr<google_apis::RequestSender> request_sender_;
   base::OnceClosure cancel_closure_;
+
+  // When set, replaces the actual fetch with a callback.
+  FetchOverrideCallback fetch_override_for_test_;
 
   base::WeakPtrFactory<GlicUserStatusFetcher> weak_ptr_factory_{this};
 };

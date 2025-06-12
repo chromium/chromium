@@ -191,6 +191,8 @@ void GlicUserStatusFetcher::UpdateUserStatusIfNeeded() {
 }
 
 void GlicUserStatusFetcher::UpdateUserStatus() {
+  last_update_start_time_ = base::Time::Now();
+
   if (refresh_status_timer_.IsRunning()) {
     refresh_status_timer_.Stop();
   }
@@ -203,16 +205,55 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
 
   // only send user status request when primary account exists and refresh
   // token is available.
-  if (identity_manager->HasPrimaryAccountWithRefreshToken(
+  if (!identity_manager->HasPrimaryAccountWithRefreshToken(
           signin::ConsentLevel::kSignin)) {
-    // Only send the RPC for enterprise account.
-    if (!IsEnterpriseAccount()) {
-      return;
-    }
-    FetchNow();
-  } else {
     is_user_status_waiting_for_refresh_token_ = true;
+    return;
   }
+
+  // Only send the RPC for enterprise account.
+  if (!IsEnterpriseAccount()) {
+    return;
+  }
+
+  // Cancel any ongoing fetch. This will do nothing if the request is already
+  // finished.
+  CancelUserStatusUpdateIfNeeded();
+
+  // schedule next run regardless.
+  ScheduleUserStatusUpdate(features::kGlicUserStatusRequestDelay.Get());
+
+  auto gaia_id_hash = GetGaiaIdHashForPrimaryAccount(profile_);
+  if (!gaia_id_hash.has_value()) {
+    return;
+  }
+
+  auto callback = base::BindOnce(&GlicUserStatusFetcher::ProcessResponse,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 gaia_id_hash.value().ToBase64());
+
+  if (fetch_override_for_test_) {
+    fetch_override_for_test_.Run(std::move(callback));
+    return;
+  }
+
+  request_sender_ = std::make_unique<google_apis::RequestSender>(
+      std::make_unique<google_apis::AuthService>(
+          identity_manager,
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          profile_->GetURLLoaderFactory(),
+          std::vector<std::string>{oauth2_scope_}),
+      profile_->GetURLLoaderFactory(),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+          .get(),
+      /*custom_user_agent=*/std::string(), kTrafficAnnotation);
+
+  auto request = std::make_unique<GlicUserStatusRequest>(
+      request_sender_.get(), endpoint_, std::move(callback));
+  cancel_closure_ =
+      request_sender_->StartRequestWithAuthRetry(std::move(request));
 }
 
 void GlicUserStatusFetcher::ScheduleUserStatusUpdate(
@@ -251,56 +292,34 @@ GlicUserStatusFetcher::GetGaiaIdHashForPrimaryAccount(Profile* profile) {
   return signin::GaiaIdHash::FromGaiaId(primary_account.gaia);
 }
 
-void GlicUserStatusFetcher::FetchNow() {
-  // Cancel any ongoing fetch. This will do nothing if the request is already
-  // finished.
-  CancelUserStatusUpdateIfNeeded();
-
-  // schedule next run regardless.
-  ScheduleUserStatusUpdate(features::kGlicUserStatusRequestDelay.Get());
-
-  auto account_info = GetGaiaIdHashForPrimaryAccount(profile_);
-
-  if (!account_info.has_value()) {
-    return;
-  }
-
-  std::vector<std::string> scopes;
-  scopes.push_back(oauth2_scope_);
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-
-  request_sender_ = std::make_unique<google_apis::RequestSender>(
-      std::make_unique<google_apis::AuthService>(
-          identity_manager,
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          profile_->GetURLLoaderFactory(),
-          std::vector<std::string>{oauth2_scope_}),
-      profile_->GetURLLoaderFactory(),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
-          .get(),
-      /*custom_user_agent=*/std::string(), kTrafficAnnotation);
-
-  auto request = std::make_unique<GlicUserStatusRequest>(
-      request_sender_.get(), endpoint_,
-      base::BindOnce(&GlicUserStatusFetcher::ProcessResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     account_info.value().ToBase64()));
-  cancel_closure_ =
-      request_sender_->StartRequestWithAuthRetry(std::move(request));
-}
-
 void GlicUserStatusFetcher::CancelUserStatusUpdateIfNeeded() {
   if (cancel_closure_) {
     std::move(cancel_closure_).Run();
   }
 }
 
+void GlicUserStatusFetcher::UpdateUserStatusWithDebouncing() {
+  // If it has been less than the debounce interval since the last update,
+  // don't update the user status immediately but schedule it to run after
+  // the debounce interval (unless it already was scheduled to run by that
+  // time). This limits the rate at which certain kinds of potentially frequent
+  // events can cause requests to be sent, while still making the update
+  // immediate most of the time.
+  const base::TimeDelta debounce_interval =
+      features::kGlicUserStatusDebounceInterval.Get();
+  const base::Time now = base::Time::Now();
+
+  if (now >= last_update_start_time_ + debounce_interval) {
+    UpdateUserStatus();
+  } else if (!refresh_status_timer_.IsRunning() ||
+             refresh_status_timer_.desired_run_time() >
+                 now + debounce_interval) {
+    ScheduleUserStatusUpdate(debounce_interval);
+  }
+}
+
 void GlicUserStatusFetcher::ProcessResponse(const std::string& account_id_hash,
-                                            CachedUserStatus user_status) {
+                                            const CachedUserStatus& user_status) {
   // We don't overwrite the previous GlicUserStatus when UserStatusCode is
   // SERVER_UNAVAILABLE.
   if (user_status.user_status_code != UserStatusCode::SERVER_UNAVAILABLE) {

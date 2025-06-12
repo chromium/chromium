@@ -212,6 +212,7 @@ export declare interface HostRequestTypes {
       suggestions?: ZeroStateSuggestions,
     },
   };
+  glicBrowserMaybeRefreshUserStatus: {};
 }
 
 // Types of requests to the GlicWebClient.
@@ -340,6 +341,7 @@ type HostRequestEnumNamesType = {
     GetZeroStateSuggestionsForFocusedTab: 0,
     SetClosedCaptioningSetting: 0,
     DropScrollToHighlight: 0,
+    MaybeRefreshUserStatus: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)

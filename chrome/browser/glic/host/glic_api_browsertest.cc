@@ -32,6 +32,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -57,6 +58,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/metrics/metrics_service.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -93,6 +96,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestSystemSettingsTest",
       "GlicApiTestWithOneTabAndContextualCueing",
       "GlicApiTestWithOneTabAndPreloading",
+      "GlicApiTestUserStatusCheckTest",
   };
 }
 
@@ -165,16 +169,21 @@ class GlicApiTest : public NonInteractiveGlicTest {
 
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlic,
-          {
-              {"glic-default-hotkey", "Ctrl+G"},
-              // Shorten load timeouts.
-              {features::kGlicPreLoadingTimeMs.name, "20"},
-              {features::kGlicMinLoadingTimeMs.name, "40"},
-          }},
-         {features::kGlicScrollTo, {}},
-         {features::kGlicClosedCaptioning, {}},
-         {features::kGlicApiActivationGating, {}}},
+        {
+            {features::kGlic,
+             {
+                 {"glic-default-hotkey", "Ctrl+G"},
+                 // Shorten load timeouts.
+                 {features::kGlicPreLoadingTimeMs.name, "20"},
+                 {features::kGlicMinLoadingTimeMs.name, "40"},
+             }},
+            {features::kGlicScrollTo, {}},
+            {features::kGlicClosedCaptioning, {}},
+            {features::kGlicApiActivationGating, {}},
+            {features::kGlicUserStatusCheck,
+             {{features::kGlicUserStatusRefreshApi.name, "true"},
+              {features::kGlicUserStatusDebounceInterval.name, "2s"}}},
+        },
         /*disabled_features=*/
         {
             features::kGlicWarming,
@@ -191,6 +200,16 @@ class GlicApiTest : public NonInteractiveGlicTest {
       FAIL() << "Test not finished: call ContinueJsTest()";
     }
     test::InteractiveGlicTest::TearDownOnMainThread();
+  }
+
+  GlicKeyedService* GetService() {
+    Profile* profile = browser()->profile();
+    return GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  }
+
+  Host* GetHost() {
+    Profile* profile = browser()->profile();
+    return &GlicKeyedServiceFactory::GetGlicKeyedService(profile)->host();
   }
 
   // Run the test typescript function. The typescript function must have the
@@ -363,16 +382,6 @@ class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
     GlicApiTestWithOneTab::TearDown();
     GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
     GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
-  }
-
-  GlicKeyedService* GetService() {
-    Profile* profile = browser()->profile();
-    return GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  }
-
-  Host* GetHost() {
-    Profile* profile = browser()->profile();
-    return &GlicKeyedServiceFactory::GetGlicKeyedService(profile)->host();
   }
 
   auto CreateAndWarmGlic() {
@@ -1422,6 +1431,70 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   histogram_tester.ExpectBucketCount(
       "Glic.Api.RequestCounts.CreateTab",
       GlicRequestEvent::kRequestReceivedWhileHidden, 1);
+}
+
+class GlicApiTestUserStatusCheckTest : public GlicApiTestWithOneTab {
+ protected:
+  void SetUpOnMainThread() override {
+    GlicApiTestWithOneTab::SetUpOnMainThread();
+    GetService()->enabling().SetUserStatusFetchOverrideForTest(
+        base::BindRepeating(&GlicApiTestUserStatusCheckTest::UserStatusFetch,
+                            base::Unretained(this)));
+  }
+
+  void UserStatusFetch(
+      base::OnceCallback<void(const CachedUserStatus&)> callback) {
+    user_status_fetch_count_++;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), user_status_));
+  }
+
+  CachedUserStatus user_status_;
+  unsigned int user_status_fetch_count_ = 0;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestUserStatusCheckTest,
+                       testMaybeRefreshUserStatus) {
+  Profile* profile = browser()->profile();
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile),
+      policy::EnterpriseManagementAuthority::CLOUD);
+  ASSERT_FALSE(GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin());
+  user_status_.user_status_code = UserStatusCode::DISABLED_BY_ADMIN;
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
+  }));
+  EXPECT_GE(user_status_fetch_count_, 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestUserStatusCheckTest,
+                       testMaybeRefreshUserStatusDebounced) {
+  // As previous, but requests several updates (e.g., as though many errors
+  // were processed around the same time). An "enabled" status is assumed as
+  // otherwise the client will be unloaded.
+  //
+  // These expectations are a little loose, because we can't use mock time in
+  // browser tests yet, but they should be sufficient to catch a total lack of
+  // debouncing, at least.
+  Profile* profile = browser()->profile();
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile),
+      policy::EnterpriseManagementAuthority::CLOUD);
+  ASSERT_FALSE(GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin());
+  user_status_.user_status_code = UserStatusCode::ENABLED;
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return user_status_fetch_count_ >= 2;
+  })) << "There should be at least two fetches (initial and debounced)";
+  {
+    base::RunLoop loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, loop.QuitClosure(), base::Seconds(5));
+    loop.Run();
+  }
+  EXPECT_LT(user_status_fetch_count_, 5u)
+      << "We should not send most of the fetches";
 }
 
 }  // namespace

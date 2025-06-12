@@ -35,7 +35,7 @@ namespace glic {
 GlicUserStatusRequest::GlicUserStatusRequest(
     google_apis::RequestSender* sender,
     GURL url,
-    base::OnceCallback<void(CachedUserStatus)> process_response_callback)
+    base::OnceCallback<void(const CachedUserStatus&)> process_response_callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),

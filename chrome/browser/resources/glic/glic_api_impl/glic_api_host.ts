@@ -617,6 +617,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   glicBrowserDropScrollToHighlight(): void {
     this.handler.dropScrollToHighlight();
   }
+
+  glicBrowserMaybeRefreshUserStatus(): void {
+    this.handler.maybeRefreshUserStatus();
+  }
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {

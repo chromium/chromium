@@ -18,8 +18,7 @@ class GlicUserStatusRequest : public google_apis::UrlFetchRequestBase {
   explicit GlicUserStatusRequest(
       google_apis::RequestSender* sender,
       GURL url,
-
-      base::OnceCallback<void(CachedUserStatus)> process_response_callback);
+      base::OnceCallback<void(const CachedUserStatus&)> process_response_callback);
   GlicUserStatusRequest(const GlicUserStatusRequest&) = delete;
   GlicUserStatusRequest& operator=(const GlicUserStatusRequest&) = delete;
   ~GlicUserStatusRequest() override;
@@ -46,7 +45,7 @@ class GlicUserStatusRequest : public google_apis::UrlFetchRequestBase {
       std::string_view response_body);
 
   GURL url_;
-  base::OnceCallback<void(CachedUserStatus)> process_response_callback_;
+  base::OnceCallback<void(const CachedUserStatus&)> process_response_callback_;
 };
 
 }  // namespace glic

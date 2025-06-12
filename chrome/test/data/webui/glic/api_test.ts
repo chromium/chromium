@@ -903,6 +903,19 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals('createTab: failed', errorMessage);
   }
 
+  async testMaybeRefreshUserStatus() {
+    assertTrue(!!this.host.maybeRefreshUserStatus);
+    this.host.maybeRefreshUserStatus();
+  }
+
+  async testMaybeRefreshUserStatusDebounced() {
+    assertTrue(!!this.host.maybeRefreshUserStatus);
+    for (let i = 0; i < 10; i++) {
+      this.host.maybeRefreshUserStatus();
+      await sleep(100);
+    }
+  }
+
   private async closePanelAndWaitUntilInactive() {
     assertTrue(!!this.host.closePanel);
     await this.host.closePanel();
