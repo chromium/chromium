@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/i18n/number_formatting.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"

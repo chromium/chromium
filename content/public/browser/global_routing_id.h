@@ -9,7 +9,6 @@
 #include <ostream>
 
 #include "base/hash/hash.h"
-#include "base/i18n/number_formatting.h"
 #include "content/common/content_export.h"
 #include "content/public/common/content_constants.h"
 #include "ipc/ipc_message.h"
