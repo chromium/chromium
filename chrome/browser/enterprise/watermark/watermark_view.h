@@ -8,7 +8,6 @@
 #include "components/enterprise/watermarking/watermark.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
-
 namespace gfx {
 class Canvas;
 class RenderText;
@@ -24,6 +23,7 @@ class WatermarkView : public views::View {
 
  public:
   WatermarkView();
+  explicit WatermarkView(std::string text);
   ~WatermarkView() override;
 
   // Set this to a translucent value for testing. Useful for visualizing the
@@ -32,9 +32,7 @@ class WatermarkView : public views::View {
 
   // Convenience function to draw a simple, text-based watermark. `text` must be
   // UTF-8 encoded.
-  void SetString(const std::string& text,
-                 SkColor fill_color,
-                 SkColor outline_color);
+  void SetString(const std::string& text);
 
   // Alternative to SetString. Allows watermark to be set to any drawing
   // represented by a cc::PaintRecord instance.

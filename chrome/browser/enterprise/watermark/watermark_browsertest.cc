@@ -12,7 +12,6 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace enterprise_watermark {
 
@@ -35,9 +34,6 @@ It was not split
 This is another very long line that should be split up into multiple lines
 )";
 
-constexpr SkColor kTestFillColor = SkColorSetARGB(0x2A, 0, 0, 0);
-constexpr SkColor kTestOutlineColor = SkColorSetARGB(0x3D, 0, 0, 0);
-
 class WatermarkBrowserTest : public UiBrowserTest,
                              public testing::WithParamInterface<const char*> {
  public:
@@ -56,8 +52,7 @@ class WatermarkBrowserTest : public UiBrowserTest,
   bool SetWatermark(const std::string& watermark_message) {
     if (auto* watermark_view = BrowserView::GetBrowserViewForBrowser(browser())
                                    ->get_watermark_view_for_testing()) {
-      watermark_view->SetString(watermark_message, kTestFillColor,
-                                kTestOutlineColor);
+      watermark_view->SetString(watermark_message);
       return true;
     }
     return false;
