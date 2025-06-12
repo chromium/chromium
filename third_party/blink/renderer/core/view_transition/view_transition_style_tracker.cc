@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -1547,8 +1548,10 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
   auto group_children_css_properties =
       std::move(group_children_css_property_builder).Finish();
 
-  gfx::Vector2d border_offset(layout_object->StyleRef().BorderLeftWidth(),
-                              layout_object->StyleRef().BorderTopWidth());
+  const auto& style = layout_object->StyleRef();
+  gfx::Vector2d border_offset(
+      AdjustForAbsoluteZoom::AdjustInt(style.BorderLeftWidth(), style),
+      AdjustForAbsoluteZoom::AdjustInt(style.BorderTopWidth(), style));
 
   if (element_data->container_properties == container_properties &&
       visual_overflow_rect_in_layout_space ==
