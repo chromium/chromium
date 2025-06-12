@@ -133,7 +133,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   std::vector<const AutofillProfile*> GetProfilesForSettings() const;
 
   // Returns the profile with the specified `guid`, or nullptr if there is no
-  // profile such profile. See `GetProfiles()` for the lifetime of the pointer.
+  // such profile. See `GetProfiles()` for the lifetime of the pointer.
   const AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
   // Adds |profile| to the web database.
