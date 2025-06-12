@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 
-#include "base/strings/stringprintf.h"
-#include "base/strings/to_string.h"
+#include "media/base/media_switches.h"
 
 namespace blink {
 
@@ -28,25 +27,22 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
          voice_isolation == other.voice_isolation;
 }
 
-std::string AudioProcessingProperties::ToString() const {
-  auto aec_to_string = [](EchoCancellationType type) {
-    switch (type) {
-      case EchoCancellationType::kEchoCancellationDisabled:
-        return "disabled";
-      case EchoCancellationType::kEchoCancellationAec3:
-        return "aec3";
-      case EchoCancellationType::kEchoCancellationSystem:
-        return "system";
-    }
-  };
-  auto str = base::StringPrintf(
-      "echo_cancellation_type: %s, "
-      "auto_gain_control: %s, "
-      "noise_suppression: %s, ",
-      aec_to_string(echo_cancellation_type),
-      base::ToString(auto_gain_control).c_str(),
-      base::ToString(noise_suppression).c_str());
-  return str;
-}
+media::AudioProcessingSettings
+AudioProcessingProperties::ToAudioProcessingSettings(
+    bool multi_channel_capture_processing) const {
+  media::AudioProcessingSettings out;
+  out.echo_cancellation =
+      echo_cancellation_type == EchoCancellationType::kEchoCancellationAec3;
+  out.noise_suppression =
+      noise_suppression &&
+      (media::IsSystemEchoCancellationEnforcedAndAllowNsInTandem() ||
+       !system_noise_suppression_activated);
+  out.automatic_gain_control =
+      auto_gain_control &&
+      (media::IsSystemEchoCancellationEnforcedAndAllowAgcInTandem() ||
+       !system_gain_control_activated);
 
+  out.multi_channel_capture_processing = multi_channel_capture_processing;
+  return out;
+}
 }  // namespace blink
