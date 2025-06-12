@@ -240,7 +240,15 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
     if ((e.key === 'Enter' || e.key === 'NumpadEnter') &&
         this.state === State.READY && this.openDialogs_.length === 0) {
-      const activeElementTag = (e.composedPath()[0] as HTMLElement).tagName;
+      const activeElement = e.composedPath()[0] as HTMLElement | undefined;
+      // activeElement may be undefined if this is a forwarded key event from
+      // the plugin. Print Preview conventionally does not trigger a print for
+      // Enter when the plugin is focused
+      if (!activeElement) {
+        return;
+      }
+
+      const activeElementTag = activeElement.tagName;
       if (['CR-BUTTON', 'BUTTON', 'SELECT', 'A', 'CR-CHECKBOX'].includes(
               activeElementTag)) {
         return;
