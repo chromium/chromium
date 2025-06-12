@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "content/browser/media/capture/desktop_capturer_android.h"
 
 #include "base/android/callback_android.h"
@@ -136,7 +137,62 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(PlaneInfo plane) {
     return;
   }
 
-  // TODO(crbug.com/352187279): Process the frame.
+  const auto width = plane.crop_right - plane.crop_left;
+  const auto height = plane.crop_bottom - plane.crop_top;
+  const webrtc::DesktopSize size(width.ValueOrDie<int32_t>(),
+                                 height.ValueOrDie<int32_t>());
+  next_frame_.reset(new webrtc::BasicDesktopFrame(size));
+
+  // We don't have access to this information to Android, but this is only
+  // used for mouse cursor stuff, which we don't support currently.
+  next_frame_->set_top_left(webrtc::DesktopVector());
+
+  // We don't have damage information on Android, so damage the whole frame.
+  next_frame_->mutable_updated_region()->SetRect(
+      webrtc::DesktopRect::MakeSize(next_frame_->size()));
+
+  // TODO(crbug.com/352187279): Set DPI based on display.
+  next_frame_->set_dpi(webrtc::DesktopVector());
+
+  // TODO(crbug.com/352187279): The cursor is captured for screen capture but
+  // not for window capture. Currently there is no way to determine if we are
+  // doing screen or window capture on Android. If we can determine this and set
+  // it conditionally here we also need a way to get the cursor position by
+  // implementing `MouseCursorMonitor`.
+  next_frame_->set_may_contain_cursor(true);
+
+  // TODO(crbug.com/352187279): Determine capture_time_ms based on
+  // `CaptureFrame()` callback and timestamp from Android.
+  next_frame_->set_capture_time_ms(0);
+
+  // TODO(crbug.com/352187279): Create `DesktopCapturerId` for Android.
+  next_frame_->set_capturer_id(webrtc::DesktopCapturerId::kUnknown);
+
+  // There is no way to get an ICC profile on Android.
+  next_frame_->set_icc_profile({});
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const auto span = base::android::JavaByteBufferToSpan(env, plane.buf.obj());
+  const auto offset =
+      plane.crop_top * plane.row_stride + plane.crop_left * plane.pixel_stride;
+
+  CHECK_EQ(
+      static_cast<int>(static_cast<uint32_t>(plane.pixel_stride.ValueOrDie())),
+      webrtc::DesktopFrame::kBytesPerPixel);
+  CHECK_LE(static_cast<uint32_t>((width * plane.pixel_stride).ValueOrDie()),
+           static_cast<uint32_t>(plane.row_stride.ValueOrDie()));
+  CHECK_LE(static_cast<uint32_t>(offset.ValueOrDie()), span.size_bytes());
+  CHECK_LE(
+      static_cast<uint32_t>((offset + height * plane.row_stride).ValueOrDie()),
+      span.size());
+
+  // TODO(crbug.com/352187279): Extract to `SharedMemory` instead of copying if
+  // possible, or, use `ScreenCaptureFrameQueue` and `ResolutionTracker` to
+  // reuse frames.
+  next_frame_->CopyPixelsFrom(
+      span.get_at(offset.ValueOrDie()),
+      static_cast<uint32_t>(plane.row_stride.ValueOrDie()),
+      webrtc::DesktopRect::MakeSize(size));
 
   base::android::RunRunnableAndroid(plane.release_cb);
 }
