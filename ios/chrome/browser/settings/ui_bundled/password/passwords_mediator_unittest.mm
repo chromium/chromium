@@ -10,6 +10,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
@@ -18,6 +19,7 @@
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -26,6 +28,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator+Testing.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_observer.h"
@@ -34,7 +37,6 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -42,9 +44,10 @@
 
 namespace {
 
-using password_manager::InsecureType;
-using password_manager::PasswordForm;
-using password_manager::TestPasswordStore;
+using ::password_manager::InsecureType;
+using ::password_manager::PasswordForm;
+using ::password_manager::TestPasswordStore;
+using ::testing::Return;
 
 // Creates a saved password form.
 PasswordForm CreatePasswordForm() {
@@ -165,8 +168,7 @@ class PasswordsMediatorTest : public BlockCleanupTest {
         initWithPasswordCheckManager:password_check_
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForProfile(profile_.get())
-                         syncService:SyncServiceFactory::GetForProfile(
-                                         profile_.get())
+                         syncService:&sync_service_
                          prefService:profile_->GetPrefs()];
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
@@ -186,6 +188,8 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
   feature_engagement::test::MockTracker* mockTracker() { return mock_tracker_; }
 
+  syncer::MockSyncService* syncService() { return &sync_service_; }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
@@ -196,6 +200,7 @@ class PasswordsMediatorTest : public BlockCleanupTest {
   FakePasswordsConsumer* consumer_;
   PasswordsMediator* mediator_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
+  syncer::MockSyncService sync_service_;
 };
 
 // Consumer should be notified when passwords are changed.
@@ -233,6 +238,26 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerToShowPromoOrNot) {
   [mediator() askFETToShowPasswordManagerWidgetPromo];
 
   EXPECT_TRUE(consumer().shouldShowPasswordManagerWidgetPromoCalled);
+}
+
+// Tests that the Password Manager widget promo is not being shown because the
+// Trusted Vault widget promo should be shown
+TEST_F(PasswordsMediatorTest,
+       PasswordManagerWidgetPromoIsNotShownDueToTrustedVaultWidgetPromo) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
+  ON_CALL(*(syncService()->GetMockUserSettings()),
+          IsTrustedVaultKeyRequiredForPreferredDataTypes())
+      .WillByDefault(Return(true));
+
+  // Make sure that `shouldShowPasswordManagerWidgetPromoCalled` isn't already
+  // true.
+  EXPECT_FALSE(consumer().shouldShowPasswordManagerWidgetPromoCalled);
+
+  [mediator() askFETToShowPasswordManagerWidgetPromo];
+
+  EXPECT_FALSE(consumer().shouldShowPasswordManagerWidgetPromoCalled);
 }
 
 // Tests that `Dismissed` is called on the FET on disconnect when the Password

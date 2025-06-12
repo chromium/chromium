@@ -169,6 +169,13 @@ struct PasswordManagerActiveWidgetPromoData
 }
 
 - (void)askFETToShowPasswordManagerWidgetPromo {
+  if (password_manager::features::
+          IsPasswordManagerTrustedVaultWidgetEnabled() &&
+      [self shouldTrustedVaultPromoBeShown]) {
+    // We don't display the password manager widget promo because the trusted
+    // vault promo should be shown.
+    return;
+  }
   if (self.tracker && !_shouldNotifyFETToDismissPasswordManagerWidgetPromo) {
     [self.consumer setShouldShowPasswordManagerWidgetPromo:
                        [self shouldShowPasswordManagerWidgetPromo]];
@@ -412,6 +419,14 @@ struct PasswordManagerActiveWidgetPromoData
 }
 
 // LINT.IfChange(IsTrustedVaultKeyRequiredForPreferredDataTypes)
+// Decides whether the Trusted Vault widget promo should be displayed.
+- (BOOL)shouldTrustedVaultPromoBeShown {
+  CHECK(_syncService);
+  return _syncService->GetUserSettings()
+      ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
+}
+// LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_mediator.mm:IsTrustedVaultKeyRequiredForPreferredDataTypes)
+
 // Decides whether the Trusted Vault widget promo should be displayed and asks
 // consumer to do so. This code should be in sync with the code that decides
 // whether the error badge should be displayed for the GPM icon in the overflow
@@ -420,11 +435,9 @@ struct PasswordManagerActiveWidgetPromoData
   if (password_manager::features::
           IsPasswordManagerTrustedVaultWidgetEnabled()) {
     [self.consumer setShouldShowTrustedVaultWidgetPromo:
-                       _syncService->GetUserSettings()
-                           ->IsTrustedVaultKeyRequiredForPreferredDataTypes()];
-  }
+                       [self shouldTrustedVaultPromoBeShown]];
+  };
 }
-// LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_mediator.mm:IsTrustedVaultKeyRequiredForPreferredDataTypes)
 
 #pragma mark - SavedPasswordsPresenterObserver
 
@@ -462,6 +475,7 @@ struct PasswordManagerActiveWidgetPromoData
           password_manager::sync_util::GetPasswordSyncState(_syncService) !=
           password_manager::sync_util::SyncState::kNotActive];
   [self displayOrHideTrustedVaultPasswordManagerWidgetPromo];
+  [self askFETToShowPasswordManagerWidgetPromo];
 }
 
 @end
