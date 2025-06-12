@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -17,11 +18,11 @@ using FindBarControllerTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(FindBarControllerTest,
                        NoFindBarControllerOnBrowserCreate) {
   // FindBarController should not be created on browser start.
-  EXPECT_FALSE(browser()->HasFindBarController());
+  EXPECT_FALSE(browser()->GetFeatures().HasFindBarController());
   // GetFindBarController should create the FindBarController on demand.
-  EXPECT_NE(nullptr, browser()->GetFindBarController());
+  EXPECT_NE(nullptr, browser()->GetFeatures().GetFindBarController());
   // This should now indicate that there is now a FindBarController instance.
-  EXPECT_TRUE(browser()->HasFindBarController());
+  EXPECT_TRUE(browser()->GetFeatures().HasFindBarController());
 }
 
 // This test ensure that the FindBarController is created when the tab having
@@ -33,5 +34,5 @@ IN_PROC_BROWSER_TEST_F(FindBarControllerTest, FindBarControllerOnWindowCreate) {
   chrome::MoveActiveTabToNewWindow(browser());
 
   // Make sure FindBarController is created.
-  EXPECT_TRUE(browser()->HasFindBarController());
+  EXPECT_TRUE(browser()->GetFeatures().HasFindBarController());
 }

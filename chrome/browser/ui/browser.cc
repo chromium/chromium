@@ -115,7 +115,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
-#include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
@@ -858,23 +857,6 @@ base::WeakPtr<Browser> Browser::AsWeakPtr() {
 
 base::WeakPtr<const Browser> Browser::AsWeakPtr() const {
   return weak_factory_.GetWeakPtr();
-}
-
-FindBarController* Browser::GetFindBarController() {
-  if (!find_bar_controller_.get()) {
-    find_bar_controller_ =
-        std::make_unique<FindBarController>(window_->CreateFindBar());
-    find_bar_controller_->find_bar()->SetFindBarController(
-        find_bar_controller_.get());
-    find_bar_controller_->ChangeWebContents(
-        tab_strip_model_->GetActiveWebContents());
-    find_bar_controller_->find_bar()->MoveWindowIfNecessary();
-  }
-  return find_bar_controller_.get();
-}
-
-bool Browser::HasFindBarController() const {
-  return find_bar_controller_.get() != nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1664,7 +1646,7 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
           find_in_page::FindTabHelper::FromWebContents(selection.new_contents);
       if (!HasFindBarController() && find_tab_helper &&
           find_tab_helper->is_find_session_active()) {
-        GetFindBarController();
+        std::ignore = CreateOrGetFindBarController();
       }
       for (const auto& contents : change.GetInsert()->contents) {
         OnTabInsertedAt(contents.contents, contents.index);
@@ -3187,15 +3169,7 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   }
 
   if (HasFindBarController()) {
-    find_bar_controller_->ChangeWebContents(new_contents);
-    find_bar_controller_->find_bar()->MoveWindowIfNecessary();
-    find_in_page::FindTabHelper* find_tab_helper =
-        find_in_page::FindTabHelper::FromWebContents(new_contents);
-    if (find_tab_helper && find_tab_helper->find_ui_active()) {
-      if (!find_bar_controller_->find_bar()->HasFocus()) {
-        find_bar_controller_->find_bar()->RestoreSavedFocus();
-      }
-    }
+    CreateOrGetFindBarController()->HandleActiveTabChanged(new_contents);
   }
 
   // Update sessions (selected tab index and last active time). Don't force
@@ -3619,7 +3593,7 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
   RemoveScheduledUpdatesFor(contents);
 
   if (HasFindBarController() && was_active) {
-    find_bar_controller_->ChangeWebContents(nullptr);
+    CreateOrGetFindBarController()->ChangeWebContents(nullptr);
   }
 }
 
@@ -3977,6 +3951,14 @@ BackgroundContents* Browser::CreateBackgroundContents(
       std::string());  // No extra headers.
 
   return contents;
+}
+
+FindBarController* Browser::CreateOrGetFindBarController() {
+  return GetFeatures().GetFindBarController();
+}
+
+bool Browser::HasFindBarController() {
+  return GetFeatures().HasFindBarController();
 }
 
 Browser::ScopedWindowCallToActionImpl::ScopedWindowCallToActionImpl(

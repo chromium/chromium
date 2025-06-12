@@ -25,10 +25,13 @@
 #include "chrome/browser/ui/browser_instant_controller.h"
 #include "chrome/browser/ui/browser_location_bar_model_delegate.h"
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
+#include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
@@ -123,6 +126,10 @@ void BrowserWindowFeatures::ReplaceBrowserWindowFeaturesForTesting(
 }
 
 void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
+  // This is used only for the controllers which will be created on demand
+  // later.
+  browser_ = browser;
+
   // Avoid passing `browser` directly to features. Instead, pass the minimum
   // necessary state or controllers necessary.
   // Ping erikchen for assistance. This comment will be deleted after there are
@@ -424,6 +431,24 @@ SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
 
 ToastController* BrowserWindowFeatures::toast_controller() {
   return toast_service_ ? toast_service_->toast_controller() : nullptr;
+}
+
+FindBarController* BrowserWindowFeatures::GetFindBarController() {
+  if (!find_bar_controller_.get()) {
+    CHECK(browser_);
+    find_bar_controller_ = std::make_unique<FindBarController>(
+        browser_->GetBrowserForMigrationOnly()->window()->CreateFindBar());
+    find_bar_controller_->find_bar()->SetFindBarController(
+        find_bar_controller_.get());
+    find_bar_controller_->ChangeWebContents(
+        tab_strip_model_->GetActiveWebContents());
+    find_bar_controller_->find_bar()->MoveWindowIfNecessary();
+  }
+  return find_bar_controller_.get();
+}
+
+bool BrowserWindowFeatures::HasFindBarController() const {
+  return find_bar_controller_.get() != nullptr;
 }
 
 BrowserWindowFeatures::BrowserWindowFeatures() = default;

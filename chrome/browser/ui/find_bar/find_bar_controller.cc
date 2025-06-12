@@ -187,6 +187,19 @@ void FindBarController::OnUserChangedFindText(std::u16string_view text) {
   }
 }
 
+void FindBarController::HandleActiveTabChanged(
+    content::WebContents* new_contents) {
+  ChangeWebContents(new_contents);
+  find_bar()->MoveWindowIfNecessary();
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(new_contents);
+  if (find_tab_helper && find_tab_helper->find_ui_active()) {
+    if (!find_bar()->HasFocus()) {
+      find_bar()->RestoreSavedFocus();
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // FindBarController, content::WebContentsObserver implementation:
 

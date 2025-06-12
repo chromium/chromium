@@ -70,6 +70,9 @@ class FindBarController : public content::WebContentsObserver,
   // Called when the find text is updated in response to a user action.
   void OnUserChangedFindText(std::u16string_view text);
 
+  // Will be called only from `Browser`.
+  void HandleActiveTabChanged(content::WebContents* new_contents);
+
   FindBar* find_bar() const { return find_bar_.get(); }
 
  private:

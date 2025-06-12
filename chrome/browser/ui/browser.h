@@ -499,13 +499,6 @@ class Browser : public TabStripModelObserver,
   base::WeakPtr<Browser> AsWeakPtr();
   base::WeakPtr<const Browser> AsWeakPtr() const;
 
-  // Get the FindBarController for this browser, creating it if it does not
-  // yet exist.
-  FindBarController* GetFindBarController();
-
-  // Returns true if a FindBarController exists for this browser.
-  bool HasFindBarController() const;
-
   // Returns the state of the bookmark bar.
   BookmarkBar::State bookmark_bar_state() const { return bookmark_bar_state_; }
 
@@ -1309,6 +1302,15 @@ class Browser : public TabStripModelObserver,
       tabs::TabInterface* tab,
       std::optional<tab_groups::TabGroupId> group);
 
+  // Create `FindBarController` if it does not exist.
+  // TODO(crbug.com/423956131): Convert to `GetFindBarController` which returns
+  // existing `FindBarController`.
+  FindBarController* CreateOrGetFindBarController();
+
+  // Returns true if a `FindBarController` exists for this browser.
+  // TODO(crbug.com/423956131): Remove this function.
+  bool HasFindBarController();
+
   // Data members /////////////////////////////////////////////////////////////
 
   PrefChangeRegistrar profile_pref_registrar_;
@@ -1398,10 +1400,6 @@ class Browser : public TabStripModelObserver,
   CreationSource creation_source_ = CreationSource::kUnknown;
 
   UnloadController unload_controller_;
-
-  // The Find Bar. This may be NULL if there is no Find Bar, and if it is
-  // non-NULL, it may or may not be visible.
-  std::unique_ptr<FindBarController> find_bar_controller_;
 
   // Dialog box used for opening and saving files.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

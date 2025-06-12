@@ -878,11 +878,12 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   }
 
   bool HasFindBarController() const override {
-    return browser_view_->browser()->HasFindBarController();
+    return browser_view_->browser()->GetFeatures().HasFindBarController();
   }
 
   void MoveWindowForFindBarIfNecessary() const override {
-    auto* const controller = browser_view_->browser()->GetFindBarController();
+    auto* const controller =
+        browser_view_->browser()->GetFeatures().GetFindBarController();
     return controller->find_bar()->MoveWindowIfNecessary();
   }
 

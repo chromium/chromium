@@ -75,6 +75,7 @@ if (!is_android) {
     deps = [
       ":find_bar",
       ":test_support",
+      "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/test:test_support",
     ]
 
@@ -94,6 +95,7 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":find_bar",
+      "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/test:test_support",
     ]
 

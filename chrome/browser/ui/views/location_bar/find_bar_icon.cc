@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -62,12 +63,15 @@ const gfx::VectorIcon& FindBarIcon::GetVectorIcon() const {
 void FindBarIcon::UpdateImpl() {
   // |browser_->window()| may return nullptr because Update() is called while
   // BrowserWindow is being constructed.
-  if (!browser_->window() || !browser_->HasFindBarController()) {
+  if (!browser_->window() || !browser_->GetFeatures().HasFindBarController()) {
     return;
   }
 
   const bool was_visible = GetVisible();
-  SetVisible(browser_->GetFindBarController()->find_bar()->IsFindBarVisible());
+  SetVisible(browser_->GetFeatures()
+                 .GetFindBarController()
+                 ->find_bar()
+                 ->IsFindBarVisible());
   SetActive(GetVisible(), was_visible != GetVisible());
 }
 

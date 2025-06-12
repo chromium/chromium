@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/buildflags.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -28,6 +29,7 @@ class ChromeLabsCoordinator;
 class CookieControlsBubbleCoordinator;
 class DesktopBrowserWindowCapabilities;
 class DownloadToolbarUIController;
+class FindBarController;
 class HistorySidePanelCoordinator;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
@@ -282,6 +284,13 @@ class BrowserWindowFeatures {
     return new_tab_footer_controller_.get();
   }
 
+  // Get the FindBarController for this browser window, creating it if it does
+  // not yet exist.
+  FindBarController* GetFindBarController();
+
+  // Returns true if a FindBarController exists for this browser window.
+  bool HasFindBarController() const;
+
  protected:
   BrowserWindowFeatures();
 
@@ -397,6 +406,13 @@ class BrowserWindowFeatures {
 
   // This is an experimental API that interacts with the TabStripModel.
   std::unique_ptr<TabStripServiceRegister> tab_strip_service_;
+
+  // The Find Bar. This may be NULL if there is no Find Bar, and if it is
+  // non-NULL, it may or may not be visible.
+  std::unique_ptr<FindBarController> find_bar_controller_;
+
+  // TODO(crbug.com/423956131): Remove this.
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

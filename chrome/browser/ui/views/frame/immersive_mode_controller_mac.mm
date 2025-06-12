@@ -12,6 +12,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -407,9 +408,9 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
   }
 
   // The find bar should be reparented if it exists.
-  if (browser_view_->browser()->HasFindBarController()) {
+  if (browser_view_->browser()->GetFeatures().HasFindBarController()) {
     FindBarController* find_bar_controller =
-        browser_view_->browser()->GetFindBarController();
+        browser_view_->browser()->GetFeatures().GetFindBarController();
     if (child == find_bar_controller->find_bar()->GetHostWidget()) {
       return true;
     }

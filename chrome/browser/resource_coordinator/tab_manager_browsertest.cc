@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -351,14 +352,14 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, TabManagerBasics) {
   EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(2)));
 
   // Force creation of the FindBarController.
-  browser()->GetFindBarController();
+  browser()->GetFeatures().GetFindBarController();
 
   // Select the first tab.  It should reload.
   chrome::SelectNumberedTab(browser(), 0);
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
   // Make sure the FindBarController gets the right WebContents.
-  EXPECT_EQ(browser()->GetFindBarController()->web_contents(),
+  EXPECT_EQ(browser()->GetFeatures().GetFindBarController()->web_contents(),
             tsm()->GetActiveWebContents());
   EXPECT_EQ(0, tsm()->active_index());
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(0)));

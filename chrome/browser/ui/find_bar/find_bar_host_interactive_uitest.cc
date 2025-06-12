@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -41,8 +42,10 @@ class FindInPageInteractiveTest : public InProcessBrowserTest {
                       int* ordinal) {
     std::u16string search_str16(base::ASCIIToUTF16(search_str));
     Browser* browser = chrome::FindBrowserWithTab(web_contents);
-    browser->GetFindBarController()->find_bar()->SetFindTextAndSelectedRange(
-        search_str16, gfx::Range());
+    browser->GetFeatures()
+        .GetFindBarController()
+        ->find_bar()
+        ->SetFindTextAndSelectedRange(search_str16, gfx::Range());
     return ui_test_utils::FindInPage(web_contents, search_str16, forward,
                                      case_sensitive, ordinal, nullptr);
   }
