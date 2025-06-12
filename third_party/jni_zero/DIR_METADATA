@@ -1,7 +1,8 @@
 monorail: {
-  component: "Build"
+  component: "Build>JNI Zero"
 }
 team_email: "build@chromium.org"
 buganizer_public: {
-  component_id: 1456832
+  # Chromium Public Trackers > Chromium > Build > Android > JNI Zero
+  component_id: 1456806
 }
