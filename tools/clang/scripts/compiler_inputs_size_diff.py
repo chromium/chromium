@@ -107,12 +107,21 @@ def bytes_to_human(bytes: int, sign: bool = False) -> str:
 
   Returns:
     A human-readable string representation of the number of bytes.
+
+  >>> bytes_to_human(505040312, sign=True)
+  '+481.64 MiB'
+  >>> bytes_to_human(-505040312)
+  '-481.64 MiB'
   """
   units = ['B', 'KiB', 'MiB', 'GiB', 'TiB']
   i = 0
+  negative = bytes < 0
+  bytes = abs(bytes)
   while bytes >= 1024 and i < len(units) - 1:
     bytes /= 1024
     i += 1
+  if negative:
+    bytes = -bytes
   if sign:
     return f'{bytes:+.2f} {units[i]}'
   return f'{bytes:.2f} {units[i]}'
@@ -130,6 +139,15 @@ def print_diff(before: Dict[str, int], after: Dict[str, int]):
   Delta %: 14.47%
   baz.cc +1012
   foo.cc -34
+  >>> print_diff(
+  ...   {'foo.cc': 123400, 'bar.cc': 567800, 'baz.cc': 101200, 'total': 791200},
+  ...   {'foo.cc': 120000, 'bar.cc': 567800, 'total': 691200})
+  Before: 772.66 KiB (791200)
+  After: 675.00 KiB (691200)
+  Delta: -97.66 KiB (-100000)
+  Delta %: -12.64%
+  foo.cc -3400
+  baz.cc -101200
   """
   size_diffs = diff_tu_sizes(before, after)
   max_path_length = max(len(k) for k in size_diffs)
