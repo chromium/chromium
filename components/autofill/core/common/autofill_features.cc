@@ -120,7 +120,7 @@ const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults{
 // strings DD/MM/YYYY and D/M/YYYY.
 BASE_FEATURE(kAutofillAiVoteForFormatStringsFromSingleFields,
              "AutofillAiVoteForFormatStringsFromSingleFields",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, votes for date format strings from multiple fields are uploaded.
 // For example, <input type=text value=31> <input type=text value=12> <input
@@ -128,7 +128,7 @@ BASE_FEATURE(kAutofillAiVoteForFormatStringsFromSingleFields,
 // respectively.
 BASE_FEATURE(kAutofillAiVoteForFormatStringsFromMultipleFields,
              "AutofillAiVoteForFormatStringsFromMultipleFields",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the second iteration AutofillAI.
 // This feature is independent of `autofill_ai::kAutofillAi`.
