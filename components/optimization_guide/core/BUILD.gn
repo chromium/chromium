@@ -185,7 +185,8 @@ component("features") {
   defines = [ "IS_OPTIMIZATION_GUIDE_FEATURES_IMPL" ]
 }
 
-output_proto_descriptors_cc_file = "$root_gen_dir/components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.cc"
+output_proto_descriptors_cc_file = "$target_gen_dir/model_execution/on_device_model_execution_proto_descriptors.cc"
+output_proto_enum_templates_h_file = "$target_gen_dir/model_execution/on_device_model_execution_proto_enum_templates.h"
 
 source_set("hints") {
   sources = [
@@ -380,6 +381,7 @@ source_set("model_execution") {
       "model_execution/value_converter.cc",
       "model_execution/value_converter.h",
       output_proto_descriptors_cc_file,
+      output_proto_enum_templates_h_file,
     ]
     deps += [
       ":core_util",
@@ -929,10 +931,17 @@ action("on_device_model_execution_proto_generator") {
       "//components/optimization_guide/tools/gen_on_device_proto_descriptors.py"
 
   inputs = [ "$root_gen_dir/components/optimization_guide/proto/optimization_guide_proto.descriptor" ]
-  outputs = [ output_proto_descriptors_cc_file ]
+  outputs = [
+    output_proto_descriptors_cc_file,
+    output_proto_enum_templates_h_file,
+  ]
 
-  args = [ "--output_cc=" +
-           rebase_path(output_proto_descriptors_cc_file, root_build_dir) ]
+  args = [
+    "--proto_descriptors_cc=" +
+        rebase_path(output_proto_descriptors_cc_file, root_build_dir),
+    "--enum_templates_h=" +
+        rebase_path(output_proto_enum_templates_h_file, root_build_dir),
+  ]
   foreach(file, inputs) {
     args += [
       "--input_file",

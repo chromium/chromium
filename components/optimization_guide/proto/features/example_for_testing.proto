@@ -41,16 +41,21 @@ message ExampleForTestingRequest {
   repeated ExampleForTestingMessage repeated_field = 6;
 }
 
+enum ExampleForTestingOutsideMessageEnum {
+  VALUE_A = 0;
+  VALUE_B = 10;
+}
+
 message ExampleForTestingResponse {
   bool bool_value = 1;
   string string_value = 2;
 
-  enum ExampleEnum {
+  enum ExampleInsideMessageEnum {
     VALUE0 = 0;
     VALUE1 = 1;
   }
 
-  ExampleEnum enum_value = 3;
+  ExampleInsideMessageEnum inside_enum_value = 3;
 
   float float_value = 4;
   double double_value = 5;
@@ -58,6 +63,8 @@ message ExampleForTestingResponse {
   uint32 uint32_value = 7;
   int64 int64_value = 8;
   uint64 uint64_value = 9;
+
+  ExampleForTestingOutsideMessageEnum outside_enum_value = 10;
 }
 
 message ExampleForTestingData {

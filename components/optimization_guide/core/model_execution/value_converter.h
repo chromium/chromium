@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_VALUE_CONVERTER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_VALUE_CONVERTER_H_
 
+#include <algorithm>
 #include <cstdint>
 #include <string_view>
+#include <type_traits>
 
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_enum_templates.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_status.h"
 
 namespace optimization_guide {
@@ -23,6 +26,23 @@ struct ValueConverter {
   static base::expected<T, ProtoStatus> TryConvertFromString(
       std::string_view string) {
     static_assert(false, "No specialization is defined for type T");
+  }
+};
+
+template <typename T>
+  requires std::is_enum_v<T>
+struct ValueConverter<T> {
+  static base::expected<T, ProtoStatus> TryConvertFromString(
+      std::string_view string) {
+    const auto loc = std::ranges::find_if(
+        EnumTraits<T>::values,
+        [&string](const EnumNameAndValue<T>& enum_name_and_value) {
+          return enum_name_and_value.name == string;
+        });
+    if (loc == EnumTraits<T>::values.end()) {
+      return base::unexpected(ProtoStatus::kError);
+    }
+    return loc->value;
   }
 };
 
