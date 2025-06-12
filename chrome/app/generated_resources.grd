@@ -11373,7 +11373,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           other {Add tabs to new group}}
         </message>
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
-          Add tab to split view
+          Add tab to new split view
+        </message>
+        <message name="IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
+          New split view with current tab
         </message>
         <message name="IDS_TAB_CXMENU_ARRANGE_SPLIT" desc="The label of the tab context menu submenu for exiting split view.">
           Arrange split view
@@ -11483,7 +11486,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           other {Add Tabs to New Group}}
         </message>
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
-          Add Tab to Split View
+          Add Tab to New Split View
+        </message>
+        <message name="IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
+          New Split View with Current Tab
         </message>
         <message name="IDS_TAB_CXMENU_ARRANGE_SPLIT" desc="The label of the tab context menu submenu for exiting split view.">
           Arrange Split View
