@@ -1467,8 +1467,7 @@
     'kiosk': {
       'filepath': 'chrome/browser/chromeos/app_mode/'\
                   '|chrome/browser/ash/app_mode/'\
-                  '|chrome/browser/ash/login/app_mode/'
-                  '|chromeos/crosapi/mojom/kiosk_session_service.mojom',
+                  '|chrome/browser/ash/login/app_mode/',
     },
     'language': {
       'filepath': 'chrome/browser/language|'\

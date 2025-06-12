@@ -27,7 +27,6 @@ mojom("mojom") {
     "identity_manager.mojom",
     "keystore_error.mojom",
     "keystore_service.mojom",
-    "kiosk_session_service.mojom",
     "launcher_search.mojom",
     "local_printer.mojom",
     "login.mojom",

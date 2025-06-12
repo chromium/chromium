@@ -46,7 +46,6 @@ import "chromeos/crosapi/mojom/vpn_service.mojom";
 import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
-import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "services/device/public/mojom/hid.mojom";
@@ -362,13 +361,7 @@ interface Crosapi {
   // BindVideoConferenceManager@102 was removed.
   // BindVirtualKeyboard@91 was removed.
   // BindVpnExtensionObserver@78 was removed.
-
-  // Binds the Kiosk session service which sends session status changes from
-  // lacros to ash.
-  // Added in M96.
-  [MinVersion=49] BindKioskSessionService@53(
-      pending_receiver<KioskSessionService> receiver);
-
+  // BindKioskSessionService@53 was removed.
   // BindChromeAppKioskService@76 was removed.
   // BindWebKioskService@114 was removed.
   // BindDeviceLocalAccountExtensionService@100 was removed.

@@ -51,7 +51,6 @@ class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
 class FullscreenControllerAsh;
 class KeystoreServiceAsh;
-class KioskSessionServiceAsh;
 class LocalPrinterAsh;
 class LoginAsh;
 class LoginStateAsh;
@@ -107,8 +106,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindKeystoreService(
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
-  void BindKioskSessionService(
-      mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
@@ -192,10 +189,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return keystore_service_ash_.get();
   }
 
-  KioskSessionServiceAsh* kiosk_session_service() {
-    return kiosk_session_service_ash_.get();
-  }
-
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
 
   LoginAsh* login_ash() { return login_ash_.get(); }
@@ -246,7 +239,6 @@ class CrosapiAsh : public mojom::Crosapi {
       file_system_provider_service_ash_;
   std::unique_ptr<FullscreenControllerAsh> fullscreen_controller_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
-  std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
   std::unique_ptr<LoginStateAsh> login_state_ash_;

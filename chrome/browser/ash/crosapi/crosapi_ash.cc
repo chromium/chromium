@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
-#include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
@@ -111,7 +110,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<FileSystemProviderServiceAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
-      kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       login_ash_(std::make_unique<LoginAsh>()),
       login_state_ash_(std::make_unique<LoginStateAsh>()),
@@ -225,11 +223,6 @@ void CrosapiAsh::BindInSessionAuth(
 void CrosapiAsh::BindKeystoreService(
     mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {
   keystore_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindKioskSessionService(
-    mojo::PendingReceiver<mojom::KioskSessionService> receiver) {
-  kiosk_session_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindLocalPrinter(
