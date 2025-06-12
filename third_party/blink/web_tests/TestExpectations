@@ -5432,7 +5432,7 @@ crbug.com/40732030 http/tests/devtools/sources/debugger-ui/inline-scope-variable
 crbug.com/1087242 crbug.com/1271141 http/tests/inspector-protocol/service-worker/network-extrainfo-main-request.js [ Pass Timeout ]
 
 #Sheriff 2020-11-26
-crbug.com/931646 [ Mac ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
+crbug.com/931646 [ Mac ] virtual/viewport-and-meta-enabled/http/tests/preload/meta-viewport-link-headers-imagesrcset.php [ Failure Pass ]
 
 # DevTools roll
 crbug.com/40155405 http/tests/devtools/report-API-errors.js [ Crash Failure Pass Timeout ]
@@ -8537,7 +8537,7 @@ crbug.com/340651310 external/wpt/uievents/mouse/mouse_boundary_events_after_reap
 b/40270061 http/tests/inspector-protocol/tracing/runtime-stats.js [ Crash Failure Pass Timeout ]
 
 #Loading bug triage 2024-05-16
-crbug.com/339833760 [ Win ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
+crbug.com/339833760 [ Win ] virtual/viewport-and-meta-enabled/http/tests/preload/meta-viewport-link-headers-imagesrcset.php [ Failure Pass ]
 
 # Gardener 2024-05-29
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-user-gesture.html [ Failure Pass ]

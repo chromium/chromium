@@ -4372,5 +4372,65 @@
       "--web-settings-for-testing=logPreload:true"
     ],
     "expires": "never"
+  },
+  {
+    "prefix": "autoplay-policy-no-user-gesture-required",
+    "owners": [
+      "leimy@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "Fuchsia"
+    ],
+    "bases": [
+      "http/tests/media/autoplay/document-user-activation-navigation-nogesture.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--web-settings-for-testing=autoplayPolicy:2"
+    ],
+    "expires": "never"
+  },
+  {
+    "prefix": "viewport-and-meta-enabled",
+    "owners": [
+      "leimy@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "Fuchsia"
+    ],
+    "bases": [
+      "http/tests/preload/meta-viewport-link-headers-imagesrcset.php"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--web-settings-for-testing=viewportEnabled:true,viewportMetaEnabled:true"
+    ],
+    "expires": "never"
+  },
+  {
+    "prefix": "image-disabled",
+    "owners": [
+      "leimy@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "Fuchsia"
+    ],
+    "bases": [
+      "fast/loader/data-images-with-images-disabled.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--web-settings-for-testing=imagesEnabled:false"
+    ],
+    "expires": "never"
   }
 ]

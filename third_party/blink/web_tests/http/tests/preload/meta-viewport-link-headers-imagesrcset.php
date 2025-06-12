@@ -4,18 +4,24 @@
 ?>
 <!DOCTYPE html>
 <meta name="viewport" content="width=300">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script>
     const numPreloads = 2;
+    var t = async_test('Makes sure that Link headers support the imagesrcset and imagesizes attributes and respond to <meta content=viewport>');
 
     let loaded = [];
     function checkPreloads(perf) {
         for (let e of perf.getEntriesByType('resource')) {
             let q = e.name.indexOf("?");
-            if (q >= 0)
+            if (q >= 0) {
                 loaded.push(e.name.substr(q + 1));
+            }
         }
-        if (loaded.length >= numPreloads)
-            window.opener.postMessage(loaded, "*");
+        if (loaded.length >= numPreloads) {
+            assert_array_equals(loaded.sort(), ["300", "small"]);
+            t.done();
+        }
     }
 
     let observer = new PerformanceObserver(checkPreloads);
