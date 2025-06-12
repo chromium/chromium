@@ -48,7 +48,6 @@
 #include "ui/accessibility/ax_mode.h"
 
 namespace blink {
-class WebNode;
 class WebFormControlElement;
 class WebFormElement;
 }  // namespace blink
@@ -204,10 +203,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void GetPotentialLastFourCombinationsForStandaloneCvc(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
-
-  base::WeakPtr<AutofillAgent> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
 
   // Called after updating the last interacted element in FormTracker because of
   // `reason`. It is always the case that `form` or `element` are non-null. If
@@ -388,11 +383,6 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebElement& element,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Sets the selected value of the the field identified by `field_id` to
-  // `suggested_value`.
-  void DoAcceptDataListSuggestion(FieldRendererId field_id,
-                                  const std::u16string& suggested_value);
-
   // Set `element` to display the given `value`.
   void DoFillFieldWithValue(std::u16string_view value,
                             blink::WebFormControlElement& element,
@@ -476,10 +466,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Stores immutable configuration this agent was created with. It contains
   // features and settings that are specific to the client using this agent.
   const Config config_;
-
-  // Return the next web node of `current_node` in the DOM. `next` determines
-  // the direction to traverse in.
-  blink::WebNode NextWebNode(const blink::WebNode& current_node, bool next);
 
   // Contains the forms of the document.
   FormCache form_cache_{this};
