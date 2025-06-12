@@ -7,11 +7,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "url/gurl.h"
 
 class AutocompleteResult;
@@ -83,10 +80,6 @@ class SearchPreloadPipelineManager
 
   void EraseNotAlivePipelines();
 
-  void MaybePreloadSharedDictionary(Profile& profile,
-                                    const AutocompleteResult& result);
-  void InvalidateSharedDictionary();
-
   void OnAutocompleteResultChangedProcessOne(
       Profile& profile,
       base::WeakPtr<SearchPreloadService> search_preload_service,
@@ -96,10 +89,6 @@ class SearchPreloadPipelineManager
 
   // Manages pipeline per canonical URL.
   base::flat_map<GURL, std::unique_ptr<SearchPreloadPipeline>> pipelines_;
-
-  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
-      shared_dictionary_handle_;
-  base::OneShotTimer shared_dictionary_expiry_timer_;
 
   base::WeakPtrFactory<SearchPreloadPipelineManager> weak_factory_{this};
 };

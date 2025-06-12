@@ -5,6 +5,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
@@ -55,7 +56,9 @@ SearchPrefetchServiceFactory* SearchPrefetchServiceFactory::GetInstance() {
 
 SearchPrefetchServiceFactory::SearchPrefetchServiceFactory()
     : ProfileKeyedServiceFactory("SearchPrefetchService",
-                                 GetProfileSelections()) {}
+                                 GetProfileSelections()) {
+  DependsOn(AutocompleteDictionaryPreloadServiceFactory::GetInstance());
+}
 
 SearchPrefetchServiceFactory::~SearchPrefetchServiceFactory() = default;
 

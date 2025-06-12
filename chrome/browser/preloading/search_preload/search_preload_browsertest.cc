@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
@@ -1345,6 +1346,12 @@ class SearchPreloadBrowserTest_SharedDictionary
                 {
                     {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
                     {"kDsePreload2OnSuggestSharedDictionaryTtl", "10ms"},
+                },
+            },
+            {
+                kAutocompleteDictionaryPreload,
+                {
+                    {"autocomplete_preloaded_dictionary_timeout", "10ms"},
                 },
             },
         },

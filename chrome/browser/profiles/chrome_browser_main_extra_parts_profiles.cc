@@ -151,6 +151,7 @@
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/prefs/pref_metrics_service.h"
+#include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
@@ -695,6 +696,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   AutocompleteClassifierFactory::GetInstance();
   AutocompleteControllerEmitterFactory::GetInstance();
+  AutocompleteDictionaryPreloadServiceFactory::GetInstance();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   AutocompleteScoringModelServiceFactory::GetInstance();
 #endif

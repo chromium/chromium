@@ -21,6 +21,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefetch/pref_names.h"
+#include "chrome/browser/preloading/autocomplete_dictionary_preload_service.h"
+#include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -701,8 +703,12 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
 
   // This preloads dictionaries for AutocompleteResult's `destination_url` which
   // are not specific to search prefetch.
-  // TODO(crbug.com/349030549): Consider moving somewhere more suitable.
-  MaybePreloadDictionary(result);
+  // TODO(crbug.com/423789034): Consider moving somewhere more suitable.
+  if (auto* dictionary_preload_service =
+          AutocompleteDictionaryPreloadServiceFactory::GetForProfile(
+              profile_)) {
+    dictionary_preload_service->MaybePreload(result);
+  }
 
   for (const auto& match : result) {
     // Return early if neither prefetch nor prerender are enabled for the match.
@@ -1259,44 +1265,6 @@ void SearchPrefetchService::SetLoaderDestructionCallbackForTesting(
   return prefetches_[canonical_search_url]
       ->SetLoaderDestructionCallbackForTesting(  // IN-TEST
           std::move(streaming_url_loader_destruction_callback));
-}
-
-void SearchPrefetchService::MaybePreloadDictionary(
-    const AutocompleteResult& result) {
-  if (!base::FeatureList::IsEnabled(kAutocompleteDictionaryPreload)) {
-    return;
-  }
-  std::vector<GURL> match_destination_urls;
-  match_destination_urls.reserve(result.size());
-  for (const AutocompleteMatch& match : result) {
-    if (match.destination_url.SchemeIsHTTPOrHTTPS()) {
-      match_destination_urls.emplace_back(match.destination_url);
-    }
-  }
-
-  if (match_destination_urls.empty()) {
-    return;
-  }
-
-  // Keep the old handle until `PreloadSharedDictionaryInfoForDocument()` call
-  // to avoid reloading dictionaries in the network service.
-  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
-      old_handle = std::move(preloaded_shared_dictionaries_handle_);
-
-  preloaded_shared_dictionaries_handle_.reset();
-  profile_->GetDefaultStoragePartition()
-      ->GetNetworkContext()
-      ->PreloadSharedDictionaryInfoForDocument(
-          match_destination_urls, preloaded_shared_dictionaries_handle_
-                                      .InitWithNewPipeAndPassReceiver());
-  preloaded_shared_dictionaries_expiry_timer_.Start(
-      FROM_HERE, kAutocompletePreloadedDictionaryTimeout.Get(),
-      base::BindOnce(&SearchPrefetchService::DeletePreloadedDictionaries,
-                     base::Unretained(this)));
-}
-
-void SearchPrefetchService::DeletePreloadedDictionaries() {
-  preloaded_shared_dictionaries_handle_.reset();
 }
 
 void SearchPrefetchService::RecordInterceptionMetrics(

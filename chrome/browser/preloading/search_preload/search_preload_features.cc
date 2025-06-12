@@ -19,10 +19,6 @@ const base::FeatureParam<size_t> kDsePreload2DeviceMemoryThresholdMiB{
     3072};
 const base::FeatureParam<size_t> kDsePreload2MaxPrefetch{
     &kDsePreload2, "kDsePreload2MaxPrefetch", 7};
-const base::FeatureParam<base::TimeDelta>
-    kDsePreload2OnSuggestSharedDictionaryTtl{
-        &kDsePreload2, "kDsePreload2OnSuggestSharedDictionaryTtl",
-        base::Milliseconds(60000)};
 const base::FeatureParam<base::TimeDelta> kDsePreload2PrefetchTtl{
     &kDsePreload2, "kDsePreload2PrefetchTtl", base::Milliseconds(60000)};
 

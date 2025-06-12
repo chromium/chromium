@@ -26,9 +26,6 @@ BASE_DECLARE_FEATURE(kDsePreload2);
 // The feature is disabled if device memory is smaller than the threshold.
 extern const base::FeatureParam<size_t> kDsePreload2DeviceMemoryThresholdMiB;
 extern const base::FeatureParam<size_t> kDsePreload2MaxPrefetch;
-// The amount of time preloaded dictionary is kept alive.
-extern const base::FeatureParam<base::TimeDelta>
-    kDsePreload2OnSuggestSharedDictionaryTtl;
 // Time to live (TTL) of prefetch.
 extern const base::FeatureParam<base::TimeDelta> kDsePreload2PrefetchTtl;
 
