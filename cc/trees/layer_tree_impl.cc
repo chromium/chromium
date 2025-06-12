@@ -340,6 +340,9 @@ void LayerTreeImpl::UpdateScrollbarGeometries(const ScrollNode& scroll_node) {
               .OffsetFromOrigin();
       gfx::SizeF outer_viewport_bounds(
           scroll_tree.container_bounds(outer_scroll_node->id));
+      // Inner viewport scroll node container bounds are in device space; divide
+      // by page scale factor to get them in content space.
+      viewport_bounds.InvScale(current_page_scale_factor());
       viewport_bounds.SetToMin(outer_viewport_bounds);
       // The scrolling size is only determined by the outer viewport.
       scrolling_size = gfx::SizeF(outer_scroll_node->bounds);
@@ -353,9 +356,11 @@ void LayerTreeImpl::UpdateScrollbarGeometries(const ScrollNode& scroll_node) {
               .OffsetFromOrigin();
       gfx::SizeF inner_viewport_bounds(
           scroll_tree.container_bounds(inner_scroll_node->id));
+      // Inner viewport scroll node container bounds are in device space; divide
+      // by page scale factor to get them in content space.
+      inner_viewport_bounds.InvScale(current_page_scale_factor());
       viewport_bounds.SetToMin(inner_viewport_bounds);
     }
-    viewport_bounds.InvScale(current_page_scale_factor());
     bounds_size = ToCeiledSize(viewport_bounds);
   }
 
