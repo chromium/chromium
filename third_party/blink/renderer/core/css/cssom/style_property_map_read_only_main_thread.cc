@@ -66,7 +66,8 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
       CSSPropertyName::From(execution_context, property_name);
 
   if (!name) {
-    exception_state.ThrowTypeError("Invalid propertyName: " + property_name);
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid propertyName: ", property_name}));
     return nullptr;
   }
 
@@ -100,7 +101,8 @@ CSSStyleValueVector StylePropertyMapReadOnlyMainThread::getAll(
       CSSPropertyName::From(execution_context, property_name);
 
   if (!name) {
-    exception_state.ThrowTypeError("Invalid propertyName: " + property_name);
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid propertyName: ", property_name}));
     return CSSStyleValueVector();
   }
 

@@ -51,7 +51,7 @@ void CascadeLayer::ToStringInternal(StringBuilder& result,
     }
     result.Append(prefix);
     result.Append(name);
-    sub_layer->ToStringInternal(result, prefix + name + ".");
+    sub_layer->ToStringInternal(result, StrCat({prefix, name, "."}));
   }
 }
 

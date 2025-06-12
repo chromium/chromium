@@ -588,9 +588,9 @@ void CSSComputedStyleDeclaration::SetPropertyInternal(
     ExceptionState& exception_state) {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNoModificationAllowedError,
-      "These styles are computed, and therefore the '" +
-          CSSUnresolvedProperty::Get(id).GetPropertyNameString() +
-          "' property is read-only.");
+      StrCat({"These styles are computed, and therefore the '",
+              CSSUnresolvedProperty::Get(id).GetPropertyNameString(),
+              "' property is read-only."}));
 }
 
 void CSSComputedStyleDeclaration::Trace(Visitor* visitor) const {

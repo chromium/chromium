@@ -103,8 +103,9 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
   if (index > num_child_rules) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "the index " + String::Number(index) +
-            " must be less than or equal to the length of the rule list.");
+        StrCat(
+            {"the index ", String::Number(index),
+             " must be less than or equal to the length of the rule list."}));
     return nullptr;
   }
 
@@ -138,7 +139,8 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
   if (!new_rule) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "the rule '" + rule_string + "' is invalid and cannot be parsed.");
+        StrCat(
+            {"the rule '", rule_string, "' is invalid and cannot be parsed."}));
     return nullptr;
   }
 

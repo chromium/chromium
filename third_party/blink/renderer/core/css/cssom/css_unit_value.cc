@@ -94,7 +94,7 @@ CSSUnitValue* CSSUnitValue::Create(double value,
                                    ExceptionState& exception_state) {
   CSSPrimitiveValue::UnitType unit = UnitFromName(unit_name);
   if (!IsValidUnit(unit)) {
-    exception_state.ThrowTypeError("Invalid unit: " + unit_name);
+    exception_state.ThrowTypeError(StrCat({"Invalid unit: ", unit_name}));
     return nullptr;
   }
   return MakeGarbageCollected<CSSUnitValue>(value, unit);

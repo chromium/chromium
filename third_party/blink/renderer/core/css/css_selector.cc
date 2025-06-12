@@ -1401,7 +1401,7 @@ String CSSSelector::SelectorTextInternal(uintptr_t scope_id) const {
     compound = compound->SerializeCompound<expand_pseudo_references>(builder,
                                                                      scope_id);
     if (!compound) {
-      return builder.ReleaseString() + result;
+      return StrCat({builder.ReleaseString(), result});
     }
 
     RelationType relation = compound->Relation();
@@ -1423,31 +1423,31 @@ String CSSSelector::SelectorTextInternal(uintptr_t scope_id) const {
 
     switch (relation) {
       case kDescendant:
-        result = " " + builder.ReleaseString() + result;
+        result = StrCat({" ", builder.ReleaseString(), result});
         break;
       case kChild:
-        result = " > " + builder.ReleaseString() + result;
+        result = StrCat({" > ", builder.ReleaseString(), result});
         break;
       case kDirectAdjacent:
-        result = " + " + builder.ReleaseString() + result;
+        result = StrCat({" + ", builder.ReleaseString(), result});
         break;
       case kIndirectAdjacent:
-        result = " ~ " + builder.ReleaseString() + result;
+        result = StrCat({" ~ ", builder.ReleaseString(), result});
         break;
       case kSubSelector:
       case kShadowPart:
       case kUAShadow:
       case kShadowSlot:
-        result = builder.ReleaseString() + result;
+        result = StrCat({builder.ReleaseString(), result});
         break;
       case kRelativeDescendant:
-        return builder.ReleaseString() + result;
+        return StrCat({builder.ReleaseString(), result});
       case kRelativeChild:
-        return "> " + builder.ReleaseString() + result;
+        return StrCat({"> ", builder.ReleaseString(), result});
       case kRelativeDirectAdjacent:
-        return "+ " + builder.ReleaseString() + result;
+        return StrCat({"+ ", builder.ReleaseString(), result});
       case kRelativeIndirectAdjacent:
-        return "~ " + builder.ReleaseString() + result;
+        return StrCat({"~ ", builder.ReleaseString(), result});
     }
   }
   NOTREACHED();

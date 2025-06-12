@@ -368,7 +368,7 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
     return g_null_atom;
   }
 
-  return String("Field diff: ") + builder.ReleaseString();
+  return StrCat({"Field diff: ", builder.ReleaseString()});
 }
 #endif  // DCHECK_IS_ON()
 

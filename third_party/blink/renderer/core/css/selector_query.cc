@@ -649,7 +649,7 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
   if (selector_vector.empty()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "'" + selectors + "' is not a valid selector.");
+        StrCat({"'", selectors, "' is not a valid selector."}));
     return nullptr;
   }
 

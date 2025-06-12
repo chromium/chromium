@@ -214,7 +214,7 @@ static String FormatInfinityOrNaN(double number, const char* suffix) {
   }
 
   if (strlen(suffix) > 0) {
-    result = result + String::Format(" * 1%s", suffix);
+    result = StrCat({result, " * 1", suffix});
   }
   return result;
 }

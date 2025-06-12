@@ -473,9 +473,10 @@ String HebrewAlgorithm(unsigned number) {
     return HebrewAlgorithmUnder1000(number);
   }
 
-  return HebrewAlgorithmUnder1000(number / 1000) +
-         kHebrewPunctuationGereshCharacter +
-         HebrewAlgorithmUnder1000(number % 1000);
+  return StrCat(
+      {HebrewAlgorithmUnder1000(number / 1000),
+       StringView(base::span_from_ref(kHebrewPunctuationGereshCharacter)),
+       HebrewAlgorithmUnder1000(number % 1000)});
 }
 
 String ArmenianAlgorithmUnder10000(unsigned number,
@@ -529,8 +530,8 @@ String ArmenianAlgorithm(unsigned number, bool upper) {
   if (!number || number > 99999999) {
     return String();
   }
-  return ArmenianAlgorithmUnder10000(number / 10000, upper, true) +
-         ArmenianAlgorithmUnder10000(number % 10000, upper, false);
+  return StrCat({ArmenianAlgorithmUnder10000(number / 10000, upper, true),
+                 ArmenianAlgorithmUnder10000(number % 10000, upper, false)});
 }
 
 // https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
@@ -1085,10 +1086,10 @@ String CounterStyle::GenerateTextAlternative(int value) const {
   // custom prefix or suffix. Use the suffix of the predefined symbolic
   // styles instead.
   if (EffectiveSpeakAs() == CounterStyleSpeakAs::kBullets) {
-    return text_without_prefix_suffix + " ";
+    return StrCat({text_without_prefix_suffix, " "});
   }
 
-  return prefix_ + text_without_prefix_suffix + suffix_;
+  return StrCat({prefix_, text_without_prefix_suffix, suffix_});
 }
 
 String CounterStyle::GenerateTextAlternativeWithoutPrefixSuffix(

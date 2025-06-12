@@ -51,7 +51,7 @@ void CSSKeyframeRule::setKeyText(const ExecutionContext* execution_context,
   if (!keyframe_->SetKeyText(execution_context, key_text)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The key '" + key_text + "' is invalid and cannot be parsed");
+        StrCat({"The key '", key_text, "' is invalid and cannot be parsed"}));
   }
 
   if (auto* parent = To<CSSKeyframesRule>(parentRule())) {

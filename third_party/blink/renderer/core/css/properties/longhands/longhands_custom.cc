@@ -3142,7 +3142,7 @@ void Content::ApplyValue(StyleResolverState& state,
           IDS_PARTIAL_INTEREST_TARGET_ACTIVATION_HINT,
           Element::GetPartialInterestTargetActivationHotkey());
       auto* content =
-          MakeGarbageCollected<TextContentData>("{" + hint_text + "}");
+          MakeGarbageCollected<TextContentData>(StrCat({"{", hint_text, "}"}));
       auto* alt_content = MakeGarbageCollected<AltTextContentData>(hint_text);
       content->SetNext(alt_content);
       builder.SetContent(content);
@@ -3191,7 +3191,7 @@ void Content::ApplyValue(StyleResolverState& state,
           GetStringFromAttributeOrStringValue(*item, state, builder);
       if (prev_content && prev_content->IsText()) {
         TextContentData* text_content = To<TextContentData>(prev_content);
-        text_content->SetText(text_content->GetText() + string);
+        text_content->SetText(StrCat({text_content->GetText(), string}));
         continue;
       }
       next_content = MakeGarbageCollected<TextContentData>(string);

@@ -115,8 +115,9 @@ const MediaQueryEvaluator& CSSDefaultStyleSheets::ScreenEval() {
 CSSDefaultStyleSheets::CSSDefaultStyleSheets()
     : media_controls_style_sheet_loader_(nullptr) {
   // Strict-mode rules.
-  String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
-                         LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
+  String default_rules =
+      StrCat({UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS),
+              LayoutTheme::GetTheme().ExtraDefaultStyleSheet()});
 
   default_style_sheet_ = ParseUASheet(default_rules);
 
@@ -146,8 +147,9 @@ void CSSDefaultStyleSheets::Reset() {
   view_source_style_sheet_.Clear();
   json_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
-  String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
-                         LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
+  String default_rules =
+      StrCat({UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS),
+              LayoutTheme::GetTheme().ExtraDefaultStyleSheet()});
   default_style_sheet_ = ParseUASheet(default_rules);
 
   // Initialize the styles that have the lazily loaded style sheets.
@@ -488,8 +490,8 @@ void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen(
   }
 
   String fullscreen_rules =
-      UncompressResourceAsASCIIString(IDR_UASTYLE_FULLSCREEN_CSS) +
-      LayoutTheme::GetTheme().ExtraFullscreenStyleSheet();
+      StrCat({UncompressResourceAsASCIIString(IDR_UASTYLE_FULLSCREEN_CSS),
+              LayoutTheme::GetTheme().ExtraFullscreenStyleSheet()});
   fullscreen_style_sheet_ = ParseUASheet(fullscreen_rules);
 
   default_fullscreen_style_->AddRulesFromSheet(
@@ -526,9 +528,9 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
 
   String forced_colors_rules = String();
   if (RuntimeEnabledFeatures::ForcedColorsEnabled()) {
-    forced_colors_rules =
-        forced_colors_rules +
-        UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_FORCED_COLORS_CSS);
+    forced_colors_rules = StrCat(
+        {forced_colors_rules,
+         UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_FORCED_COLORS_CSS)});
   }
   forced_colors_style_sheet_ = ParseUASheet(forced_colors_rules);
 
