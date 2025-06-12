@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/button_util.h"
@@ -281,9 +282,9 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   if (bodyText) {
     UILabel* label = [[UILabel alloc] init];
     label.adjustsFontForContentSizeCategory = YES;
-    label.text = bodyText;
+    label.attributedText =
+        PutBoldPartInString(bodyText, UIFontTextStyleSubheadline);
     label.textColor = [UIColor colorNamed:kGrey700Color];
-    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     label.numberOfLines = 0;
     [_contentView addArrangedSubview:label];
     [label.widthAnchor constraintEqualToAnchor:_contentView.widthAnchor]

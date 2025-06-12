@@ -5435,10 +5435,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         This password is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>.
       </message>
       <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_BODY" desc="Text when a user attempts to download a file and is eligible to save it to Google Drive, then is presented with the account picker dialog to select a destination for their download, and if applicable e.g. they choose Drive as a destination, which account they want to use to save the file. [iOS only]" meaning="Text when a user attempts to download a file and is eligible to save it to Google Drive, then is presented with the account picker dialog to select a destination for their download, and if applicable e.g. they choose Drive as a destination, which account they want to use to save the file. [iOS only]">
-        Choose where to save <ph name="FILENAME">$1<ex>file.zip</ex></ph>
+        Choose where to save &quot;<ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="FILENAME">$1<ex>file.zip</ex></ph><ph name="END_BOLD">END_BOLD</ph>&quot;
       </message>
       <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_BODY_WITH_SIZE" desc="Text when a user attempts to download a file and is eligible to save it to Google Drive, then is presented with the account picker dialog to select a destination for their download, and if applicable e.g. they choose Drive as a destination, which account they want to use to save the file. [iOS only]" meaning="Text when a user attempts to download a file and is eligible to save it to Google Drive, then is presented with the account picker dialog to select a destination for their download, and if applicable e.g. they choose Drive as a destination, which account they want to use to save the file. [iOS only]">
-        Choose where to save <ph name="FILENAME">$1<ex>file.zip</ex></ph> (<ph name="FILE_SIZE">$2<ex>456KB</ex></ph>)
+        Choose where to save &quot;<ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="FILENAME">$1<ex>file.zip</ex></ph><ph name="END_BOLD">END_BOLD</ph>&quot; (<ph name="FILE_SIZE">$2<ex>456KB</ex></ph>)
       </message>
       <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_SUBMIT" desc="Dialog primary button label to validate the account picked to save a file to Google Drive. [iOS only]" meaning="This button saves the file to the user's Google Drive storage i.e. this means 'Save' as in 'Save in Google Drive'.">
         Save
@@ -5450,7 +5450,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Ask which account to use every time
       </message>
       <message name="IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_BODY" desc="Text when a user attempts to save an image to Google Photos, then is presented with the account picker dialog to select which account they want to use to save the image. [iOS only]">
-        Select the account you want to use to save <ph name="FILENAME">$1<ex>image.jpeg</ex></ph> - <ph name="FILESIZE">$2<ex>4 MB</ex></ph>
+        Select the account you want to use to save &quot;<ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="FILENAME">$1<ex>image.jpeg</ex></ph><ph name="END_BOLD">END_BOLD</ph>&quot; - <ph name="FILESIZE">$2<ex>4 MB</ex></ph>
       </message>
       <message name="IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_GOOGLE_PHOTOS_TITLE" desc="The title of the save to photos account picker. [iOS only]" meaning="This title represents the `Google Photos` brand, and the current string represents the `Photos` part of the brand's' name.">
         Photos
