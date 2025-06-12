@@ -16,8 +16,6 @@ static_library("crosapi") {
     "browser_manager.h",
     "cert_provisioning_ash.cc",
     "cert_provisioning_ash.h",
-    "chaps_service_ash.cc",
-    "chaps_service_ash.h",
     "crosapi_ash.cc",
     "crosapi_ash.h",
     "crosapi_id.h",
@@ -173,7 +171,6 @@ static_library("crosapi") {
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
-    "//chromeos/ash/components/dbus/chaps",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
     "//chromeos/ash/components/dbus/resourced",
@@ -364,7 +361,6 @@ source_set("unit_tests") {
 
   sources = [
     "cert_provisioning_ash_unittest.cc",
-    "chaps_service_ash_unittest.cc",
     "crosapi_util_unittest.cc",
     "device_attributes_ash_unittest.cc",
     "device_oauth2_token_service_ash_unittest.cc",
@@ -412,7 +408,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/audio",
-    "//chromeos/ash/components/dbus/chaps:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/disks:test_support",
