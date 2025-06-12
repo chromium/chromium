@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
@@ -208,6 +209,9 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("about:blank"));
     TestSaveCardBubbleControllerImpl::CreateForTesting(active_web_contents());
+
+    // Initialize a tracker for TrustSafetySentimentService to work properly.
+    metrics::DesktopSessionDurationTracker::Initialize();
     mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
         TrustSafetySentimentServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
@@ -224,6 +228,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
     did_on_confirmation_closed_callback_run_ = false;
     personal_data_manager()->test_payments_data_manager().ClearCreditCards();
     BrowserWithTestWindowTest::TearDown();
+    metrics::DesktopSessionDurationTracker::CleanupForTesting();
   }
 
   // BrowserWithTestWindowTest:
