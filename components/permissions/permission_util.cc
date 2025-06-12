@@ -194,10 +194,8 @@ RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
     case RequestType::kWebPrinting:
       return RequestTypeForUma::PERMISSION_WEB_PRINTING;
 #endif
-#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kWindowManagement:
       return RequestTypeForUma::PERMISSION_WINDOW_MANAGEMENT;
-#endif
     case RequestType::kTopLevelStorageAccess:
       return RequestTypeForUma::PERMISSION_TOP_LEVEL_STORAGE_ACCESS;
     case RequestType::kFileSystemAccess:

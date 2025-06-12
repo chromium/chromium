@@ -94,6 +94,9 @@
     <message name="IDS_IDENTITY_PROVIDER_INFOBAR_TEXT" desc="Text requesting permission for a site to register itself as an Federated Identity Provider." translateable="false">
       Would you like to use your <ph name="URL">$1<ex>google.com</ex></ph> accounts to login to websites?
     </message>
+    <message name="IDS_WINDOW_MANAGEMENT_INFOBAR_TEXT" desc="Text requesting permission for a site that wants to manage windows.">
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to manage windows on all your displays
+    </message>
 </if>
   <if expr="is_android or is_chromeos or is_win">
     <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's protected media identifier.">

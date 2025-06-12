@@ -65,6 +65,8 @@ int GetIconIdAndroid(RequestType type) {
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
       return IDR_ANDROID_STORAGE_ACCESS;
+    case RequestType::kWindowManagement:
+      return IDR_ANDROID_INFOBAR_WINDOW_MANAGEMENT;
   }
   NOTREACHED();
 }
@@ -240,9 +242,9 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kStorageAccess;
     case ContentSettingsType::VR:
       return RequestType::kVrSession;
-#if !BUILDFLAG(IS_ANDROID)
     case ContentSettingsType::WINDOW_MANAGEMENT:
       return RequestType::kWindowManagement;
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(crbug.com/400455013): Enable on Android.
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
       return RequestType::kLocalNetworkAccess;
@@ -465,9 +467,9 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kWebAppInstallation:
       return "web_app_installation";
+#endif
     case permissions::RequestType::kWindowManagement:
       return "window_management";
-#endif
     case permissions::RequestType::kIdentityProvider:
       return "identity_provider";
   }

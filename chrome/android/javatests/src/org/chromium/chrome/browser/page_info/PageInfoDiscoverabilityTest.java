@@ -174,6 +174,10 @@ public class PageInfoDiscoverabilityTest {
                     new ParameterSet()
                             .name("RequestType.kTopLevelStorageAccess")
                             .value(ContentSettingsType.TOP_LEVEL_STORAGE_ACCESS, false));
+            parameters.add(
+                    new ParameterSet()
+                            .name("RequestType.kWindowManagement")
+                            .value(ContentSettingsType.WINDOW_MANAGEMENT, false));
 
             return parameters;
         }

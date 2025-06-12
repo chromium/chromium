@@ -134,6 +134,9 @@ PermissionRequest::GetDialogAnnotatedMessageText(
     case RequestType::kIdentityProvider:
       message_id = IDS_IDENTITY_PROVIDER_INFOBAR_TEXT;
       break;
+    case RequestType::kWindowManagement:
+      message_id = IDS_WINDOW_MANAGEMENT_INFOBAR_TEXT;
+      break;
   }
   DCHECK_NE(0, message_id);
 

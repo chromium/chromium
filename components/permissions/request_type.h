@@ -69,12 +69,8 @@ enum class RequestType {
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   kWebPrinting,
 #endif
-#if !BUILDFLAG(IS_ANDROID)
   kWindowManagement,
   kMaxValue = kWindowManagement
-#else
-  kMaxValue = kVrSession
-#endif
 };
 
 #if BUILDFLAG(IS_ANDROID)
