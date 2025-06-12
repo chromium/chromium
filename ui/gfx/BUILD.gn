@@ -11,6 +11,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")
   import("//build/config/ios/bundle_data_from_filelist.gni")
 }
 
@@ -811,9 +812,11 @@ test("gfx_unittests") {
   if (is_ios) {
     sources += [
       "image/image_ios_unittest.mm",
-      "ios/NSString+CrStringDrawing_unittest.mm",
       "ios/uikit_util_unittest.mm",
     ]
+    if (target_platform == "iphoneos") {
+      sources += [ "ios/NSString+CrStringDrawing_unittest.mm" ]
+    }
   }
   if (is_android) {
     sources += [ "android/android_surface_control_compat_unittest.cc" ]
