@@ -2975,13 +2975,6 @@ BASE_FEATURE(kAuthPanelUsingAuthHub,
              "AuthPanelUsingAuthHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This feature toggles which dhcpcd version is used for IPv4 provisioning.
-// If it is enabled, the legacy dhcpcd7 is used, otherwise the latest dhcpcd is
-// used. Note that IPv6 (DHCPv6-PD) always uses the latest dhcpcd.
-BASE_FEATURE(kUseLegacyDHCPCD,
-             "UseLegacyDHCPCD",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This features controls whether or not passwordless setup is enabled, such as
 // having a pin-only config.
 BASE_FEATURE(kAllowPasswordlessSetup,

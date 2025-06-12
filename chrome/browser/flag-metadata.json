@@ -9947,11 +9947,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "use-legacy-dhcpcd",
-    "owners": [ "chenzikai@google.com", "cros-networking@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "use-managed-print-job-options-in-print-preview",
     "owners": ["nedol@google.com", "chromeos-commercial-printing@google.com"],
     "expiry_milestone": 150
