@@ -208,7 +208,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   if (is_device_open_) {
     ReportOpenStatus(OpenStatus::kErrorDeviceAlreadyOpen, timer.Elapsed());
     SendLogMessage("%s => Device is already open.", __func__);
-    return OpenOutcome::kFailed;
+    return OpenOutcome::kAlreadyOpen;
   }
 
   NSArray<NSNumber*>* process_audio_device_ids_to_exclude = @[];
@@ -309,7 +309,9 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   // Initialization: Step 1.
   OSStatus status =
       catap_api_->AudioHardwareCreateProcessTap(tap_description_, &tap_);
-  if (status != noErr) {
+  if (status != noErr || tap_ == kAudioObjectUnknown) {
+    // `kAudioObjectUnknown` is returned if the specified output device doesn't
+    // exist.
     ReportOpenStatus(OpenStatus::kErrorCreatingProcessTap, timer.Elapsed());
     SendLogMessage("%s => Error creating process tap.", __func__);
     return OpenOutcome::kFailed;
@@ -381,7 +383,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
     ReportOpenStatus(OpenStatus::kErrorMissingAudioTapPermission,
                      timer.Elapsed());
     SendLogMessage("%s => Error when probing audio tap permissions.", __func__);
-    return OpenOutcome::kFailed;
+    return OpenOutcome::kFailedSystemPermissions;
   }
 
   is_device_open_ = true;

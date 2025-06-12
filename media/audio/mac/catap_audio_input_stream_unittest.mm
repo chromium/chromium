@@ -299,7 +299,15 @@ TEST_F(CatapAudioInputStreamTest, CreateAndInitializeWithPermissions) {
 TEST_F(CatapAudioInputStreamTest, CreateAndFailToInitializeWithoutPermissions) {
   if (@available(macOS 14.2, *)) {
     EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/false),
-              AudioInputStream::OpenOutcome::kFailed);
+              AudioInputStream::OpenOutcome::kFailedSystemPermissions);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, DoubleOpenResultsInkAlreadyOpen) {
+  if (@available(macOS 14.2, *)) {
+    EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/true),
+              AudioInputStream::OpenOutcome::kSuccess);
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kAlreadyOpen);
   }
 }
 
