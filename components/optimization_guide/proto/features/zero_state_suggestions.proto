@@ -31,6 +31,7 @@ message ZeroStateSuggestionsLoggingData {
   ModelExecutionInfo model_execution_info = 3 [features = { field_presence: EXPLICIT }];
 }
 
+// Next ID: 5
 message ZeroStateSuggestionsRequest {
   oneof request {
     // The context of the page to generate suggestions for. This is used when
@@ -44,6 +45,9 @@ message ZeroStateSuggestionsRequest {
 
   // Whether the request is for FRE mode.
   bool is_fre = 2 [features = { field_presence: EXPLICIT }];
+
+  // The tools that are supported by Glic for this client.
+  repeated string supported_tools = 4;
 }
 
 message ZeroStatePageContextList {
