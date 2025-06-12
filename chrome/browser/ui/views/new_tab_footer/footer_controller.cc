@@ -107,7 +107,7 @@ void NewTabFooterController::UpdateFooterVisibility(bool log_on_load_metric) {
        ntp_footer::CanShowExtensionFooter(url, profile_));
 
   if (show) {
-    footer_->ShowUI(load_start_timestamp);
+    footer_->ShowUI(load_start_timestamp, url);
   } else {
     footer_->CloseUI();
   }

@@ -9,7 +9,7 @@ import type {CustomizeButtonsDocumentRemote} from 'chrome://newtab-footer/custom
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeChromeSection, SidePanelOpenTrigger} from 'chrome://newtab-footer/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from 'chrome://newtab-footer/customize_buttons_proxy.js';
 import type {ManagementNotice, NewTabFooterDocumentRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
-import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
+import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote, NewTabPageType} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {WindowProxy} from 'chrome://newtab-footer/window_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -41,7 +41,7 @@ suite('NewTabFooterAppTest', () => {
 
   const url: URL = new URL(location.href);
 
-  async function setupFooter() {
+  async function setupFooter(ntpType: NewTabPageType = NewTabPageType.kOther) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(NewTabFooterHandlerRemote);
     NewTabFooterDocumentProxy.setInstance(
@@ -62,12 +62,14 @@ suite('NewTabFooterAppTest', () => {
 
     element = document.createElement('new-tab-footer-app');
     document.body.appendChild(element);
+    callbackRouter.attachedTabStateUpdated(ntpType);
+    await callbackRouter.$.flushForTesting();
     await microtasksFinished();
   }
 
   suite('Extension', () => {
     setup(async () => {
-      await setupFooter();
+      await setupFooter(NewTabPageType.kExtension);
     });
 
     test('Get extension name on initialization', async () => {
@@ -111,6 +113,25 @@ suite('NewTabFooterAppTest', () => {
           metrics.count(
               'NewTabPage.Footer.Click', FooterElement.EXTENSION_NAME));
     });
+
+    ([
+      [NewTabPageType.kExtension, true],
+      [NewTabPageType.kFirstPartyWebUI, false],
+      [NewTabPageType.kOther, false],
+    ] as Array<[NewTabPageType, boolean]>)
+        .forEach(([pageType, expected]) => {
+          test(`Change NTP type to ${pageType}`, async () => {
+            // Act.
+            const fooName = 'foo';
+            callbackRouter.attachedTabStateUpdated(pageType);
+            callbackRouter.setNtpExtensionName(fooName);
+            await callbackRouter.$.flushForTesting();
+
+            // Assert.
+            const name = $$(element, '#extensionNameContainer');
+            assertEquals(expected, !!name);
+          });
+        });
   });
 
   suite('Managed', () => {
@@ -216,7 +237,7 @@ suite('NewTabFooterAppTest', () => {
 
   suite('CustomizeChromeButton', () => {
     setup(async () => {
-      await setupFooter();
+      await setupFooter(NewTabPageType.kFirstPartyWebUI);
     });
 
     function getCustomizeButton(): CrButtonElement {
@@ -361,5 +382,24 @@ suite('NewTabFooterAppTest', () => {
                 FooterCustomizeChromeEntryPoint.URL));
       });
     });
+
+    ([
+      [NewTabPageType.kOther, false],
+      [NewTabPageType.kFirstPartyWebUI, true],
+      [NewTabPageType.kExtension, true],
+    ] as Array<[NewTabPageType, boolean]>)
+        .forEach(([pageType, expected]) => {
+          test(
+              `setting ntp type ${pageType} shows customize button ${expected}`,
+              async () => {
+                // Act.
+                callbackRouter.attachedTabStateUpdated(pageType);
+                await callbackRouter.$.flushForTesting();
+
+                // Assert.
+                const buttons = $$(element, '#customizeButtons');
+                assertEquals(!!buttons, expected);
+              });
+        });
   });
 });

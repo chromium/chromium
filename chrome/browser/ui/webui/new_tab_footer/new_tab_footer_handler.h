@@ -36,12 +36,15 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   // new_tab_footer::mojom::NewTabFooterHandler:
   void UpdateNtpExtensionName() override;
   void UpdateManagementNotice() override;
+  void UpdateAttachedTabState() override;
   void OpenExtensionOptionsPageWithFallback() override;
   void OpenManagementPage() override;
 
   // Returns the bitmap representation of the management logo.
   // Exposed for testing only.
   SkBitmap GetManagementNoticeIconBitmap();
+  // Passes `AttachedTabStateUpdated` calls to the `document_`.
+  void AttachedTabStateUpdated(const GURL& url);
 
  private:
   void OpenUrlInCurrentTab(const GURL& url);
@@ -60,6 +63,7 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   const raw_ptr<content::WebContents> web_contents_;
   PrefChangeRegistrar profile_pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
+  GURL last_source_url_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>

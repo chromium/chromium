@@ -6,6 +6,14 @@ module new_tab_footer.mojom;
 
 import "url/mojom/url.mojom";
 
+// NTP Type for the attached tab.
+// |kOther| includes non-NTP and NTP types other than 1P and extension.
+enum NewTabPageType {
+  kFirstPartyWebUI,
+  kExtension,
+  kOther,
+};
+
 // Enterprise browser management notice
 struct ManagementNotice {
   // Human readable string for notice text. This will indicate that the browser
@@ -34,6 +42,9 @@ interface NewTabFooterHandler {
   // Updates the enterprise management notice for a managed
   // browser. Triggers a call to |SetManagementNotice|.
   UpdateManagementNotice();
+  // Updates the current tab state. Triggers a call to
+  // |AttachedTabStateUpdated|.
+  UpdateAttachedTabState();
   // Opens the options page for the extension identified by the last call
   // to |GetNtpExtensionName|. If that call did not determine a valid ID,
   // this opens the extension settings page.
@@ -48,4 +59,7 @@ interface NewTabFooterDocument {
   SetNtpExtensionName(string name);
   // Sets the enterprise management notice for a managed browser.
   SetManagementNotice(ManagementNotice? notice);
+  // Sets information about the tab that is attached to the
+  // NewTabFooterDocument.
+  AttachedTabStateUpdated(NewTabPageType ntp_type);
 };

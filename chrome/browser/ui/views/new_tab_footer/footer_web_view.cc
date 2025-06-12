@@ -8,7 +8,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
@@ -34,8 +33,9 @@ NewTabFooterWebView::~NewTabFooterWebView() {
   contents_wrapper_ = nullptr;
 }
 
-void NewTabFooterWebView::ShowUI(base::TimeTicks load_start) {
+void NewTabFooterWebView::ShowUI(base::TimeTicks load_start, GURL url) {
   ShowUI();
+  contents_wrapper_->GetWebUIController()->AttachedTabStateUpdated(url);
   base::UmaHistogramMediumTimes("NewTabPage.Footer.ShownTime",
                                 base::TimeTicks::Now() - load_start);
 }

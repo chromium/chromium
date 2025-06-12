@@ -17,6 +17,7 @@ import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemo
 import {CustomizeChromeSection, SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
 import type {ManagementNotice, NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerInterface} from './new_tab_footer.mojom-webui.js';
+import {NewTabPageType} from './new_tab_footer.mojom-webui.js';
 import {WindowProxy} from './window_proxy.js';
 
 // TODO(crbug.com/419144611) Move to a shared util as it's shared by both the
@@ -83,19 +84,22 @@ export class NewTabFooterAppElement extends CrLitElement {
       extensionName_: {type: String},
       isCustomizeActive_: {type: Boolean},
       managementNotice_: {type: Object},
+      showCustomizeButtons_: {type: Boolean},
       showCustomizeText_: {type: Boolean},
       showExtension_: {type: Boolean},
+      ntpType_: {type: Object},
     };
   }
 
   protected accessor extensionName_: string|null = null;
   protected accessor isCustomizeActive_: boolean = false;
   protected accessor managementNotice_: ManagementNotice|null = null;
-  protected showCustomizeButtons_: boolean = false;
+  protected accessor showCustomizeButtons_: boolean = false;
   protected accessor showCustomizeText_: boolean = true;
   protected accessor showExtension_: boolean = false;
-  private selectedCustomizeDialogPage_: string|null;
+  protected accessor ntpType_: NewTabPageType = NewTabPageType.kOther;
 
+  private selectedCustomizeDialogPage_: string|null;
   private callbackRouter_: NewTabFooterDocumentCallbackRouter;
   private handler_: NewTabFooterHandlerInterface;
   private customizeCallbackRouter_: CustomizeButtonsDocumentCallbackRouter;
@@ -103,6 +107,7 @@ export class NewTabFooterAppElement extends CrLitElement {
   private setCustomizeChromeSidePanelVisibilityListener_: number|null = null;
   private setNtpExtensionNameListenerId_: number|null = null;
   private setManagementNoticeListener_: number|null = null;
+  private setAttachedTabStateUpdatedListener_: number|null = null;
 
   constructor() {
     super();
@@ -141,6 +146,12 @@ export class NewTabFooterAppElement extends CrLitElement {
             .addListener((visible: boolean) => {
               this.isCustomizeActive_ = visible;
             });
+    this.setAttachedTabStateUpdatedListener_ =
+        this.callbackRouter_.attachedTabStateUpdated.addListener(
+            (ntpType: NewTabPageType) => {
+              this.ntpType_ = ntpType;
+            });
+    this.handler_.updateAttachedTabState();
     // Open Customize Chrome if there are Customize Chrome URL params.
     if (this.isCustomizeActive_) {
       this.setCustomizeChromeSidePanelVisible(this.isCustomizeActive_);
@@ -154,6 +165,9 @@ export class NewTabFooterAppElement extends CrLitElement {
     this.callbackRouter_.removeListener(this.setNtpExtensionNameListenerId_);
     assert(this.setManagementNoticeListener_);
     this.callbackRouter_.removeListener(this.setManagementNoticeListener_);
+    assert(this.setAttachedTabStateUpdatedListener_);
+    this.callbackRouter_.removeListener(
+        this.setAttachedTabStateUpdatedListener_);
     assert(this.setCustomizeChromeSidePanelVisibilityListener_);
     this.customizeCallbackRouter_.removeListener(
         this.setCustomizeChromeSidePanelVisibilityListener_);
@@ -165,19 +179,23 @@ export class NewTabFooterAppElement extends CrLitElement {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    this.showCustomizeButtons_ = this.computeShowCustomizeButtons_();
+    if (changedPrivateProperties.has('ntpType_')) {
+      this.showCustomizeButtons_ = this.computeShowCustomizeButtons_();
+    }
 
-    if (changedPrivateProperties.has('extensionName_')) {
+    if (changedPrivateProperties.has('ntpType_') ||
+        changedPrivateProperties.has('extensionName_')) {
       this.showExtension_ = this.computeShowExtension_();
     }
   }
 
   private computeShowCustomizeButtons_(): boolean {
-    return true;
+    return this.ntpType_ === NewTabPageType.kFirstPartyWebUI ||
+        this.ntpType_ === NewTabPageType.kExtension;
   }
 
   private computeShowExtension_(): boolean {
-    return !!this.extensionName_;
+    return !!this.extensionName_ && this.ntpType_ === NewTabPageType.kExtension;
   }
 
   protected onExtensionNameClick_(e: Event) {

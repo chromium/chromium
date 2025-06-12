@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -172,4 +174,20 @@ void NewTabFooterHandler::OnExtensionUnloaded(
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
   UpdateNtpExtensionName();
+}
+
+void NewTabFooterHandler::UpdateAttachedTabState() {
+  AttachedTabStateUpdated(last_source_url_);
+}
+
+void NewTabFooterHandler::AttachedTabStateUpdated(const GURL& url) {
+  last_source_url_ = url;
+  new_tab_footer::mojom::NewTabPageType ntp_type =
+      new_tab_footer::mojom::NewTabPageType::kOther;
+  if (NewTabPageUI::IsNewTabPageOrigin(url)) {
+    ntp_type = new_tab_footer::mojom::NewTabPageType::kFirstPartyWebUI;
+  } else if (ntp_footer::IsExtensionNtp(url, profile_)) {
+    ntp_type = new_tab_footer::mojom::NewTabPageType::kExtension;
+  }
+  document_->AttachedTabStateUpdated(ntp_type);
 }

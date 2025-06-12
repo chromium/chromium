@@ -41,6 +41,8 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 using testing::_;
+using ::testing::DoAll;
+using ::testing::SaveArg;
 
 namespace {
 const char kExtensionNtpName[] = "Extension-overridden NTP";
@@ -167,6 +169,38 @@ TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_UnloadExtension) {
   observer.WaitForExtensionUnloaded();
 
   document_.FlushForTesting();
+}
+
+TEST_F(NewTabFooterHandlerExtensionTest, AttachedTabStateUpdated) {
+  auto extension = LoadNtpExtension();
+  ASSERT_TRUE(extension);
+  // Force activation of the URL override. The usual observer for
+  // extension load isn't created in the unit test.
+  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+      profile(),
+      extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
+  registry()->TriggerOnReady(extension.get());
+  document_.FlushForTesting();
+
+  new_tab_footer::mojom::NewTabPageType ntp_type;
+  EXPECT_CALL(document_, AttachedTabStateUpdated)
+      .Times(3)
+      .WillRepeatedly(DoAll(SaveArg<0>(&ntp_type)));
+
+  handler().AttachedTabStateUpdated(GURL(extension->url()));
+  document_.FlushForTesting();
+  EXPECT_EQ(ntp_type, new_tab_footer::mojom::NewTabPageType::kExtension);
+
+  handler().AttachedTabStateUpdated(GURL(chrome::kChromeUINewTabPageURL));
+  document_.FlushForTesting();
+  EXPECT_EQ(ntp_type, new_tab_footer::mojom::NewTabPageType::kFirstPartyWebUI);
+
+  handler().AttachedTabStateUpdated(
+      GURL(chrome::kChromeUINewTabPageThirdPartyHost));
+  document_.FlushForTesting();
+  EXPECT_EQ(ntp_type, new_tab_footer::mojom::NewTabPageType::kOther);
+
+  testing::Mock::VerifyAndClearExpectations(&document_);
 }
 
 TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_DisableByPolicy) {

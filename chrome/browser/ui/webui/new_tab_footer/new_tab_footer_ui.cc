@@ -113,6 +113,17 @@ void NewTabFooterUI::CreateNewTabFooterHandler(
   handler_ = std::make_unique<NewTabFooterHandler>(std::move(pending_handler),
                                                    std::move(pending_document),
                                                    web_ui()->GetWebContents());
+  if (!source_tab_url_.is_empty()) {
+    handler_->AttachedTabStateUpdated(source_tab_url_);
+  }
+}
+
+void NewTabFooterUI::AttachedTabStateUpdated(const GURL& url) {
+  if (handler_) {
+    handler_->AttachedTabStateUpdated(url);
+  } else {
+    source_tab_url_ = url;
+  }
 }
 
 void NewTabFooterUI::CreateCustomizeButtonsHandler(

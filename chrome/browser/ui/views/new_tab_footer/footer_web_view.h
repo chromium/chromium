@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_NEW_TAB_FOOTER_FOOTER_WEB_VIEW_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
@@ -28,7 +29,7 @@ class NewTabFooterWebView : public views::WebView,
   NewTabFooterWebView& operator=(const NewTabFooterWebView&) = delete;
   ~NewTabFooterWebView() override;
 
-  void ShowUI(base::TimeTicks load_start);
+  void ShowUI(base::TimeTicks load_start, GURL url);
 
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
@@ -36,7 +37,7 @@ class NewTabFooterWebView : public views::WebView,
 
  private:
   raw_ptr<BrowserWindowInterface> browser_;
-  std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
+  std::unique_ptr<WebUIContentsWrapperT<NewTabFooterUI>> contents_wrapper_;
 
   base::WeakPtrFactory<NewTabFooterWebView> weak_factory_{this};
 };
