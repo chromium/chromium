@@ -1896,6 +1896,46 @@ TEST_P(PNGTests, MalformedPlteOrTrnsChunks) {
   }
 }
 
+// Regression test for https://crbug.com/423247103
+TEST_P(PNGTests, RecoveringToReadFirstFrameAfterSecondFrameFailure) {
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
+      kDecodersTestingDir, "apng-with-malformed-2nd-frame.png");
+  EXPECT_FALSE(data->empty());
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(data.get(), true);
+
+  // 1st frame can be successfully decoded.
+  const ImageFrame* frame1 = decoder->DecodeFrameBufferAtIndex(0);
+  EXPECT_FALSE(decoder->Failed());
+  ASSERT_TRUE(frame1);
+  EXPECT_EQ(frame1->GetStatus(), ImageFrame::kFrameComplete);
+
+  // 2nd frame is malformed in the test input.
+  const ImageFrame* frame2 = decoder->DecodeFrameBufferAtIndex(1);
+  ASSERT_TRUE(frame2);
+  EXPECT_EQ(frame2->GetStatus(), ImageFrame::kFramePartial);
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    EXPECT_FALSE(decoder->Failed());
+  } else {
+    EXPECT_TRUE(decoder->Failed());
+  }
+
+  // Try decoding the 1st frame again.
+  const ImageFrame* frame1b = decoder->DecodeFrameBufferAtIndex(0);
+  if (skia::IsRustyPngEnabled()) {
+    EXPECT_FALSE(decoder->Failed());
+    ASSERT_TRUE(frame1b);
+    EXPECT_EQ(frame1b->GetStatus(), ImageFrame::kFrameComplete);
+  } else {
+    EXPECT_TRUE(decoder->Failed());
+    ASSERT_TRUE(frame1b);
+    EXPECT_EQ(frame1b->GetStatus(), ImageFrame::kFrameEmpty);
+  }
+}
+
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 INSTANTIATE_TEST_SUITE_P(RustEnabled,
                          AnimatedPNGTests,

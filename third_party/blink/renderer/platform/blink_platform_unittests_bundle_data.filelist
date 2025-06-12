@@ -630,6 +630,7 @@
 ../../web_tests/third_party/adobe-fonts/CSSFWOrientationTest.otf
 ../../web_tests/third_party/adobe-fonts/CSSHWOrientationTest.otf
 ../../web_tests/third_party/gsubtest/gsubtest-lookup3.otf
+image-decoders/testing/apng-with-malformed-2nd-frame.png
 image-decoders/testing/bad-code.gif
 image-decoders/testing/bad-initial-code.gif
 image-decoders/testing/basn3p01-based-long-plte.png
