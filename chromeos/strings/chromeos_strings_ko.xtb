@@ -328,7 +328,7 @@
 <translation id="2244834438220057800">녹색</translation>
 <translation id="225692081236532131">활성화 상태</translation>
 <translation id="2267285889943769271">스크린샷 추가</translation>
-<translation id="2268044343513325586">상세검색</translation>
+<translation id="2268044343513325586">다듬기</translation>
 <translation id="2271469253353559191">어두운 모드 예약</translation>
 <translation id="2276999893457278469">상위 도움말 콘텐츠</translation>
 <translation id="2277631741861284101">오디오를 간편하게 녹음하고 공유하세요</translation>
@@ -1465,7 +1465,7 @@
 <translation id="741244894080940828">변환</translation>
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>
 <translation id="7418738250896500352">단어가 너무 많아 간결하게 바꿀 수 없습니다.</translation>
-<translation id="7425037327577270384">작성 지원 기능</translation>
+<translation id="7425037327577270384">글쓰기 도우미</translation>
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> 스크립트 작성 모델 <ph name="PROGRESS_PERCENTAGE" />% 다운로드됨</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정된 <ph name="ATTACH" /> APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>

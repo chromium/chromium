@@ -137,7 +137,7 @@
 <translation id="1084288067399862432">ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬದಲಾಯಿಸಲಾಗಿದೆ.
 
 ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="GOOGLE_PASSWORD_MANAGER" /> ನಲ್ಲಿ ಪರಿಶೀಲಿಸಿ.</translation>
-<translation id="1084824384139382525">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="1084824384139382525">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1085064499066015002">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="1085558727130096638"><ph name="OWNER_FIRST_NAME" /> ಮತ್ತು ಇತರ <ph name="NUM_OTHER_MEMBERS" /> ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿಲ್ಲ. <ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />. ಆಯ್ಕೆಮಾಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
@@ -1017,7 +1017,7 @@
 <translation id="1688935057616748272">ಅಕ್ಷರವನ್ನು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="1689333818294560261">ಅಡ್ಡಹೆಸರು</translation>
 <translation id="168991973552362966">ಸಮೀಪದಲ್ಲಿರುವ ಪ್ರಿಂಟರ್‌ ಸೇರಿಸಿ</translation>
-<translation id="1689945336726856614">&amp;URL ನಕಲಿಸಿ</translation>
+<translation id="1689945336726856614">&amp;URL ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1690068335127678634">ಸ್ಪ್ಲಿಟ್ ಸ್ಕ್ರೀನ್ ಸೆಟಪ್</translation>
 <translation id="1692115862433274081">ಬೇರೊಂದು ಖಾತೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="1692118695553449118">ಸಿಂಕ್‌ ಆನ್‌ ಆಗಿದೆ</translation>
@@ -1696,7 +1696,7 @@
 <translation id="2157779167749714207">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> Gemini ಯೊಂದಿಗೆ ಬರುತ್ತದೆ</translation>
 <translation id="2158103060812356265">ಒಂದೇ ರೀತಿಯ ಉತ್ಪನ್ನಗಳನ್ನು ಸುಲಭವಾಗಿ ಹೋಲಿಕೆ ಮಾಡಿ</translation>
 <translation id="2158249272743343757">ವೈಯಕ್ತೀಕರಣ ಡೇಟಾವನ್ನು ಅಳಿಸಿ...</translation>
-<translation id="2158475082070321257">ಹೈಲೈಟ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಲಿಂಕ್ ಅನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="2158475082070321257">ಹೈಲೈಟ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಲಿಂಕ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ <ph name="SHORTCUT" /> ನ ಸ್ಕೋಪ್</translation>
 <translation id="216169395504480358">ವೈ-ಫೈ ಸೇರಿಸಿ...</translation>
@@ -3607,7 +3607,7 @@
 <translation id="3509379002674019679">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ, ಸೇವ್ ಮಾಡಿ ಹಾಗೂ ನಿರ್ವಹಿಸಿ. ಇದರಿಂದ ನೀವು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3510471875518562537">ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಈ ವಿಳಾಸವನ್ನು ಬಳಸಿ</translation>
 <translation id="3511200754045804813">ಮರು-ಸ್ಕ್ಯಾನ್</translation>
-<translation id="3511307672085573050">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="3511307672085573050">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="351152300840026870">ಸ್ಥಿರ-ಅಗಲ ಫಾಂಟ್</translation>
 <translation id="3511528412952710609">ಶಾರ್ಟ್‌</translation>
 <translation id="3513019849832307207">ಸೇರಿಕೊಳ್ಳಿ ಮತ್ತು ತೆರೆಯಿರಿ</translation>
@@ -4341,7 +4341,7 @@
 <translation id="3984135167056005094">ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ಸೇರಿಸಬೇಡಿ</translation>
 <translation id="3984159763196946143">ಡೆಮೋ ಮೋಡ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3984536049089846927">ಮುಂದಿನ ಪುಟ</translation>
-<translation id="398477389655464998">ಹೈಲೈಟ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಲಿಂಕ್ ಅನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="398477389655464998">ಹೈಲೈಟ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಲಿಂಕ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="3984862166739904574">ತ್ವರಿತ ಉತ್ತರಗಳು ವಿವರಣೆ</translation>
 <translation id="3985022125189960801">ನೀವು ಇಷ್ಟಪಡುವದನ್ನು ಊಹಿಸಬಹುದಾದ ಸೈಟ್‌ಗಳ ಪೂಲ್‌ನಲ್ಲಿ ನೀವು ಸೈಟ್ ಅನ್ನು ಬಯಸಿದರೆ, ಅದನ್ನು ಪುನಃ ಸೇರಿಸಿ</translation>
 <translation id="3986813315215454677">ChromeOS ಬ್ಲೂಟೂತ್</translation>
@@ -4392,7 +4392,7 @@
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">ತಲೆಯನ್ನು ಕೊಂಚ ಮೂವ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ ಕರ್ಸರ್ ಜಂಪ್ ಆಗುವುದನ್ನು ನೀವು ತಡೆಯಬಹುದು, ಆದರೆ ಸ್ವಲ್ಪ ವಿಳಂಬವಾಗುತ್ತದೆ.</translation>
 <translation id="402184264550408568">(TCP)</translation>
-<translation id="4021909830315618592">ಬಿಲ್ಡ್ ವಿವರಗಳನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="4021909830315618592">ಬಿಲ್ಡ್ ವಿವರಗಳನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="4021941025609472374">ಎಡಬದಿಯಲ್ಲಿರುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="4022426551683927403">ನಿಘಂಟಿಗೆ &amp;ಸೇರಿಸಿ</translation>
 <translation id="4023048917751563912"><ph name="APP_NAME" /> <ph name="PAGE_NUMBER" /> ಪುಟಗಳನ್ನು <ph name="PRINTER_NAME" /> ಗೆ ಮುದ್ರಿಸುತ್ತಿದೆ</translation>
@@ -10793,7 +10793,7 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620206585293032550">ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳ ನೋಟ</translation>
 <translation id="8621979332865976405">ನಿಮ್ಮ ಸಂಪೂರ್ಣ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
-<translation id="8624315169751085215">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿ</translation>
+<translation id="8624315169751085215">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS ಸಾಧನ ಮತ್ತು ಕಾಂಪೊನೆಂಟ್ ಕ್ರಮ ಸಂಖ್ಯೆಗಳನ್ನು ಓದಿ</translation>
 <translation id="862542460444371744">&amp;ವಿಸ್ತರಣೆಗಳು</translation>
