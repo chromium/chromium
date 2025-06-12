@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/entry_impl.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 
@@ -139,7 +135,8 @@ class EntryImpl::UserBuffer {
   // Prepare this buffer for reuse.
   void Reset();
 
-  char* Data() { return buffer_.data(); }
+  base::span<uint8_t> as_span() { return buffer_; }
+
   int Size() { return static_cast<int>(buffer_.size()); }
   int Start() { return offset_; }
   int End() { return offset_ + Size(); }
@@ -150,7 +147,7 @@ class EntryImpl::UserBuffer {
 
   base::WeakPtr<BackendImpl> backend_;
   int offset_ = 0;
-  std::vector<char> buffer_;
+  std::vector<uint8_t> buffer_;
   bool grow_allowed_ = true;
 };
 
@@ -210,18 +207,22 @@ void EntryImpl::UserBuffer::Write(int offset, IOBuffer* buf, int len) {
   if (!len)
     return;
 
-  char* buffer = buf->data();
+  base::span<uint8_t> in_buf = buf->first(len);
   int valid_len = Size() - offset;
   int copy_len = std::min(valid_len, len);
   if (copy_len) {
-    memcpy(&buffer_[offset], buffer, copy_len);
-    len -= copy_len;
-    buffer += copy_len;
-  }
-  if (!len)
-    return;
+    size_t sz_offset = base::checked_cast<size_t>(offset);
+    size_t sz_len = base::checked_cast<size_t>(copy_len);
 
-  buffer_.insert(buffer_.end(), buffer, buffer + len);
+    base::span(buffer_)
+        .subspan(sz_offset, sz_len)
+        .copy_from_nonoverlapping(in_buf.take_first(sz_len));
+  }
+  if (in_buf.empty()) {
+    return;
+  }
+
+  buffer_.insert(buffer_.end(), in_buf.begin(), in_buf.end());
 }
 
 bool EntryImpl::UserBuffer::PreRead(int eof, int offset, int* len) {
@@ -254,11 +255,14 @@ int EntryImpl::UserBuffer::Read(int offset, IOBuffer* buf, int len) {
   DCHECK_GT(len, 0);
   DCHECK(Size() || offset < offset_);
 
+  base::span<uint8_t> dest = buf->span();
+
   int clean_bytes = 0;
   if (offset < offset_) {
     // We don't have a file so lets fill the first part with 0.
     clean_bytes = std::min(offset_ - offset, len);
-    memset(buf->data(), 0, clean_bytes);
+    std::ranges::fill(dest.take_first(base::checked_cast<size_t>(clean_bytes)),
+                      0);
     if (len == clean_bytes)
       return len;
     offset = offset_;
@@ -270,7 +274,10 @@ int EntryImpl::UserBuffer::Read(int offset, IOBuffer* buf, int len) {
   DCHECK_GE(start, 0);
   DCHECK_GE(available, 0);
   len = std::min(len, available);
-  memcpy(buf->data() + clean_bytes, &buffer_[start], len);
+  size_t sz_len = base::checked_cast<size_t>(len);
+  size_t sz_start = base::checked_cast<size_t>(start);
+  dest.first(sz_len).copy_from_nonoverlapping(
+      base::span(buffer_).subspan(sz_start, sz_len));
   return len + clean_bytes;
 }
 
@@ -279,7 +286,7 @@ void EntryImpl::UserBuffer::Reset() {
     if (backend_.get())
       backend_->BufferDeleted(capacity() - kMaxBlockSize);
     grow_allowed_ = true;
-    std::vector<char> tmp;
+    std::vector<uint8_t> tmp;
     buffer_.swap(tmp);
     buffer_.reserve(kMaxBlockSize);
   }
@@ -431,8 +438,9 @@ bool EntryImpl::CreateEntry(Addr node_address,
                             uint32_t hash) {
   EntryStore* entry_store = entry_.Data();
   RankingsNode* node = node_.Data();
-  memset(entry_store, 0, sizeof(EntryStore) * entry_.address().num_blocks());
-  memset(node, 0, sizeof(RankingsNode));
+  *node = RankingsNode();
+  std::ranges::fill(base::as_writable_bytes(entry_.AllData()), 0);
+
   if (!node_.LazyInit(backend_->File(node_address), node_address))
     return false;
 
@@ -1063,7 +1071,8 @@ int EntryImpl::InternalReadData(int index,
   }
 
   bool completed;
-  if (!file->Read(buf->data(), buf_len, file_offset, io_callback, &completed)) {
+  if (!file->Read(buf->first(base::checked_cast<size_t>(buf_len)), file_offset,
+                  io_callback, &completed)) {
     if (io_callback)
       io_callback->Discard();
     DoomImpl();
@@ -1159,8 +1168,8 @@ int EntryImpl::InternalWriteData(int index,
   }
 
   bool completed;
-  if (!file->Write(buf->data(), buf_len, file_offset, io_callback,
-                   &completed)) {
+  if (!file->Write(buf->first(base::checked_cast<size_t>(buf_len)), file_offset,
+                   io_callback, &completed)) {
     if (io_callback)
       io_callback->Discard();
     return net::ERR_CACHE_WRITE_FAILURE;
@@ -1399,8 +1408,9 @@ bool EntryImpl::CopyToLocalBuffer(int index) {
   if (address.is_block_file())
     offset = address.start_block() * address.BlockSize() + kBlockHeaderSize;
 
-  if (!file || !file->Read(user_buffers_[index]->Data(), len, offset, nullptr,
-                           nullptr)) {
+  if (!file || !file->Read(user_buffers_[index]->as_span().first(
+                               base::checked_cast<size_t>(len)),
+                           offset, nullptr, nullptr)) {
     user_buffers_[index].reset();
     return false;
   }
@@ -1497,8 +1507,11 @@ bool EntryImpl::Flush(int index, int min_len) {
   if (!file)
     return false;
 
-  if (!file->Write(user_buffers_[index]->Data(), len, offset, nullptr, nullptr))
+  if (!file->Write(user_buffers_[index]->as_span().first(
+                       base::checked_cast<size_t>(len)),
+                   offset, nullptr, nullptr)) {
     return false;
+  }
   user_buffers_[index]->Reset();
 
   return true;
@@ -1536,7 +1549,7 @@ uint32_t EntryImpl::GetEntryFlags() {
 }
 
 void EntryImpl::GetData(int index,
-                        base::HeapArray<char>* buffer,
+                        base::HeapArray<uint8_t>* buffer,
                         Addr* address) {
   DCHECK(backend_.get());
   if (user_buffers_[index].get() && user_buffers_[index]->Size() &&
@@ -1545,8 +1558,9 @@ void EntryImpl::GetData(int index,
     int data_len = entry_.Data()->data_size[index];
     if (data_len <= user_buffers_[index]->Size()) {
       DCHECK(!user_buffers_[index]->Start());
-      *buffer = base::HeapArray<char>::Uninit(data_len);
-      memcpy(buffer->data(), user_buffers_[index]->Data(), data_len);
+      *buffer = base::HeapArray<uint8_t>::Uninit(data_len);
+      buffer->as_span().copy_from_nonoverlapping(
+          user_buffers_[index]->as_span().first(buffer->size()));
       return;
     }
   }

@@ -79,7 +79,7 @@ class ChildrenDeleter
 
   // Two ways of deleting the children: if we have the children map, use Start()
   // directly, otherwise pass the data address to ReadData().
-  void Start(base::HeapArray<char> buffer, int len);
+  void Start(base::HeapArray<uint8_t> buffer, int len);
   void ReadData(disk_cache::Addr address, int len);
 
  private:
@@ -92,7 +92,7 @@ class ChildrenDeleter
   std::string name_;
   disk_cache::Bitmap children_map_;
   int64_t signature_ = 0;
-  base::HeapArray<char> buffer_;
+  base::HeapArray<uint8_t> buffer_;
 };
 
 // This is the callback of the file operation.
@@ -100,23 +100,22 @@ void ChildrenDeleter::OnFileIOComplete(int bytes_copied) {
   Start(std::move(buffer_), bytes_copied);
 }
 
-void ChildrenDeleter::Start(base::HeapArray<char> buffer, int len) {
-  buffer_ = std::move(buffer);
+void ChildrenDeleter::Start(base::HeapArray<uint8_t> buffer, int len) {
   if (len < static_cast<int>(sizeof(disk_cache::SparseData)))
     return Release();
 
   // Just copy the information from |buffer|, delete |buffer| and start deleting
   // the child entries.
   disk_cache::SparseData* data =
-      reinterpret_cast<disk_cache::SparseData*>(buffer_.data());
+      reinterpret_cast<disk_cache::SparseData*>(buffer.data());
   signature_ = data->header.signature;
 
   int num_bits = (len - sizeof(disk_cache::SparseHeader)) * 8;
   children_map_.Resize(num_bits, false);
-  base::span<uint8_t> bitmap_bytes = base::as_writable_bytes(
-      buffer_.subspan(offsetof(disk_cache::SparseData, bitmap)));
+  base::span<uint8_t> bitmap_bytes =
+      buffer.subspan(offsetof(disk_cache::SparseData, bitmap));
   children_map_.SetMap(disk_cache::ToUint32Span(bitmap_bytes));
-  buffer_ = {};
+  buffer = {};
 
   DeleteChildren();
 }
@@ -133,9 +132,9 @@ void ChildrenDeleter::ReadData(disk_cache::Addr address, int len) {
   size_t file_offset = address.start_block() * address.BlockSize() +
                        disk_cache::kBlockHeaderSize;
 
-  buffer_ = base::HeapArray<char>::Uninit(len);
+  buffer_ = base::HeapArray<uint8_t>::Uninit(len);
   bool completed;
-  if (!file->Read(buffer_.data(), len, file_offset, this, &completed)) {
+  if (!file->Read(buffer_.as_span(), file_offset, this, &completed)) {
     return Release();
   }
 
@@ -377,7 +376,7 @@ void SparseControl::DeleteChildren(EntryImpl* entry) {
   if (map_len > kMaxMapSize || map_len % 4)
     return;
 
-  base::HeapArray<char> buffer;
+  base::HeapArray<uint8_t> buffer;
   Addr address;
   entry->GetData(kSparseIndex, &buffer, &address);
   if (buffer.empty() && !address.is_initialized()) {

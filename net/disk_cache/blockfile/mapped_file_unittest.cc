@@ -75,15 +75,15 @@ TEST_F(DiskCacheTest, MappedFile_AsyncIO) {
   buffer1_span.copy_prefix_from(
       base::byte_span_with_nul_from_cstring("the data"));
   bool completed;
-  EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 1024 * 1024, &callback,
-              &completed));
+  EXPECT_TRUE(file->Write(base::as_byte_span(buffer1), 1024 * 1024, &callback,
+                          &completed));
   int expected = completed ? 0 : 1;
 
   max_id = 1;
   helper.WaitUntilCacheIoFinished(expected);
 
-  EXPECT_TRUE(file->Read(buffer2, sizeof(buffer2), 1024 * 1024, &callback,
-              &completed));
+  EXPECT_TRUE(file->Read(base::as_writable_byte_span(buffer2), 1024 * 1024,
+                         &callback, &completed));
   if (!completed)
     expected++;
 

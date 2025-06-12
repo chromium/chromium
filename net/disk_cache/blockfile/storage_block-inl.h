@@ -21,7 +21,8 @@ namespace disk_cache {
 template <typename T>
 StorageBlock<T>::StorageBlock(MappedFile* file, Addr address)
     : file_(file), address_(address) {
-  static_assert(std::is_trivial_v<T>);  // T is loaded as bytes from a file.
+  static_assert(
+      std::is_trivially_copyable_v<T>);  // T is loaded as bytes from a file.
   DCHECK_NE(address.num_blocks(), 0);
   DCHECK(!address.is_initialized() || sizeof(T) == address.BlockSize())
       << address.value();

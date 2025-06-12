@@ -289,7 +289,7 @@ class NET_EXPORT_PRIVATE EntryImpl
   // responsible for deleting the block (or file) from the backing store at some
   // point; there is no need to report any storage-size change, only to do the
   // actual cleanup.
-  void GetData(int index, base::HeapArray<char>* buffer, Addr* address);
+  void GetData(int index, base::HeapArray<uint8_t>* buffer, Addr* address);
 
   // Returns the byte span that can be used to access internal key in
   // `entry_`. Note that this may be longer than the key and its terminating
