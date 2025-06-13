@@ -471,6 +471,20 @@ class LayerContextImplTest : public testing::Test {
 
 namespace {
 
+TransferableResource MakeFakeResource(gfx::Size size) {
+  auto sync_token =
+      gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
+                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456);
+  auto shared_image = gpu::ClientSharedImage::CreateForTesting(
+      {SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ},
+      GL_TEXTURE_2D);
+
+  return TransferableResource::Make(
+      shared_image, TransferableResource::ResourceSource::kTest, sync_token);
+}
+
 mojom::TransferableUIResourceRequestPtr CreateUIResourceRequest(
     int uid,
     mojom::TransferableUIResourceRequest::Type type) {
@@ -479,12 +493,7 @@ mojom::TransferableUIResourceRequestPtr CreateUIResourceRequest(
   request->type = type;
   if (type == mojom::TransferableUIResourceRequest::Type::kCreate) {
     // Add a minimal valid resource.
-    request->transferable_resource = TransferableResource::MakeGpu(
-        gpu::Mailbox::Generate(), GL_TEXTURE_2D,
-        gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
-                       gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
-        gfx::Size(1, 1), SinglePlaneFormat::kRGBA_8888,
-        false /* is_overlay_candidate */);
+    request->transferable_resource = MakeFakeResource(gfx::Size(1, 1));
   }
   return request;
 }
@@ -1584,12 +1593,7 @@ TEST_P(LayerContextImplUpdateDisplayTreeUIResourceRequestTest, ResourceSize) {
   auto request = mojom::TransferableUIResourceRequest::New();
   request->type = mojom::TransferableUIResourceRequest::Type::kCreate;
   request->uid = 42;
-  request->transferable_resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D,
-      gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
-                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
-      resource_size, SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+  request->transferable_resource = MakeFakeResource(resource_size);
   update->ui_resource_requests.push_back(std::move(request));
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
@@ -3071,9 +3075,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   tile2_resource->column_index = kTileIndex2.i;
   tile2_resource->row_index = kTileIndex2.j;
   auto resource_contents = mojom::TileResource::New();
-  resource_contents->resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), kTileSize2,
-      SinglePlaneFormat::kRGBA_8888, false);
+  resource_contents->resource = MakeFakeResource(kTileSize2);
   resource_contents->resource.id = kResourceId1;
   resource_contents->is_checkered = false;
   tile2_resource->contents =
@@ -3195,9 +3197,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   tile_updated_to_resource->column_index = kTileIndex1.i;
   tile_updated_to_resource->row_index = kTileIndex1.j;
   auto resource_contents_updated = mojom::TileResource::New();
-  resource_contents_updated->resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), kTileSize1,
-      SinglePlaneFormat::kRGBA_8888, false);
+  resource_contents_updated->resource = MakeFakeResource(kTileSize1);
   resource_contents_updated->resource.id = kResourceId2;
   resource_contents_updated->is_checkered = true;
   tile_updated_to_resource->contents =
@@ -3421,12 +3421,6 @@ TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
 TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
        UpdateTransferableResource) {
   constexpr int kTextureLayerId = 2;
-  const gpu::Mailbox kMailbox1 = gpu::Mailbox::Generate();
-  const gpu::Mailbox kMailbox2 = gpu::Mailbox::Generate();
-  const gpu::SyncToken kSyncToken1(
-      gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(0x123), 42);
-  const gpu::SyncToken kSyncToken2(
-      gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(0x123), 43);
   const gfx::Size kResourceSize1(10, 10);
   const gfx::Size kResourceSize2(12, 12);
 
@@ -3448,9 +3442,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
   auto layer_props2 = CreateManualLayer(
       kTextureLayerId, cc::mojom::LayerType::kTexture, kResourceSize1);
   auto& texture_extra2 = layer_props2->layer_extra->get_texture_layer_extra();
-  TransferableResource resource1 = TransferableResource::MakeGpu(
-      kMailbox1, GL_TEXTURE_2D, kSyncToken1, kResourceSize1,
-      SinglePlaneFormat::kRGBA_8888, false);
+  TransferableResource resource1 = MakeFakeResource(kResourceSize1);
   texture_extra2->transferable_resource = resource1;
   update2->layers.push_back(std::move(layer_props2));
 
@@ -3464,9 +3456,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
   auto layer_props3 = CreateManualLayer(
       kTextureLayerId, cc::mojom::LayerType::kTexture, kResourceSize2);
   auto& texture_extra3 = layer_props3->layer_extra->get_texture_layer_extra();
-  TransferableResource resource2 = TransferableResource::MakeGpu(
-      kMailbox2, GL_TEXTURE_RECTANGLE_ARB, kSyncToken2, kResourceSize2,
-      SinglePlaneFormat::kRGBA_8888, false);
+  TransferableResource resource2 = MakeFakeResource(kResourceSize2);
   texture_extra3->transferable_resource = resource2;
   update3->layers.push_back(std::move(layer_props3));
 
