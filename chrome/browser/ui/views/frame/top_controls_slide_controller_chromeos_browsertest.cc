@@ -692,50 +692,47 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
   EXPECT_TRUE(browser_view()->GetLocationBarView()->omnibox_view()->HasFocus());
 }
 
-// Fails on Linux ChromiumOS MSan Tests (https://crbug.com/1194575).
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       DISABLED_TestScrollingPageAndSwitchingToNTP) {
+                       TestScrollingPageAndSwitchingToNTP) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
 
-  // Add a tab containing a local NTP page. NTP pages are not permitted to hide
-  // top-chrome with scrolling.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
 
-  // Navigate to our test page that has a long vertical content which we can use
-  // to test page scrolling.
+  // Add a new tab (index 1), navigate it to the scrollable test page,
+  // making it the active tab.
+  chrome::NewTab(browser());
   NavigateActiveTabToUrl(
       embedded_test_server()->GetURL("/top_controls_scroll.html"));
-
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
 
-  // Scroll the `top_controls_scroll.html` page such that top-chrome is now
-  // fully hidden.
+  // Scroll the active `top_controls_scroll.html` page (index 1) such that
+  // top-chrome is now fully hidden.
   ScrollAndExpectTopChromeToBe(ScrollDirection::kDown,
                                TopChromeShownState::kFullyHidden);
 
-  // Simulate (Ctrl + Tab) shortcut to select the next tab. Top-chrome should
-  // show automatically.
+  // Simulate (Ctrl + Tab) shortcut to select the next tab (NTP at index 0).
+  // Top-chrome should show automatically.
   TopControlsShownRatioWaiter waiter(top_controls_slide_controller());
   browser()->tab_strip_model()->SelectNextTab();
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
   waiter.WaitForRatio(1.f);
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
   CheckBrowserLayout(browser_view(), TopChromeShownState::kFullyShown);
 
-  // Since this is the NTP page, gesture scrolling down will not hide
+  // Since this is the NTP page (index 0), gesture scrolling down will not hide
   // top-chrome. It will remain fully shown.
   ScrollAndExpectTopChromeToBe(ScrollDirection::kDown,
                                TopChromeShownState::kFullyShown);
 
-  // Switch back to the scrollable page, it should be possible now to hide top-
-  // chrome.
+  // Switch back to the scrollable page (index 1), it should be possible now to
+  // hide top-chrome.
   browser()->tab_strip_model()->SelectNextTab();
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
   waiter.WaitForRatio(1.f);
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
 
@@ -745,10 +742,11 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   // The `DoBrowserControlsShrinkRendererSize` bit is separately tracked for
   // each tab.
   auto* tab_strip_model = browser()->tab_strip_model();
-  auto* scrollable_page_contents = tab_strip_model->GetWebContentsAt(0);
-  auto* ntp_contents = tab_strip_model->GetWebContentsAt(1);
+  auto* ntp_contents = tab_strip_model->GetWebContentsAt(0);
   EXPECT_TRUE(
       browser_view()->DoBrowserControlsShrinkRendererSize(ntp_contents));
+  auto* scrollable_page_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
   EXPECT_FALSE(browser_view()->DoBrowserControlsShrinkRendererSize(
       scrollable_page_contents));
 }
