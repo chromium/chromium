@@ -43,7 +43,9 @@ std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
     bool with_privacy_notice,
     std::u16string email) {
   ui::DialogModelLabel::TextReplacement link = ui::DialogModelLabel::CreateLink(
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
+      with_privacy_notice
+          ? IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_LINK_WITH_PRIVACY_NOTICE
+          : IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_LINK_WITHOUT_PRIVACY_NOTICE,
       std::move(navigate_to_settings_callback));
 
   ui::DialogModel::Builder dialog_builder;
@@ -53,10 +55,10 @@ std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
   dialog_builder.SetIcon(
       ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon()));
   dialog_builder.SetTitle(l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_TITLE));
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_TITLE));
   dialog_builder.AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_DETAILS,
-      {link, ui::DialogModelLabel::CreatePlainText(std::move(email))}));
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_DETAILS,
+      {ui::DialogModelLabel::CreatePlainText(std::move(email)), link}));
   dialog_builder.AddCancelButton(base::DoNothing(),
                                  ui::DialogModel::Button::Params().SetLabel(
                                      l10n_util::GetStringUTF16(IDS_NO_THANKS)));
