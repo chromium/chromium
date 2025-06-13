@@ -71,6 +71,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [coordinator_ stop];
     [scene_state_ shutdown];
     scene_state_ = nil;
     PlatformTest::TearDown();

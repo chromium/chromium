@@ -144,6 +144,8 @@
   DCHECK(ShouldPromoManagerDisplayPromos());
   if ((self = [super initWithBaseViewController:viewController
                                         browser:browser])) {
+    CHECK(viewController, base::NotFatalUntil::M140);
+    CHECK(browser, base::NotFatalUntil::M140);
     _applicationCommandHandler = applicationHandler;
     _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
     _dockingPromoCommandHandler = dockingPromoHandler;
@@ -167,6 +169,12 @@
   }
 
   return self;
+}
+
+- (void)dealloc {
+  CHECK(!_mediator, base::NotFatalUntil::M140);
+  CHECK(!self.viewController, base::NotFatalUntil::M140);
+  CHECK(!self.banneredViewController, base::NotFatalUntil::M140);
 }
 
 #pragma mark - Public
