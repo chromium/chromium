@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 
 #include "base/containers/span.h"
@@ -136,7 +131,7 @@ std::optional<SHA256HashValue> ToSHA256HashValue(
   if (sha256_bytes.size() != sha256_hash.size()) {
     return std::nullopt;
   }
-  memcpy(sha256_hash.data(), sha256_bytes.data(), sha256_bytes.size());
+  base::span(sha256_hash).copy_from_nonoverlapping(sha256_bytes);
   return sha256_hash;
 }
 
