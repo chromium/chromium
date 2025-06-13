@@ -149,31 +149,16 @@ class ExecutionEngine {
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
       last_observed_page_content_;
 
-  // This is deprecated. Do not add new use cases.
-  struct ActionsV1 {
-    ActionsV1(const optimization_guide::proto::BrowserAction& actions,
-              ActionResultCallback callback);
-    ~ActionsV1();
-    ActionsV1(const ActionsV1&) = delete;
-    ActionsV1& operator=(const ActionsV1&) = delete;
+  template <typename ActionT, typename CallbackT>
+  struct ActionWithCallback {
+    ActionWithCallback(const ActionT& actions, CallbackT callback)
+        : proto(actions), callback(std::move(callback)) {}
+    ~ActionWithCallback() = default;
+    ActionWithCallback(const ActionWithCallback&) = delete;
+    ActionWithCallback& operator=(const ActionWithCallback&) = delete;
 
-    optimization_guide::proto::BrowserAction proto;
-
-    // Note that ActionResultCallback != ActionsResultCallback.
-    ActionResultCallback callback;
-  };
-
-  struct ActionsV2 {
-    ActionsV2(const optimization_guide::proto::Actions& actions,
-              ActionsResultCallback callback);
-    ~ActionsV2();
-    ActionsV2(const ActionsV2&) = delete;
-    ActionsV2& operator=(const ActionsV2&) = delete;
-
-    optimization_guide::proto::Actions proto;
-
-    // Note that ActionResultCallback != ActionsResultCallback.
-    ActionsResultCallback callback;
+    ActionT proto;
+    CallbackT callback;
   };
 
   // TODO(crbug.com/411462297): This assumes all tasks are scoped to a tab,
@@ -189,11 +174,16 @@ class ExecutionEngine {
 
   // A sequence of actions that the model has requested. When it is finished
   // being processed it is reset.
-  std::optional<ActionsV1> actions_v1_;
+  // This is deprecated; do not add new use cases.
+  std::optional<ActionWithCallback<optimization_guide::proto::BrowserAction,
+                                   ActionResultCallback>>
+      actions_v1_;
 
   // A sequence of actions that the model has requested. When it is finished
   // being processed it is reset.
-  std::optional<ActionsV2> actions_v2_;
+  std::optional<ActionWithCallback<optimization_guide::proto::Actions,
+                                   ActionsResultCallback>>
+      actions_v2_;
 
   // The index of the in-progress action.
   int action_index_ = 0;

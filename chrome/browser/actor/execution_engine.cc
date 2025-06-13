@@ -183,18 +183,6 @@ void PostTaskForActCallback(ExecutionEngine::ActionResultCallback callback,
 
 }  // namespace
 
-ExecutionEngine::ActionsV1::ActionsV1(const BrowserAction& actions,
-                                      ActionResultCallback callback)
-    : proto(actions), callback(std::move(callback)) {}
-
-ExecutionEngine::ActionsV1::~ActionsV1() = default;
-
-ExecutionEngine::ActionsV2::ActionsV2(const Actions& actions,
-                                      ActionsResultCallback callback)
-    : proto(actions), callback(std::move(callback)) {}
-
-ExecutionEngine::ActionsV2::~ActionsV2() = default;
-
 ExecutionEngine::ExecutionEngine(Profile* profile)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()) {
