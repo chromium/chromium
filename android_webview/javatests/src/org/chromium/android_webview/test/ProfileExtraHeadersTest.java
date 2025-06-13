@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import android.webkit.WebSettings;
+
 import androidx.annotation.NonNull;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -568,10 +570,22 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Test
     public void willAttachHeaderOnCrossOriginResourceRequests() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mAwContents.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE));
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        TestWebMessageListener listener = addTestWebMessageListener();
         String mainContentTemplate =
                 """
             <!DOCTYPE html>
-            <html><body><img src="%s"></body></html>
+            <html>
+            <script>
+            function onImageLoaded() {
+              testListener.postMessage("loaded");
+            }
+            </script>
+            <!-- onerror because we are returning an invalid result from the test server. -->
+            <body><img onerror="onImageLoaded()" src="%s">
+            </body></html>
             """;
         try (TestWebServer server = TestWebServer.start();
                 TestWebServer corsServer = TestWebServer.startAdditional()) {
@@ -585,8 +599,9 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
             String mainContent = String.format(mainContentTemplate, corsUrl);
             String mainUrl = server.setResponse("/index.html", mainContent, null);
 
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), mainUrl);
+            mActivityTestRule.loadUrlAsync(mAwContents, mainUrl);
+            listener.waitForOnPostMessage();
+
             HTTPRequest lastRequest = server.getLastRequest("/index.html");
             Assert.assertEquals("", lastRequest.headerValue("X-ApplicationHeader"));
 
