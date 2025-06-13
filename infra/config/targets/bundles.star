@@ -296,7 +296,11 @@ targets.bundle(
         "android_emulator_specific_chrome_public_tests",
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
+        "chrome_profile_generator_tests",
         "chromium_gtests_for_devices_with_graphical_output",
+        "fieldtrial_android_tests",
+        "jni_zero_sample_apk_test",
+        "minidump_uploader_test",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_ui_instrumentation_tests",
