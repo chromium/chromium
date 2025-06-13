@@ -9154,6 +9154,23 @@
             ]
         }
     ],
+    "EnterpriseBadgingForNtpFooter": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseBadgingForNtpFooter"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseFileObfuscation": [
         {
             "platforms": [
