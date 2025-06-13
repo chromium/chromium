@@ -66,7 +66,7 @@ void GetGlyphWidthAndExtents(const SkFont& font,
   SkRect sk_bounds;
   uint16_t glyph = static_cast<uint16_t>(codepoint);
 
-  font.getWidths(&glyph, 1, &sk_width, &sk_bounds);
+  font.getWidthsBounds({&glyph, 1}, {&sk_width, 1}, {&sk_bounds, 1}, nullptr);
   if (width)
     *width = SkiaScalarToHarfBuzzUnits(sk_width);
   if (extents) {
@@ -140,7 +140,7 @@ hb_position_t GetGlyphKerning(FontData* font_data,
                                static_cast<uint16_t>(second_glyph) };
   int32_t kerning_adjustments[1] = { 0 };
 
-  if (!typeface->getKerningPairAdjustments(glyphs, 2, kerning_adjustments))
+  if (!typeface->getKerningPairAdjustments(glyphs, kerning_adjustments))
     return 0;
 
   SkScalar upm = SkIntToScalar(typeface->getUnitsPerEm());

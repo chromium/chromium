@@ -117,7 +117,7 @@ class TableHeader::HighlightPathGenerator
       }
     }
     return SkPath().addRoundRect(gfx::RectToSkRect(bounds),
-                                 focus_ring_radii.data());
+                                 focus_ring_radii);
   }
 };
 

@@ -44,10 +44,9 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
   DCHECK_LE(codepoint, 0xFFFFu);
   CHECK(width);
 
-  SkScalar sk_width;
   uint16_t glyph = codepoint;
+  SkScalar sk_width = font.getWidth(glyph);
 
-  font.getWidths(&glyph, 1, &sk_width);
   if (!font.isSubpixel())
     sk_width = SkScalarRoundToInt(sk_width);
   *width = SkiaScalarToHarfBuzzPosition(sk_width);
@@ -68,7 +67,7 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
     glyph_array[i] = *glyphs;
   }
   Vector<SkScalar, 256> sk_width_array(count);
-  font.getWidths(glyph_array.data(), count, sk_width_array.data());
+  font.getWidths(glyph_array, sk_width_array);
 
   if (!font.isSubpixel()) {
     for (unsigned i = 0; i < count; i++)
@@ -110,10 +109,10 @@ void SkFontGetGlyphExtentsForHarfBuzz(const SkFont& font,
   if (font.getPath(glyph, &path)) {
     sk_bounds = path.getBounds();
   } else {
-    font.getBounds(&glyph, 1, &sk_bounds, nullptr);
+    sk_bounds = font.getBounds(glyph, nullptr);
   }
 #else
-  font.getBounds(&glyph, 1, &sk_bounds, nullptr);
+  sk_bounds = font.getBounds(glyph, nullptr);
 #endif
   if (!font.isSubpixel()) {
     // Use roundOut() rather than round() to avoid rendering glyphs
@@ -138,10 +137,10 @@ void SkFontGetBoundsForGlyph(const SkFont& font, Glyph glyph, SkRect* bounds) {
     *bounds = path.getBounds();
   } else {
     // Fonts like Apple Color Emoji have no paths, fall back to bounds here.
-    font.getBounds(&glyph, 1, bounds, nullptr);
+    *bounds = font.getBounds(glyph, nullptr);
   }
 #else
-  font.getBounds(&glyph, 1, bounds, nullptr);
+  *bounds = font.getBounds(glyph, nullptr);
 #endif
 
   if (!font.isSubpixel()) {
@@ -160,7 +159,7 @@ void SkFontGetBoundsForGlyphs(const SkFont& font,
   }
 #else
   static_assert(sizeof(Glyph) == 2, "Skia expects 2 bytes glyph id.");
-  font.getBounds(glyphs.data(), glyphs.size(), bounds, nullptr);
+  font.getBounds(glyphs, {bounds, glyphs.size()}, nullptr);
 
   if (!font.isSubpixel()) {
     for (unsigned i = 0; i < glyphs.size(); i++) {
@@ -173,8 +172,7 @@ void SkFontGetBoundsForGlyphs(const SkFont& font,
 }
 
 float SkFontGetWidthForGlyph(const SkFont& font, Glyph glyph) {
-  SkScalar sk_width;
-  font.getWidths(&glyph, 1, &sk_width);
+  SkScalar sk_width = font.getWidth(glyph);
 
   if (!font.isSubpixel())
     sk_width = SkScalarRoundToInt(sk_width);

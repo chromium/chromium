@@ -61,13 +61,13 @@ bool VariableAxisChangeEffective(SkTypeface* typeface,
                                  SkFourByteTag axis,
                                  float new_value) {
   // First clamp new value to within range of min and max of variable axis.
-  int num_axes = typeface->getVariationDesignParameters(nullptr, 0);
+  int num_axes = typeface->getVariationDesignParameters({});
   if (num_axes <= 0)
     return false;
 
   Vector<SkFontParameters::Variation::Axis> axes_parameters(num_axes);
   int returned_axes =
-      typeface->getVariationDesignParameters(axes_parameters.data(), num_axes);
+      typeface->getVariationDesignParameters(axes_parameters);
   DCHECK_EQ(num_axes, returned_axes);
   DCHECK_GE(num_axes, 0);
 
@@ -79,7 +79,7 @@ bool VariableAxisChangeEffective(SkTypeface* typeface,
     }
   }
 
-  int num_coordinates = typeface->getVariationDesignPosition(nullptr, 0);
+  int num_coordinates = typeface->getVariationDesignPosition({});
   if (num_coordinates <= 0)
     return true;  // Font has axes, but no positions, setting one would have an
                   // effect.
@@ -88,7 +88,7 @@ bool VariableAxisChangeEffective(SkTypeface* typeface,
   Vector<SkFontArguments::VariationPosition::Coordinate> coordinates(
       num_coordinates);
   int returned_coordinates =
-      typeface->getVariationDesignPosition(coordinates.data(), num_coordinates);
+      typeface->getVariationDesignPosition(coordinates);
 
   if (returned_coordinates != num_coordinates)
     return false;  // Something went wrong in retrieving actual axis positions,
@@ -150,7 +150,7 @@ const FontPlatformData* FontPlatformDataFromCTFont(
   if (!typeface)
     return nullptr;
 
-  int existing_axes = typeface->getVariationDesignPosition(nullptr, 0);
+  int existing_axes = typeface->getVariationDesignPosition({});
   // Don't apply variation parameters if the font does not have axes or we
   // fail to retrieve the existing ones.
   if (existing_axes <= 0)
@@ -159,8 +159,7 @@ const FontPlatformData* FontPlatformDataFromCTFont(
   Vector<SkFontArguments::VariationPosition::Coordinate> coordinates_to_set;
   coordinates_to_set.resize(existing_axes);
 
-  if (typeface->getVariationDesignPosition(coordinates_to_set.data(),
-                                           existing_axes) != existing_axes) {
+  if (typeface->getVariationDesignPosition(coordinates_to_set) != existing_axes) {
     return make_typeface_fontplatformdata();
   }
 

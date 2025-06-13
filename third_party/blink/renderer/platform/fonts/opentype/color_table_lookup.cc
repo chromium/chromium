@@ -26,7 +26,7 @@ bool ColorTableLookup::TypefaceHasAnySupportedColorTable(
     return false;
   }
   auto tags = base::HeapArray<SkFontTableTag>::Uninit(num_tags);
-  const int returned_tags = typeface->getTableTags(tags.data());
+  const int returned_tags = typeface->readTableTags(tags);
   if (!returned_tags) {
     return false;
   }

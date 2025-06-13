@@ -53,8 +53,7 @@ class DashPathEffect final : public PathEffect {
   }
 
   sk_sp<SkPathEffect> GetSkPathEffect() const override {
-    return SkDashPathEffect::Make(
-        intervals_.data(), base::checked_cast<int>(intervals_.size()), phase_);
+    return SkDashPathEffect::Make(intervals_, phase_);
   }
 
   size_t dash_interval_count() const override { return intervals_.size(); }

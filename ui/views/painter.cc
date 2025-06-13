@@ -102,8 +102,7 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
        radii_.lower_right() * scale, radii_.lower_right() * scale,
        radii_.lower_left() * scale, radii_.lower_left() * scale}};
 
-  UNSAFE_TODO(fill_path.addRoundRect(gfx::RectFToSkRect(fill_rect),
-                                     scaled_radii.data()));
+  fill_path.addRoundRect(gfx::RectFToSkRect(fill_rect), scaled_radii);
   canvas->DrawPath(fill_path, flags);
 
   if (stroke_color_ != SK_ColorTRANSPARENT) {
@@ -120,8 +119,7 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
       stroke_radii[i] = scaled_radii[i] - stroke_width / 2;
     }
 
-    UNSAFE_TODO(stroke_path.addRoundRect(gfx::RectFToSkRect(stroke_rect),
-                                         stroke_radii.data()));
+    stroke_path.addRoundRect(gfx::RectFToSkRect(stroke_rect), stroke_radii);
     canvas->DrawPath(stroke_path, flags);
   }
 }

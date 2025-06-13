@@ -531,7 +531,7 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   bubble_rect.Inset(0.5);
 
   SkPath path;
-  path.addRoundRect(gfx::RectFToSkRect(bubble_rect), rad.data());
+  path.addRoundRect(gfx::RectFToSkRect(bubble_rect), rad);
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kStroke_Style);

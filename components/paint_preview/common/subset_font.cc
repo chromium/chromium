@@ -145,12 +145,11 @@ sk_sp<SkData> SubsetFont(SkTypeface* typeface, const GlyphUsage& usage) {
 
   // For fonts with variations we need to force the right variant of SkTypeface
   // post subset.
-  const int axis_count = typeface->getVariationDesignPosition(nullptr, 0);
+  const int axis_count = typeface->getVariationDesignPosition({});
   if (axis_count > 0) {
     std::vector<SkFontArguments::VariationPosition::Coordinate> typeface_axis;
     typeface_axis.resize(axis_count);
-    if (typeface->getVariationDesignPosition(typeface_axis.data(),
-                                             typeface_axis.size()) > 0) {
+    if (typeface->getVariationDesignPosition(typeface_axis) > 0) {
       SkFontArguments::VariationPosition variation;
       variation.coordinates = typeface_axis.data();
       variation.coordinateCount = typeface_axis.size();

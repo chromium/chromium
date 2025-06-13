@@ -296,7 +296,7 @@ IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
   builder.AddValue(table_count);
 
   Vector<SkFontTableTag> all_table_tags(table_count);
-  int tags_copied = typeface_->getTableTags(all_table_tags.data());
+  int tags_copied = typeface_->readTableTags(all_table_tags);
   DCHECK_EQ(tags_copied, table_count);
 
   // The tags are probably already sorted, but let's make sure.
