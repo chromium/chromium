@@ -8,9 +8,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Requests information about important sites and other forms of browsing data. */
+@NullMarked
 public class ClearBrowsingDataFetcher
         implements BrowsingDataBridge.ImportantSitesCallback,
                 BrowsingDataBridge.OtherFormsOfBrowsingHistoryListener,
@@ -19,11 +22,11 @@ public class ClearBrowsingDataFetcher
     private final int mMaxImportantSites;
     // This is the sorted list of important registerable domains. If null, then we haven't finished
     // fetching them yet.
-    private String[] mSortedImportantDomains;
+    private String @Nullable [] mSortedImportantDomains;
     // These are the reasons the above domains were chosen as important.
-    private int[] mSortedImportantDomainReasons;
+    private int @Nullable [] mSortedImportantDomainReasons;
     // These are full url examples of the domains above. We use them for favicons.
-    private String[] mSortedExampleOrigins;
+    private String @Nullable [] mSortedExampleOrigins;
 
     // Whether the dialog about other forms of browsing history should be shown.
     private boolean mIsDialogAboutOtherFormsOfBrowsingHistoryEnabled;
@@ -94,21 +97,21 @@ public class ClearBrowsingDataFetcher
      * @return Get a sorted list of important registerable domains. If null, then we haven't
      * finished fetching them yet.
      */
-    public String[] getSortedImportantDomains() {
+    public String @Nullable [] getSortedImportantDomains() {
         return mSortedImportantDomains;
     }
 
     /**
      * @return The reasons the above domains were chosen as important.
      */
-    public int[] getSortedImportantDomainReasons() {
+    public int @Nullable [] getSortedImportantDomainReasons() {
         return mSortedImportantDomainReasons;
     }
 
     /**
      * @return Full url examples of the domains above. We use them for favicons.
      */
-    public String[] getSortedExampleOrigins() {
+    public String @Nullable [] getSortedExampleOrigins() {
         return mSortedExampleOrigins;
     }
 

@@ -15,6 +15,8 @@ import android.widget.ScrollView;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
@@ -22,6 +24,7 @@ import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.ViewUtils;
 
 /** The New Tab Page for use in the incognito profile. */
+@NullMarked
 public class IncognitoNewTabPageView extends FrameLayout {
     private IncognitoNewTabPageManager mManager;
     private boolean mFirstShow = true;
@@ -90,6 +93,17 @@ public class IncognitoNewTabPageView extends FrameLayout {
                 });
     }
 
+    /**
+     * Initialize the incognito New Tab Page.
+     * @param manager The manager that handles external dependencies of the view.
+     */
+    @Initializer
+    void initialize(IncognitoNewTabPageManager manager) {
+        mManager = manager;
+        inflateConditionalLayouts();
+        mManager.initCookieControlsManager();
+    }
+
     private void inflateConditionalLayouts() {
         ViewStub viewStub = findViewById(R.id.incognito_description_layout_stub);
         viewStub.setLayoutResource(R.layout.incognito_description_layout);
@@ -122,16 +136,6 @@ public class IncognitoNewTabPageView extends FrameLayout {
             mManager.onLoadingComplete();
             mFirstShow = false;
         }
-    }
-
-    /**
-     * Initialize the incognito New Tab Page.
-     * @param manager The manager that handles external dependencies of the view.
-     */
-    void initialize(IncognitoNewTabPageManager manager) {
-        mManager = manager;
-        inflateConditionalLayouts();
-        mManager.initCookieControlsManager();
     }
 
     /** @return The IncognitoNewTabPageManager associated with this IncognitoNewTabPageView. */
