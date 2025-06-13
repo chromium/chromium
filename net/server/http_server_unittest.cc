@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/server/http_server.h"
 
 #include <stdint.h>
@@ -1044,9 +1039,10 @@ class MockStreamSocket : public StreamSocket {
       return ERR_IO_PENDING;
     }
     DCHECK_GT(buf_len, 0);
-    int read_len =
-        std::min(static_cast<int>(pending_read_data_.size()), buf_len);
-    memcpy(buf->data(), pending_read_data_.data(), read_len);
+    size_t read_len =
+        std::min(pending_read_data_.size(), static_cast<size_t>(buf_len));
+    buf->span().copy_prefix_from(
+        base::as_byte_span(pending_read_data_).first(read_len));
     pending_read_data_.erase(0, read_len);
     return read_len;
   }
@@ -1062,17 +1058,20 @@ class MockStreamSocket : public StreamSocket {
   }
   int SetSendBufferSize(int32_t size) override { return ERR_NOT_IMPLEMENTED; }
 
-  void DidRead(const char* data, int data_len) {
+  void DidRead(base::span<const char> data) {
     if (!read_buf_.get()) {
-      pending_read_data_.append(data, data_len);
+      pending_read_data_.append(data.begin(), data.end());
       return;
     }
-    int read_len = std::min(data_len, read_buf_len_);
-    memcpy(read_buf_->data(), data, read_len);
-    pending_read_data_.assign(data + read_len, data_len - read_len);
+    size_t read_len =
+        std::min(data.size(), base::checked_cast<size_t>(read_buf_len_));
+    base::span<const uint8_t> callback_portion =
+        base::as_bytes(data.take_first(read_len));
+    read_buf_->span().copy_prefix_from(callback_portion);
+    pending_read_data_.assign(data.begin(), data.end());
     read_buf_ = nullptr;
     read_buf_len_ = 0;
-    std::move(read_callback_).Run(read_len);
+    std::move(read_callback_).Run(base::checked_cast<int>(read_len));
   }
 
  private:
@@ -1094,9 +1093,12 @@ TEST_F(HttpServerTest, RequestWithBodySplitAcrossPackets) {
       "SomeHeader: 1\r\n"
       "Content-Length: %" PRIuS "\r\n\r\n%s",
       body.length(), body.c_str());
-  socket_ptr->DidRead(request_text.c_str(), request_text.length() - 2);
+  base::span<const char> request_span(request_text);
+  auto [before_blankline, blankline] =
+      request_span.split_at(request_span.size() - 2);
+  socket_ptr->DidRead(before_blankline);
   ASSERT_FALSE(HasRequest());
-  socket_ptr->DidRead(request_text.c_str() + request_text.length() - 2, 2);
+  socket_ptr->DidRead(blankline);
   ASSERT_TRUE(HasRequest());
   ASSERT_EQ(body, WaitForRequest().info.data);
 }

@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/test/spawned_test_server/local_test_server.h"
 
 #include <poll.h>
+#include <stdint.h>
 
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -61,12 +58,11 @@ class OrphanedTestServerFilter : public base::ProcessFilter {
   std::string port_string_;
 };
 
-// Given a file descriptor, reads into |buffer| until |bytes_max|
-// bytes has been read or an error has been encountered.  Returns true
-// if the read was successful.
-bool ReadData(int fd, ssize_t bytes_max, uint8_t* buffer) {
-  ssize_t bytes_read = 0;
-  while (bytes_read < bytes_max) {
+// Given a file descriptor, reads into |buffer| until it's full or an error has
+// been encountered.  Returns true if the read was successful.
+bool ReadData(int fd, base::span<uint8_t> buffer) {
+  size_t initial_size = buffer.size();
+  while (!buffer.empty()) {
     struct pollfd poll_fds[1];
 
     poll_fds[0].fd = fd;
@@ -76,19 +72,19 @@ bool ReadData(int fd, ssize_t bytes_max, uint8_t* buffer) {
     // Each test itself has its own timeout, so no need to use one here.
     int rv = HANDLE_EINTR(poll(poll_fds, 1, -1));
     if (rv == 0) {
-      LOG(ERROR) << "poll() timed out; bytes_read=" << bytes_read;
+      LOG(ERROR) << "poll() timed out; bytes_read="
+                 << (initial_size - buffer.size());
       return false;
     } else if (rv < 0) {
       PLOG(ERROR) << "poll() failed for child file descriptor; bytes_read="
-                  << bytes_read;
+                  << (initial_size - buffer.size());
       return false;
     }
 
-    ssize_t num_bytes = HANDLE_EINTR(read(fd, buffer + bytes_read,
-                                          bytes_max - bytes_read));
+    ssize_t num_bytes = HANDLE_EINTR(read(fd, buffer.data(), buffer.size()));
     if (num_bytes <= 0)
       return false;
-    bytes_read += num_bytes;
+    buffer.take_first(static_cast<size_t>(num_bytes));
   }
   return true;
 }
@@ -158,14 +154,12 @@ bool LocalTestServer::WaitToStart() {
   base::ScopedFD our_fd(child_fd_.release());
 
   uint32_t server_data_len = 0;
-  if (!ReadData(our_fd.get(), sizeof(server_data_len),
-                reinterpret_cast<uint8_t*>(&server_data_len))) {
+  if (!ReadData(our_fd.get(), base::byte_span_from_ref(server_data_len))) {
     LOG(ERROR) << "Could not read server_data_len";
     return false;
   }
   std::string server_data(server_data_len, '\0');
-  if (!ReadData(our_fd.get(), server_data_len,
-                reinterpret_cast<uint8_t*>(&server_data[0]))) {
+  if (!ReadData(our_fd.get(), base::as_writable_byte_span(server_data))) {
     LOG(ERROR) << "Could not read server_data (" << server_data_len
                << " bytes)";
     return false;

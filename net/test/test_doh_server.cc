@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/test/test_doh_server.h"
 
 #include <string.h>
@@ -189,7 +184,7 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
 
   // Parse the DNS query.
   auto query_buf = base::MakeRefCounted<IOBufferWithSize>(query.size());
-  memcpy(query_buf->data(), query.data(), query.size());
+  query_buf->span().copy_from(base::as_byte_span(query));
   DnsQuery dns_query(std::move(query_buf));
   if (!dns_query.Parse(query.size())) {
     return MakeHttpErrorResponse(HTTP_BAD_REQUEST, "invalid DNS query");
