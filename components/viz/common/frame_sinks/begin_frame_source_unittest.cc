@@ -9,8 +9,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "components/viz/common/features.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/begin_frame_source_test.h"
 #include "components/viz/test/fake_delay_based_time_source.h"
@@ -400,9 +403,18 @@ TEST_F(BackToBackBeginFrameSourceTest, OnGpuNoLongerBusyWithNoObservers) {
 
 // DelayBasedBeginFrameSource testing
 // ------------------------------------------
-class DelayBasedBeginFrameSourceTest : public ::testing::Test {
+class DelayBasedBeginFrameSourceTest
+    : public ::testing::Test,
+      public testing::WithParamInterface<bool> {
  public:
+  bool NoLateBeginFrames() const { return GetParam(); }
+
   void SetUp() override {
+    if (NoLateBeginFrames()) {
+      scoped_feature_list_.InitAndEnableFeature(features::kNoLateBeginFrames);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kNoLateBeginFrames);
+    }
     task_runner_ = base::MakeRefCounted<TestTaskRunner>();
     std::unique_ptr<FakeDelayBasedTimeSource> time_source =
         std::make_unique<FakeDelayBasedTimeSource>(
@@ -420,10 +432,14 @@ class DelayBasedBeginFrameSourceTest : public ::testing::Test {
   scoped_refptr<TestTaskRunner> task_runner_;
   std::unique_ptr<DelayBasedBeginFrameSource> source_;
   std::unique_ptr<MockBeginFrameObserver> obs_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DelayBasedBeginFrameSourceTest,
+TEST_P(DelayBasedBeginFrameSourceTest,
        AddObserverCallsOnBeginFrameWithMissedTick) {
+  if (NoLateBeginFrames()) {
+    return;
+  }
   task_runner_->AdvanceMockTickClock(base::Microseconds(9010));
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
   EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 10000, 20000,
@@ -432,10 +448,12 @@ TEST_F(DelayBasedBeginFrameSourceTest,
   // No tasks should need to be run for this to occur.
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, AddObserverCallsCausesOnBeginFrame) {
+TEST_P(DelayBasedBeginFrameSourceTest, AddObserverCallsCausesOnBeginFrame) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(obs_.get());
   EXPECT_EQ(TicksFromMicroseconds(10000),
             task_runner_->NowTicks() + task_runner_->NextPendingTaskDelay());
@@ -445,10 +463,12 @@ TEST_F(DelayBasedBeginFrameSourceTest, AddObserverCallsCausesOnBeginFrame) {
   task_runner_->RunUntilIdle();
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, BasicOperation) {
+TEST_P(DelayBasedBeginFrameSourceTest, BasicOperation) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(obs_.get());
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 3, 20000, 30000, 10000);
@@ -460,10 +480,12 @@ TEST_F(DelayBasedBeginFrameSourceTest, BasicOperation) {
   task_runner_->FastForwardTo(TicksFromMicroseconds(60000));
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, VSyncChanges) {
+TEST_P(DelayBasedBeginFrameSourceTest, VSyncChanges) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(obs_.get());
 
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
@@ -481,10 +503,12 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChanges) {
   task_runner_->FastForwardTo(TicksFromMicroseconds(60000));
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBeforeLastTick) {
+TEST_P(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBeforeLastTick) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(obs_.get());
 
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
@@ -513,10 +537,12 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBeforeLastTick) {
   task_runner_->FastForwardTo(TicksFromMicroseconds(70000));
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseAfterNextTick) {
+TEST_P(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseAfterNextTick) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(obs_.get());
 
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
@@ -552,10 +578,12 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseAfterNextTick) {
   task_runner_->FastForwardTo(TicksFromMicroseconds(85000));
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBetweenTicks) {
+TEST_P(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBetweenTicks) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(obs_.get());
 
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
@@ -580,10 +608,12 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBetweenTicks) {
   task_runner_->FastForwardTo(TicksFromMicroseconds(70000));
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, VSyncSkipped) {
+TEST_P(DelayBasedBeginFrameSourceTest, VSyncSkipped) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(obs_.get());
 
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
@@ -602,14 +632,16 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncSkipped) {
   task_runner_->FastForwardTo(TicksFromMicroseconds(75000));
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, MultipleObservers) {
+TEST_P(DelayBasedBeginFrameSourceTest, MultipleObservers) {
   NiceMock<MockBeginFrameObserver> obs1, obs2;
 
   // Mock tick clock starts off at 1000.
   task_runner_->FastForwardBy(base::Microseconds(9010));
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs1, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs1, source_->source_id(), 1, 10000, 20000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs1, source_->source_id(), 1, 10000, 20000,
+                                   10000);
+  }
   source_->AddObserver(&obs1);  // Should cause the last tick to be sent
   // No tasks should need to be run for this to occur.
 
@@ -618,8 +650,10 @@ TEST_F(DelayBasedBeginFrameSourceTest, MultipleObservers) {
 
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs2, false);
   // Sequence number unchanged for missed frame with time of last normal frame.
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs2, source_->source_id(), 2, 20000, 30000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs2, source_->source_id(), 2, 20000, 30000,
+                                   10000);
+  }
   source_->AddObserver(&obs2);  // Should cause the last tick to be sent
   // No tasks should need to be run for this to occur.
 
@@ -637,11 +671,14 @@ TEST_F(DelayBasedBeginFrameSourceTest, MultipleObservers) {
   EXPECT_FALSE(task_runner_->HasPendingTask());
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, DoubleTick) {
+TEST_P(DelayBasedBeginFrameSourceTest, DoubleTick) {
   NiceMock<MockBeginFrameObserver> obs;
 
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 10000, 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(&obs);
 
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(5000),
@@ -659,11 +696,14 @@ TEST_F(DelayBasedBeginFrameSourceTest, DoubleTick) {
   task_runner_->RunUntilIdle();
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, DoubleTickMissedFrame) {
+TEST_P(DelayBasedBeginFrameSourceTest, DoubleTickMissedFrame) {
   NiceMock<MockBeginFrameObserver> obs;
 
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 10000, 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(&obs);
   source_->RemoveObserver(&obs);
 
@@ -683,19 +723,29 @@ TEST_F(DelayBasedBeginFrameSourceTest, DoubleTickMissedFrame) {
                                    base::Microseconds(10000));
   task_runner_->AdvanceMockTickClock(base::Microseconds(5000));
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
-  // Sequence number is incremented again, because sufficient time has passed.
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 2, 10000, 20000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    // Sequence number is incremented again, because sufficient time has passed.
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 2, 10000, 20000,
+                                   10000);
+  }
   source_->AddObserver(&obs);
+  if (NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 3, 20000, 30000, 10000);
+    task_runner_->AdvanceMockTickClock(base::Microseconds(10010));
+    task_runner_->RunUntilIdle();
+  }
   source_->RemoveObserver(&obs);
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, MultipleArgsInSameInterval) {
+TEST_P(DelayBasedBeginFrameSourceTest, MultipleArgsInSameInterval) {
   NiceMock<MockBeginFrameObserver> obs;
   NiceMock<MockBeginFrameObserver> obs2;
 
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 10000, 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(&obs);
   task_runner_->RunUntilIdle();
 
@@ -703,9 +753,11 @@ TEST_F(DelayBasedBeginFrameSourceTest, MultipleArgsInSameInterval) {
   task_runner_->AdvanceMockTickClock(base::Microseconds(9000));
   task_runner_->RunUntilIdle();
 
-  // Sequence number should stay the same within same interval.
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs2, source_->source_id(), 2, 10000, 20000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    // Sequence number should stay the same within same interval.
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs2, source_->source_id(), 2, 10000, 20000,
+                                   10000);
+  }
   source_->AddObserver(&obs2);
 
   EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 3, 20000, 30000, 10000);
@@ -714,11 +766,14 @@ TEST_F(DelayBasedBeginFrameSourceTest, MultipleArgsInSameInterval) {
   task_runner_->RunUntilIdle();
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, ConsecutiveArgsDelayedByMultipleVsyncs) {
+TEST_P(DelayBasedBeginFrameSourceTest, ConsecutiveArgsDelayedByMultipleVsyncs) {
   NiceMock<MockBeginFrameObserver> obs;
 
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 10000, 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
   source_->AddObserver(&obs);
   task_runner_->RunUntilIdle();
 
@@ -730,18 +785,29 @@ TEST_F(DelayBasedBeginFrameSourceTest, ConsecutiveArgsDelayedByMultipleVsyncs) {
   // New args created 8 intervals later.
   // Sequence number should increase by this much.
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 10, 90000, 100000,
-                                 10000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 10, 90000, 100000,
+                                   10000);
+  }
   task_runner_->AdvanceMockTickClock(base::Microseconds(80000));
   source_->AddObserver(&obs);
+  if (NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 11, 100000, 110000,
+                            10000);
+    task_runner_->AdvanceMockTickClock(base::Microseconds(10010));
+    task_runner_->RunUntilIdle();
+  }
 }
 
-TEST_F(DelayBasedBeginFrameSourceTest, WithVrrInterval) {
+TEST_P(DelayBasedBeginFrameSourceTest, WithVrrInterval) {
   NiceMock<MockBeginFrameObserver> obs;
   source_->SetMaxVrrInterval(base::Microseconds(25000));
 
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 25000, 25000);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 25000,
+                                   25000);
+  }
   source_->AddObserver(&obs);
 
   EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 2, 10000, 35000, 25000);
@@ -766,6 +832,13 @@ TEST_F(DelayBasedBeginFrameSourceTest, WithVrrInterval) {
   task_runner_->FastForwardTo(TicksFromMicroseconds(73000));
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DelayBasedBeginFrameSourceTest,
+    testing::Bool(),
+    [](const ::testing::TestParamInfo<bool>& info) -> std::string {
+      return info.param ? "NoLateBeginFrames" : "LateBeginFrames";
+    });
 // ExternalBeginFrameSource testing
 // --------------------------------------------
 class MockExternalBeginFrameSourceClient
@@ -849,7 +922,9 @@ TEST_F(ExternalBeginFrameSourceTest, GetMissedBeginFrameArgs) {
   source_->OnBeginFrame(args);
 
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
-  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, 0, 2, 10000, 10100, 100);
+  if (!base::FeatureList::IsEnabled(features::kNoLateBeginFrames)) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, 0, 2, 10000, 10100, 100);
+  }
   source_->AddObserver(obs_.get());
   source_->RemoveObserver(obs_.get());
 

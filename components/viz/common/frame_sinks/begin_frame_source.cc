@@ -13,6 +13,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -381,6 +382,9 @@ void DelayBasedBeginFrameSource::AddObserver(BeginFrameObserver* obs) {
           last_begin_frame_args_.frame_time + double_tick_margin) {
     last_begin_frame_args_ = CreateBeginFrameArgs(last_or_missed_tick_time);
   }
+  if (base::FeatureList::IsEnabled(features::kNoLateBeginFrames)) {
+    return;
+  }
   BeginFrameArgs missed_args = last_begin_frame_args_;
   missed_args.type = BeginFrameArgs::MISSED;
   IssueBeginFrameToObserver(obs, missed_args);
@@ -508,6 +512,9 @@ void ExternalBeginFrameSource::AddObserver(BeginFrameObserver* obs) {
   observers_.insert(obs);
   obs->OnBeginFrameSourcePausedChanged(paused_);
 
+  if (base::FeatureList::IsEnabled(features::kNoLateBeginFrames)) {
+    return;
+  }
   // Send a MISSED begin frame if necessary.
   BeginFrameArgs missed_args = GetMissedBeginFrameArgs(obs);
   if (missed_args.IsValid()) {

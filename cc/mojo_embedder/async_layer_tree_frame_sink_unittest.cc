@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,6 +19,7 @@
 #include "base/threading/thread.h"
 #include "cc/base/features.h"
 #include "cc/test/fake_layer_tree_frame_sink_client.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/performance_hint_utils.h"
@@ -606,7 +608,10 @@ TEST_F(AsyncLayerTreeFrameSinkBeginFrameTest,
   task_runner_->RunUntilIdle();
   EXPECT_TRUE(
       layer_tree_frame_sink_->use_internal_begin_frame_source_for_testing());
-  EXPECT_EQ(internal_sequence, last_received_begin_frame_sequence_number());
+  if (!base::FeatureList::IsEnabled(features::kNoLateBeginFrames)) {
+    EXPECT_EQ(internal_sequence, last_received_begin_frame_sequence_number());
+  }
+
   SendCompositorFrame();
   task_runner_->FastForwardBy(viz::BeginFrameArgs::DefaultInterval());
   internal_sequence++;
@@ -671,7 +676,9 @@ TEST_F(AsyncLayerTreeFrameSinkBeginFrameTest,
   EXPECT_EQ(args4.frame_id.sequence_number,
             last_received_begin_frame_sequence_number());
   // Receive 2 from internal and 2 from viz.
-  EXPECT_EQ(4u, frame_tracking_client_.begin_frame_count());
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kNoLateBeginFrames) ? 3u : 4u,
+      frame_tracking_client_.begin_frame_count());
   layer_tree_frame_sink_->DetachFromClient();
 }
 
