@@ -172,28 +172,49 @@ struct VectorTypeOperations {
 
   using ConstructTraits = WTF::ConstructTraits<T, VectorTraits<T>, Allocator>;
 
-  static void Destruct(T* begin, T* end) {
-    if constexpr (VectorTraits<T>::kNeedsDestruction) {
-      for (T* cur = begin; cur != end; ++cur)
-        cur->~T();
+  ALWAYS_INLINE static void Destruct(T* begin, T* end) {
+    if constexpr (!VectorTraits<T>::kNeedsDestruction) {
+      return;
+    }
+    for (T* cur = begin; cur != end; ++cur) {
+      cur->~T();
     }
   }
 
-  static void Initialize(T* begin, T* end) {
+  ALWAYS_INLINE static void Initialize(T* begin,
+                                       T* end,
+                                       VectorOperationOrigin origin,
+                                       bool maybe_inline_storage) {
     if constexpr (VectorTraits<T>::kCanInitializeWithMemset) {
-      size_t size =
+      // For GCed out-of-line storage during construction we are guaranteed to
+      // have  memory initialized with zeros.
+      if (Allocator::kIsGarbageCollected &&
+          origin == VectorOperationOrigin::kConstruction &&
+          !maybe_inline_storage) {
+        return;
+      }
+
+      const size_t bytes =
           reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin);
-      if constexpr (!Allocator::kIsGarbageCollected || !IsTraceable<T>::value) {
-        if (size != 0) {
-          // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
-          memset(begin, 0, size);
-        }
+      if constexpr (IsTraceable<T>::value) {
+        // Traceable values must only exist on GCed vectors.
+        static_assert(Allocator::kIsGarbageCollected);
+        AtomicMemzero(begin, bytes);
       } else {
-        AtomicMemzero(begin, size);
+        // Anything else (non-GCed, or GCed with non-traceables) can use regular
+        // memset.
+        if (bytes != 0) {
+          // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
+          memset(begin, 0, bytes);
+        }
       }
     } else {
-      for (T* cur = begin; cur != end; ++cur)
+      for (T* cur = begin; cur != end; ++cur) {
         ConstructTraits::Construct(cur);
+      }
+      // We assume that default construction using T() doesn't set interesting
+      // pointers. Otherwise, we'd need `NotifyNewElements` if `origin` is
+      // `kRegularModification`.
     }
   }
 
@@ -1728,7 +1749,9 @@ inline Vector<T, InlineCapacity, Allocator>::Vector(wtf_size_t size)
     : Base(size) {
   ANNOTATE_NEW_BUFFER(data(), capacity(), size);
   size_ = size;
-  TypeOperations::Initialize(data(), DataEnd());
+  TypeOperations::Initialize(data(), DataEnd(),
+                             VectorOperationOrigin::kConstruction,
+                             SupportsInlineCapacity());
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -2050,7 +2073,9 @@ inline void Vector<T, InlineCapacity, Allocator>::resize(wtf_size_t size) {
       ExpandCapacity(size);
     MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, data(), capacity(), size_,
                                        size);
-    TypeOperations::Initialize(DataEnd(), data() + size);
+    TypeOperations::Initialize(DataEnd(), data() + size,
+                               VectorOperationOrigin::kRegularModification,
+                               SupportsInlineCapacity());
   }
 
   size_ = size;
@@ -2073,7 +2098,9 @@ void Vector<T, InlineCapacity, Allocator>::Grow(wtf_size_t size) {
     ExpandCapacity(size);
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, data(), capacity(), size_,
                                      size);
-  TypeOperations::Initialize(DataEnd(), data() + size);
+  TypeOperations::Initialize(DataEnd(), data() + size,
+                             VectorOperationOrigin::kRegularModification,
+                             SupportsInlineCapacity());
   size_ = size;
 }
 

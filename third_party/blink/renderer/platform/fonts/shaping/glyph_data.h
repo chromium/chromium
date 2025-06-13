@@ -78,4 +78,7 @@ using GlyphOffset = gfx::Vector2dF;
 
 }  // namespace blink
 
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::GlyphOffset)
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::HarfBuzzRunGlyphData)
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_DATA_H_
