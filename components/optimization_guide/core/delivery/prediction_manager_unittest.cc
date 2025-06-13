@@ -334,18 +334,14 @@ class TestPredictionManager : public PredictionManager {
       PrefService* pref_service,
       ComponentUpdatesEnabledProvider component_updates_enabled_provider,
       bool off_the_record,
-      const std::string& application_locale,
-      const base::FilePath& models_dir_path)
+      const std::string& application_locale)
       : PredictionManager(
             prediction_model_store,
             url_loader_factory,
             pref_service,
             off_the_record,
             application_locale,
-            models_dir_path,
             &optimization_guide_logger_,
-            /*background_download_service_provider=*/
-            base::OnceCallback<download::BackgroundDownloadService*()>(),
             component_updates_enabled_provider,
             base::BindRepeating(&unzip::LaunchInProcessUnzipper)) {}
 
@@ -403,7 +399,7 @@ class PredictionManagerTestBase : public testing::Test {
         base::BindRepeating(
             &PredictionManagerTestBase::AreComponentUpdatesEnabled,
             base::Unretained(this)),
-        false, kTestLocale, temp_dir());
+        false, kTestLocale);
     prediction_manager_->GetPredictionModelFetchTimerForTesting()
         ->SetClockForTesting(task_environment_.GetMockClock());
   }

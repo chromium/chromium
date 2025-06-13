@@ -73,11 +73,6 @@ class OptimizationGuideService
 #endif
       public optimization_guide::OptimizationGuideModelProvider {
  public:
-  // BackgroundDownloadService is only available once the profile is fully
-  // initialized and that cannot be done as part of `Initialize`. Get a provider
-  // to retrieve the service when it is needed.
-  using BackgroundDownloadServiceProvider =
-      base::OnceCallback<download::BackgroundDownloadService*(void)>;
   OptimizationGuideService(
       leveldb_proto::ProtoDatabaseProvider* proto_db_provider,
       const base::FilePath& profile_path,
@@ -87,7 +82,6 @@ class OptimizationGuideService
       PrefService* pref_service,
       BrowserList* browser_list,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      BackgroundDownloadServiceProvider background_download_service_provider,
       signin::IdentityManager* identity_manager);
   ~OptimizationGuideService() override;
 

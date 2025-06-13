@@ -183,9 +183,7 @@ PredictionManager::PredictionManager(
     PrefService* pref_service,
     bool off_the_record,
     const std::string& application_locale,
-    const base::FilePath& models_dir_path,
     OptimizationGuideLogger* optimization_guide_logger,
-    BackgroundDownloadServiceProvider background_download_service_provider,
     ComponentUpdatesEnabledProvider component_updates_enabled_provider,
     unzip::UnzipperFactory unzipper_factory)
     : prediction_model_download_manager_(nullptr),
@@ -204,24 +202,18 @@ PredictionManager::PredictionManager(
       off_the_record_(off_the_record),
       application_locale_(application_locale),
       model_cache_key_(GetModelCacheKey(application_locale_)),
-      models_dir_path_(models_dir_path),
       should_check_google_api_key_configuration_(
           !switches::ShouldSkipGoogleApiKeyConfigurationCheck()) {
   DCHECK(prediction_model_store_);
-  Initialize(std::move(background_download_service_provider));
+  LoadPredictionModels(GetRegisteredOptimizationTargets());
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PredictionManager.StoreInitialized", true);
 }
 
 PredictionManager::~PredictionManager() {
   if (prediction_model_download_manager_) {
     prediction_model_download_manager_->RemoveObserver(this);
   }
-}
-
-void PredictionManager::Initialize(
-    BackgroundDownloadServiceProvider background_download_service_provider) {
-  LoadPredictionModels(GetRegisteredOptimizationTargets());
-  LOCAL_HISTOGRAM_BOOLEAN(
-      "OptimizationGuide.PredictionManager.StoreInitialized", true);
 }
 
 void PredictionManager::AddObserverForOptimizationTargetModel(

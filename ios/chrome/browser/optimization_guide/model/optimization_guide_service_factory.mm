@@ -22,16 +22,6 @@
 
 namespace {
 
-// Returns the BackgroundDownloadService for `weak_profile`.
-download::BackgroundDownloadService* GetBackgroundDownloadService(
-    base::WeakPtr<ProfileIOS> weak_profile) {
-  if (ProfileIOS* profile = weak_profile.get()) {
-    return BackgroundDownloadServiceFactory::GetForProfile(profile);
-  }
-
-  return nullptr;
-}
-
 std::unique_ptr<KeyedService> BuildOptimizationGuideService(
     web::BrowserState* context) {
   if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
@@ -59,7 +49,6 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
       GetApplicationContext()->GetApplicationLocale(), hint_store,
       profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(),
-      base::BindOnce(&GetBackgroundDownloadService, profile->AsWeakPtr()),
       IdentityManagerFactory::GetForProfile(profile));
 
   service->DoFinalInit(

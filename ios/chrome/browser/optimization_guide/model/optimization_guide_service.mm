@@ -128,7 +128,6 @@ OptimizationGuideService::OptimizationGuideService(
     PrefService* pref_service,
     BrowserList* browser_list,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    BackgroundDownloadServiceProvider background_download_service_provider,
     signin::IdentityManager* identity_manager)
     : pref_service_(pref_service), off_the_record_(off_the_record) {
   DCHECK(optimization_guide::features::IsOptimizationHintsEnabled());
@@ -136,7 +135,6 @@ OptimizationGuideService::OptimizationGuideService(
   // In off the record profile, the stores of normal profile should be
   // passed to the constructor. In normal profile, they will be created.
   DCHECK(!off_the_record_ || hint_store);
-  base::FilePath models_dir;
   if (!off_the_record_) {
     // Only create a top host provider from the command line if provided.
     top_host_provider_ =
@@ -166,8 +164,7 @@ OptimizationGuideService::OptimizationGuideService(
         std::make_unique<optimization_guide::PredictionManager>(
             optimization_guide::IOSChromePredictionModelStore::GetInstance(),
             url_loader_factory, pref_service, off_the_record_,
-            application_locale, models_dir, optimization_guide_logger_.get(),
-            std::move(background_download_service_provider),
+            application_locale, optimization_guide_logger_.get(),
             base::BindRepeating([]() {
               return GetApplicationContext()->GetLocalState()->GetBoolean(
                   ::prefs::kComponentUpdatesEnabled);

@@ -286,7 +286,6 @@ void OptimizationGuideKeyedService::Initialize() {
   // profile's store and do not fetch any new hints or models.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
-  base::FilePath model_downloads_dir;
   if (profile->IsOffTheRecord()) {
     OptimizationGuideKeyedService* original_ogks =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -348,13 +347,8 @@ void OptimizationGuideKeyedService::Initialize() {
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       optimization_guide::ChromePredictionModelStore::GetInstance(),
       url_loader_factory, profile->GetPrefs(), profile->IsOffTheRecord(),
-      g_browser_process->GetApplicationLocale(), model_downloads_dir,
+      g_browser_process->GetApplicationLocale(),
       optimization_guide_logger_.get(),
-      base::BindOnce(
-          &OptimizationGuideKeyedService::BackgroundDownloadServiceProvider,
-          // It's safe to use |base::Unretained(this)| here because
-          // |this| owns |prediction_manager_|.
-          base::Unretained(this)),
       base::BindRepeating(
           &OptimizationGuideKeyedService::ComponentUpdatesEnabledProvider,
           // It's safe to use |base::Unretained(this)| here because
@@ -708,7 +702,8 @@ OptimizationGuideKeyedService::GetModelExecutionFeaturesController() {
 
 void OptimizationGuideKeyedService::AllowUnsignedUserForTesting(
     optimization_guide::UserVisibleFeatureKey feature) {
-  model_execution_features_controller_->AllowUnsignedUserForTesting(feature);  // IN-TEST
+  model_execution_features_controller_->AllowUnsignedUserForTesting(
+      feature);  // IN-TEST
 }
 
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(

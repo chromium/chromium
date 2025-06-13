@@ -63,12 +63,6 @@ class ModelInfo;
 // for an OptimizationTarget.
 class PredictionManager : public PredictionModelDownloadObserver {
  public:
-  // BackgroundDownloadService is only available once the profile is fully
-  // initialized and that cannot be done as part of |Initialize|. Get a provider
-  // to retrieve the service when it is needed.
-  using BackgroundDownloadServiceProvider =
-      base::OnceCallback<download::BackgroundDownloadService*(void)>;
-
   // Callback to whether component updates are enabled for the browser.
   using ComponentUpdatesEnabledProvider = base::RepeatingCallback<bool(void)>;
 
@@ -78,9 +72,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
       PrefService* pref_service,
       bool off_the_record,
       const std::string& application_locale,
-      const base::FilePath& models_dir_path,
       OptimizationGuideLogger* optimization_guide_logger,
-      BackgroundDownloadServiceProvider background_download_service_provider,
       ComponentUpdatesEnabledProvider component_updates_enabled_provider,
       unzip::UnzipperFactory unzipper_factory);
 
@@ -188,12 +180,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   friend class PredictionManagerTestBase;
   friend class PredictionModelStoreBrowserTestBase;
-
-  // Called on construction to initialize the prediction model.
-  // |background_dowload_service_provider| can provide the
-  // BackgroundDownloadService if needed to download models.
-  void Initialize(
-      BackgroundDownloadServiceProvider background_dowload_service_provider);
 
   // Called to make a request to fetch models from the remote Optimization Guide
   // Service. Used to fetch models for the registered optimization targets.
