@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -165,10 +166,13 @@ TEST_F(RewriteDiyIconsCommandTest, ScheduleAndExecuteCommand) {
   EXPECT_THAT(installed_icon.value(), gfx::test::EqualsBitmap(expected_bitmap));
 
   base::test::TestFuture<RewriteIconResult> future;
-  fake_provider().scheduler().RewriteDiyIcons(app_id, future.GetCallback(),
-                                              FROM_HERE);
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    fake_provider().scheduler().RewriteDiyIcons(app_id, future.GetCallback(),
+                                                FROM_HERE);
 
-  EXPECT_TRUE(future.Wait());
+    EXPECT_TRUE(future.Wait());
+  }
 
   // Verify the rewrite operation result was successful.
   EXPECT_EQ(future.Get(), RewriteIconResult::kUpdateSucceeded);
