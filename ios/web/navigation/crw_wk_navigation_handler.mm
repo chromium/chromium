@@ -198,10 +198,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   if (!self.beingDestroyed) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      if (@available(iOS 16.0, *)) {
-        web::GetWebClient()->SetOSLockdownModeEnabled(
-            preferences.lockdownModeEnabled);
-      }
+      web::GetWebClient()->SetOSLockdownModeEnabled(
+          preferences.lockdownModeEnabled);
     });
   }
 
@@ -250,25 +248,22 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   BOOL isMainFrameNavigationAction = [self isMainFrameNavigationAction:action];
   auto decisionHandler = ^(WKNavigationActionPolicy policy) {
     preferences.preferredContentMode = contentMode;
-    if (@available(iOS 16.0, *)) {
+    if ((policy == WKNavigationActionPolicyAllow) &&
+        isMainFrameNavigationAction) {
+      UMA_HISTOGRAM_BOOLEAN("IOS.MainFrameNavigationIsInLockdownMode",
+                            preferences.lockdownModeEnabled);
+    }
+
+    if (!self.beingDestroyed) {
+      bool browser_lockdown_mode_enabled =
+          web::GetWebClient()->IsBrowserLockdownModeEnabled();
       if ((policy == WKNavigationActionPolicyAllow) &&
           isMainFrameNavigationAction) {
-        UMA_HISTOGRAM_BOOLEAN("IOS.MainFrameNavigationIsInLockdownMode",
-                              preferences.lockdownModeEnabled);
+        UMA_HISTOGRAM_BOOLEAN("IOS.MainFrameNavigationIsInBrowserLockdownMode",
+                              browser_lockdown_mode_enabled);
       }
-
-      if (!self.beingDestroyed) {
-        bool browser_lockdown_mode_enabled =
-            web::GetWebClient()->IsBrowserLockdownModeEnabled();
-        if ((policy == WKNavigationActionPolicyAllow) &&
-            isMainFrameNavigationAction) {
-          UMA_HISTOGRAM_BOOLEAN(
-              "IOS.MainFrameNavigationIsInBrowserLockdownMode",
-              browser_lockdown_mode_enabled);
-        }
-        if (browser_lockdown_mode_enabled) {
-          preferences.lockdownModeEnabled = true;
-        }
+      if (browser_lockdown_mode_enabled) {
+        preferences.lockdownModeEnabled = true;
       }
     }
     handler(policy, preferences);
