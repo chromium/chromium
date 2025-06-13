@@ -146,9 +146,9 @@ struct CONTENT_EXPORT OpenURLParams {
   // Optional URLLoaderFactory to facilitate navigation to a blob URL.
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
 
-  // Indicates that the navigation should happen in an app window if
-  // possible, i.e. if an app for the URL is installed.
-  bool open_app_window_if_possible = false;
+  // Indicates that this is a service worker openWindow() call targeting a new
+  // window.
+  bool is_service_worker_open_window = false;
 
   // If this navigation was initiated from a link that specified the
   // hrefTranslate attribute, this contains the attribute's value (a BCP47

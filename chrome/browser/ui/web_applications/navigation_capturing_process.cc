@@ -96,13 +96,6 @@ bool IsPageTransitionValidForNavigationCapturing(
   return true;
 }
 
-bool IsServiceWorkerClientOpenNavigation(const NavigateParams& params) {
-  return params.open_pwa_window_if_possible &&
-         ui::PageTransitionCoreTypeIs(params.transition,
-                                      ui::PAGE_TRANSITION_AUTO_TOPLEVEL) &&
-         params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB;
-}
-
 // Returns true if an auxiliary browsing context is getting created, so
 // navigation should be done in the same container that it was triggered in.
 bool IsAuxiliaryBrowsingContext(const NavigateParams& nav_params) {
@@ -252,12 +245,9 @@ NavigationCapturingProcess::MaybeHandleAppNavigation(
   }
 
   auto result = base::WrapUnique(new NavigationCapturingProcess(params));
-  // The `open_pwa_window_if_possible` flag is implemented in navigation
-  // capturing logic, even if otherwise the reimpl experiment isn't enabled.
-
   const bool should_handle_navigations_in_app =
       result->IsNavigationCapturingReimplExperimentEnabled() ||
-      params.open_pwa_window_if_possible ||
+      params.is_service_worker_open_window ||
       content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
           profile, params.url);
 
@@ -403,10 +393,8 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
   // needed.
   navigation_capturing_enabled_ =
       IsNavigationCapturingReimplExperimentEnabled();
-  bool is_service_worker_clients_open_window =
-      IsServiceWorkerClientOpenNavigation(params);
   debug_data_.Set("is_service_worker_clients_open_window",
-                  is_service_worker_clients_open_window);
+                  params.is_service_worker_open_window);
 
   if (isolated_web_app_navigation_) {
     return HandleIsolatedWebAppNavigation(params);
@@ -414,7 +402,7 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
 
   CHECK(!isolated_web_app_navigation_);
   // Handle service worker related navigations if any here.
-  if (is_service_worker_clients_open_window && !navigation_capturing_enabled_) {
+  if (params.is_service_worker_open_window && !navigation_capturing_enabled_) {
     // See service_worker_client_utils::OpenWindow() for more details.
     CHECK(!params.browser);
     CHECK_EQ(disposition_, WindowOpenDisposition::NEW_FOREGROUND_TAB);
@@ -449,7 +437,7 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
   // The service worker clients API currently uses
   // PAGE_TRANSITION_AUTO_TOPLEVEL, which is normally considered invalid for
   // navigation capturing. Explicitly allow that.
-  if (!is_service_worker_clients_open_window &&
+  if (!params.is_service_worker_open_window &&
       !IsPageTransitionValidForNavigationCapturing(params.transition)) {
     return CapturingDisabled();
   }

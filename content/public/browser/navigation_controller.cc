@@ -72,7 +72,7 @@ NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
   //
   //   The following OpenURLParams don't have an equivalent in LoadURLParams:
   //     disposition
-  //     open_app_window_if_possible
+  //     is_service_worker_open_window
   //     source_render_frame_id
   //     source_render_process_id
   //     triggering_event_info

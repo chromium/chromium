@@ -162,7 +162,6 @@ bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
   OpenURLParams params(url, Referrer(),
                        WindowOpenDisposition::NEW_FOREGROUND_TAB, transition,
                        /*is_renderer_initiated=*/false);
-  params.open_app_window_if_possible = true;
   GetContentClient()->browser()->OpenURL(
       navigation_handle()->GetStartingSiteInstance(), params,
       base::DoNothing());

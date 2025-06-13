@@ -34,13 +34,13 @@ class WebAppServiceWorkerOpenWindowBrowserTest : public WebAppBrowserTestBase {
     params.is_renderer_initiated = true;
     params.user_gesture = false;
     params.initiator_origin = url::Origin::Create(GetGoogleURL());
-    params.open_pwa_window_if_possible = true;
+    params.is_service_worker_open_window = true;
     return params;
   }
 };
 
-// This test verifies that navigating with "open_pwa_window_if_possible = true"
-// opens a new app window if there is an installed Web App for the URL.
+// This test verifies that navigating with "is_service_worker_open_window =
+// true" opens a new app window if there is an installed Web App for the URL.
 IN_PROC_BROWSER_TEST_F(WebAppServiceWorkerOpenWindowBrowserTest,
                        AppInstalled_ServiceWorkerOpenWindow) {
   InstallPWA(GetGoogleURL());
