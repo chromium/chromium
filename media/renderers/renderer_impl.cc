@@ -1011,6 +1011,11 @@ void RendererImpl::OnTracksChanged(DemuxerStream::Type track_type,
   base::OnceClosure fix_stream_cb;
   switch (track_type) {
     case DemuxerStream::AUDIO: {
+      if (!stream && !audio_playing_) {
+        std::move(change_completed_cb).Run();
+        return;
+      }
+
       if (stream && stream != current_audio_stream_) {
         fix_stream_cb = base::BindOnce(&RendererImpl::ReinitializeAudioRenderer,
                                        weak_this_, stream, GetMediaTime(),
@@ -1038,6 +1043,11 @@ void RendererImpl::OnTracksChanged(DemuxerStream::Type track_type,
       return;
     }
     case DemuxerStream::VIDEO: {
+      if (!stream && !video_playing_) {
+        std::move(change_completed_cb).Run();
+        return;
+      }
+
       if (stream && stream != current_video_stream_) {
         fix_stream_cb = base::BindOnce(&RendererImpl::ReinitializeVideoRenderer,
                                        weak_this_, stream, GetMediaTime(),
