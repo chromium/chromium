@@ -29,6 +29,12 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/test/views_test_utils.h"
 
+namespace {
+
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
+
 class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchContainerBrowserTest() {
@@ -50,6 +56,27 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
     return browser_view()
         ->tab_strip_region_view()
         ->tab_search_container_for_testing();
+  }
+
+  // Returns an assertion result that the expansion animation is closing.
+  AssertionResult ExpansionAnimationIsClosing() {
+    if (!tab_search_container()) {
+      return AssertionFailure() << "tab_search_container is null.";
+    }
+    if (!tab_search_container()->animation_session_for_testing()) {
+      return AssertionFailure() << "animation_session_for_testing is null.";
+    }
+    if (!tab_search_container()
+             ->animation_session_for_testing()
+             ->expansion_animation()) {
+      return AssertionFailure() << "expansion_animation is null.";
+    }
+    return tab_search_container()
+                   ->animation_session_for_testing()
+                   ->expansion_animation()
+                   ->IsClosing()
+               ? AssertionSuccess()
+               : AssertionFailure() << "expansion_animation is not closing.";
   }
 
  protected:
@@ -245,10 +272,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysHide) {
   tab_search_container()->SetLockedExpansionModeForTesting(
       LockedExpansionMode::kNone, nullptr);
 
-  ASSERT_TRUE(tab_search_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
+  EXPECT_TRUE(ExpansionAnimationIsClosing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
@@ -264,10 +288,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   tab_search_container()->OnAutoTabGroupButtonClicked();
 
-  EXPECT_TRUE(tab_search_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
+  EXPECT_TRUE(ExpansionAnimationIsClosing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
@@ -283,10 +304,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   tab_search_container()->OnAutoTabGroupButtonDismissed();
 
-  EXPECT_TRUE(tab_search_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
+  EXPECT_TRUE(ExpansionAnimationIsClosing());
 }
 
 // TODO(crbug.com/414839512): Fix flaky test.
@@ -320,10 +338,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
       LockedExpansionMode::kNone,
       tab_search_container()->auto_tab_group_button());
 
-  ASSERT_TRUE(tab_search_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
+  EXPECT_TRUE(ExpansionAnimationIsClosing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
@@ -477,10 +492,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   tab_search_container()->HideTabOrganization(
       tab_search_container()->auto_tab_group_button());
 
-  EXPECT_TRUE(tab_search_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
+  EXPECT_TRUE(ExpansionAnimationIsClosing());
 
   EXPECT_EQ(tab_search_container()
                 ->animation_session_for_testing()
@@ -528,10 +540,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   tab_search_container()->HideTabOrganization(
       tab_search_container()->tab_declutter_button());
 
-  ASSERT_TRUE(tab_search_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
+  EXPECT_TRUE(ExpansionAnimationIsClosing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
@@ -555,3 +564,5 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 }
+
+}  // namespace
