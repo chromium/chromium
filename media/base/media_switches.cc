@@ -396,6 +396,18 @@ BASE_FEATURE(kWebrtcMediaCapabilitiesParameters,
              "WebrtcMediaCapabilitiesParameters",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls the persistent license support for protected media that uses
+// widevine.
+BASE_FEATURE(kWidvinePersistentLicenseSupport,
+             "WidvinePersistentLicenseSupport",
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+             // TODO(crbug.com/423458074): This will rollout slowly as an
+             // experiment eventually becoming disabled by default.
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
 // Display the Cast overlay button on the media controls.
 BASE_FEATURE(kMediaCastOverlayButton,
              "MediaCastOverlayButton",

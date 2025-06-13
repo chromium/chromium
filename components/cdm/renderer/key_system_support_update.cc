@@ -257,7 +257,9 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
 
 // Returns whether persistent-license session can be supported.
 bool CanSupportPersistentLicense() {
-  // Do not support persistent-license if the process cannot persist data.
+  if (!base::FeatureList::IsEnabled(media::kWidvinePersistentLicenseSupport)) {
+    return false;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, platform verification is similar to CDM host verification
@@ -293,6 +295,7 @@ bool CanSupportPersistentLicense() {
 base::flat_set<CdmSessionType> UpdatePersistentLicenseSupport(
     bool can_persist_data,
     base::flat_set<CdmSessionType> session_types) {
+  // Do not support persistent-license if the process cannot persist data.
   if (!can_persist_data || !CanSupportPersistentLicense()) {
     session_types.erase(CdmSessionType::kPersistentLicense);
   }

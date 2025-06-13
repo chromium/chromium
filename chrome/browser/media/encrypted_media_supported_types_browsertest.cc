@@ -856,6 +856,18 @@ class EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest
 };
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+class EncryptedMediaSupportedTypesWidevinePersistentLicenseNotSupported
+    : public EncryptedMediaSupportedTypesWidevineTest {
+ protected:
+  EncryptedMediaSupportedTypesWidevinePersistentLicenseNotSupported() {
+    DisableFeature(media::kWidvinePersistentLicenseSupport);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaSupportedTypesTest::SetUpCommandLine(command_line);
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Basic) {
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoWebMMimeType,
                                         video_webm_codecs()));
@@ -2265,3 +2277,10 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+IN_PROC_BROWSER_TEST_F(
+    EncryptedMediaSupportedTypesWidevinePersistentLicenseNotSupported,
+    Basic) {
+  EXPECT_UNSUPPORTED(
+      IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
+}
