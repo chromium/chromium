@@ -11,10 +11,6 @@ import org.chromium.content.common.InputTransferTokenWrapper;
 import org.chromium.content.common.SurfaceWrapper;
 
 interface IGpuProcessCallback {
-
-  oneway void forwardSurfaceForSurfaceRequest(
-      in UnguessableToken requestToken, in Surface surface);
-
   SurfaceWrapper getViewSurface(int surfaceId);
 
   // Send the input transfer token from Viz to Browser so that the Browser can use it later

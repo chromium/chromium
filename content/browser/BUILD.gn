@@ -3331,8 +3331,6 @@ source_set("browser") {
       "android/page_proxy.h",
       "android/render_widget_host_connector.cc",
       "android/render_widget_host_connector.h",
-      "android/scoped_surface_request_manager.cc",
-      "android/scoped_surface_request_manager.h",
       "android/select_popup.cc",
       "android/select_popup.h",
       "android/selection/composited_touch_handle_drawable.cc",

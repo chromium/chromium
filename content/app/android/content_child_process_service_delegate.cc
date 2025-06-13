@@ -19,7 +19,6 @@
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/texture_owner.h"
-#include "gpu/ipc/common/android/scoped_surface_request_conduit.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/scoped_java_surface_control.h"
@@ -37,8 +36,7 @@ namespace {
 
 // TODO(sievers): Use two different implementations of this depending on if
 // we're in a renderer or gpu process.
-class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
-                                   public gpu::GpuSurfaceLookup,
+class ChildProcessSurfaceManager : public gpu::GpuSurfaceLookup,
                                    public input::InputTokenForwarder {
  public:
   ChildProcessSurfaceManager() {}
@@ -53,18 +51,6 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
   // org.chromium.content.app.ChildProcessService.
   void SetServiceImpl(const base::android::JavaRef<jobject>& service_impl) {
     service_impl_.Reset(service_impl);
-  }
-
-  // Overriden from ScopedSurfaceRequestConduit:
-  void ForwardSurfaceOwnerForSurfaceRequest(
-      const base::UnguessableToken& request_token,
-      const gpu::TextureOwner* texture_owner) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-
-    content::
-        Java_ContentChildProcessServiceDelegate_forwardSurfaceForSurfaceRequest(
-            env, service_impl_, request_token,
-            texture_owner->CreateJavaSurface().j_surface());
   }
 
   // Overridden from GpuSurfaceLookup:
@@ -130,8 +116,6 @@ void JNI_ContentChildProcessServiceDelegate_InternalInitChildProcess(
   g_child_process_surface_manager.Get().SetServiceImpl(service_impl);
 
   gpu::GpuSurfaceLookup::InitInstance(
-      g_child_process_surface_manager.Pointer());
-  gpu::ScopedSurfaceRequestConduit::SetInstance(
       g_child_process_surface_manager.Pointer());
   input::InputTokenForwarder::SetInstance(
       g_child_process_surface_manager.Pointer());
