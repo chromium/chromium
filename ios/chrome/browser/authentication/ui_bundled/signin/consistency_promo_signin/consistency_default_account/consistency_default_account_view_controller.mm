@@ -344,6 +344,13 @@ UIFont* GetNavigationBarTitleFont() {
       l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN));
 }
 
+#pragma mark - UIAccessibilityAction
+
+- (BOOL)accessibilityPerformEscape {
+  [self.actionDelegate consistencyDefaultAccountViewControllerSkip:self];
+  return YES;
+}
+
 #pragma mark - UIResponder
 
 // To always be able to register key commands via -keyCommands, the VC must be
