@@ -15,7 +15,6 @@ import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
 import "chromeos/crosapi/mojom/desk_profiles.mojom";
-import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
@@ -115,13 +114,7 @@ interface Crosapi {
   // BindDesk@103 was removed.
   // BindDeskProfileObserver@124 was removed.
   // BindDeskTemplate@71 was removed.
-
-  // Binds the device attributes service which is used by enterprise extension
-  // APIs to query information about the device.
-  // Added in M89.
-  [MinVersion=12] BindDeviceAttributes@17(
-      pending_receiver<DeviceAttributes> receiver);
-
+  // BindDeviceAttributes@17 was removed.
   // BindDeviceOAuth2TokenService@95 was removed.
   // BindDeviceSettingsService@59 was removed.
 

@@ -7,9 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -90,23 +87,10 @@ class EnterpriseDeviceAttributesApiAshTest
         break;
     }
 
-    // Set up fake device attributes.
-    device_attributes_ = std::make_unique<policy::FakeDeviceAttributes>();
-    device_attributes_->SetFakeDirectoryApiId(kFakeDirectoryApiId);
-    device_attributes_->SetFakeDeviceSerialNumber(kFakeSerialNumber);
-    device_attributes_->SetFakeDeviceAssetId(kFakeAssetId);
-    device_attributes_->SetFakeDeviceAnnotatedLocation(kFakeAnnotatedLocation);
-    device_attributes_->SetFakeDeviceHostname(kFakeHostname);
-
     ash::LoginState::Initialize();
-    manager_ = std::make_unique<crosapi::CrosapiManager>();
-    manager_->crosapi_ash()
-        ->device_attributes_ash()
-        ->SetDeviceAttributesForTesting(std::move(device_attributes_));
   }
 
   void TearDown() override {
-    manager_.reset();
     ash::DeviceSettingsTestBase::TearDown();
     ash::LoginState::Shutdown();
   }
@@ -129,18 +113,28 @@ class EnterpriseDeviceAttributesApiAshTest
     }
   }
 
+  void SetDeviceAttributes(EnterpriseDeviceAttributesBase* function) {
+    auto device_attributes = std::make_unique<policy::FakeDeviceAttributes>();
+    device_attributes->SetFakeDirectoryApiId(kFakeDirectoryApiId);
+    device_attributes->SetFakeDeviceSerialNumber(kFakeSerialNumber);
+    device_attributes->SetFakeDeviceAssetId(kFakeAssetId);
+    device_attributes->SetFakeDeviceAnnotatedLocation(kFakeAnnotatedLocation);
+    device_attributes->SetFakeDeviceHostname(kFakeHostname);
+
+    function->SetDeviceAttributes({}, std::move(device_attributes));
+  }
+
  protected:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> testing_profile_;
-  std::unique_ptr<crosapi::CrosapiManager> manager_;
-  std::unique_ptr<policy::FakeDeviceAttributes> device_attributes_;
 };
 
 TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDirectoryDeviceIdFunction) {
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction>();
+  SetDeviceAttributes(function.get());
 
   std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
@@ -154,6 +148,7 @@ TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDirectoryDeviceIdFunction) {
 TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDeviceSerialNumberFunction) {
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDeviceSerialNumberFunction>();
+  SetDeviceAttributes(function.get());
 
   std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
@@ -166,6 +161,7 @@ TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDeviceSerialNumberFunction) {
 TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDeviceAssetIdFunction) {
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDeviceAssetIdFunction>();
+  SetDeviceAttributes(function.get());
 
   std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
@@ -179,6 +175,7 @@ TEST_P(EnterpriseDeviceAttributesApiAshTest,
        GetDeviceAnnotatedLocationFunction) {
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction>();
+  SetDeviceAttributes(function.get());
 
   std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
@@ -192,6 +189,7 @@ TEST_P(EnterpriseDeviceAttributesApiAshTest,
 TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDeviceHostnameFunction) {
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDeviceHostnameFunction>();
+  SetDeviceAttributes(function.get());
 
   std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(

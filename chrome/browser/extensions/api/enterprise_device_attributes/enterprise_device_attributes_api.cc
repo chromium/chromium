@@ -7,94 +7,96 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/device_attributes_ash.h"
+#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/user_manager/user.h"
 
 namespace {
 
-crosapi::mojom::DeviceAttributes* GetDeviceAttributesApi() {
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->device_attributes_ash();
+bool IsAccessAllowed() {
+  // TODO(crbug.com/354842935): this check looks incorrect, because APIs are
+  // running under a certain profile, while this looks at primary user profile.
+  // Also GetPrimaryUserProfile has known issue (crbug.com/40227502).
+  // We should respect the Profile which can be taken by
+  // `Profile::FromBrowserContext(ExtensionFunction::browser_context())`.
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (ash::IsSigninBrowserContext(profile)) {
+    return true;
+  }
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (!user) {
+    return false;
+  }
+  return user->IsAffiliated();
 }
 
 }  // namespace
 
 namespace extensions {
 
-void EnterpriseDeviceAttributesBase::OnCrosapiResult(
-    crosapi::mojom::DeviceAttributesStringResultPtr result) {
-  using Result = crosapi::mojom::DeviceAttributesStringResult;
-  switch (result->which()) {
-    case Result::Tag::kErrorMessage:
-      // We intentionally drop the error message here because the extension API
-      // is expected to return "" on validation error.
-      Respond(WithArguments(""));
-      return;
-    case Result::Tag::kContents:
-      Respond(WithArguments(result->get_contents()));
-      return;
-  }
+EnterpriseDeviceAttributesBase::EnterpriseDeviceAttributesBase()
+    : device_attributes_(std::make_unique<policy::DeviceAttributesImpl>()) {}
+
+EnterpriseDeviceAttributesBase::~EnterpriseDeviceAttributesBase() = default;
+
+template <std::invocable F>
+  requires std::convertible_to<std::invoke_result_t<F>, std::string>
+ExtensionFunction::ResponseAction
+EnterpriseDeviceAttributesBase::RespondWithCheck(F&& f) {
+  return RespondNow(WithArguments(
+      IsAccessAllowed()
+          ? f()
+          :
+          // We intentionally drop the error message here because the
+          // extension API is expected to return "" on validation error.
+          std::string()));
+}
+
+void EnterpriseDeviceAttributesBase::SetDeviceAttributes(
+    base::PassKey<EnterpriseDeviceAttributesApiAshTest>,
+    std::unique_ptr<policy::DeviceAttributes> device_attributes) {
+  device_attributes_ = std::move(device_attributes);
 }
 
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
-  auto cb = base::BindOnce(
-      &EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::OnCrosapiResult,
-      this);
-
-  GetDeviceAttributesApi()->GetDirectoryDeviceId(std::move(cb));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return RespondWithCheck(
+      [this]() { return device_attributes().GetDirectoryApiID(); });
 }
 
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceSerialNumberFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
-  auto cb = base::BindOnce(
-      &EnterpriseDeviceAttributesGetDeviceSerialNumberFunction::OnCrosapiResult,
-      this);
-
-  GetDeviceAttributesApi()->GetDeviceSerialNumber(std::move(cb));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return RespondWithCheck(
+      [this]() { return device_attributes().GetDeviceSerialNumber(); });
 }
 
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceAssetIdFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
-  auto cb = base::BindOnce(
-      &EnterpriseDeviceAttributesGetDeviceAssetIdFunction::OnCrosapiResult,
-      this);
-
-  GetDeviceAttributesApi()->GetDeviceAssetId(std::move(cb));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return RespondWithCheck(
+      [this]() { return device_attributes().GetDeviceAssetID(); });
 }
 
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
-  auto cb = base::BindOnce(
-      &EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction::
-          OnCrosapiResult,
-      this);
-
-  GetDeviceAttributesApi()->GetDeviceAnnotatedLocation(std::move(cb));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return RespondWithCheck(
+      [this]() { return device_attributes().GetDeviceAnnotatedLocation(); });
 }
 
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceHostnameFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
-  auto cb = base::BindOnce(
-      &EnterpriseDeviceAttributesGetDeviceHostnameFunction::OnCrosapiResult,
-      this);
-
-  GetDeviceAttributesApi()->GetDeviceHostname(std::move(cb));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return RespondWithCheck([this]() {
+    return device_attributes().GetDeviceHostname().value_or(std::string());
+  });
 }
 
 }  // namespace extensions

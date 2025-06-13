@@ -44,7 +44,6 @@ class PrintPreviewWebcontentsAdapterAsh;
 namespace crosapi {
 
 class CertProvisioningAsh;
-class DeviceAttributesAsh;
 class DocumentScanAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
@@ -82,8 +81,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindCrosDisplayConfigController(
       mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
       override;
-  void BindDeviceAttributes(
-      mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
   void BindDiagnosticsService(
       mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDocumentScan(
@@ -153,10 +150,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return cert_provisioning_ash_.get();
   }
 
-  DeviceAttributesAsh* device_attributes_ash() {
-    return device_attributes_ash_.get();
-  }
-
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
 
   FileSystemAccessCloudIdentifierProviderAsh*
@@ -206,7 +199,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void OnDisconnected();
 
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
-  std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>

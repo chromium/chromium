@@ -7786,6 +7786,15 @@ static_library("browser") {
         "//services/accessibility:buildflags",
         "//services/accessibility/public/mojom",
         "//ui/events/ozone/layout:layout",
+
+        # TODO(crbug.com/40227502): Currently EnterpriseDeviceAttributes
+        # internally uses profile manager. We should get rid of it.
+        "//chrome/browser/extensions/api/enterprise_device_attributes",
+      ]
+      allow_circular_includes_from += [
+        # TODO(crbug.com/40227502): Currently EnterpriseDeviceAttributes
+        # internally uses profile manager. We should get rid of it.
+        "//chrome/browser/extensions/api/enterprise_device_attributes",
       ]
     }
   }

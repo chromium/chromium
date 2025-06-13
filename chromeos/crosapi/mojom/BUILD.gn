@@ -14,7 +14,6 @@ mojom("mojom") {
     "cros_display_config.mojom",
     "crosapi.mojom",
     "desk_profiles.mojom",
-    "device_attributes.mojom",
     "diagnostics_service.mojom",
     "document_scan.mojom",
     "file_change_service_bridge.mojom",
