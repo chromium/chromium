@@ -62,7 +62,13 @@ public interface GestureListenerManager {
     boolean isScrollInProgress();
 
     /**
+     * @return Whether there's an active, ongoing fling scroll.
+     */
+    boolean hasActiveFlingScroll();
+
+    /**
      * Enable or disable multi-touch zoom support.
+     *
      * @param supportsMultiTouchZoom {@code true} if the feature is enabled.
      */
     void updateMultiTouchZoomSupport(boolean supportsMultiTouchZoom);

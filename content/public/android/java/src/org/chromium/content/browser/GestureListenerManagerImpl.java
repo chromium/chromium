@@ -223,6 +223,7 @@ public class GestureListenerManagerImpl
     }
 
     /** Returns whether there's an active, ongoing fling scroll. */
+    @Override
     public boolean hasActiveFlingScroll() {
         return mHasActiveFlingScroll;
     }
