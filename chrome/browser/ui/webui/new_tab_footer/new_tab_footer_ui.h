@@ -24,6 +24,7 @@ class NewTabFooterHandler;
 class NewTabFooterUI;
 class PrefRegistrySimple;
 class Profile;
+class WebuiLoadTimer;
 
 class NewTabFooterUIConfig
     : public DefaultTopChromeWebUIConfig<NewTabFooterUI> {
@@ -81,6 +82,7 @@ class NewTabFooterUI
       mojo::PendingReceiver<customize_buttons::mojom::CustomizeButtonsHandler>
           pending_page_handler) override;
 
+  std::unique_ptr<WebuiLoadTimer> webui_load_timer_;
   std::unique_ptr<NewTabFooterHandler> handler_;
   mojo::Receiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>
       document_factory_receiver_{this};
