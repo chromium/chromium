@@ -60,7 +60,7 @@ public class JniPaymentApp extends PaymentApp {
             // use getPaymentEntityLogos() instead.
             @JniType("const SkBitmap*") @Nullable final Bitmap issuerIcon,
             @JniType("const SkBitmap*") @Nullable final Bitmap networkIcon,
-            @JniType("std::vector<PaymentApp::PaymentEntityLogo>")
+            @JniType("std::vector<PaymentApp::PaymentEntityLogo*>")
                     List<PaymentEntityLogoImpl> paymentEntitiesLogos) {
         super(id, label, sublabel, new BitmapDrawable(icon));
         mPaymentAppType = paymentAppType;

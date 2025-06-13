@@ -114,7 +114,7 @@ class PaymentApp {
   virtual const SkBitmap* issuer_bitmap() const;
   virtual const SkBitmap* network_bitmap() const;
   // Returns the payment entities logos to be displayed to the user.
-  virtual const std::vector<PaymentEntityLogo>& GetPaymentEntitiesLogos() const;
+  virtual std::vector<PaymentEntityLogo*> GetPaymentEntitiesLogos();
 
   // Returns the identifier for another payment app that should be hidden when
   // this payment app is present.

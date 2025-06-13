@@ -77,7 +77,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     base::WeakPtr<PaymentRequestSpec> spec,
     mojom::SecurePaymentConfirmationRequestPtr request,
     std::unique_ptr<webauthn::InternalAuthenticator> authenticator,
-    std::vector<PaymentEntityLogo> payment_entities_logos)
+    std::vector<PaymentApp::PaymentEntityLogo> payment_entities_logos)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
       content::WebContentsObserver(web_contents_to_observe),
       authenticator_frame_routing_id_(
@@ -247,9 +247,19 @@ const SkBitmap* SecurePaymentConfirmationApp::network_bitmap() const {
   return payment_entities_logos_[0].icon.get();
 }
 
-const std::vector<PaymentApp::PaymentEntityLogo>&
-SecurePaymentConfirmationApp::GetPaymentEntitiesLogos() const {
-  return payment_entities_logos_;
+std::vector<PaymentApp::PaymentEntityLogo*>
+SecurePaymentConfirmationApp::GetPaymentEntitiesLogos() {
+  // Filters logos with empty icons out from payment_entities_logos_. Once
+  // network_bitmap() and issuer_bitmap() are no longer needed,
+  // payment_entities_logos_ will no longer contain logos with empty icons, and
+  // the filtering will not be required.
+  std::vector<PaymentApp::PaymentEntityLogo*> filtered_logos;
+  for (PaymentApp::PaymentEntityLogo& logo : payment_entities_logos_) {
+    if (logo.icon != nullptr) {
+      filtered_logos.push_back(&logo);
+    }
+  }
+  return filtered_logos;
 }
 
 bool SecurePaymentConfirmationApp::IsValidForModifier(
