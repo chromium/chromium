@@ -98,8 +98,8 @@ HttpStreamPool::TcpBasedAttempt::TcpBasedAttempt(AttemptManager* manager,
 
 HttpStreamPool::TcpBasedAttempt::~TcpBasedAttempt() {
   base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
-  base::UmaHistogramTimes(
-      base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptTime.",
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptTime2.",
                     GetResultHistogramSuffix(result_)}),
       elapsed);
 
@@ -115,9 +115,9 @@ HttpStreamPool::TcpBasedAttempt::~TcpBasedAttempt() {
             {"Net.HttpStreamPool.TcpBasedAttemptCanceledInitialAttemptState.",
              suffix}),
         *manager_->initial_attempt_state());
-    base::UmaHistogramTimes(
+    base::UmaHistogramLongTimes100(
         base::StrCat(
-            {"Net.HttpStreamPool.TcpBasedAttemptCanceledTime.", suffix}),
+            {"Net.HttpStreamPool.TcpBasedAttemptCanceledTime2.", suffix}),
         elapsed);
   }
 
@@ -198,8 +198,9 @@ HttpStreamPool::TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
   }
 
   CHECK(!ssl_config_wait_start_time_.is_null());
-  base::UmaHistogramTimes("Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime",
-                          base::TimeTicks::Now() - ssl_config_wait_start_time_);
+  base::UmaHistogramMediumTimes(
+      "Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime2",
+      base::TimeTicks::Now() - ssl_config_wait_start_time_);
 
   if (!is_slow_ && !slow_timer_.IsRunning()) {
     // Resume the slow timer as `attempt_` will start a TLS handshake.

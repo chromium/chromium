@@ -123,15 +123,15 @@ HttpStreamPool::Job::~Job() {
   // completed.
   if (result_.has_value()) {
     constexpr std::string_view kCompleteTimeHistogramName =
-        "Net.HttpStreamPool.JobCompleteTime2.";
+        "Net.HttpStreamPool.JobCompleteTime3.";
     base::TimeDelta complete_time = base::TimeTicks::Now() - create_time_;
     if (*result_ == OK) {
       const std::string_view protocol = NegotiatedProtocolToHistogramSuffix(
           negotiated_protocol_.value_or(NextProto::kProtoUnknown));
-      base::UmaHistogramTimes(
+      base::UmaHistogramLongTimes100(
           base::StrCat({kCompleteTimeHistogramName, protocol}), complete_time);
     } else {
-      base::UmaHistogramTimes(
+      base::UmaHistogramLongTimes100(
           base::StrCat({kCompleteTimeHistogramName, "Failure"}), complete_time);
       base::UmaHistogramSparse("Net.HttpStreamPool.JobErrorCode", -*result_);
     }
