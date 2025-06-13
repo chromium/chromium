@@ -179,16 +179,6 @@ bool IsPromptingEnabled() {
   return FeatureSwitch::prompt_for_external_extensions()->IsEnabled();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void InitExtensionSystemForIncognitoSplit(
-    content::BrowserContext* incognito_context) {
-  ExtensionSystem* extension_system = ExtensionSystem::Get(incognito_context);
-  if (!extension_system->is_ready()) {
-    extension_system->InitForRegularProfile(/*extensions_enabled=*/true);
-  }
-}
-#endif
-
 bool AllowFileAccess(const ExtensionId& extension_id,
                      content::BrowserContext* context) {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(

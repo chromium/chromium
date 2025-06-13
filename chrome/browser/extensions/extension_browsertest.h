@@ -213,9 +213,6 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   // tab.
   content::WebContents* GetActiveWebContents() const;
 
-  // Returns incognito profile. Creates the profile if it doesn't exist.
-  Profile* GetOrCreateIncognitoProfile();
-
   // Pack the extension in `dir_path` into a crx file and return its path.
   // Return an empty FilePath if there were errors.
   base::FilePath PackExtension(

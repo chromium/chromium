@@ -427,7 +427,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   extension = SetExtensionIncognitoEnabled(*extension, *profile());
   ASSERT_TRUE(extension);
 
-  Profile* incognito_profile = GetOrCreateIncognitoProfile();
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // We're going to be executing scripts in the service worker context, so
   // ensure the service worker is active.
