@@ -2730,14 +2730,15 @@ class Spanifier {
     // not. Investigate?
     const auto reinterpret_cast_wrapper = optionally(hasParent(
         cxxReinterpretCastExpr(
-            cxxReinterpretCastExpr(hasDestinationType(qualType(pointsTo(
+            hasDestinationType(qualType(pointsTo(
                 qualType(anyOf(qualType(asString("uint8_t"))
                                    .bind("reinterpret_cast_to_bytes"),
                                qualType(isAnyCharacter())
                                    .bind("reinterpret_cast_to_bytes"),
                                qualType(isInteger())
                                    .bind("reinterpret_cast_to_integral_type")))
-                    .bind("target_type"))))))
+                    .bind("target_type")))),
+            unless(raw_ptr_plugin::isInMacroLocation()))
             .bind("reinterpret_cast")));
 
     // Defines nodes that contain size information, these include:
