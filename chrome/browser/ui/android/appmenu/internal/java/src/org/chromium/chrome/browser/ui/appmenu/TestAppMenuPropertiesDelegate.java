@@ -34,7 +34,7 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     public void destroy() {}
 
     @Override
-    public ModelList getMenuItems(AppMenuHandler handler) {
+    public ModelList getMenuItems() {
         ModelList modelList = new ModelList();
 
         modelList.add(

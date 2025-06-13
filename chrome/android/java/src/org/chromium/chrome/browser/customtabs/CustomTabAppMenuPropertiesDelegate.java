@@ -120,7 +120,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
     @Override
     @VisibleForTesting
-    public MVCListAdapter.ModelList buildMenuModelList(AppMenuHandler handler) {
+    public MVCListAdapter.ModelList buildMenuModelList() {
         MVCListAdapter.ModelList modelList = new MVCListAdapter.ModelList();
 
         Tab currentTab = mActivityTabProvider.get();

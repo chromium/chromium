@@ -36,10 +36,9 @@ public interface AppMenuPropertiesDelegate {
     /**
      * Gets the menu items for app menu.
      *
-     * @param handler The {@link AppMenuHandler} associated with {@code menu}.
      * @return The {@link ModelList} which contains the menu items for app menu.
      */
-    ModelList getMenuItems(AppMenuHandler handler);
+    ModelList getMenuItems();
 
     /**
      * Gets a bundle of (optional) extra data associated with the provided MenuItem.

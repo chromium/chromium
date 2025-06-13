@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -211,8 +210,7 @@ public class AppMenuPropertiesDelegateUnitTest {
                                 mBookmarkModelSupplier,
                                 mReadAloudControllerSupplier) {
                             @Override
-                            public MVCListAdapter.ModelList buildMenuModelList(
-                                    AppMenuHandler handler) {
+                            public MVCListAdapter.ModelList buildMenuModelList() {
                                 return new MVCListAdapter.ModelList();
                             }
                         });
@@ -466,16 +464,14 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void readAloud_CanBeAddedOnMultipleCreatedMenus() {
         when(mReadAloudController.isReadable(any(Tab.class))).thenReturn(true);
 
-        MVCListAdapter.ModelList modelList =
-                mAppMenuPropertiesDelegate.getMenuItems(mock(AppMenuHandler.class));
+        MVCListAdapter.ModelList modelList = mAppMenuPropertiesDelegate.getMenuItems();
         mAppMenuPropertiesDelegate.observeAndMaybeAddReadAloud(modelList, mTab);
         Assert.assertEquals(1, modelList.size());
         Assert.assertEquals(
                 R.id.readaloud_menu_id,
                 modelList.get(0).model.get(AppMenuItemProperties.MENU_ITEM_ID));
 
-        MVCListAdapter.ModelList modelList2 =
-                mAppMenuPropertiesDelegate.getMenuItems(mock(AppMenuHandler.class));
+        MVCListAdapter.ModelList modelList2 = mAppMenuPropertiesDelegate.getMenuItems();
         mAppMenuPropertiesDelegate.observeAndMaybeAddReadAloud(modelList2, mTab);
         Assert.assertEquals(1, modelList2.size());
         Assert.assertEquals(

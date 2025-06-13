@@ -151,7 +151,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     private @Nullable LayoutStateProvider mLayoutStateProvider;
-    protected Runnable mAppMenuInvalidator;
 
     /**
      * Construct a new {@link AppMenuPropertiesDelegateImpl}.
@@ -216,7 +215,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         return mReadAloudAppMenuResetter;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Nullable
     public ModelList getModelList() {
         return mModelList;
@@ -268,16 +267,16 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     @Override
-    public final ModelList getMenuItems(AppMenuHandler handler) {
+    public final ModelList getMenuItems() {
         mReadAloudPos = -1;
         mHasReadAloudInserted = false;
-        mModelList = buildMenuModelList(handler);
+        mModelList = buildMenuModelList();
         return mModelList;
     }
 
     /** Construct the ModelList for the appropriate current state of the menu. */
     @VisibleForTesting
-    public abstract ModelList buildMenuModelList(AppMenuHandler handler);
+    public abstract ModelList buildMenuModelList();
 
     /**
      * Builds a property model for a divider item type.
@@ -299,8 +298,20 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @return A Builder object that forms the basis for text menu item models.
      */
     public PropertyModel.Builder buildBaseModelForTextItem(@IdRes int id) {
-        return new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                .with(AppMenuItemProperties.MENU_ITEM_ID, id)
+        return populateBaseModelForTextItem(
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS), id);
+    }
+
+    /**
+     * Populates the PropertyModel.Builder with the common properties for a text menu item.
+     *
+     * @param builder The builder to populate with data.
+     * @param id The id of the text menu item.
+     * @return A Builder object that forms the basis for text menu item models.
+     */
+    public PropertyModel.Builder populateBaseModelForTextItem(
+            PropertyModel.Builder builder, @IdRes int id) {
+        return builder.with(AppMenuItemProperties.MENU_ITEM_ID, id)
                 .with(AppMenuItemProperties.ENABLED, true)
                 .with(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(id))
                 .with(AppMenuItemProperties.ICON_SHOW_BADGE, shouldShowBadgeOnMenuItemIcon(id))

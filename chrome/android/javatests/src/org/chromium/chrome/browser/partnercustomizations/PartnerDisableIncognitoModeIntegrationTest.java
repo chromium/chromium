@@ -63,10 +63,7 @@ public class PartnerDisableIncognitoModeIntegrationTest {
                         () ->
                                 AppMenuTestSupport.getAppMenuPropertiesDelegate(
                                                 mActivityTestRule.getAppMenuCoordinator())
-                                        .getMenuItems(
-                                                mActivityTestRule
-                                                        .getAppMenuCoordinator()
-                                                        .getAppMenuHandler()));
+                                        .getMenuItems());
         MVCListAdapter.ListItem newIncognitoItem = null;
         for (MVCListAdapter.ListItem item : modelList) {
             if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)

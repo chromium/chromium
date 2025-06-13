@@ -260,7 +260,7 @@ class AppMenuHandlerImpl
 
         assert !(isByPermanentButton && startDragging);
 
-        mModelList = mDelegate.getMenuItems(this);
+        mModelList = mDelegate.getMenuItems();
         mModelList.addObserver(mListObserver);
         ContextThemeWrapper wrapper =
                 new ContextThemeWrapper(mContext, R.style.OverflowMenuThemeOverlay);
@@ -359,11 +359,6 @@ class AppMenuHandlerImpl
     @Override
     public AppMenuButtonHelper createAppMenuButtonHelper() {
         return new AppMenuButtonHelperImpl(this);
-    }
-
-    @Override
-    public void invalidateAppMenu() {
-        if (mAppMenu != null) mAppMenu.invalidate();
     }
 
     @Override

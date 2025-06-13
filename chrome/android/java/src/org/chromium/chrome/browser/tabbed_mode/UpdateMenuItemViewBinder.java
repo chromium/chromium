@@ -12,12 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -26,65 +23,55 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** A custom binder used to bind the update menu item. */
 @NullMarked
 class UpdateMenuItemViewBinder {
+    /** Summary for the Update menu item. */
+    public static final PropertyModel.WritableObjectPropertyKey<String> SUMMARY =
+            new PropertyModel.WritableObjectPropertyKey<>("SUMMARY");
+
+    /** The color to be applied to the title text. */
+    public static final PropertyModel.WritableIntPropertyKey TITLE_COLOR_ID =
+            new PropertyModel.WritableIntPropertyKey("TITLE_COLOR_ID");
+
+    /** All the applicable property keys for the update menu item. */
+    public static final PropertyKey[] ALL_KEYS =
+            PropertyModel.concatKeys(
+                    AppMenuItemProperties.ALL_KEYS, new PropertyKey[] {SUMMARY, TITLE_COLOR_ID});
+
     /** Handles binding the view and models changes. */
     public static void bind(PropertyModel model, View view, PropertyKey key) {
         AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
-
-        @Nullable MenuItemState itemState =
-                ((MenuItemState) model.get(AppMenuItemProperties.CUSTOM_ITEM_DATA));
 
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
             assert id == R.id.update_menu_id;
             view.setId(id);
-
-            if (itemState != null) {
-                TextView summary = view.findViewById(R.id.menu_item_summary);
-                if (!TextUtils.isEmpty(itemState.summary)) {
-                    summary.setText(itemState.summary);
-                    summary.setVisibility(View.VISIBLE);
-                } else {
-                    summary.setText("");
-                    summary.setVisibility(View.GONE);
-                }
+        } else if (key == SUMMARY) {
+            TextView summary = view.findViewById(R.id.menu_item_summary);
+            String summaryText = model.get(SUMMARY);
+            if (!TextUtils.isEmpty(summaryText)) {
+                summary.setText(summaryText);
+                summary.setVisibility(View.VISIBLE);
+            } else {
+                summary.setText("");
+                summary.setVisibility(View.GONE);
             }
         } else if (key == AppMenuItemProperties.TITLE) {
             TextView text = view.findViewById(R.id.menu_item_text);
-            if (itemState == null) {
-                text.setText(model.get(AppMenuItemProperties.TITLE));
-            } else {
-                text.setText(itemState.title);
-                text.setTextColor(
-                        AppCompatResources.getColorStateList(
-                                view.getContext(), itemState.titleColorId));
-            }
-        } else if (key == AppMenuItemProperties.TITLE_CONDENSED) {
+            text.setText(model.get(AppMenuItemProperties.TITLE));
+            text.setContentDescription(model.get(AppMenuItemProperties.TITLE));
+        } else if (key == TITLE_COLOR_ID) {
             TextView text = view.findViewById(R.id.menu_item_text);
-            if (itemState == null) {
-                CharSequence titleCondensed = model.get(AppMenuItemProperties.TITLE_CONDENSED);
-                text.setContentDescription(titleCondensed);
-            } else {
-                text.setContentDescription(view.getResources().getString(itemState.title));
-            }
+            text.setTextColor(
+                    AppCompatResources.getColorStateList(
+                            view.getContext(), model.get(TITLE_COLOR_ID)));
         } else if (key == AppMenuItemProperties.ICON) {
             ImageView image = view.findViewById(R.id.menu_item_icon);
-
-            if (itemState == null) {
-                Drawable icon = model.get(AppMenuItemProperties.ICON);
-                image.setImageDrawable(icon);
-                image.setVisibility(View.VISIBLE);
-                return;
-            }
-
-            image.setImageResource(itemState.icon);
-            if (itemState.iconTintId != 0) {
-                DrawableCompat.setTint(
-                        image.getDrawable(), view.getContext().getColor(itemState.iconTintId));
-            }
+            Drawable icon = model.get(AppMenuItemProperties.ICON);
+            image.setVisibility(icon == null ? View.GONE : View.VISIBLE);
+            image.setImageDrawable(icon);
         } else if (key == AppMenuItemProperties.ENABLED) {
             view.findViewById(R.id.menu_item_text)
                     .setEnabled(model.get(AppMenuItemProperties.ENABLED));
-            if (itemState != null) view.setEnabled(itemState.enabled);
+            view.setEnabled(model.get(AppMenuItemProperties.ENABLED));
         } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
             view.setOnClickListener(
                     v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));

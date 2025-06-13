@@ -164,7 +164,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier */ () -> null,
                         /* hasClientPackage= */ false);
-        MVCListAdapter.ModelList modelList = delegate.getMenuItems(mAppMenuHandler);
+        MVCListAdapter.ModelList modelList = delegate.getMenuItems();
         assertTrue(isMenuItemPresent(modelList, R.id.enable_price_tracking_menu_id));
         assertFalse(isMenuItemPresent(modelList, R.id.disable_price_tracking_menu_id));
     }
@@ -200,7 +200,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         () -> cpac,
                         /* hasClientPackage= */ false);
-        MVCListAdapter.ModelList modelList = delegate.getMenuItems(mAppMenuHandler);
+        MVCListAdapter.ModelList modelList = delegate.getMenuItems();
         assertTrue(isMenuItemPresent(modelList, R.id.price_insights_menu_id));
     }
 
@@ -231,7 +231,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier */ () -> null,
                         /* hasClientPackage= */ false);
-        MVCListAdapter.ModelList modelList = delegate.getMenuItems(mAppMenuHandler);
+        MVCListAdapter.ModelList modelList = delegate.getMenuItems();
 
         assertTrue(isMenuItemPresent(modelList, R.id.find_in_page_id));
 
@@ -270,7 +270,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier */ () -> null,
                         /* hasClientPackage= */ false);
-        MVCListAdapter.ModelList modelList = delegate.getMenuItems(mAppMenuHandler);
+        MVCListAdapter.ModelList modelList = delegate.getMenuItems();
 
         assertTrue(isMenuItemPresent(modelList, R.id.find_in_page_id));
 

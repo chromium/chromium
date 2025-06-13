@@ -553,11 +553,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         return null;
     }
 
-    /** Invalidate the app menu data. See {@link AppMenuAdapter#notifyDataSetChanged}. */
-    void invalidate() {
-        if (mAdapter != null) mAdapter.notifyDataSetChanged();
-    }
-
     @RequiresNonNull("mPopup")
     private void setMenuHeight(
             List<Integer> menuItemIds,

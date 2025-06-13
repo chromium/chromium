@@ -98,7 +98,4 @@ public interface AppMenuHandler {
      * @return A new {@link AppMenuButtonHelper} to hook up to a view containing a menu button.
      */
     AppMenuButtonHelper createAppMenuButtonHelper();
-
-    /** Call to cause a redraw when an item in the app menu changes. */
-    void invalidateAppMenu();
 }
