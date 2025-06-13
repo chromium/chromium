@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelImpl.IncognitoTabModelDelegate;
@@ -71,6 +72,14 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
 
     @Override
     public TabModelInternal createTabModel() {
+        if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
+            return new TabCollectionTabModelImpl(
+                    assumeNonNull(mProfileProvider.getOffTheRecordProfile(true)),
+                    mActivityType,
+                    /* isArchivedTabModel= */ false,
+                    mRegularTabCreator,
+                    mIncognitoTabCreator);
+        }
         return new TabModelImpl(
                 assumeNonNull(mProfileProvider.getOffTheRecordProfile(true)),
                 mActivityType,

@@ -1197,6 +1197,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
     public static final MutableFlagWithSafeDefault sSwapNewTabAndNewTabInGroupAndroid =
             newMutableFlagWithSafeDefault(SWAP_NEW_TAB_AND_NEW_TAB_IN_GROUP_ANDROID, false);
+    public static final MutableFlagWithSafeDefault sTabCollectionAndroid =
+            newMutableFlagWithSafeDefault(TAB_COLLECTION_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabArchivalDragDropAndroid =
             newMutableFlagWithSafeDefault(TAB_ARCHIVAL_DRAG_DROP_ANDROID, false);
     // Default value will only ever be reached in tests.

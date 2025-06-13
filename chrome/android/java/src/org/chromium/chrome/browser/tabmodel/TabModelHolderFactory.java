@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -35,6 +36,14 @@ public class TabModelHolderFactory {
             boolean supportUndo,
             boolean isArchivedTabModel,
             TabUngrouperFactory tabUngrouperFactory) {
+        if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
+            return createCollectionTabModelHolder(
+                    profile,
+                    activityType,
+                    isArchivedTabModel,
+                    regularTabCreator,
+                    incognitoTabCreator);
+        }
         return createLegacyTabModelHolder(
                 profile,
                 activityType,
@@ -67,6 +76,19 @@ public class TabModelHolderFactory {
             TabModelDelegate modelDelegate,
             TabRemover tabRemover,
             TabUngrouperFactory tabUngrouperFactory) {
+        if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
+            return createCollectionIncognitoTabModelHolder(
+                    profileProvider,
+                    regularTabCreator,
+                    incognitoTabCreator,
+                    orderController,
+                    tabContentManager,
+                    nextTabPolicySupplier,
+                    asyncTabParamsManager,
+                    activityType,
+                    modelDelegate,
+                    tabRemover);
+        }
         return createLegacyIncognitoTabModelHolder(
                 profileProvider,
                 regularTabCreator,
@@ -85,6 +107,52 @@ public class TabModelHolderFactory {
     public static IncognitoTabModelHolder createEmptyIncognitoTabModelHolder() {
         EmptyTabModel model = EmptyTabModel.getInstance(/* isIncognito= */ true);
         return new IncognitoTabModelHolder(model, new IncognitoTabGroupModelFilterImpl(model));
+    }
+
+    private static TabModelHolder createCollectionTabModelHolder(
+            Profile profile,
+            @ActivityType int activityType,
+            boolean isArchivedTabModel,
+            TabCreator regularTabCreator,
+            TabCreator incognitoTabCreator) {
+        TabCollectionTabModelImpl regularTabModel =
+                new TabCollectionTabModelImpl(
+                        profile,
+                        activityType,
+                        isArchivedTabModel,
+                        regularTabCreator,
+                        incognitoTabCreator);
+
+        return new TabModelHolder(regularTabModel, regularTabModel);
+    }
+
+    private static IncognitoTabModelHolder createCollectionIncognitoTabModelHolder(
+            ProfileProvider profileProvider,
+            TabCreator regularTabCreator,
+            TabCreator incognitoTabCreator,
+            TabModelOrderController orderController,
+            TabContentManager tabContentManager,
+            NextTabPolicySupplier nextTabPolicySupplier,
+            AsyncTabParamsManager asyncTabParamsManager,
+            @ActivityType int activityType,
+            TabModelDelegate modelDelegate,
+            TabRemover tabRemover) {
+        IncognitoTabModelImplCreator incognitoCreator =
+                new IncognitoTabModelImplCreator(
+                        profileProvider,
+                        regularTabCreator,
+                        incognitoTabCreator,
+                        orderController,
+                        tabContentManager,
+                        nextTabPolicySupplier,
+                        asyncTabParamsManager,
+                        activityType,
+                        modelDelegate,
+                        tabRemover);
+        IncognitoTabModelImpl incognitoTabModel = new IncognitoTabModelImpl(incognitoCreator);
+
+        return new IncognitoTabModelHolder(
+                incognitoTabModel, new IncognitoTabGroupModelFilterImpl(incognitoTabModel));
     }
 
     private static TabModelHolder createLegacyTabModelHolder(
