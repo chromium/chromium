@@ -53,8 +53,6 @@ static_library("crosapi") {
     "parent_access_ash.h",
     "primary_profile_creation_waiter.cc",
     "primary_profile_creation_waiter.h",
-    "structured_metrics_service_ash.cc",
-    "structured_metrics_service_ash.h",
     "vpn_service_ash.cc",
     "vpn_service_ash.h",
   ]
@@ -218,7 +216,6 @@ static_library("crosapi") {
     "//components/language/core/browser",
     "//components/live_caption:utils",
     "//components/metrics",
-    "//components/metrics/structured",
     "//components/metrics_services_manager:metrics_services_manager",
     "//components/payments/core:error_strings",
     "//components/policy/core/common:common_constants",

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/354842935): while this interface is originally designed
+// to be used as a part of crosapi, now it is used for the communication
+// with recorder_ui web app. Rework to make this turn into the dedicated
+// api for the communication, and update the build rules.
+
 module crosapi.mojom;
 
 import "components/metrics/structured/mojom/event.mojom";

@@ -35,7 +35,6 @@ import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
-import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
@@ -261,13 +260,7 @@ interface Crosapi {
   // BindSmartReaderClient@107 was removed.
   // BindSpeechRecognition@84 was removed.
   // BindStableVideoDecoderFactory@56 was removed.
-
-  // Binds the StructuredMetricsService interface to record events.
-  // Added in M96.
-  [MinVersion=48]
-  BindStructuredMetricsService@52(
-      pending_receiver<StructuredMetricsService> receiver);
-
+  // BindStructuredMetricsService@52 was removed.
   // BindSuggestionService@136 was removed.
   // BindTrustedVaultBackend@121 was removed.
   // BindTrustedVaultBackendService@145 was removed.

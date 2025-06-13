@@ -55,7 +55,6 @@ class MediaUIAsh;
 class MultiCaptureServiceAsh;
 class NetworkingAttributesAsh;
 class ParentAccessAsh;
-class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
@@ -131,9 +130,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
-  void BindStructuredMetricsService(
-      ::mojo::PendingReceiver<::crosapi::mojom::StructuredMetricsService>
-          receiver) override;
   void BindTelemetryDiagnosticRoutinesService(
       mojo::PendingReceiver<mojom::TelemetryDiagnosticRoutinesService> receiver)
       override;
@@ -199,10 +195,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ash::ProbeServiceAsh* probe_service_ash() { return probe_service_ash_.get(); }
 
-  StructuredMetricsServiceAsh* structured_metrics_service_ash() {
-    return structured_metrics_service_ash_.get();
-  }
-
   ash::VideoConferenceManagerAsh* video_conference_manager_ash() {
     return video_conference_manager_ash_.get();
   }
@@ -236,7 +228,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
   std::unique_ptr<ash::printing::PrintPreviewWebcontentsAdapterAsh>
       print_preview_webcontents_adapter_ash_;
-  std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
 

@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
-#include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
@@ -119,8 +118,6 @@ CrosapiAsh::CrosapiAsh()
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       print_preview_webcontents_adapter_ash_(
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
-      structured_metrics_service_ash_(
-          std::make_unique<StructuredMetricsServiceAsh>()),
       video_conference_manager_ash_(
           std::make_unique<ash::VideoConferenceManagerAsh>()),
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()) {
@@ -296,11 +293,6 @@ void CrosapiAsh::BindSensorHalClient(
     mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote) {
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
       std::move(remote));
-}
-
-void CrosapiAsh::BindStructuredMetricsService(
-    mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver) {
-  structured_metrics_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindTelemetryDiagnosticRoutinesService(
