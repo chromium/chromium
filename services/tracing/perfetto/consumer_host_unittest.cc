@@ -453,7 +453,6 @@ class TracingConsumerTest : public testing::Test,
         trace_config.add_data_sources()->mutable_config();
     trace_event_config->set_name(data_source_name);
     trace_event_config->set_target_buffer(0);
-    trace_event_config->mutable_chrome_config()->set_client_priority(priority);
 
     return trace_config;
   }

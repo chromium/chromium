@@ -101,8 +101,8 @@ struct ChromeConfig {
   // format.
   bool convert_to_legacy_json;
 
-  // Priority of the tracing session.
-  TracingClientPriority client_priority;
+  //  When enabled, event names should not contain package names.
+  bool event_package_name_filter_enabled;
 };
 
 enum ConsoleOutput {
