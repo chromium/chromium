@@ -53,7 +53,7 @@ void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
 void SnapshotTabHelper::SetSnapshotStorage(SnapshotStorageWrapper* wrapper) {
   if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
     CHECK(snapshot_manager_);
-    SnapshotStorage* storage = nil;
+    id<SnapshotStorage> storage = nil;
     // `wrapper` is nil when a WebState is detached.
     if (wrapper) {
       storage = wrapper.snapshotStorage;

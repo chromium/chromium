@@ -9,7 +9,6 @@ source_set("model") {
     "legacy_image_file_manager.h",
     "legacy_snapshot_generator.h",
     "legacy_snapshot_lru_cache.h",
-    "legacy_snapshot_storage+Testing.h",
     "legacy_snapshot_storage.h",
     "snapshot_browser_agent.h",
     "snapshot_storage_wrapper.h",
@@ -54,6 +53,7 @@ source_set("model_common") {
     "snapshot_id.h",
     "snapshot_id_wrapper.h",
     "snapshot_id_wrapper.mm",
+    "snapshot_kind.h",
     "snapshot_scale.h",
     "snapshot_scale.mm",
     "web_state_snapshot_info.h",
@@ -76,6 +76,7 @@ swift_source_set("model_swift") {
     "snapshot_lru_cache.swift",
     "snapshot_manager.swift",
     "snapshot_storage.swift",
+    "snapshot_storage_impl.swift",
     "snapshot_storage_observer.swift",
   ]
   deps = [
@@ -85,6 +86,7 @@ swift_source_set("model_swift") {
     "//ios/chrome/browser/shared/public/metrics:metrics_bridge",
     "//ios/chrome/browser/shared/ui/util:util_bridge",
   ]
+  public_deps = [ "//base" ]
 }
 
 source_set("test_utils") {

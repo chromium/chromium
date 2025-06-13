@@ -49,4 +49,15 @@
          base::apple::ObjCCastStrict<SnapshotIDWrapper>(other).snapshot_id;
 }
 
+#pragma mark - NSCopying
+
+// SnapshotIDWrapper is immutable, so copy can simply return self.
+- (id)copy {
+  return self;
+}
+
+- (id)copyWithZone:(NSZone*)zone {
+  return self;
+}
+
 @end

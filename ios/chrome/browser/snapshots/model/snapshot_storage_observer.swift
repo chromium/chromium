@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Interface for listening to events occurring to the SnapshotStorage.
-@objc protocol SnapshotStorageObserver {
+@objc public protocol SnapshotStorageObserver {
   // Tells the observing object that the storage was updated with a new snapshot corresponding to
   // `snapshotID`.
   @objc optional func didUpdateSnapshotStorage(snapshotID: SnapshotIDWrapper)

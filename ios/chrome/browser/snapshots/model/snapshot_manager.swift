@@ -32,7 +32,8 @@ import UIKit
   // Invokes `completion` with nil if a snapshot does not exist.
   func retrieveSnapshot(completion: @escaping (UIImage?) -> Void) {
     if let storage = snapshotStorage {
-      storage.retrieveImage(snapshotID: snapshotID, completion: completion)
+      storage.retrieveImage(
+        snapshotID: snapshotID, snapshotKind: SnapshotKind.color, completion: completion)
     } else {
       completion(nil)
     }
@@ -47,7 +48,8 @@ import UIKit
     }
 
     if let storage = snapshotStorage {
-      storage.retrieveGreyImage(snapshotID: snapshotID, completion: wrappedCompletion)
+      storage.retrieveImage(
+        snapshotID: snapshotID, snapshotKind: SnapshotKind.greyscale, completion: wrappedCompletion)
     } else {
       wrappedCompletion(nil)
     }
@@ -110,7 +112,7 @@ import UIKit
     guard timestamp > latestCommitedTimestamp else { return }
 
     latestCommitedTimestamp = timestamp
-    snapshotStorage?.setImage(image, snapshotID: snapshotID)
+    snapshotStorage?.setImage(image, withSnapshotID: snapshotID)
   }
 
   // Helper method used to retrieve a grey snapshot.
