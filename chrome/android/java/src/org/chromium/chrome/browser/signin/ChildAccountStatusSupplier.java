@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.signin;
 
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountUtils;
 
@@ -25,12 +25,13 @@ import org.chromium.components.signin.AccountUtils;
  * optimisation creates a potential conflict if there are no app restrictions on a supervised
  * device. However, this should never happen on real devices.
  */
+@NullMarked
 public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
     private final OneshotSupplierImpl<Boolean> mValue = new OneshotSupplierImpl<>();
     private final long mChildAccountStatusStartTime;
 
-    private Boolean mHasRestriction;
-    private Boolean mChildAccountStatusFromAccountManagerFacade;
+    private @Nullable Boolean mHasRestriction;
+    private @Nullable Boolean mChildAccountStatusFromAccountManagerFacade;
 
     /**
      * Creates ChildAccountStatusSupplier and starts fetching the child account status.
@@ -57,12 +58,13 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
     }
 
     @Override
-    public Boolean onAvailable(Callback<Boolean> callback) {
+    public @Nullable Boolean onAvailable(Callback<Boolean> callback) {
         return mValue.onAvailable(callback);
     }
 
     @Override
-    public Boolean get() {
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
+    public @Nullable Boolean get() {
         return mValue.get();
     }
 

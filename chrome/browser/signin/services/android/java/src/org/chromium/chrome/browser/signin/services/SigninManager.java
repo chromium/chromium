@@ -199,7 +199,7 @@ public interface SigninManager {
     /**
      * Returns the management domain if the signed in account is managed, otherwise returns null.
      */
-    String getManagementDomain();
+    @Nullable String getManagementDomain();
 
     /**
      * Verifies if the account is managed. Callback may be called either synchronously or

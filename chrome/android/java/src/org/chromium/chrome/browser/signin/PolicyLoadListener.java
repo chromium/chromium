@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.signin;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.policy.PolicyService;
 import org.chromium.components.policy.PolicyService.Observer;
 
@@ -28,6 +28,7 @@ import org.chromium.components.policy.PolicyService.Observer;
  * <p>- Supplies [True] if policy service is initialized and policy might be applied; - Supplies
  * [False] if no app restriction is found, thus no polices will be found on device.
  */
+@NullMarked
 public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     private static final String TAG = "PolicyLoadListener";
 
@@ -35,7 +36,7 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     private final OneshotSupplierImpl<Boolean> mMightHavePoliciesSupplier;
     private final OneshotSupplier<PolicyService> mPolicyServiceSupplier;
 
-    private PolicyService.Observer mPolicyServiceObserver;
+    private PolicyService.@Nullable Observer mPolicyServiceObserver;
 
     /**
      * Whether app restriction is found on the device. This can be null when this information is not
@@ -73,12 +74,13 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     }
 
     @Override
-    public Boolean onAvailable(Callback<Boolean> callback) {
+    public @Nullable Boolean onAvailable(Callback<Boolean> callback) {
         return mMightHavePoliciesSupplier.onAvailable(mCallbackController.makeCancelable(callback));
     }
 
     @Override
-    public Boolean get() {
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
+    public @Nullable Boolean get() {
         return mMightHavePoliciesSupplier.get();
     }
 
@@ -130,6 +132,7 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
                                     TAG,
                                     "#onPolicyServiceInitialized() "
                                             + policyService.isInitializationComplete());
+                            assert mPolicyServiceObserver != null;
                             policyService.removeObserver(mPolicyServiceObserver);
                             mPolicyServiceObserver = null;
                             setSupplierIfDecidable();
