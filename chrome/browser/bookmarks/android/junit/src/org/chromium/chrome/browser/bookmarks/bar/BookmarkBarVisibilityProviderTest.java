@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -28,7 +30,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -50,12 +51,12 @@ public class BookmarkBarVisibilityProviderTest {
 
     @Mock private Activity mActivity;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private Callback<Boolean> mCallback;
     @Mock private Configuration mConfig;
     @Mock private PrefChangeRegistrarJni mPrefChangeRegistrarJni;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
     @Mock private UserPrefsJni mUserPrefsJni;
+    @Mock private BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver mObserver;
 
     private final Set<ConfigurationChangedObserver> mConfigChangeObserverCache = new HashSet<>();
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
@@ -99,50 +100,46 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingEnabledForTesting(false);
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mCallback).onResult(false);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
+        verify(mObserver, times(1)).onVisibilityChanged(false);
+        clearInvocations(mObserver);
 
         // Clean up.
         provider.destroy();
-        verifyNoMoreInteractions(mCallback);
+        verify(mObserver, never()).onVisibilityChanged(anyBoolean());
 
         // Case: Construct w/ feature disallowed and setting enabled.
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mCallback).onResult(false);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
+        verify(mObserver, times(1)).onVisibilityChanged(false);
+        clearInvocations(mObserver);
 
         // Clean up.
         provider.destroy();
-        verifyNoMoreInteractions(mCallback);
+        verify(mObserver, never()).onVisibilityChanged(anyBoolean());
 
         // Case: Construct w/ feature allowed and setting disabled.
         BookmarkBarUtils.setFeatureAllowedForTesting(true);
         BookmarkBarUtils.setSettingEnabledForTesting(false);
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mCallback).onResult(false);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
+        verify(mObserver, times(1)).onVisibilityChanged(false);
+        clearInvocations(mObserver);
 
         // Clean up.
         provider.destroy();
-        verifyNoMoreInteractions(mCallback);
+        verify(mObserver, never()).onVisibilityChanged(anyBoolean());
 
         // Case: Construct w/ feature allowed and setting enabled.
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mCallback).onResult(true);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
+        verify(mObserver, times(1)).onVisibilityChanged(true);
+        clearInvocations(mObserver);
 
         // Clean up.
         provider.destroy();
-        verifyNoMoreInteractions(mCallback);
+        verify(mObserver, never()).onVisibilityChanged(anyBoolean());
     }
 
     @Test
@@ -153,27 +150,20 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mCallback).onResult(true);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
 
         // Case: Configuration changed to disallow feature.
         BookmarkBarUtils.setFeatureAllowedForTesting(false);
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
-        verify(mCallback).onResult(false);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
+        verify(mObserver, times(1)).onVisibilityChanged(false);
+        clearInvocations(mObserver);
 
         // Case: Configuration changed to allow feature.
         BookmarkBarUtils.setFeatureAllowedForTesting(true);
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
-        verify(mCallback).onResult(true);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
+        verify(mObserver, times(1)).onVisibilityChanged(true);
 
         // Clean up.
         provider.destroy();
-        verifyNoMoreInteractions(mCallback);
     }
 
     @Test
@@ -184,27 +174,20 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mCallback).onResult(true);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
 
         // Case: Preference changed to disable setting.
         BookmarkBarUtils.setSettingEnabledForTesting(false);
         mSettingObserverCache.stream().forEach(PrefObserver::onPreferenceChange);
-        verify(mCallback).onResult(false);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
+        verify(mObserver, times(1)).onVisibilityChanged(false);
+        clearInvocations(mObserver);
 
         // Case: Preference changed to enable setting.
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         mSettingObserverCache.stream().forEach(PrefObserver::onPreferenceChange);
-        verify(mCallback).onResult(true);
-        verifyNoMoreInteractions(mCallback);
-        clearInvocations(mCallback);
+        verify(mObserver, times(1)).onVisibilityChanged(true);
 
         // Clean up.
         provider.destroy();
-        verifyNoMoreInteractions(mCallback);
     }
 
     private @NonNull <T> Answer<Void> addValueAtIndexToSet(@NonNull Set<T> set, int index) {
@@ -216,8 +199,11 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     private @NonNull BookmarkBarVisibilityProvider createProvider() {
-        return new BookmarkBarVisibilityProvider(
-                mActivity, mActivityLifecycleDispatcher, mProfileSupplier, mCallback);
+        BookmarkBarVisibilityProvider provider =
+                new BookmarkBarVisibilityProvider(
+                        mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
+        provider.addObserver(mObserver);
+        return provider;
     }
 
     private @NonNull <T> Answer<Void> removeValueAtIndexFromSet(@NonNull Set<T> set, int index) {

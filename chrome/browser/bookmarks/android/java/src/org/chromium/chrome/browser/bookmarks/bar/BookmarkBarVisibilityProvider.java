@@ -8,7 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -22,12 +22,25 @@ import org.chromium.chrome.browser.profiles.Profile;
 @NullMarked
 public class BookmarkBarVisibilityProvider {
 
+    /**
+     * Interface to define an observer of visibility changes for the Bookmark Bar. The visibility
+     * can change from user setting or device configuration changes.
+     */
+    public interface BookmarkBarVisibilityObserver {
+        /**
+         * Called when the visibility of the Bookmark Bar changes.
+         *
+         * @param visibility The new (now current) visibility of the Bookmark Bar.
+         */
+        void onVisibilityChanged(boolean visibility);
+    }
+
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final Callback<Boolean> mCallback;
     private final ConfigurationChangedObserver mConfigurationChangedListener;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final BookmarkBarSettingProvider mSettingProvider;
+    private final ObserverList<BookmarkBarVisibilityObserver> mObservers;
 
     /**
      * Constructor.
@@ -35,17 +48,16 @@ public class BookmarkBarVisibilityProvider {
      * @param activity The activity in which the bookmark bar is hosted.
      * @param activityLifecycleDispatcher The lifecycle dispatcher for the host activity.
      * @param profileSupplier The supplier of the profile for which to observe the user setting.
-     * @param callback The callback to notify of changes to visibility.
      */
     public BookmarkBarVisibilityProvider(
             @NonNull Activity activity,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull Callback<Boolean> callback) {
+            @NonNull ObservableSupplier<Profile> profileSupplier) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mCallback = callback;
         mProfileSupplier = profileSupplier;
+
+        mObservers = new ObserverList<>();
 
         mConfigurationChangedListener = (unused) -> updateVisibility();
         mActivityLifecycleDispatcher.register(mConfigurationChangedListener);
@@ -55,13 +67,36 @@ public class BookmarkBarVisibilityProvider {
                         mProfileSupplier, /* callback= */ (unused) -> updateVisibility());
     }
 
+    /**
+     * Adds the given observer to |this| to receive notifications of visibility changes.
+     *
+     * @param observer The observer to add to the observer list of |this|.
+     */
+    public void addObserver(BookmarkBarVisibilityObserver observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes the given observer from |this| to no longer receive notifications of visibility
+     * changes.
+     *
+     * @param observer The observer to remove from the observer list of |this|.
+     */
+    public void removeObserver(BookmarkBarVisibilityObserver observer) {
+        mObservers.removeObserver(observer);
+    }
+
     /** Destroys the visibility provider. */
     public void destroy() {
         mActivityLifecycleDispatcher.unregister(mConfigurationChangedListener);
         mSettingProvider.destroy();
+        mObservers.clear();
     }
 
     private void updateVisibility() {
-        mCallback.onResult(BookmarkBarUtils.isFeatureVisible(mActivity, mProfileSupplier.get()));
+        boolean visibility = BookmarkBarUtils.isFeatureVisible(mActivity, mProfileSupplier.get());
+        for (BookmarkBarVisibilityObserver observer : mObservers) {
+            observer.onVisibilityChanged(visibility);
+        }
     }
 }
