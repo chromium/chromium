@@ -955,11 +955,9 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                     web_contents->GetBrowserContext()));
 
   // Pass WebContentsKey to look up AwContentsIoThreadClient in
-  // WebContentsToIoThreadClientMap later. Currently this is used only when a
-  // page is being prerendered.
-  // TODO(crbug.com/373474043): Use this even for non-prerendered pages.
+  // WebContentsToIoThreadClientMap later.
   std::optional<WebContentsKey> web_contents_key;
-  if (web_contents && web_contents->IsPrerenderedFrame(frame_tree_node_id)) {
+  if (web_contents) {
     web_contents_key = GetWebContentsKey(*web_contents);
   }
 
@@ -1163,13 +1161,9 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
     }
 
     // Pass WebContentsKey to look up AwContentsIoThreadClient in
-    // WebContentsToIoThreadClientMap later. Currently this is used only when a
-    // page is being prerendered.
-    // TODO(crbug.com/373474043): Use this even for non-prerendered pages.
+    // WebContentsToIoThreadClientMap later.
     std::optional<WebContentsKey> web_contents_key;
-    if (web_contents->IsPrerenderedFrame(frame->GetFrameTreeNodeId())) {
-      web_contents_key = GetWebContentsKey(*web_contents);
-    }
+    web_contents_key = GetWebContentsKey(*web_contents);
 
     auto xrw_allowlist_matcher =
         AwSettings::FromWebContents(web_contents)->xrw_allowlist_matcher();

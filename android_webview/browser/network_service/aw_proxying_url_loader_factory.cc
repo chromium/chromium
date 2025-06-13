@@ -612,16 +612,22 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
 
 // logic for when not to invoke shouldInterceptRequest callback
 bool InterceptedRequest::ShouldNotInterceptRequest() {
+  if (request_was_redirected_) {
+    return true;
+  }
+
   bool should_skip_intercept_for_prefetch_enabled =
       base::FeatureList::IsEnabled(features::kWebViewSkipInterceptsForPrefetch);
-  // Do not call shouldInterceptRequest callback for prefetch requests that are
-  // not also prerenders. This is because prerenders are treated as typical
-  // navigations in WebView and therefore should be intercepted as usual.
-  if (request_was_redirected_ ||
-      (should_skip_intercept_for_prefetch_enabled &&
-       AwPrefetchManager::IsPrefetchRequest(request_) &&
-       !AwPrefetchManager::IsPrerenderRequest(request_))) {
-    return true;
+  if (should_skip_intercept_for_prefetch_enabled) {
+    // Only skip if the prefetch is not also a prerender.
+    if (AwPrefetchManager::IsPrefetchRequest(request_) &&
+        !AwPrefetchManager::IsPrerenderRequest(request_)) {
+      // Only skip if the prefetch if it is not associated with any web
+      // contents. This is required in order for browser context initiated
+      // prefetch requests to skip shouldInterceptRequest while excluding
+      // renderer initiated prefetches (e.g. speculation rules).
+      return web_contents_key_ == std::nullopt;
+    }
   }
 
   // Do not call shouldInterceptRequest callback for special android urls,
