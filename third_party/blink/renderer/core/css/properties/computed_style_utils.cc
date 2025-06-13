@@ -2883,6 +2883,17 @@ CSSValueList* ComputedStyleUtils::ValueForCornerShapeShorthand(
   return list;
 }
 
+CSSValueList* ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
+    Superellipse a,
+    Superellipse b) {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*ValueForCornerShape(a));
+  if (a != b) {
+    list->Append(*ValueForCornerShape(b));
+  }
+  return list;
+}
+
 CSSFunctionValue* ComputedStyleUtils::ValueForTransform(
     const gfx::Transform& matrix,
     float zoom,

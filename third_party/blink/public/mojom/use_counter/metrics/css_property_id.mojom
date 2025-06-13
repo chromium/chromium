@@ -916,6 +916,10 @@ enum CSSSampleId {
     kTextShrink = 857,
     kRule = 858,
     kOriginTrialTestShorthand = 859,
+    kCornerTopShape = 860,
+    kCornerRightShape = 861,
+    kCornerBottomShape = 862,
+    kCornerLeftShape = 863,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

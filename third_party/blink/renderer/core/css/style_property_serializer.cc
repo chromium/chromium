@@ -702,6 +702,14 @@ String StylePropertySerializer::SerializeShorthand(
       return BorderRadiusValue();
     case CSSPropertyID::kCornerShape:
       return CornerShapeValue();
+    case CSSPropertyID::kCornerTopShape:
+      return Get2Values(cornerTopShapeShorthand());
+    case CSSPropertyID::kCornerRightShape:
+      return Get2Values(cornerRightShapeShorthand());
+    case CSSPropertyID::kCornerBottomShape:
+      return Get2Values(cornerBottomShapeShorthand());
+    case CSSPropertyID::kCornerLeftShape:
+      return Get2Values(cornerLeftShapeShorthand());
     case CSSPropertyID::kScrollPadding:
       return Get4Values(scrollPaddingShorthand());
     case CSSPropertyID::kScrollPaddingBlock:

@@ -8008,6 +8008,29 @@ bool ConsumeCornerShapes(std::array<CSSValue*, 4>& shapes,
   return true;
 }
 
+bool ConsumeEdgeCornerShapes(bool important,
+                             CSSParserTokenStream& stream,
+                             const CSSParserContext& context,
+                             const StylePropertyShorthand& shorthand,
+                             HeapVector<CSSPropertyValue, 64>& properties) {
+  CSSValue* first_shape = ConsumeCornerShape(stream, context);
+  if (!first_shape) {
+    return false;
+  }
+
+  CSSValue* second_shape = ConsumeCornerShape(stream, context);
+  css_parsing_utils::AddProperty(
+      shorthand.properties()[0]->PropertyID(), shorthand.id(), *first_shape,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  css_parsing_utils::AddProperty(
+      shorthand.properties()[1]->PropertyID(), shorthand.id(),
+      *(second_shape ? second_shape : first_shape), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  return true;
+}
+
 CSSValue* ConsumeBasicShape(CSSParserTokenStream& stream,
                             const CSSParserContext& context,
                             AllowPathValue allow_path,

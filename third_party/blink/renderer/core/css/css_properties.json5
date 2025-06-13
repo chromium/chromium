@@ -8454,6 +8454,46 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
+      name: "corner-top-shape",
+      longhands: [
+        "corner-top-left-shape", "corner-top-right-shape"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornerShape",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-right-shape",
+      longhands: [
+        "corner-top-right-shape", "corner-bottom-right-shape"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornerShape",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-bottom-shape",
+      longhands: [
+        "corner-bottom-left-shape", "corner-bottom-right-shape"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornerShape",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-left-shape",
+      longhands: [
+        "corner-top-left-shape", "corner-bottom-left-shape"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornerShape",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
       name: "corner-shape",
       longhands: [
         "corner-top-left-shape", "corner-top-right-shape",

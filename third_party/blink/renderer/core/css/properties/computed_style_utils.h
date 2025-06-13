@@ -247,6 +247,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForBorderRadiusCorner(const LengthSize&,
                                               const ComputedStyle&);
   static CSSValue* ValueForCornerShape(const Superellipse&);
+  static CSSValueList* ValueForCornerShapeEdgeShorthand(Superellipse a,
+                                                        Superellipse b);
 
   // Serializes a gfx::Transform into a matrix() or matrix3d() transform
   // function value. If force_matrix3d is true, it will always give a matrix3d

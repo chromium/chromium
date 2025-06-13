@@ -661,9 +661,21 @@ All changes to this list should go through Blink's feature review process: http:
     container
         container-name
         container-type
+    corner-bottom-shape
+        corner-bottom-left-shape
+        corner-bottom-right-shape
+    corner-left-shape
+        corner-bottom-left-shape
+        corner-top-left-shape
+    corner-right-shape
+        corner-bottom-right-shape
+        corner-top-right-shape
     corner-shape
         corner-bottom-left-shape
         corner-bottom-right-shape
+        corner-top-left-shape
+        corner-top-right-shape
+    corner-top-shape
         corner-top-left-shape
         corner-top-right-shape
     flex

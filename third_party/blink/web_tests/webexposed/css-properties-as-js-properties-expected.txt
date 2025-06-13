@@ -164,13 +164,17 @@ content
 contentVisibility
 cornerBottomLeftShape
 cornerBottomRightShape
+cornerBottomShape
 cornerEndEndShape
 cornerEndStartShape
+cornerLeftShape
+cornerRightShape
 cornerShape
 cornerStartEndShape
 cornerStartStartShape
 cornerTopLeftShape
 cornerTopRightShape
+cornerTopShape
 counterIncrement
 counterReset
 counterSet
