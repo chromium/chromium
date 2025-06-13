@@ -7,17 +7,28 @@
 
 #include "base/time/time.h"
 
+enum class SessionState {
+  kNone = 0,
+  kSessionStarted = 1,
+  kSessionAbandoned = 2,
+  kSubmittedQuery = 3,
+};
+
 class ComposeboxQueryController {
  public:
   ComposeboxQueryController() = default;
-  virtual ~ComposeboxQueryController() = default;
+  virtual ~ComposeboxQueryController();
 
   // Session management.
   void NotifySessionStarted();
+  void NotifySessionAbandoned();
+
+  SessionState session_state() { return session_state_; }
 
  private:
   // TODO(420701010) Create SessionMetrics struct.
   base::Time session_start_time_;
+  SessionState session_state_ = SessionState::kNone;
 };
 
 #endif  // COMPONENTS_OMNIBOX_COMPOSEBOX_COMPOSEBOX_QUERY_CONTROLLER_H_

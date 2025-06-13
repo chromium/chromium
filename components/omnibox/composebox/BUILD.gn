@@ -9,3 +9,12 @@ source_set("composebox") {
   ]
   deps = [ "//base:base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "composebox_query_controller_unittest.cc" ]
+  deps = [
+    ":composebox",
+    "//base/test:test_support",
+  ]
+}
