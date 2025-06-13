@@ -9,6 +9,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "content/public/common/drop_data.h"
 #include "ui/views/view_class_properties.h"
@@ -70,10 +71,8 @@ void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
 
   show_drop_target_timer_.emplace(drop_side);
 
-  // TODO(crbug.com/394369035): Settle on an appropriate value for this.
-  constexpr base::TimeDelta kDropTargetDelay = base::Seconds(1);
   show_drop_target_timer_->timer.Start(
-      FROM_HERE, kDropTargetDelay, this,
+      FROM_HERE, features::kSideBySideShowDropTargetDelay.Get(), this,
       &MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget);
 }
 

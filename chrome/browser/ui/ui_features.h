@@ -145,6 +145,13 @@ BASE_DECLARE_FEATURE(KScrimForTabModal);
 
 BASE_DECLARE_FEATURE(kSideBySide);
 
+// The delay before showing the drop target for the side-by-side drag-and-drop
+// entrypoint.
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kSideBySideShowDropTargetDelay(&kSideBySide,
+                                   "SideBySideShowDropTargetDelay",
+                                   base::Seconds(1));
+
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
 
 bool IsNtpFooterEnabledWithoutSideBySide();
