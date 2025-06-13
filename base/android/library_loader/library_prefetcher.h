@@ -10,7 +10,6 @@
 
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/base_export.h"
-#include "base/gtest_prod_util.h"
 
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
 
@@ -32,34 +31,9 @@ class BASE_EXPORT NativeLibraryPrefetcher {
   NativeLibraryPrefetcher& operator=(const NativeLibraryPrefetcher&) = delete;
 
   // Finds the executable code range, forks a low priority process pre-fetching
-  // it wait()s for the process to exit or die. If ordered_only is true, only
-  // the ordered section is prefetched. See GetOrdrderedTextRange() in
-  // library_prefetcher.cc.
-  static void ForkAndPrefetchNativeLibrary(bool ordered_only);
-
-  // Returns the percentage of the native library code currently resident in
-  // memory, or -1 in case of error.
-  static int PercentageOfResidentNativeLibraryCode();
-
-  // Collects residency for the native library executable multiple times, then
-  // dumps it to disk.
-  static void PeriodicallyCollectResidency();
-
-  // Calls madvise() on the native library executable, using orderfile
-  // information to decide how to advise each part of the library.
-  static void MadviseForOrderfile();
-
-  // Calls madvise() on the native library executable so that residency
-  // collection is accurate.
-  static void MadviseForResidencyCollection();
-
- private:
-  // Returns the percentage of [start, end] currently resident in
-  // memory, or -1 in case of error.
-  static int PercentageOfResidentCode(size_t start, size_t end);
-
-  FRIEND_TEST_ALL_PREFIXES(NativeLibraryPrefetcherTest,
-                           TestPercentageOfResidentCode);
+  // it wait()s for the process to exit or die. It fetches any ordered section
+  // first.
+  static void ForkAndPrefetchNativeLibrary();
 };
 
 }  // namespace android

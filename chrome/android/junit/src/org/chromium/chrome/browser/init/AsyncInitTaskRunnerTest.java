@@ -77,7 +77,6 @@ public class AsyncInitTaskRunnerTest {
                         });
         // Allow test to run on all builds
         when(mRunner.shouldFetchVariationsSeedDuringFirstRun()).thenReturn(true);
-        doNothing().when(mRunner).prefetchLibrary();
     }
 
     @Test

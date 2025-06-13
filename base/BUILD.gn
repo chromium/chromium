@@ -4030,7 +4030,6 @@ test("base_unittests") {
       "android/jni_array_unittest.cc",
       "android/jni_bytebuffer_unittest.cc",
       "android/jni_string_unittest.cc",
-      "android/library_loader/library_prefetcher_unittest.cc",
       "android/linker/linker_jni.cc",
       "android/linker/linker_jni.h",
       "android/linker/linker_unittest.cc",

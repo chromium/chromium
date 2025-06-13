@@ -11,11 +11,6 @@
 #include "base/android/library_loader/library_prefetcher.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/at_exit.h"
-#include "base/base_switches.h"
-#include "base/metrics/histogram.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/system/sys_info.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/library_loader_jni/LibraryLoader_jni.h"
@@ -40,14 +35,6 @@ LibraryProcessType GetLibraryProcessType() {
   return g_library_process_type;
 }
 
-bool IsUsingOrderfileOptimization() {
-#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  return SysInfo::IsLowEndDevice();
-#else  //  !SUPPORTS_CODE_ORDERING
-  return false;
-#endif
-}
-
 void SetNativeInitializationHook(
     NativeInitializationHook native_initialization_hook) {
   g_native_initialization_hook = native_initialization_hook;
@@ -65,15 +52,6 @@ static jboolean JNI_LibraryLoader_LibraryLoaded(JNIEnv* env,
 
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
   orderfile::StartDelayedDump();
-#endif
-
-#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  if (CommandLine::ForCurrentProcess()->HasSwitch(
-          "log-native-library-residency")) {
-    NativeLibraryPrefetcher::MadviseForResidencyCollection();
-  } else if (IsUsingOrderfileOptimization()) {
-    NativeLibraryPrefetcher::MadviseForOrderfile();
-  }
 #endif
 
   if (g_native_initialization_hook &&
