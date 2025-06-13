@@ -210,6 +210,13 @@ public final class Website implements WebsiteEntry {
         return mContentSettingExceptions.get(type);
     }
 
+    /** Returns the title for a specific type of content setting for this Website. */
+    public String getTitleForContentSetting(@ContentSettingsType.EnumType int type) {
+        return getContentSettingException(type) != null
+                ? assumeNonNull(getContentSettingException(type)).getDisplayPattern()
+                : getTitle();
+    }
+
     /** Sets the exception info for this Website for specified type. */
     public void setContentSettingException(
             @ContentSettingsType.EnumType int type, ContentSettingException exception) {

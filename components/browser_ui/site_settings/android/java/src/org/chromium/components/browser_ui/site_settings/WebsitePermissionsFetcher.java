@@ -447,6 +447,16 @@ public class WebsitePermissionsFetcher {
                         containsPatternWildcards(address)
                                 ? address
                                 : assumeNonNull(WebsiteAddress.create(address)).getOrigin();
+                // To avoid collapsing addresses with and without wildcards into the same row,
+                // convert the embedder to add the scheme or the wildcard to create a
+                // unique key (and thus row) per pattern.
+                if (mSiteSettingsDelegate.isDisplayWildcardInContentSettingsEnabled()
+                        && embedder != null) {
+                    embedder =
+                            containsPatternWildcards(embedder)
+                                    ? embedder
+                                    : assumeNonNull(WebsiteAddress.create(embedder)).getOrigin();
+                }
                 Website site = findOrCreateSite(origin, embedder, contentSetting);
                 if (isEmbeddedPermission) {
                     site.addEmbeddedPermission(exception);

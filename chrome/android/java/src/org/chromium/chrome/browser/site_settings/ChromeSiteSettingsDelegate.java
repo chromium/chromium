@@ -199,6 +199,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isDisplayWildcardInContentSettingsEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS);
+    }
+
+    @Override
     public void getChannelIdForOrigin(String origin, Callback<String> callback) {
         SiteChannelsManager.getInstance().getChannelIdForOriginAsync(origin, callback);
     }

@@ -43,7 +43,9 @@ public class WebsiteGroup implements WebsiteEntry {
         Map<String, List<Website>> etldMap = new HashMap<>();
         for (Website website : websites) {
             // TODO(crbug.com/40231223): Handle partitioned storage.
-            String etld = website.getAddress().getDomainAndRegistry();
+            // Use the main address to handle cases where Origin is a wildcard and the Embedder is
+            // the actual address.
+            String etld = website.getMainAddress().getDomainAndRegistry();
             List<Website> etldSites = etldMap.get(etld);
             if (etldSites == null) {
                 etldSites = new ArrayList<>();

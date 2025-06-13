@@ -67,6 +67,11 @@ public interface TrackingProtectionDelegate {
      */
     boolean isFingerprintingProtectionEnabled();
 
+    /**
+     * @return true if wildcards should be shown in content settings patterns.
+     */
+    boolean isDisplayWildcardInContentSettingsEnabled();
+
     /** Set the value of the fingerprinting protection state. */
     void setFingerprintingProtection(boolean enabled);
 

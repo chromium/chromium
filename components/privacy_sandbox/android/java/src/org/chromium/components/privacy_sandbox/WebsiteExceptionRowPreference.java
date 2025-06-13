@@ -55,7 +55,10 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
         mContext = context;
         mCallback = callback;
 
-        setTitle(site.getTitle());
+        setTitle(
+                delegate.isDisplayWildcardInContentSettingsEnabled()
+                        ? mSite.getTitleForContentSetting(ContentSettingsType.COOKIES)
+                        : mSite.getTitle());
         var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
         if (exception != null && exception.hasExpiration()) {
             int expirationInDays = assumeNonNull(exception.getExpirationInDays());

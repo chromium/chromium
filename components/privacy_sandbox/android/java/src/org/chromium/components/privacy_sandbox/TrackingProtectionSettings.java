@@ -249,7 +249,11 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
     private void onExceptionsFetched(Collection<Website> sites) {
         List<WebsiteExceptionRowPreference> websites = new ArrayList<>();
         for (Website site : sites) {
-            if (mSearch == null || mSearch.isEmpty() || site.getTitle().contains(mSearch)) {
+            // Filter out any exceptions for first-party cookies.
+            if (site.representsThirdPartiesOnSite()
+                    && (mSearch == null
+                            || mSearch.isEmpty()
+                            || site.getTitle().contains(mSearch))) {
                 WebsiteExceptionRowPreference preference =
                         new WebsiteExceptionRowPreference(
                                 getContext(), site, mDelegate, this::refreshBlockingExceptions);

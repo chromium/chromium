@@ -90,6 +90,11 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     }
 
     @Override
+    public boolean isDisplayWildcardInContentSettingsEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS);
+    }
+
+    @Override
     public BrowserContextHandle getBrowserContext() {
         return mProfile;
     }

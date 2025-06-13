@@ -80,6 +80,8 @@ public class WebsiteExceptionRowPreferenceTest {
 
     @Mock private WebsiteExceptionDeletedCallback mCallback;
 
+    private static final String TEST_URL_WITH_WILDCARD = "https://[*.]test.com";
+
     @BeforeClass
     public static void setupSuite() {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
@@ -94,6 +96,7 @@ public class WebsiteExceptionRowPreferenceTest {
         mPreferenceScreen = mSettingsRule.getPreferenceScreen();
         mActivity = mSettingsRule.getActivity();
         when(mDelegate.getSiteSettingsDelegate(Mockito.any())).thenReturn(mSiteSettingsDelegate);
+        when(mDelegate.isDisplayWildcardInContentSettingsEnabled()).thenReturn(true);
     }
 
     @After
@@ -105,6 +108,88 @@ public class WebsiteExceptionRowPreferenceTest {
     @SmallTest
     public void createException_displayedCorrectly() {
         Website site = new Website(WebsiteAddress.create("https://test.com"), null);
+        mPreference = new WebsiteExceptionRowPreference(mActivity, site, mDelegate, mCallback);
+        mPreferenceScreen.addPreference(mPreference);
+        // Check the title, summary, and the delete button.
+        onViewWaiting(withId(android.R.id.title))
+                .check(matches(allOf(withText("https://test.com"), isDisplayed())));
+        onView(withId(android.R.id.summary))
+                .check(matches(allOf(withText("Does not expire"), isDisplayed())));
+        onView(withId(R.id.image_view_widget)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void createExceptionWithSecondaryPattern_displayedCorrectly() {
+        Website site =
+                new Website(
+                        WebsiteAddress.create("*"), WebsiteAddress.create(TEST_URL_WITH_WILDCARD));
+        site.setContentSettingException(
+                ContentSettingsType.COOKIES,
+                new ContentSettingException(
+                        ContentSettingsType.COOKIES,
+                        /* primaryPattern */ "*",
+                        TEST_URL_WITH_WILDCARD,
+                        ContentSettingValues.ALLOW,
+                        ProviderType.PREF_PROVIDER,
+                        /* expirationInDays= */ null,
+                        /* isEmbargoed= */ false));
+        mPreference = new WebsiteExceptionRowPreference(mActivity, site, mDelegate, mCallback);
+        mPreferenceScreen.addPreference(mPreference);
+        // Check the title, summary, and the delete button.
+        onViewWaiting(withId(android.R.id.title))
+                .check(matches(allOf(withText(TEST_URL_WITH_WILDCARD), isDisplayed())));
+        onView(withId(android.R.id.summary))
+                .check(matches(allOf(withText("Does not expire"), isDisplayed())));
+        onView(withId(R.id.image_view_widget)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void createExceptionWithPrimaryPattern_displayedCorrectly() {
+        Website site =
+                new Website(
+                        WebsiteAddress.create(TEST_URL_WITH_WILDCARD), WebsiteAddress.create("*"));
+        site.setContentSettingException(
+                ContentSettingsType.COOKIES,
+                new ContentSettingException(
+                        ContentSettingsType.COOKIES,
+                        TEST_URL_WITH_WILDCARD,
+                        /* secondaryPattern */ "*",
+                        ContentSettingValues.ALLOW,
+                        ProviderType.PREF_PROVIDER,
+                        /* expirationInDays= */ null,
+                        /* isEmbargoed= */ false));
+        mPreference = new WebsiteExceptionRowPreference(mActivity, site, mDelegate, mCallback);
+        mPreferenceScreen.addPreference(mPreference);
+        // Check the title, summary, and the delete button.
+        onViewWaiting(withId(android.R.id.title))
+                .check(matches(allOf(withText(TEST_URL_WITH_WILDCARD), isDisplayed())));
+        onView(withId(android.R.id.summary))
+                .check(matches(allOf(withText("Does not expire"), isDisplayed())));
+        onView(withId(R.id.image_view_widget)).check(matches(isDisplayed()));
+    }
+
+    // TODO(crbug.com/393183477): Remove when fully launched.
+    @Test
+    @SmallTest
+    public void
+            createExceptionWithSecondaryPattern_displayedCorrectly_displayWildcardContentSettingsDisabled() {
+        when(mDelegate.isDisplayWildcardInContentSettingsEnabled()).thenReturn(false);
+
+        Website site =
+                new Website(
+                        WebsiteAddress.create("*"), WebsiteAddress.create(TEST_URL_WITH_WILDCARD));
+        site.setContentSettingException(
+                ContentSettingsType.COOKIES,
+                new ContentSettingException(
+                        ContentSettingsType.COOKIES,
+                        /* primaryPattern */ "*",
+                        TEST_URL_WITH_WILDCARD,
+                        ContentSettingValues.ALLOW,
+                        ProviderType.PREF_PROVIDER,
+                        /* expirationInDays= */ null,
+                        /* isEmbargoed= */ false));
         mPreference = new WebsiteExceptionRowPreference(mActivity, site, mDelegate, mCallback);
         mPreferenceScreen.addPreference(mPreference);
         // Check the title, summary, and the delete button.

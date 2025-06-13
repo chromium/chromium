@@ -86,6 +86,12 @@ public class ContentSettingException implements Serializable {
         return (mSecondaryPattern == null) ? SITE_WILDCARD : mSecondaryPattern;
     }
 
+    public String getDisplayPattern() {
+        return mPrimaryPattern.equals(SITE_WILDCARD)
+                ? getSecondaryPatternSafe()
+                : getPrimaryPattern();
+    }
+
     public @ProviderType.EnumType int getSource() {
         return mSource;
     }

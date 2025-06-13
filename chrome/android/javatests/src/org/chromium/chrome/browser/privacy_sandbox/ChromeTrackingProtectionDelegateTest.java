@@ -20,6 +20,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -103,6 +106,22 @@ public class ChromeTrackingProtectionDelegateTest {
         assertTrue(mDelegate.isFingerprintingProtectionEnabled());
         mDelegate.setFingerprintingProtection(false);
         assertFalse(mDelegate.isFingerprintingProtectionEnabled());
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS})
+    public void displayWildcardInContentSettingsEnabled() {
+        assertTrue(mDelegate.isDisplayWildcardInContentSettingsEnabled());
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS})
+    public void displayWildcardInContentSettingsDisabled() {
+        assertFalse(mDelegate.isDisplayWildcardInContentSettingsEnabled());
     }
 
     @Test

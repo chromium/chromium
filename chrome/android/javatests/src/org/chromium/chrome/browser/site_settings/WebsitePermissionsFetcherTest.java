@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.site_settings;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
@@ -1604,6 +1605,8 @@ public class WebsitePermissionsFetcherTest {
     @Test
     @SmallTest
     public void testFetchAllSites() {
+        when(mSiteSettingsDelegate.isDisplayWildcardInContentSettingsEnabled()).thenReturn(true);
+
         WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(mSiteSettingsDelegate);
         FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
         fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
