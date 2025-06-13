@@ -349,7 +349,7 @@ void MultiContentsViewMiniToolbar::OpenSplitViewMenu() {
                           static_cast<views::MenuButtonController*>(
                               menu_button_->button_controller()),
                           menu_button_->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kTopRight,
+                          views::MenuAnchorPosition::kBubbleTopLeft,
                           ui::mojom::MenuSourceType::kNone);
 }
 
