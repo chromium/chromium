@@ -167,8 +167,8 @@ static void BuildBaseTextCodecMaps() {
   blink::TextCodecUtf8::RegisterEncodingNames(AddToTextEncodingNameMap);
   blink::TextCodecUtf8::RegisterCodecs(AddToTextCodecMap);
 
-  TextCodecUTF16::RegisterEncodingNames(AddToTextEncodingNameMap);
-  TextCodecUTF16::RegisterCodecs(AddToTextCodecMap);
+  blink::TextCodecUtf16::RegisterEncodingNames(AddToTextEncodingNameMap);
+  blink::TextCodecUtf16::RegisterCodecs(AddToTextCodecMap);
 
   TextCodecUserDefined::RegisterEncodingNames(AddToTextEncodingNameMap);
   TextCodecUserDefined::RegisterCodecs(AddToTextCodecMap);

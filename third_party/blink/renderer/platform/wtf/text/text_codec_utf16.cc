@@ -35,9 +35,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
-namespace WTF {
+namespace blink {
 
-void TextCodecUTF16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
+void TextCodecUtf16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   registrar("UTF-16LE", "UTF-16LE");
   registrar("UTF-16BE", "UTF-16BE");
 
@@ -51,24 +51,24 @@ void TextCodecUTF16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   registrar("unicodeFFFE", "UTF-16BE");
 }
 
-static std::unique_ptr<TextCodec> NewStreamingTextDecoderUTF16LE(
-    const TextEncoding&,
+static std::unique_ptr<TextCodec> NewStreamingTextDecoderUtf16le(
+    const WTF::TextEncoding&,
     const void*) {
-  return std::make_unique<TextCodecUTF16>(true);
+  return std::make_unique<TextCodecUtf16>(true);
 }
 
-static std::unique_ptr<TextCodec> NewStreamingTextDecoderUTF16BE(
-    const TextEncoding&,
+static std::unique_ptr<TextCodec> NewStreamingTextDecoderUtf16be(
+    const WTF::TextEncoding&,
     const void*) {
-  return std::make_unique<TextCodecUTF16>(false);
+  return std::make_unique<TextCodecUtf16>(false);
 }
 
-void TextCodecUTF16::RegisterCodecs(TextCodecRegistrar registrar) {
-  registrar("UTF-16LE", NewStreamingTextDecoderUTF16LE, nullptr);
-  registrar("UTF-16BE", NewStreamingTextDecoderUTF16BE, nullptr);
+void TextCodecUtf16::RegisterCodecs(TextCodecRegistrar registrar) {
+  registrar("UTF-16LE", NewStreamingTextDecoderUtf16le, nullptr);
+  registrar("UTF-16BE", NewStreamingTextDecoderUtf16be, nullptr);
 }
 
-String TextCodecUTF16::Decode(base::span<const uint8_t> bytes,
+String TextCodecUtf16::Decode(base::span<const uint8_t> bytes,
                               FlushBehavior flush,
                               bool,
                               bool& saw_error) {
@@ -158,7 +158,7 @@ String TextCodecUTF16::Decode(base::span<const uint8_t> bytes,
   return String::Adopt(buffer);
 }
 
-std::string TextCodecUTF16::Encode(base::span<const UChar> characters,
+std::string TextCodecUtf16::Encode(base::span<const UChar> characters,
                                    UnencodableHandling) {
   // We need to be sure we can double the length without overflowing.
   // Since the passed-in length is the length of an actual existing
@@ -187,7 +187,7 @@ std::string TextCodecUTF16::Encode(base::span<const UChar> characters,
   return result;
 }
 
-std::string TextCodecUTF16::Encode(base::span<const LChar> characters,
+std::string TextCodecUtf16::Encode(base::span<const LChar> characters,
                                    UnencodableHandling) {
   // In the LChar case, we do actually need to perform this check in release. :)
   CHECK_LE(characters.size(), std::numeric_limits<wtf_size_t>::max() / 2);
@@ -209,4 +209,4 @@ std::string TextCodecUTF16::Encode(base::span<const LChar> characters,
   return result;
 }
 
-}  // namespace WTF
+}  // namespace blink
