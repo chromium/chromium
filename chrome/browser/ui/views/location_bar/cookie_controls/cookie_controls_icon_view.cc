@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -45,15 +46,30 @@ void RecordOpenedAction(bool icon_visible, CookieControlsState controls_state) {
   if (!icon_visible) {
     base::RecordAction(
         base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
-  } else if (controls_state == CookieControlsState::kBlocked3pc) {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.Bubble.CookiesBlocked.Opened"));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.Bubble.CookiesAllowed.Opened"));
+  }
+
+  switch (controls_state) {
+    case CookieControlsState::kBlocked3pc:
+      base::RecordAction(base::UserMetricsAction(
+          "CookieControls.Bubble.CookiesBlocked.Opened"));
+      break;
+    case CookieControlsState::kAllowed3pc:
+      base::RecordAction(base::UserMetricsAction(
+          "CookieControls.Bubble.CookiesAllowed.Opened"));
+      break;
+    case CookieControlsState::kActiveTp:
+      base::RecordAction(base::UserMetricsAction(
+          "TrackingProtections.Bubble.ProtectionsActive.Opened"));
+      break;
+    case CookieControlsState::kPausedTp:
+      base::RecordAction(base::UserMetricsAction(
+          "TrackingProtections.Bubble.ProtectionsPaused.Opened"));
+      break;
+    case CookieControlsState::kHidden:
+      // Handled as part of `icon_visible` check above.
+      NOTREACHED();
   }
 }
-
 }  // namespace
 
 CookieControlsIconView::CookieControlsIconView(

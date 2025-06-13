@@ -46023,6 +46023,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TrackingProtections.Bubble.ProtectionsActive.Opened">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User bypass is opened when tracking protections are active.
+  </description>
+</action>
+
+<action name="TrackingProtections.Bubble.ProtectionsPaused.Opened">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User bypass is opened when tracking protections are paused.
+  </description>
+</action>
+
 <action name="TrackingProtections.Bubble.SendFeedback">
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
