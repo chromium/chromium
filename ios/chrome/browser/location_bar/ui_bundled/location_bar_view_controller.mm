@@ -845,23 +845,13 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     if (GetApplicationContext()->GetLocalState()->GetBoolean(
             prefs::kBottomOmnibox)) {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX);
-      if (@available(iOS 15.1, *)) {
-        image = DefaultSymbolWithPointSize(kMovePlatterToTopPhoneSymbol,
-                                           kSymbolActionPointSize);
-      } else {
-        image = CustomSymbolWithPointSize(kCustomMovePlatterToTopPhoneSymbol,
-                                          kSymbolActionPointSize);
-      }
+      image = DefaultSymbolWithPointSize(kMovePlatterToTopPhoneSymbol,
+                                         kSymbolActionPointSize);
       targetToolbarType = ToolbarType::kPrimary;
     } else {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX);
-      if (@available(iOS 15.1, *)) {
-        image = DefaultSymbolWithPointSize(kMovePlatterToBottomPhoneSymbol,
-                                           kSymbolActionPointSize);
-      } else {
-        image = CustomSymbolWithPointSize(kCustomMovePlatterToBottomPhoneSymbol,
-                                          kSymbolActionPointSize);
-      }
+      image = DefaultSymbolWithPointSize(kMovePlatterToBottomPhoneSymbol,
+                                         kSymbolActionPointSize);
       targetToolbarType = ToolbarType::kSecondary;
     }
     UIAction* moveAddressBarAction = [UIAction

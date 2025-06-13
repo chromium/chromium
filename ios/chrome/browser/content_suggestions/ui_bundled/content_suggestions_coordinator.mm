@@ -1285,9 +1285,7 @@ using segmentation_platform::TipIdentifier;
                   base::RecordAction(base::UserMetricsAction(
                       "Commerce.PriceTracking.MagicStackPromo.Reenable.Allow"));
                   NSString* settingURL = UIApplicationOpenSettingsURLString;
-                  if (@available(iOS 15.4, *)) {
-                    settingURL = UIApplicationOpenNotificationSettingsURLString;
-                  }
+                  settingURL = UIApplicationOpenNotificationSettingsURLString;
 
                   [[UIApplication sharedApplication]
                       openURL:[NSURL URLWithString:settingURL]

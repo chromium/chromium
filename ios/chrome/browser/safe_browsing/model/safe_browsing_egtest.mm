@@ -625,13 +625,6 @@ void EnableEnterpriseUrlFilteringPrefs() {
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
   [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
 
-  if (@available(iOS 15.1, *)) {
-  } else {
-    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
-    // break loading the unsafe page below.
-    return;
-  }
-
   // Tap on the link to proceed to the unsafe page, and verify that this page is
   // loaded.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
@@ -667,13 +660,6 @@ void EnableEnterpriseUrlFilteringPrefs() {
   // Tap on the Details button and verify that warning details are shown.
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
   [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
-
-  if (@available(iOS 15.1, *)) {
-  } else {
-    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
-    // break loading the unsafe page below.
-    return;
-  }
 
   // Tap on the link to proceed to the unsafe page, and verify that this page is
   // loaded.
@@ -721,13 +707,6 @@ void EnableEnterpriseUrlFilteringPrefs() {
                  clickedThrough:NO
                     eventResult:EventResult::EVENT_RESULT_WARNED
                          reason:SafeBrowsingInterstitialEvent::MALWARE];
-
-  if (@available(iOS 15.1, *)) {
-  } else {
-    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
-    // break loading the unsafe page below.
-    return;
-  }
 
   // Tap on the link to proceed to the unsafe page, and verify that this page is
   // loaded.

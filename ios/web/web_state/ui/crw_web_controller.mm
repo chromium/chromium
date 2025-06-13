@@ -83,14 +83,6 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
-// TODO(crbug.com/40746865): Allow usage of iOS15 interactionState on iOS 14 SDK
-// based builds.
-#if !defined(__IPHONE_15_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_15_0
-@interface WKWebView (Additions)
-@property(nonatomic, nullable, copy) id interactionState;
-@end
-#endif
-
 @interface CRWWebController () <CRWWKNavigationHandlerDelegate,
                                 CRWEditMenuBuilder,
                                 CRWInputViewProvider,

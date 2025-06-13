@@ -16,26 +16,24 @@ UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   UIButton* primary_blue_button = [UIButton buttonWithType:UIButtonTypeSystem];
   primary_blue_button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  if (@available(iOS 15.0, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-    buttonConfiguration.background.backgroundColor =
-        [UIColor colorNamed:kBlueColor];
-    buttonConfiguration.baseForegroundColor =
-        [UIColor colorNamed:kSolidButtonTextColor];
-    buttonConfiguration.background.cornerRadius = kPrimaryButtonCornerRadius;
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  buttonConfiguration.background.backgroundColor =
+      [UIColor colorNamed:kBlueColor];
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kSolidButtonTextColor];
+  buttonConfiguration.background.cornerRadius = kPrimaryButtonCornerRadius;
 
-    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    NSDictionary* attributes = @{NSFontAttributeName : font};
-    NSMutableAttributedString* string =
-        [[NSMutableAttributedString alloc] initWithString:@" "];
-    [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-    buttonConfiguration.attributedTitle = string;
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string =
+      [[NSMutableAttributedString alloc] initWithString:@" "];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  buttonConfiguration.attributedTitle = string;
 
-    primary_blue_button.configuration = buttonConfiguration;
-  }
+  primary_blue_button.configuration = buttonConfiguration;
 
   if (pointer_interaction_enabled) {
     primary_blue_button.pointerInteractionEnabled = YES;
@@ -47,49 +45,43 @@ UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
 }
 
 void SetConfigurationTitle(UIButton* button, NSString* newString) {
-  if (@available(iOS 15.0, *)) {
-    UIButtonConfiguration* buttonConfiguration = button.configuration;
-    NSMutableAttributedString* attributedString =
-        [[NSMutableAttributedString alloc]
-            initWithAttributedString:buttonConfiguration.attributedTitle];
-    [attributedString.mutableString setString:newString ? newString : @""];
-    buttonConfiguration.attributedTitle = attributedString;
-    button.configuration = buttonConfiguration;
-  }
+  UIButtonConfiguration* buttonConfiguration = button.configuration;
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithAttributedString:buttonConfiguration.attributedTitle];
+  [attributedString.mutableString setString:newString ? newString : @""];
+  buttonConfiguration.attributedTitle = attributedString;
+  button.configuration = buttonConfiguration;
 }
 
 void SetConfigurationFont(UIButton* button, UIFont* font) {
-  if (@available(iOS 15.0, *)) {
-    UIButtonConfiguration* buttonConfiguration = button.configuration;
-    NSString* configurationString = buttonConfiguration.attributedTitle.string;
+  UIButtonConfiguration* buttonConfiguration = button.configuration;
+  NSString* configurationString = buttonConfiguration.attributedTitle.string;
 
-    if (configurationString) {
-      NSDictionary* attributes = @{NSFontAttributeName : font};
-      NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
-          initWithString:configurationString];
-      [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-      buttonConfiguration.attributedTitle = string;
-      button.configuration = buttonConfiguration;
-    }
+  if (configurationString) {
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSMutableAttributedString* string =
+        [[NSMutableAttributedString alloc] initWithString:configurationString];
+    [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+    buttonConfiguration.attributedTitle = string;
+    button.configuration = buttonConfiguration;
   }
 }
 
 void UpdateButtonColorOnEnableDisable(UIButton* button) {
-  if (@available(iOS 15.0, *)) {
-    UIButtonConfiguration* buttonConfiguration = button.configuration;
-    if (button.enabled) {
-      buttonConfiguration.background.backgroundColor =
-          [UIColor colorNamed:kBlueColor];
-      buttonConfiguration.baseForegroundColor =
-          [UIColor colorNamed:kSolidButtonTextColor];
-    } else {
-      buttonConfiguration.background.backgroundColor =
-          [buttonConfiguration.background.backgroundColor
-              colorWithAlphaComponent:kDisabledButtonAlpha];
-      buttonConfiguration.baseForegroundColor =
-          [buttonConfiguration.baseForegroundColor
-              colorWithAlphaComponent:kDisabledButtonAlpha];
-    }
-    button.configuration = buttonConfiguration;
+  UIButtonConfiguration* buttonConfiguration = button.configuration;
+  if (button.enabled) {
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kSolidButtonTextColor];
+  } else {
+    buttonConfiguration.background.backgroundColor =
+        [buttonConfiguration.background.backgroundColor
+            colorWithAlphaComponent:kDisabledButtonAlpha];
+    buttonConfiguration.baseForegroundColor =
+        [buttonConfiguration.baseForegroundColor
+            colorWithAlphaComponent:kDisabledButtonAlpha];
   }
+  button.configuration = buttonConfiguration;
 }

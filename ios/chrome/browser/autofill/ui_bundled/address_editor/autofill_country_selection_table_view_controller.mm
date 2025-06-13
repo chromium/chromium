@@ -116,12 +116,10 @@ const CGFloat kBackButtonSize = 24;
                      action:@selector(dismissViewController)
            forControlEvents:UIControlEventTouchUpInside];
 
-      if (@available(iOS 15.0, *)) {
-        UIButtonConfiguration* config = backButton.configuration;
-        config.contentInsets =
-            NSDirectionalEdgeInsetsMake(0, 8, 0, 0);  // Adjust values as needed
-        backButton.configuration = config;
-      }
+      UIButtonConfiguration* config = backButton.configuration;
+      config.contentInsets =
+          NSDirectionalEdgeInsetsMake(0, 8, 0, 0);  // Adjust values as needed
+      backButton.configuration = config;
 
       // Size the button to fit the content
       [backButton sizeToFit];

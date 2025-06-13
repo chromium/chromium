@@ -335,9 +335,7 @@ NSDate* getNSDateFromString(std::string date) {
 // Callback invoked when the user chooses to open settings.
 - (void)onPushNotificationSettings {
   NSString* settingURL = UIApplicationOpenSettingsURLString;
-  if (@available(iOS 15.4, *)) {
-    settingURL = UIApplicationOpenNotificationSettingsURLString;
-  }
+  settingURL = UIApplicationOpenNotificationSettingsURLString;
 
   [[UIApplication sharedApplication] openURL:[NSURL URLWithString:settingURL]
                                      options:{}
