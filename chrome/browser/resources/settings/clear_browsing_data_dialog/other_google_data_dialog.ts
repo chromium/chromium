@@ -16,6 +16,8 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
@@ -26,6 +28,7 @@ export interface SettingsOtherGoogleDataDialogElement {
   $: {
     dialog: CrDialogElement,
     passwordManagerLink: CrLinkRowElement,
+    myActivityLink: CrLinkRowElement,
   };
 }
 
@@ -45,6 +48,11 @@ export class SettingsOtherGoogleDataDialogElement extends PolymerElement {
   private onPasswordManagerClick_() {
     PasswordManagerImpl.getInstance().showPasswordManager(
         PasswordManagerPage.PASSWORDS);
+  }
+
+  private onMyActivityClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('deleteBrowsingDataMyActivityUrl'));
   }
 }
 
