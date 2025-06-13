@@ -8,13 +8,17 @@
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
 
+using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 using test::CreateTestFormField;
+using ::testing::IsEmpty;
 
 // Parameterized test where the parameter indicates how far we went through
 // the funnel:
@@ -163,6 +167,8 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
     SubmitForm(form);
   }
 
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   // Phase 2: Validate KeyMetrics expectations.
@@ -185,6 +191,19 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
             LOYALTY_MEMBERSHIP_ID, /*suggestion_accepted=*/true),
         1);
 
+    VerifyUkm(
+        &test_ukm_recorder(), form, UkmAutofillKeyMetricsType::kEntryName,
+        {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+          {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
+          {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 1},
+          {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
+          {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
+          {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
+          {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+          {UkmAutofillKeyMetricsType::kFormTypesName,
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+
   } else {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 0);
@@ -200,6 +219,10 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
         "Autofill.Autocomplete.Off.FillingAcceptance.LoyaltyCard", 0);
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
+
+    EXPECT_THAT(test_ukm_recorder().GetEntriesByName(
+                    UkmAutofillKeyMetricsType::kEntryName),
+                IsEmpty());
   }
   if (user_accepted_suggestion) {
     histogram_tester.ExpectBucketCount(
@@ -250,6 +273,8 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
                                               form_.fields()[0].global_id());
   SubmitForm(form_);
 
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -264,6 +289,16 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.LoyaltyCard", 0);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
+
+  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
+              {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
+              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kLoyaltyCardForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user does not accept a suggestion.
@@ -281,6 +316,8 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -298,6 +335,17 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
       GetBucketForAcceptanceMetricsGroupedByFieldType(
           field_types_[1], /*suggestion_accepted=*/false),
       1);
+
+  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
+              {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
+              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kLoyaltyCardForm})}}});
 }
 // Validate Autofill.KeyMetrics.* in case the user has to fix the filled data.
 TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
@@ -315,6 +363,8 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -332,6 +382,18 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
       GetBucketForAcceptanceMetricsGroupedByFieldType(
           field_types_[1], /*suggestion_accepted=*/true),
       1);
+
+  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
+              {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 0},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
+              {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
+              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 1},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kLoyaltyCardForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user fixes the filled data but
@@ -366,6 +428,10 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
       "Autofill.KeyMetrics.FormSubmission.Autofilled.LoyaltyCard", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
+
+  EXPECT_THAT(test_ukm_recorder().GetEntriesByName(
+                  UkmAutofillKeyMetricsType::kEntryName),
+              IsEmpty());
 }
 
 }  // namespace autofill::autofill_metrics

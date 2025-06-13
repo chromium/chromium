@@ -238,6 +238,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
       // that a merchant has saved. This indicates there could be Autofill
       // suggestions related to standalone CVC fields.
     case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kLoyaltyCardEntry:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
@@ -260,7 +261,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kIbanEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
-    case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:
     case SuggestionType::kManageCreditCard:
