@@ -47,19 +47,12 @@ from py_utils import tempfile_ext
 import tombstones
 
 _MAX_INLINE_FLAGS_LENGTH = 50  # Arbitrarily chosen.
-
-# Extras from NativeTestIntent.java
 _EXTRA_COMMAND_LINE_FILE = (
     'org.chromium.native_test.NativeTest.CommandLineFile')
 _EXTRA_COMMAND_LINE_FLAGS = (
     'org.chromium.native_test.NativeTest.CommandLineFlags')
 _EXTRA_COVERAGE_DEVICE_FILE = (
     'org.chromium.native_test.NativeTest.CoverageDeviceFile')
-
-# Extras from NativeTestInstrumentationTestRunner.java
-_EXTRA_KEEP_USER_DATA_DIR = (
-    'org.chromium.native_test.NativeTestInstrumentationTestRunner'
-        '.KeepUserDataDir')
 _EXTRA_STDOUT_FILE = (
     'org.chromium.native_test.NativeTestInstrumentationTestRunner'
         '.StdoutFile')
@@ -212,17 +205,6 @@ def _GroupPreTests(tests):
   return pre_tests, other_tests
 
 
-def _IsPreTestGroup(test_group):
-  """Check if a test group has one and only one PRE test group."""
-  test_set = set()
-  has_pre_test = False
-  for test in test_group:
-    if not has_pre_test and gtest_test_instance.IsPreTest(test):
-      has_pre_test = True
-    test_set.add(gtest_test_instance.TestNameWithoutPrefixes(test))
-  return has_pre_test and len(test_set) == 1
-
-
 class _ApkDelegate:
   def __init__(self, test_instance, env):
     self._activity = test_instance.activity
@@ -305,9 +287,6 @@ class _ApkDelegate:
         extras[_EXTRA_TEST_LIST] = test_list_file.name
       else:
         extras[_EXTRA_TEST] = test[0]
-
-      if _IsPreTestGroup(test):
-        extras[_EXTRA_KEEP_USER_DATA_DIR] = 1
 
     # We need to use GetAppWritablePath here instead of GetExternalStoragePath
     # since we will not have yet applied legacy storage permission workarounds
@@ -671,7 +650,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       for test in tests_on_device:
         if isinstance(test, list):
           # Any existing list from "tests" shall be a PRE test group.
-          assert _IsPreTestGroup(test), (
+          assert self._IsPreTestGroup(test), (
               f'Expecting a PRE test group, got {test}')
           # A test subgroup will run together even if it has a crashed test
           shards.append(test)
@@ -857,11 +836,22 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       test = test[-1]
     return gtest_test_instance.TestNameWithoutDisabledPrefix(test)
 
+  def _IsPreTestGroup(self, test_group):
+    """Check if a test group has one and only one PRE test group."""
+    # pylint: disable=no-self-use
+    test_set = set()
+    has_pre_test = False
+    for test in test_group:
+      if not has_pre_test and gtest_test_instance.IsPreTest(test):
+        has_pre_test = True
+      test_set.add(gtest_test_instance.TestNameWithoutPrefixes(test))
+    return has_pre_test and len(test_set) == 1
+
   #override
   def _ShouldRetryFullGroup(self, test_group):
     """A group in gtest shall be a PRE test group and retry in full."""
     # Ensure the given test group is a PRE test group
-    assert _IsPreTestGroup(test_group), (
+    assert self._IsPreTestGroup(test_group), (
         f'Expecting a PRE test group, got {test_group}')
     return True
 

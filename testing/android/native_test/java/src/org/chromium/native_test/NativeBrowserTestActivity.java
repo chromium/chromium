@@ -12,7 +12,7 @@ import java.io.File;
 
 /** An {@link android.app.Activity} for running native browser tests. */
 public abstract class NativeBrowserTestActivity extends FragmentActivity {
-    private static final String TAG = "NativeTestActivity";
+    private static final String TAG = "NativeTest";
 
     private final NativeTest mTest = new NativeTest();
     private boolean mStarted;
@@ -44,9 +44,7 @@ public abstract class NativeBrowserTestActivity extends FragmentActivity {
         if (mStarted) return;
 
         mStarted = true;
-        if (!mTest.shouldKeepUserDataDir()) {
-            NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
-        }
+        NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
         initializeBrowserProcess();
     }
 

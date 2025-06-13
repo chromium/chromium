@@ -42,12 +42,8 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
             "org.chromium.native_test.NativeTestInstrumentationTestRunner.TestList";
     private static final String EXTRA_TEST =
             "org.chromium.native_test.NativeTestInstrumentationTestRunner.Test";
-    // An extra to indicate if user data dir should be kept when running the
-    // given test list. no-op if given a single test.
-    private static final String EXTRA_KEEP_USER_DATA_DIR =
-            "org.chromium.native_test.NativeTestInstrumentationTestRunner.KeepUserDataDir";
 
-    private static final String TAG = "NativeTestRunner";
+    private static final String TAG = "NativeTest";
 
     private static final long DEFAULT_SHARD_NANO_TIMEOUT = 60 * 1000000000L;
     // Default to no size limit.
@@ -58,12 +54,11 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     private final SparseArray<ShardMonitor> mMonitors = new SparseArray<ShardMonitor>();
     private String mNativeTestActivity;
     private TestStatusReceiver mReceiver;
-    private final Queue<ShardMetadata> mShards = new ArrayDeque<ShardMetadata>();
+    private final Queue<String> mShards = new ArrayDeque<String>();
     private long mShardNanoTimeout = DEFAULT_SHARD_NANO_TIMEOUT;
     private int mShardSizeLimit = DEFAULT_SHARD_SIZE_LIMIT;
     private File mStdoutFile;
     private Bundle mTransparentArguments;
-    private boolean mKeepUserDataDir;
 
     @Override
     public void onCreate(Bundle arguments) {
@@ -106,22 +101,14 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
 
         mTransparentArguments.remove(EXTRA_STDOUT_FILE);
 
-        mKeepUserDataDir = arguments.containsKey(EXTRA_KEEP_USER_DATA_DIR);
-        if (mKeepUserDataDir) {
-            Log.i(TAG, "user data dir will be kept between the given tests.");
-        }
-        mTransparentArguments.remove(EXTRA_KEEP_USER_DATA_DIR);
-
         String singleTest = arguments.getString(EXTRA_TEST);
         if (singleTest != null) {
-            mShards.add(new ShardMetadata(singleTest, false));
+            mShards.add(singleTest);
         }
 
         String testListFilePath = arguments.getString(EXTRA_TEST_LIST_FILE);
         if (testListFilePath != null) {
             File testListFile = new File(testListFilePath);
-
-            boolean isFirstTest = true;
             try {
                 BufferedReader testListFileReader =
                         new BufferedReader(new FileReader(testListFile));
@@ -129,26 +116,15 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
                 String test;
                 ArrayList<String> workingShard = new ArrayList<String>();
                 while ((test = testListFileReader.readLine()) != null) {
-                    // For multiple tests passed via a test list file, data
-                    // in user data dir should:
-                    //  - Be cleaned before the 1st test, and
-                    //  - Kept in the followed tests.
-                    boolean keepUserDataDirForTest = mKeepUserDataDir && !isFirstTest;
-                    isFirstTest = false;
                     workingShard.add(test);
                     if (workingShard.size() == mShardSizeLimit) {
-                        mShards.add(
-                                new ShardMetadata(
-                                        TextUtils.join(":", workingShard), keepUserDataDirForTest));
+                        mShards.add(TextUtils.join(":", workingShard));
                         workingShard = new ArrayList<String>();
                     }
                 }
 
                 if (!workingShard.isEmpty()) {
-                    boolean keepUserDataDirForTest = mKeepUserDataDir && !isFirstTest;
-                    mShards.add(
-                            new ShardMetadata(
-                                    TextUtils.join(":", workingShard), keepUserDataDirForTest));
+                    mShards.add(TextUtils.join(":", workingShard));
                 }
 
                 testListFileReader.close();
@@ -202,25 +178,6 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
                 });
 
         mHandler.post(new ShardStarter());
-    }
-
-    /** Stores the metadata for a test shard. */
-    private static class ShardMetadata {
-        private final String mGtestFilter;
-        private final boolean mKeepUserDataDir;
-
-        public ShardMetadata(String gtestFilter, boolean keepUserDataDir) {
-            mGtestFilter = gtestFilter;
-            mKeepUserDataDir = keepUserDataDir;
-        }
-
-        public String getGtestFilter() {
-            return mGtestFilter;
-        }
-
-        public boolean shouldKeepUserDataDir() {
-            return mKeepUserDataDir;
-        }
     }
 
     /** Monitors a test shard's execution. */
@@ -279,11 +236,8 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         i.putExtras(mTransparentArguments);
         if (mShards != null && !mShards.isEmpty()) {
-            ShardMetadata shardMetadata = mShards.remove();
-            i.putExtra(NativeTestIntent.EXTRA_GTEST_FILTER, shardMetadata.getGtestFilter());
-            i.putExtra(
-                    NativeTestIntent.EXTRA_KEEP_USER_DATA_DIR,
-                    shardMetadata.shouldKeepUserDataDir());
+            String gtestFilter = mShards.remove();
+            i.putExtra(NativeTestIntent.EXTRA_GTEST_FILTER, gtestFilter);
         }
         i.putExtra(NativeTestIntent.EXTRA_STDOUT_FILE, mStdoutFile.getAbsolutePath());
         return i;

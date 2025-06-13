@@ -99,21 +99,6 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
     self.assertIn(pre_test_group3, pre_tests)
     self.assertIn(pre_test_group4, pre_tests)
 
-  def test_IsPreTestGroup(self):
-    self.assertTrue(local_device_gtest_run._IsPreTestGroup([
-        'TestSuite1.TestName1',
-        'TestSuite1.PRE_TestName1',
-        'TestSuite1.PRE_PRE_TestName1',
-    ]))
-    self.assertFalse(local_device_gtest_run._IsPreTestGroup([
-        'TestSuite1.TestName2',
-    ]))
-    self.assertFalse(local_device_gtest_run._IsPreTestGroup([
-        'TestSuite1.TestName1',
-        'TestSuite1.PRE_TestName1',
-        'TestSuite1.TestName2',
-    ]))
-
   def test_ApplyExternalSharding(self):
     tests = [
         'TestSuite1.TestName1',
@@ -170,6 +155,21 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
     ]
     actual_shards = self._obj._CreateShardsForDevices(tests)
     self.assertListEqual(actual_shards, expected_shards)
+
+  def test_IsPreTestGroup(self):
+    self.assertTrue(self._obj._IsPreTestGroup([
+        'TestSuite1.TestName1',
+        'TestSuite1.PRE_TestName1',
+        'TestSuite1.PRE_PRE_TestName1',
+    ]))
+    self.assertFalse(self._obj._IsPreTestGroup([
+        'TestSuite1.TestName2',
+    ]))
+    self.assertFalse(self._obj._IsPreTestGroup([
+        'TestSuite1.TestName1',
+        'TestSuite1.PRE_TestName1',
+        'TestSuite1.TestName2',
+    ]))
 
   def test_GetTestsToRetry(self):
     test_data = [

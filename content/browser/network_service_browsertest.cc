@@ -649,8 +649,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
   EXPECT_TRUE(test_loader_factory->has_received_request());
 }
 
-// Cache data migration is not used for Fuchsia.
-#if !BUILDFLAG(IS_FUCHSIA)
+// Android doesn't support PRE_ tests.
+// TODO(wfh): Enable this test when https://crbug.com/1257820 is fixed.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
  public:
   NetworkServiceBrowserCacheResetTest() = default;
@@ -823,6 +824,10 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetFailure) {
               net::test::IsError(net::ERR_CACHE_MISS));
 }
 #endif  // BUILDFLAG(IS_POSIX)
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Cache data migration is not used for Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
 
 const base::FilePath::CharType kCheckpointFileName[] =
     FILE_PATH_LITERAL("NetworkDataMigrated");
