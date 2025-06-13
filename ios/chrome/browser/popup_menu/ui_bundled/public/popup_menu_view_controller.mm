@@ -78,7 +78,7 @@ const CGFloat kImageMargin = 196;
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self.delegate popupMenuViewControllerWillDismiss:self];
 }
 

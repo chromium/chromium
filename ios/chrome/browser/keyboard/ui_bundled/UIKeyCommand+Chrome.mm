@@ -18,6 +18,8 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
 
 }  // namespace
 
+const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
+
 @implementation UIKeyCommand (Chrome)
 
 #pragma mark - Specific Keyboard Commands

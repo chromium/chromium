@@ -428,7 +428,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self dismissBookmarkEditorView];
 }
 

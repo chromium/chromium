@@ -227,7 +227,7 @@ const CGFloat kSymbolSize = 20;
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 

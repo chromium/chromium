@@ -148,7 +148,7 @@ enum ItemIdentifier {
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self.pageInfoCommandsHandler hidePageInfo];
 }
 

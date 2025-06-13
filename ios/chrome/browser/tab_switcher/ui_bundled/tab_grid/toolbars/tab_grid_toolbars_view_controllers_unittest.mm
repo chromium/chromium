@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/test/metrics/user_action_tester.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_top_toolbar.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -88,7 +89,7 @@ TEST_F(TabGridToolbarsViewControllersTest, Metrics) {
   std::ignore = bottom_toolbar_;
   ExpectUMA(@"keyCommand_closeAll", "MobileKeyCommandCloseAll");
   ExpectUMA(@"keyCommand_undo", "MobileKeyCommandUndo");
-  ExpectUMA(@"keyCommand_close", "MobileKeyCommandClose");
+  ExpectUMA(@"keyCommand_close", kMobileKeyCommandClose);
 
   // Check only top toolbar.
   ExpectUMA(@"keyCommand_find", "MobileKeyCommandSearchTabs", top_toolbar_);

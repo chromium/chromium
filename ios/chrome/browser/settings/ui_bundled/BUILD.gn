@@ -350,6 +350,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/photos/model:photos_service_factory",
     "//ios/chrome/browser/policy/model:policy_util",

@@ -8,6 +8,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -43,12 +44,11 @@ TEST_F(BookmarksEditorViewControllerTest, KeyCommands) {
 // Checks that metrics are correctly reported.
 TEST_F(BookmarksEditorViewControllerTest, Metrics) {
   base::UserActionTester user_action_tester;
-  std::string user_action = "MobileKeyCommandClose";
-  ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);
+  ASSERT_EQ(user_action_tester.GetActionCount(kMobileKeyCommandClose), 0);
 
   [_controller keyCommand_close];
 
-  EXPECT_EQ(user_action_tester.GetActionCount(user_action), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kMobileKeyCommandClose), 1);
 }
 
 // Regression test for See crbug.com/1429435

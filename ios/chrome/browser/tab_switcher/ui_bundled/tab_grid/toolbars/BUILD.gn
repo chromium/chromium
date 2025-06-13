@@ -81,6 +81,7 @@ source_set("unit_tests") {
     ":toolbars_ui",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//testing/gtest",
     "//ui/base",
   ]

@@ -9,6 +9,7 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_mediator.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -183,12 +184,11 @@ TEST_F(BookmarksHomeViewControllerTest, Metrics) {
 
     controller.displayedFolderNode = bookmark_model_->mobile_node();
     base::UserActionTester user_action_tester;
-    std::string user_action = "MobileKeyCommandClose";
-    ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);
+    ASSERT_EQ(user_action_tester.GetActionCount(kMobileKeyCommandClose), 0);
 
     [controller keyCommand_close];
 
-    EXPECT_EQ(user_action_tester.GetActionCount(user_action), 1);
+    EXPECT_EQ(user_action_tester.GetActionCount(kMobileKeyCommandClose), 1);
     [controller shutdown];
   }
 }

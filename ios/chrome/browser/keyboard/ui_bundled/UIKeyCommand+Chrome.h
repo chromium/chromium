@@ -10,6 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const char kMobileKeyCommandClose[];
+
 // Note: this is implemented as a category on UIKeyCommand because UIKeyCommand
 // can't be subclassed as of iOS 9 beta 4. http://crbug.com/510970
 @interface UIKeyCommand (Chrome)

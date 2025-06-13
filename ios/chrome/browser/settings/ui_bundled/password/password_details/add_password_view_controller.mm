@@ -940,7 +940,7 @@ const int kMinNoteCharAmountForWarning = 901;
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self didTapCancelButton:nil];
 }
 

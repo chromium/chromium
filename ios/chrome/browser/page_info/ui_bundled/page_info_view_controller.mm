@@ -287,7 +287,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self.pageInfoCommandsHandler hidePageInfo];
 }
 

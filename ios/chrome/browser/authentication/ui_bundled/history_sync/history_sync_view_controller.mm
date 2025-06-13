@@ -137,7 +137,7 @@
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   // Closing behavior is the same as "No thanks". For consistency with
   // `presentationControllerDidDismiss:` behaviour.
   [self.delegate didTapSecondaryActionButton];

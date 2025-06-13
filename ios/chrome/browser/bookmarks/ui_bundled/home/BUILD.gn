@@ -111,6 +111,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/bookmarks/ui_bundled/home",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",

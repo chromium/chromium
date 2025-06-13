@@ -91,6 +91,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/bookmarks/ui_bundled:constants",
     "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

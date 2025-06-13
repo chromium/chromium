@@ -15,6 +15,7 @@
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -194,12 +195,11 @@ TEST_F(SettingsNavigationControllerTest, Metrics) {
           mainSettingsControllerForBrowser:browser_.get()
                                   delegate:mockDelegate_
                   hasDefaultBrowserBlueDot:NO];
-  std::string user_action = "MobileKeyCommandClose";
-  ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);
+  ASSERT_EQ(user_action_tester.GetActionCount(kMobileKeyCommandClose), 0);
 
   [settingsController keyCommand_close];
 
-  EXPECT_EQ(user_action_tester.GetActionCount(user_action), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kMobileKeyCommandClose), 1);
   [settingsController cleanUpSettings];
 }
 

@@ -100,7 +100,7 @@ enum ItemIdentifier : NSInteger {
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self.presentationDelegate dismissLearnMoreTableViewController:self];
   // Request the coordinator to be stopped here
 }

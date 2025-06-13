@@ -638,7 +638,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   if (_mode == TabGridMode::kSearch) {
     [self cancelSearchButtonTapped:nil];
   } else {

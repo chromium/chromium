@@ -131,7 +131,7 @@ constexpr CGFloat kContentMargin = 16.;
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self.actionDelegate
       consistencyAccountChooserTableViewControllerWantsToGoBack:self];
 }

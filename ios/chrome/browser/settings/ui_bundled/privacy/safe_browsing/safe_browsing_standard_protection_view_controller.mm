@@ -145,7 +145,7 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 }
 
 - (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
