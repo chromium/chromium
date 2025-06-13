@@ -227,7 +227,7 @@ struct NET_EXPORT QuicParams {
   bool delay_main_job_with_available_spdy_session = false;
 
   // If true, ALPS uses new codepoint to negotiates application settings.
-  bool use_new_alps_codepoint = false;
+  bool use_new_alps_codepoint = true;
 
   // If true, parse received ORIGIN frame.
   bool enable_origin_frame = true;

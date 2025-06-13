@@ -107,9 +107,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
       quic_params_.initial_delay_for_broken_alternative_service.has_value());
   EXPECT_FALSE(quic_params_.exponential_backoff_on_initial_delay.has_value());
   EXPECT_FALSE(quic_params_.delay_main_job_with_available_spdy_session);
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(net::features::kUseNewAlpsCodepointQUIC),
-      quic_params_.use_new_alps_codepoint);
+  EXPECT_TRUE(quic_params_.use_new_alps_codepoint);
   EXPECT_TRUE(quic_params_.enable_origin_frame);
   EXPECT_TRUE(quic_params_.skip_dns_with_origin_frame);
   EXPECT_FALSE(quic_params_.ignore_ip_matching_when_finding_existing_sessions);
@@ -1090,10 +1088,7 @@ class NetworkSessionConfiguratorWithNewAlpsCodepointTest
   NetworkSessionConfiguratorWithNewAlpsCodepointTest()
       : use_new_alps_codepoint_feature_setting_(std::get<0>(GetParam())),
         use_new_alps_codepoint_field_trial_setting_(std::get<1>(GetParam())) {
-    if (use_new_alps_codepoint_feature_setting_) {
-      feature_list_.InitAndEnableFeature(
-          net::features::kUseNewAlpsCodepointQUIC);
-    } else {
+    if (!use_new_alps_codepoint_feature_setting_) {
       feature_list_.InitAndDisableFeature(
           net::features::kUseNewAlpsCodepointQUIC);
     }

@@ -79,14 +79,15 @@ const std::string& GetVariationParam(
 
 bool GetVariationBoolParamOrFeatureSetting(const VariationParameters& params,
                                            const std::string& key,
-                                           bool feature_setting) {
+                                           bool feature_setting,
+                                           const std::string& param_setting) {
   // Don't override feature setting if variation param doesn't exist.
   if (params.find(key) == params.end()) {
     return feature_setting;
   }
 
   return base::EqualsCaseInsensitiveASCII(GetVariationParam(params, key),
-                                          "true");
+                                          param_setting);
 }
 
 spdy::SettingsMap GetHttp2Settings(
@@ -306,14 +307,16 @@ bool ShouldQuicMigrateSessionsOnNetworkChangeV2(
   return GetVariationBoolParamOrFeatureSetting(
       quic_trial_params, "migrate_sessions_on_network_change_v2",
       base::FeatureList::IsEnabled(
-          net::features::kMigrateSessionsOnNetworkChangeV2));
+          net::features::kMigrateSessionsOnNetworkChangeV2),
+      "true");
 }
 
 bool ShouldQuicUseNewAlpsCodepoint(
     const VariationParameters& quic_trial_params) {
-  return GetVariationBoolParamOrFeatureSetting(
+  return !GetVariationBoolParamOrFeatureSetting(
       quic_trial_params, "use_new_alps_codepoint",
-      base::FeatureList::IsEnabled(net::features::kUseNewAlpsCodepointQUIC));
+      !base::FeatureList::IsEnabled(net::features::kUseNewAlpsCodepointQUIC),
+      "false");
 }
 
 bool ShouldQuicMigrateSessionsEarlyV2(
