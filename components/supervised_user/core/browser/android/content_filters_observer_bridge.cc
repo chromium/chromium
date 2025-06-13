@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "base/logging.h"
 #include "components/supervised_user/core/common/features.h"
 
 // Include last. Requires declarations from includes above.
@@ -16,11 +17,14 @@ ContentFiltersObserverBridge::ContentFiltersObserverBridge(
     std::string_view setting_name,
     base::RepeatingClosure on_enabled,
     base::RepeatingClosure on_disabled)
-    : on_enabled_(on_enabled), on_disabled_(on_disabled) {
+    : setting_name_(setting_name),
+      on_enabled_(on_enabled),
+      on_disabled_(on_disabled) {
   if (!base::FeatureList::IsEnabled(
           kPropagateDeviceContentFiltersToSupervisedUser)) {
     // TODO(crbug.com/422435683): Link the java bridge class to relevant
     // unit-test binaries.
+    VLOG(1) << "ContentFiltersObserverBridge is disabled.";
     return;
   }
 
@@ -43,6 +47,9 @@ ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
 }
 
 void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
+  VLOG(1) << "ContentFiltersObserverBridge received onChange for setting "
+          << setting_name_ << " with value "
+          << (enabled ? "enabled" : "disabled");
   if (enabled) {
     on_enabled_.Run();
   } else {
