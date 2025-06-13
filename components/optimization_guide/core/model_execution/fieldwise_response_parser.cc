@@ -22,19 +22,19 @@ std::optional<ResponseParsingError> ExecuteExtractor(
     const proto::FieldExtractor& extractor,
     const std::string& output,
     google::protobuf::MessageLite& message) {
-  if (!extractor.has_capturing_regex()) {
-    return ResponseParsingError::kInvalidConfiguration;
-  }
-
-  const RE2 capturing_regex = extractor.capturing_regex();
-  if (capturing_regex.NumberOfCapturingGroups() != 1) {
-    return ResponseParsingError::kInvalidConfiguration;
-  }
-
   std::string content;
-  if (!RE2::PartialMatch(output, capturing_regex, &content)) {
-    // Do nothing if the regex doesn't match.
-    return std::nullopt;
+  if (extractor.has_capturing_regex()) {
+    const RE2 capturing_regex = extractor.capturing_regex();
+    if (capturing_regex.NumberOfCapturingGroups() != 1) {
+      return ResponseParsingError::kInvalidConfiguration;
+    }
+
+    if (!RE2::PartialMatch(output, capturing_regex, &content)) {
+      // Do nothing if the regex doesn't match.
+      return std::nullopt;
+    }
+  } else {
+    content = output;
   }
 
   const auto loc = extractor.translation_map().find(content);

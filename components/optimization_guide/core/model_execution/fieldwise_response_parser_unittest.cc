@@ -67,9 +67,12 @@ TEST(FieldwiseResponseParserTest, ParseWithNoCapturingRegex) {
       /*suppress_parsing_incomplete_response=*/true);
   ParseResponseFuture response_future;
   parser.ParseAsync("output", response_future.GetCallback());
+  base::expected<proto::Any, ResponseParsingError> maybe_metadata =
+      response_future.Get();
 
-  EXPECT_THAT(response_future.Get(),
-              ErrorIs(ResponseParsingError::kInvalidConfiguration));
+  EXPECT_EQ("output",
+            ParsedAnyMetadata<proto::ExampleForTestingResponse>(*maybe_metadata)
+                ->string_value());
 }
 
 TEST(FieldwiseResponseParserTest, ParseWithNonMatchingRegex) {
