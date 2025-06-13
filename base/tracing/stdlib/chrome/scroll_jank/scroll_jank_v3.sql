@@ -473,36 +473,3 @@ SELECT
 FROM frames
 LEFT JOIN janky_frames
   ON frames.scroll_id = janky_frames.scroll_id;
-
--- Scroll jank causes per scroll.
-CREATE PERFETTO VIEW chrome_causes_per_scroll (
-  -- The ID of the scroll.
-  scroll_id LONG,
-  -- The maximum time a frame was delayed after the presentation of the previous
-  -- frame.
-  max_delay_since_last_frame DOUBLE,
-  -- The expected vsync interval.
-  vsync_interval DOUBLE,
-  -- A proto amalgamation of each scroll jank cause including cause name, sub
-  -- cause and the duration of the delay since the previous frame was presented.
-  scroll_jank_causes BYTES
-) AS
-SELECT
-  scroll_id,
-  max(1.0 * delay_since_last_frame / vsync_interval) AS max_delay_since_last_frame,
-  -- MAX does not matter, since `vsync_interval` is the computed as the
-  -- same value for a single trace.
-  max(vsync_interval) AS vsync_interval,
-  repeatedfield(
-    chromescrolljankv3_scroll_scrolljankcause(
-      'cause',
-      cause_of_jank,
-      'sub_cause',
-      sub_cause_of_jank,
-      'delay_since_last_frame',
-      1.0 * delay_since_last_frame / vsync_interval
-    )
-  ) AS scroll_jank_causes
-FROM chrome_janky_frames
-GROUP BY
-  scroll_id;
