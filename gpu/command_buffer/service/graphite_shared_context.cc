@@ -65,21 +65,68 @@ static void ReadPixelsCallbackThreadSafe(
 }  // namespace
 
 // Helper class used by subclasses to acquire |lock_| if it exists.
+// Recursive lock is permitted for locking will be skipped upon reentance.
 class SCOPED_LOCKABLE GraphiteSharedContext::AutoLock {
   STACK_ALLOCATED();
-
  public:
   explicit AutoLock(const GraphiteSharedContext* context)
-      EXCLUSIVE_LOCK_FUNCTION(context->lock_)
-      : auto_lock_(context->lock_ ? &context->lock_.value() : nullptr) {}
-  ~AutoLock() UNLOCK_FUNCTION() = default;
+      EXCLUSIVE_LOCK_FUNCTION(context->lock_);
 
-  AutoLock(const AutoLock&) = delete;
-  AutoLock& operator=(const AutoLock&) = delete;
+  AutoLock(AutoLock&) = delete;
+  AutoLock& operator=(AutoLock&) = delete;
+
+  ~AutoLock() UNLOCK_FUNCTION();
 
  private:
-  base::AutoLockMaybe auto_lock_;
+  std::optional<base::AutoLockMaybe> auto_lock_;
+  const GraphiteSharedContext* context_;
 };
+
+// |context->locked_thread_id_| reflects the thread where |lock_| is acquired.
+// It should only be changed from Invalid to Current, or Current to Invalid.
+// It is accessed with `memory_order_relaxed` as writing to |locked_thread_id_|
+// is guarded by |context->lock_|.
+//
+// The logic of detecting recursive lock with
+// "current_thread_id == locked_thread_id_":
+// - There is no concurrent write hazard for |locked_thread_id|.
+// - If Thread1 holds |lock_| and it tries to re-acquire |lock_| after
+//   re-entering GraphiteSharedContext, |locked_thread_id_| can be read back
+//   safely now as no one can write to |locked_thread_id_| when |lock_| is held
+//   by Thread1. It is determined a recursive lock if the current thread id is
+//   |locked_thread_id_|. Locking should be skipped here to avoid a deadlock.
+// - If Thread1 has held |lock_| and is writing to |locked_thread_id_| while
+//   Thread2 is trying to read it, it means Thread1 changes the id between
+//   kInvalidThreadId and Thread1::Id() so neither of them matches the current
+//   Thread2 id. Thread2 can proceed to acquire the lock.
+//
+
+GraphiteSharedContext::AutoLock::AutoLock(const GraphiteSharedContext* context)
+    : context_(context) {
+  base::PlatformThreadId current_thread_id = base::PlatformThread::CurrentId();
+
+  if (!context->lock_ || current_thread_id == context->locked_thread_id_.load(
+                                                  std::memory_order_relaxed)) {
+    // Skip if is_thread_safe is disabled or it's a recursive lock.
+  } else {
+    auto_lock_.emplace(&context->lock_.value());
+
+    // |locked_thread_id_| must be kInvalid after the lock is acquired.
+    CHECK_EQ(context_->locked_thread_id_.load(std::memory_order_relaxed),
+             base::kInvalidThreadId);
+    context_->locked_thread_id_.store(current_thread_id,
+                                      std::memory_order_relaxed);
+  }
+}
+
+GraphiteSharedContext::AutoLock::~AutoLock() {
+  if (auto_lock_.has_value()) {
+    CHECK_EQ(context_->locked_thread_id_.load(std::memory_order_relaxed),
+             base::PlatformThread::CurrentId());
+    context_->locked_thread_id_.store(base::kInvalidThreadId,
+                                      std::memory_order_relaxed);
+  }
+}
 
 GraphiteSharedContext::GraphiteSharedContext(
     std::unique_ptr<skgpu::graphite::Context> graphite_context,
