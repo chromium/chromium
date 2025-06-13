@@ -8,6 +8,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -56,31 +57,27 @@ class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
 
   bool PerformAcceleratorAction(AcceleratorAction action);
 
-  void DisableEarcons();
-
-  void EnableChromeVox(bool check_for_intro = true);
-
   void StablizeChromeVoxState();
 
   void ExecuteCommandHandlerCommand(std::string command);
 
   void PressRepeatedlyUntilUtterance(ui::KeyboardCode key,
                                      const std::string& expected_utterance);
-  void RunJSForChromeVox(const std::string& script);
-  // Exposes the module, specified by `name`, on the `globalThis` object. This
-  // allows tests to call directly into various ChromeVox methods.
-  void GlobalizeModule(const std::string& name);
 
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 
-  test::SpeechMonitor sm_;
+  ChromeVoxTestUtils* chromevox_test_utils() {
+    return chromevox_test_utils_.get();
+  }
+
+  test::SpeechMonitor* sm() { return chromevox_test_utils()->sm(); }
 
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  std::unique_ptr<ChromeVoxTestUtils> chromevox_test_utils_;
 
   StubBrailleController braille_controller_;
   ui::ScopedAnimationDurationScaleMode animation_mode_;
-  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -101,6 +101,8 @@ static_library("test_support") {
     "autoclick_test_utils.h",
     "automation_test_utils.cc",
     "automation_test_utils.h",
+    "chromevox_test_utils.cc",
+    "chromevox_test_utils.h",
     "dictation_test_utils.cc",
     "dictation_test_utils.h",
     "facegaze_test_utils.cc",
