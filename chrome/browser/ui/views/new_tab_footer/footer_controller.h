@@ -29,7 +29,7 @@ class NewTabFooterController : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  void UpdateFooterVisibility();
+  void UpdateFooterVisibility(bool log_on_load_metric);
   // Callback for active tab changes from BrowserWindowInterface.
   void OnActiveTabChanged(BrowserWindowInterface* browser);
 

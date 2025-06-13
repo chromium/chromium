@@ -540,6 +540,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Footer.VisibleOnLoad" enum="BooleanVisible"
+    expires_after="2026-02-01">
+  <owner>pauladedeji@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Whether New Tab Footer is visible when a new tab page is opened.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Footer.WebUI.LoadCompletedTime" units="ms"
     expires_after="2026-02-01">
   <owner>pauladedeji@google.com</owner>

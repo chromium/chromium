@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -87,8 +88,7 @@ class FooterControllerExtensionTest : public FooterControllerExtensionTestBase {
   FooterControllerExtensionTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{ntp_features::kNtpFooter},
-        /*disabled_features=*/{features::kSideBySide,
-                               features::kEnterpriseBadgingForNtpFooter});
+        /*disabled_features=*/{features::kSideBySide});
   }
   ~FooterControllerExtensionTest() override = default;
 };
@@ -140,6 +140,28 @@ IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest,
   profile()->GetPrefs()->SetBoolean(
       prefs::kNTPFooterExtensionAttributionEnabled, true);
   EXPECT_TRUE(footer()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, VisibilityRecorded) {
+  base::HistogramTester histogram_tester;
+  const std::string& visible_on_load = "NewTabPage.Footer.VisibleOnLoad";
+
+  auto extension = LoadNtpExtension();
+  histogram_tester.ExpectTotalCount(visible_on_load, 0);
+
+  NavigateCurrentTab(extension->url());
+  histogram_tester.ExpectTotalCount(visible_on_load, 1);
+  histogram_tester.ExpectBucketCount(visible_on_load, true, 1);
+
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kNTPFooterExtensionAttributionEnabled, false);
+  histogram_tester.ExpectTotalCount(visible_on_load, 1);
+  histogram_tester.ExpectBucketCount(visible_on_load, true, 1);
+
+  NavigateCurrentTab(extension->url());
+  histogram_tester.ExpectTotalCount(visible_on_load, 2);
+  histogram_tester.ExpectBucketCount(visible_on_load, true, 1);
+  histogram_tester.ExpectBucketCount(visible_on_load, false, 1);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -229,8 +251,7 @@ class FooterControllerSideBySideTest : public InProcessBrowserTest {
  public:
   FooterControllerSideBySideTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpFooter, features::kSideBySide,
-                              features::kEnterpriseBadgingForNtpFooter},
+        /*enabled_features=*/{ntp_features::kNtpFooter, features::kSideBySide},
         /*disabled_features=*/{});
   }
   ~FooterControllerSideBySideTest() override = default;
