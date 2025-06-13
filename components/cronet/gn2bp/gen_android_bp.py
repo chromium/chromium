@@ -2602,7 +2602,8 @@ def create_concatenated_generated_headers_module(bp_module_name,
   blueprint.add_module(module)
   return module
 
-def set_module_flags(module, cflags, defines, ldflags, libs):
+
+def configure_cc_module(module, cflags, defines, ldflags, libs):
   module.cflags.update(_get_cflags(cflags, defines))
   module.ldflags.update({
       flag
@@ -2610,6 +2611,14 @@ def set_module_flags(module, cflags, defines, ldflags, libs):
       if flag in ldflag_allowlist or flag.startswith("-Wl,-wrap,")
   })
   _set_linker_script(module, libs)
+  for lib in libs:
+    # Generally library names should be mangled as 'libXXX', unless they
+    # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
+    # libraries (e.g. "android.hardware.power.stats-V1-cpp")
+    android_lib = lib if '@' in lib or "-cpp" in lib or "-ndk" in lib \
+      else 'lib' + lib
+    if lib in shared_library_allowlist:
+      module.shared_libs.add(android_lib)
   # TODO: implement proper cflag parsing.
   for flag in cflags:
     if '-std=' in flag:
@@ -2806,14 +2815,14 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     module.rtti = target.rtti
 
     if target.type in gn_utils.LINKER_UNIT_TYPES:
-      set_module_flags(module, target.cflags, target.defines, target.ldflags,
-                       target.libs)
+      configure_cc_module(module, target.cflags, target.defines, target.ldflags,
+                          target.libs)
       set_module_include_dirs(module, target.cflags, target.include_dirs)
       # TODO: set_module_xxx is confusing, apply similar function to module and target in better way.
       for arch_name, arch in target.get_archs().items():
         # TODO(aymanm): Make libs arch-specific.
-        set_module_flags(module.target[arch_name], arch.cflags, arch.defines,
-                         arch.ldflags, [])
+        configure_cc_module(module.target[arch_name], arch.cflags, arch.defines,
+                            arch.ldflags, arch.libs)
         # -Xclang -target-feature -Xclang +mte are used to enable MTE (Memory Tagging Extensions).
         # Flags which does not start with '-' could not be in the cflags so enabling MTE by
         # -march and -mcpu Feature Modifiers. MTE is only available on arm64. This is needed for
@@ -2872,14 +2881,6 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       # Don't try to inject library/source dependencies into genrules or
       # filegroups because they are not compiled in the traditional sense.
       module.defaults = [cc_defaults_module]
-      for lib in target.libs:
-        # Generally library names should be mangled as 'libXXX', unless they
-        # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
-        # libraries (e.g. "android.hardware.power.stats-V1-cpp")
-        android_lib = lib if '@' in lib or "-cpp" in lib or "-ndk" in lib \
-          else 'lib' + lib
-        if lib in shared_library_allowlist:
-          module.add_android_shared_lib(android_lib)
 
     if module.type == 'cc_library_shared':
       output_name = target.output_name
