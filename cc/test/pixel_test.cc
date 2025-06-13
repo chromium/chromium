@@ -284,10 +284,9 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
   CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
   source.readPixels(info, mem.data(), row_bytes, 0, 0);
 
-  auto transferable_resource =
-      viz::TransferableResource::MakeSoftwareSharedImage(
-          shared_image, sync_token, size, viz::SinglePlaneFormat::kBGRA_8888,
-          viz::TransferableResource::ResourceSource::kTileRasterTask);
+  auto transferable_resource = viz::TransferableResource::Make(
+      shared_image, viz::TransferableResource::ResourceSource::kTileRasterTask,
+      sync_token);
   auto release_callback =
       base::BindOnce(&DeleteSharedImage, std::move(shared_image));
 

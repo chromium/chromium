@@ -332,10 +332,9 @@ class BrowserCompositorInvalidateLayerTreePerfTest
                                    next_fence_sync_);
     next_sync_token.SetVerifyFlush();
 
-    constexpr gfx::Size size(64, 64);
-    viz::TransferableResource resource = viz::TransferableResource::MakeGpu(
-        gpu_mailbox, GL_TEXTURE_2D, next_sync_token, size,
-        viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+    viz::TransferableResource resource = viz::TransferableResource::Make(
+        gpu::ClientSharedImage::CreateForTesting(),
+        viz::TransferableResource::ResourceSource::kTest, next_sync_token);
     next_fence_sync_++;
 
     tab_contents_->SetTransferableResource(resource, std::move(callback));

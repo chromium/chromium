@@ -10717,11 +10717,9 @@ class BlendStateCheckLayer : public LayerImpl {
              gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
              "BlendStateCheckLayerTest"});
     auto sync_token = shared_image_interface_->GenVerifiedSyncToken();
-    viz::TransferableResource resource =
-        viz::TransferableResource::MakeSoftwareSharedImage(
-            shared_image, sync_token, gfx::Size(1, 1),
-            viz::SinglePlaneFormat::kBGRA_8888,
-            viz::TransferableResource::ResourceSource::kTileRasterTask);
+    viz::TransferableResource resource = viz::TransferableResource::Make(
+        shared_image,
+        viz::TransferableResource::ResourceSource::kTileRasterTask, sync_token);
 
     resource_id_ = resource_provider_->ImportResource(std::move(resource),
                                                       base::DoNothing());

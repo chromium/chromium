@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "cc/test/render_pass_test_utils.h"
 
 #include <stdint.h>
@@ -27,6 +26,7 @@
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/display_resource_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
@@ -39,15 +39,12 @@ namespace {
 
 viz::ResourceId CreateAndImportResource(
     viz::ClientResourceProvider* resource_provider,
-    const gpu::SyncToken& sync_token,
-    gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB()) {
-  constexpr gfx::Size size(64, 64);
-  auto transfer_resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, sync_token, size,
-      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
-  transfer_resource.color_space = std::move(color_space);
-  return resource_provider->ImportResource(transfer_resource,
-                                           base::DoNothing());
+    const gpu::SyncToken& sync_token) {
+  auto resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kTest, sync_token);
+
+  return resource_provider->ImportResource(resource, base::DoNothing());
 }
 
 }  // anonymous namespace

@@ -872,10 +872,9 @@ class LayerTreeHostContextTestDontUseLostResources
     scoped_refptr<TextureLayer> texture = TextureLayer::Create(nullptr);
     texture->SetBounds(gfx::Size(10, 10));
     texture->SetIsDrawable(true);
-    constexpr gfx::Size size(64, 64);
-    auto resource = viz::TransferableResource::MakeGpu(
-        shared_image, GL_TEXTURE_2D, sync_token, size,
-        viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+    auto resource = viz::TransferableResource::Make(
+        shared_image, viz::TransferableResource::ResourceSource::kTest,
+        sync_token);
     texture->SetTransferableResource(
         resource, base::BindOnce(&LayerTreeHostContextTestDontUseLostResources::
                                      EmptyReleaseCallback));
