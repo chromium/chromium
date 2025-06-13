@@ -7,6 +7,7 @@
 #include <cstring>
 #include <tuple>
 
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 
 // No rewrite expected.
@@ -95,11 +96,11 @@ void sizeof_array_expr() {
   std::ignore = buf[UnsafeIndex()];
 
   // Expected rewrite:
-  // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
-  std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
+  // std::ignore = base::SpanificationSizeofForStdArray(buf);
+  std::ignore = base::SpanificationSizeofForStdArray(buf);
   // Expected rewrite:
-  // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
-  std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
+  // std::ignore = base::SpanificationSizeofForStdArray(buf);
+  std::ignore = base::SpanificationSizeofForStdArray(buf);
   // Expected rewrite:
   // std::ignore = sizeof buf[0];
   std::ignore = sizeof buf[0];

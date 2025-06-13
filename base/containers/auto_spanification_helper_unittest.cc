@@ -15,6 +15,14 @@ namespace base::internal::spanification {
 
 namespace {
 
+TEST(AutoSpanificationHelperTest, SpanificationSizeofForStdArray) {
+  std::array<char, 7> char_array;
+  EXPECT_EQ(SpanificationSizeofForStdArray(char_array), 7);
+
+  std::array<uint16_t, 3> uint16_array;
+  EXPECT_EQ(SpanificationSizeofForStdArray(uint16_array), sizeof(uint16_t) * 3);
+}
+
 // Minimized mock of SkBitmap class defined in
 // //third_party/skia/include/core/SkBitmap.h
 class SkBitmap {

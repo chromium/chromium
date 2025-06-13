@@ -92,10 +92,10 @@ void sizeof_array_expr() {
   std::ignore = buf[UnsafeIndex()];
 
   // Expected rewrite:
-  // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
+  // std::ignore = base::SpanificationSizeofForStdArray(buf);
   std::ignore = sizeof buf;
   // Expected rewrite:
-  // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
+  // std::ignore = base::SpanificationSizeofForStdArray(buf);
   std::ignore = sizeof(buf);
   // Expected rewrite:
   // std::ignore = sizeof buf[0];

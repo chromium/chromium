@@ -7,6 +7,22 @@
 
 #include "base/numerics/checked_math.h"
 
+namespace base {
+
+// SpanificationSizeofForStdArray was introduced temporarily in order to help
+// the auto spanification tool (//tools/clang/spanify), and not meant to be
+// used widely.
+//
+// Note that it's *not* guaranteed by the C++ standard that
+//     sizeof(arr) == arr.size() * sizeof(arr[0])
+// and it's possible that std::array has additional data and/or padding.
+template <typename Element, size_t N>
+constexpr size_t SpanificationSizeofForStdArray(const std::array<Element, N>&) {
+  return sizeof(Element) * N;
+}
+
+}  // namespace base
+
 namespace base::spanification_internal {
 
 // ToPointer is a helper function that converts either of a `T&` or a `T*` to a

@@ -1467,7 +1467,8 @@ static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
 // Rewrite:
 //   `sizeof(c_array)`
 // Into:
-//  `std_array.size() * sizeof(element_size)`.
+//   `base::SpanificationSizeofForStdArray(std_array)`
+// Tests are in: array-tests-original.cc
 void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
 
@@ -1492,18 +1493,19 @@ void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
     end_offset = name.getAsString().length();
   }
 
+  const std::string& key = GetRHS(result);
   const clang::SourceRange replacement_range = {
       sizeof_expr->getBeginLoc(),
       sizeof_expr->getEndLoc().getLocWithOffset(end_offset)};
-
-  // The outer-most parentheses are redundant for most cases. But it's
-  // necessary in cases like "x / sizeof(c_array)", which is unlikely though.
-  std::string replacement_text = llvm::formatv(
-      "({0}.size() * sizeof(decltype({0})::value_type))", array_decl_as_string);
-  std::string replacement_directive = GetReplacementDirective(
-      replacement_range, std::move(replacement_text), source_manager);
-
-  EmitReplacement(GetRHS(result), replacement_directive);
+  EmitReplacement(key,
+                  GetReplacementDirective(
+                      replacement_range,
+                      llvm::formatv("base::SpanificationSizeofForStdArray({0})",
+                                    array_decl_as_string),
+                      source_manager));
+  EmitReplacement(key,
+                  GetIncludeDirective(replacement_range, source_manager,
+                                      kBaseAutoSpanificationHelperIncludePath));
 }
 
 // Add `.data()` at the frontier of a span change. This is applied if the node
