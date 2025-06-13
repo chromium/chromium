@@ -2141,7 +2141,9 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
     return;
 
   int buffer_count = context_->AllocatedBufferCountPerPixel();
-  if (context_->DrawsViaGpu()) {
+  auto* provider = IsWebGL() ? GetResourceProviderForWebGL()
+                             : GetResourceProviderForCanvas2D();
+  if (provider && provider->IsAccelerated()) {
     // The number of internal GPU buffers vary between one (stable
     // non-displayed state) and three (triple-buffered animations).
     // Adding 2 is a pessimistic but relevant estimate.
