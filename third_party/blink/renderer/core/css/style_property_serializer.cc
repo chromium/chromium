@@ -1535,26 +1535,16 @@ String StylePropertySerializer::TextDecorationValue() const {
 String StylePropertySerializer::Get2Values(
     const StylePropertyShorthand& shorthand) const {
   // Assume the properties are in the usual order start, end.
-  int start_value_index =
-      property_set_.FindPropertyIndex(*shorthand.properties()[0]);
-  int end_value_index =
-      property_set_.FindPropertyIndex(*shorthand.properties()[1]);
-
-  if (start_value_index == -1 || end_value_index == -1) {
-    return String();
-  }
-
-  PropertyValueForSerializer start =
-      property_set_.PropertyAt(start_value_index);
-  PropertyValueForSerializer end = property_set_.PropertyAt(end_value_index);
-
-  bool show_end = !base::ValuesEquivalent(start.Value(), end.Value());
+  const CSSValue& start_value =
+      *property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue& end_value =
+      *property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
 
   StringBuilder result;
-  result.Append(start.Value()->CssText());
-  if (show_end) {
+  result.Append(start_value.CssText());
+  if (start_value != end_value) {
     result.Append(' ');
-    result.Append(end.Value()->CssText());
+    result.Append(end_value.CssText());
   }
   return result.ReleaseString();
 }
@@ -1562,46 +1552,32 @@ String StylePropertySerializer::Get2Values(
 String StylePropertySerializer::Get4Values(
     const StylePropertyShorthand& shorthand) const {
   // Assume the properties are in the usual order top, right, bottom, left.
-  int top_value_index =
-      property_set_.FindPropertyIndex(*shorthand.properties()[0]);
-  int right_value_index =
-      property_set_.FindPropertyIndex(*shorthand.properties()[1]);
-  int bottom_value_index =
-      property_set_.FindPropertyIndex(*shorthand.properties()[2]);
-  int left_value_index =
-      property_set_.FindPropertyIndex(*shorthand.properties()[3]);
+  const CSSValue& top_value =
+      *property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue& right_value =
+      *property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  const CSSValue& bottom_value =
+      *property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+  const CSSValue& left_value =
+      *property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
 
-  if (top_value_index == -1 || right_value_index == -1 ||
-      bottom_value_index == -1 || left_value_index == -1) {
-    return String();
-  }
-
-  PropertyValueForSerializer top = property_set_.PropertyAt(top_value_index);
-  PropertyValueForSerializer right =
-      property_set_.PropertyAt(right_value_index);
-  PropertyValueForSerializer bottom =
-      property_set_.PropertyAt(bottom_value_index);
-  PropertyValueForSerializer left = property_set_.PropertyAt(left_value_index);
-
-  bool show_left = !base::ValuesEquivalent(right.Value(), left.Value());
-  bool show_bottom =
-      !base::ValuesEquivalent(top.Value(), bottom.Value()) || show_left;
-  bool show_right =
-      !base::ValuesEquivalent(top.Value(), right.Value()) || show_bottom;
+  const bool show_left = right_value != left_value;
+  const bool show_bottom = top_value != bottom_value || show_left;
+  const bool show_right = top_value != right_value || show_bottom;
 
   StringBuilder result;
-  result.Append(top.Value()->CssText());
+  result.Append(top_value.CssText());
   if (show_right) {
     result.Append(' ');
-    result.Append(right.Value()->CssText());
+    result.Append(right_value.CssText());
   }
   if (show_bottom) {
     result.Append(' ');
-    result.Append(bottom.Value()->CssText());
+    result.Append(bottom_value.CssText());
   }
   if (show_left) {
     result.Append(' ');
-    result.Append(left.Value()->CssText());
+    result.Append(left_value.CssText());
   }
   return result.ReleaseString();
 }
