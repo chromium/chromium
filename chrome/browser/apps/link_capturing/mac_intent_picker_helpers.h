@@ -27,7 +27,9 @@ std::optional<MacAppInfo> FindMacAppForUrl(const GURL& url,
 
 // Launches a native Mac app, specified by the `launch_name` (the path) returned
 // by `FindMacAppForUrl` above, for the given `url`.
-void LaunchMacApp(const GURL& url, const std::string& launch_name);
+void LaunchMacApp(const GURL& url,
+                  const std::string& launch_name,
+                  base::OnceClosure callback);
 
 // Force `FindMacAppForUrl` to return fixed values for testing.
 // - If `fake` is `true` and `app_path` is set to a path, then

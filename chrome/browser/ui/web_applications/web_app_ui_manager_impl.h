@@ -163,6 +163,10 @@ class WebAppUiManagerImpl : public BrowserListObserver,
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) override;
 
+  void ShowIntentPicker(const GURL& url,
+                        content::WebContents* web_contents,
+                        ShowIntentPickerBubbleCallback callback) override;
+
   void LaunchOrFocusIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) override;
 

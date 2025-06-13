@@ -97,6 +97,8 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   static base::AutoReset<bool> SetAutoAcceptIntentPickerBubbleForTesting();
 
+  static base::AutoReset<bool> SetAutoCancelIntentPickerBubbleForTesting();
+
   static void CloseCurrentBubble();
 
   // LocationBarBubbleDelegateView overrides:

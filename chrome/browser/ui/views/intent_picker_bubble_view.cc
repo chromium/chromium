@@ -84,6 +84,7 @@ constexpr int kGridItemBorderRadius = 4;
 constexpr int kGridItemGroupId = 1;
 
 bool g_auto_accept_intent_picker_bubble_for_testing = false;
+bool g_auto_cancel_intent_picker_bubble_for_testing = false;
 
 bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
   return key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
@@ -550,6 +551,9 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
   if (g_auto_accept_intent_picker_bubble_for_testing) {
     intent_picker_bubble_->AcceptDialog();
   }
+  if (g_auto_cancel_intent_picker_bubble_for_testing) {
+    CloseCurrentBubble();
+  }
   return widget;
 }
 
@@ -557,6 +561,13 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
 base::AutoReset<bool>
 IntentPickerBubbleView::SetAutoAcceptIntentPickerBubbleForTesting() {
   return base::AutoReset<bool>(&g_auto_accept_intent_picker_bubble_for_testing,
+                               true);
+}
+
+// static
+base::AutoReset<bool>
+IntentPickerBubbleView::SetAutoCancelIntentPickerBubbleForTesting() {
+  return base::AutoReset<bool>(&g_auto_cancel_intent_picker_bubble_for_testing,
                                true);
 }
 

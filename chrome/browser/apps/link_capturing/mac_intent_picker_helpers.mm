@@ -110,10 +110,14 @@ std::optional<MacAppInfo> FindMacAppForUrl(const GURL& url,
   return std::nullopt;
 }
 
-void LaunchMacApp(const GURL& url, const std::string& launch_name) {
-  base::mac::LaunchApplication(base::FilePath(launch_name),
-                               /*command_line_args=*/{}, {url.spec()},
-                               /*options=*/{}, base::DoNothing());
+void LaunchMacApp(const GURL& url,
+                  const std::string& launch_name,
+                  base::OnceClosure callback) {
+  base::mac::LaunchApplication(
+      base::FilePath(launch_name),
+      /*command_line_args=*/{}, {url.spec()},
+      /*options=*/{},
+      base::IgnoreArgs<NSRunningApplication*, NSError*>(std::move(callback)));
 }
 
 void OverrideMacAppForUrlForTesting(bool fake, const std::string& app_path) {

@@ -16,11 +16,16 @@
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
 #include "url/gurl.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace webapps {
 enum class InstallResultCode;
 enum class InstallableStatusCode;
 }
 namespace web_app {
+class AppLock;
 class WebAppProvider;
 
 // Service side implementation for the Blink Web Install API. Takes the
@@ -49,6 +54,15 @@ class WebInstallServiceImpl
   ~WebInstallServiceImpl() override;
 
   void TryInstallCurrentDocument(InstallCallback callback);
+
+  void CheckForInstalledAppMaybeLaunch(content::WebContents* web_contents,
+                                       InstallCallback callback,
+                                       AppLock& lock,
+                                       base::Value::Dict& debug_value);
+
+  void OnIntentPickerMaybeLaunched(InstallCallback callback,
+                                   webapps::AppId app_id,
+                                   bool user_chose_to_open);
 
   void OnDidRetrieveManifestForCurrentDocumentInstall(
       InstallCallback callback,

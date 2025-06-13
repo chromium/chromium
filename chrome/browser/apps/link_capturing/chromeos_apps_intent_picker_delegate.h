@@ -53,7 +53,8 @@ class ChromeOsAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
   void LaunchApp(content::WebContents* web_contents,
                  const GURL& url,
                  const std::string& launch_name,
-                 PickerEntryType entry_type) override;
+                 PickerEntryType entry_type,
+                 base::OnceClosure callback = base::DoNothing()) override;
 
  private:
   raw_ref<Profile> profile_;

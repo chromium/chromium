@@ -243,6 +243,11 @@ void FakeWebAppUiManager::PresentUserUninstallDialog(
   std::move(callback).Run(webapps::UninstallResultCode::kAppRemoved);
 }
 
+void FakeWebAppUiManager::ShowIntentPicker(
+    const GURL& url,
+    content::WebContents* web_contents,
+    ShowIntentPickerBubbleCallback callback) {}
+
 void FakeWebAppUiManager::LaunchOrFocusIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {}
 

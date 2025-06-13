@@ -58,7 +58,8 @@ class AppsIntentPickerDelegate {
   virtual void LaunchApp(content::WebContents* web_contents,
                          const GURL& url,
                          const std::string& launch_name,
-                         PickerEntryType entry_type) = 0;
+                         PickerEntryType entry_type,
+                         base::OnceClosure callback) = 0;
 };
 
 }  // namespace apps

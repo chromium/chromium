@@ -152,17 +152,23 @@ void IntentPickerTabHelper::MaybeShowIntentPickerIcon() {
                      per_navigation_weak_factory_.GetWeakPtr()));
 }
 
-void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(const GURL& url) {
+void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(
+    const GURL& url,
+    bool always_show,
+    ShowIntentPickerBubbleCallback callback) {
   CHECK(web_contents());
   if (!intent_picker_delegate_->ShouldShowIntentPickerWithApps() ||
       !IsValidWebContentsForIntentPicker(web_contents())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*launched=*/false));
     return;
   }
 
   intent_picker_delegate_->FindAllAppsForUrl(
       url,
       base::BindOnce(&IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl,
-                     per_navigation_weak_factory_.GetWeakPtr(), url));
+                     per_navigation_weak_factory_.GetWeakPtr(), url,
+                     always_show, std::move(callback)));
 }
 
 // static
@@ -363,19 +369,23 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
 
 void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
     const GURL& url,
+    bool always_show,
+    ShowIntentPickerBubbleCallback callback,
     std::vector<apps::IntentPickerAppInfo> apps) {
-  if (apps.empty()) {
-    return;
-  }
-  if (IsShuttingDown(web_contents())) {
+  if (apps.empty() || IsShuttingDown(web_contents())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*launched=*/false));
     return;
   }
 
+  // TODO(crbug.com/421950209): Add and record new enum for when the intent
+  // picker is shown via the Web Install API.
   intent_picker_delegate_->RecordIntentPickerIconEvent(
       apps::IntentPickerIconEvent::kIconClicked);
 
-  if (apps.size() == 1 && intent_picker_delegate_->ShouldLaunchAppDirectly(
-                              url, apps[0].launch_name, apps[0].type)) {
+  if (apps.size() == 1 && !always_show &&
+      intent_picker_delegate_->ShouldLaunchAppDirectly(url, apps[0].launch_name,
+                                                       apps[0].type)) {
     // TODO(b/305075981): Move IntentChipDisplayPrefs to
     // c/b/apps/link_capturing.
     if (apps::features::ShouldShowLinkCapturingUX()) {
@@ -383,8 +393,9 @@ void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext());
       IntentChipDisplayPrefs::ResetIntentChipCounter(profile, url);
     }
-    intent_picker_delegate_->LaunchApp(web_contents(), url, apps[0].launch_name,
-                                       apps[0].type);
+    intent_picker_delegate_->LaunchApp(
+        web_contents(), url, apps[0].launch_name, apps[0].type,
+        base::BindOnce(std::move(callback), /*launched=*/true));
     return;
   }
 
@@ -402,7 +413,8 @@ void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
       &ShowIntentPickerBubbleForApps, web_contents(), show_stay_in_chrome,
       show_remember_selection,
       base::BindOnce(&IntentPickerTabHelper::OnIntentPickerClosedMaybeLaunch,
-                     per_navigation_weak_factory_.GetWeakPtr(), url));
+                     per_navigation_weak_factory_.GetWeakPtr(), url,
+                     std::move(callback)));
 
   LoadAppIcon(std::move(apps),
               /*index=*/0, std::move(show_intent_picker_bubble));
@@ -410,11 +422,14 @@ void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
 
 void IntentPickerTabHelper::OnIntentPickerClosedMaybeLaunch(
     const GURL& url,
+    ShowIntentPickerBubbleCallback callback,
     const std::string& launch_name,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason close_reason,
     bool should_persist) {
   if (IsShuttingDown(web_contents())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*launched=*/false));
     return;
   }
 
@@ -427,17 +442,22 @@ void IntentPickerTabHelper::OnIntentPickerClosedMaybeLaunch(
     intent_picker_delegate_->PersistIntentPreferencesForApp(entry_type,
                                                             launch_name);
   }
-  if (should_launch_app) {
-    // TODO(b/305075981): Move IntentChipDisplayPrefs to
-    // c/b/apps/link_capturing.
-    if (apps::features::ShouldShowLinkCapturingUX()) {
-      Profile* profile =
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-      IntentChipDisplayPrefs::ResetIntentChipCounter(profile, url);
-    }
-    intent_picker_delegate_->LaunchApp(web_contents(), url, launch_name,
-                                       entry_type);
+
+  if (!should_launch_app) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*launched=*/false));
+    return;
   }
+  // TODO(crbug.com/305075981): Move IntentChipDisplayPrefs to
+  // c/b/apps/link_capturing.
+  if (apps::features::ShouldShowLinkCapturingUX()) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    IntentChipDisplayPrefs::ResetIntentChipCounter(profile, url);
+  }
+  intent_picker_delegate_->LaunchApp(
+      web_contents(), url, launch_name, entry_type,
+      base::BindOnce(std::move(callback), /*launched=*/true));
 }
 
 void IntentPickerTabHelper::SetIconUpdateCallbackForTesting(

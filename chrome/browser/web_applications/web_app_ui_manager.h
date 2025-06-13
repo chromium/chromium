@@ -105,6 +105,8 @@ enum class LaunchWebAppWindowSetting {
 // events from WebAppTabHelpers.
 class WebAppUiManager {
  public:
+  using ShowIntentPickerBubbleCallback = base::OnceCallback<void(bool)>;
+
   struct RoolNotificationBehavior {
     bool is_rool_enabled = false;
     bool is_prevent_close_enabled = false;
@@ -292,6 +294,12 @@ class WebAppUiManager {
       gfx::NativeWindow parent_window,
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) = 0;
+
+  // This assumes the app is already installed. The callback is called with
+  // true when the user chooses to open the app, otherwise, false is called.
+  virtual void ShowIntentPicker(const GURL& url,
+                                content::WebContents* web_contents,
+                                ShowIntentPickerBubbleCallback callback) = 0;
 
   // Launches the Isolated Web App installer for a bundle with the given path.
   // If an installer with the given path already exists, brings it to front and

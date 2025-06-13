@@ -7,9 +7,12 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/command_metrics_test_helper.h"
@@ -29,6 +32,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 namespace {
 constexpr webapps::WebappInstallSource kInstallSource =
@@ -233,11 +237,154 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest, Install) {
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
+                       UserAcceptsOpenDialog) {
+  GURL current_doc_url =
+      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  const std::string manifest_id =
+      GenerateManifestId("some_id", current_doc_url).spec();
+
+  auto auto_accept_pwa_install_confirmation =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
+  base::HistogramTester histograms;
+
+  // Install current doc, wait for app browser window to appear and close it.
+  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+      browser(), current_doc_url);
+  // Verify that the app was installed and launched.
+  histograms.ExpectUniqueSample("WebApp.LaunchSource",
+                                apps::LaunchSource::kFromReparenting, 1);
+
+  // Navigate again to the just installed current doc in the browser window.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
+  auto auto_accept_intent_picker =
+      IntentPickerBubbleView::SetAutoAcceptIntentPickerBubbleForTesting();
+
+  ui_test_utils::BrowserChangeObserver wait_for_launch_app(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+
+  // Call navigator.install() to trigger the intent picker.
+  switch (GetParam()) {
+    case APISignature::kZeroParameter:
+      ASSERT_TRUE(TryInstallApp());
+      break;
+    case APISignature::kOneParameter:
+      ASSERT_TRUE(TryInstallApp(current_doc_url.spec()));
+      break;
+    case APISignature::kTwoParameter:
+      ASSERT_TRUE(TryInstallApp(current_doc_url.spec(), manifest_id));
+      break;
+  }
+
+  // Verify the app was launched again after accepting the intent picker.
+  auto* launched_app_browser = wait_for_launch_app.Wait();
+  ASSERT_TRUE(web_app::AppBrowserController::IsWebApp(launched_app_browser));
+  auto* launched_app_web_contents =
+      launched_app_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Validate JS results.
+  EXPECT_TRUE(ResultExists(launched_app_web_contents));
+  EXPECT_FALSE(ErrorExists(launched_app_web_contents));
+
+  histograms.ExpectUniqueSample("WebApp.LaunchSource",
+                                apps::LaunchSource::kFromReparenting, 2);
+}
+
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
+                       UserCancelsOpenDialog) {
+  GURL current_doc_url =
+      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  const std::string manifest_id =
+      GenerateManifestId("some_id", current_doc_url).spec();
+
+  auto auto_accept_pwa_install_confirmation =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
+  base::HistogramTester histograms;
+
+  // Install current doc, wait for app browser window to appear and close it.
+  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+      browser(), current_doc_url);
+  // Verify that the app was installed and launched.
+  histograms.ExpectUniqueSample("WebApp.LaunchSource",
+                                apps::LaunchSource::kFromReparenting, 1);
+
+  // Navigate again to the just installed current doc in the browser window.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
+  auto auto_cancel_intent_picker =
+      IntentPickerBubbleView::SetAutoCancelIntentPickerBubbleForTesting();
+
+  // Call navigator.install() to trigger the intent picker.
+  switch (GetParam()) {
+    case APISignature::kZeroParameter:
+      ASSERT_TRUE(TryInstallApp());
+      break;
+    case APISignature::kOneParameter:
+      ASSERT_TRUE(TryInstallApp(current_doc_url.spec()));
+      break;
+    case APISignature::kTwoParameter:
+      ASSERT_TRUE(TryInstallApp(current_doc_url.spec(), manifest_id));
+      break;
+  }
+
+  // Validate JS results.
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          WebInstallCurrentDocumentBrowserTest,
                          testing::Values(APISignature::kZeroParameter,
                                          APISignature::kOneParameter,
                                          APISignature::kTwoParameter));
+
+IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+                       IntentPickerAfterTabSwitching) {
+  GURL current_doc_url =
+      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+
+  auto auto_accept_pwa_install_confirmation =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
+  base::HistogramTester histograms;
+
+  // Install current doc, wait for app browser window to appear and close it.
+  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+      browser(), current_doc_url);
+  // Verify that the app was installed and launched.
+  histograms.ExpectUniqueSample("WebApp.LaunchSource",
+                                apps::LaunchSource::kFromReparenting, 1);
+
+  views::NamedWidgetShownWaiter intent_picker_bubble_shown(
+      views::test::AnyWidgetTestPasskey{},
+      IntentPickerBubbleView::kViewClassName);
+
+  // Navigate again to the just installed current doc in the browser window.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
+
+  // EvalJs blocks until the promise resolves which only happens after the
+  // dialog is closed. Execute the script asynchronously so we can change tabs
+  // before the promise times out.
+  ExecuteScriptAsync(web_contents(),
+                     "navigator.install()"
+                     ".then(result => {"
+                     "  webInstallResult = result;"
+                     "}).catch(error => {"
+                     "  webInstallError = error;"
+                     "});");
+
+  // Wait for the intent picker bubble to show.
+  views::Widget* intent_picker =
+      intent_picker_bubble_shown.WaitIfNeededAndGet();
+  ASSERT_NE(intent_picker, nullptr);
+
+  // Change focus to a new tab.
+  chrome::NewTab(browser());
+
+  // Switch back to the tab with the app to validate JS results.
+  chrome::SelectPreviousTab(browser());
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kAbortError);
+}
 
 // Manifest validation for current document installs.
 using WebInstallCurrentDocumentBrowserTestManifestErrors =

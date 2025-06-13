@@ -40,6 +40,7 @@ namespace apps {
 namespace {
 
 void OnAppReparentedRunInNewContents(const std::string& launch_name,
+                                     base::OnceClosure callback,
                                      content::WebContents* web_contents) {
   if (!features::ShouldShowLinkCapturingUX()) {
     return;
@@ -55,6 +56,8 @@ void OnAppReparentedRunInNewContents(const std::string& launch_name,
                                                                 launch_name);
   provider->ui_manager().MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
       /*browser=*/nullptr, profile, launch_name);
+
+  std::move(callback).Run();
 }
 
 }  // namespace
@@ -246,7 +249,8 @@ void WebAppsIntentPickerDelegate::PersistIntentPreferencesForApp(
 void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
                                             const GURL& url,
                                             const std::string& launch_name,
-                                            PickerEntryType entry_type) {
+                                            PickerEntryType entry_type,
+                                            base::OnceClosure callback) {
   CHECK(entry_type == apps::PickerEntryType::kWeb ||
         entry_type == apps::PickerEntryType::kMacOs);
   CHECK(ShouldShowIntentPickerWithApps());
@@ -256,10 +260,11 @@ void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
     // which will destroy this object.
     provider_->ui_manager().ReparentAppTabToWindow(
         web_contents, launch_name,
-        base::BindOnce(&OnAppReparentedRunInNewContents, launch_name));
+        base::BindOnce(&OnAppReparentedRunInNewContents, launch_name,
+                       std::move(callback)));
   } else if (entry_type == apps::PickerEntryType::kMacOs) {
 #if BUILDFLAG(IS_MAC)
-    LaunchMacApp(url, launch_name);
+    LaunchMacApp(url, launch_name, std::move(callback));
 #else
     NOTREACHED();
 #endif  // BUILDFLAG(IS_MAC)

@@ -188,13 +188,15 @@ void ChromeOsAppsIntentPickerDelegate::LaunchApp(
     content::WebContents* web_contents,
     const GURL& url,
     const std::string& launch_name,
-    PickerEntryType entry_type) {
+    PickerEntryType entry_type,
+    base::OnceClosure callback) {
   CHECK(!launch_name.empty());
   if (entry_type == PickerEntryType::kWeb) {
     web_app::WebAppProvider* provider =
         web_app::WebAppProvider::GetForWebApps(&profile_.get());
-    provider->ui_manager().ReparentAppTabToWindow(web_contents, launch_name,
-                                                  base::DoNothing());
+    provider->ui_manager().ReparentAppTabToWindow(
+        web_contents, launch_name,
+        base::IgnoreArgs<content::WebContents*>(std::move(callback)));
   } else {
     CHECK(proxy_);
     proxy_->LaunchAppWithUrl(
@@ -202,7 +204,8 @@ void ChromeOsAppsIntentPickerDelegate::LaunchApp(
         GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                       /*prefer_container=*/true),
         url, LaunchSource::kFromLink,
-        std::make_unique<WindowInfo>(display::kDefaultDisplayId));
+        std::make_unique<WindowInfo>(display::kDefaultDisplayId),
+        base::IgnoreArgs<LaunchResult&&>(std::move(callback)));
     CloseOrGoBack(web_contents);
   }
 }
