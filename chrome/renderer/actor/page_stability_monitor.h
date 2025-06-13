@@ -8,6 +8,7 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/renderer/actor/journal.h"
 #include "content/public/renderer/render_frame_observer.h"
 
 namespace content {
@@ -23,7 +24,9 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
  public:
   // Constructs the monitor and takes a baseline observation of the document in
   // the given RenderFrame.
-  explicit PageStabilityMonitor(content::RenderFrame& frame);
+  PageStabilityMonitor(content::RenderFrame& frame,
+                       int32_t task_id,
+                       Journal& journal);
   ~PageStabilityMonitor() override;
 
   // Invokes the given callback when the page is deemed stable enough for an
@@ -90,6 +93,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
   base::CancelableOnceClosure network_idle_callback_;
 
   base::OnceClosure is_stable_callback_;
+
+  std::unique_ptr<Journal::PendingAsyncEntry> journal_entry_;
 
   base::WeakPtrFactory<PageStabilityMonitor> weak_ptr_factory_{this};
 };

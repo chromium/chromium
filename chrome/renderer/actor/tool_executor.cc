@@ -101,7 +101,8 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
 
   journal_->Log(request->task_id, "Renderer InvokeTool", tool->DebugString());
 
-  page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(*frame_);
+  page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(
+      *frame_, request->task_id, *journal_);
 
   mojom::ActionResultPtr result = tool->Execute();
 
@@ -111,6 +112,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
 
 void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
   CHECK(completion_callback_);
+  page_stability_monitor_.reset();
   std::move(completion_callback_).Run(std::move(result));
 }
 

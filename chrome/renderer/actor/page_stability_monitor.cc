@@ -48,12 +48,17 @@ base::TimeDelta GetMainThreadTimeoutDelay() {
 
 }  // namespace
 
-PageStabilityMonitor::PageStabilityMonitor(RenderFrame& frame)
+PageStabilityMonitor::PageStabilityMonitor(RenderFrame& frame,
+                                           int32_t task_id,
+                                           Journal& journal)
     : RenderFrameObserver(&frame) {
   CHECK(render_frame());
   CHECK(render_frame()->GetWebFrame());
   starting_request_count_ =
       render_frame()->GetWebFrame()->GetDocument().ActiveResourceRequestCount();
+
+  journal_entry_ =
+      journal.CreatePendingAsyncEntry(task_id, "PageStability", "");
 }
 
 PageStabilityMonitor::~PageStabilityMonitor() = default;
@@ -140,27 +145,31 @@ void PageStabilityMonitor::MoveToState(State new_state) {
           render_frame()->GetWebFrame()->LocalRoot()->FrameWidget();
       if (!widget->InsertVisualStateRequest(
               PostMoveToStateClosure(State::kInvokeCallback))) {
-        ACTOR_LOG() << "Failed to wait for new frame presentation due to no "
-                       "compositor.";
+        journal_entry_->EndEntry(
+            "Failed to wait for new frame presentation due to no "
+            "compositor.");
         MoveToState(State::kInvokeCallback);
       }
       break;
     }
     case State::kTimeoutGlobal: {
-      ACTOR_LOG() << "Timed out waiting for page stability.";
+      journal_entry_->EndEntry("Timed out waiting for page stability.");
       MoveToState(State::kInvokeCallback);
       break;
     }
     case State::kTimeoutMainThread: {
-      ACTOR_LOG() << "Timed out waiting for page stability - main thread to "
-                     "produce a thread.";
+      journal_entry_->EndEntry(
+          "Timed out waiting for page stability - main thread to "
+          "produce a thread.");
       MoveToState(State::kInvokeCallback);
       break;
     }
     case State::kInvokeCallback: {
       // Ensure we release the network idle callback slot.
       network_idle_callback_.Cancel();
-      std::move(is_stable_callback_).Run();
+      // Call the callback on a separate task.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(is_stable_callback_));
       MoveToState(State::kDone);
       break;
     }
