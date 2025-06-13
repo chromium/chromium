@@ -15,6 +15,8 @@ Running without allocation reduces crate functionality:
 
 miniz_oxide 0.8.x currently requires at least Rust 1.56.0, though to leave some room for future internal improvements the minimum version might be raised in the future though it never be made incompatible with anything more recent than the last 4 rust versions and in all likelyhood not require anything even remotely that recent unless there is a very good reason for it.
 
+IMPORTANT! Versions prior to 0.8.4 have a [massive](https://github.com/Frommi/miniz_oxide/issues/163) regression in compression performance in versions of rust 1.81 and newer due to a upstream regression. If miniz_oxide is part of your dependencies, please update to the latest version to avoid performance regressions!
+
 miniz_oxide features no use of unsafe code.
 
 miniz_oxide can optionally be made to use a simd-accelerated version of adler32 via the [simd-adler32](https://crates.io/crates/simd-adler32) crate by enabling the 'simd' feature which will give a noticeable speedup on decoding, and a smaller speedup during encoding, if the data is encoded with a zlib header. Due to the increase in performance this is recommended, though not enabled by default for compatability reasons. Additionally, due to the use of simd intrinsics, the simd-adler32 has to use unsafe. (Due to limitations in the rust standard library simd-adler32 only has explicit SIMD implementations on stable rust for x86 platforms currently but this may change in the future.)
