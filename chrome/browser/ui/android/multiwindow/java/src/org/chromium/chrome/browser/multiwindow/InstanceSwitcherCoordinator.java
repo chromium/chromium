@@ -32,9 +32,9 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.browser_ui.util.TimeTextResolver;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -56,8 +56,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
- * Coordinator to construct the instance switcher dialog.
- * TODO: Resolve various inconsistencies that can be caused by Ui from multiple instances.
+ * Coordinator to construct the instance switcher dialog. TODO: Resolve various inconsistencies that
+ * can be caused by Ui from multiple instances.
  */
 @NullMarked
 public class InstanceSwitcherCoordinator {
@@ -143,9 +143,9 @@ public class InstanceSwitcherCoordinator {
         mNewWindowAction = newWindowAction;
         mMaxInstanceCount = maxInstanceCount;
 
-        if (isInstanceSwitcherV2Enabled()) {
-            var activeListAdapter = getInstanceListAdapter(/* active= */ true);
-            var inactiveListAdapter = getInstanceListAdapter(/* active= */ false);
+        if (UiUtils.isInstanceSwitcherV2Enabled()) {
+            var activeListAdapter = getInstanceListV2Adapter(/* active= */ true);
+            var inactiveListAdapter = getInstanceListV2Adapter(/* active= */ false);
 
             mDialogView =
                     LayoutInflater.from(context)
@@ -213,13 +213,13 @@ public class InstanceSwitcherCoordinator {
         }
     }
 
-    private SimpleRecyclerViewAdapter getInstanceListAdapter(boolean active) {
+    private SimpleRecyclerViewAdapter getInstanceListV2Adapter(boolean active) {
         var adapter = new SimpleRecyclerViewAdapter(active ? mActiveModelList : mInactiveModelList);
         adapter.registerType(
                 EntryType.INSTANCE,
                 parentView ->
                         LayoutInflater.from(mContext)
-                                .inflate(R.layout.instance_switcher_item, null),
+                                .inflate(R.layout.instance_switcher_item_v2, null),
                 InstanceSwitcherItemViewBinder::bind);
         adapter.registerType(
                 EntryType.COMMAND,
@@ -237,7 +237,7 @@ public class InstanceSwitcherCoordinator {
             // An active instance should have an associated live task.
             boolean isActiveInstance = items.get(i).taskId != INVALID_TASK_ID;
             PropertyModel itemModel = generateListItem(items.get(i));
-            if (isInstanceSwitcherV2Enabled()) {
+            if (UiUtils.isInstanceSwitcherV2Enabled()) {
                 if (isActiveInstance) {
                     mActiveModelList.add(
                             new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
@@ -296,17 +296,32 @@ public class InstanceSwitcherCoordinator {
     private PropertyModel generateListItem(InstanceInfo item) {
         String title = mUiUtils.getItemTitle(item);
         String desc = mUiUtils.getItemDesc(item);
-        boolean currentIndicator = item.type == InstanceInfo.Type.CURRENT;
+        boolean isCurrentWindow = item.type == InstanceInfo.Type.CURRENT;
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(InstanceSwitcherItemProperties.ALL_KEYS)
                         .with(InstanceSwitcherItemProperties.TITLE, title)
                         .with(InstanceSwitcherItemProperties.DESC, desc)
-                        .with(InstanceSwitcherItemProperties.CURRENT, currentIndicator)
                         .with(InstanceSwitcherItemProperties.INSTANCE_ID, item.instanceId)
                         .with(
                                 InstanceSwitcherItemProperties.CLICK_LISTENER,
                                 (view) -> switchToInstance(item));
-        if (!currentIndicator) buildMoreMenu(builder, item);
+
+        if (!UiUtils.isInstanceSwitcherV2Enabled()) {
+            builder.with(InstanceSwitcherItemProperties.CURRENT, isCurrentWindow);
+            if (!isCurrentWindow) {
+                buildMoreMenu(builder, item);
+            }
+        } else {
+            String lastAccessedString =
+                    isCurrentWindow
+                            ? mContext.getString(R.string.instance_last_accessed_current)
+                            : TimeTextResolver.resolveTimeAgoText(
+                                    mContext.getResources(), item.lastAccessedTime);
+            builder.with(InstanceSwitcherItemProperties.LAST_ACCESSED, lastAccessedString)
+                    .with(
+                            InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER,
+                            v -> closeWindow(item));
+        }
         PropertyModel model = builder.build();
         mUiUtils.setFavicon(model, InstanceSwitcherItemProperties.FAVICON, item);
         return model;
@@ -335,11 +350,7 @@ public class InstanceSwitcherCoordinator {
                 (model) -> {
                     int textId = model.get(ListMenuItemProperties.TITLE_ID);
                     if (textId == R.string.instance_switcher_close_window) {
-                        if (canSkipConfirm(item)) {
-                            removeInstance(item);
-                        } else {
-                            showConfirmationMessage(item);
-                        }
+                        closeWindow(item);
                     }
                 };
         BasicListMenu listMenu =
@@ -349,6 +360,14 @@ public class InstanceSwitcherCoordinator {
                     RecordUserAction.record("Android.WindowManager.SecondaryMenu");
                 });
         builder.with(InstanceSwitcherItemProperties.MORE_MENU, () -> listMenu);
+    }
+
+    private void closeWindow(InstanceInfo item) {
+        if (canSkipConfirm(item)) {
+            removeInstance(item);
+        } else {
+            showConfirmationMessage(item);
+        }
     }
 
     private void switchToInstance(InstanceInfo item) {
@@ -381,7 +400,7 @@ public class InstanceSwitcherCoordinator {
      * </ul>
      */
     private void updateCommandUiState() {
-        if (!isInstanceSwitcherV2Enabled()) return;
+        if (!UiUtils.isInstanceSwitcherV2Enabled()) return;
         int numActiveInstances = mActiveModelList.size();
         int numInactiveInstances = mInactiveModelList.size();
         if (mNewWindowEnabled) {
@@ -427,7 +446,7 @@ public class InstanceSwitcherCoordinator {
     }
 
     private int getTotalInstanceCount() {
-        if (!isInstanceSwitcherV2Enabled()) {
+        if (!UiUtils.isInstanceSwitcherV2Enabled()) {
             // Exclude COMMAND item from list size.
             return mModelList.size() - 1;
         }
@@ -443,7 +462,7 @@ public class InstanceSwitcherCoordinator {
     private void removeInstance(InstanceInfo item) {
         int instanceId = item.instanceId;
 
-        if (isInstanceSwitcherV2Enabled()) {
+        if (UiUtils.isInstanceSwitcherV2Enabled()) {
             removeItemFromModelList(
                     instanceId,
                     item.taskId == INVALID_TASK_ID ? mInactiveModelList : mActiveModelList);
@@ -528,9 +547,5 @@ public class InstanceSwitcherCoordinator {
                 mContext.getString(R.string.instance_switcher_tabs_active, numActiveInstances));
         inactiveTab.setText(
                 mContext.getString(R.string.instance_switcher_tabs_inactive, numInactiveInstances));
-    }
-
-    private static boolean isInstanceSwitcherV2Enabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER_V2);
     }
 }

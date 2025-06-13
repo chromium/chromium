@@ -24,6 +24,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -72,6 +74,7 @@ public class TargetSelectorCoordinatorTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
     public void testTargetSelectorCoordinatorTest_moveWindow() throws Exception {
         InstanceInfo[] instances =
                 new InstanceInfo[] {

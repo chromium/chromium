@@ -4,12 +4,12 @@
 
 package org.chromium.components.browser_ui.util;
 
-import android.content.res.Resources;
 import android.util.Pair;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
+import android.content.res.Resources;
 
-import java.time.Clock;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,38 +25,27 @@ public class TimeTextResolver {
                     new Pair<>(ChronoUnit.MONTHS, R.plurals.time_last_accessed_months),
                     new Pair<>(ChronoUnit.WEEKS, R.plurals.time_last_accessed_weeks),
                     new Pair<>(ChronoUnit.DAYS, R.plurals.time_last_accessed_days));
-    private final Resources mResources;
-    private final Clock mClock;
-
-    /**
-     * @param resources Used to resolve strings against.
-     * @param clock Used to get the current time.
-     */
-    public TimeTextResolver(Resources resources, Clock clock) {
-        mResources = resources;
-        mClock = clock;
-    }
 
     /**
      * @param timestamp The timestamp in milliseconds.
-     * @return Simple text representing the time since a given timestamp.
-     *     Represented as one of: Today > Yesterday > x days ago > x weeks ago > x months ago.
+     * @return Simple text representing the time since a given timestamp. Represented as one of:
+     *     Today > Yesterday > x days ago > x weeks ago > x months ago.
      */
     // duration.getSeconds should be toSeconds after api 31.
     @SuppressWarnings("JavaDurationGetSecondsToToSeconds")
-    public String resolveTimeAgoText(long timestamp) {
+    public static String resolveTimeAgoText(Resources resources, long timestamp) {
         List<Pair<ChronoUnit, Integer>> selectedChronoUnitAndPluralRes =
                 LAST_ACCESSED_CHRONO_UNIT_AND_PLURAL_RES;
 
-        long nowMillis = mClock.millis();
+        long nowMillis = TimeUtils.currentTimeMillis();
         int seconds = (int) TimeUnit.MILLISECONDS.toSeconds(nowMillis - timestamp);
         for (Pair<ChronoUnit, Integer> pair : selectedChronoUnitAndPluralRes) {
             int count = (int) (seconds / pair.first.getDuration().getSeconds());
             if (count >= 1) {
-                return mResources.getQuantityString(pair.second, count, count);
+                return resources.getQuantityString(pair.second, count, count);
             }
         }
 
-        return mResources.getString(R.string.time_last_accessed_today);
+        return resources.getString(R.string.time_last_accessed_today);
     }
 }

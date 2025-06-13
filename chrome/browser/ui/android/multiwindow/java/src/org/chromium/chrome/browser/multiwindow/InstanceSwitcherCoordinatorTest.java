@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
@@ -28,10 +29,13 @@ import static org.hamcrest.Matchers.not;
 
 import android.view.View;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -42,6 +46,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -373,7 +378,6 @@ public class InstanceSwitcherCoordinatorTest {
 
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
-        InstanceSwitcherCoordinator.setSkipCloseConfirmation();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -507,6 +511,57 @@ public class InstanceSwitcherCoordinatorTest {
                 });
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testLastAccessedStringsForInstances() {
+        final String expectedCurrentString = "Current window";
+        final String expectedOtherString = "2 days ago";
+
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null,
+                            null,
+                            null,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+
+        // Verify that the "Current window" string is at position 0.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                atPosition(
+                                        0,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.last_accessed),
+                                                        withText(expectedCurrentString),
+                                                        isDisplayed())))));
+
+        // Verify that the "2 days ago" string is at position 2.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                atPosition(
+                                        2,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.last_accessed),
+                                                        withText(expectedOtherString),
+                                                        isDisplayed())))));
+    }
+
     private InstanceInfo[] createPersistedInstances(
             int numActiveInstances, int numInactiveInstances) {
         int totalInstances = numActiveInstances + numInactiveInstances;
@@ -530,7 +585,7 @@ public class InstanceSwitcherCoordinatorTest {
                             1,
                             0,
                             false,
-                            0);
+                            getDaysAgoMillis(i));
         }
 
         // Create inactive instances.
@@ -541,6 +596,11 @@ public class InstanceSwitcherCoordinatorTest {
         }
 
         return instances;
+    }
+
+    /* Returns the millisecond timestamp for a given number of days in the past. */
+    private long getDaysAgoMillis(int lastAccessedDaysAgo) {
+        return TimeUtils.currentTimeMillis() - lastAccessedDaysAgo * 24L * 60L * 60L * 1000L;
     }
 
     /* For use in instance switcher v1. */
@@ -576,18 +636,40 @@ public class InstanceSwitcherCoordinatorTest {
 
                                     @Override
                                     public String getDescription() {
-                                        return "Click on the more menu.";
+                                        return "Click on the close button.";
                                     }
 
                                     @Override
                                     public void perform(UiController uiController, View view) {
-                                        View v = view.findViewById(R.id.more);
+                                        View v = view.findViewById(R.id.close_button);
                                         v.performClick();
                                     }
                                 }));
-        onView(withText(R.string.instance_switcher_close_window))
-                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+        onView(withText(R.string.close))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
                 .perform(click());
         closeCallbackHelper.waitForCallback(closeCallbackCount);
+    }
+
+    private static Matcher<View> atPosition(final int position, final Matcher<View> itemMatcher) {
+        return new BoundedMatcher<>(RecyclerView.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has item at position " + position + ": ");
+                itemMatcher.describeTo(description);
+            }
+
+            @Override
+            protected boolean matchesSafely(final RecyclerView view) {
+                RecyclerView.ViewHolder viewHolder =
+                        view.findViewHolderForAdapterPosition(position);
+                if (viewHolder == null) {
+                    // Has no item at this position.
+                    return false;
+                }
+                return itemMatcher.matches(viewHolder.itemView);
+            }
+        };
     }
 }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    style="@style/ListItemContainer" >
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/favicon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginVertical="22dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="center_vertical"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/favicon"
+        android:layout_toStartOf="@id/last_accessed"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_marginEnd="16dp" >
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:layout_gravity="center_vertical"
+            app:leading="@dimen/text_size_large_leading" />
+        <TextView
+            android:id="@+id/desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_gravity="center_vertical"
+            app:leading="@dimen/text_size_medium_leading" />
+    </LinearLayout>
+
+   <TextView
+        android:id="@+id/last_accessed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/close_button"
+        android:layout_marginEnd="16dp"
+        android:gravity="end"
+        app:leading="@dimen/text_size_medium_leading" />
+
+    <ImageView
+        android:id="@+id/close_button"
+        android:src="@drawable/material_ic_close_24dp"
+        android:contentDescription="@string/close"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginHorizontal="16dp"
+        android:scaleType="fitCenter"/>
+</RelativeLayout>

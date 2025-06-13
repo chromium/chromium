@@ -46,7 +46,6 @@ class InstanceSwitcherItemViewBinder {
             view.findViewById(R.id.current).setVisibility(current ? View.VISIBLE : View.INVISIBLE);
             // Do not show 3-dot submenu for the current instance.
             view.findViewById(R.id.more).setVisibility(current ? View.INVISIBLE : View.VISIBLE);
-
         } else if (InstanceSwitcherItemProperties.CLICK_LISTENER == propertyKey) {
             view.setOnClickListener(model.get(InstanceSwitcherItemProperties.CLICK_LISTENER));
 
@@ -62,6 +61,15 @@ class InstanceSwitcherItemViewBinder {
                 View maxInfo = view.findViewById(R.id.max_info);
                 maxInfo.setVisibility(enabled ? View.GONE : View.VISIBLE);
             }
+
+        } else if (InstanceSwitcherItemProperties.LAST_ACCESSED == propertyKey) {
+            TextView lastAccessedView = view.findViewById(R.id.last_accessed);
+            String text = model.get(InstanceSwitcherItemProperties.LAST_ACCESSED);
+            lastAccessedView.setText(text);
+        } else if (InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER == propertyKey) {
+            ImageView closeButton = view.findViewById(R.id.close_button);
+            closeButton.setOnClickListener(
+                    model.get(InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER));
         }
     }
 }

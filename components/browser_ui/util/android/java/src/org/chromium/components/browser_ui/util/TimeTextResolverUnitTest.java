@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -13,14 +12,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-
-import org.chromium.base.test.BaseRobolectricTestRunner;
-
-import java.time.Clock;
 import org.robolectric.Robolectric;
+
+import org.chromium.base.TimeUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link TimeTextResolver}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -28,18 +25,16 @@ public class TimeTextResolverUnitTest {
     private Activity mActivity;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Clock mClock;
     TimeTextResolver mResolver;
 
     @Before
     public void setup() {
-        when(mClock.millis()).thenReturn(0L);
         mActivity = Robolectric.setupActivity(Activity.class);
-        mResolver = new TimeTextResolver(mActivity.getResources(), mClock);
     }
 
     private String fromSecondsAgo(long secondsDelta) {
-        return mResolver.resolveTimeAgoText(0 - 1000 * secondsDelta);
+        return TimeTextResolver.resolveTimeAgoText(
+                mActivity.getResources(), TimeUtils.currentTimeMillis() - 1000 * secondsDelta);
     }
 
     @Test

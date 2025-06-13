@@ -5821,6 +5821,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           =1 {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>2</ex></ph> incognito and <ph name="TAB_COUNT_ONE">%2$s<ex>1</ex></ph> more tab will be closed}
           other {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>4</ex></ph> incognito and <ph name="TAB_COUNT_MANY">%2$s<ex>4</ex></ph> more tabs will be closed}}
       </message>
+      <message name="IDS_INSTANCE_LAST_ACCESSED_CURRENT" desc="The current window indicator text.">
+        Current window
+      </message>
 
       <!-- Multi-instance message strings -->
       <message name="IDS_MULTI_INSTANCE_RESTORATION_MESSAGE_TITLE" desc="Title of the message shown when the number of persisted instances exceeds the max instance count after an instance limit downgrade.">
