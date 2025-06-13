@@ -8,6 +8,7 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -119,8 +120,7 @@ public class BookmarkBarSettingProviderTest {
         mSettingSupplier.set(true);
         mProvider = new BookmarkBarSettingProvider(mProfileSupplier, mCallback);
         Robolectric.flushForegroundThreadScheduler();
-        verify(mCallback).onResult(true);
-        verifyNoMoreInteractions(mCallback);
+        verify(mCallback, times(2)).onResult(true);
         clearInvocations(mCallback);
 
         // Case: Destroy w/ setting enabled.
@@ -141,14 +141,12 @@ public class BookmarkBarSettingProviderTest {
 
         // Case: Profile changed to `null`.
         mProfileSupplier.set(null);
-        verify(mCallback).onResult(false);
-        verifyNoMoreInteractions(mCallback);
+        verify(mCallback, times(2)).onResult(false);
         clearInvocations(mCallback);
 
         // Case: Profile changed from `null`.
         mProfileSupplier.set(mProfile);
-        verify(mCallback).onResult(true);
-        verifyNoMoreInteractions(mCallback);
+        verify(mCallback, times(2)).onResult(true);
     }
 
     @Test

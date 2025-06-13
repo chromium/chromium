@@ -25,7 +25,6 @@ public class BookmarkBarSettingProvider {
     private final Callback<Boolean> mCallback;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
-    private final ObservableSupplierImpl<Boolean> mSettingSupplier;
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
 
@@ -52,16 +51,12 @@ public class BookmarkBarSettingProvider {
         mProfileSupplier = profileSupplier;
         mProfileSupplierObserver = this::onProfileChange;
         mProfileSupplier.addObserver(mProfileSupplierObserver);
-
-        mSettingSupplier = new ObservableSupplierImpl<>();
-        mSettingSupplier.addObserver(mCallback);
     }
 
     /** Destroys the setting provider. */
     public void destroy() {
         destroyPrefChangeRegistrar();
         mProfileSupplier.removeObserver(mProfileSupplierObserver);
-        mSettingSupplier.removeObserver(mCallback);
     }
 
     private void onProfileChange(@Nullable Profile profile) {
@@ -72,6 +67,9 @@ public class BookmarkBarSettingProvider {
             BookmarkBarUtils.addSettingObserver(mPrefChangeRegistrar, this::updateSetting);
         }
 
+        // The callback is now called directly twice - once when registering the observer above,
+        // and again here to cover null |profile| cases.
+        // TODO(crbug.com/424456738): Update setting provider to not have extra calls.
         updateSetting();
     }
 
@@ -83,6 +81,6 @@ public class BookmarkBarSettingProvider {
     }
 
     private void updateSetting() {
-        mSettingSupplier.set(BookmarkBarUtils.isSettingEnabled(mProfileSupplier.get()));
+        mCallback.onResult(BookmarkBarUtils.isSettingEnabled(mProfileSupplier.get()));
     }
 }

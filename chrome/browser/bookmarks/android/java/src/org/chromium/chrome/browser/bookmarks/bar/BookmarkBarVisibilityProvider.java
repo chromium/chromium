@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -29,7 +28,6 @@ public class BookmarkBarVisibilityProvider {
     private final ConfigurationChangedObserver mConfigurationChangedListener;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final BookmarkBarSettingProvider mSettingProvider;
-    private final ObservableSupplierImpl<Boolean> mVisibilitySupplier;
 
     /**
      * Constructor.
@@ -49,9 +47,6 @@ public class BookmarkBarVisibilityProvider {
         mCallback = callback;
         mProfileSupplier = profileSupplier;
 
-        mVisibilitySupplier = new ObservableSupplierImpl<>();
-        mVisibilitySupplier.addObserver(mCallback);
-
         mConfigurationChangedListener = (unused) -> updateVisibility();
         mActivityLifecycleDispatcher.register(mConfigurationChangedListener);
 
@@ -64,11 +59,9 @@ public class BookmarkBarVisibilityProvider {
     public void destroy() {
         mActivityLifecycleDispatcher.unregister(mConfigurationChangedListener);
         mSettingProvider.destroy();
-        mVisibilitySupplier.removeObserver(mCallback);
     }
 
     private void updateVisibility() {
-        mVisibilitySupplier.set(
-                BookmarkBarUtils.isFeatureVisible(mActivity, mProfileSupplier.get()));
+        mCallback.onResult(BookmarkBarUtils.isFeatureVisible(mActivity, mProfileSupplier.get()));
     }
 }
