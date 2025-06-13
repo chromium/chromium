@@ -322,6 +322,13 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
     NOTREACHED();
   }
 
+  // If snapped , breake it.
+  if (auto* snap_group =
+          SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
+    SnapGroupController::Get()->RemoveSnapGroup(
+        snap_group, SnapGroupExitPoint::kMoveToAnotherDisplay);
+  }
+
   WindowState* window_state = WindowState::Get(window);
   if (window_state->allow_set_bounds_direct()) {
     display::Display display;

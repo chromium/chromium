@@ -13,6 +13,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/pip/pip_controller.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -269,6 +270,12 @@ void SetBoundsInScreen(aura::Window* window,
     }
 
     if (dst_container && window->parent() != dst_container) {
+      if (auto* snap_group =
+              SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
+        SnapGroupController::Get()->RemoveSnapGroup(
+            snap_group, SnapGroupExitPoint::kDragWindowOut);
+      }
+
       aura::Window* focused = window_util::GetFocusedWindow();
       aura::Window* active = window_util::GetActiveWindow();
 

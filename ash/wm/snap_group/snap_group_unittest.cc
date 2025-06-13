@@ -9451,22 +9451,22 @@ TEST_F(SnapGroupMultiDisplayTest, NoCrashOnDisplayMetricsChange) {
   // update the work area insets to trigger it.
   display_manager->UpdateWorkAreaOfDisplay(display_ids[0], gfx::Insets(5));
 
-  // Disconnect the secondary display and verify that `snap_group` will be moved
-  // to the primary display.
+  // Disconnect the secondary display and verify that `snap_group` is removed
+  // but windows are moved to the primary display.
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(display_manager->GetDisplayInfo(display_ids[0]));
   display_manager->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(1u, display_manager->GetNumDisplays());
-  EXPECT_TRUE(SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get()));
-  VerifySnapGroupOnDisplay(snap_group, display_ids[0]);
-
-  // Reconnect the secondary display and verify that `snap_group` will be moved
-  // back to the secondary display.
-  display_info_list.insert(display_info_list.begin(),
-                           display_manager->GetDisplayInfo(display_ids[1]));
-  display_manager->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(2u, display_manager->GetNumDisplays());
-  VerifySnapGroupOnDisplay(snap_group, display_ids[1]);
+  EXPECT_FALSE(
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get()));
+  EXPECT_FALSE(
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w2.get()));
+  EXPECT_EQ(
+      display_ids[0],
+      display::Screen::GetScreen()->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(
+      display_ids[0],
+      display::Screen::GetScreen()->GetDisplayNearestWindow(w2.get()).id());
 }
 
 // Tests to verify that when a window is dragged out of a snap group and onto
@@ -9521,101 +9521,32 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
   auto* snap_group_divider = SnapGroupController::Get()
                                  ->GetSnapGroupForGivenWindow(w1.get())
                                  ->snap_group_divider();
-  const int64_t primary_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t primary_id = GetPrimaryDisplay().id();
   display::Screen* screen = display::Screen::GetScreen();
   ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(w1.get()).id());
   ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(w2.get()).id());
 
   // Activate `w1`, then press Search+Alt+M to move it to display 2.
   wm::ActivateWindow(w1.get());
-  PressAndReleaseKey(ui::VKEY_M, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  const int64_t secondary_id =
-      display::test::DisplayManagerTestApi(display_manager())
-          .GetSecondaryDisplay()
-          .id();
-  ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(w1.get()).id());
-  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(w2.get()).id());
-  aura::Window* divider_window = snap_group_divider->GetDividerWindow();
-  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(divider_window).id());
-
-  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
-      Shell::Get()->GetRootWindowForDisplayId(secondary_id));
 
   MruWindowTracker* mru_window_tracker = Shell::Get()->mru_window_tracker();
   aura::Window* mru_window = window_util::GetTopMostWindow(
       mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
-
-  // `w1` will be the mru window. With the window stacking fixed by
-  // `window_util::FixWindowStackingAccordingToGlobalMru()`, the `w2` that gets
-  // moved after will be stacked above `w1`.
   EXPECT_EQ(mru_window, w1.get());
-  EXPECT_THAT(desk_container->children(),
-              ElementsAre(w2.get(), w1.get(), divider_window));
 
-  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
-}
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
 
-// Tests that moving an `OverviewGroupItem` between displays correctly
-// relocates the group item and its windows without crashing, while maintaining
-// divider widget invisibility during the overview session.
-TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplaysInOverview) {
-  UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
-  display::DisplayManager* display_manager = Shell::Get()->display_manager();
-  const auto& displays = display_manager->active_display_list();
-  ASSERT_EQ(3U, displays.size());
+  const int64_t secondary_id = GetSecondaryDisplay().id();
+  ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(w1.get()).id());
 
-  const gfx::Point point_in_display2(900, 100);
-  EXPECT_FALSE(displays[0].bounds().Contains(point_in_display2));
-  EXPECT_TRUE(displays[1].bounds().Contains(point_in_display2));
-  EXPECT_FALSE(displays[2].bounds().Contains(point_in_display2));
+  // Ungrouped window will stay in the primary.
+  EXPECT_EQ(primary_id, screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_FALSE(snap_group_divider->GetDividerWindow());
 
-  const gfx::Point point_in_display3(1700, 200);
-  EXPECT_FALSE(displays[0].bounds().Contains(point_in_display3));
-  EXPECT_FALSE(displays[1].bounds().Contains(point_in_display3));
-  EXPECT_TRUE(displays[2].bounds().Contains(point_in_display3));
-
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  auto* event_generator = GetEventGenerator();
-  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true, event_generator);
-  auto* divider = GetTopmostSnapGroupDivider();
-  ASSERT_TRUE(divider);
-  auto* divider_widget = divider->divider_widget();
-  ASSERT_TRUE(divider_widget);
-  ASSERT_TRUE(divider_widget->IsVisible());
-
-  struct {
-    gfx::Point drop_location;
-    int display_index;
-  } kTestCases[]{
-      {point_in_display2, 1}, {point_in_display3, 2}, {gfx::Point(0, 0), 0}};
-
-  OverviewController* overview_controller = OverviewController::Get();
-  for (const auto test_case : kTestCases) {
-    SCOPED_TRACE("\nDrop location: " + test_case.drop_location.ToString() +
-                 ";\n" + "Destination display index: " +
-                 base::NumberToString(test_case.display_index) + ".");
-    overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
-    EXPECT_FALSE(divider_widget->IsVisible());
-
-    auto* overview_group_item = GetOverviewItemForWindow(w1.get());
-    DragGroupItemToPoint(overview_group_item, test_case.drop_location,
-                         event_generator,
-                         /*by_touch_gestures=*/false, /*drop=*/true);
-    EXPECT_FALSE(divider_widget->IsVisible());
-
-    display::Screen* screen = display::Screen::GetScreen();
-    EXPECT_EQ(displays[test_case.display_index].id(),
-              screen->GetDisplayNearestWindow(w1.get()).id());
-    EXPECT_EQ(displays[test_case.display_index].id(),
-              screen->GetDisplayNearestWindow(w2.get()).id());
-
-    SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
-    event_generator->PressKey(ui::VKEY_RETURN, /*flags=*/0);
-
-    EXPECT_TRUE(divider_widget->IsVisible());
-  }
+  // `w1` and 'w2'  will be on different displays, and will not share the same
+  // same parent.
+  EXPECT_FALSE(window_util::GetTopMostWindow(
+      mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk)));
 }
 
 // Verifies that when an `OverviewGroupItem` is dragged between displays in
@@ -9628,6 +9559,7 @@ TEST_F(SnapGroupMultiDisplayTest,
   const auto& displays = display_manager->active_display_list();
   ASSERT_EQ(2U, displays.size());
 
+  const gfx::Point point_in_display1(400, 100);
   const gfx::Point point_in_display2(1000, 100);
   EXPECT_FALSE(displays[0].bounds().Contains(point_in_display2));
   EXPECT_TRUE(displays[1].bounds().Contains(point_in_display2));
@@ -9646,12 +9578,12 @@ TEST_F(SnapGroupMultiDisplayTest,
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
 
-  // Move Snap Group to display #2.
   OverviewGroupItem* group_item =
       static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w1.get()));
+
+  // Move Snap Group to display #2.
   DragGroupItemToPoint(group_item, point_in_display2, event_generator,
                        /*by_touch_gestures=*/false, /*drop=*/false);
-
   // Verify that the item widget and window are mirrored for the individual
   // items.
   for (const auto& item : group_item->overview_items_for_testing()) {
@@ -9659,12 +9591,16 @@ TEST_F(SnapGroupMultiDisplayTest,
     EXPECT_TRUE(item->window_mirror_for_dragging_for_testing());
   }
 
+  // Move Snap Group back to display #1.
+  event_generator->MoveMouseTo(point_in_display1);
   event_generator->ReleaseLeftButton();
 
-  // Verify that the windows are moved to the destination display properly.
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
   display::Screen* screen = display::Screen::GetScreen();
-  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
-  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w2.get()).id());
 }
 
 // Tests that when moving snap group to another display with snap group, the
@@ -9719,10 +9655,15 @@ TEST_F(SnapGroupMultiDisplayTest,
 
   // Verify that the windows are moved to the destination display properly.
   display::Screen* screen = display::Screen::GetScreen();
-  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w3.get()).id());
-  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w4.get()).id());
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
-  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w3.get(), w4.get()));
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w3.get()).id());
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w4.get()).id());
 }
 
 // Tests that dragging an `OverviewGroupItem` to a different desk in another
@@ -9776,18 +9717,16 @@ TEST_F(SnapGroupMultiDisplayTest,
   waiter.Wait();
   ASSERT_FALSE(IsInOverviewSession());
 
+  EXPECT_FALSE(GetTopmostSnapGroupDivider());
   display::Screen* screen = display::Screen::GetScreen();
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
-  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+  // The snapgroup will be removed and w2 should stay on display 1.
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w2.get()).id());
   EXPECT_TRUE(desks_util::IsActiveDeskContainer(w1->parent()));
+
   EXPECT_TRUE(desks_util::IsActiveDeskContainer(w2->parent()));
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
-  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
-                                   GetTopmostSnapGroupDivider());
-  VerifySnapGroupOnDisplay(
-      snap_group_controller->GetSnapGroupForGivenWindow(w1.get()),
-      displays[1].id());
 }
 
 // Tests if a `SnapGroup` is created on the external display, desk change with
@@ -9871,7 +9810,9 @@ TEST_F(SnapGroupMultiDisplayTest, MirroredMode) {
   display_manager->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   ASSERT_EQ(1U, displays.size());
   VerifySnapGroupOnDisplay(group1, primary_id);
-  VerifySnapGroupOnDisplay(group2, primary_id);
+  // Snapgroup #2 will be unsnapped.
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w3.get(), w4.get()));
 
   // Exit mirrored mode.
   display_manager->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
@@ -9881,8 +9822,8 @@ TEST_F(SnapGroupMultiDisplayTest, MirroredMode) {
   // we just verify the group bounds are visible and on-screen.
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
                                    group1->snap_group_divider());
-  UnionBoundsEqualToWorkAreaBounds(w3.get(), w4.get(),
-                                   group2->snap_group_divider());
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w3.get(), w4.get()));
 }
 
 // Tests that toggling mirror mode with a Snap Group on external display doesn't
@@ -9912,13 +9853,16 @@ TEST_F(SnapGroupMultiDisplayTest, ToggleMirrorMode) {
   // Enable mirror mode and there should be no crash.
   display_manager->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   ASSERT_EQ(1U, displays.size());
-  VerifySnapGroupOnDisplay(snap_group, displays[0].id());
+  // Snapgroup will be unsnapped.
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
   base::RunLoop().RunUntilIdle();
 
   // Disable mirror mode and there should be no crash.
   display_manager->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   ASSERT_EQ(2U, displays.size());
-  VerifySnapGroupOnDisplay(snap_group, displays[1].id());
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -10008,8 +9952,8 @@ TEST_F(SnapGroupMultiDisplayTest, AddRemovePrimaryDisplay) {
   ASSERT_EQ(WindowTreeHostManager::GetPrimaryDisplayId(), secondary_id);
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
                                    group1->snap_group_divider());
-  UnionBoundsEqualToWorkAreaBounds(w3.get(), w4.get(),
-                                   group2->snap_group_divider());
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w3.get(), w4.get()));
 
   // Reconnect primary display.
   display_info_list.push_back(primary_info);
@@ -10018,8 +9962,8 @@ TEST_F(SnapGroupMultiDisplayTest, AddRemovePrimaryDisplay) {
   ASSERT_EQ(WindowTreeHostManager::GetPrimaryDisplayId(), primary_id);
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
                                    group1->snap_group_divider());
-  UnionBoundsEqualToWorkAreaBounds(w3.get(), w4.get(),
-                                   group2->snap_group_divider());
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w3.get(), w4.get()));
 }
 
 // Tests no overlap in the divider and window bounds after disconnecting and
