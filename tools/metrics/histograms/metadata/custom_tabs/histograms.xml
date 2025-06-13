@@ -898,33 +898,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.WebAppHeader.ControlsHiddenTime" units="seconds"
+<histogram name="CustomTabs.WebAppHeader.ControlsHiddenTime2" units="seconds"
     expires_after="2026-05-31">
-  <owner>japhet@chromium.org</owner>
+  <owner>vkorotkevich@google.com</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     Records how long PWA controls are hidden due to the window size being too
-    small. Recorded when transitioning hidden to shown, and on destruction.
+    small. Recorded when transitioning hidden to shown, and on destruction. The
+    second version is intorduced, because previously milliseconds were recorded.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.WebAppHeader.ControlsShownTime" units="seconds"
+<histogram name="CustomTabs.WebAppHeader.ControlsShownTime2" units="seconds"
     expires_after="2026-05-31">
-  <owner>japhet@chromium.org</owner>
+  <owner>vkorotkevich@google.com</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     Records how long PWA controls are shown before being hidden due to window
     size changes. Recorded when transitioning shown to hidden, and on
-    destruction.
+    destruction. The second version is intorduced, because previously
+    milliseconds were recorded.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.WebAppHeader.DisplayMode"
+<histogram name="CustomTabs.WebAppHeader.DisplayMode2"
     enum="WebAppHeaderDisplayMode" expires_after="2026-05-31">
-  <owner>japhet@chromium.org</owner>
+  <owner>vkorotkevich@google.com</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     Records the DisplayMode of the the PWA header when it first becomes visible.
+    This histogram is a fixed version of a previous one, because buckets didn't
+    match DisplayMode enum values.
   </summary>
 </histogram>
 

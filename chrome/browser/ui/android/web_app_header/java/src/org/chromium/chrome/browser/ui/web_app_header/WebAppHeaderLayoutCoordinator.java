@@ -41,6 +41,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Root component to interact with web app header. This coordinator lazily initializes web app
@@ -208,13 +209,15 @@ public class WebAppHeaderLayoutCoordinator
 
     private void logControlsVisibilityChange(boolean wasShowingButtons) {
         if (mLastButtonVisibilityChangeTime != 0) {
-            long duration = SystemClock.elapsedRealtime() - mLastButtonVisibilityChangeTime;
+            long duration =
+                    TimeUnit.MILLISECONDS.toSeconds(
+                            SystemClock.elapsedRealtime() - mLastButtonVisibilityChangeTime);
             if (wasShowingButtons) {
                 RecordHistogram.recordLongTimesHistogram(
-                        "CustomTabs.WebAppHeader.ControlsShownTime", duration);
+                        "CustomTabs.WebAppHeader.ControlsShownTime2", duration);
             } else {
                 RecordHistogram.recordLongTimesHistogram(
-                        "CustomTabs.WebAppHeader.ControlsHiddenTime", duration);
+                        "CustomTabs.WebAppHeader.ControlsHiddenTime2", duration);
             }
         }
         mLastButtonVisibilityChangeTime = SystemClock.elapsedRealtime();
