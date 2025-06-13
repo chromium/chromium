@@ -22,11 +22,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -43,6 +45,7 @@ import org.chromium.ui.widget.ChromeBulletSpan;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** The view to describle incognito mode. */
+@NullMarked
 public class IncognitoDescriptionView extends LinearLayout {
     private int mWidthDp;
     private int mHeightDp;
@@ -53,11 +56,11 @@ public class IncognitoDescriptionView extends LinearLayout {
     private LinearLayout mBulletpointsContainer;
     private TextViewWithClickableSpans mLearnMore;
     private TextView[] mParagraphs;
-    private ViewGroup mCookieControlsCard;
-    private SwitchCompat mCookieControlsToggle;
-    private ImageView mCookieControlsManagedIcon;
-    private TextView mCookieControlsTitle;
-    private TextView mCookieControlsSubtitle;
+    private @Nullable ViewGroup mCookieControlsCard;
+    private @Nullable SwitchCompat mCookieControlsToggle;
+    private @Nullable ImageView mCookieControlsManagedIcon;
+    private @Nullable TextView mCookieControlsTitle;
+    private @Nullable TextView mCookieControlsSubtitle;
 
     private static final int BULLETPOINTS_HORIZONTAL_SPACING_DP = 40;
     private static final int BULLETPOINTS_MARGIN_BOTTOM_DP = 12;
@@ -203,7 +206,6 @@ public class IncognitoDescriptionView extends LinearLayout {
         view.setText(spannedText);
     }
 
-    @NonNull
     static SpannableString getSpannedBulletText(Context context, @StringRes int content) {
         String text = context.getString(content);
         // Some translations don't have a line break between list entries.
@@ -516,12 +518,21 @@ public class IncognitoDescriptionView extends LinearLayout {
     }
 
     /** Finds the 3PC controls and returns true if they exist. */
+    @EnsuresNonNullIf({
+        "mCookieControlsToggle",
+        "mCookieControlsManagedIcon",
+        "mCookieControlsTitle",
+        "mCookieControlsSubtitle"
+    })
     private boolean findCookieControlElements() {
         mCookieControlsToggle = findViewById(R.id.cookie_controls_card_toggle);
         if (mCookieControlsToggle == null) return false;
         mCookieControlsManagedIcon = findViewById(R.id.cookie_controls_card_managed_icon);
         mCookieControlsTitle = findViewById(R.id.cookie_controls_card_title);
         mCookieControlsSubtitle = findViewById(R.id.cookie_controls_card_subtitle);
+        assert mCookieControlsManagedIcon != null
+                && mCookieControlsTitle != null
+                && mCookieControlsSubtitle != null;
         return true;
     }
 }
