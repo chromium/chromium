@@ -299,15 +299,15 @@ bool EntityShouldProduceSuggestion(const AutofillField& trigger_field,
 }
 
 // Returns the set of AttributeTypes for which `entity` could fill a value in
-// `trigger_field.section()` of `form`.
+// `section` of `form`.
 DenseSet<AttributeType> GetAttributeTypesFillableByEntity(
     const FormStructure& form,
-    const AutofillField& trigger_field,
+    const Section& section,
     const EntityInstance& entity) {
   DenseSet<AttributeType> attribute_types_in_section;
   for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     // Only fill fields that match the triggering field section.
-    if (field->section() != trigger_field.section()) {
+    if (field->section() != section) {
       continue;
     }
     std::optional<FieldType> field_autofill_ai_prediction =
@@ -428,16 +428,12 @@ std::vector<Suggestion> CreateFillingSuggestions(
 
   // Suggestion and their fields to be filled metadata.
   std::vector<SuggestionWithMetadata> suggestions_with_metadata;
-  // Used to know whether any other entity can fill the current fill group.
-  DenseSet<AttributeType> attribute_types_in_section;
   for (const EntityInstance* entity : sorted_entities) {
     if (!EntityShouldProduceSuggestion(*autofill_field, *entity, app_locale)) {
       continue;
     }
     suggestions_with_metadata.push_back(
         GetSuggestionForEntity(form, *autofill_field, *entity, app_locale));
-    attribute_types_in_section.insert_all(
-        GetAttributeTypesFillableByEntity(form, *autofill_field, *entity));
   }
 
   if (suggestions_with_metadata.empty()) {
@@ -462,6 +458,9 @@ std::vector<Suggestion> CreateFillingSuggestions(
     if (entity->type() != trigger_field_attribute_type->entity_type()) {
       continue;
     }
+    DenseSet<AttributeType> attribute_types_in_section =
+        GetAttributeTypesFillableByEntity(form, autofill_field->section(),
+                                          *entity);
     const bool can_entity_fill_any_field_in_section = std::ranges::any_of(
         attribute_types_in_section, [&](const AttributeType attribute) {
           base::optional_ref<const AttributeInstance> instance =
