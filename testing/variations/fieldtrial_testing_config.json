@@ -24326,6 +24326,24 @@
             ]
         }
     ],
+    "TouchToSearchCallout": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "text_variant": "true"
+                    },
+                    "enable_features": [
+                        "TouchToSearchCallout"
+                    ]
+                }
+            ]
+        }
+    ],
     "TouchpadFastClickStudy": [
         {
             "platforms": [

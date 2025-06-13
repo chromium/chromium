@@ -621,6 +621,7 @@ public abstract class ChromeFeatureList {
     public static final String TINKER_TANK_BOTTOM_SHEET = "TinkerTankBottomSheet";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TOP_CONTROLS_REFACTOR = "TopControlsRefactor";
+    public static final String TOUCH_TO_SEARCH_CALLOUT = "TouchToSearchCallout";
     public static final String TRACE_BINDER_IPC = "TraceBinderIpc";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
     public static final String TRACKING_PROTECTION_USER_BYPASS_PWA =
@@ -956,6 +957,11 @@ public abstract class ChromeFeatureList {
                     TOP_CONTROLS_REFACTOR,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sTouchToSearchCallout =
+            newCachedFlag(
+                    TOUCH_TO_SEARCH_CALLOUT,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTraceBinderIpc = newCachedFlag(TRACE_BINDER_IPC, false);
     public static final CachedFlag sUseChimeAndroidSdk =
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
@@ -1094,6 +1100,7 @@ public abstract class ChromeFeatureList {
                     sTabStripLayoutOptimization,
                     sTabWindowManagerReportIndicesMismatch,
                     sTopControlsRefactor,
+                    sTouchToSearchCallout,
                     sTraceBinderIpc,
                     sUseChimeAndroidSdk,
                     sUseActivityManagerForTabActivation,
@@ -1591,6 +1598,9 @@ public abstract class ChromeFeatureList {
     public static final IntCachedFeatureParam sWebApkMinShellApkVersionValue =
             newIntCachedFeatureParam(WEB_APK_MIN_SHELL_APK_VERSION, "version", 146);
 
+    public static final BooleanCachedFeatureParam sTouchToSearchCalloutTextVariant =
+            newBooleanCachedFeatureParam(TOUCH_TO_SEARCH_CALLOUT, "text_variant", false);
+
     /** All {@link CachedFeatureParam}s of features in this FeatureList */
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
@@ -1671,7 +1681,8 @@ public abstract class ChromeFeatureList {
                     sTabStripLayoutOptimizationOnExternalDisplayOemDenylist,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
                     sUseChimeAndroidSdkAlwaysRegister,
-                    sWebApkMinShellApkVersionValue);
+                    sWebApkMinShellApkVersionValue,
+                    sTouchToSearchCalloutTextVariant);
 
     // Mutable*ParamWithSafeDefault instances.
     /* Alphabetical: */

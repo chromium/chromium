@@ -4785,6 +4785,19 @@ const FeatureEntry::FeatureVariation kHistorySyncOptinExpansionPillVariations[] 
      nullptr}};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_ANDROID)
+
+const FeatureEntry::FeatureParam kTouchToSearchCalloutTextVariantParams[] = {
+    {"text_variant", "true"},
+};
+const FeatureEntry::FeatureVariation kTouchToSearchCalloutVariations[] = {
+    {"Default", nullptr, 0, nullptr},
+    {"Text Variant", kTouchToSearchCalloutTextVariantParams,
+     std::size(kTouchToSearchCalloutTextVariantParams), nullptr},
+};
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -12724,6 +12737,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"top-controls-refactor", flag_descriptions::kTopControlsRefactorName,
      flag_descriptions::kTopControlsRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTopControlsRefactor)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"touch-to-search-callout", flag_descriptions::kTouchToSearchCalloutName,
+     flag_descriptions::kTouchToSearchCalloutDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTouchToSearchCallout,
+                                    kTouchToSearchCalloutVariations,
+                                    "TouchToSearchCallout")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

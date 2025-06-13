@@ -2413,6 +2413,11 @@ extern const char kTopControlsRefactorName[];
 extern const char kTopControlsRefactorDescription[];
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kTouchToSearchCalloutName[];
+extern const char kTouchToSearchCalloutDescription[];
+#endif
+
 extern const char kTopChromeTouchUiName[];
 extern const char kTopChromeTouchUiDescription[];
 

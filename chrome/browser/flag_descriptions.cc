@@ -4185,6 +4185,12 @@ const char kTopControlsRefactorDescription[] =
     "control.";
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+const char kTouchToSearchCalloutName[] = "Touch To Search Callout";
+const char kTouchToSearchCalloutDescription[] =
+    "Enables a callout in the touch to search panel.";
+#endif
+
 const char kTopChromeTouchUiName[] = "Touch UI Layout";
 const char kTopChromeTouchUiDescription[] =
     "Enables touch UI layout in the browser's top chrome.";

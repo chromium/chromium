@@ -12330,6 +12330,7 @@ from previous Chrome versions.
   <int value="-601672508" label="ReaderModeUseReadability:disabled"/>
   <int value="-601427689" label="FloatingSnackbar:enabled"/>
   <int value="-601384286" label="disable-contextual-search"/>
+  <int value="-601043527" label="TouchToSearchCallout:disabled"/>
   <int value="-600792432" label="WebVrAutopresentFromIntent:disabled"/>
   <int value="-600726805" label="DeprecateMenagerieAPI:disabled"/>
   <int value="-600000411"
@@ -19506,6 +19507,7 @@ from previous Chrome versions.
   <int value="2062752242" label="ApnRevamp:enabled"/>
   <int value="2063091429" label="OfflinePagesSharing:enabled"/>
   <int value="2063238104" label="ContextMenuPopupForAllScreenSizes:enabled"/>
+  <int value="2063278949" label="TouchToSearchCallout:enabled"/>
   <int value="2063329599"
       label="AutofillEnableAndroidNKeyForFidoAuthentication:disabled"/>
   <int value="2063330973" label="StaticStorageQuota:enabled"/>

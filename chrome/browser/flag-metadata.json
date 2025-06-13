@@ -9686,6 +9686,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "touch-to-search-callout",
+    "owners": [ "bwong@chromium.org", "clank-app-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name":"tpc-phase-out-facilitated-testing",
     "owners": ["//chrome/browser/tpcd/experiment/OWNERS"],
     "expiry_milestone": 137

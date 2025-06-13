@@ -400,6 +400,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
     &kTopControlsRefactor,
+    &kTouchToSearchCallout,
     &kTraceBinderIpc,
     &kStartSurfaceReturnTime,
     &kUmaBackgroundSessions,
@@ -1332,6 +1333,10 @@ BASE_FEATURE(kTestDefaultEnabled,
 // Enables the use of the refactored Top Controls approach on Android.
 BASE_FEATURE(kTopControlsRefactor,
              "TopControlsRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTouchToSearchCallout,
+             "TouchToSearchCallout",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTraceBinderIpc,
