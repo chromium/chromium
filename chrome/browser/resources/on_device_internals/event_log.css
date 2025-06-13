@@ -8,6 +8,11 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+th,
+td {
+  overflow: auto;
+}
+
 .source-location {
   text-overflow: ellipsis;
   white-space: nowrap;
