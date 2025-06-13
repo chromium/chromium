@@ -31,6 +31,7 @@ import org.chromium.android_webview.test.TestWebMessageListener.Data;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -569,6 +570,7 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @Test
+    @DisabledTest(message = "https://crbug.com/424621656")
     public void willAttachHeaderOnCrossOriginResourceRequests() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE));
