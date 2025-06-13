@@ -920,6 +920,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
 #endif
 }
 
+// TODO(crbug.com/423866731): Add unit tests for this method.
 bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     std::vector<autofill::LoyaltyCard> loyalty_cards_to_suggest) {
@@ -941,10 +942,15 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
       tracker->WouldTriggerHelpUI(
           feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
 
-  return GetTouchToFillPaymentMethodController()->ShowLoyaltyCards(
-      std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
-      delegate, std::move(affiliated_loyalty_cards),
-      std::move(loyalty_cards_to_suggest), first_time_usage);
+  const bool loyalty_cards_shown =
+      GetTouchToFillPaymentMethodController()->ShowLoyaltyCards(
+          std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
+          delegate, std::move(affiliated_loyalty_cards),
+          std::move(loyalty_cards_to_suggest), first_time_usage);
+  if (first_time_usage && loyalty_cards_shown) {
+    tracker->NotifyEvent("keyboard_accessory_loyalty_cards_autofilled");
+  }
+  return loyalty_cards_shown;
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
