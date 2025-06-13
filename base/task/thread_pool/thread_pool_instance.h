@@ -5,16 +5,12 @@
 #ifndef BASE_TASK_THREAD_POOL_THREAD_POOL_INSTANCE_H_
 #define BASE_TASK_THREAD_POOL_THREAD_POOL_INSTANCE_H_
 
+#include <cstddef>
 #include <memory>
 #include <string_view>
 
 #include "base/base_export.h"
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/task/single_thread_task_runner_thread_mode.h"
-#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
