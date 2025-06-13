@@ -28,6 +28,8 @@ class NewTabFooterWebView : public views::WebView,
   NewTabFooterWebView& operator=(const NewTabFooterWebView&) = delete;
   ~NewTabFooterWebView() override;
 
+  void ShowUI(base::TimeTicks load_start);
+
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;

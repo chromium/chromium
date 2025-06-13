@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -162,6 +163,23 @@ IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, VisibilityRecorded) {
   histogram_tester.ExpectTotalCount(visible_on_load, 2);
   histogram_tester.ExpectBucketCount(visible_on_load, true, 1);
   histogram_tester.ExpectBucketCount(visible_on_load, false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, ShownTimeRecorded) {
+  base::HistogramTester histogram_tester;
+  const std::string& shown_time = "NewTabPage.Footer.ShownTime";
+
+  auto extension = LoadNtpExtension();
+  histogram_tester.ExpectTotalCount(shown_time, 0);
+
+  base::TimeTicks start = base::TimeTicks::Now();
+  NavigateCurrentTab(extension->url());
+  int max_expected = (base::TimeTicks::Now() - start).InMilliseconds();
+
+  histogram_tester.ExpectTotalCount(shown_time, 1);
+  int actual = histogram_tester.GetAllSamples(shown_time)[0].min;
+  EXPECT_GT(actual, 1);
+  EXPECT_LE(actual, max_expected);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
