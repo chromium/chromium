@@ -365,9 +365,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kGlicClosedCaptioning);
     state->closed_captioning_setting_enabled =
         pref_service_->GetBoolean(prefs::kGlicClosedCaptioningEnabled);
-    state->enable_maybe_refresh_user_status =
-        base::FeatureList::IsEnabled(features::kGlicUserStatusCheck) &&
-        features::kGlicUserStatusRefreshApi.Get();
 
     std::move(callback).Run(std::move(state));
   }
@@ -838,17 +835,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
               std::move(callback).Run(std::move(suggestions));
             },
             std::move(callback), base::TimeTicks::Now()));
-  }
-
-  void MaybeRefreshUserStatus() override {
-    if (!base::FeatureList::IsEnabled(features::kGlicUserStatusCheck) ||
-        !features::kGlicUserStatusRefreshApi.Get()) {
-      receiver_.ReportBadMessage(
-          "Client should not call MaybeRefreshUserStatus without the "
-          "GlicUserStatusCheck feature enabled with the refresh API.");
-      return;
-    }
-    glic_service_->enabling().UpdateUserStatusWithDebouncing();
   }
 
   void OnOsPermissionSettingChanged(ContentSettingsType content_type,

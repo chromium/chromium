@@ -190,16 +190,6 @@ $.setClosedCaptioningFalse.addEventListener('click', async () => {
   }
 });
 
-$.maybeRefreshUserStatusBn.addEventListener('click', async () => {
-  logMessage('Calling maybeRefreshUserStatus...');
-  try {
-    await getBrowser()!.maybeRefreshUserStatus!();
-    logMessage('maybeRefreshUserStatus done.');
-  } catch (e) {
-    logMessage(`maybeRefreshUserStatus failed: ${e}`);
-  }
-});
-
 window.addEventListener('load', () => {
   $.desktopScreenshot.addEventListener('click', async () => {
     logMessage('Requesting desktop screenshot...');

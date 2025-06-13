@@ -512,13 +512,6 @@ export declare interface GlicBrowserHost {
    */
   getZeroStateSuggestionsForFocusedTab?
       (is_first_run?: boolean): Promise<ZeroStateSuggestions>;
-
-  /**
-   * Called when the client believes that the user's status may have changed.
-   * For example, an RPC may have been rejected due to the the service being
-   * disabled.
-   */
-  maybeRefreshUserStatus?(): void;
 }
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media'|'geolocation';

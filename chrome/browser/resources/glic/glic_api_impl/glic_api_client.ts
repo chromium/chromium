@@ -259,10 +259,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.getClosedCaptioningSetting = undefined;
       this.setClosedCaptioningSetting = undefined;
     }
-
-    if (!state.enableMaybeRefreshUserStatus) {
-      this.maybeRefreshUserStatus = undefined;
-    }
   }
 
   webClientInitialized(
@@ -537,11 +533,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   dropScrollToHighlight?(): void {
     this.sender.requestWithResponse(
         'glicBrowserDropScrollToHighlight', undefined);
-  }
-
-  maybeRefreshUserStatus?(): void {
-    this.sender.requestNoResponse(
-        'glicBrowserMaybeRefreshUserStatus', undefined);
   }
 }
 

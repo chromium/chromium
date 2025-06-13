@@ -123,7 +123,6 @@ export interface PageElementTypes {
   setClosedCaptioningFalse: HTMLButtonElement;
   dropScrollToHighlightBtn: HTMLButtonElement;
   copyAPCToClipboardBtn: HTMLButtonElement;
-  maybeRefreshUserStatusBn: HTMLButtonElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {
