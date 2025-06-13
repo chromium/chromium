@@ -1,0 +1,2 @@
+Tests --start-fullscreen switch with pixel scaling.
+Screen: 1500x1000, Outer: 1500x1000
