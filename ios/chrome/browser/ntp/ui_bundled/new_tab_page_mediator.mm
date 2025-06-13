@@ -196,6 +196,17 @@
                                             self.templateURLService)];
   [self.headerConsumer
       setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
+
+  const TemplateURL* defaultSearchEngine =
+      self.templateURLService->GetDefaultSearchProvider();
+  NSString* dseName =
+      defaultSearchEngine
+          ? [NSString
+                cr_fromString16:defaultSearchEngine
+                                    ->AdjustedShortNameForLocaleDirection()]
+          : @"";
+  [self.headerConsumer setDefaultSearchEngineName:dseName];
+
   [self updateAccountImage];
   [self updateAccountErrorBadge];
   [self startObservingPrefs];
