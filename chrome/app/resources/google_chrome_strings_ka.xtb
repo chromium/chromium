@@ -222,6 +222,7 @@
 <translation id="3716540481907974026">ChromeOS Flex-ის ვერსია</translation>
 <translation id="3718181793972440140">ეს მოქმედება წაშლის 1 ერთეულს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome გირჩევთ მის ამოშლას. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი მხარდაჭერილი გაფართოებების შესახებ<ph name="END_LINK" />}other{Chrome გირჩევთ მათ ამოშლას. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი მხარდაჭერილი გაფართოებების შესახებ<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">შეიტყვეთ მეტი Chrome-ის ინსტალაციის შესახებ</translation>
 <translation id="3780814664026482060">Chrome — <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex-მა ვერ მოახერხა თქვენი მონაცემების სინქრონიზაცია, რადგან შესვლისას მოხდა შეცდომა.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

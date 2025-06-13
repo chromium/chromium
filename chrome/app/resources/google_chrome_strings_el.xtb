@@ -220,6 +220,7 @@
 <translation id="3716540481907974026">Έκδοση ChromeOS Flex</translation>
 <translation id="3718181793972440140">Με αυτή την ενέργεια θα διαγραφεί 1 στοιχείο από αυτήν τη συσκευή. Για να ανακτήσετε τα δεδομένα σας αργότερα, συνδεθείτε στο Chrome ως <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Το Chrome προτείνει να την καταργήσετε. <ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με τις υποστηριζόμενες επεκτάσεις<ph name="END_LINK" />}other{Το Chrome προτείνει να την καταργήσετε. <ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με τις υποστηριζόμενες επεκτάσεις<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Μάθετε περισσότερα σχετικά με την εγκατάσταση του Chrome</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Δεν ήταν δυνατός ο συγχρονισμός των δεδομένων σας από το ChromeOS Flex λόγω σφάλματος κατά τη σύνδεση.</translation>
 <translation id="3795971588916395511">Λειτουργικό σύστημα Chrome OS</translation>

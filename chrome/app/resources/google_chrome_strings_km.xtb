@@ -222,6 +222,7 @@
 <translation id="3716540481907974026">កំណែ ChromeOS Flex</translation>
 <translation id="3718181793972440140">វា​នឹង​លុប​ធាតុ 1 ចេញ​ពី​ឧបករណ៍​នេះ។ ដើម្បី​ទាញ​យក​ទិន្នន័យ​របស់អ្នក​មកវិញ​នៅ​ពេល​ក្រោយ សូម​ចូល​ទៅ​កាន់ Chrome ជា <ph name="USER_EMAIL" /> ។</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome ណែនាំ​ឱ្យអ្នកដក​កម្មវិធីបន្ថែមនេះ​ចេញ។ <ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែម​អំពី​កម្មវិធីបន្ថែម​ដែលអាច​ប្រើបាន<ph name="END_LINK" />}other{Chrome ណែនាំ​ឱ្យអ្នកដក​កម្មវិធីបន្ថែម​ទាំងនេះ​ចេញ។ <ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែម​អំពី​កម្មវិធីបន្ថែម​ដែលអាច​ប្រើបាន<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">ស្វែងយល់​បន្ថែម​អំពី​ការដំឡើង Chrome</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex មិនអាចធ្វើ​សម​កាល​កម្មទិន្នន័យរបស់អ្នកបានទេ ដោយសារមានបញ្ហាក្នុងការចូលគណនី។</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

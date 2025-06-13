@@ -222,6 +222,7 @@
 <translation id="3716540481907974026">ChromeOS Flex нұсқасы</translation>
 <translation id="3718181793972440140">Құрылғыдан 1 элемент жойылады. Деректерді кейінірек алу үшін Chrome браузеріне <ph name="USER_EMAIL" /> болып кіріңіз.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome оны өшіруге кеңес береді. <ph name="BEGIN_LINK" />Қолдау көрсетілетін кеңейтімдер туралы толық ақпарат алыңыз.<ph name="END_LINK" />}other{Chrome оларды өшіруге кеңес береді. <ph name="BEGIN_LINK" />Қолдау көрсетілетін кеңейтімдер туралы толық ақпарат алыңыз.<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome орнату туралы толық ақпарат</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Кіру кезіндегі қате салдарынан ChromeOS Flex деректеріңізді синхрондай алмады.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

@@ -222,6 +222,7 @@
 <translation id="3716540481907974026">ChromeOS Flex പതിപ്പ്</translation>
 <translation id="3718181793972440140">ഇത് ഈ ഉപകരണത്തിൽ നിന്നും ഒരിനം ഇല്ലാതാക്കും. പിന്നീട് നിങ്ങളുടെ വിവരങ്ങൾ വീണ്ടെടുക്കാൻ, <ph name="USER_EMAIL" /> എന്നയാളായി Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{അത് നീക്കം ചെയ്യാൻ Chrome നിർദ്ദേശിക്കുന്നു. <ph name="BEGIN_LINK" />പിന്തുണയ്ക്കുന്ന വിപുലീകരണങ്ങളെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" />}other{അവ നീക്കം ചെയ്യാൻ Chrome നിർദ്ദേശിക്കുന്നു. <ph name="BEGIN_LINK" />പിന്തുണയ്ക്കുന്ന വിപുലീകരണങ്ങളെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome ഇൻസ്റ്റാൾ ചെയ്യുന്നതിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">സൈൻ ഇൻ ചെയ്യുന്നതിലെ പിശക് മൂലം ChromeOS Flex-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

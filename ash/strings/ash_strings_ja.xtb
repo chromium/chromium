@@ -434,7 +434,7 @@
 <translation id="2455994958736234930">アドレスバーに「www.」と「.com」を追加してからウェブサイトを開く</translation>
 <translation id="2456008742792828469">カレンダー、<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">ドリルダウン</translation>
-<translation id="2465145153332031561">バッテリーの状態 <ph name="BATTERY_HEALTH_PERCENTAGE" />%、サイクル数 <ph name="CYCLE_COUNT" /></translation>
+<translation id="2465145153332031561">バッテリー ヘルス <ph name="BATTERY_HEALTH_PERCENTAGE" />%、サイクル数 <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">解像度の確定</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> を挿入</translation>
 <translation id="2475982808118771221">エラーが発生しました</translation>
@@ -1282,7 +1282,7 @@
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
-<translation id="5163434717504750796">バッテリーの状態 <ph name="BATTERY_HEALTH_PERCENTAGE" />% | サイクル数 <ph name="CYCLE_COUNT" /></translation>
+<translation id="5163434717504750796">バッテリー ヘルス <ph name="BATTERY_HEALTH_PERCENTAGE" />% | サイクル数 <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">デスクをテンプレートとして保存</translation>
 <translation id="5168181903108465623">キャスト デバイスを利用できます</translation>
 <translation id="5168753792967365150">Google ToDo リストで編集</translation>

@@ -222,6 +222,7 @@
 <translation id="3716540481907974026">ChromeOS Flex ਵਰਜਨ</translation>
 <translation id="3718181793972440140">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ 1 ਆਈਟਮ ਮਿਟਾ ਦਿੱਤੀ ਜਾਵੇਗੀ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕਰੋ।</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ। <ph name="BEGIN_LINK" />ਸਮਰਥਿਤ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />}one{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ। <ph name="BEGIN_LINK" />ਸਮਰਥਿਤ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />}other{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਨੂੰ ਹਟਾ ਦਿਓ। <ph name="BEGIN_LINK" />ਸਮਰਥਿਤ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex ਸਾਈਨ-ਇਨ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋਣ ਕਰਕੇ ਤੁਹਾਡਾ ਡਾਟਾ ਸਿੰਕ ਨਹੀਂ ਕਰ ਸਕਿਆ।</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

@@ -218,6 +218,7 @@
 <translation id="3716540481907974026">Версия Chrome OS Flex</translation>
 <translation id="3718181793972440140">С устройства будет удален 1 объект. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome рекомендует удалить его. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}one{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}few{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}many{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}other{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}}</translation>
+<translation id="3756724684201900923">Подробнее об установке Chrome…</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex не удалось синхронизировать данные, так как при входе в аккаунт произошла ошибка.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

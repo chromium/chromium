@@ -220,6 +220,7 @@
 <translation id="3716540481907974026">ChromeOS Flex ভার্সন</translation>
 <translation id="3718181793972440140">এটি এই ডিভাইস থেকে ১টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়। <ph name="BEGIN_LINK" />ব্যবহার করা যায় এমন এক্সটেনশন সম্পর্কে আরও জানুন<ph name="END_LINK" />}one{Chrome আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়। <ph name="BEGIN_LINK" />ব্যবহার করা যায় এমন এক্সটেনশন সম্পর্কে আরও জানুন<ph name="END_LINK" />}other{Chrome আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়। <ph name="BEGIN_LINK" />ব্যবহার করা যায় এমন এক্সটেনশন সম্পর্কে আরও জানুন<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome ইনস্টল করার ব্যাপারে আরও জানুন</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">সাইন-ইনে সমস্যা থাকার জন্য ChromeOS Flex আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

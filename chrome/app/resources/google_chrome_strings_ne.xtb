@@ -220,6 +220,7 @@
 <translation id="3716540481907974026">ChromeOS Flex को संस्करण</translation>
 <translation id="3718181793972440140">यसले यो डिभाइसको १ वस्तु मेट्नेछ। पछि आफ्नो डेटा प्राप्त गर्न Chrome मा <ph name="USER_EMAIL" /> को रूपमा साइन इन गर्नुहोस्।</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome ले तपाईंलाई यो एक्स्टेन्सन हटाउन सिफारिस गर्छ। <ph name="BEGIN_LINK" />प्रयोग गर्न सकिने एक्स्टेन्सनहरूका बारेमा थप जान्नुहोस्<ph name="END_LINK" />}other{Chrome ले तपाईंलाई यी एक्स्टेन्सनहरू हटाउन सिफारिस गर्छ। <ph name="BEGIN_LINK" />प्रयोग गर्न सकिने एक्स्टेन्सनहरूका बारेमा थप जान्नुहोस्<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome इन्स्टल गर्ने बारेमा थप जान्नुहोस्</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">साइन इन गर्ने क्रममा त्रुटि भएकाले ChromeOS Flex ले तपाईंको डेटा सिंक गर्न सकेन।</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

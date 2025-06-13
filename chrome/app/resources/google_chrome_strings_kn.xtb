@@ -220,6 +220,7 @@
 <translation id="3716540481907974026">ChromeOS Flex ಆವೃತ್ತಿ</translation>
 <translation id="3718181793972440140">ಈ ಸಾಧನದಿಂದ 1 ಐಟಂ ಅನ್ನು ಇದು ಅಳಿಸುತ್ತದೆ. ನಂತರ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಪಡೆಯಲು, <ph name="USER_EMAIL" /> ನಂತೆ Chrome ಗೆ ಸೈನ್‌ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{ನೀವು ಅದನ್ನು ತೆಗೆದುಹಾಕುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK" />ಬೆಂಬಲಿತ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" />}one{ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK" />ಬೆಂಬಲಿತ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" />}other{ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK" />ಬೆಂಬಲಿತ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವ ಬಗ್ಗೆ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ಸೈನ್ ಇನ್ ಮಾಡುವಾಗ ಎದುರಾದ ದೋಷದಿಂದಾಗಿ ChromeOS Flex ಅನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>

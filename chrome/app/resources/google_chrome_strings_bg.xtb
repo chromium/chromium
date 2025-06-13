@@ -220,6 +220,7 @@
 <translation id="3716540481907974026">Версия на ChromeOS Flex</translation>
 <translation id="3718181793972440140">1 елемент ще се изтрие от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome препоръчва да го премахнете. <ph name="BEGIN_LINK" />Научете повече за поддържаните разширения<ph name="END_LINK" />}other{Chrome препоръчва да ги премахнете. <ph name="BEGIN_LINK" />Научете повече за поддържаните разширения<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Научете повече за инсталирането на Chrome</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex не успя да синхронизира данните ви поради грешка при влизане в профила.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
