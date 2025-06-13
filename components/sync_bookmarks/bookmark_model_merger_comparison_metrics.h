@@ -39,6 +39,11 @@ enum class GroupingKeyInfix {
 // Result of comparing two datasets for the purpose of logging metrics. Note
 // that enum values listed first take precedence (are evaluated earlier) than
 // those following.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with the homonym enum
+// in tools/metrics/histograms/metadata/sync/enums.xml.
+// Exposed in the header file for testing.
+// LINT.IfChange(BookmarkSetComparisonOutcome)
 enum class SetComparisonOutcome {
   kBothEmpty = 0,
   kLocalDataEmpty = 1,
@@ -54,6 +59,7 @@ enum class SetComparisonOutcome {
   kIntersectionEmpty = 11,
   kMaxValue = kIntersectionEmpty
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BookmarkSetComparisonOutcome)
 
 struct UrlOnly {
   static constexpr GroupingKeyInfix kGroupingKeyInfix =

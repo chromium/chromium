@@ -3186,6 +3186,27 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PRE_ComparisonMetrics) {
       /*sample=*/4 /*kAccountDataIsStrictSubsetOfLocalData*/,
       /*expected_bucket_count=*/1);
 
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrl",
+      /*sample=*/8 /*kIntersectionBetween50And90Percent*/,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndUuid",
+      /*sample=*/8 /*kIntersectionBetween50And90Percent*/,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndUuid",
+      /*sample=*/3 /*kExactMatchNonEmpty*/,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndUuid.Between1And19LocalUrlBookmarks",
+      /*sample=*/8 /*kIntersectionBetween50And90Percent*/,
+      /*expected_bucket_count=*/1);
+
   // Enable Sync with a different account.
   GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
   ASSERT_TRUE(GetClient(kSingleProfileIndex)
