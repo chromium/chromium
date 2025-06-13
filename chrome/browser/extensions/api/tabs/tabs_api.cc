@@ -37,6 +37,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -72,9 +73,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -829,11 +833,14 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   Browser::CreateParams create_params(window_type, window_profile,
                                       user_gesture());
   if (isolated_web_app_url_info.has_value()) {
+    // For Isolated Web Apps, the actual navigating-to URL will be the app's
+    // start_url to prevent deep-linking attacks, while the original URL will be
+    // accessible via window.launchQueue; for this reason the browser is marked
+    // trusted.
     create_params = Browser::CreateParams::CreateForApp(
         web_app::GenerateApplicationNameFromAppId(
             isolated_web_app_url_info->app_id()),
-        /*trusted_source=*/false, window_bounds, window_profile,
-        user_gesture());
+        /*trusted_source=*/true, window_bounds, window_profile, user_gesture());
   } else if (extension_id.empty()) {
     create_params.initial_bounds = window_bounds;
   } else {
@@ -858,7 +865,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     return RespondNow(Error(ExtensionTabUtil::kBrowserWindowNotAllowed));
   }
 
-  for (const GURL& url : urls) {
+  auto create_nav_params =
+      [&](const GURL& url) -> base::expected<NavigateParams, std::string> {
     NavigateParams navigate_params(new_window, url, ui::PAGE_TRANSITION_LINK);
     navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     // Ensure that these navigations will not get 'captured' into PWA windows,
@@ -876,8 +884,12 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     if (set_self_as_opener) {
       if (is_from_service_worker()) {
         // TODO(crbug.com/40636155): Add test for this.
-        return RespondNow(
-            Error("Cannot specify setSelfAsOpener Service Worker extension."));
+        return base::unexpected(
+            "Cannot specify setSelfAsOpener Service Worker extension.");
+      }
+      if (isolated_web_app_url_info) {
+        return base::unexpected(
+            "Cannot specify setSelfAsOpener for isolated-app:// URLs.");
       }
       // TODO(crbug.com/40636155): Add tests for checking opener SiteInstance
       // behavior from a SW based extension's extension frame (e.g. from popup).
@@ -890,7 +902,41 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
           render_frame_host()->GetSiteInstance();
     }
 
-    Navigate(&navigate_params);
+    return navigate_params;
+  };
+
+  if (!isolated_web_app_url_info) {
+    for (const GURL& url : urls) {
+      ASSIGN_OR_RETURN(
+          NavigateParams navigate_params, create_nav_params(url),
+          [&](const std::string& error) { return RespondNow(Error(error)); });
+      Navigate(&navigate_params);
+    }
+  } else {
+    CHECK_EQ(urls.size(), 1U);
+    const GURL& original_url = urls[0];
+
+    const webapps::AppId& iwa_id = isolated_web_app_url_info->app_id();
+    web_app::WebAppRegistrar& registrar =
+        web_app::WebAppProvider::GetForWebApps(window_profile)
+            ->registrar_unsafe();
+
+    // TODO(crbug.com/424128443): create an dummy tab in the browser so that the
+    // returned window's tab count is always equal to 1 -- this will limit the
+    // extension's ability to figure out which IWAs are installed without the
+    // `tabs` permission.
+    if (registrar.IsIsolated(iwa_id)) {
+      ASSIGN_OR_RETURN(
+          NavigateParams navigate_params,
+          create_nav_params(registrar.GetAppStartUrl(iwa_id)),
+          [&](const std::string& error) { return RespondNow(Error(error)); });
+      base::WeakPtr<content::NavigationHandle> handle =
+          Navigate(&navigate_params);
+      CHECK(handle);
+      web_app::EnqueueLaunchParams(
+          handle->GetWebContents(), iwa_id, original_url,
+          /*wait_for_navigation_to_complete=*/true, handle->NavigationStart());
+    }
   }
 
   const TabModel* tab = nullptr;

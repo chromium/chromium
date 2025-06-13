@@ -237,10 +237,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
 
   // Basic window details.
   gfx::Rect bounds;
-  if (browser()->window()->IsMinimized())
+  if (browser()->window()->IsMinimized()) {
     bounds = browser()->window()->GetRestoredBounds();
-  else
+  } else {
     bounds = browser()->window()->GetBounds();
+  }
 
   function = base::MakeRefCounted<WindowsGetFunction>();
   function->set_extension(extension.get());
@@ -691,8 +692,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryCurrentWindowTabs) {
   const size_t kExtraWindows = 3;
-  for (size_t i = 0; i < kExtraWindows; ++i)
+  for (size_t i = 0; i < kExtraWindows; ++i) {
     CreateBrowser(browser()->profile());
+  }
 
   GURL url(url::kAboutBlankURL);
   ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK));
@@ -858,8 +860,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowBounds) {
 
   // Get the display bounds so we can test whether the window intersects.
   gfx::Rect displays;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays())
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     displays.Union(display.bounds());
+  }
 
   int window_id = ExtensionTabUtil::GetWindowId(browser());
   gfx::Rect window_bounds = browser()->window()->GetBounds();
@@ -1074,8 +1077,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowState) {
 IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowBounds) {
   // Get the display bounds so we can test whether the window intersects.
   gfx::Rect displays;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays())
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     displays.Union(display.bounds());
+  }
 
   static const char kArgsCreateFunction[] =
       "[{\"left\": %d, \"top\": %d, \"width\": %d, \"height\": %d }]";
@@ -1240,7 +1244,20 @@ IN_PROC_BROWSER_TEST_P(ExtensionWindowCreateIwaTest, CreateWindowForIwa) {
     ASSERT_EQ(BrowserList::GetInstance()->size(), 1ul);
     Browser* iwa_browser = *BrowserList::GetInstance()->begin();
     ASSERT_EQ(iwa_browser->tab_strip_model()->count(), 1);
-    EXPECT_EQ(iwa_browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+
+    auto* web_contents = iwa_browser->tab_strip_model()->GetActiveWebContents();
+    content::WaitForLoadStop(web_contents);
+    EXPECT_EQ(web_contents->GetURL(), url_info.origin().GetURL());
+
+    static constexpr std::string_view kLaunchQueueScript = R"(
+      new Promise(async (resolve) => {
+        window.launchQueue.setConsumer(launchParams => {
+          resolve(launchParams.targetURL);
+        });
+      });
+    )";
+
+    EXPECT_EQ(content::EvalJs(web_contents, kLaunchQueueScript),
               url_info.origin().GetURL().Resolve("/index.html"));
   } else {
     EXPECT_FALSE(result);
@@ -2014,8 +2031,7 @@ class ExtensionTabsZoomTest : public ExtensionTabsTest {
                                              double* default_zoom_factor);
 
   // Runs chrome.tabs.setZoom(), expecting an error.
-  std::string RunSetZoomExpectError(int tab_id,
-                                    double zoom_factor);
+  std::string RunSetZoomExpectError(int tab_id, double zoom_factor);
 
   // Runs chrome.tabs.setZoomSettings(), expecting an error.
   std::string RunSetZoomSettingsExpectError(int tab_id,
@@ -2056,12 +2072,14 @@ testing::AssertionResult ExtensionTabsZoomTest::RunGetZoom(
           get_zoom_function.get(), base::StringPrintf("[%u]", tab_id),
           browser()->profile());
 
-  if (!get_zoom_result)
+  if (!get_zoom_result) {
     return testing::AssertionFailure() << "no result";
+  }
 
   std::optional<double> maybe_value = get_zoom_result->GetIfDouble();
-  if (!maybe_value.has_value())
+  if (!maybe_value.has_value()) {
     return testing::AssertionFailure() << "result was not a double";
+  }
 
   *zoom_factor = maybe_value.value();
   return testing::AssertionSuccess();
@@ -2103,8 +2121,9 @@ testing::AssertionResult ExtensionTabsZoomTest::RunGetZoomSettings(
           get_zoom_settings_function.get(), base::StringPrintf("[%u]", tab_id),
           browser()->profile());
 
-  if (!get_zoom_settings_result)
+  if (!get_zoom_settings_result) {
     return testing::AssertionFailure() << "no result";
+  }
 
   base::Value::Dict get_zoom_settings_dict =
       utils::ToDict(std::move(get_zoom_settings_result));
@@ -2177,7 +2196,7 @@ content::WebContents* ExtensionTabsZoomTest::OpenUrlAndWaitForLoad(
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  return  browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->tab_strip_model()->GetActiveWebContents();
 }
 
 namespace {
@@ -2388,8 +2407,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, GetZoomSettings) {
   std::string error =
       RunSetZoomSettingsExpectError(tab_id, "manual", "per-origin");
   EXPECT_TRUE(base::MatchPattern(error, keys::kPerOriginOnlyInAutomaticError));
-  error =
-      RunSetZoomSettingsExpectError(tab_id, "disabled", "per-origin");
+  error = RunSetZoomSettingsExpectError(tab_id, "disabled", "per-origin");
   EXPECT_TRUE(base::MatchPattern(error, keys::kPerOriginOnlyInAutomaticError));
 }
 
