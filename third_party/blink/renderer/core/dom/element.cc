@@ -4414,6 +4414,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     if (style->IsContainerForSizeContainerQueries()) {
       child_recalc_context.container = this;
     }
+    if (style->IsContainerForAnchoredContainerQueries()) {
+      child_recalc_context.has_anchored_container = true;
+    }
   }
 
   if (LayoutObject* layout_object = GetLayoutObject()) {

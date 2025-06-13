@@ -15,9 +15,9 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
   StyleRecalcContext result;
   for (auto* element = &start_element; element;
        element = FlatTreeTraversal::ParentElement(*element)) {
-    if (result.container == nullptr) {
-      const ComputedStyle* style = element->GetComputedStyle();
-      if (style && style->IsContainerForSizeContainerQueries()) {
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (result.container == nullptr &&
+          style->IsContainerForSizeContainerQueries()) {
         // TODO(crbug.com/40250356): Eliminate all invalid calls to
         // StyleRecalcContext::From[Inclusive]Ancestors, then either turn
         // if (!style) into CHECK(style) or simplify into checking:
@@ -29,12 +29,15 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
         // land a strategy to figure it out and fix what's going on.
         result.container = element;
       }
-    }
-
-    const ComputedStyle* style = element->GetComputedStyle();
-    if (style && !style->ScrollMarkerGroupNone() &&
-        (style->IsScrollContainer() || element->IsDocumentElement())) {
-      result.has_scroller_ancestor_with_scroll_marker_group_property = true;
+      if (!result.has_scroller_ancestor_with_scroll_marker_group_property &&
+          !style->ScrollMarkerGroupNone() &&
+          (style->IsScrollContainer() || element->IsDocumentElement())) {
+        result.has_scroller_ancestor_with_scroll_marker_group_property = true;
+      }
+      if (!result.has_anchored_container) {
+        result.has_anchored_container =
+            style->IsContainerForAnchoredContainerQueries();
+      }
     }
 
     if (!result.has_content_visibility_auto_locked_ancestor) {

@@ -112,6 +112,9 @@ class CORE_EXPORT StyleRecalcContext {
   // True if any scroller ancestor of this element had a scroll-marker-group
   // property set to "before" or "after".
   bool has_scroller_ancestor_with_scroll_marker_group_property = false;
+
+  // True if this element has a container-type:anchored ancestor.
+  bool has_anchored_container = false;
 };
 
 }  // namespace blink
