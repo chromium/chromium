@@ -1445,6 +1445,10 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
   }
   SetFieldFocus(FocusFieldType::kNoFocus);
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  client_->MaybeShowSearchifyInProgress();
+#endif
+
   if (point_data.area != PDFiumPage::TEXT_AREA) {
     return true;  // Return true so WebKit doesn't do its own highlighting.
   }
@@ -1454,10 +1458,6 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
   }
 
   OnTextOrLinkAreaClickInternal(point_data, click_count);
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  client_->MaybeShowSearchifyInProgress();
-#endif
   return true;
 }
 
