@@ -228,7 +228,7 @@ std::vector<attribution_internals::mojom::WebUIReportPtr> ToWebUIReports(
 }
 
 attribution_internals::mojom::NetworkStatusPtr NetworkStatus(int status) {
-  return status > 0
+  return status >= 0
              ? attribution_internals::mojom::NetworkStatus::NewHttpResponseCode(
                    status)
              : attribution_internals::mojom::NetworkStatus::NewNetworkError(
