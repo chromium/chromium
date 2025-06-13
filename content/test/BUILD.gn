@@ -2197,8 +2197,6 @@ test("content_browsertests") {
     ]
     sources -= [
       "../browser/media/session/audio_focus_delegate_default_browsertest.cc",
-      "../browser/pointer_lock_browsertest.cc",
-      "../browser/pointer_lock_browsertest.h",
     ]
     deps += [
       ":android_test_message_pump_support",

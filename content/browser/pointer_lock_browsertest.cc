@@ -31,6 +31,10 @@
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_view_aura.h"
 #endif  // USE_AURA
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/renderer_host/render_widget_host_view_android.h"
+#include "content/browser/web_contents/web_contents_view_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -113,6 +117,57 @@ void InstallCreateHooksForPointerLockBrowserTests() {
       });
 }
 #endif  // USE_AURA
+#if BUILDFLAG(IS_ANDROID)
+class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAndroid {
+ public:
+  MockPointerLockRenderWidgetHostView(RenderWidgetHostImpl* rwhi,
+                                      gfx::NativeView parent_native_view,
+                                      cc::slim::Layer* parent_layer)
+      : RenderWidgetHostViewAndroid(rwhi, parent_native_view, parent_layer) {}
+  ~MockPointerLockRenderWidgetHostView() override {
+    if (pointer_locked_) {
+      UnlockPointer();
+    }
+  }
+
+  blink::mojom::PointerLockResult LockPointer(
+      bool request_unadjusted_movement) override {
+    pointer_locked_ = true;
+
+    return blink::mojom::PointerLockResult::kSuccess;
+  }
+
+  blink::mojom::PointerLockResult ChangePointerLock(
+      bool request_unadjusted_movement) override {
+    return blink::mojom::PointerLockResult::kSuccess;
+  }
+
+  void UnlockPointer() override {
+    if (RenderWidgetHostImpl* host =
+            RenderWidgetHostImpl::From(GetRenderWidgetHost())) {
+      host->LostPointerLock();
+    }
+    pointer_locked_ = false;
+  }
+
+  bool IsPointerLocked() override { return pointer_locked_; }
+
+  bool HasFocus() override { return true; }
+  bool CanBePointerLocked() override { return true; }
+
+ private:
+  bool pointer_locked_ = false;
+};
+
+void InstallCreateHooksForPointerLockBrowserTests() {
+  WebContentsViewAndroid::InstallCreateHookForTests(
+      [](RenderWidgetHostImpl* rwhi, gfx::NativeView parent_native_view,
+         cc::slim::Layer* parent_layer) -> RenderWidgetHostViewAndroid* {
+        return new MockPointerLockRenderWidgetHostView(rwhi, parent_native_view,
+                                                       parent_layer);
+      });
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class PointerLockBrowserTest : public ContentBrowserTest {
  public:
@@ -292,6 +347,9 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, MAYBE_PointerLockEventRouting) {
       child->current_frame_host()->GetView());
 
   WaitForHitTestData(child->current_frame_host());
+  // Make sure that page_scale is 1, on Android page scale is not guaranteed to
+  // be 1
+  web_contents()->SetPageScale(1.0);
 
   std::string set_mouse_move_event_listener = R"(
     mouseMoveExecuted = new Promise(function (resolve, reject) {
@@ -539,6 +597,9 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
       child->current_frame_host()->GetView());
 
   WaitForHitTestData(child->current_frame_host());
+  // Make sure that page_scale is 1, on Android page scale is not guaranteed to
+  // be 1
+  web_contents()->SetPageScale(1.0);
 
   // Add a mouse move event listener to the root frame.
   EXPECT_TRUE(ExecJs(
@@ -698,8 +759,16 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOnDroppedElem) {
   EXPECT_TRUE(ExecJs(shell(), "", EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
+// unajustedMovement flag is not supported on Android
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PointerLockRequestUnadjustedMovement \
+  DISABLED_PointerLockRequestUnadjustedMovement
+#else
+#define MAYBE_PointerLockRequestUnadjustedMovement \
+  PointerLockRequestUnadjustedMovement
+#endif
 IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
-                       PointerLockRequestUnadjustedMovement) {
+                       MAYBE_PointerLockRequestUnadjustedMovement) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

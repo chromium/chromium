@@ -10,8 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_drag_security_info.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -154,6 +156,15 @@ class WebContentsViewAndroid : public WebContentsView,
   }
 
   WebContentsImpl* web_contents() { return web_contents_; }
+
+  using RenderWidgetHostViewCreateFunction =
+      RenderWidgetHostViewAndroid* (*)(RenderWidgetHostImpl*,
+                                       gfx::NativeView,
+                                       cc::slim::Layer*);
+
+  // Used to override the creation of RenderWidgetHostViews in tests.
+  CONTENT_EXPORT static void InstallCreateHookForTests(
+      RenderWidgetHostViewCreateFunction create_render_widget_host_view);
 
  private:
   void OnDragEntered(const gfx::PointF& location,

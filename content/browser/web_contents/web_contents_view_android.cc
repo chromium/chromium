@@ -64,6 +64,9 @@ namespace content {
 
 namespace {
 
+WebContentsViewAndroid::RenderWidgetHostViewCreateFunction
+    g_create_render_widget_host_view = nullptr;
+
 // Returns the minimum distance in DIPs, for drag event being considered as an
 // intentional drag.
 int DragMovementThresholdDip() {
@@ -117,6 +120,13 @@ std::unique_ptr<WebContentsView> CreateWebContentsView(
                                                      std::move(delegate));
   *render_view_host_delegate_view = rv.get();
   return rv;
+}
+
+// static
+void WebContentsViewAndroid::InstallCreateHookForTests(
+    RenderWidgetHostViewCreateFunction create_render_widget_host_view) {
+  CHECK_EQ(nullptr, g_create_render_widget_host_view);
+  g_create_render_widget_host_view = create_render_widget_host_view;
 }
 
 WebContentsViewAndroid::WebContentsViewAndroid(
@@ -264,8 +274,11 @@ RenderWidgetHostViewBase* WebContentsViewAndroid::CreateViewForWidget(
   // native view (i.e. ContentView) how to obtain a reference to this widget in
   // order to paint it.
   RenderWidgetHostImpl* rwhi = RenderWidgetHostImpl::From(render_widget_host);
-  auto* rwhv = new RenderWidgetHostViewAndroid(
-      rwhi, &view_, parent_for_web_page_widgets_.get());
+  auto* rwhv = g_create_render_widget_host_view
+                   ? g_create_render_widget_host_view(
+                         rwhi, &view_, parent_for_web_page_widgets_.get())
+                   : new RenderWidgetHostViewAndroid(
+                         rwhi, &view_, parent_for_web_page_widgets_.get());
   rwhv->SetSynchronousCompositorClient(synchronous_compositor_client_);
   return rwhv;
 }
