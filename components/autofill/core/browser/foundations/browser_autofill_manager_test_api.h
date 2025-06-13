@@ -99,16 +99,14 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   std::vector<Suggestion> GetProfileSuggestions(
       const FormData& form,
       const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source =
-          AutofillSuggestionTriggerSource::kFormControlElementClicked,
       std::optional<std::string> plus_address_override = std::nullopt) {
     FormStructure* form_structure;
     AutofillField* autofill_field;
     CHECK(manager_->GetCachedFormAndField(form.global_id(), field.global_id(),
                                           &form_structure, &autofill_field));
-    return manager_->GetProfileSuggestions(
-        form, CHECK_DEREF(form_structure), field, CHECK_DEREF(autofill_field),
-        trigger_source, std::move(plus_address_override));
+    return manager_->GetProfileSuggestions(form, CHECK_DEREF(form_structure),
+                                           field, CHECK_DEREF(autofill_field),
+                                           std::move(plus_address_override));
   }
 
  private:

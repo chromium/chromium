@@ -389,6 +389,7 @@ class BrowserAutofillManager : public AutofillManager {
   // - Collect profile token quality observations
   std::unique_ptr<FormStructure> ValidateSubmittedForm(const FormData& form);
 
+  // TODO(crbug.com/40100455): Correct this outdated comment.
   // Returns suggestions for the `form`, if suggestions were triggered using
   // the `trigger_source` on the `field`. The field's type is `field_type`.
   // The `trigger_source` controls which fields are considered for filling and
@@ -402,7 +403,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
       const AutofillField& trigger_autofill_field,
-      AutofillSuggestionTriggerSource trigger_source,
       std::optional<std::string> plus_address_email_override);
 
   // Returns a list of values from the stored credit cards that match
@@ -416,13 +416,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
       const AutofillField& autofill_trigger_field,
-      AutofillSuggestionTriggerSource trigger_source,
       autofill_metrics::SuggestionRankingContext& ranking_context);
-
-  // Returns valuables suggestions depending on the `trigger_autofill_field`
-  // value type.
-  std::vector<Suggestion> GetValuablesSuggestions(
-      const AutofillField& trigger_autofill_field);
 
   // Fills or previews `form` with the information in `credit_card`.
   // `autofill_field` is the field that triggered the filling operation.
@@ -616,8 +610,6 @@ class BrowserAutofillManager : public AutofillManager {
   void LogAndRecordCreditCardFill(
       FormStructure& form_structure,
       AutofillField& trigger_autofill_field,
-      base::span<const FormFieldData*> safe_filled_fields,
-      base::span<const AutofillField*> safe_filled_autofill_fields,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
       const CreditCard& card,
@@ -629,8 +621,6 @@ class BrowserAutofillManager : public AutofillManager {
   void LogAndRecordProfileFill(
       FormStructure& form_structure,
       AutofillField& trigger_autofill_field,
-      base::span<const FormFieldData*> safe_filled_fields,
-      base::span<const AutofillField*> safe_filled_autofill_fields,
       const AutofillProfile& filled_profile,
       AutofillTriggerSource trigger_source,
       bool is_refill);
@@ -639,7 +629,6 @@ class BrowserAutofillManager : public AutofillManager {
   // if so, shows a notification to the user.
   void MaybeShowPlusAddressEmailOverrideNotification(
       base::span<const AutofillField*> safe_filled_autofill_fields,
-      base::span<const FormFieldData*> safe_filled_fields,
       const AutofillProfile& filled_profile,
       const FormStructure& form_structure);
 

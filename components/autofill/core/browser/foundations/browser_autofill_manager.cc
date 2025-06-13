@@ -458,8 +458,7 @@ void LogSuggestionsCount(const SuggestionsContext& context,
   }
 }
 
-bool ShouldOfferSingleFieldFill(const FormFieldData& field,
-                                const AutofillField* autofill_field,
+bool ShouldOfferSingleFieldFill(const AutofillField* autofill_field,
                                 AutofillSuggestionTriggerSource trigger_source,
                                 SuppressReason suppress_reason) {
   if (trigger_source ==
@@ -1442,7 +1441,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   // Whether or not to request single field form fill suggestions.
   const bool should_offer_single_field_form_fill =
       should_offer_other_suggestions &&
-      ShouldOfferSingleFieldFill(field, autofill_field, trigger_source,
+      ShouldOfferSingleFieldFill(autofill_field, trigger_source,
                                  context.suppress_reason);
 
   // Whether or not to show plus address suggestions.
@@ -2543,20 +2542,17 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   std::visit(
       absl::Overload{
           [&](const AutofillProfile* profile) {
-            LogAndRecordProfileFill(
-                form_structure, trigger_autofill_field, safe_filled_fields,
-                safe_filled_autofill_fields, *profile, trigger_source,
-                refill_trigger_reason.has_value());
+            LogAndRecordProfileFill(form_structure, trigger_autofill_field,
+                                    *profile, trigger_source,
+                                    refill_trigger_reason.has_value());
             MaybeShowPlusAddressEmailOverrideNotification(
-                safe_filled_autofill_fields, safe_filled_fields, *profile,
-                form_structure);
+                safe_filled_autofill_fields, *profile, form_structure);
           },
           [&](const CreditCard* credit_card) {
-            LogAndRecordCreditCardFill(
-                form_structure, trigger_autofill_field, safe_filled_fields,
-                safe_filled_autofill_fields, filled_field_ids, safe_field_ids,
-                *credit_card, trigger_source,
-                refill_trigger_reason.has_value());
+            LogAndRecordCreditCardFill(form_structure, trigger_autofill_field,
+                                       filled_field_ids, safe_field_ids,
+                                       *credit_card, trigger_source,
+                                       refill_trigger_reason.has_value());
           },
           [&](const EntityInstance* entity) {
             if (AutofillAiDelegate* delegate =
@@ -2635,8 +2631,6 @@ void BrowserAutofillManager::AppendFillLogEvents(
 void BrowserAutofillManager::LogAndRecordCreditCardFill(
     FormStructure& form_structure,
     AutofillField& trigger_autofill_field,
-    base::span<const FormFieldData*> safe_filled_fields,
-    base::span<const AutofillField*> safe_filled_autofill_fields,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
     const CreditCard& card,
@@ -2667,8 +2661,6 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
 void BrowserAutofillManager::LogAndRecordProfileFill(
     FormStructure& form_structure,
     AutofillField& trigger_autofill_field,
-    base::span<const FormFieldData*> safe_filled_fields,
-    base::span<const AutofillField*> safe_filled_autofill_fields,
     const AutofillProfile& filled_profile,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
@@ -2689,7 +2681,6 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
 
 void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
     base::span<const AutofillField*> safe_filled_autofill_fields,
-    base::span<const FormFieldData*> safe_filled_fields,
     const AutofillProfile& filled_profile,
     const FormStructure& form_structure) {
   // `filled_profile` might have had its email overridden, which is what makes
@@ -2801,7 +2792,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormStructure& form_structure,
     const FormFieldData& trigger_field,
     const AutofillField& trigger_autofill_field,
-    AutofillSuggestionTriggerSource trigger_source,
     std::optional<std::string> plus_address_email_override) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   bool should_suppress =
@@ -2871,7 +2861,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormStructure& form_structure,
     const FormFieldData& trigger_field,
     const AutofillField& autofill_trigger_field,
-    AutofillSuggestionTriggerSource trigger_source,
     autofill_metrics::SuggestionRankingContext& ranking_context) {
   metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
       metrics_->signin_state_for_metrics);
@@ -3137,9 +3126,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
   std::vector<Suggestion> suggestions;
   switch (context.filling_product) {
     case FillingProduct::kAddress:
-      suggestions = GetProfileSuggestions(
-          form, *form_structure, field, *autofill_field, trigger_source,
-          std::move(plus_address_email_override));
+      suggestions =
+          GetProfileSuggestions(form, *form_structure, field, *autofill_field,
+                                std::move(plus_address_email_override));
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
           autofill_field->Type().GetStorableType() ==
@@ -3160,8 +3149,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       break;
     case FillingProduct::kCreditCard:
       suggestions = GetCreditCardSuggestions(form, *form_structure, field,
-                                             *autofill_field, trigger_source,
-                                             ranking_context);
+                                             *autofill_field, ranking_context);
       break;
     case FillingProduct::kLoyaltyCard:
       if (base::FeatureList::IsEnabled(
