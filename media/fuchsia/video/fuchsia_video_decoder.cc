@@ -690,7 +690,16 @@ void FuchsiaVideoDecoder::OnStreamProcessorError() {
 }
 
 void FuchsiaVideoDecoder::CallNextDecodeCallback() {
-  DCHECK(!decode_callbacks_.empty());
+  if (decode_callbacks_.empty()) {
+    // Besides the potential possibilities of unexpected calling this function
+    // more times than expected, triggering this condition may also mean that we
+    // executed the callback too early and ignored some of the frames.
+    // The root cause is still being investigated, and will be fixed later.
+    // TODO(crbug.com/423634129): Remove this log once the root cause is fixed.
+    LOG(WARNING)
+        << "Called CallNextDecodeCallback more times than expected.";
+    return;
+  }
   auto cb = std::move(decode_callbacks_.front());
   decode_callbacks_.pop_front();
 
