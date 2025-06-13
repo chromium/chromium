@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
@@ -29,9 +30,9 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest overrides.
   void SetUpOnMainThread() override;
 
-  // Builds a vector of strings of all added javascript libraries suitable for
-  // execution by subclasses.
-  void BuildJavascriptLibraries(std::vector<std::u16string>* libraries);
+  // Builds a vector of javascript library contents for execution. Returns true
+  // on success, false if any library fails to load or if `libraries` is null.
+  bool BuildJavascriptLibraries(std::vector<std::u16string>* libraries);
 
   // Builds a string with a call to the runTest JS function, passing the
   // given |is_async|, |test_name| and its |args|.

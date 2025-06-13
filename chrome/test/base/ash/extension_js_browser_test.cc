@@ -5,8 +5,14 @@
 #include "chrome/test/base/ash/extension_js_browser_test.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 #include <vector>
 
+#include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
@@ -117,7 +123,10 @@ bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
   }
 
   if (!libs_loaded_) {
-    BuildJavascriptLibraries(&scripts);
+    if (!BuildJavascriptLibraries(&scripts)) {
+      ADD_FAILURE() << "Failed to build JavaScript libraries";
+      return false;
+    }
     libs_loaded_ = true;
   }
 

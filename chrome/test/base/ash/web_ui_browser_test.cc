@@ -7,10 +7,12 @@
 #include <stddef.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -451,7 +453,10 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
                                   : test_handler_->GetRenderFrameHostForTest();
   if (!base::Contains(libraries_preloaded_for_frames_,
                       frame_for_libraries->GetGlobalId())) {
-    BuildJavascriptLibraries(&libraries);
+    if (!BuildJavascriptLibraries(&libraries)) {
+      ADD_FAILURE() << "Failed to build JavaScript libraries";
+      return false;
+    }
     if (!preload_frame) {
       content = base::JoinString(libraries, u"\n");
       libraries.clear();
