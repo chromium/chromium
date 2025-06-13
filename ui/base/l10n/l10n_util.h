@@ -100,10 +100,10 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
                                        bool is_for_ui,
                                        bool disallow_default = false);
 
-// Returns the display name of the |country_code| in |display_locale|.
+// Returns the display name of the `country_code` in `display_locale.
 COMPONENT_EXPORT(UI_BASE)
-std::u16string GetDisplayNameForCountry(const std::string& country_code,
-                                        const std::string& display_locale);
+std::u16string GetDisplayNameForCountry(std::string_view country_code,
+                                        std::string_view display_locale);
 
 // Converts all - into _, to be consistent with ICU and file system names.
 COMPONENT_EXPORT(UI_BASE)

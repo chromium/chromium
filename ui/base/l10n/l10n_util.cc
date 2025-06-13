@@ -31,6 +31,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -708,9 +709,10 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
   return display_name;
 }
 
-std::u16string GetDisplayNameForCountry(const std::string& country_code,
-                                        const std::string& display_locale) {
-  return GetDisplayNameForLocale("_" + country_code, display_locale, false);
+std::u16string GetDisplayNameForCountry(std::string_view country_code,
+                                        std::string_view display_locale) {
+  return GetDisplayNameForLocale(base::StrCat({"_", country_code}),
+                                 display_locale, false);
 }
 
 std::string NormalizeLocale(const std::string& locale) {
