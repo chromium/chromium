@@ -13,9 +13,9 @@ namespace supervised_user {
 
 template <>
 void TypedFetchProcess<std::string>::OnResponse(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   CHECK(response_body) << "Use OnError when there is no response.";
-  OnSuccess(std::move(response_body));
+  OnSuccess(std::make_unique<std::string>(std::move(response_body.value())));
 }
 
 }  // namespace supervised_user

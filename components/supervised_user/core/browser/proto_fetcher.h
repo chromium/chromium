@@ -104,11 +104,11 @@ class FetchProcess {
   // Third phase of fetching: the remote service responded
   void OnSimpleUrlLoaderComplete(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Final phase of fetching: binary data is collected and ready to be
   // interpreted or error is encountered.
-  virtual void OnResponse(std::unique_ptr<std::string> response_body) = 0;
+  virtual void OnResponse(std::optional<std::string> response_body) = 0;
   virtual void OnError(const ProtoFetcherStatus& status) = 0;
 
   const raw_ref<signin::IdentityManager> identity_manager_;
@@ -168,7 +168,7 @@ class TypedFetchProcess : public FetchProcess {
   ~TypedFetchProcess() override = default;
 
  private:
-  void OnResponse(std::unique_ptr<std::string> response_body) override {
+  void OnResponse(std::optional<std::string> response_body) override {
     CHECK(response_body) << "Use OnError when there is no response.";
     std::unique_ptr<Response> response = std::make_unique<Response>();
     if (!response->ParseFromString(*response_body)) {

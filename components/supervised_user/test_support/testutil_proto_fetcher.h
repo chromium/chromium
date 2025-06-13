@@ -16,7 +16,7 @@ namespace supervised_user {
 // the message.
 template <>
 void TypedFetchProcess<std::string>::OnResponse(
-    std::unique_ptr<std::string> response_body);
+    std::optional<std::string> response_body);
 
 }  // namespace supervised_user
 #endif  // COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_TESTUTIL_PROTO_FETCHER_H_

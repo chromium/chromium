@@ -223,7 +223,7 @@ void FetchProcess::StartUrlLoader(
 
 void FetchProcess::OnSimpleUrlLoaderComplete(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // In best-effort mode we must retry on auth error in order that the request
   // can proceed without credentials.
   if (config_->access_token_config.has_value() &&
