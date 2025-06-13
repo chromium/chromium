@@ -61,6 +61,15 @@ constexpr char kChallengeBase64[] = "aaaa";
 constexpr char kCredentialIdBase64[] = "cccc";
 constexpr int kDefaultFakeBitmapHeight = 32;
 
+struct MockAuthenticatorOptions {
+  bool is_user_verifying_platform_authenticator_available = true;
+  bool is_matching_credential_api_supported = true;
+  // When std::nullopt, GetMatchingCredentialIds() is not mocked and could
+  // be mocked by the caller of CreateMockInternalAuthenticator.
+  std::optional<std::vector<std::vector<uint8_t>>>
+      response_to_get_matching_credential_ids = std::nullopt;
+};
+
 class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
  protected:
   const GURL kInstrumentIconUrl = GURL("https://site.example/icon.png");
@@ -75,6 +84,24 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
     ASSERT_TRUE(base::Base64Decode(kCredentialIdBase64, &credential_id_bytes_));
     secure_payment_confirmation_app_factory_ =
         std::make_unique<SecurePaymentConfirmationAppFactory>();
+  }
+
+  std::unique_ptr<webauthn::MockInternalAuthenticator>
+  CreateMockInternalAuthenticator(MockAuthenticatorOptions options = {}) {
+    auto mock_authenticator =
+        std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
+    ON_CALL(*mock_authenticator,
+            IsUserVerifyingPlatformAuthenticatorAvailable(_))
+        .WillByDefault(RunOnceCallback<0>(
+            options.is_user_verifying_platform_authenticator_available));
+    ON_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
+        .WillByDefault(Return(options.is_matching_credential_api_supported));
+    if (options.response_to_get_matching_credential_ids) {
+      EXPECT_CALL(*mock_authenticator, GetMatchingCredentialIds(_, _, _, _))
+          .WillOnce(RunOnceCallback<3>(
+              std::move(*options.response_to_get_matching_credential_ids)));
+    }
+    return mock_authenticator;
   }
 
   // Creates and returns a minimal SecurePaymentConfirmationRequest object with
@@ -555,11 +582,7 @@ class SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest
   void SetUp() override {
     SecurePaymentConfirmationAppFactoryTest::SetUp();
 
-    mock_authenticator_ =
-        std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
-    EXPECT_CALL(*mock_authenticator_,
-                IsUserVerifyingPlatformAuthenticatorAvailable(_))
-        .WillOnce(RunOnceCallback<0>(true));
+    mock_authenticator_ = CreateMockInternalAuthenticator();
 
     mock_service_ = base::MakeRefCounted<MockPaymentManifestWebDataService>();
     EXPECT_CALL(*mock_service_,
@@ -968,13 +991,8 @@ class SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest
     auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
         web_contents_, std::move(method_data));
 
-    auto mock_authenticator =
-        std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
-    EXPECT_CALL(*mock_authenticator,
-                IsUserVerifyingPlatformAuthenticatorAvailable(_))
-        .WillOnce(RunOnceCallback<0>(true));
-    EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
-        .WillOnce(Return(true));
+    std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
+        CreateMockInternalAuthenticator();
 
     // This is the core 'test' line of this method. It ensures that the
     // authenticator device is asked for the right RP ID and credentials, and
@@ -1046,14 +1064,13 @@ TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
 
-  auto mock_authenticator =
-      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
-  EXPECT_CALL(*mock_authenticator,
-              IsUserVerifyingPlatformAuthenticatorAvailable(_))
-      .WillOnce(RunOnceCallback<0>(true));
-  // Make it so that the credential store API support is unavailable.
-  EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
-      .WillOnce(Return(false));
+  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
+      CreateMockInternalAuthenticator(
+          {.is_matching_credential_api_supported = false});
+  // Expect IsGetMatchingCredentialIdsSupported() to be called to ensure we
+  // reach the point of checking for the API (instead of returning early due to
+  // another reason).
+  EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported);
 
   scoped_refptr<MockPaymentManifestWebDataService> mock_service =
       base::MakeRefCounted<MockPaymentManifestWebDataService>();
@@ -1105,16 +1122,10 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
   secure_payment_confirmation_app_factory_->SetBrowserBoundKeyStoreForTesting(
       browser_bound_key_store_);
 
-  auto mock_authenticator =
-      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
-  EXPECT_CALL(*mock_authenticator,
-              IsUserVerifyingPlatformAuthenticatorAvailable(_))
-      .WillOnce(RunOnceCallback<0>(true));
-  EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator, GetMatchingCredentialIds(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>(
-          method_data->secure_payment_confirmation->credential_ids));
+  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
+      CreateMockInternalAuthenticator(
+          {.response_to_get_matching_credential_ids =
+               method_data->secure_payment_confirmation->credential_ids});
 
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
@@ -1173,15 +1184,10 @@ TEST_F(SecurePaymentConfirmationAppFactoryFallbackTest,
       CreateSecurePaymentConfirmationRequest();
   GURL icon = method_data->secure_payment_confirmation->instrument->icon;
 
-  auto mock_authenticator =
-      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
-  EXPECT_CALL(*mock_authenticator,
-              IsUserVerifyingPlatformAuthenticatorAvailable(_))
-      .WillOnce(RunOnceCallback<0>(true));
-  EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator, GetMatchingCredentialIds(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>(std::vector<std::vector<uint8_t>>()));
+  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
+      CreateMockInternalAuthenticator(
+          {.response_to_get_matching_credential_ids =
+               std::vector<std::vector<uint8_t>>()});
 
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
