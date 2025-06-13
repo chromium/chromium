@@ -136,7 +136,6 @@ cc::Region GetOccludingRegionForRRectF(
       lower_left == lower_right || lower_left.IsZero() || lower_right.IsZero();
 
   const bool should_generate_complex_occluder =
-      features::IsComplexOccluderForQuadsWithRoundedCornersEnabled() &&
       generate_complex_occluder_for_rounded_corners && uniform_top_corners &&
       uniform_bottom_corners &&
       bounds_f.size().GetArea() >= minumum_quad_size_with_rounded_corners;

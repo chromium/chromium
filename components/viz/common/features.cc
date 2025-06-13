@@ -267,11 +267,6 @@ BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// If enabled, complex occluders are generated for quads with rounded corners,
-BASE_FEATURE(kComplexOccluderForQuadsWithRoundedCorners,
-             "ComplexOccluderForQuadsWithRoundedCorners",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allow SurfaceAggregator to merge render passes when they contain quads that
 // require overlay (e.g. protected video). See usage in |EmitSurfaceContent|.
 BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
@@ -537,12 +532,6 @@ int MaxOverlaysConsidered() {
 
 bool ShouldOnBeginFrameThrottleVideo() {
   return base::FeatureList::IsEnabled(features::kOnBeginFrameThrottleVideo);
-}
-
-bool IsComplexOccluderForQuadsWithRoundedCornersEnabled() {
-  static bool enabled = base::FeatureList::IsEnabled(
-      features::kComplexOccluderForQuadsWithRoundedCorners);
-  return enabled;
 }
 
 bool ShouldDrawImmediatelyWhenInteractive() {

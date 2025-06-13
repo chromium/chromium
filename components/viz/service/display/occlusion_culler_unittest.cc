@@ -3371,10 +3371,6 @@ class QuadsWithComplexOccluderTest
 };
 
 TEST_P(QuadsWithComplexOccluderTest, OcclusionCullingWithRoundedCorner) {
-  if (!features::IsComplexOccluderForQuadsWithRoundedCornersEnabled()) {
-    GTEST_SKIP();
-  }
-
   RendererSettings::OcclusionCullerSettings settings;
   settings.generate_complex_occluder_for_rounded_corners = true;
   settings.minimum_fragments_reduced = 0;
@@ -3507,10 +3503,6 @@ INSTANTIATE_TEST_SUITE_P(
 // inscribed rectangle within the rounded rectangle, rather than a more complex
 // occluder.
 TEST_F(OcclusionCullerTest, OcclusionCullingWithRoundedCornerOnSmallQuads) {
-  if (!features::IsComplexOccluderForQuadsWithRoundedCornersEnabled()) {
-    GTEST_SKIP();
-  }
-
   RendererSettings::OcclusionCullerSettings settings;
   settings.generate_complex_occluder_for_rounded_corners = true;
   settings.quad_split_limit = 10;
