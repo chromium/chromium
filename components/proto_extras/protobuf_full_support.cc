@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/proto_extras/proto_extras_lib.h"
+#include "components/proto_extras/protobuf_full_support.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/proto_extras/proto_extras_lib.h"
 #include "third_party/protobuf/src/google/protobuf/unknown_field_set.h"
 
 namespace proto_extras {

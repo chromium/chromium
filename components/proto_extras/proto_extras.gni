@@ -2,9 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Generate serializers that turn a protobuf into a base::Value. This
-# does not directly generate the protobuf bindings for any language, so
+# Generate extra functionality for protobuf messages, including:
+# - Serialization to base::DictValue.
+# - Stream operator support for C++ printing.
+# - (future) equality operator support
+# - (future) gtest matchers.
+# This does not directly generate the protobuf bindings for any language, so
 # callers must include the build target for C++ bindings in the deps.
+#
+# This is a wrapper around proto_library that adds the proto_extras plugin. It
+# is intended to be used in conjunction with proto_library, not on its own.
+#
+# The generated C++ code will be named <name>.extras.h and <name>.extras.cc.
+# The primary entry point is <name>.extras.h, which declares the generated
+# serialization and streaming operators.
+#
+# For cases where the message uses the full google::protobuf::Message type,
+# the protobuf_full_support option can be used to ensure the generated code
+# with the full protobuf library. Due to android build complications, this also
+# requires the `use_fuzzing_engine_with_lpm` build flag to be set.
 #
 # Caveats:
 # - Integer types in the proto that are not compatible with base::Value are
@@ -19,19 +35,28 @@
 #     deps = [
 #       "mylib_proto_target"
 #     ]
-#     # Optional: Set to true to generate C++ stream operators (operator<<)
-#     # for the proto messages, which will print the message using
-#     # base::Value::DebugString().
-#     # Defaults to false.
-#     generate_stream_operators = true
+#     omit_to_value_serialization = true   # default is false
+#     omit_stream_operators = true         # default is false
 #   }
 
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 template("proto_extras") {
-  _generate_stream_operators = false
-  if (defined(invoker.generate_stream_operators)) {
-    _generate_stream_operators = invoker.generate_stream_operators
+  _options = []
+  if (defined(invoker.omit_to_value_serialization) &&
+      invoker.omit_to_value_serialization) {
+    _options += [ "omit_to_value_serialization" ]
+  }
+  if (defined(invoker.omit_stream_operators) && invoker.omit_stream_operators) {
+    _options += [ "omit_stream_operators" ]
+  }
+
+  _protobuf_full_support = false
+  if (defined(invoker.protobuf_full_support) && invoker.protobuf_full_support &&
+      use_fuzzing_engine_with_lpm) {
+    _options += [ "protobuf_full_support" ]
+    _protobuf_full_support = true
   }
 
   proto_library("${target_name}") {
@@ -44,16 +69,16 @@ template("proto_extras") {
     }
 
     generator_plugin_label = "//components/proto_extras:proto_extras_plugin"
-    generator_plugin_suffix = ".to_value"
+    generator_plugin_suffix = ".extras"
     generate_cc = false
     generate_python = false
     link_public_deps = [ "//base" ]
-    link_deps = [
-      "//components/proto_extras:proto_extras_lib",
-    ]
-
-    if (_generate_stream_operators) {
-      generator_plugin_options = "generate_stream_operators"
+    link_deps = [ "//components/proto_extras:proto_extras_lib" ]
+    if (_protobuf_full_support) {
+      link_deps += [ "//components/proto_extras:protobuf_full_support" ]
+    }
+    if (_options != []) {
+      generator_plugin_options = string_join(",", _options)
     }
   }
 }
