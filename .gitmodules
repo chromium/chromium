@@ -279,10 +279,6 @@
 	path = third_party/instrumented_libs
 	url = https://chromium.googlesource.com/chromium/third_party/instrumented_libraries
 	gclient-condition = checkout_instrumented_libraries
-[submodule "third_party/jszip/src"]
-	path = third_party/jszip/src
-	url = https://chromium.googlesource.com/external/github.com/Stuk/jszip
-	gclient-condition = checkout_ios
 [submodule "third_party/emoji-segmenter/src"]
 	path = third_party/emoji-segmenter/src
 	url = https://chromium.googlesource.com/external/github.com/google/emoji-segmenter
