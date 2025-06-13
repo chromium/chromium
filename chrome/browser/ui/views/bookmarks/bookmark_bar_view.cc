@@ -579,7 +579,7 @@ void BookmarkBarView::GetAnchorPositionForButton(
 
 int BookmarkBarView::GetLeadingMargin() const {
   static constexpr int kBookmarksBarLeadingMarginWithoutSavedTabGroups = 6;
-  static constexpr int kBookmarksBarLeadingMarginWithSavedTabGroups = 12;
+  static constexpr int kBookmarksBarLeadingMarginWithSavedTabGroups = 6;
 
   if (saved_tab_groups_separator_view_ &&
       saved_tab_groups_separator_view_->GetVisible()) {
