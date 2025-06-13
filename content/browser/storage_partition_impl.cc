@@ -914,6 +914,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
       network::mojom::DeviceBoundSessionManager* device_bound_session_manager,
+      KeepAliveURLLoaderService* keep_alive_url_loader_service,
       bool perform_storage_cleanup,
       const base::Time begin,
       const base::Time end);
@@ -2776,7 +2777,8 @@ void StoragePartitionImpl::ClearDataImpl(
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       cdm_storage_manager_.get(),
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-      GetDeviceBoundSessionManager(), perform_storage_cleanup, begin, end);
+      GetDeviceBoundSessionManager(), GetKeepAliveURLLoaderService(),
+      perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2962,6 +2964,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
     network::mojom::DeviceBoundSessionManager* device_bound_session_manager,
+    KeepAliveURLLoaderService* keep_alive_url_loader_service,
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end) {
@@ -3206,6 +3209,11 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
         filter_builder ? filter_builder->BuildNetworkServiceFilter() : nullptr,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(CreateTaskCompletionClosure(
             TracingDataType::kDeviceBoundSessions)));
+  }
+
+  if (remove_mask_ & REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY &&
+      keep_alive_url_loader_service) {
+    keep_alive_url_loader_service->ClearKeepAliveURLLoadersAttemptingRetry();
   }
 }
 

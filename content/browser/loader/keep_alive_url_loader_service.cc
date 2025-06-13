@@ -166,6 +166,19 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
     }
   }
 
+  void ClearKeepAliveURLLoadersAttemptingRetry() {
+    std::vector<mojo::ReceiverId> loader_ids_to_remove;
+    for (const auto& [loader_id, weak_ptr_loader] : weak_ptr_loaders_) {
+      if (weak_ptr_loader && weak_ptr_loader->IsAttemptingRetry()) {
+        loader_ids_to_remove.push_back(loader_id);
+      }
+    }
+
+    for (auto loader_id : loader_ids_to_remove) {
+      RemoveLoader(loader_id);
+    }
+  }
+
   // For testing only:
   base::WeakPtr<KeepAliveURLLoader> GetLoaderWithRequestIdForTesting(
       int32_t request_id) const {
@@ -182,6 +195,15 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
   }
   size_t NumDisconnectedLoadersForTesting() const {
     return disconnected_loaders_.size();
+  }
+  size_t NumLoadersAttemptingRetryForTesting() const {
+    int count = 0;
+    for (const auto& [_, weak_ptr_loader] : weak_ptr_loaders_) {
+      if (weak_ptr_loader->IsAttemptingRetry()) {
+        count++;
+      }
+    }
+    return count;
   }
 
  protected:
@@ -644,6 +666,11 @@ KeepAliveURLLoaderService::GetLoaderWithRequestIdForTesting(
       request_id);  // IN-TEST
 }
 
+void KeepAliveURLLoaderService::ClearKeepAliveURLLoadersAttemptingRetry() {
+  url_loader_factories_->ClearKeepAliveURLLoadersAttemptingRetry();
+  fetch_later_loader_factories_->ClearKeepAliveURLLoadersAttemptingRetry();
+}
+
 size_t KeepAliveURLLoaderService::NumLoadersForTesting() const {
   return url_loader_factories_->NumLoadersForTesting() +         // IN-TEST
          fetch_later_loader_factories_->NumLoadersForTesting();  // IN-TEST
@@ -653,6 +680,13 @@ size_t KeepAliveURLLoaderService::NumDisconnectedLoadersForTesting() const {
   return url_loader_factories_->NumDisconnectedLoadersForTesting() +  // IN-TEST
          fetch_later_loader_factories_
              ->NumDisconnectedLoadersForTesting();  // IN-TEST
+}
+
+size_t KeepAliveURLLoaderService::NumLoadersAttemptingRetryForTesting() const {
+  return url_loader_factories_
+             ->NumLoadersAttemptingRetryForTesting() +  // IN-TEST
+         fetch_later_loader_factories_
+             ->NumLoadersAttemptingRetryForTesting();  // IN-TEST
 }
 
 void KeepAliveURLLoaderService::SetLoaderObserverForTesting(

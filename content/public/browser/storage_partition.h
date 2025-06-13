@@ -228,6 +228,11 @@ class CONTENT_EXPORT StoragePartition {
     // user-initiated clearing.
     REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR = 1 << 20,
 
+    // Keepalive loads might be kept around in memory for a long time when
+    // waiting for a chance to retry. They should be removed as part of
+    // user-initiated clearing.
+    REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY = 1 << 21,
+
     REMOVE_DATA_MASK_ALL = 0xFFFFFFFF,
 
     // Corresponds to storage::kStorageTypeTemporary, which is equivalent to

@@ -546,7 +546,8 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCookieForever) {
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_COOKIES |
-                StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS);
+                StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
+                StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
   EXPECT_EQ(removal_data.quota_storage_remove_mask,
             StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
@@ -564,7 +565,8 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCookieLastHour) {
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_COOKIES |
-                StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS);
+                StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
+                StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
   EXPECT_EQ(removal_data.quota_storage_remove_mask,
             StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
@@ -590,7 +592,8 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCookiesDomainPreserveList) {
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_COOKIES |
-                StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS);
+                StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
+                StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
   EXPECT_EQ(removal_data.quota_storage_remove_mask,
             StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
@@ -767,7 +770,8 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveMultipleTypes) {
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_COOKIES |
-                StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS);
+                StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
+                StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
   EXPECT_EQ(removal_data.quota_storage_remove_mask,
             StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 }
@@ -1369,8 +1373,7 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCodeCache) {
   EXPECT_TRUE(removal_data[1].remove_code_cache);
 }
 
-TEST_F(BrowsingDataRemoverImplTest,
-       RemoveShaderCacheAndInterstGroupPermissionsCache) {
+TEST_F(BrowsingDataRemoverImplTest, RemoveCache) {
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 BrowsingDataRemover::DATA_TYPE_CACHE, false);
   auto removal_data = GetStoragePartitionRemovalDataListAndReset();
@@ -1378,7 +1381,8 @@ TEST_F(BrowsingDataRemoverImplTest,
   EXPECT_EQ(
       removal_data[0].remove_mask,
       StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE |
-          StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE);
+          StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE |
+          StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
 }
 
 TEST_F(BrowsingDataRemoverImplTest, RemoveAttributionReporting) {
@@ -1755,7 +1759,8 @@ TEST_F(BrowsingDataRemoverImplTest, DeferCookieDeletion) {
       StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
   uint32_t dom_storage_and_cookie_mask =
       dom_storage_mask | StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
-      StoragePartition::REMOVE_DATA_MASK_COOKIES;
+      StoragePartition::REMOVE_DATA_MASK_COOKIES |
+      StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY;
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 BrowsingDataRemover::DATA_TYPE_COOKIES |
                                     BrowsingDataRemover::DATA_TYPE_DOM_STORAGE,

@@ -1370,6 +1370,62 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
       /*retried_count=*/kMaxRetryCountPerFactoryForTesting);
 }
 
+// Test that a loader attempting retry will be deleted by clearing
+// cookies/cache.
+IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
+                       ClearingDataClearsLoaderAttemptingRetry) {
+  ASSERT_TRUE(server()->Start());
+  const auto beacon_url = server()->GetURL(kPrimaryHost, kKeepAliveEndpoint);
+  // Always fail the fetch with a network changed error.
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(beacon_url,
+                                                   net::ERR_NETWORK_CHANGED);
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            server()->GetURL(kPrimaryHost, "/title1.html")));
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     JsReplace(R"(
+                      window.fetchPromise = fetch($1, {
+                        keepalive: true,
+                        retryOptions: {
+                          maxAttempts: 10,
+                          initialDelay: (1000 * 3600 * 24), // 1 day
+                          retryNonIdempotent: true
+                        }});)",
+                               beacon_url),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the first load to fail.
+  loaders_observer().WaitForTotalOnComplete({net::ERR_NETWORK_CHANGED});
+
+  // The loader is now waiting for its retry attempt (which is scheduled for
+  // 1 day from now).
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+  ASSERT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(), 1u);
+
+  // Simulate clearing cookies.
+  base::RunLoop run_loop;
+  static_cast<StoragePartitionImpl*>(
+      web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
+      ->ClearData(StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY,
+                  StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+                  blink::StorageKey(), base::Time(), base::Time::Max(),
+                  run_loop.QuitClosure());
+  run_loop.Run();
+  // The pending retry loader is deleted.
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ASSERT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(), 0u);
+
+  // No retry happened and the failure is not forwarded to the renderer because
+  // the loader is deleted while it's waiting for retry.
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/1),
+      /*retried_count=*/0);
+}
+
 // TODO(crbug.com/417930271): test unload, redirects, timeout, attribution.
 
 }  // namespace content
