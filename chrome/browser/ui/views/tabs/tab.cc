@@ -228,6 +228,15 @@ Tab::Tab(TabSlotController* controller)
   // inside the tab shape, rather than to its extents.
   SetBorder(views::CreateEmptyBorder(tab_style_views()->GetContentsInsets()));
 
+#if BUILDFLAG(ENABLE_GLIC)
+  // For performance testing, pull a GlicBorderView into the tab UI to mimic use
+  // of a shader-based glow effect.
+  if (base::FeatureList::IsEnabled(features::kGlicTabGlow)) {
+    glic_border_view_ = AddChildView(
+        glic::GlicBorderView::Factory::Create(controller->GetBrowser()));
+  }
+#endif
+
   title_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_->SetElideBehavior(gfx::FADE_TAIL);
   title_->SetHandlesTooltips(false);
@@ -331,6 +340,13 @@ void Tab::Layout(PassKey) {
   UpdateIconVisibility();
 
   const int start = contents_rect.x();
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (base::FeatureList::IsEnabled(features::kGlicTabGlow)) {
+    glic_border_view_->SetBoundsRect(contents_rect);
+    glic_border_view_->SetVisible(true);
+  }
+#endif
 
   // The bounds for the favicon will include extra width for the attention
   // indicator, but visually it will be smaller at kFaviconSize wide.

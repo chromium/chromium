@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/common/buildflags.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -27,6 +28,10 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view_observer.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_border_view.h"
+#endif
 
 class AlertIndicatorButton;
 class TabCloseButton;
@@ -262,6 +267,10 @@ class Tab : public gfx::AnimationDelegate,
 
   // True if the tab is being animated closed.
   bool closing_ = false;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  raw_ptr<glic::GlicBorderView> glic_border_view_ = nullptr;
+#endif
 
   raw_ptr<TabIcon> icon_ = nullptr;
   raw_ptr<AlertIndicatorButton> alert_indicator_button_ = nullptr;
