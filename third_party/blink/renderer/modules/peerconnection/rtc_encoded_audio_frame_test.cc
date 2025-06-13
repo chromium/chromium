@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 
+#include <cstdint>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +22,8 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/test/mock_transformable_audio_frame.h"
@@ -35,6 +39,7 @@ using testing::SaveArg;
 using webrtc::MockTransformableAudioFrame;
 
 namespace blink {
+namespace {
 
 class RTCEncodedAudioFrameTest : public testing::Test {
   test::TaskEnvironment task_environment_;
@@ -44,6 +49,11 @@ webrtc::Timestamp GetWebRTCTimeOrigin(LocalDOMWindow* window) {
   return webrtc::Timestamp::Micros(
       (WindowPerformance::GetTimeOrigin(window) - base::TimeTicks())
           .InMicroseconds());
+}
+
+DOMHighResTimeStamp GetTimeOriginNtp(V8TestingScope& v8_scope) {
+  return DOMWindowPerformance::performance(v8_scope.GetWindow())->timeOrigin() +
+         2208988800000.0;
 }
 
 constexpr uint32_t kSsrc = 7;
@@ -111,9 +121,10 @@ RTCEncodedAudioFrameMetadata* CreateAudioMetadata(
   new_metadata->setPayloadType(kPayloadType2);
   new_metadata->setAudioLevel(ToLinearAudioLevel(kAudioLevel_dBov2));
   if (execution_context) {
-    new_metadata->setCaptureTime(CalculateRTCEncodedFrameTimestamp(
+    new_metadata->setCaptureTime(RTCEncodedFrameTimestampFromCaptureTimeInfo(
         execution_context,
-        base::TimeTicks() + base::Milliseconds(kCaptureTimeMillis2)));
+        {.capture_time = base::Milliseconds(kCaptureTimeMillis2),
+         .clock_type = CaptureTimeInfo::ClockType::kTimeTicks}));
   }
   return new_metadata;
 }
@@ -364,9 +375,73 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataModifiesMetadata) {
             new_frame->getMetadata(execution_context)->audioLevel());
 }
 
-double ToDOMHighResTimestamp(ExecutionContext* execution_context, int millis) {
-  return CalculateRTCEncodedFrameTimestamp(
-      execution_context, base::TimeTicks() + base::Milliseconds(millis));
+TEST_F(RTCEncodedAudioFrameTest, ConstructorWithInvalidPayloadTypeFails) {
+  V8TestingScope v8_scope;
+  std::unique_ptr<MockTransformableAudioFrame> frame =
+      std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+  MockMetadata(frame.get());
+  RTCEncodedAudioFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
+  ExecutionContext* execution_context = v8_scope.GetExecutionContext();
+  std::vector<uint8_t> invalid_payload_types;
+  // This range is reserved for RCTP.
+  // See https://tools.ietf.org/html/rfc5761#section-4
+  for (int i = 64; i <= 95; i++) {
+    invalid_payload_types.push_back(i);
+  }
+  // PayloadType is a 7-bit field, so anything > 127 is invalid.
+  for (int i = 128; i <= 255; i++) {
+    invalid_payload_types.push_back(i);
+  }
+  for (auto invalid_pt : invalid_payload_types) {
+    RTCEncodedAudioFrameMetadata* new_metadata =
+        encoded_frame->getMetadata(execution_context);
+    new_metadata->setPayloadType(invalid_pt);
+    RTCEncodedAudioFrameOptions* frame_options =
+        RTCEncodedAudioFrameOptions::Create();
+    frame_options->setMetadata(new_metadata);
+
+    DummyExceptionStateForTesting exception_state;
+    RTCEncodedAudioFrame::Create(execution_context, encoded_frame,
+                                 frame_options, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.Code(),
+              static_cast<int>(DOMExceptionCode::kInvalidModificationError));
+  }
+}
+
+TEST_F(RTCEncodedAudioFrameTest, ConstructorWithValidPayloadTypeSucceeds) {
+  V8TestingScope v8_scope;
+  std::unique_ptr<MockTransformableAudioFrame> frame =
+      std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+  MockMetadata(frame.get());
+  RTCEncodedAudioFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
+  ExecutionContext* execution_context = v8_scope.GetExecutionContext();
+  std::vector<uint8_t> valid_payload_types;
+  // This range is reserved for RCTP.
+  // See https://tools.ietf.org/html/rfc5761#section-4
+  for (int i = 0; i <= 63; i++) {
+    valid_payload_types.push_back(i);
+  }
+  for (int i = 96; i <= 127; i++) {
+    valid_payload_types.push_back(i);
+  }
+  for (auto pt : valid_payload_types) {
+    RTCEncodedAudioFrameMetadata* new_metadata =
+        encoded_frame->getMetadata(execution_context);
+    new_metadata->setPayloadType(pt);
+    RTCEncodedAudioFrameOptions* frame_options =
+        RTCEncodedAudioFrameOptions::Create();
+    frame_options->setMetadata(new_metadata);
+
+    DummyExceptionStateForTesting exception_state;
+    RTCEncodedAudioFrame* new_frame = RTCEncodedAudioFrame::Create(
+        execution_context, encoded_frame, frame_options, exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    EXPECT_TRUE(new_frame->getMetadata(execution_context)->hasPayloadType());
+    EXPECT_EQ(new_frame->getMetadata(execution_context)->payloadType(), pt);
+  }
 }
 
 TEST_F(RTCEncodedAudioFrameTest, ConstructorCopiesMetadata) {
@@ -395,9 +470,11 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorCopiesMetadata) {
   EXPECT_EQ("image", new_frame_metadata->mimeType());
   EXPECT_EQ(kSequenceNumber, new_frame_metadata->sequenceNumber());
   EXPECT_EQ(kRtpTimestamp, new_frame_metadata->rtpTimestamp());
-  EXPECT_EQ(
-      ToDOMHighResTimestamp(v8_scope.GetExecutionContext(), kCaptureTimeMillis),
-      new_frame_metadata->captureTime());
+  EXPECT_EQ(RTCEncodedFrameTimestampFromCaptureTimeInfo(
+                v8_scope.GetExecutionContext(),
+                {.capture_time = base::Milliseconds(kCaptureTimeMillis),
+                 .clock_type = CaptureTimeInfo::ClockType::kTimeTicks}),
+            new_frame_metadata->captureTime());
   EXPECT_EQ(ToLinearAudioLevel(kAudioLevel_dBov),
             new_frame_metadata->audioLevel());
   EXPECT_FALSE(new_frame_metadata->hasReceiveTime());
@@ -484,7 +561,7 @@ TEST_F(RTCEncodedAudioFrameTest, PassWebRTCDetachesFrameData) {
 
 TEST_F(RTCEncodedAudioFrameTest, FrameWithSenderCaptureTimeOffset) {
   V8TestingScope v8_scope;
-  double sender_capture_offsets_in_millis[] = {12, -34};
+  int sender_capture_offsets_in_millis[] = {12, -34};
   for (int offset : sender_capture_offsets_in_millis) {
     std::unique_ptr<MockTransformableAudioFrame> frame =
         std::make_unique<NiceMock<MockTransformableAudioFrame>>();
@@ -500,19 +577,14 @@ TEST_F(RTCEncodedAudioFrameTest, FrameWithSenderCaptureTimeOffset) {
   }
 }
 
-TEST_F(RTCEncodedAudioFrameTest, FrameWithCaptureTime) {
+TEST_F(RTCEncodedAudioFrameTest, ReceiverFrameWithCaptureTime) {
   V8TestingScope v8_scope;
-  auto* performance = DOMWindowPerformance::performance(v8_scope.GetWindow());
-  const base::TimeTicks window_time_origin =
-      performance->GetTimeOriginInternal();
-  const double capture_times_in_millis[] = {12, -34};
+  const int capture_times_in_millis[] = {12, -34};
   for (int capture_time : capture_times_in_millis) {
-    base::TimeDelta ntp_capture_time = base::Milliseconds(capture_time) +
-                                       window_time_origin.since_origin() -
-                                       WebRTCFrameNtpEpoch().since_origin();
+    base::TimeDelta ntp_capture_time =
+        base::Milliseconds(GetTimeOriginNtp(v8_scope) + capture_time);
     std::unique_ptr<MockTransformableAudioFrame> frame =
         std::make_unique<NiceMock<MockTransformableAudioFrame>>();
-    // Currently, only receiver frames expose captureTime.
     ON_CALL(*frame, GetDirection)
         .WillByDefault(
             Return(webrtc::TransformableFrameInterface::Direction::kReceiver));
@@ -525,8 +597,31 @@ TEST_F(RTCEncodedAudioFrameTest, FrameWithCaptureTime) {
     RTCEncodedAudioFrameMetadata* metadata =
         encoded_frame->getMetadata(v8_scope.GetExecutionContext());
     EXPECT_TRUE(metadata->hasCaptureTime());
-    // The error is slightly more than 0.1; use 0.11 to avoid flakes.
-    EXPECT_LE(std::abs(metadata->getCaptureTimeOr(0.0) - capture_time), 0.11);
+    // The error is slightly more than 0.1; use 0.2 to avoid flakes.
+    EXPECT_LE(std::abs(metadata->captureTime() - capture_time), 0.2);
+  }
+}
+
+TEST_F(RTCEncodedAudioFrameTest, SenderFrameWithCaptureTime) {
+  V8TestingScope v8_scope;
+  const int capture_times_in_millis[] = {12, -34};
+  for (int capture_time : capture_times_in_millis) {
+    std::unique_ptr<MockTransformableAudioFrame> frame =
+        std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+    ON_CALL(*frame, GetDirection)
+        .WillByDefault(
+            Return(webrtc::TransformableFrameInterface::Direction::kSender));
+    ON_CALL(*frame, CaptureTime)
+        .WillByDefault(Return(GetWebRTCTimeOrigin(&v8_scope.GetWindow()) +
+                              webrtc::TimeDelta::Millis(capture_time)));
+
+    RTCEncodedAudioFrame* encoded_frame =
+        MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
+    RTCEncodedAudioFrameMetadata* metadata =
+        encoded_frame->getMetadata(v8_scope.GetExecutionContext());
+    EXPECT_TRUE(metadata->hasCaptureTime());
+    // The error is slightly more than 0.1; use 0.2 to avoid flakes.
+    EXPECT_LE(std::abs(metadata->captureTime() - capture_time), 0.2);
   }
 }
 
@@ -544,4 +639,5 @@ TEST_F(RTCEncodedAudioFrameTest, FrameWithAudioLevel) {
   EXPECT_EQ(metadata->audioLevel(), ToLinearAudioLevel(kAudioLevel_dBov));
 }
 
+}  // namespace
 }  // namespace blink

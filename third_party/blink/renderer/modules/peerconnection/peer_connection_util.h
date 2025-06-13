@@ -7,23 +7,51 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
+// This structure represents a capture time as a timestamp together with the
+// type of clock from where there timestamp comes.
+// Different sources of frames use different clocks (e.g., monotonic pausable
+// vs. adjustable wall clock), with different epochs (e.g., Unix, NTP,
+// system startup).
+struct CaptureTimeInfo {
+  enum class ClockType {
+    // The timestamp uses a monotonic base::TimeTicks clock and is relative to
+    // the same platform-dependent epoch as base::TimeTicks::Now().
+    kTimeTicks,
+
+    // The timestamp uses a real-world clock and is relative to the NTP epoch
+    // (1900-01-01). Commonly used by incoming frames using the the
+    // abs-capture-time RTP Header extension.
+    kNtpRealClock
+  };
+
+  base::TimeDelta capture_time;
+  ClockType clock_type;
+};
+
 // Returns a DOMHighResTimeStamp relative to Performance.timeOrigin.
 MODULES_EXPORT DOMHighResTimeStamp
-CalculateRTCEncodedFrameTimestamp(ExecutionContext*, base::TimeTicks);
+RTCEncodedFrameTimestampFromTimeTicks(ExecutionContext*, base::TimeTicks);
 
-// Converts DOMHighResTimeStamp relative to Performance.timeOrigin to a
-// base::TimeTicks.
-MODULES_EXPORT base::TimeTicks RTCEncodedFrameTimestampToTimeTicks(
+// Returns a DOMHighResTimeStamp relative to Performance.timeOrigin.
+MODULES_EXPORT DOMHighResTimeStamp
+RTCEncodedFrameTimestampFromCaptureTimeInfo(ExecutionContext*, CaptureTimeInfo);
+
+// Converts a DOMHighResTimeStamp relative to Performance.timeOrigin to a
+// base::TimeDelta representing the time elapsed since the epoch associated
+// with the given clock type.
+MODULES_EXPORT base::TimeDelta RTCEncodedFrameTimestampToCaptureTime(
     ExecutionContext*,
-    DOMHighResTimeStamp);
+    DOMHighResTimeStamp,
+    CaptureTimeInfo::ClockType);
 
-// Returns a DOMHighResTimeStamp equivalent to the given delta
+// Returns a DOMHighResTimeStamp equivalent to the given delta.
 MODULES_EXPORT DOMHighResTimeStamp
 CalculateRTCEncodedFrameTimeDelta(ExecutionContext*, base::TimeDelta);
 

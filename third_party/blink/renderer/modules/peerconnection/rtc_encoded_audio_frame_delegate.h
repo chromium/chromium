@@ -13,7 +13,10 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/units/timestamp.h"
@@ -36,18 +39,19 @@ class RTCEncodedAudioFrameDelegate
   uint32_t RtpTimestamp() const;
   DOMArrayBuffer* CreateDataBuffer(v8::Isolate* isolate) const;
   void SetData(const DOMArrayBuffer* data);
+
+  // This method can only be called from the main thread.
   base::expected<void, String> SetWebRtcFrameMetadata(
-      uint32_t rtp_timestamp,
-      std::optional<uint8_t> payload_type,
-      std::optional<webrtc::Timestamp> capture_time,
-      std::optional<double> linear_audio_level);
+      ExecutionContext*,
+      const RTCEncodedAudioFrameMetadata*);
+
   std::optional<uint32_t> Ssrc() const;
   std::optional<uint8_t> PayloadType() const;
   std::optional<std::string> MimeType() const;
   std::optional<uint16_t> SequenceNumber() const;
   Vector<uint32_t> ContributingSources() const;
   std::optional<base::TimeTicks> ReceiveTime() const;
-  std::optional<base::TimeTicks> CaptureTime() const;
+  std::optional<CaptureTimeInfo> CaptureTime() const;
   std::optional<base::TimeDelta> SenderCaptureTimeOffset() const;
   std::optional<double> AudioLevel() const;
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> PassWebRtcFrame();

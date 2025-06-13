@@ -6,6 +6,8 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <ctime>
+#include <vector>
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,73 +20,110 @@ namespace blink {
 
 namespace {
 
-base::TimeTicks GetTimeOrigin(V8TestingScope& v8_scope) {
+base::TimeTicks GetTimeOriginTimeTicks(V8TestingScope& v8_scope) {
   return DOMWindowPerformance::performance(v8_scope.GetWindow())
       ->GetTimeOriginInternal();
 }
 
+DOMHighResTimeStamp GetTimeOriginNtp(V8TestingScope& v8_scope) {
+  return DOMWindowPerformance::performance(v8_scope.GetWindow())->timeOrigin() +
+         2208988800000.0;
+}
+
 }  // namespace
 
-TEST(PeerConnectionUtilTest, RTCEncodedFrameTimestampToTimeTicks) {
+TEST(PeerConnectionUtilTest, RTCEncodedFrameTimestampFromTimeTicks) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  EXPECT_EQ(RTCEncodedFrameTimestampToTimeTicks(v8_scope.GetExecutionContext(),
-                                                123.456),
-            GetTimeOrigin(v8_scope) + base::Microseconds(123456));
-}
-
-TEST(PeerConnectionUtilTest, RTCEncodedFrameTimestampToTimeTicksNegative) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope v8_scope;
-  EXPECT_EQ(RTCEncodedFrameTimestampToTimeTicks(v8_scope.GetExecutionContext(),
-                                                -123.456),
-            GetTimeOrigin(v8_scope) + base::Microseconds(-123456));
-}
-
-TEST(PeerConnectionUtilTest, CalculateRTCEncodedFrameTimestamp) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope v8_scope;
-  // Use a timestamp precise to 0.1ms, since that is the precision of
+  // Use timestamps precise to 0.1ms, since that is the precision of
   // DOMHighResTimeStamp without cross-origin isolation.
-  DOMHighResTimeStamp timestamp = CalculateRTCEncodedFrameTimestamp(
-      v8_scope.GetExecutionContext(),
-      GetTimeOrigin(v8_scope) + base::Microseconds(123400));
-  // Use 0.2ms as tolerance to account for the 0.1ms precision.
-  EXPECT_LE(std::abs(timestamp - 123.4), 0.2);
-}
-
-TEST(PeerConnectionUtilTest, CalculateRTCEncodedFrameTimestampNegative) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope v8_scope;
-  // Use a timestamp precise to 0.1ms, since that is the precision of
-  // DOMHighResTimeStamp without cross-origin isolation.
-  DOMHighResTimeStamp timestamp = CalculateRTCEncodedFrameTimestamp(
-      v8_scope.GetExecutionContext(),
-      GetTimeOrigin(v8_scope) + base::Microseconds(-123400));
-  // Use 0.2ms as tolerance to account for the 0.1ms precision.
-  EXPECT_LE(timestamp - -123.4, 0.2);
+  std::vector<double> timestamps_ms = {123.4, -123.4};
+  for (double timestamp_ms : timestamps_ms) {
+    DOMHighResTimeStamp timestamp = RTCEncodedFrameTimestampFromTimeTicks(
+        v8_scope.GetExecutionContext(),
+        GetTimeOriginTimeTicks(v8_scope) + base::Milliseconds(timestamp_ms));
+    // Use 0.2ms as tolerance to account for the 0.1ms precision.
+    EXPECT_LE(std::abs(timestamp - timestamp_ms), 0.2);
+  }
 }
 
 TEST(PeerConnectionUtilTest, CalculateRTCEncodedFrameTimeDelta) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  // Use a timestamp precise to 0.1ms, since that is the precision of
+  // Use timestamps precise to 0.1ms, since that is the precision of
   // DOMHighResTimeStamp without cross-origin isolation.
-  DOMHighResTimeStamp timestamp = CalculateRTCEncodedFrameTimeDelta(
-      v8_scope.GetExecutionContext(), base::Microseconds(123400));
-  // Use 0.2ms as tolerance to account for the 0.1ms precision.
-  EXPECT_LE(timestamp - 123.4, 0.2);
+  std::vector<double> timedeltas_ms = {123.4, -123.4};
+  for (double timedelta_ms : timedeltas_ms) {
+    DOMHighResTimeStamp timestamp = CalculateRTCEncodedFrameTimeDelta(
+        v8_scope.GetExecutionContext(), base::Milliseconds(timedelta_ms));
+    // Use 0.2ms as tolerance to account for the 0.1ms precision.
+    EXPECT_LE(std::abs(timestamp - timedelta_ms), 0.2);
+  }
 }
 
-TEST(PeerConnectionUtilTest, CalculateRTCEncodedFrameTimeDeltaNegative) {
+TEST(PeerConnectionUtilTest,
+     RTCEncodedFrameTimestampFromCaptureTimeInfoTimeTicks) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  // Use a timestamp precise to 0.1ms, since that is the precision of
-  // DOMHighResTimeStamp without cross-origin isolation.
-  DOMHighResTimeStamp timestamp = CalculateRTCEncodedFrameTimeDelta(
-      v8_scope.GetExecutionContext(), base::Microseconds(-123400));
-  // Use 0.2ms as tolerance to account for the 0.1ms precision.
-  EXPECT_LE(timestamp - -123.4, 0.2);
+  std::vector<double> timestamps_ms = {123.4, -123.4};
+  for (double timestamp_ms : timestamps_ms) {
+    DOMHighResTimeStamp timestamp = RTCEncodedFrameTimestampFromCaptureTimeInfo(
+        v8_scope.GetExecutionContext(),
+        {.capture_time = (GetTimeOriginTimeTicks(v8_scope) +
+                          base::Milliseconds(timestamp_ms))
+                             .since_origin(),
+         .clock_type = CaptureTimeInfo::ClockType::kTimeTicks});
+    // Use 0.2ms as tolerance to account for the 0.1ms precision.
+    EXPECT_LE(std::abs(timestamp - timestamp_ms), 0.2);
+  }
+}
+
+TEST(PeerConnectionUtilTest, RTCEncodedFrameTimestampFromCaptureTimeInfoNtp) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  std::vector<double> timestamps_ms = {123.4, -123.4};
+  for (double timestamp_ms : timestamps_ms) {
+    DOMHighResTimeStamp timestamp = RTCEncodedFrameTimestampFromCaptureTimeInfo(
+        v8_scope.GetExecutionContext(),
+        {.capture_time = base::Milliseconds(timestamp_ms),
+         .clock_type = CaptureTimeInfo::ClockType::kNtpRealClock});
+    DOMHighResTimeStamp expected_timestamp =
+        timestamp_ms - GetTimeOriginNtp(v8_scope);
+    // Use 0.2ms as tolerance to account for the 0.1ms precision.
+    EXPECT_LE(std::abs(timestamp - expected_timestamp), 0.2);
+  }
+}
+
+TEST(PeerConnectionUtilTest, RTCEncodedFrameTimestampToCaptureTimeTimeTicks) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  std::vector<double> timestamps_ms = {123.456, -123.456};
+  for (double timestamp_ms : timestamps_ms) {
+    base::TimeDelta capture_time = RTCEncodedFrameTimestampToCaptureTime(
+        v8_scope.GetExecutionContext(), timestamp_ms,
+        CaptureTimeInfo::ClockType::kTimeTicks);
+    base::TimeDelta expected_time =
+        GetTimeOriginTimeTicks(v8_scope).since_origin() +
+        base::Milliseconds(timestamp_ms);
+    EXPECT_LE((capture_time - expected_time).magnitude(),
+              base::Milliseconds(0.2));
+  }
+}
+
+TEST(PeerConnectionUtilTest, RTCEncodedFrameTimestampToCaptureTimeNtp) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  std::vector<double> timestamps_ms = {123.456, -123.456};
+  for (double timestamp_ms : timestamps_ms) {
+    base::TimeDelta capture_time = RTCEncodedFrameTimestampToCaptureTime(
+        v8_scope.GetExecutionContext(), timestamp_ms,
+        CaptureTimeInfo::ClockType::kNtpRealClock);
+    base::TimeDelta expected_time =
+        base::Milliseconds(GetTimeOriginNtp(v8_scope)) +
+        base::Milliseconds(timestamp_ms);
+    EXPECT_LE((capture_time - expected_time).magnitude(),
+              base::Milliseconds(0.2));
+  }
 }
 
 TEST(PeerConnectionUtilTest, AudioLevelConversionRangeEndpoints) {

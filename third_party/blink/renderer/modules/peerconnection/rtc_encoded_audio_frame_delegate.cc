@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/frame_transformer_factory.h"
+#include "third_party/webrtc/api/frame_transformer_interface.h"
+#include "third_party/webrtc/api/units/timestamp.h"
 
 namespace blink {
 
@@ -74,10 +76,8 @@ void RTCEncodedAudioFrameDelegate::SetData(const DOMArrayBuffer* data) {
 
 base::expected<void, String>
 RTCEncodedAudioFrameDelegate::SetWebRtcFrameMetadata(
-    uint32_t rtp_timestamp,
-    std::optional<uint8_t> payload_type,
-    std::optional<webrtc::Timestamp> capture_time,
-    std::optional<double> linear_audio_level) {
+    ExecutionContext* context,
+    const RTCEncodedAudioFrameMetadata* metadata) {
   base::AutoLock lock(lock_);
   if (!webrtc_frame_) {
     return base::unexpected("Underlying webrtc frame doesn't exist.");
@@ -85,29 +85,55 @@ RTCEncodedAudioFrameDelegate::SetWebRtcFrameMetadata(
 
   // Payload type always has a current value. The new metadata must match it if
   // SetPayloadType is not supported.
-  if (payload_type.has_value() &&
-      payload_type != webrtc_frame_->GetPayloadType() &&
-      !webrtc_frame_->CanSetPayloadType()) {
-    return base::unexpected("payloadType cannot be modified");
-  }
-
-  if (capture_time != webrtc_frame_->CaptureTime() &&
-      !webrtc_frame_->CanSetCaptureTime()) {
-    return base::unexpected("captureTime cannot be modified");
+  if (metadata->hasPayloadType()) {
+    if (metadata->payloadType() != webrtc_frame_->GetPayloadType() &&
+        !webrtc_frame_->CanSetPayloadType()) {
+      return base::unexpected("payloadType cannot be modified");
+    }
+    // Payload types must be in the [0,127] range, but values in the [64,95]
+    // range are reserved for RCTP. For additional details, see
+    // https://tools.ietf.org/html/rfc5761#section-4
+    if ((metadata->payloadType() >= 64u && metadata->payloadType() <= 95u) ||
+        metadata->payloadType() > 127u) {
+      return base::unexpected("invalid payloadType value");
+    }
   }
 
   std::optional<uint8_t> audio_level_dbov;
-  if (linear_audio_level.has_value()) {
-    audio_level_dbov = FromLinearAudioLevel(*linear_audio_level);
+  if (metadata->hasAudioLevel()) {
+    audio_level_dbov = FromLinearAudioLevel(metadata->audioLevel());
   }
   if (audio_level_dbov != webrtc_frame_->AudioLevel() &&
       !webrtc_frame_->CanSetAudioLevel()) {
     return base::unexpected("audioLevel cannot be modified");
   }
 
-  webrtc_frame_->SetRTPTimestamp(rtp_timestamp);
-  if (payload_type.has_value() && webrtc_frame_->CanSetPayloadType()) {
-    webrtc_frame_->SetPayloadType(*payload_type);
+  std::optional<webrtc::Timestamp> capture_time;
+  if (metadata->hasCaptureTime()) {
+    CaptureTimeInfo::ClockType clock_type;
+    switch (webrtc_frame_->GetDirection()) {
+      case webrtc::TransformableFrameInterface::Direction::kReceiver:
+        clock_type = CaptureTimeInfo::ClockType::kNtpRealClock;
+        break;
+      case webrtc::TransformableFrameInterface::Direction::kSender:
+        clock_type = CaptureTimeInfo::ClockType::kTimeTicks;
+        break;
+      case webrtc::TransformableFrameInterface::Direction::kUnknown:
+        return base::unexpected("captureTime not supported for this frame");
+    }
+    base::TimeDelta capture_time_delta = RTCEncodedFrameTimestampToCaptureTime(
+        context, metadata->captureTime(), clock_type);
+    capture_time =
+        webrtc::Timestamp::Micros(capture_time_delta.InMicroseconds());
+  }
+  if (capture_time != webrtc_frame_->CaptureTime() &&
+      !webrtc_frame_->CanSetCaptureTime()) {
+    return base::unexpected("captureTime cannot be modified");
+  }
+
+  webrtc_frame_->SetRTPTimestamp(metadata->rtpTimestamp());
+  if (metadata->hasPayloadType() && webrtc_frame_->CanSetPayloadType()) {
+    webrtc_frame_->SetPayloadType(metadata->payloadType());
   }
   if (webrtc_frame_->CanSetCaptureTime()) {
     webrtc_frame_->SetCaptureTime(capture_time);
@@ -154,17 +180,26 @@ std::optional<base::TimeTicks> RTCEncodedAudioFrameDelegate::ReceiveTime()
   return ConvertToOptionalTimeTicks(webrtc_frame_->ReceiveTime());
 }
 
-std::optional<base::TimeTicks> RTCEncodedAudioFrameDelegate::CaptureTime()
+std::optional<CaptureTimeInfo> RTCEncodedAudioFrameDelegate::CaptureTime()
     const {
   base::AutoLock lock(lock_);
-  if (!webrtc_frame_) {
+  if (!webrtc_frame_ || !webrtc_frame_->CaptureTime()) {
     return std::nullopt;
   }
-  return (webrtc_frame_->GetDirection() ==
-          webrtc::TransformableFrameInterface::Direction::kReceiver)
-             ? ConvertToOptionalTimeTicks(webrtc_frame_->CaptureTime(),
-                                          WebRTCFrameNtpEpoch())
-             : ConvertToOptionalTimeTicks(webrtc_frame_->CaptureTime());
+  CaptureTimeInfo::ClockType clock_type;
+  switch (webrtc_frame_->GetDirection()) {
+    case webrtc::TransformableFrameInterface::Direction::kReceiver:
+      clock_type = CaptureTimeInfo::ClockType::kNtpRealClock;
+      break;
+    case webrtc::TransformableFrameInterface::Direction::kSender:
+      clock_type = CaptureTimeInfo::ClockType::kTimeTicks;
+      break;
+    case webrtc::TransformableFrameInterface::Direction::kUnknown:
+      return std::nullopt;
+  }
+  return CaptureTimeInfo(
+      {.capture_time = base::Microseconds(webrtc_frame_->CaptureTime()->us()),
+       .clock_type = clock_type});
 }
 
 std::optional<base::TimeDelta>

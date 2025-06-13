@@ -100,12 +100,6 @@ std::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
   return std::nullopt;
 }
 
-base::TimeTicks WebRTCFrameNtpEpoch() {
-  static base::TimeTicks ntp_epoch =
-      base::TimeTicks::UnixEpoch() - base::Milliseconds(2208988800000);
-  return ntp_epoch;
-}
-
 std::optional<base::TimeTicks> PLATFORM_EXPORT
 ConvertToOptionalTimeTicks(std::optional<webrtc::Timestamp> time,
                            std::optional<base::TimeTicks> offset) {

@@ -17,6 +17,12 @@ namespace blink {
 
 namespace {
 
+// Time between the NTP and Unix epochs.
+//   unix_time = ntp_time - kNtpUnixEpochOffset
+//   ntp_time = unix_time + kNtpUnixEpochOffset
+constexpr base::TimeDelta kNtpUnixEpochOffset =
+    base::Milliseconds(2208988800000);
+
 Performance* GetPerformanceFromExecutionContext(ExecutionContext* context) {
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     return DOMWindowPerformance::performance(*window);
@@ -26,9 +32,18 @@ Performance* GetPerformanceFromExecutionContext(ExecutionContext* context) {
   NOTREACHED();
 }
 
+DOMHighResTimeStamp RTCEncodedFrameTimestampFromUnixRealClock(
+    ExecutionContext* context,
+    base::TimeDelta time_since_unix_epoch) {
+  Performance* performance = GetPerformanceFromExecutionContext(context);
+  return Performance::ClampTimeResolution(
+      time_since_unix_epoch - base::Milliseconds(performance->timeOrigin()),
+      performance->CrossOriginIsolatedCapability());
+}
+
 }  // namespace
 
-DOMHighResTimeStamp CalculateRTCEncodedFrameTimestamp(
+DOMHighResTimeStamp RTCEncodedFrameTimestampFromTimeTicks(
     ExecutionContext* context,
     base::TimeTicks timestamp) {
   Performance* performance = GetPerformanceFromExecutionContext(context);
@@ -38,11 +53,35 @@ DOMHighResTimeStamp CalculateRTCEncodedFrameTimestamp(
       performance->CrossOriginIsolatedCapability());
 }
 
-base::TimeTicks RTCEncodedFrameTimestampToTimeTicks(
+DOMHighResTimeStamp RTCEncodedFrameTimestampFromCaptureTimeInfo(
     ExecutionContext* context,
-    DOMHighResTimeStamp timestamp) {
+    CaptureTimeInfo capture_time_info) {
+  switch (capture_time_info.clock_type) {
+    case CaptureTimeInfo::ClockType::kTimeTicks:
+      return RTCEncodedFrameTimestampFromTimeTicks(
+          context, base::TimeTicks() + capture_time_info.capture_time);
+    case CaptureTimeInfo::ClockType::kNtpRealClock:
+      base::TimeDelta time_since_unix_epoch =
+          capture_time_info.capture_time - kNtpUnixEpochOffset;
+      return RTCEncodedFrameTimestampFromUnixRealClock(context,
+                                                       time_since_unix_epoch);
+  }
+}
+
+base::TimeDelta RTCEncodedFrameTimestampToCaptureTime(
+    ExecutionContext* context,
+    DOMHighResTimeStamp timestamp,
+    CaptureTimeInfo::ClockType clock_type) {
   Performance* performance = GetPerformanceFromExecutionContext(context);
-  return performance->GetTimeOriginInternal() + base::Milliseconds(timestamp);
+  switch (clock_type) {
+    case CaptureTimeInfo::ClockType::kTimeTicks:
+      return (performance->GetTimeOriginInternal() +
+              base::Milliseconds(timestamp))
+          .since_origin();
+    case CaptureTimeInfo::ClockType::kNtpRealClock:
+      return kNtpUnixEpochOffset +
+             base::Milliseconds(performance->timeOrigin() + timestamp);
+  }
 }
 
 DOMHighResTimeStamp CalculateRTCEncodedFrameTimeDelta(
