@@ -5,7 +5,6 @@
 #include "net/cert/internal/trust_store_chrome.h"
 
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "crypto/sha2.h"
@@ -364,6 +363,9 @@ TEST(TrustStoreChromeTestNoFixture,
 
     // Check that the certificate is present in the trust store as an anchor,
     // with the expected settings for expiry and X.509 constraints.
+    // TODO(crbug.com/414630735): check that the correct Trust Anchor ID is
+    // stored in TrustStoreChrome, once implemented. (Right now TrustStoreChrome
+    // throws out Trust Anchor IDs and doesn't keep them around.)
     bssl::CertificateTrust trust =
         trust_store_chrome->GetTrust(parsed_cert.get());
     EXPECT_TRUE(trust.IsTrustAnchor());
@@ -371,11 +373,8 @@ TEST(TrustStoreChromeTestNoFixture,
               expected_trust.enforce_anchor_expiry);
     EXPECT_EQ(trust.enforce_anchor_constraints,
               expected_trust.enforce_anchor_constraints);
-    EXPECT_TRUE(trust_store_chrome->trust_anchor_ids().contains(
-        base::ToVector(base::as_byte_span(cert.trust_anchor_id))));
   }
   EXPECT_EQ(4u, certs_with_tai);
-  EXPECT_EQ(trust_store_chrome->trust_anchor_ids().size(), 4u);
 }
 
 // Tests that, for a compiled-in root store, certificates in |additional_certs|
@@ -436,8 +435,10 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoAdditionalCertsAsTrustAnchors) {
       EXPECT_TRUE(trust.IsTrustAnchor());
       EXPECT_EQ(trust.enforce_anchor_expiry, enforce_anchor_expiry);
       EXPECT_EQ(trust.enforce_anchor_constraints, enforce_anchor_constraints);
-      EXPECT_TRUE(trust_store_chrome.trust_anchor_ids().contains(
-          {0x01, 0x02, 0x03, 0x04}));
+      // TODO(crbug.com/414630735): check that the correct Trust Anchor ID is
+      // stored in TrustStoreChrome, once implemented. (Right now
+      // TrustStoreChrome throws out Trust Anchor IDs and doesn't keep them
+      // around.)
     }
   }
 }
@@ -492,8 +493,9 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoNonAnchorsAreNotTrusted) {
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
       ToParsedCertificate(*root);
   EXPECT_FALSE(trust_store_chrome.Contains(parsed.get()));
-  EXPECT_FALSE(
-      trust_store_chrome.trust_anchor_ids().contains({0x01, 0x02, 0x03, 0x04}));
+  // TODO(crbug.com/414630735): check that the above Trust Anchor ID is
+  // not present in TrustStoreChrome, once implemented. (Right now
+  // TrustStoreChrome throws out Trust Anchor IDs and doesn't keep them around.)
 }
 
 // Tests that TLS Trust Anchor IDs are loaded correctly from the compiled-in
