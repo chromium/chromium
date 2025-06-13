@@ -355,6 +355,13 @@ void WebUIContentsPreloadManager::MaybePreloadForBrowserContextLater(
     PreloadReason preload_reason,
     base::TimeDelta deadline) {
   CHECK(!is_delay_preload_disabled_for_test_);
+
+  // Usually destroying a WebContents may trigger preload, but if the
+  // destroy is caused by setting new preload contents, ignore it.
+  if (is_setting_preloaded_web_contents_) {
+    return;
+  }
+
   pending_preload_ = std::make_unique<PendingPreload>(
       this, Profile::FromBrowserContext(browser_context),
       busy_web_contents_to_watch, preload_reason, deadline);
