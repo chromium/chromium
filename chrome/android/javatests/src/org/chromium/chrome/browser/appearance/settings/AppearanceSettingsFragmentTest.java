@@ -21,7 +21,7 @@ import androidx.preference.Preference;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,9 +49,11 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredicto
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.HashSet;
@@ -68,10 +70,10 @@ public class AppearanceSettingsFragmentTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private PrefChangeRegistrarJni mPrefChangeRegistrarJni;
+    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
-    @Mock private UserPrefsJni mUserPrefsJni;
+    @Mock private UserPrefs.Natives mUserPrefsJni;
 
     private Set<PrefObserver> mBookmarkBarSettingObserverCache;
     private ObservableSupplierImpl<Boolean> mBookmarkBarSettingSupplier;
@@ -107,8 +109,8 @@ public class AppearanceSettingsFragmentTest {
                 .setBoolean(eq(Pref.SHOW_BOOKMARK_BAR), anyBoolean());
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public static void tearDown() {
         PrefChangeRegistrarJni.setInstanceForTesting(null);
         UserPrefsJni.setInstanceForTesting(null);
     }
@@ -231,6 +233,7 @@ public class AppearanceSettingsFragmentTest {
                 /* fragmentArgs= */ null,
                 (fragment) -> ((AppearanceSettingsFragment) fragment).setProfile(mProfile));
         mSettings = (AppearanceSettingsFragment) mSettingsTestRule.getPreferenceFragment();
+        mBookmarkBarSettingObserverCache.add(mSettings.getPrefObserverForTesting());
     }
 
     private @NonNull <T> Answer<Void> runCallbackWithValueAtIndex(

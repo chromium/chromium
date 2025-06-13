@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks.bar;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
@@ -27,16 +26,6 @@ public class BookmarkBarSettingProvider {
     private final Callback<Profile> mProfileSupplierObserver;
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
-
-    /**
-     * Constructor.
-     *
-     * @param profile The profile for which to observe the user setting.
-     * @param callback The callback to notify of changes to the user setting.
-     */
-    public BookmarkBarSettingProvider(Profile profile, Callback<Boolean> callback) {
-        this(new ObservableSupplierImpl<>(profile), callback);
-    }
 
     /**
      * Constructor.

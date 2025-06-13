@@ -12,16 +12,19 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSettingProvider;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 
 /** Fragment to manage appearance settings. */
 @NullMarked
@@ -34,7 +37,8 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
-    private @Nullable BookmarkBarSettingProvider mBookmarkBarSettingProvider;
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
+    private @Nullable PrefObserver mPrefObserver;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -50,16 +54,18 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     public void onDestroy() {
         super.onDestroy();
 
-        if (mBookmarkBarSettingProvider != null) {
-            mBookmarkBarSettingProvider.destroy();
-            mBookmarkBarSettingProvider = null;
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.removeObserver(Pref.SHOW_BOOKMARK_BAR);
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        updatePreferences();
+        updateBookmarkBarPref();
+        updateUiThemePref();
     }
 
     @Override
@@ -86,16 +92,24 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
             return;
         }
 
+        mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
+        mPrefObserver =
+                new PrefObserver() {
+                    @Override
+                    public void onPreferenceChange() {
+                        updateBookmarkBarPref();
+                    }
+                };
+
+        // We register a pref change listener for a pref that would be changed on this page so that
+        // we can account for users changing the pref using a different window in desktop mode.
+        mPrefChangeRegistrar.addObserver(Pref.SHOW_BOOKMARK_BAR, mPrefObserver);
         ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
                 .setOnPreferenceChangeListener(
                         (pref, newValue) -> {
                             BookmarkBarUtils.setSettingEnabled(getProfile(), (boolean) newValue);
                             return true;
                         });
-
-        mBookmarkBarSettingProvider =
-                new BookmarkBarSettingProvider(
-                        getProfile(), /* callback= */ this::updateBookmarkBarPref);
     }
 
     private void initToolbarShortcutPref() {
@@ -127,15 +141,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         getPreferenceScreen().removePreference(findPreference(prefKey));
     }
 
-    private void updatePreferences() {
-        updateBookmarkBarPref(BookmarkBarUtils.isSettingEnabled(getProfile()));
-        updateUiThemePref();
-    }
-
-    private void updateBookmarkBarPref(boolean isSettingEnabled) {
+    private void updateBookmarkBarPref() {
         if (BookmarkBarUtils.isFeatureEnabled(getContext())) {
             ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
-                    .setChecked(isSettingEnabled);
+                    .setChecked(BookmarkBarUtils.isSettingEnabled(getProfile()));
         }
     }
 
@@ -149,5 +158,9 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     @Override
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
+    }
+
+    @Nullable PrefObserver getPrefObserverForTesting() {
+        return mPrefObserver;
     }
 }
