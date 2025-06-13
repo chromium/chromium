@@ -160,6 +160,7 @@ void SignalGpuCompletion(
 void CopyToGpuMemoryBuffer(
     base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
     media::VideoFrame* dst_frame,
+    const gpu::SyncToken& blit_done_sync_token,
     base::OnceClosure callback) {
   CHECK(dst_frame->HasMappableGpuBuffer());
   CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
@@ -171,9 +172,6 @@ void CopyToGpuMemoryBuffer(
   DCHECK(raster_context_provider);
   auto* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
-
-  gpu::SyncToken blit_done_sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
 
   auto* sii = context_provider.SharedImageInterface();
   DCHECK(sii);
@@ -201,18 +199,9 @@ void CopyToGpuMemoryBuffer(
 
   // Synchronize RasterInterface with SharedImageInterface.
   auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
-  ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
 
-  // Make access to the `dst_frame` wait on copy completion. We also update the
-  // ReleaseSyncToken here since it's used when the underlying GpuMemoryBuffer
-  // and SharedImage resources are returned to the pool. This is not necessary
-  // since we'll set the empty sync token on the video frame on GPU completion.
-  // But if we ever refactor this code to have a "don't wait for GMB" mode, the
-  // correct sync token on the video frame will be needed.
-  gpu::SyncToken completion_sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
-  media::SimpleSyncTokenClient simple_client(completion_sync_token);
-  dst_frame->UpdateAcquireSyncToken(completion_sync_token);
+  media::SimpleSyncTokenClient simple_client(copy_to_gmb_done_sync_token);
+  dst_frame->UpdateAcquireSyncToken(copy_to_gmb_done_sync_token);
   dst_frame->UpdateReleaseSyncToken(&simple_client);
 
   // Do not use a query to track copy completion on Windows when using the new
@@ -298,6 +287,7 @@ WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     // For shared memory GMBs we needed to explicitly request a copy
     // from the shared image GPU texture to the GMB.
     CopyToGpuMemoryBuffer(weak_context_provider_, dst_frame_ptr,
+                          completion_sync_token.value(),
                           wrapped_callback->callback());
   } else {
     // QueryEXT functions are used to make sure that
