@@ -111,6 +111,7 @@ public class EntryManagerTest {
     /** Tests capture through to generation of the fullpage entry. */
     @Test
     public void testGenerateFullpageEntry() {
+        when(mBoundsManagerMock.getFullEntryBounds()).thenReturn(new Rect(0, 100, 0, 100));
         mProcessor.processCapturedTab(FAKE_CAPTURE_ADDR, Status.OK);
         mOnCompositorResultCallback.onResult(CompositorStatus.OK);
         mInOrder.verify(mObserverMock).onStatusChange(eq(EntryStatus.CAPTURE_COMPLETE));
