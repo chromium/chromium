@@ -174,4 +174,12 @@ ALWAYS_INLINE typename Allocator::ResultStringType ConvertASCIICase(
 
 }  // namespace WTF
 
+// TODO(crbug.com/422768753): Remove these `using` directives.
+namespace blink {
+using WTF::AlignToMachineWord;
+using WTF::IsAlignedToMachineWord;
+using WTF::IsAllASCII;
+using WTF::MachineWord;
+}  // namespace blink
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_FAST_PATH_H_

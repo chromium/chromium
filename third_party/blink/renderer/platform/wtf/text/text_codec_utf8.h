@@ -31,18 +31,19 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 
-namespace WTF {
+namespace blink {
 
-class TextCodecUTF8 : public TextCodec {
+class TextCodecUtf8 : public TextCodec {
  public:
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
 
  protected:
-  TextCodecUTF8() : partial_sequence_size_(0) {}
+  TextCodecUtf8() : partial_sequence_size_(0) {}
 
  private:
-  static std::unique_ptr<TextCodec> Create(const TextEncoding&, const void*);
+  static std::unique_ptr<TextCodec> Create(const WTF::TextEncoding&,
+                                           const void*);
 
   String Decode(base::span<const uint8_t> data,
                 FlushBehavior,
@@ -84,6 +85,6 @@ class TextCodecUTF8 : public TextCodec {
   uint8_t partial_sequence_[U8_MAX_LENGTH];
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_UTF8_H_

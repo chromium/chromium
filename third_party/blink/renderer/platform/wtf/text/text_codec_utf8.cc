@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_ascii_fast_path.h"
 
-namespace WTF {
+namespace blink {
 
 // We'll use nonCharacter* constants to signal invalid utf-8.
 // The number in the name signals how many input bytes were invalid.
@@ -50,12 +50,12 @@ bool IsNonCharacter(int character) {
   return character >= kNonCharacter3 && character <= kNonCharacter1;
 }
 
-std::unique_ptr<TextCodec> TextCodecUTF8::Create(const TextEncoding&,
+std::unique_ptr<TextCodec> TextCodecUtf8::Create(const WTF::TextEncoding&,
                                                  const void*) {
-  return base::WrapUnique(new TextCodecUTF8());
+  return base::WrapUnique(new TextCodecUtf8());
 }
 
-void TextCodecUTF8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
+void TextCodecUtf8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   registrar("UTF-8", "UTF-8");
 
   // Additional aliases that originally were present in the encoding
@@ -73,7 +73,7 @@ void TextCodecUTF8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   registrar("unicode-1-1-utf-8", "UTF-8");
 }
 
-void TextCodecUTF8::RegisterCodecs(TextCodecRegistrar registrar) {
+void TextCodecUtf8::RegisterCodecs(TextCodecRegistrar registrar) {
   registrar("UTF-8", Create, nullptr);
 }
 
@@ -158,14 +158,14 @@ static inline UChar* AppendCharacter(UChar* destination, int character) {
   return destination;
 }
 
-void TextCodecUTF8::ConsumePartialSequenceBytes(int num_bytes) {
+void TextCodecUtf8::ConsumePartialSequenceBytes(int num_bytes) {
   DCHECK_GE(partial_sequence_size_, num_bytes);
   partial_sequence_size_ -= num_bytes;
   memmove(partial_sequence_, partial_sequence_ + num_bytes,
           partial_sequence_size_);
 }
 
-void TextCodecUTF8::HandleError(int character,
+void TextCodecUtf8::HandleError(int character,
                                 UChar*& destination,
                                 bool stop_on_error,
                                 bool& saw_error) {
@@ -182,7 +182,7 @@ void TextCodecUTF8::HandleError(int character,
 }
 
 template <>
-bool TextCodecUTF8::HandlePartialSequence<LChar>(LChar*& destination,
+bool TextCodecUtf8::HandlePartialSequence<LChar>(LChar*& destination,
                                                  const uint8_t*& source,
                                                  const uint8_t* end,
                                                  bool flush,
@@ -240,7 +240,7 @@ bool TextCodecUTF8::HandlePartialSequence<LChar>(LChar*& destination,
 }
 
 template <>
-bool TextCodecUTF8::HandlePartialSequence<UChar>(UChar*& destination,
+bool TextCodecUtf8::HandlePartialSequence<UChar>(UChar*& destination,
                                                  const uint8_t*& source,
                                                  const uint8_t* end,
                                                  bool flush,
@@ -345,7 +345,7 @@ class InlinedStringBuffer {
 };
 }  // namespace
 
-String TextCodecUTF8::Decode(base::span<const uint8_t> bytes,
+String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
                              FlushBehavior flush,
                              bool stop_on_error,
                              bool& saw_error) {
@@ -522,7 +522,7 @@ upConvertTo16Bit:
 }
 
 template <typename CharType>
-std::string TextCodecUTF8::EncodeCommon(base::span<const CharType> characters) {
+std::string TextCodecUtf8::EncodeCommon(base::span<const CharType> characters) {
   // The maximum number of UTF-8 bytes needed per UTF-16 code unit is 3.
   // BMP characters take only one UTF-16 code unit and can take up to 3 bytes
   // (3x).
@@ -549,7 +549,7 @@ std::string TextCodecUTF8::EncodeCommon(base::span<const CharType> characters) {
 }
 
 template <typename CharType>
-TextCodec::EncodeIntoResult TextCodecUTF8::EncodeIntoCommon(
+TextCodec::EncodeIntoResult TextCodecUtf8::EncodeIntoCommon(
     base::span<const CharType> source,
     base::span<uint8_t> destination) {
   const auto* characters = source.data();
@@ -584,26 +584,26 @@ TextCodec::EncodeIntoResult TextCodecUTF8::EncodeIntoCommon(
   return encode_into_result;
 }
 
-std::string TextCodecUTF8::Encode(base::span<const UChar> characters,
+std::string TextCodecUtf8::Encode(base::span<const UChar> characters,
                                   UnencodableHandling) {
   return EncodeCommon(characters);
 }
 
-std::string TextCodecUTF8::Encode(base::span<const LChar> characters,
+std::string TextCodecUtf8::Encode(base::span<const LChar> characters,
                                   UnencodableHandling) {
   return EncodeCommon(characters);
 }
 
-TextCodec::EncodeIntoResult TextCodecUTF8::EncodeInto(
+TextCodec::EncodeIntoResult TextCodecUtf8::EncodeInto(
     base::span<const UChar> characters,
     base::span<uint8_t> destination) {
   return EncodeIntoCommon(characters, destination);
 }
 
-TextCodec::EncodeIntoResult TextCodecUTF8::EncodeInto(
+TextCodec::EncodeIntoResult TextCodecUtf8::EncodeInto(
     base::span<const LChar> characters,
     base::span<uint8_t> destination) {
   return EncodeIntoCommon(characters, destination);
 }
 
-}  // namespace WTF
+}  // namespace blink

@@ -111,13 +111,6 @@ void TextCodecLatin1::RegisterCodecs(WTF::TextCodecRegistrar registrar) {
   registrar("US-ASCII", NewStreamingTextDecoderWindowsLatin1, nullptr);
 }
 
-// TODO(crbug.com/422768753): Remove these `using` directives.
-using WTF::AlignToMachineWord;
-using WTF::CopyASCIIMachineWord;
-using WTF::IsAlignedToMachineWord;
-using WTF::IsAllASCII;
-using WTF::MachineWord;
-
 String TextCodecLatin1::Decode(base::span<const uint8_t> bytes,
                                WTF::FlushBehavior,
                                bool,

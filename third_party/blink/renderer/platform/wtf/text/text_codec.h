@@ -123,6 +123,13 @@ typedef void (*TextCodecRegistrar)(const char* name,
 
 }  // namespace WTF
 
+// TODO(crbug.com/422768753): Remove these `using` directives.
 using WTF::TextCodec;
+namespace blink {
+using WTF::EncodingNameRegistrar;
+using WTF::FlushBehavior;
+using WTF::TextCodecRegistrar;
+using WTF::UnencodableHandling;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_H_

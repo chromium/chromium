@@ -15,7 +15,7 @@ namespace blink {
 // the same as UTF-8; and for a non-empty input the decoder emits U+FFFD and
 // terminates. See: https://encoding.spec.whatwg.org/#replacement and
 // https://encoding.spec.whatwg.org/#output-encodings
-class TextCodecReplacement final : public WTF::TextCodecUTF8 {
+class TextCodecReplacement final : public TextCodecUtf8 {
  public:
   TextCodecReplacement();
 
