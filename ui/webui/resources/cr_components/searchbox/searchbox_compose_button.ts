@@ -4,10 +4,17 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './searchbox_compose_button.css.js';
 import {getHtml} from './searchbox_compose_button.html.js';
+
+export interface SearchboxComposeButtonElement {
+  $: {
+    glowAnimationWrapper: HTMLElement,
+  };
+}
 
 export class SearchboxComposeButtonElement extends CrLitElement {
   static get is() {
@@ -28,11 +35,30 @@ export class SearchboxComposeButtonElement extends CrLitElement {
         type: String,
         reflect: true,
       },
+      showAnimation_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   protected accessor composeIcon_: string =
       '//resources/cr_components/searchbox/icons/search_spark.svg';
+
+  protected accessor showAnimation_: boolean =
+      loadTimeData.getBoolean('searchboxShowComposeAnimation');
+
+  override firstUpdated() {
+    if (this.$.glowAnimationWrapper) {
+      if (!this.showAnimation_) {
+        this.$.glowAnimationWrapper.classList.remove('play');
+      } else {
+        this.$.glowAnimationWrapper.addEventListener('animationend', () => {
+          this.$.glowAnimationWrapper.classList.remove('play');
+        });
+      }
+    }
+  }
 
   protected onClick_(e: MouseEvent) {
     e.preventDefault();

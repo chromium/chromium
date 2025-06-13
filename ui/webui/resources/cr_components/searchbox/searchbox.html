@@ -219,7 +219,8 @@
   }
 
   :host([compose-button-enabled]) .searchbox-icon-button.lens {
-   right: calc(16px + var(--cr-compose-button-width) + var(--cr-searchbox-icon-spacing));
+   /* Since there is a 4px padding because of the glow effect, add 12px to right instead of 16px. */
+   right: calc(12px + var(--cr-compose-button-width) + var(--cr-searchbox-icon-spacing));
   }
 
   /* When voice/lens icons are monochrome, they are webkit mask images.

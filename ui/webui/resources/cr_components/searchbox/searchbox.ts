@@ -841,8 +841,9 @@ export class SearchboxElement extends SearchboxElementBase {
       searchParams.append('sourceid', 'chrome');
       searchParams.append('udm', '50');
       searchParams.append('aep', DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT_VALUE);
-      if (this.$.input.value) {
-        searchParams.append('q', this.$.input.value);
+
+      if (this.$.input.value.trim()) {
+        searchParams.append('q', this.$.input.value.trim());
       }
       const queryUrl =
           new URL('/search', loadTimeData.getString('googleBaseUrl'));
