@@ -105,7 +105,8 @@ void RelaunchRecommendedBubbleView::Init() {
 
   // Align the body label with the left edge of the bubble's title.
   // TODO(bsep): Remove this when fixing https://crbug.com/810970.
-  // Note: BubleFrameView applies INSETS_DIALOG_TITLE either side of the icon.
+  // Note: BubbleDialogDelegate applies INSETS_DIALOG_TITLE either side of the
+  // icon.
   const int title_offset = 2 * views::LayoutProvider::Get()
                                    ->GetInsetsMetric(views::INSETS_DIALOG_TITLE)
                                    .left() +
