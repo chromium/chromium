@@ -11,9 +11,10 @@
 
 [package]
 name = "rustc-demangle"
-version = "0.1.24"
+version = "0.1.25"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
 build = false
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -34,25 +35,18 @@ rustdoc-args = [
     "docsrs",
 ]
 
-[profile.release]
-lto = true
+[features]
+compiler_builtins = []
+rustc-dep-of-std = ["core"]
+std = []
 
 [lib]
 name = "rustc_demangle"
 path = "src/lib.rs"
-
-[dependencies.compiler_builtins]
-version = "0.1.2"
-optional = true
 
 [dependencies.core]
 version = "1.0.0"
 optional = true
 package = "rustc-std-workspace-core"
 
-[features]
-rustc-dep-of-std = [
-    "core",
-    "compiler_builtins",
-]
-std = []
+[profile.release]

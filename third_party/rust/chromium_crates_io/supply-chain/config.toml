@@ -317,7 +317,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."rustc-demangle-capi:0.1.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rustc-demangle:0.1.24"]
+[policy."rustc-demangle:0.1.25"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rustversion:1.0.21"]

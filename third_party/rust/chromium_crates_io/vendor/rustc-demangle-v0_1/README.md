@@ -30,6 +30,15 @@ You'll then find `target/release/librustc_demangle.a` and
 platform). These objects implement the interface specified in
 `crates/capi/include/rustc_demangle.h`.
 
+If your build system does not support Rust, there is also a mostly-identical
+C version in the `crates/native-c` which you can use via copy-paste or as
+a git submodule. Read `crates/native-c/README.md` for more details. It is
+likely to be less supported than the Rust version, so it is better to use
+the Rust version if your build system supports it.
+
+Both the Rust and C versions don't require memory allocation or any other
+operating-system support.
+
 # License
 
 This project is licensed under either of
