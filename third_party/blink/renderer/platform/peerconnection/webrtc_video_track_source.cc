@@ -514,10 +514,10 @@ bool WebRtcVideoTrackSource::ShouldSetColorSpace(
     return false;
   }
 
-  // The remote end will assume REC709 if not instructed otherwise, so there's
+  // The remote end will assume REC601 if not instructed otherwise, so there's
   // no need to pass this information on the wire.
   return color_space.IsValid() &&
-         color_space != gfx::ColorSpace::CreateREC709();
+         color_space != gfx::ColorSpace::CreateREC601();
 }
 
 void WebRtcVideoTrackSource::Dispose() {
