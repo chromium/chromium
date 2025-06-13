@@ -143,7 +143,7 @@ export class SearchboxElement extends SearchboxElementBase {
 
       composeButtonEnabled: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('searchboxShowComposeEntrypoint'),
+        computed: `computeComposeButtonEnabled_()`,
         reflectToAttribute: true,
       },
 
@@ -335,6 +335,11 @@ export class SearchboxElement extends SearchboxElementBase {
 
   private computeInputAriaLive_(): string {
     return this.selectedMatch_ ? 'off' : 'polite';
+  }
+
+  private computeComposeButtonEnabled_(): boolean {
+    return loadTimeData.getBoolean('searchboxShowComposeEntrypoint') &&
+        !this.isLensSearchbox_;
   }
 
   override connectedCallback() {
