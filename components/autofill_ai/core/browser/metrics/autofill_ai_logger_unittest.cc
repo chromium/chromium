@@ -102,15 +102,15 @@ class BaseAutofillAiTest : public testing::Test {
     manager_ = std::make_unique<AutofillAiManager>(&client_, &strike_database_);
     ON_CALL(client_, GetAutofillClient)
         .WillByDefault(ReturnRef(autofill_client()));
-    ON_CALL(client_, GetEntityDataManager)
-        .WillByDefault(Return(autofill_client().GetEntityDataManager()));
   }
 
   AutofillAiManager& manager() { return *manager_; }
 
   void AddOrUpdateEntityInstance(autofill::EntityInstance entity) {
-    client().GetEntityDataManager()->AddOrUpdateEntityInstance(
-        std::move(entity));
+    client()
+        .GetAutofillClient()
+        .GetEntityDataManager()
+        ->AddOrUpdateEntityInstance(std::move(entity));
     webdata_helper_.WaitUntilIdle();
   }
 

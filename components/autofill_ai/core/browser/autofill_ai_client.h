@@ -65,10 +65,6 @@ class AutofillAiClient {
   // client.
   virtual AutofillAiManager& GetManager() = 0;
 
-  // Returns a pointer to the current profile's `autofill::EntityDataManager`.
-  // Can be `nullptr` if `features::kAutofillAiWithDataSchema` is disabled.
-  virtual autofill::EntityDataManager* GetEntityDataManager() = 0;
-
   // Returns the service used in order to log metrics into MQLS.
   virtual optimization_guide::ModelQualityLogsUploaderService*
   GetMqlsUploadService() = 0;

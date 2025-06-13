@@ -137,8 +137,6 @@ class AutofillAiManagerTest : public testing::Test {
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
-    ON_CALL(client(), GetEntityDataManager)
-        .WillByDefault(Return(autofill_client().GetEntityDataManager()));
   }
 
   // Given a `FormStructure` sets `field_types_predictions` for each field in

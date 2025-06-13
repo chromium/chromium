@@ -63,14 +63,6 @@ autofill_ai::AutofillAiManager& ChromeAutofillAiClient::GetManager() {
   return prediction_improvements_manager_;
 }
 
-autofill::EntityDataManager* ChromeAutofillAiClient::GetEntityDataManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  return profile ? autofill::AutofillEntityDataManagerFactory::GetForProfile(
-                       profile)
-                 : nullptr;
-}
-
 void ChromeAutofillAiClient::ShowSaveOrUpdateBubble(
     autofill::EntityInstance new_entity,
     std::optional<autofill::EntityInstance> old_entity,

@@ -20,10 +20,6 @@ class MockAutofillAiClient : public AutofillAiClient {
 
   MOCK_METHOD(autofill::AutofillClient&, GetAutofillClient, (), (override));
   MOCK_METHOD(AutofillAiManager&, GetManager, (), (override));
-  MOCK_METHOD(autofill::EntityDataManager*,
-              GetEntityDataManager,
-              (),
-              (override));
   MOCK_METHOD(optimization_guide::ModelQualityLogsUploaderService*,
               GetMqlsUploadService,
               (),

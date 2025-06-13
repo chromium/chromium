@@ -221,7 +221,8 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
     return;
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  autofill::EntityDataManager* entity_manager =
+      client_->GetAutofillClient().GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
@@ -244,7 +245,8 @@ void AutofillAiManager::OnDidFillSuggestion(
   for (const autofill::AutofillField* const field : filled_fields) {
     logger_.OnDidFillField(form, CHECK_DEREF(field), ukm_source_id);
   }
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  autofill::EntityDataManager* entity_manager =
+      client_->GetAutofillClient().GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
@@ -277,7 +279,8 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
     return false;
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  autofill::EntityDataManager* entity_manager =
+      client_->GetAutofillClient().GetEntityDataManager();
   if (!entity_manager) {
     LOG_AF(GetCurrentLogManager())
         << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
@@ -337,7 +340,8 @@ void AutofillAiManager::HandleSavePromptResult(
     return;
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  autofill::EntityDataManager* entity_manager =
+      client_->GetAutofillClient().GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
@@ -356,7 +360,8 @@ void AutofillAiManager::HandleUpdatePromptResult(
     return;
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  autofill::EntityDataManager* entity_manager =
+      client_->GetAutofillClient().GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
@@ -374,7 +379,8 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
     return {};
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  autofill::EntityDataManager* entity_manager =
+      client_->GetAutofillClient().GetEntityDataManager();
   if (!entity_manager) {
     return {};
   }
