@@ -2000,6 +2000,9 @@
   <message name="IDS_SETTINGS_SYNC_AND_GOOGLE_SERVICES_PRIVACY_DESC_UNIFIED_CONSENT" desc="The description of the 'Sync and Google services' row in the privacy section">
     More settings that relate to privacy, security, and data collection
   </message>
+  <message name="IDS_SETTINGS_SEARCH_AGGREGATOR_PREF" desc="The label of the checkbox to enable/disable sending omnibox input to the user's organization's search aggregator to get additional suggestions. Note that this setting is controlled by enterprise policy and, while a checkbox is shown, it is always enabled and cannot be disabled.">
+    Show suggestions and results from your organization
+  </message>
   <message name="IDS_SETTINGS_RECENT_PERMISSIONS_NO_CHANGES" desc="Text shown to a user when they have not changed any site permissions instead of showing recently changed permissions">
     No recently changed permissions
   </message>

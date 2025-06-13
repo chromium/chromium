@@ -323,6 +323,9 @@
   <message name="IDS_SETTINGS_SUGGEST_PREF_DESC" desc="The description of the 'Improve search suggestions' checkbox, which enables/disables sending omnibox input to the user's default search engine to get additional suggestions.">
     When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.
   </message>
+  <message name="IDS_SETTINGS_SEARCH_AGGREGATOR_PREF_DESC" desc="The description of the 'Show suggestions and results from your organization' checkbox, which enables/disables sending omnibox input to the user's organization's search aggregator to get additional suggestions. Note that this setting is controlled by enterprise policy and, while a checkbox is shown, it is always enabled and cannot be disabled.">
+    When you type in the address bar or search box, Chrome sends what you type to your organization's search, AI, and agent tools to get suggestions.
+  </message>
   <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_NO_ACCOUNT" desc="The text displayed to prompt users to sign in to Chrome.">
     Sign in to sync and personalize Chrome across your devices
   </message>

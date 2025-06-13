@@ -260,7 +260,6 @@
   <message name="IDS_SETTINGS_SUGGEST_PREF" desc="The label of the checkbox to enable/disable sending omnibox input to the user's default search engine to get additional suggestions.">
     Improve search suggestions
   </message>
-
   <!-- Sync Accounts page (used by the <settings-sync-account-control> element) -->
   <message name="IDS_SETTINGS_PEOPLE_SIGNED_IN_TO_ACCOUNT" desc="The text displayed to the user that the profile is currently signed in to a specific account.">
     Signed in to <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph>
