@@ -208,6 +208,10 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   // Update state that will be drawn.
   UpdateHudContents();
 
+  // Note the layer properties changed, to force the layer to update changes to
+  // Viz/Display.
+  NoteLayerPropertyChanged();
+
   viz::RasterContextProvider* raster_context_provider = nullptr;
   std::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
   if (draw_mode == DRAW_MODE_HARDWARE) {
@@ -447,6 +451,22 @@ void HeadsUpDisplayLayerImpl::SetLayoutShiftRects(
 
 void HeadsUpDisplayLayerImpl::ClearLayoutShiftRects() {
   layout_shift_rects_.clear();
+}
+
+void HeadsUpDisplayLayerImpl::GetContentsResourceId(
+    viz::ResourceId* resource_id,
+    gfx::Size* resource_size,
+    gfx::SizeF* resource_uv_size) const {
+  if (in_flight_resource_ && in_flight_resource_.backing()) {
+    *resource_id = in_flight_resource_.resource_id_for_export();
+    *resource_size = in_flight_resource_.size();
+    // HUD layers use the full texture.
+    *resource_uv_size = gfx::SizeF(1.f, 1.f);
+  } else {
+    *resource_id = viz::kInvalidResourceId;
+    *resource_size = gfx::Size();
+    *resource_uv_size = gfx::SizeF();
+  }
 }
 
 void HeadsUpDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {

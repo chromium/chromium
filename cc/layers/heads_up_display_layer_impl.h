@@ -81,6 +81,10 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   // This evicts hud quad appended during render pass preparation.
   void EvictHudQuad(const viz::CompositorRenderPassList& list);
 
+  void GetContentsResourceId(viz::ResourceId* resource_id,
+                             gfx::Size* resource_size,
+                             gfx::SizeF* resource_uv_size) const override;
+
   // LayerImpl overrides.
   void PushPropertiesTo(LayerImpl* layer) override;
 

@@ -22,6 +22,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
+#include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
@@ -614,6 +615,38 @@ void SerializePictureLayerTileUpdates(
   }
 }
 
+// Serializes HUD-specific data into a TextureLayerExtra mojom object.
+// HUD layers are treated as Texture layers by Viz.
+void SerializeHudLayerExtra(HeadsUpDisplayLayerImpl& layer,
+                            viz::mojom::TextureLayerExtraPtr& extra,
+                            viz::ClientResourceProvider& resource_provider,
+                            viz::RasterContextProvider& context_provider) {
+  // HUD layers are typically drawn onto a transparent background and then
+  // composited. They don't have a specific background color to blend with.
+  extra->blend_background_color = false;
+  // HUD content (text, graphs) often has alpha.
+  extra->force_texture_to_opaque = false;
+
+  viz::ResourceId resource_id = viz::kInvalidResourceId;
+  gfx::Size resource_size_in_pixels;
+  gfx::SizeF resource_uv_size;
+  layer.GetContentsResourceId(&resource_id, &resource_size_in_pixels,
+                              &resource_uv_size);
+
+  if (resource_id != viz::kInvalidResourceId) {
+    std::vector<viz::ResourceId> ids = {resource_id};
+    std::vector<viz::TransferableResource> resources;
+    resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
+    CHECK_EQ(resources.size(), 1u);
+    extra->transferable_resource = resources[0];
+    extra->uv_top_left = gfx::PointF();
+    extra->uv_bottom_right =
+        gfx::PointF(resource_uv_size.width(), resource_uv_size.height());
+  } else {
+    extra->transferable_resource = viz::TransferableResource();
+  }
+}
+
 void SerializeMirrorLayerExtra(MirrorLayerImpl& layer,
                                viz::mojom::MirrorLayerExtraPtr& extra) {
   extra->mirrored_layer_id = layer.mirrored_layer_id();
@@ -776,6 +809,17 @@ void SerializeLayer(LayerImpl& layer,
     wire.rare_properties = std::move(rare_properties);
   }
   switch (layer.GetLayerType()) {
+    case mojom::LayerType::kHeadsUpDisplay: {
+      // For Viz, this should look like a Texture layer.
+      wire.type = mojom::LayerType::kTexture;
+      auto texture_layer_extra = viz::mojom::TextureLayerExtra::New();
+      SerializeHudLayerExtra(static_cast<HeadsUpDisplayLayerImpl&>(layer),
+                             texture_layer_extra, resource_provider,
+                             context_provider);
+      wire.layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
+          std::move(texture_layer_extra));
+      break;
+    }
     case mojom::LayerType::kMirror: {
       auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();
       SerializeMirrorLayerExtra(static_cast<MirrorLayerImpl&>(layer),
