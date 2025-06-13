@@ -473,6 +473,12 @@ std::string SavePasswordProgressLogger::GetStringFromID(
     case STRING_RESOURCE_FAILED_LOADING_LOGIN_FAILED:
       return "POST error with 400-403 status is detected, considering "
              "current submission failed";
+    case STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT:
+      return "Result of password change form filling";
+    case STRING_PASSWORD_CHANGE_SUBMIT_WITH_ENTER_RESULT:
+      return "Result of password change form submission with Enter";
+    case STRING_PASSWORD_CHANGE_SUBMIT_WITH_MODEL_RESULT:
+      return "Result of password change form submission with model";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.

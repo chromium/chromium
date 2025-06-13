@@ -1063,10 +1063,18 @@ void PasswordAutofillAgent::SubmitFormWithEnter(
     return;
   }
 
+  auto form_elements = form.GetFormControlElements();  // nocheck
+  auto submit_element_iter =
+      std::ranges::find_if(form_elements, &IsSubmitElement);
   // If there is no submit element in the form, we can't guarantee Enter will
   // work.
-  if (std::ranges::none_of(form.GetFormControlElements(),  // nocheck
-                           &IsSubmitElement)) {
+  if (submit_element_iter == form_elements.end()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Fail immediately if the element is disabled.
+  if (submit_element_iter->HasAttribute("disabled")) {
     std::move(callback).Run(false);
     return;
   }

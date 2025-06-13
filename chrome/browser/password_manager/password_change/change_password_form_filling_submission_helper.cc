@@ -10,16 +10,20 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
+
+using Logger = password_manager::BrowserSavePasswordProgressLogger;
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   auto options = blink::mojom::AIPageContentOptions::New();
@@ -28,6 +32,25 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   // on_critical_path is set to true.
   options->on_critical_path = true;
   return options;
+}
+
+std::unique_ptr<Logger> GetLoggerIfAvailable(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  password_manager::PasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(web_contents);
+  if (!client) {
+    return nullptr;
+  }
+
+  autofill::LogManager* log_manager = client->GetCurrentLogManager();
+  if (log_manager && log_manager->IsLoggingActive()) {
+    return std::make_unique<Logger>(log_manager);
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -159,6 +182,11 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
     return;
   }
 
+  if (auto logger = GetLoggerIfAvailable(web_contents_)) {
+    logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT,
+                       submitted_form.has_value());
+  }
+
   if (!submitted_form) {
     // TODO(crbug.com/398754700): Change password form disappeared, consider
     // searching for change-pwd form again.
@@ -180,6 +208,11 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
 void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     bool success) {
+  if (auto logger = GetLoggerIfAvailable(web_contents_)) {
+    logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_SUBMIT_WITH_ENTER_RESULT,
+                       success);
+  }
+
   if (!success) {
     std::move(capture_annotated_page_content_)
         .Run(base::BindOnce(
@@ -248,6 +281,11 @@ void ChangePasswordFormFillingSubmissionHelper::OnFormSubmitted() {
 
 void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(bool result) {
   click_helper_.reset();
+
+  if (auto logger = GetLoggerIfAvailable(web_contents_)) {
+    logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_SUBMIT_WITH_MODEL_RESULT,
+                       result);
+  }
 
   if (!result || !web_contents_) {
     return;
