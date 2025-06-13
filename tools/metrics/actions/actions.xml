@@ -39431,6 +39431,44 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_BottomSheet_DefaultAccount_AddAccount">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user taps on the Add Account button in the sign-in bottom
+    sheet. This can only occurs if all accounts were removed from the device
+    after the sign-in sheet was opened. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_DefaultAccount_IdentityButtonTapped">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user taps on the button with the default identity in the
+    sign-in bottom sheet. That cause the identity chooser to be opened. Recorded
+    for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_DefaultAccount_Signin">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user taps on sign-in button in the sign-in bottom sheet.
+    Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_DefaultAccount_Skip">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user tap &quot;cancel&quot; or &quot;skip&quot; in the
+    sign-in bottom sheet. Recorded for iOS only.
+  </description>
+</action>
+
 <action name="Signin_BottomSheet_IdentityChooser_Closed">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>

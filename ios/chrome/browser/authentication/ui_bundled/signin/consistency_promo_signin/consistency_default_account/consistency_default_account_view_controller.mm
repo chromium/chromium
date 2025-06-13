@@ -249,23 +249,31 @@ UIFont* GetNavigationBarTitleFont() {
 #pragma mark - UI actions
 
 - (void)skipButtonAction:(id)sender {
+  base::RecordAction(
+      base::UserMetricsAction("Signin_BottomSheet_DefaultAccount_Skip"));
   [self.actionDelegate consistencyDefaultAccountViewControllerSkip:self];
 }
 
 - (void)identityButtonControlAction:(id)sender forEvent:(UIEvent*)event {
+  base::RecordAction(base::UserMetricsAction(
+      "Signin_BottomSheet_DefaultAccount_IdentityButtonTapped"));
   [self.actionDelegate
       consistencyDefaultAccountViewControllerOpenIdentityChooser:self];
 }
 
 - (void)primaryButtonAction:
     (ConsistencyDefaultAccountViewController*)viewController {
-  // If the IdentityButtonControl is hidden, there is no account avaiable on the
-  // device.
   if (!self.identityButtonControl.hidden) {
+    base::RecordAction(
+        base::UserMetricsAction("Signin_BottomSheet_DefaultAccount_Signin"));
     [self.actionDelegate
         consistencyDefaultAccountViewControllerContinueWithSelectedIdentity:
             self];
   } else {
+    // If the IdentityButtonControl is hidden, there is no account available on
+    // the device.
+    base::RecordAction(base::UserMetricsAction(
+        "Signin_BottomSheet_DefaultAccount_AddAccount"));
     [self.actionDelegate
         consistencyDefaultAccountViewControllerAddAccountAndSignin:self];
   }
