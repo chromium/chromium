@@ -32,6 +32,8 @@ class TestInterceptablePrefFilter final : public InterceptablePrefFilter {
         .Run(std::move(pref_store_contents), prefs_altered);
   }
 
+  void SetPrefService(PrefService* pref_service) override {}
+
   base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }

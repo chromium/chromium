@@ -75,6 +75,7 @@
 #include "rlz/buildflags/buildflags.h"
 #include "services/preferences/public/cpp/tracked/configuration.h"
 #include "services/preferences/public/cpp/tracked/pref_names.h"
+#include "services/preferences/tracked/pref_hash_filter.h"
 #include "sql/error_delegate_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -406,6 +407,25 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
                  supervised_user_settings, user_pref_store,
                  std::move(extension_prefs), async, connector);
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+  // Get raw pointers to the filters before moving user_pref_store.
+  PrefFilter* default_filter = nullptr;
+  PrefFilter* selected_filter = nullptr;
+  if (user_pref_store) {
+    // Get the underlying segregated pref store filters if possible, otherwise
+    // the functions will return nullptr.
+    default_filter = user_pref_store->GetDefaultStoreFilter();
+    selected_filter = user_pref_store->GetSelectedStoreFilter();
+
+    // JsonPrefStore will not have the two getters implemented, it will fall
+    // back to this block below. The user_pref_store itself will have the
+    // filter.
+    if (!default_filter && !selected_filter) {
+      default_filter = user_pref_store->GetFilter();
+    }
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
   if (base::FeatureList::IsEnabled(
           switches::kEnablePreferencesAccountStorage)) {
     // Desktop and Mobile platforms have different implementation for account
@@ -487,7 +507,20 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
     }
   }
 
-  return factory.CreateSyncable(std::move(pref_registry));
+  std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service =
+      factory.CreateSyncable(std::move(pref_registry));
+
+// The PrefService is created, set the weakptr for the filters.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+  if (default_filter) {
+    default_filter->SetPrefService(pref_service.get());
+  }
+  if (selected_filter) {
+    selected_filter->SetPrefService(pref_service.get());
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
+  return pref_service;
 }
 
 void DisableDomainCheckForTesting() {

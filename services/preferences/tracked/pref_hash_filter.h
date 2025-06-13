@@ -105,6 +105,10 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   static void SetDeprecatedPrefsForTesting(
       const std::vector<const char*>& deprecated_prefs);
 
+  // Sets the PrefService that owns this filter. This must be called after
+  // construction and before any deferred tasks can run that might need it.
+  void SetPrefService(PrefService* pref_service) override;
+
  private:
   // InterceptablePrefFilter implementation.
   void FinalizeFilterOnLoad(
@@ -167,7 +171,13 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // FilterSerializeData.
   ChangedPathsMap changed_paths_;
 
-  base::WeakPtrFactory<InterceptablePrefFilter> weak_ptr_factory_{this};
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // A raw pointer to the PrefService that owns this filter. This is safe
+  // because the PrefService is guaranteed to outlive this filter.
+  raw_ptr<PrefService> pref_service_ = nullptr;
+
+  base::WeakPtrFactory<PrefHashFilter> weak_ptr_factory_{this};
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_PREF_HASH_FILTER_H_

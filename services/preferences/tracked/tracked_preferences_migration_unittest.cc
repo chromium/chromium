@@ -55,6 +55,8 @@ class SimpleInterceptablePrefFilter final : public InterceptablePrefFilter {
                           base::OnceCallback<void(bool success)>());
   }
 
+  void SetPrefService(PrefService* pref_service) override {}
+
  private:
   // InterceptablePrefFilter implementation.
   void FinalizeFilterOnLoad(

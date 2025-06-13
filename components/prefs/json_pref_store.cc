@@ -549,3 +549,7 @@ void JsonPrefStore::ScheduleWrite(uint32_t flags) {
 bool JsonPrefStore::HasReadErrorDelegate() const {
   return error_delegate_.has_value();
 }
+
+PrefFilter* JsonPrefStore::GetFilter() {
+  return pref_filter_.get();
+}

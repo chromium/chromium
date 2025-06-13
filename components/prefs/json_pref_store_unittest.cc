@@ -32,6 +32,7 @@
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store_unittest.h"
 #include "components/prefs/pref_filter.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,6 +81,8 @@ class InterceptingPrefFilter : public PrefFilter {
     return std::move(on_write_callback_pair_);
   }
   void OnStoreDeletionFromDisk() override {}
+
+  void SetPrefService(PrefService* pref_service) override {}
 
   bool has_intercepted_prefs() const { return intercepted_prefs_ != nullptr; }
 
@@ -1022,4 +1025,85 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacksDuringProfileDeath) {
             write_callback_observer_.GetAndResetPostWriteObservationState());
 }
 
+class MockApiTestPrefFilter : public PrefFilter {
+ public:
+  MockApiTestPrefFilter() = default;
+  ~MockApiTestPrefFilter() override = default;
+
+  void FilterOnLoad(PostFilterOnLoadCallback on_done,
+                    base::Value::Dict pref_store_contents) override {
+    std::move(on_done).Run(std::move(pref_store_contents), false);
+  }
+
+  OnWriteCallbackPair FilterSerializeData(
+      base::Value::Dict& pref_store_contents) override {
+    return OnWriteCallbackPair();
+  }
+
+  void FilterUpdate(std::string_view path) override {}
+  void OnStoreDeletionFromDisk() override {}
+
+  void SetPrefService(PrefService* pref_service) override {
+    pref_service_ = pref_service;
+  }
+
+  PrefService* get_pref_service_for_testing() const {
+    return pref_service_.get();
+  }
+
+ private:
+  raw_ptr<PrefService> pref_service_ = nullptr;
+};
+
+// A test fixture for testing the new APIs on JsonPrefStore.
+class JsonPrefStoreApiTest : public testing::Test {
+ protected:
+  JsonPrefStoreApiTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+  base::FilePath GetTestFile() {
+    return temp_dir_.GetPath().AppendASCII("test_api.json");
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
+};
+
+TEST_F(JsonPrefStoreApiTest, GetFilter) {
+  // Test with a filter.
+  auto filter = std::make_unique<MockApiTestPrefFilter>();
+  PrefFilter* raw_filter = filter.get();
+  auto pref_store_with_filter =
+      base::MakeRefCounted<JsonPrefStore>(GetTestFile(), std::move(filter));
+  EXPECT_EQ(raw_filter, pref_store_with_filter->GetFilter());
+
+  // Test without a filter.
+  auto pref_store_without_filter =
+      base::MakeRefCounted<JsonPrefStore>(GetTestFile());
+  EXPECT_EQ(nullptr, pref_store_without_filter->GetFilter());
+}
+
+TEST_F(JsonPrefStoreApiTest, SetPrefServiceOnFilter) {
+  auto filter = std::make_unique<MockApiTestPrefFilter>();
+  MockApiTestPrefFilter* raw_filter = filter.get();
+  auto pref_store =
+      base::MakeRefCounted<JsonPrefStore>(GetTestFile(), std::move(filter));
+
+  // Initially, the filter should not have a PrefService.
+  // This emulates the scenario where the filter object is created but the pref
+  // service isn't available yet.
+  EXPECT_EQ(nullptr, raw_filter->get_pref_service_for_testing());
+
+  TestingPrefServiceSimple pref_service;
+
+  // Set the PrefService on the filter via the store's API.
+  PrefFilter* retrieved_filter = pref_store->GetFilter();
+  ASSERT_NE(nullptr, retrieved_filter);
+  retrieved_filter->SetPrefService(&pref_service);
+
+  // Verify that the filter now holds the correct PrefService pointer.
+  EXPECT_EQ(&pref_service, raw_filter->get_pref_service_for_testing());
+}
 }  // namespace base

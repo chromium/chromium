@@ -136,6 +136,13 @@ PrefHashFilter::~PrefHashFilter() {
   DCHECK(changed_paths_.empty());
 }
 
+void PrefHashFilter::SetPrefService(PrefService* pref_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This should only be set once, shortly after construction.
+  DCHECK(!pref_service_);
+  pref_service_ = pref_service;
+}
+
 // static
 void PrefHashFilter::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

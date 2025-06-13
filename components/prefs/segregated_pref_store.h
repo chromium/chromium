@@ -83,6 +83,12 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   void OnStoreDeletionFromDisk() override;
   bool HasReadErrorDelegate() const override;
 
+  // Overridden from PersistentPrefStore to get underlying default store filter.
+  PrefFilter* GetDefaultStoreFilter() override;
+  // Overridden from PersistentPrefStore to get underlying selected store
+  // filter.
+  PrefFilter* GetSelectedStoreFilter() override;
+
  protected:
   ~SegregatedPrefStore() override;
 
