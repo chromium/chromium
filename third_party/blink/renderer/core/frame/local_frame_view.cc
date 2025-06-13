@@ -4713,9 +4713,14 @@ void LocalFrameView::MapLocalToRemoteMainFrame(
                                  TransformState::kAccumulateTransform);
 }
 
-LayoutUnit LocalFrameView::CaretWidth() const {
+LayoutUnit LocalFrameView::BarCaretWidth() const {
   return LayoutUnit(std::max<float>(
       1.0f, GetChromeClient()->WindowToViewportScalar(&GetFrame(), 1.0f)));
+}
+
+LayoutUnit LocalFrameView::ScaleCssPixelForCaret(float width) const {
+  return LayoutUnit(std::max<float>(
+      width, GetChromeClient()->WindowToViewportScalar(&GetFrame(), width)));
 }
 
 void LocalFrameView::RegisterTapEvent(Element* target) {

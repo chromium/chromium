@@ -109,6 +109,48 @@ TEST_F(LocalCaretRectTest, SimpleText) {
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 3), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, MixedHeightText) {
@@ -131,6 +173,48 @@ TEST_F(LocalCaretRectTest, MixedHeightText) {
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 3), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, RtlText) {
@@ -154,6 +238,48 @@ TEST_F(LocalCaretRectTest, RtlText) {
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 3), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, ClampingAndRounding) {
@@ -170,10 +296,23 @@ TEST_F(LocalCaretRectTest, ClampingAndRounding) {
       </style>
       <div id=root>def</div>)HTML");
   const Node* text = GetElementById("root")->firstChild();
+  // caret-shape: bar
   EXPECT_EQ(
       LocalCaretRect(text->GetLayoutObject(), PhysicalRect(149, 0, 1, 30)),
       LocalCaretRectOfPosition(
           PositionWithAffinity(Position(text, 3), TextAffinity::kDownstream)));
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(149, 0, 30, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(149, 29, 30, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, OverflowTextLtr) {
@@ -260,6 +399,7 @@ TEST_F(LocalCaretRectTest, VerticalRLText) {
       "font: 10px/10px Ahem; width: 30px; height: 30px'>XXXYYYZZZ</div>");
   const Node* foo = GetElementById("div")->firstChild();
 
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 0, 10, 1)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 0), TextAffinity::kDownstream)));
@@ -298,6 +438,132 @@ TEST_F(LocalCaretRectTest, VerticalRLText) {
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 29, 10, 1)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 9), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 29, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kUpstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 5), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 29, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 6), TextAffinity::kUpstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 6), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 7), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 8), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 29, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 9), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 29, 1, 10)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position(foo, 3), TextAffinity::kUpstream),
+                CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 5), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 29, 1, 10)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position(foo, 6), TextAffinity::kUpstream),
+                CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 6), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 7), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 8), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 29, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 9), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, VerticalLRText) {
@@ -309,6 +575,7 @@ TEST_F(LocalCaretRectTest, VerticalLRText) {
       "font: 10px/10px Ahem; width: 30px; height: 30px'>XXXYYYZZZ</div>");
   const Node* foo = GetElementById("div")->firstChild();
 
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 0), TextAffinity::kDownstream)));
@@ -347,6 +614,131 @@ TEST_F(LocalCaretRectTest, VerticalLRText) {
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 29, 10, 1)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 9), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 29, 10, 10)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position(foo, 3), TextAffinity::kUpstream),
+                CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 5), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 29, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 6), TextAffinity::kUpstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 6), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 7), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 8), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 29, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 9), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 29, 1, 10)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position(foo, 3), TextAffinity::kUpstream),
+                CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 5), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 29, 1, 10)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position(foo, 6), TextAffinity::kUpstream),
+                CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 6), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 7), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 8), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 29, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 9), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, OverflowTextVerticalLtr) {
@@ -435,6 +827,7 @@ TEST_F(LocalCaretRectTest, TwoLinesOfTextWithSoftWrap) {
       "word-break: break-all'>XXXXXX</div>");
   const Node* foo = GetElementById("div")->firstChild();
 
+  // caret-shape: bar
   // First line
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
@@ -462,6 +855,93 @@ TEST_F(LocalCaretRectTest, TwoLinesOfTextWithSoftWrap) {
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 10, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 6), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  // First line
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 0, 10, 10)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position(foo, 3), TextAffinity::kUpstream),
+                CaretShape::kBlock));
+
+  // Second line
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 5), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 6), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 9, 10, 1)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position(foo, 3), TextAffinity::kUpstream),
+                CaretShape::kUnderscore));
+
+  // Second line
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(10, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(20, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 5), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(29, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 6), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodes) {
@@ -481,6 +961,7 @@ TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodes) {
   const Node* text_d = GetElementById("span-d")->firstChild();
 
   const Position after_c(text_c, 1);
+  // caret-shape: bar
   EXPECT_EQ(
       LocalCaretRect(text_c->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
       LocalCaretRectOfPosition(
@@ -490,7 +971,32 @@ TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodes) {
       LocalCaretRectOfPosition(
           PositionWithAffinity(after_c, TextAffinity::kDownstream)));
 
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text_c->GetLayoutObject(), PhysicalRect(29, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(after_c, TextAffinity::kUpstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(after_c, TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(text_c->GetLayoutObject(), PhysicalRect(29, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(after_c, TextAffinity::kUpstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(after_c, TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+
   const Position before_d(text_d, 0);
+  // caret-shape: bar
   EXPECT_EQ(
       LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
       LocalCaretRectOfPosition(
@@ -499,6 +1005,30 @@ TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodes) {
       LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
       LocalCaretRectOfPosition(
           PositionWithAffinity(before_d, TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kUpstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kUpstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodesRtl) {
@@ -519,6 +1049,7 @@ TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodesRtl) {
   const Node* text_d = GetElementById("span-d")->firstChild();
 
   const Position after_c(text_c, 1);
+  // caret-shape: bar
   EXPECT_EQ(
       LocalCaretRect(text_c->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
       LocalCaretRectOfPosition(
@@ -528,7 +1059,32 @@ TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodesRtl) {
       LocalCaretRectOfPosition(
           PositionWithAffinity(after_c, TextAffinity::kDownstream)));
 
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text_c->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(after_c, TextAffinity::kUpstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(after_c, TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(text_c->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(after_c, TextAffinity::kUpstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(20, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(after_c, TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+
   const Position before_d(text_d, 0);
+  // caret-shape: bar
   EXPECT_EQ(
       LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(29, 10, 1, 10)),
       LocalCaretRectOfPosition(
@@ -537,6 +1093,180 @@ TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodesRtl) {
       LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(29, 10, 1, 10)),
       LocalCaretRectOfPosition(
           PositionWithAffinity(before_d, TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kUpstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(20, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kUpstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(20, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, MultipleTextNodesVlr) {
+  // This test only records the current behavior. Future changes are allowed.
+  LoadAhem();
+  SetBodyContent(
+      "<bdo style='font: 10px/10px Ahem; writing-mode: vertical-lr;'>"
+      "<span id=span-ab>Ab</span>"
+      "<br>"
+      "<span id=span-cd style='font: 30px/30px Ahem'>cD</span>"
+      "</bdo>");
+  const Node* text_ab = GetElementById("span-ab")->firstChild();
+  const Node* text_cd = GetElementById("span-cd")->firstChild();
+
+  // caret-shape: bar
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 0), TextAffinity::kUpstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(0, 10, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 1), TextAffinity::kUpstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(10, 0, 30, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(
+          Position(text_cd, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(10, 30, 30, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(
+          Position(text_cd, 1), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 0), TextAffinity::kUpstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 1), TextAffinity::kUpstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(10, 0, 30, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_cd, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(10, 30, 30, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_cd, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 0), TextAffinity::kUpstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 1), TextAffinity::kUpstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(10, 0, 1, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_cd, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(10, 30, 1, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_cd, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, MultipleTextNodesVrl) {
+  // This test only records the current behavior. Future changes are allowed.
+  LoadAhem();
+  SetBodyContent(
+      "<bdo style='font: 10px/10px Ahem; writing-mode: vertical-rl;'>"
+      "<span id=span-ab>Ab</span>"
+      "<br>"
+      "<span id=span-cd style='font: 30px/30px Ahem'>cD</span>"
+      "</bdo>");
+  const Node* text_ab = GetElementById("span-ab")->firstChild();
+  const Node* text_cd = GetElementById("span-cd")->firstChild();
+
+  // caret-shape: bar
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(30, 0, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 0), TextAffinity::kUpstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(30, 10, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 1), TextAffinity::kUpstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(0, 0, 30, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(
+          Position(text_cd, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(0, 30, 30, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(
+          Position(text_cd, 1), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(30, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 0), TextAffinity::kUpstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(30, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 1), TextAffinity::kUpstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(0, 0, 30, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_cd, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(0, 30, 30, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_cd, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 0), TextAffinity::kUpstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_ab->GetLayoutObject(), PhysicalRect(30, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_ab, 1), TextAffinity::kUpstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(0, 0, 1, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_cd, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_cd->GetLayoutObject(), PhysicalRect(0, 30, 1, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text_cd, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, CaretRectAtBR) {
@@ -547,9 +1277,24 @@ TEST_F(LocalCaretRectTest, CaretRectAtBR) {
       "<div style='font: 10px/10px Ahem; width: 30px'><br>foo</div>");
   const Element& br = *QuerySelector("br");
 
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(br.GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position::BeforeNode(br), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(br.GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(br),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(br.GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(br),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, CaretRectAtRtlBR) {
@@ -561,9 +1306,24 @@ TEST_F(LocalCaretRectTest, CaretRectAtRtlBR) {
       "<br>foo</bdo>");
   const Element& br = *QuerySelector("br");
 
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(br.GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position::BeforeNode(br), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(br.GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(br),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(br.GetLayoutObject(), PhysicalRect(20, 9, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(br),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, Images) {
@@ -697,6 +1457,7 @@ TEST_F(LocalCaretRectTest, FloatFirstLetter) {
   const LayoutObject* first_letter = AssociatedLayoutObjectOf(*foo, 0);
   const LayoutObject* remaining_text = AssociatedLayoutObjectOf(*foo, 1);
 
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(first_letter, PhysicalRect(0, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 0), TextAffinity::kDownstream)));
@@ -709,6 +1470,50 @@ TEST_F(LocalCaretRectTest, FloatFirstLetter) {
   EXPECT_EQ(LocalCaretRect(remaining_text, PhysicalRect(20, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 3), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(first_letter, PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(remaining_text, PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(remaining_text, PhysicalRect(10, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(remaining_text, PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(first_letter, PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(remaining_text, PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(remaining_text, PhysicalRect(10, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 2), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(remaining_text, PhysicalRect(20, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, AfterLineBreak) {
@@ -718,6 +1523,7 @@ TEST_F(LocalCaretRectTest, AfterLineBreak) {
   const Node* foo = div->firstChild();
   const Node* first_br = foo->nextSibling();
   const Node* second_br = first_br->nextSibling();
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position::AfterNode(*foo), TextAffinity::kDownstream)));
@@ -729,6 +1535,44 @@ TEST_F(LocalCaretRectTest, AfterLineBreak) {
       LocalCaretRect(second_br->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
       LocalCaretRectOfPosition(PositionWithAffinity(
           Position::AfterNode(*second_br), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(30, 0, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(*foo),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(second_br->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position::AfterNode(*first_br),
+                               TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(second_br->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position::AfterNode(*second_br),
+                               TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(30, 9, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(*foo),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(second_br->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position::AfterNode(*first_br),
+                               TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(second_br->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position::AfterNode(*second_br),
+                               TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, AfterLineBreakInPre) {
@@ -736,6 +1580,7 @@ TEST_F(LocalCaretRectTest, AfterLineBreakInPre) {
   SetBodyContent("<pre style='font: 10px/10px Ahem;'>foo\n\n</pre>");
   const Node* pre = GetDocument().body()->firstChild();
   const Node* foo = pre->firstChild();
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 3), TextAffinity::kDownstream)));
@@ -745,6 +1590,40 @@ TEST_F(LocalCaretRectTest, AfterLineBreakInPre) {
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 5), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(30, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 5), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(30, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 5), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, AfterLineBreakInPre2) {
@@ -755,6 +1634,7 @@ TEST_F(LocalCaretRectTest, AfterLineBreakInPre2) {
   const Node* pre = GetDocument().body()->firstChild();
   const Node* foo = pre->firstChild();
   const Node* br = foo->nextSibling();
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(foo, 3), TextAffinity::kDownstream)));
@@ -764,6 +1644,40 @@ TEST_F(LocalCaretRectTest, AfterLineBreakInPre2) {
   EXPECT_EQ(LocalCaretRect(br->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position::AfterNode(*br), TextAffinity::kDownstream)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(30, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(br->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(br->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(*br),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(30, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 3), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(br->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(foo, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(br->GetLayoutObject(), PhysicalRect(0, 19, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(*br),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, AfterLineBreakTextArea) {
@@ -771,10 +1685,24 @@ TEST_F(LocalCaretRectTest, AfterLineBreakTextArea) {
   SetBodyContent("<textarea style='font: 10px/10px Ahem; '>foo\n\n</textarea>");
   const auto* textarea = ToTextControl(GetDocument().body()->firstChild());
   const Node* inner_text = textarea->InnerEditorElement()->firstChild();
+  // caret-shape: bar
   EXPECT_EQ(
       LocalCaretRect(inner_text->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
       LocalCaretRectOfPosition(PositionWithAffinity(
           Position(inner_text, 3), TextAffinity::kDownstream)));
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(inner_text->GetLayoutObject(),
+                     PhysicalRect(30, 0, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(inner_text, 3),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+  // caret-shape: underscore
+  EXPECT_EQ(
+      LocalCaretRect(inner_text->GetLayoutObject(), PhysicalRect(30, 9, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(inner_text, 3),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
 
   // Test the second line.
   const Node* br_in_2nd_line = inner_text->nextSibling()->nextSibling();
@@ -1006,13 +1934,54 @@ TEST_F(LocalCaretRectTest, MultiColumnSingleText) {
             LocalCaretRectOf(Position(text, 23)).rect);
 }
 
+// Caret in empty block in multi Columns
+TEST_F(LocalCaretRectTest, MultiColumnEmptyBlock) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { font: 10px/10px Ahem; width: 30px; }"
+      "parent { columns: 2;}"
+      "editor { height: 100px; padding: 10px }");
+  SetBodyContent(
+      "<div id=parent>"
+      "<div id=editor contenteditable>"
+      "</div>"
+      "</div>");
+
+  const auto& editor = *GetElementById("editor");
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position::FirstPositionInNode(editor)))
+                .rect);
+  EXPECT_EQ(PhysicalRect(0, 0, 10, 10),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position::FirstPositionInNode(editor)),
+                CaretShape::kBlock)
+                .rect);
+  EXPECT_EQ(PhysicalRect(0, 10, 10, 1),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position::FirstPositionInNode(editor)),
+                CaretShape::kUnderscore)
+                .rect);
+}
+
 TEST_F(LocalCaretRectTest, UnicodeBidiPlaintextWithDifferentBlockDirection) {
   LoadAhem();
   InsertStyleElement("div { font: 10px/10px Ahem; unicode-bidi: plaintext }");
   const Position position = SetCaretTextToBody("<div dir='rtl'>|abc</div>");
-  const PhysicalRect caret_rect =
+  PhysicalRect caret_rect =
       LocalCaretRectOfPosition(PositionWithAffinity(position)).rect;
+  // caret-shape: bar
   EXPECT_EQ(PhysicalRect(0, 0, 1, 10), caret_rect);
+  // caret-shape: block
+  caret_rect = LocalCaretRectOfPosition(PositionWithAffinity(position),
+                                        CaretShape::kBlock)
+                   .rect;
+  EXPECT_EQ(PhysicalRect(0, 0, 10, 10), caret_rect);
+  // caret-shape: underscore
+  caret_rect = LocalCaretRectOfPosition(PositionWithAffinity(position),
+                                        CaretShape::kUnderscore)
+                   .rect;
+  EXPECT_EQ(PhysicalRect(0, 9, 10, 1), caret_rect);
 }
 
 // http://crbug.com/835779
@@ -1027,9 +1996,22 @@ TEST_F(LocalCaretRectTest, NextLineWithoutLeafChild) {
       "</div>");
 
   const Element& br = *QuerySelector("br");
+  // caret-shape: bar
   EXPECT_EQ(
       PhysicalRect(50, 10, 1, 10),
       LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(br)))
+          .rect);
+  // caret-shape: block
+  EXPECT_EQ(
+      PhysicalRect(50, 10, 10, 10),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(br)),
+                               CaretShape::kBlock)
+          .rect);
+  // caret-shape: underscore
+  EXPECT_EQ(
+      PhysicalRect(50, 19, 10, 1),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(br)),
+                               CaretShape::kUnderscore)
           .rect);
 }
 
@@ -1069,9 +2051,21 @@ TEST_F(LocalCaretRectTest, AfterCollapsedWhiteSpaceInRTLText) {
   const Position position =
       SetCaretTextToBody("<bdo dir=rtl>AAA  |BBB<span>CCC</span></bdo>");
   const Node* text = position.AnchorNode();
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(60, 0, 1, 10)),
             LocalCaretRectOfPosition(
                 PositionWithAffinity(position, TextAffinity::kDownstream)));
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(50, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(position, TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // caret-shape: underscore
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(50, 9, 10, 1)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(position, TextAffinity::kDownstream),
+                CaretShape::kUnderscore));
 }
 
 // https://crbug.com/936988
@@ -1084,8 +2078,20 @@ TEST_F(LocalCaretRectTest, AfterIneditableInline) {
   const Node* text = div->firstChild()->firstChild();
 
   const Position position = Position::LastPositionInNode(*div);
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(position)));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(position),
+                               CaretShape::kBlock));
+
+  // caret-shape: underscore
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 9, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(position),
+                                     CaretShape::kUnderscore));
 }
 
 // http://crbug.com/688015
@@ -1582,12 +2588,30 @@ TEST_F(LocalCaretRectTest, LocalCaretInSvgTextWithFontScaling) {
       "<svg viewBox='0 0 160 120'><text x='10' y='10'>Text</text></svg>");
 
   const Text& text = To<Text>(*QuerySelector("text")->firstChild());
+  // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(10, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 0)));
+  // caret-shape: block
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(10, 2, 10, 10)),
+            LocalCaretRectOf(Position(text, 0), CaretShape::kBlock));
+  // caret-shape: underscore
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(10, 11, 10, 1)),
+            LocalCaretRectOf(Position(text, 0), CaretShape::kUnderscore));
+
+  // caret-shape: block
   EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(20, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 1)));
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(20, 2, 10, 10)),
+            LocalCaretRectOf(Position(text, 1), CaretShape::kBlock));
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(20, 11, 10, 1)),
+            LocalCaretRectOf(Position(text, 1), CaretShape::kUnderscore));
+  // caret-shape: underscore
   EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(30, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 2)));
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(30, 2, 10, 10)),
+            LocalCaretRectOf(Position(text, 2), CaretShape::kBlock));
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(30, 11, 10, 1)),
+            LocalCaretRectOf(Position(text, 2), CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, AbsoluteCaretAtStartOrEndOfNonEditableBidi) {

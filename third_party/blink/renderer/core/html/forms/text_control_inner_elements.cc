@@ -157,7 +157,9 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
     style_builder.SetHasLineIfEmpty(true);
   }
   if (!start_style.ApplyControlFixedSize(host)) {
-    Length caret_width(GetDocument().View()->CaretWidth(), Length::kFixed);
+    // TODO(https://crbug.com/353713061): Add support for caret-shape:
+    // underscore and caret-shape: block cases.
+    Length caret_width(GetDocument().View()->BarCaretWidth(), Length::kFixed);
     if (IsHorizontalWritingMode(style_builder.GetWritingMode())) {
       style_builder.SetMinWidth(caret_width);
     } else {

@@ -729,7 +729,10 @@ class CORE_EXPORT LocalFrameView final
   void SetVisualViewportOrOverlayNeedsRepaint();
   bool VisualViewportOrOverlayNeedsRepaintForTesting() const;
 
-  LayoutUnit CaretWidth() const;
+  LayoutUnit BarCaretWidth() const;
+  // Returns the max value between the given float value of width and viewpoint
+  // scale in LayoutUnit.
+  LayoutUnit ScaleCssPixelForCaret(float width) const;
 
   size_t PaintFrameCount() const { return paint_frame_count_; }
 

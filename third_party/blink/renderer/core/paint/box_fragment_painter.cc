@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/inline/caret_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
@@ -576,6 +577,9 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
       info.phase = PaintPhase::kDescendantBlockBackgroundsOnly;
   }
 
+  LocalFrame* frame = box_fragment_.GetLayoutObject()->GetFrame();
+  CaretShape shape = frame->Selection().GetCaretShape();
+
   if (original_phase != PaintPhase::kSelfBlockBackgroundOnly &&
       original_phase != PaintPhase::kSelfOutlineOnly &&
       // kOverlayOverflowControls is for the current object itself, so we don't
@@ -585,6 +589,17 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
         !box_fragment_.GetLayoutObject()->IsBox()) {
       PaintObject(info, paint_offset);
     } else {
+      // Paint the caret before text when caret-shape is block as text insertion
+      // of block caret is a rectangle overlapping the visible text character.
+      // If the caret's node's fragment's containing block is this block, and
+      // the paint action is PaintPhaseForeground, then paint the caret.
+      if (original_phase == PaintPhase::kForeground &&
+          shape == CaretShape::kBlock) {
+        if (!recorder) [[likely]] {
+          DCHECK(!text_combine || !text_combine->NeedsAffineTransformInPaint());
+          PaintCaretsIfNeeded(paint_state, paint_info, paint_offset);
+        }
+      }
       ScopedBoxContentsPaintState contents_paint_state(
           paint_state, To<LayoutBox>(*box_fragment_.GetLayoutObject()));
       PaintObject(contents_paint_state.GetPaintInfo(),
@@ -592,9 +607,9 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     }
   }
 
-  // If the caret's node's fragment's containing block is this block, and
-  // the paint action is PaintPhaseForeground, then paint the caret.
-  if (original_phase == PaintPhase::kForeground) {
+  // Paint the caret when the shape is bar or underscore.
+  if (original_phase == PaintPhase::kForeground &&
+      shape != CaretShape::kBlock) {
     if (!recorder) [[likely]] {
       DCHECK(!text_combine || !text_combine->NeedsAffineTransformInPaint());
       PaintCaretsIfNeeded(paint_state, paint_info, paint_offset);

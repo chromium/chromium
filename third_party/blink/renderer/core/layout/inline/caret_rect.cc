@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/text_utils.h"
+#include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -66,7 +68,7 @@ PhysicalRect ComputeLocalCaretRectByBoxSide(
 
   const LocalFrameView* frame_view =
       cursor.Current().GetLayoutObject()->GetDocument().View();
-  caret_rect.size.inline_size = frame_view->CaretWidth();
+  caret_rect.size.inline_size = frame_view->BarCaretWidth();
 
   const bool is_ltr = IsLtr(ResolvedDirection(cursor));
   if (!is_atomic_inline) {
@@ -107,35 +109,153 @@ LayoutUnit ClampAndRound(LayoutUnit value, LayoutUnit min, LayoutUnit max) {
   return LayoutUnit(ClampTo<LayoutUnit>(value, min_ceil, max_floor).Round());
 }
 
-PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
-                                               unsigned offset,
-                                               CaretShape caret_shape) {
+LayoutUnit ComputeCharacterWidthAtOffset(const InlineCursor& cursor,
+                                         unsigned offset,
+                                         const ComputedStyle& style) {
+  const LocalFrameView* frame_view =
+      cursor.Current().GetLayoutObject()->GetFrameView();
+  unsigned cluster_size =
+      LengthOfGraphemeCluster(cursor.CurrentText().ToString(), offset);
+  float width = ComputeTextWidth(
+      StringView(cursor.CurrentText(), offset, cluster_size), style);
+
+  return frame_view->ScaleCssPixelForCaret(width);
+}
+
+LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,
+                                            unsigned offset,
+                                            CaretShape caret_shape) {
+  const LocalFrameView* frame_view =
+      cursor.Current().GetLayoutObject()->GetFrameView();
+  LayoutUnit caret_width = frame_view->BarCaretWidth();
+
+  const ComputedStyle& style = cursor.Current().Style();
+
+  WritingModeConverter converter({style.GetWritingMode(), TextDirection::kLtr},
+                                 cursor.Current().Size());
+  LogicalRect caret_rect;
+  LayoutUnit cursor_block_size =
+      converter.ToLogical(cursor.Current().Size()).block_size;
+
+  LayoutUnit cursor_inline_size = caret_width;
+  LayoutUnit cursor_block_offset;
+
+  if (offset < cursor.Current().TextEndOffset()) {
+    cursor_inline_size = ComputeCharacterWidthAtOffset(
+        cursor, offset - cursor.Current().TextStartOffset(), style);
+  } else {
+    // If the next fragment is text, we need to get the width and height of
+    // the first visible character in this fragment.
+    auto next = cursor;
+    next.MoveToNext();
+    if (next && next.Current().IsText() && !cursor.Current().IsLineBreak()) {
+      const ComputedStyle& style_next = next.Current().Style();
+      WritingModeConverter converter_next(
+          {style_next.GetWritingMode(), ResolvedDirection(next)},
+          next.Current().Size());
+      cursor_inline_size = ComputeCharacterWidthAtOffset(next, 0, style_next);
+      cursor_block_size =
+          converter_next.ToLogical(next.Current().Size()).block_size;
+      switch (style.GetWritingMode()) {
+        case WritingMode::kHorizontalTb:
+          cursor_block_offset =
+              next.Current().OffsetInContainerFragment().top -
+              cursor.Current().OffsetInContainerFragment().top;
+          break;
+        case WritingMode::kVerticalRl:
+        case WritingMode::kVerticalLr:
+        case WritingMode::kSidewaysRl:
+        case WritingMode::kSidewaysLr:
+          cursor_block_offset =
+              next.Current().OffsetInContainerFragment().left -
+              cursor.Current().OffsetInContainerFragment().left;
+          break;
+      }
+    } else {
+      // If there is no visible character after the insertion point, the UA must
+      // render the caret after the last visible character.
+      cursor_inline_size = ComputeCharacterWidthAtOffset(
+          cursor, offset - cursor.Current().TextStartOffset() - 1, style);
+    }
+  }
+  caret_rect.offset.block_offset = cursor_block_offset;
+
+  if (caret_shape == CaretShape::kBlock) {
+    caret_rect.size.block_size = cursor_block_size;
+    caret_rect.size.inline_size = cursor_inline_size;
+  } else {
+    caret_rect.size.block_size = caret_width;
+    caret_rect.size.inline_size = cursor_inline_size;
+    if (!IsFlippedLinesWritingMode(style.GetWritingMode())) {
+      caret_rect.offset.block_offset += cursor_block_size - caret_width;
+    }
+  }
+  return caret_rect;
+}
+
+LogicalRect ComputeLogicalCaretRectAtTextOffset(const InlineCursor& cursor,
+                                                unsigned offset,
+                                                CaretShape caret_shape) {
   DCHECK(cursor.Current().IsText());
   DCHECK_GE(offset, cursor.Current().TextStartOffset());
   DCHECK_LE(offset, cursor.Current().TextEndOffset());
 
   const LocalFrameView* frame_view =
       cursor.Current().GetLayoutObject()->GetDocument().View();
-  LayoutUnit caret_width = frame_view->CaretWidth();
+  LayoutUnit caret_width = frame_view->BarCaretWidth();
 
   const ComputedStyle& style = cursor.Current().Style();
-  const bool is_horizontal = style.IsHorizontalWritingMode();
 
   WritingModeConverter converter({style.GetWritingMode(), TextDirection::kLtr},
                                  cursor.Current().Size());
   LogicalRect caret_rect;
-  caret_rect.size.inline_size = caret_width;
-  caret_rect.size.block_size =
+  LayoutUnit cursor_block_size =
       converter.ToLogical(cursor.Current().Size()).block_size;
+  if (caret_shape != CaretShape::kBar &&
+      !IsA<LayoutTextCombine>(cursor.Current().GetLayoutObject()->Parent()))
+      [[unlikely]] {
+    // Get the width of the "next" character, or width of the last visible
+    // character if there is no visible next character.
+    caret_rect = ComputeNextCharacterLogicalRect(cursor, offset, caret_shape);
+  } else {
+    caret_rect.size.inline_size = caret_width;
+    caret_rect.size.block_size = cursor_block_size;
+  }
 
   LayoutUnit caret_left = cursor.CaretInlinePositionForOffset(offset);
   if (cursor.CurrentItem()->IsSvgText()) {
     caret_left /= cursor.CurrentItem()->SvgScalingFactor();
   }
-  if (!cursor.Current().IsLineBreak())
+  if (!cursor.Current().IsLineBreak() && caret_shape == CaretShape::kBar) {
     caret_left -= caret_width / 2;
+  }
+
   caret_rect.offset.inline_offset = caret_left;
 
+  if (caret_shape == CaretShape::kBlock ||
+      caret_shape == CaretShape::kUnderscore) {
+    if (!IsLtr(ResolvedDirection(cursor))) {
+      caret_rect.offset.inline_offset =
+          caret_left - caret_rect.size.inline_size;
+    }
+  }
+
+  return caret_rect;
+}
+
+PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
+                                               unsigned offset,
+                                               CaretShape caret_shape) {
+  const LocalFrameView* frame_view =
+      cursor.Current().GetLayoutObject()->GetFrameView();
+  LayoutUnit caret_width = frame_view->BarCaretWidth();
+  const ComputedStyle& style = cursor.Current().Style();
+  const bool is_horizontal = style.IsHorizontalWritingMode();
+
+  WritingModeConverter converter({style.GetWritingMode(), TextDirection::kLtr},
+                                 cursor.Current().Size());
+  LogicalRect caret_rect =
+      ComputeLogicalCaretRectAtTextOffset(cursor, offset, caret_shape);
   PhysicalRect physical_caret_rect = converter.ToPhysical(caret_rect);
 
   // Adjust the location to be relative to the inline formatting context.
@@ -143,6 +263,8 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
       physical_caret_rect.offset + cursor.Current().OffsetInContainerFragment();
   const auto* const text_combine = DynamicTo<LayoutTextCombine>(
       cursor.Current().GetLayoutObject()->Parent());
+  // TODO(https://crbug.com/353713061): Add caret-shape support for combine
+  // text.
   if (text_combine) [[unlikely]] {
     caret_location =
         text_combine->AdjustOffsetForLocalCaretRect(caret_location);
@@ -261,6 +383,12 @@ LocalCaretRect ComputeLocalSelectionRect(
   }
   return {caret_rect.layout_object, rect,
           &caret_position.cursor.ContainerFragment()};
+}
+
+LogicalRect GetCaretRectAtTextOffset(const InlineCursor& cursor,
+                                     unsigned text_offset,
+                                     CaretShape caret_shape) {
+  return ComputeLogicalCaretRectAtTextOffset(cursor, text_offset, caret_shape);
 }
 
 }  // namespace blink

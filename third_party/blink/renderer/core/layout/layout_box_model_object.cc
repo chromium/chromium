@@ -842,7 +842,7 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
               {current_style.GetWritingMode(), TextDirection::kLtr});
   x = border_padding.inline_start;
   max_x = width - border_padding.inline_end;
-  LayoutUnit caret_width = GetFrameView()->CaretWidth();
+  LayoutUnit caret_width = GetFrameView()->BarCaretWidth();
 
   switch (alignment) {
     case kAlignLeft:
@@ -873,6 +873,17 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
     height = LayoutUnit(font_data->GetFontMetrics().Height());
   LayoutUnit vertical_space = FirstLineHeight() - height;
   LayoutUnit block_start = border_padding.block_start + (vertical_space / 2);
+  if (caret_shape != CaretShape::kBar && font_data) [[unlikely]] {
+    if (caret_shape == CaretShape::kBlock) {
+      caret_width = LayoutUnit(font_data->AvgCharWidth());
+    } else if (caret_shape == CaretShape::kUnderscore) {
+      height = caret_width;
+      caret_width = LayoutUnit(font_data->AvgCharWidth());
+      block_start =
+          block_start + LayoutUnit(font_data->GetFontMetrics().Height());
+    }
+  }
+
   return LogicalRect(x, block_start, caret_width, height);
 }
 

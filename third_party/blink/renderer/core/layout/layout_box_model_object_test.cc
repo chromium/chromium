@@ -43,6 +43,8 @@ class LayoutBoxModelObjectTest : public RenderingTest,
 INSTANTIATE_PAINT_TEST_SUITE_P(LayoutBoxModelObjectTest);
 
 // This test doesn't need to be a parameterized test.
+// TODO(https://crbug.com/353713061): caret-shape property doesn't apply for
+// browsing only case.
 TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
@@ -80,6 +82,8 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
   constexpr LayoutUnit kPaddingRight = LayoutUnit(3);
   constexpr LayoutUnit kPaddingLeft = LayoutUnit(7);
   constexpr LayoutUnit kFontHeight = LayoutUnit(10);
+  constexpr LayoutUnit kFontWidth = LayoutUnit(10);
+  // width for bar and height for underscore.
   constexpr LayoutUnit kCaretWidth = LayoutUnit(1);
 
   {
@@ -87,11 +91,23 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
     EXPECT_EQ(PhysicalRect(rl->Size().width - kPaddingRight - kFontHeight,
                            kPaddingTop, kFontHeight, kCaretWidth),
               rl->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(PhysicalRect(rl->Size().width - kPaddingRight - kFontHeight,
+                           kPaddingTop, kFontHeight, kFontWidth),
+              rl->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(
+                  rl->Size().width - kPaddingRight - kFontHeight - kCaretWidth,
+                  kPaddingTop, kCaretWidth, kFontWidth),
+              rl->LocalCaretRect(0, CaretShape::kUnderscore));
   }
   {
     auto* lr = GetLayoutBoxByElementId("target-lr");
     EXPECT_EQ(PhysicalRect(kPaddingLeft, kPaddingTop, kFontHeight, kCaretWidth),
               lr->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(PhysicalRect(kPaddingLeft, kPaddingTop, kFontHeight, kFontWidth),
+              lr->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(kPaddingLeft + kFontHeight, kPaddingTop, kCaretWidth,
+                           kFontWidth),
+              lr->LocalCaretRect(0, CaretShape::kUnderscore));
   }
   {
     auto* inline_rl =
@@ -99,6 +115,12 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
     EXPECT_EQ(PhysicalRect(LayoutUnit(), kPaddingTop - kCaretWidth, kFontHeight,
                            kCaretWidth),
               inline_rl->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(PhysicalRect(LayoutUnit(), kPaddingTop - kCaretWidth, kFontHeight,
+                           kFontWidth),
+              inline_rl->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(LayoutUnit() - kCaretWidth,
+                           kPaddingTop - kCaretWidth, kCaretWidth, kFontWidth),
+              inline_rl->LocalCaretRect(0, CaretShape::kUnderscore));
   }
   {
     auto* inline_lr =
@@ -106,6 +128,12 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
     EXPECT_EQ(PhysicalRect(kFontHeight, kPaddingTop - kCaretWidth, kFontHeight,
                            kCaretWidth),
               inline_lr->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(PhysicalRect(kFontHeight, kPaddingTop - kCaretWidth, kFontHeight,
+                           kFontWidth),
+              inline_lr->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(kFontHeight + kFontHeight, kPaddingTop - kCaretWidth,
+                           kCaretWidth, kFontWidth),
+              inline_lr->LocalCaretRect(0, CaretShape::kUnderscore));
   }
 }
 

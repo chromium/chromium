@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -221,6 +222,14 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     color_ = new_color;
   }
 
+  // TODO(https://crbug.com/353713061):
+  // https://drafts.csswg.org/css-ui/#caret-color When caret-shape is block,
+  // ensuring good visibility and contrast is best achieved with a UA-determined
+  // color other than currentColor.
+  if (caret_shape == CaretShape::kBlock) {
+    // Temporarily setting opacity to 0.5.
+    color_.SetAlpha(0.5);
+  }
   auto new_local_rect = rect_and_block.caret_rect;
   // TODO(crbug.com/1123630): Avoid paint invalidation on caret movement.
   if (new_local_rect != local_rect_) {
