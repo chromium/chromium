@@ -8983,8 +8983,6 @@ crbug.com/397870172 [ Linux ] external/wpt/css/css-scroll-snap/selection-target.
 #Gardener 2025-02-21
 crbug.com/398165466 [ Debug Mac14 ] http/tests/inspector-protocol/tracing/screenshots.js [ Failure Pass Timeout ]
 
-crbug.com/387898495 fast/mediastream/MediaStreamTrack-applyConstraints.html [ Failure Pass ]
-
 # Gardener 2025-03-05
 crbug.com/400811282 [ Mac ] external/wpt/media-source/URL-createObjectURL-revoke.html [ Failure ]
 crbug.com/400811282 [ Win11 ] external/wpt/media-source/URL-createObjectURL-revoke.html [ Failure ]
