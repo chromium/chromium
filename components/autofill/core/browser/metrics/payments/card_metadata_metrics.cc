@@ -265,7 +265,7 @@ void LogCardWithBenefitFormEventMetric(
         LogBenefitFormEventToAllBenefitHistograms(
             context.instrument_ids_to_available_benefit_sources,
             CardBenefitFormEvent::
-                kBenefitSuggestionShownWithMultipleServerCards);
+                kSuggestionWithBenefitShownWithMultipleServerCards);
       }
       LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
           context.instrument_ids_to_available_benefit_sources,

@@ -60,12 +60,14 @@ enum class CardMetadataLoggingEvent {
 // page load. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
 enum class CardBenefitFormEvent {
-  // TODO(crbug.com/417228483): "0" is reserved for `kBenefitSuggestionShown`.
+  // TODO(crbug.com/417228483): "0" is reserved for
+  // `kSuggestionWithBenefitShown`.
+
   // Suggestions containing cards with a benefit available were shown when the
   // user had two or more server cards.
-  kBenefitSuggestionShownWithMultipleServerCards = 1,
+  kSuggestionWithBenefitShownWithMultipleServerCards = 1,
 
-  kMaxValue = kBenefitSuggestionShownWithMultipleServerCards
+  kMaxValue = kSuggestionWithBenefitShownWithMultipleServerCards
 };
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:CardBenefitFormEvent)
