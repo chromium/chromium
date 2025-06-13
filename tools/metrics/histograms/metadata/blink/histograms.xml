@@ -2813,6 +2813,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.ResumedByUserTiming" enum="Boolean"
+    expires_after="2025-08-07">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the parser yield is resumed by the user timing signal via
+    performance.mark(), or resumed by the scheduled timeout.
+
+    This is measured for the experiment in crbug.com/416543903.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.TimeToDeferredPumpTokenizer4"
     units="microseconds" expires_after="2024-12-24">
   <owner>sky@chromium.org</owner>
