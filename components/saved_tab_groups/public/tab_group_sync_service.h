@@ -386,6 +386,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual std::unique_ptr<std::vector<SavedTabGroup>>
   TakeSharedTabGroupsAvailableAtStartupForMessaging() = 0;
 
+  // Returns if shared tab group existed during startup. If
+  // `open_shared_tab_groups` is true, returns whether there were open shared
+  // tab groups during startup.
+  virtual bool HadSharedTabGroupsLastSession(bool open_shared_tab_groups) = 0;
+
   // Called when the last tab in a group is closed.
   virtual void OnLastTabClosed(const SavedTabGroup& saved_tab_group) = 0;
 

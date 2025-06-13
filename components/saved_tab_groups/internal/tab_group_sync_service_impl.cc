@@ -253,6 +253,12 @@ TabGroupSyncServiceImpl::TakeSharedTabGroupsAvailableAtStartupForMessaging() {
   return std::move(shared_tab_groups_available_at_startup_for_messaging_);
 }
 
+bool TabGroupSyncServiceImpl::HadSharedTabGroupsLastSession(
+    bool open_shared_tab_groups) {
+  return open_shared_tab_groups ? had_open_shared_tab_groups_on_startup_
+                                : had_shared_tab_groups_on_startup_;
+}
+
 void TabGroupSyncServiceImpl::AddObserver(
     TabGroupSyncService::Observer* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1754,6 +1760,11 @@ void TabGroupSyncServiceImpl::
 
     // Dereference to create a safe copy.
     shared_tab_groups_available_at_startup_for_messaging_->push_back(*group);
+
+    had_shared_tab_groups_on_startup_ = true;
+    if (group->local_group_id().has_value()) {
+      had_open_shared_tab_groups_on_startup_ = true;
+    }
   }
 }
 

@@ -186,6 +186,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   std::unique_ptr<std::vector<SavedTabGroup>>
   TakeSharedTabGroupsAvailableAtStartupForMessaging() override;
+  bool HadSharedTabGroupsLastSession(bool open_shared_tab_groups) override;
   void OnLastTabClosed(const SavedTabGroup& saved_tab_group) override;
 
   void AddObserver(TabGroupSyncService::Observer* observer) override;
@@ -427,6 +428,12 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // updates.
   std::unique_ptr<std::vector<SavedTabGroup>>
       shared_tab_groups_available_at_startup_for_messaging_;
+
+  // Whether shared tab groups existed during startup.
+  bool had_shared_tab_groups_on_startup_ = false;
+
+  // Whether open shared tab groups existed during startup.
+  bool had_open_shared_tab_groups_on_startup_ = false;
 
   // Temporary in-memory mapping from collaboration ID to title for tab groups
   // that we/ have previously known about. This is to facilitate displaying of

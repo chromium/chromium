@@ -377,6 +377,11 @@ TabGroupSyncServiceProxy::TakeSharedTabGroupsAvailableAtStartupForMessaging() {
   NOTREACHED();
 }
 
+bool TabGroupSyncServiceProxy::HadSharedTabGroupsLastSession(
+    bool open_shared_tab_groups) {
+  return false;
+}
+
 void TabGroupSyncServiceProxy::OnLastTabClosed(
     const SavedTabGroup& saved_tab_group) {}
 

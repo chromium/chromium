@@ -158,14 +158,6 @@ void TabGroupChangeNotifierImpl::OnInitialized() {
     last_known_tab_groups_ = ConvertToMapOfSharedTabGroup(*original_tab_groups);
   }
 
-  had_shared_tab_groups_on_startup_ = !last_known_tab_groups_.empty();
-  for (const auto& [guid, group] : last_known_tab_groups_) {
-    if (group.local_group_id().has_value()) {
-      had_open_shared_tab_groups_on_startup_ = true;
-      break;
-    }
-  }
-
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -188,12 +180,6 @@ bool TabGroupChangeNotifierImpl::IsInProgressInitialMergeOrDisableSync() {
              tab_groups::SyncBridgeUpdateType::kInitialMerge ||
          sync_bridge_update_type_ ==
              tab_groups::SyncBridgeUpdateType::kDisableSync;
-}
-
-bool TabGroupChangeNotifierImpl::HadSharedTabGroupsLastSession(
-    bool open_shared_tab_groups) {
-  return open_shared_tab_groups ? had_open_shared_tab_groups_on_startup_
-                                : had_shared_tab_groups_on_startup_;
 }
 
 void TabGroupChangeNotifierImpl::OnTabGroupAdded(

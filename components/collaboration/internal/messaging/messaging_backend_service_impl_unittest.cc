@@ -178,7 +178,6 @@ class MockTabGroupChangeNotifier : public TabGroupChangeNotifier {
               (override));
   MOCK_METHOD(void, Initialize, (), (override));
   MOCK_METHOD(bool, IsInitialized, (), (override));
-  MOCK_METHOD(bool, HadSharedTabGroupsLastSession, (bool), (override));
 };
 
 class MockDataSharingChangeNotifier : public DataSharingChangeNotifier {

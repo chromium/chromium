@@ -142,6 +142,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(std::unique_ptr<std::vector<SavedTabGroup>>,
               TakeSharedTabGroupsAvailableAtStartupForMessaging,
               ());
+  MOCK_METHOD(bool, HadSharedTabGroupsLastSession, (bool), (override));
   MOCK_METHOD(void, OnLastTabClosed, (const SavedTabGroup&));
 
   MOCK_METHOD(void, AddObserver, (Observer*));
