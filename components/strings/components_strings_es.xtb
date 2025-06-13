@@ -292,7 +292,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1482372785911828880">Extrafino</translation>
 <translation id="1482879811280872320">Ciclismo</translation>
 <translation id="1483493594462132177">Enviar</translation>
-<translation id="1484449009683144042">Se trata de una ayuda experimental de escritura con IA y no siempre acierta.
+<translation id="1484449009683144042">Esto es una ayuda experimental de escritura con IA y no siempre acierta.
     <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1486096554574027028">Buscar contraseñas</translation>
 <translation id="1492194039220927094">Envío de políticas:</translation>
@@ -743,7 +743,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2265356434276802347">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas destacadas.</translation>
 <translation id="2266175583972138136">Se aplican condiciones para las ventajas de la tarjeta</translation>
 <translation id="2267047181501709434">Verificando tu identidad...</translation>
-<translation id="2268044343513325586">Restringir</translation>
+<translation id="2268044343513325586">Pulir</translation>
 <translation id="2268966938956566076">Subir dentro de <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Número de teléfono</translation>
 <translation id="2276057643614339130">Base de impresión</translation>

@@ -4668,7 +4668,7 @@
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4242577469625748426">Не удалось применить к устройству настройки политики: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Вашим <ph name="BEGIN_LINK" />браузером и профилем управляет<ph name="END_LINK" /> <ph name="DOMAIN" />.</translation>
-<translation id="424315890655130736">Введите кодовую фразу</translation>
+<translation id="424315890655130736">Ввести кодовую фразу</translation>
 <translation id="4243504193894350135">Работа принтера приостановлена.</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, уровень <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Другие приложения для стилуса</translation>
@@ -11691,7 +11691,7 @@
 <translation id="936801553271523408">Диагностические данные системы</translation>
 <translation id="93766956588638423">Восстановить расширение</translation>
 <translation id="938623846785894166">Необычный файл</translation>
-<translation id="939598580284253335">Введите кодовую фразу</translation>
+<translation id="939598580284253335">Ввести кодовую фразу</translation>
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="940212040923880623">&amp;Найти и изменить</translation>
 <translation id="942296794412775122">Включить или отключить микрофон</translation>
