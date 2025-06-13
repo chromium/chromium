@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 <enum name="FooterElement">
   <int value="0" label="Other Element"/>
   <int value="1" label="Customize Chrome Button"/>
-  <int value="2" label="Wallpaper Search Button"/>
+  <int value="2" label="Extension name"/>
 </enum>
 
 <enum name="ItemSuggestRequestResult">
