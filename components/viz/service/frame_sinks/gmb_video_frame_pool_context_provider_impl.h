@@ -18,14 +18,12 @@ class GpuMemoryBufferFactory;
 namespace viz {
 
 class GpuServiceImpl;
-class InProcessGpuMemoryBufferManager;
 
 class VIZ_SERVICE_EXPORT GmbVideoFramePoolContextProviderImpl
     : public GmbVideoFramePoolContextProvider {
  public:
   explicit GmbVideoFramePoolContextProviderImpl(
       GpuServiceImpl* gpu_service,
-      InProcessGpuMemoryBufferManager* gpu_memory_buffer_manager,
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
 
   GmbVideoFramePoolContextProviderImpl(
@@ -40,7 +38,6 @@ class VIZ_SERVICE_EXPORT GmbVideoFramePoolContextProviderImpl
 
  private:
   const raw_ptr<GpuServiceImpl> gpu_service_;
-  const raw_ptr<InProcessGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   const raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 };
 

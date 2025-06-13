@@ -11,7 +11,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
@@ -29,11 +28,9 @@ class GmbVideoFramePoolContext
  public:
   explicit GmbVideoFramePoolContext(
       GpuServiceImpl* gpu_service,
-      InProcessGpuMemoryBufferManager* gpu_memory_buffer_manager,
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       base::OnceClosure on_context_lost)
       : gpu_service_(gpu_service),
-        gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
         gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
         on_context_lost_(
             base::BindPostTaskToCurrentDefault(std::move(on_context_lost))) {
@@ -177,7 +174,6 @@ class GmbVideoFramePoolContext
   }
 
   const raw_ptr<GpuServiceImpl> gpu_service_;
-  const raw_ptr<InProcessGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   const raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 
   // Closure that we need to call when context loss happens.
@@ -196,10 +192,8 @@ class GmbVideoFramePoolContext
 
 GmbVideoFramePoolContextProviderImpl::GmbVideoFramePoolContextProviderImpl(
     GpuServiceImpl* gpu_service,
-    InProcessGpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory)
     : gpu_service_(gpu_service),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {}
 
 GmbVideoFramePoolContextProviderImpl::~GmbVideoFramePoolContextProviderImpl() =
@@ -209,8 +203,7 @@ std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool::Context>
 GmbVideoFramePoolContextProviderImpl::CreateContext(
     base::OnceClosure on_context_lost) {
   return std::make_unique<GmbVideoFramePoolContext>(
-      gpu_service_, gpu_memory_buffer_manager_, gpu_memory_buffer_factory_,
-      std::move(on_context_lost));
+      gpu_service_, gpu_memory_buffer_factory_, std::move(on_context_lost));
 }
 
 }  // namespace viz

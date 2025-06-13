@@ -176,8 +176,7 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
     // manager to create GMB-backed video frames.
     gmb_video_frame_pool_context_provider_ =
         std::make_unique<GmbVideoFramePoolContextProviderImpl>(
-            gpu_service, gpu_memory_buffer_manager_.get(),
-            gpu_service->gpu_memory_buffer_factory());
+            gpu_service, gpu_service->gpu_memory_buffer_factory());
   } else {
     // Create OutputSurfaceProvider usable for software compositing only.
     output_surface_provider_ =
