@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -12,6 +14,7 @@ import android.util.Size;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paintpreview.player.CompositorStatus;
@@ -24,6 +27,7 @@ import java.util.List;
  * to generate and retrieve the needed bitmaps. Currently we generate the screenshot in one pass; to
  * obtain it call {@link generateFullpageEntry}.
  */
+@NullMarked
 public class EntryManager {
     // List of all entries in correspondence of the webpage.
     private final List<LongScreenshotsEntry> mEntries;
@@ -158,7 +162,9 @@ public class EntryManager {
 
         observer.onStatusChange(mGeneratorStatus);
         if (mGeneratorStatus == EntryStatus.CAPTURE_COMPLETE) {
-            observer.onCompositorReady(mGenerator.getContentSize(), mGenerator.getScrollOffset());
+            observer.onCompositorReady(
+                    assertNonNull(mGenerator.getContentSize()),
+                    assertNonNull(mGenerator.getScrollOffset()));
         }
     }
 
@@ -183,6 +189,7 @@ public class EntryManager {
 
                     Size contentSize = mGenerator.getContentSize();
                     Point scrollOffset = mGenerator.getScrollOffset();
+                    assert contentSize != null && scrollOffset != null;
                     for (BitmapGeneratorObserver observer : mGeneratorObservers) {
                         observer.onCompositorReady(contentSize, scrollOffset);
                     }
@@ -202,6 +209,7 @@ public class EntryManager {
         };
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mGenerator != null) {
             mGenerator.destroy();
