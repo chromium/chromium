@@ -210,7 +210,7 @@ class StringTokenizerT {
   const_iterator token_end() const { return token_end_; }
   str token() const { return str(token_begin_, token_end_); }
   std::basic_string_view<char_type> token_piece() const {
-    return MakeBasicStringPiece<char_type>(token_begin_, token_end_);
+    return std::basic_string_view(token_begin_, token_end_);
   }
 
  private:
