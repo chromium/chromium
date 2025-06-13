@@ -83,8 +83,8 @@ int ChunkedDataPipeUploadDataStream::InitInternal(
 
 int ChunkedDataPipeUploadDataStream::ReadInternal(net::IOBuffer* buf,
                                                   int buf_len) {
-  DCHECK(!buf_);
-  DCHECK(buf);
+  CHECK(!buf_);
+  CHECK(buf);
   DCHECK_GT(buf_len, 0);
 
   // If there was an error either passed to the ReadCallback or as a result of
@@ -218,7 +218,7 @@ void ChunkedDataPipeUploadDataStream::OnSizeReceived(int32_t status,
 }
 
 void ChunkedDataPipeUploadDataStream::OnHandleReadable(MojoResult result) {
-  DCHECK(buf_);
+  CHECK(buf_);
 
   // Final result of the Read() call, to be passed to the consumer.
   // Swap out |buf_| and |buf_len_|

@@ -70,6 +70,7 @@ int UploadDataStream::Read(IOBuffer* buf,
                            CompletionOnceCallback callback) {
   DCHECK(!callback.is_null() || IsInMemory());
   DCHECK(initialized_successfully_);
+  CHECK(buf);
   DCHECK_GT(buf_len, 0);
 
   net_log_.BeginEvent(NetLogEventType::UPLOAD_DATA_STREAM_READ,
