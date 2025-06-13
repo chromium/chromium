@@ -550,6 +550,17 @@ config("compiler") {
     cflags += [ "-Werror=poison-system-directories" ]
   }
 
+  if (is_chromeos_device && current_toolchain == default_toolchain) {
+    # Flags added automatically by ChromeOS's custom toolchain that are
+    # not already added elsewhere in the configuration. Add these here,
+    # so that we also get them when not building with ChromeOS's toolchain.
+    ldflags += [
+      "-Wl,--pack-dyn-relocs=relr",
+      "-Wl,--no-rosegment",
+      "-Wl,-z,nostart-stop-gc",
+    ]
+  }
+
   # Clang-specific compiler flags setup.
   # ------------------------------------
   if (is_clang) {
