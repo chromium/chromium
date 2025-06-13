@@ -4,24 +4,12 @@
 
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 
-#include <inttypes.h>
-
-#include <algorithm>
-#include <map>
-#include <optional>
-#include <string>
-#include <utility>
-
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/leveldatabase/env_chromium.h"
-#include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
