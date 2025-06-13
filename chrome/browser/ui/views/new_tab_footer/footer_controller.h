@@ -32,12 +32,10 @@ class NewTabFooterController : public content::WebContentsObserver {
   void UpdateFooterVisibility();
   // Callback for active tab changes from BrowserWindowInterface.
   void OnActiveTabChanged(BrowserWindowInterface* browser);
-  void ShowUI();
-  void CloseUI();
 
   raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<new_tab_footer::NewTabFooterWebView> footer_;
-  base::CallbackListSubscription tab_activation_subscription_subscription_;
+  base::CallbackListSubscription tab_activation_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;

@@ -93,27 +93,20 @@ class FooterControllerExtensionTest : public FooterControllerExtensionTestBase {
   ~FooterControllerExtensionTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest,
-                       FooterShown_ExtensionNTP) {
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, TabChanged) {
+  ASSERT_FALSE(footer()->GetVisible());
+
   auto extension = LoadNtpExtension();
   ASSERT_FALSE(footer()->GetVisible());
 
   OpenNewTab(GURL(extension->url()));
   EXPECT_TRUE(footer()->GetVisible());
 
-  NavigateCurrentTab(extension->url());
-  EXPECT_TRUE(footer()->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest,
-                       FooterHidden_NonExtensionNTP) {
-  auto extension = LoadNtpExtension();
-  ASSERT_FALSE(footer()->GetVisible());
-  NavigateCurrentTab(extension->url());
-  EXPECT_TRUE(footer()->GetVisible());
-
   NavigateCurrentTab(GURL(kNonNtpUrl));
   EXPECT_FALSE(footer()->GetVisible());
+
+  NavigateCurrentTab(extension->url());
+  EXPECT_TRUE(footer()->GetVisible());
 
   OpenNewTab(GURL(chrome::kChromeUINewTabPageURL));
   EXPECT_FALSE(footer()->GetVisible());
@@ -168,13 +161,11 @@ class FooterControllerEnterpriseTest
 
 INSTANTIATE_TEST_SUITE_P(, FooterControllerEnterpriseTest, testing::Bool());
 
-IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest,
-                       FooterShown_NoticeEnabled) {
-  policy::ScopedManagementServiceOverrideForTesting
-      profile_supervised_management(
-          policy::ManagementServiceFactory::GetForProfile(profile()),
-          managed() ? policy::EnterpriseManagementAuthority::DOMAIN_LOCAL
-                    : policy::EnterpriseManagementAuthority::NONE);
+IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest, NoticePolicyEnabled) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      managed() ? policy::EnterpriseManagementAuthority::DOMAIN_LOCAL
+                : policy::EnterpriseManagementAuthority::NONE);
 
   // Non-NTP
   ASSERT_FALSE(footer()->GetVisible());
@@ -201,26 +192,22 @@ IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest,
   EXPECT_FALSE(footer()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest,
-                       FooterHidden_NoticeDisabled) {
-  policy::ScopedManagementServiceOverrideForTesting
-      profile_supervised_management(
-          policy::ManagementServiceFactory::GetForProfile(profile()),
-          managed() ? policy::EnterpriseManagementAuthority::DOMAIN_LOCAL
-                    : policy::EnterpriseManagementAuthority::NONE);
+IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest, NoticePolicyDisabled) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      managed() ? policy::EnterpriseManagementAuthority::DOMAIN_LOCAL
+                : policy::EnterpriseManagementAuthority::NONE);
   local_state()->SetBoolean(prefs::kNTPFooterManagementNoticeEnabled, false);
 
   NavigateCurrentTab(GURL(chrome::kChromeUINewTabPageURL));
   EXPECT_FALSE(footer()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest,
-                       FooterHidden_NoticePolicyChanged) {
-  policy::ScopedManagementServiceOverrideForTesting
-      profile_supervised_management(
-          policy::ManagementServiceFactory::GetForProfile(profile()),
-          managed() ? policy::EnterpriseManagementAuthority::DOMAIN_LOCAL
-                    : policy::EnterpriseManagementAuthority::NONE);
+IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest, NoticePolicyChanged) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      managed() ? policy::EnterpriseManagementAuthority::DOMAIN_LOCAL
+                : policy::EnterpriseManagementAuthority::NONE);
   ASSERT_FALSE(footer()->GetVisible());
 
   NavigateCurrentTab(GURL(chrome::kChromeUINewTabURL));
