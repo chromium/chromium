@@ -60,7 +60,7 @@ enum class SyncMetadataReadError {
   // Reading successful, but the base entity specifics cache contains proto
   // fields supported in the current browser version. The cache is meant to only
   // preserve unsupported fields, hence the initial sync flow is forced to
-  // resolve this incosistency.
+  // resolve this inconsistency.
   kNewlySupportedFieldDetectedInUnsupportedFieldsCache = 4,
   // Reading successful, but the browser has been upgraded to a version that
   // supports
@@ -72,8 +72,12 @@ enum class SyncMetadataReadError {
   // Reading successful, but suspicious bulk deletions were detected. To err on
   // the side of safety, drop all password sync metadata and start again.
   kPasswordsCleanupAccidentalBatchDeletions = 6,
+  // Reading successful, but undecryptable passwords were detected. This is
+  // logged when the password sync metadata is cleared to force resync in such
+  // case.
+  kReadSuccessButClearedDueToUndecryptablePasswords = 7,
 
-  kMaxValue = kPasswordsCleanupAccidentalBatchDeletions,
+  kMaxValue = kReadSuccessButClearedDueToUndecryptablePasswords,
 };
 
 std::string ComputeClientTag(
@@ -278,6 +282,18 @@ bool DoesPasswordStoreContainAccidentalBatchDeletions(
   return false;
 }
 
+// Returns true if the password store contains undecryptable passwords either
+// because the encryption service failed or failed with partial data.
+bool DoesPasswordStoreContainUndecryptablePasswords(
+    PasswordStoreSync* password_store_sync) {
+  PrimaryKeyToPasswordSpecificsDataMap key_to_specifics_map;
+  const FormRetrievalResult read_result =
+      password_store_sync->ReadAllCredentials(&key_to_specifics_map);
+  return read_result == FormRetrievalResult::kEncryptionServiceFailure ||
+         read_result ==
+             FormRetrievalResult::kEncryptionServiceFailureWithPartialData;
+}
+
 // A simple class for scoping a password store sync transaction. If the
 // transaction hasn't been committed, it will be rolled back when it goes out of
 // scope.
@@ -390,6 +406,22 @@ void PasswordSyncBridge::Init(
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error =
           SyncMetadataReadError::kPasswordsCleanupAccidentalBatchDeletions;
+    } else if (
+        DoesPasswordStoreContainUndecryptablePasswords(password_store_sync_) &&
+        ShouldRecoverPasswordsDuringMerge() &&
+        base::FeatureList::IsEnabled(
+            features::
+                kTriggerPasswordResyncWhenUndecryptablePasswordsDetected)) {
+      // Some locally undecryptable credentials were detected, force initial
+      // sync by dropping the sync metadata. This is only done if
+      // ShouldRecoverPasswordsDuringMerge() returns true to avoid triggering
+      // this logic on every startup if the undecryptable passwords are not
+      // deleted.
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
+          syncer::PASSWORDS);
+      batch = std::make_unique<syncer::MetadataBatch>();
+      sync_metadata_read_error = SyncMetadataReadError::
+          kReadSuccessButClearedDueToUndecryptablePasswords;
     }
   }
   base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError2",
