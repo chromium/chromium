@@ -47,9 +47,10 @@ bool AXRelativeBounds::operator==(const AXRelativeBounds& other) const {
 std::string AXRelativeBounds::ToString() const {
   std::string result;
 
-  if (offset_container_id != -1)
+  if (offset_container_id != kInvalidAXNodeID) {
     result +=
         "offset_container_id=" + NumberToString(offset_container_id) + " ";
+  }
 
   result += "(" + NumberToString(bounds.x()) + ", " +
             NumberToString(bounds.y()) + ")-(" +

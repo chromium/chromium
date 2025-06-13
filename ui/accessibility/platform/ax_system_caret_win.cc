@@ -28,7 +28,7 @@ AXSystemCaretWin::AXSystemCaretWin(gfx::AcceleratedWidget event_target)
   data_.AddState(ax::mojom::State::kInvisible);
   // According to MSDN, "Edit" should be the name of the caret object.
   data_.SetName(u"Edit");
-  data_.relative_bounds.offset_container_id = -1;
+  data_.relative_bounds.offset_container_id = kInvalidAXNodeID;
 
   if (event_target_) {
     ::NotifyWinEvent(EVENT_OBJECT_CREATE, event_target_, OBJID_CARET,

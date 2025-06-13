@@ -609,7 +609,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   AXNodeData node_2;
   node_2.id = 2;
   node_2.child_ids = {3};
-  node_2.relative_bounds.offset_container_id = -1;
+  node_2.relative_bounds.offset_container_id = kInvalidAXNodeID;
   AXNodeData node_3;
   node_3.id = 3;
   node_3.relative_bounds.offset_container_id = 2;
