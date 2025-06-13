@@ -115,6 +115,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_OptionalFields) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
+  request->instrument()->setDetails("instrument details");
   request->setPayeeOrigin("https://merchant.example");
   request->setTimeout(5 * 60 * 1000);  // 5 minutes
 
@@ -146,6 +147,9 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_OptionalFields) {
           script_value, *scope.GetExecutionContext(), ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(parsed_request);
 
+  // Instrument details is behind a default-disabled flag; however, when set
+  // directly as above, they will still be present and testable here.
+  EXPECT_EQ(parsed_request->instrument->details, "instrument details");
   EXPECT_EQ(parsed_request->payee_origin->ToString(),
             "https://merchant.example");
   EXPECT_EQ(parsed_request->timeout, base::Minutes(5));
@@ -294,6 +298,27 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidInstrumentIcon) {
       CreateSecurePaymentConfirmationRequest(scope);
 
   request->instrument()->setIcon("thisisnotaurl");
+
+  ScriptValue script_value(scope.GetIsolate(),
+                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
+                               scope.GetScriptState(), request));
+  SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
+      script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(ESErrorType::kTypeError,
+            scope.GetExceptionState().CodeAs<ESErrorType>());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with a detail string
+// that is longer than 4K throws.
+TEST(SecurePaymentConfirmationHelperTest, Parse_TooLargeInstrumentDtails) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  SecurePaymentConfirmationRequest* request =
+      CreateSecurePaymentConfirmationRequest(scope);
+
+  request->instrument()->setDetails(
+      WTF::String::FromUTF8(std::string(4097, '.')));
 
   ScriptValue script_value(scope.GetIsolate(),
                            ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(

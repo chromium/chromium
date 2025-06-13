@@ -23,6 +23,11 @@
 namespace blink {
 
 namespace {
+
+// The maximum size of the payment instrument details string. Arbitrarily chosen
+// while being much larger than any reasonable input.
+constexpr size_t kMaxInstrumentDetailsLength = 4096;
+
 bool IsEmpty(const V8UnionArrayBufferOrArrayBufferView* buffer) {
   DCHECK(buffer);
   switch (buffer->GetContentType()) {
@@ -98,6 +103,13 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
     exception_state.ThrowTypeError(
         "The \"secure-payment-confirmation\" method requires a valid URL in "
         "the \"instrument.icon\" field.");
+    return nullptr;
+  }
+  if (request->instrument()->hasDetails() &&
+      request->instrument()->details().length() > kMaxInstrumentDetailsLength) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires the string "
+        "length in the \"instrument.details\" field to be at most 4096.");
     return nullptr;
   }
   if (!IsValidDomain(request->rpId())) {

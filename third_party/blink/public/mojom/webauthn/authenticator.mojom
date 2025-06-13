@@ -353,6 +353,11 @@ struct PaymentCredentialInstrument {
 
   // Whether the icon is required to be shown in the UI.
   bool iconMustBeShown;
+
+  // An additional detail string for displaying this instrument to the user.
+  // For example, "**** 1234 | 01/29" (for a credit card instrument). The
+  // browser validates this to be valid UTF8 and at most 4K characters.
+  string details;
 };
 
 // TODO(https://crbug.com/40193778): Convert to a non-mojo struct when

@@ -208,6 +208,7 @@ public class ClientDataJsonTest {
         payment.instrument.displayName = "TestPay";
         payment.instrument.icon = new Url();
         payment.instrument.icon.url = "https://www.example.test/icon.png";
+        payment.instrument.details = "instrument details";
         payment.payeeOrigin = new org.chromium.url.internal.mojom.Origin();
         payment.payeeOrigin.scheme = "https";
         payment.payeeOrigin.host = "test.example";

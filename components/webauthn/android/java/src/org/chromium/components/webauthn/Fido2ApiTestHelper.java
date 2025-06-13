@@ -739,6 +739,7 @@ public class Fido2ApiTestHelper {
         options.instrument.displayName = "MaxPay";
         options.instrument.icon = new Url();
         options.instrument.icon.url = "https://www.google.com/icon.png";
+        options.instrument.details = "instrument details";
         options.payeeOrigin = new org.chromium.url.internal.mojom.Origin();
         options.payeeOrigin.scheme = "https";
         options.payeeOrigin.host = "test.example";
