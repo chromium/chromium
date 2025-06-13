@@ -576,6 +576,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.DirectComposition.CommitAndClearPendingOverlaysDuration"
+    units="microseconds" expires_after="2025-12-09">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>tangm@microsoft.com</owner>
+  <summary>
+    Records the duration of CommitAndClearPendingOverlays, which contains the
+    work to update the DCLayerTree's visual contents, visual tree, and commit.
+    This estimates the amount of work DCLayerTree needs to do per frame and can
+    be used to compare incremental tree updating algorithms.
+
+    Only reported on systems which have high resolution timers.
+  </summary>
+</histogram>
+
 <histogram name="GPU.DirectComposition.CompositionMode2.VideoOrCanvas"
     enum="DxgiFramePresentationMode" expires_after="2025-02-04">
   <owner>sunnyps@chromium.org</owner>

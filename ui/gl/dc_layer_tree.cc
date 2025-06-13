@@ -1196,6 +1196,10 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
                "num_overlays", overlays.size());
 
+  base::ScopedUmaHistogramTimer scoped_timer(
+      "GPU.DirectComposition.CommitAndClearPendingOverlaysDuration",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
+
   // If delegated ink metadata exists for this frame, attempt to make an overlay
   // so that a visual subtree can be created for a delegated ink visual.
   // TODO(crbug.com/335553727) Consider clearing ink_renderer_ when there's no
