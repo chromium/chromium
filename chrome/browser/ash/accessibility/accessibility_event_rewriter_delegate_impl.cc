@@ -17,6 +17,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/common/constants.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -75,7 +76,12 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVox(
     std::unique_ptr<ui::Event> event,
     bool capture) {
   extensions::ExtensionHost* host =
-      GetAccessibilityExtensionHost(extension_misc::kChromeVoxExtensionId);
+      ::features::IsAccessibilityManifestV3EnabledForChromeVox()
+          ? GetAccessibilityOffscreenDocumentHost(
+                extension_misc::kChromeVoxExtensionId)
+          : GetAccessibilityExtensionHost(
+                extension_misc::kChromeVoxExtensionId);
+
   if (!host)
     return;
 
