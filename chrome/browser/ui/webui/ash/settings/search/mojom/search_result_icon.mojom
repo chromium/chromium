@@ -73,6 +73,7 @@ enum SearchResultIcon {
   kReset,
   kRestore,
   kScanner,
+  kScannerActions,
   kSearch,
   kSelectToSpeak,
   kShield,

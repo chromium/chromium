@@ -906,6 +906,9 @@
   <message name="IDS_OS_SETTINGS_TAG_MAGIC_BOOST_LOBSTER" desc="Text for search result item which, when clicked, navigates the user to Create Image settings, with an option to turn functionality on.">
     Create Image
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_SUGGESTED_ACTIONS" desc="Text for search result item which, when clicked, navigates the user to Suggested actions when searching your screen settings, with an option to turn functionality on.">
+    Suggested actions when searching your screen
+  </message>
 
   <!-- Apps section. -->
   <message name="IDS_OS_SETTINGS_TAG_APPS" desc="Text for search result item which, when clicked, navigates the user to apps settings.">

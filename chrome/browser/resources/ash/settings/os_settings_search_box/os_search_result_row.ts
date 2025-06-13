@@ -811,6 +811,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:restore';
       case SearchResultIcon.kScanner:
         return 'os-settings:device-scan';
+      case SearchResultIcon.kScannerActions:
+        return 'os-settings:scanner';
       case SearchResultIcon.kSearch:
         return 'os-settings:explore';
       case SearchResultIcon.kSelectToSpeak:

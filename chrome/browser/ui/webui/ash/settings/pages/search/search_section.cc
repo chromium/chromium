@@ -161,6 +161,18 @@ base::span<const SearchConcept> GetQuickAnswersOnSearchConcepts() {
   return tags;
 }
 
+base::span<const SearchConcept> GetScannerSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
+      {IDS_OS_SETTINGS_TAG_SUGGESTED_ACTIONS,
+       mojom::kSystemPreferencesSectionPath,
+       mojom::SearchResultIcon::kScannerActions,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kScannerOnOff}},
+  });
+  return tags;
+}
+
 base::span<const SearchConcept> GetAssistantSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ASSISTANT,
@@ -354,6 +366,9 @@ SearchSection::SearchSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   updater.AddSearchTags(GetSearchPageSearchConcepts());
+  if (IsScannerSettingsToggleVisible()) {
+    updater.AddSearchTags(GetScannerSearchConcepts());
+  }
 
   AssistantState* assistant_state = AssistantState::Get();
   if (IsAssistantAllowed() && assistant_state) {
