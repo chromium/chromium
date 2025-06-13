@@ -511,9 +511,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kIosCredentialProviderPromoSource, 0);
 
-  registry->RegisterBooleanPref(
-      prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager, false);
-
   registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoPolicyEnabled,
                                 true);
 
@@ -681,6 +678,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeed, 0);
   registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeedV2,
                                0);
+
+  // Deprecated 06/2025.
+  registry->RegisterBooleanPref(
+      prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager, false);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1131,6 +1132,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 06/2025.
   prefs->ClearPref(kVariationsLimitedEntropySyntheticTrialSeed);
   prefs->ClearPref(kVariationsLimitedEntropySyntheticTrialSeedV2);
+
+  // Added 06/2025.
+  prefs->ClearPref(
+      prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager);
 }
 
 // This method should be periodically pruned of year+ old migrations.

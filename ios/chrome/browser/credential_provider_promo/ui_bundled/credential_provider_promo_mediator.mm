@@ -144,13 +144,6 @@ NSString* GetLearnMoreSubtitleString() {
     case CredentialProviderPromoTrigger::RemindMeLater:
       source = [self promoOriginalSource];
 
-      // Reset the state. This case `RemindMeLater` implicitly means it is
-      // presented from and would be deregistered by the Promo Manager
-      // internally.
-      GetApplicationContext()->GetLocalState()->SetBoolean(
-          prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager,
-          false);
-
       [self setAnimation];
       break;
     case CredentialProviderPromoTrigger::SetUpList:
@@ -184,9 +177,6 @@ NSString* GetLearnMoreSubtitleString() {
     self.tracker->NotifyEvent(
         feature_engagement::events::kCredentialProviderExtensionPromoSnoozed);
   }
-
-  GetApplicationContext()->GetLocalState()->SetBoolean(
-      prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager, true);
 }
 
 - (IOSCredentialProviderPromoSource)promoOriginalSource {

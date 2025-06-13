@@ -45,16 +45,9 @@
       // no-op.
       break;
     case SceneActivationLevelForegroundActive:
-      bool isPromoRegistered =
-          GetApplicationContext()->GetLocalState()->GetBoolean(
-              prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager);
-      bool shouldNotShowPromo = [self isCPEEnabled];
-      if (isPromoRegistered && shouldNotShowPromo) {
+      if ([self isCPEEnabled]) {
         _promosManager->DeregisterPromo(
             promos_manager::Promo::CredentialProviderExtension);
-        GetApplicationContext()->GetLocalState()->SetBoolean(
-            prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager,
-            false);
       }
       break;
   }
