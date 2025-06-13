@@ -404,8 +404,11 @@ class BocaAppPageHandlerTest : public testing::Test {
  public:
   BocaAppPageHandlerTest() = default;
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kBoca},
+        // TODO:crbug.com/424867979 - Re-enable feature flag after adding unit
+        // tests.
+        /*disabled_features=*/{ash::features::kBocaSpotlightRobotRequester});
     // Set up UserManager related modules.
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     ash::boca_util::RegisterPrefs(local_state_.registry());
