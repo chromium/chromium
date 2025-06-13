@@ -39,11 +39,9 @@ public final class WidgetsMetricLogger: NSObject {
   /// This method is safe to call from any thread.
   @objc(logInstalledWidgets)
   public static func logInstalledWidgets() {
-    if #available(iOS 14, *) {
-      // To avoid blocking startup, perform work on a background queue.
-      queue.async {
-        logInstalledWidgets(fetcher: WidgetCenter.shared, store: UserDefaultsWidgetStore())
-      }
+    // To avoid blocking startup, perform work on a background queue.
+    queue.async {
+      logInstalledWidgets(fetcher: WidgetCenter.shared, store: UserDefaultsWidgetStore())
     }
   }
 
