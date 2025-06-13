@@ -2137,20 +2137,16 @@ UniqueFontSelector* HTMLCanvasElement::GetFontSelector() {
 }
 
 void HTMLCanvasElement::UpdateMemoryUsage() {
-  int buffer_count = 0;
-
   if (!IsRenderingContext2D() && !IsWebGL())
     return;
 
-  if (context_) {
-    buffer_count = context_->AllocatedBufferCountPerPixel();
-    if (context_->DrawsViaGpu()) {
-      // The number of internal GPU buffers vary between one (stable
-      // non-displayed state) and three (triple-buffered animations).
-      // Adding 2 is a pessimistic but relevant estimate.
-      // Note: These buffers might be allocated in GPU memory.
-      buffer_count += 2;
-    }
+  int buffer_count = context_->AllocatedBufferCountPerPixel();
+  if (context_->DrawsViaGpu()) {
+    // The number of internal GPU buffers vary between one (stable
+    // non-displayed state) and three (triple-buffered animations).
+    // Adding 2 is a pessimistic but relevant estimate.
+    // Note: These buffers might be allocated in GPU memory.
+    buffer_count += 2;
   }
 
   // NOTE: All formats used by canvas are either 8-bit or 16-bit.
