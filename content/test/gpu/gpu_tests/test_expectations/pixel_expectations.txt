@@ -500,8 +500,8 @@ crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
 crbug.com/420902568 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MeetEffectsTruckerHat [ Failure ]
 
 # Flakily causes android pixel 6 genesh to crash.
-crbug.com/421412516 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
-crbug.com/421871867 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
+crbug.com/421412516 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
+crbug.com/421871867 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 
 # Corsola/Android Desktop
 crbug.com/421948893 [ android android-corsola ] Pixel_Video_BackdropFilter [ Failure ]
