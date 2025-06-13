@@ -2880,6 +2880,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.YieldedCountByUserTiming" units="count"
+    expires_after="2025-08-07">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The count how many times the parser is yielded by the signal from the site.
+    This is triggered via performance.mark().
+
+    This is measured for the experiment in crbug.com/416543903.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.YieldedTimeAverage4" units="microseconds"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>

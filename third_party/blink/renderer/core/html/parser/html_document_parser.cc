@@ -1278,6 +1278,9 @@ void HTMLDocumentParser::NotifyParserPauseByUserTiming() {
     time_waiting_for_user_timing_ = base::TimeTicks::Now();
   }
   is_waiting_for_user_timing_ = true;
+  if (metrics_reporter_) {
+    metrics_reporter_->CountYieldByUserTiming();
+  }
 }
 
 void HTMLDocumentParser::NotifyParserResumeByUserTiming() {
