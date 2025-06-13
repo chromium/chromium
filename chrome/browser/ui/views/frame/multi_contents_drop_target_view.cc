@@ -98,6 +98,13 @@ bool MultiContentsDropTargetView::IsClosing() const {
   return animation_.IsClosing();
 }
 
+int MultiContentsDropTargetView::GetPreferredWidth() const {
+  if (!GetVisible()) {
+    return 0;
+  }
+  return GetAnimationValue() * GetPreferredSize().width();
+}
+
 void MultiContentsDropTargetView::AnimationProgressed(
     const gfx::Animation* animation) {
   InvalidateLayout();
@@ -117,8 +124,14 @@ void MultiContentsDropTargetView::Show(DropSide side) {
 }
 
 void MultiContentsDropTargetView::Hide() {
-  side_.reset();
   UpdateVisibility(false);
+}
+
+void MultiContentsDropTargetView::SetVisible(bool visible) {
+  if (!visible) {
+    side_.reset();
+  }
+  views::View::SetVisible(visible);
 }
 
 void MultiContentsDropTargetView::UpdateVisibility(bool should_be_open) {

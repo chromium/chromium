@@ -33,7 +33,8 @@ class MultiContentsViewDropTargetController final {
   // Handles a drag within the web contents area.
   // `point` should be relative to the multi contents view.
   void OnWebContentsDragUpdate(const content::DropData& data,
-                               const gfx::PointF& point);
+                               const gfx::PointF& point,
+                               bool is_in_split_view);
   void OnWebContentsDragExit();
 
  private:

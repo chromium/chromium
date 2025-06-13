@@ -53,7 +53,11 @@ class MultiContentsDropTargetView : public views::View,
 
   bool IsClosing() const;
 
+  // Returns the preferred width of this view, considering animation progress.
+  int GetPreferredWidth() const;
+
   // views::View
+  void SetVisible(bool visible) override;
   void OnThemeChanged() override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;

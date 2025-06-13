@@ -50,6 +50,8 @@ class MultiContentsView : public views::View,
     double start_width = 0;
     double resize_width = 0;
     double end_width = 0;
+
+    double drop_target_width = 0;
   };
 
   static constexpr int kSplitViewContentInset = 8;

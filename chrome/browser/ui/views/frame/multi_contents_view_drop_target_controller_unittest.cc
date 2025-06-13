@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -21,8 +22,8 @@ namespace {
 
 static constexpr gfx::Size kMultiContentsViewSize(500, 500);
 
-static constexpr gfx::PointF kDragPointForStartDropTargetShow(50, 250);
-static constexpr gfx::PointF kDragPointForEndDropTargetShow(450, 250);
+static constexpr gfx::PointF kDragPointForStartDropTargetShow(1, 250);
+static constexpr gfx::PointF kDragPointForEndDropTargetShow(499, 250);
 static constexpr gfx::PointF kDragPointForHiddenTargets(250, 250);
 
 content::DropData ValidUrlDropData() {
@@ -79,7 +80,7 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
   }
 
   void DragURLTo(const gfx::PointF& point) {
-    controller().OnWebContentsDragUpdate(ValidUrlDropData(), point);
+    controller().OnWebContentsDragUpdate(ValidUrlDropData(), point, false);
   }
 
  private:
@@ -178,7 +179,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
 TEST_F(MultiContentsViewDropTargetControllerTest,
        OnWebContentsDragUpdate_HideDropTargetOnInvalidURL) {
   controller().OnWebContentsDragUpdate(content::DropData(),
-                                       kDragPointForStartDropTargetShow);
+                                       kDragPointForStartDropTargetShow, false);
 
   FastForward();
   EXPECT_FALSE(drop_target_view().GetVisible());
@@ -192,7 +193,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
   EXPECT_FALSE(drop_target_view().GetVisible());
 
   controller().OnWebContentsDragUpdate(ValidUrlDropData(),
-                                       kDragPointForHiddenTargets);
+                                       kDragPointForHiddenTargets, false);
   FastForward();
   EXPECT_FALSE(drop_target_view().GetVisible());
 }

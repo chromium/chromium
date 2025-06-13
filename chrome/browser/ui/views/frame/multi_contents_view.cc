@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -212,13 +214,35 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
 
   const gfx::Rect available_space(width, height);
   ViewWidths widths = GetViewWidths(available_space);
+
+  gfx::Rect drop_target_rect(widths.drop_target_width,
+                             available_space.height());
   gfx::Rect start_rect(available_space.origin(),
                        gfx::Size(widths.start_width, available_space.height()));
-  const gfx::Rect resize_rect(
+  gfx::Rect resize_rect(
       start_rect.top_right(),
       gfx::Size(widths.resize_width, available_space.height()));
   gfx::Rect end_rect(resize_rect.top_right(),
                      gfx::Size(widths.end_width, available_space.height()));
+
+  if (drop_target_view_->side().has_value()) {
+    switch (drop_target_view_->side().value()) {
+      case MultiContentsDropTargetView::DropSide::START:
+        // If the drop target view will show at the start, shift everything
+        // over.
+        start_rect.set_x(start_rect.x() + widths.drop_target_width);
+        resize_rect.set_x(resize_rect.x() + widths.drop_target_width);
+        end_rect.set_x(resize_rect.x() + widths.drop_target_width);
+        drop_target_rect.set_origin(available_space.origin());
+        break;
+      case MultiContentsDropTargetView::DropSide::END:
+        drop_target_rect.set_origin(end_rect.top_right());
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
   if (IsInSplitView()) {
     start_rect.Inset(start_contents_view_inset_);
     end_rect.Inset(end_contents_view_inset_);
@@ -233,10 +257,9 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
                                      contents_container_views_[1]->GetVisible(),
                                      end_rect);
 
-  // TODO(crbug.com/394369035): Implement visual layout of the drop target
-  // views.
-  layouts.child_layouts.emplace_back(drop_target_view_.get(), false,
-                                     gfx::Rect(0, 0, 0, 0));
+  layouts.child_layouts.emplace_back(drop_target_view_.get(),
+                                     drop_target_view_->GetVisible(),
+                                     drop_target_rect);
 
   layouts.host_size = gfx::Size(width, height);
   return layouts;
@@ -255,24 +278,29 @@ MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
         available_space.width() - widths.start_width - widths.resize_width;
   } else {
     CHECK(!contents_container_views_[1]->GetVisible());
-    widths.start_width = available_space.width();
+    widths.drop_target_width = drop_target_view_->GetPreferredWidth();
+
+    // TODO(crbug.com/394369035): Drop targets currently don't scale with
+    // browser size. Consider adding a min width value.
+    widths.start_width = available_space.width() - widths.drop_target_width;
   }
   return ClampToMinWidth(widths);
 }
 
 MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
     ViewWidths widths) const {
+  if (!IsInSplitView()) {
+    // Don't clamp if in a single-view state, where other views should be 0
+    // width.
+    return widths;
+  }
+
   const int min_percentage =
       kMinWebContentsWidthPercentage * browser_view_->GetBounds().width();
   const int min_fixed_value = min_contents_width_for_testing_.has_value()
                                   ? min_contents_width_for_testing_.value()
                                   : kMinWebContentsWidth;
   const int min_width = std::min(min_fixed_value, min_percentage);
-  if (!IsInSplitView()) {
-    // Don't clamp if in a single-view state, where other views should be 0
-    // width.
-    return widths;
-  }
   if (widths.start_width < min_width) {
     const double diff = min_width - widths.start_width;
     widths.start_width += diff;

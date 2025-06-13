@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 
 #include "base/check_deref.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
@@ -26,21 +27,23 @@ MultiContentsViewDropTargetController::DropTargetShowTimer::DropTargetShowTimer(
 
 void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
     const content::DropData& data,
-    const gfx::PointF& point) {
+    const gfx::PointF& point,
+    bool is_in_split_view) {
   CHECK_LE(point.x(), drop_target_parent_view_->width());
 
-  // TODO(crbug.com/394369035): Settle on an appropriate value for this.
-  constexpr int kDropEntryPointWidth = 100;
-
-  const bool is_rtl = base::i18n::IsRTL();
-  if (!data.url.is_valid()) {
+  if (!data.url.is_valid() || is_in_split_view) {
     ResetDropTargetTimer();
-  } else if (point.x() >=
-             drop_target_parent_view_->width() - kDropEntryPointWidth) {
+    return;
+  }
+
+  const int drop_entry_point_width =
+      drop_target_view_->GetPreferredSize().width();
+  const bool is_rtl = base::i18n::IsRTL();
+  if (point.x() >= drop_target_parent_view_->width() - drop_entry_point_width) {
     StartOrUpdateDropTargetTimer(
         is_rtl ? MultiContentsDropTargetView::DropSide::START
                : MultiContentsDropTargetView::DropSide::END);
-  } else if (point.x() <= kDropEntryPointWidth) {
+  } else if (point.x() <= drop_entry_point_width) {
     StartOrUpdateDropTargetTimer(
         is_rtl ? MultiContentsDropTargetView::DropSide::END
                : MultiContentsDropTargetView::DropSide::START);

@@ -3712,7 +3712,7 @@ void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
                                       const gfx::PointF& point) {
   if (multi_contents_view_) {
     multi_contents_view_->drop_target_controller().OnWebContentsDragUpdate(
-        drop_data, point);
+        drop_data, point, IsInSplitView());
   }
 }
 
