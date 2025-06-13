@@ -1,7 +1,1 @@
-{
-  "browser": "Chrome",
-  "channel": "Stable",
-  "platform": "Windows",
-  "version": "137.0.7151.41",
-  "chromium_main_branch_position": 1453031
-}
+{"browser":"Chrome","channel":"Stable","platform":"Windows","version":"137.0.7151.70"}
