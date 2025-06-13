@@ -62,8 +62,11 @@ struct FullAddressFormPageParams {
   // True if the submission should be default prevented.
   bool default_prevented = false;
   // True if there should be redirection done after submitting with
-  // `default_prevented` enabled in the parameters.
+  // a parameter that can stop the submit event from being handled by Autofill.
   bool redirect = false;
+  // True if the submission should be prevented from propagating to any other
+  // listener regardless of their positioning.
+  bool stop_immediate_propagation = false;
 };
 
 // Matcher for the banner button.
@@ -249,6 +252,17 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
     config.features_enabled.push_back(kAutofillAllowDefaultPreventedSubmission);
   }
 
+  if ([self isRunningTest:@selector(testSubmissionDetection_inCaptureMode)]) {
+    config.features_enabled.push_back(
+        kAutofillFormSubmissionEventsInCaptureMode);
+  }
+
+  if ([self
+          isRunningTest:@selector(testSubmissionDetection_notInCaptureMode)]) {
+    config.features_disabled.push_back(
+        kAutofillFormSubmissionEventsInCaptureMode);
+  }
+
   return config;
 }
 
@@ -329,7 +343,10 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
       queryParameters.push_back("preventDefault");
     }
     if (params.redirect) {
-      queryParameters.push_back("redirectWhenDefaultPrevented");
+      queryParameters.push_back("redirectWhenSubmissionPrevented");
+    }
+    if (params.stop_immediate_propagation) {
+      queryParameters.push_back("stopImmediatePropagation");
     }
     return base::JoinString(queryParameters, "&");
   };
@@ -927,6 +944,60 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
       expectTotalCount:1
           forHistogram:@"Autofill.iOS.FormSubmission.Outcome"]);
+}
+
+// Tests that submission is detected hence the infobar is displayed when the
+// "form" event behind the submission has its propagation entirely stopped via
+// stopImmediatePropagation() while the form submit event listener for Autofill
+// is set in capture mode.
+- (void)testSubmissionDetection_inCaptureMode {
+  // Sign-in so the profile can be saved into the account.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Submit the form with `defaultPrevented` not considered.
+  FullAddressFormPageParams params{.redirect = true,
+                                   .stop_immediate_propagation = true};
+  [self loadAndSubmitFullAddressFormWithParams:params];
+
+  // Wait on the infobar to be displayed after submission.
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+
+  // Accept the banner to save the profile.
+  [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Wait for the save profile dialog to appear.
+  [ChromeEarlGrey waitForMatcher:ModalButtonMatcher()];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  [SigninEarlGrey signOut];
+}
+
+// Tests that submission isn't detected hence the infobar not displayed when the
+// "form" event behind the submission has its propagation entirely stopped via
+// stopImmediatePropagation() while the form submit event listener for Autofill
+// isn't set in capture mode.
+- (void)testSubmissionDetection_notInCaptureMode {
+  // Sign-in so the profile can be saved into the account.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Submit the form with the submit event propagation stopped via
+  // stopImmediatePropagation().
+  FullAddressFormPageParams params{.redirect = true,
+                                   .stop_immediate_propagation = true};
+  [self loadAndSubmitFullAddressFormWithParams:params];
+
+  // Make sure the infobar isn't displayed.
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+
+  [SigninEarlGrey signOut];
 }
 
 @end
