@@ -581,12 +581,19 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting() {
   return CreateForTesting(viz::SinglePlaneFormat::kRGBA_8888, GL_TEXTURE_2D);
 }
 
+scoped_refptr<ClientSharedImage> ClientSharedImage::CreateSoftwareForTesting() {
+  auto shared_image = CreateForTesting();  // IN-TEST
+  shared_image->is_software_ = true;
+  return shared_image;
+}
+
 // static
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     viz::SharedImageFormat format,
     uint32_t texture_target) {
   SharedImageMetadata metadata;
   metadata.format = format;
+  metadata.size = gfx::Size(64, 64);
   metadata.color_space = gfx::ColorSpace::CreateSRGB();
   metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
   metadata.alpha_type = kOpaque_SkAlphaType;
@@ -600,6 +607,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     SharedImageUsageSet usage) {
   SharedImageMetadata metadata;
   metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.size = gfx::Size(64, 64);
   metadata.color_space = gfx::ColorSpace::CreateSRGB();
   metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
   metadata.alpha_type = kOpaque_SkAlphaType;

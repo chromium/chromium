@@ -27,12 +27,9 @@ TEST(TextureLayerImplTest, VisibleOpaqueRegion) {
 
   LayerTreeImplTestBase impl;
 
-  auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D,
-      gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
-                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
-      layer_bounds, viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+  auto resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken());
 
   TextureLayerImpl* layer = impl.AddLayerInActiveTree<TextureLayerImpl>();
   layer->SetBounds(layer_bounds);
@@ -61,12 +58,9 @@ TEST(TextureLayerImplTest, Occlusion) {
 
   LayerTreeImplTestBase impl;
 
-  auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D,
-      gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
-                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
-      layer_size, viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+  auto resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken());
 
   TextureLayerImpl* texture_layer_impl =
       impl.AddLayerInActiveTree<TextureLayerImpl>();

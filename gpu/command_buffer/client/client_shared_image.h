@@ -201,6 +201,7 @@ class GPU_EXPORT ClientSharedImage
   // Creates a ClientSharedImage that is not associated with any
   // SharedImageInterface for testing.
   static scoped_refptr<ClientSharedImage> CreateForTesting();
+  static scoped_refptr<ClientSharedImage> CreateSoftwareForTesting();
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       viz::SharedImageFormat format,
       uint32_t texture_target);
