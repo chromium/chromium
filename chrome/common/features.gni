@@ -52,7 +52,9 @@ declare_args() {
 
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
-  enable_hangout_services_extension = is_chrome_branded
+  # TODO(crbug.com/424596489): Enable on desktop Android once the
+  # enterprise.hardwarePlatform and webrtcLoggingPrivate APIs are supported.
+  enable_hangout_services_extension = is_chrome_branded && !is_desktop_android
 
   enable_service_discovery = (enable_mdns && !is_android) || is_mac
 
