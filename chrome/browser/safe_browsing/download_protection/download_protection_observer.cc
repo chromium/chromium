@@ -138,6 +138,13 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   if (!profile)
     return;
 
+  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+      referrer_chain;
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    referrer_chain =
+        safe_browsing::GetOrIdentifyReferrerChainForEnterprise(*download);
+  }
+
   enterprise_connectors::ScanResult* stored_result =
       static_cast<enterprise_connectors::ScanResult*>(
           download->GetUserData(enterprise_connectors::ScanResult::kKey));
@@ -148,8 +155,8 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
           profile, download->GetURL(), download->GetTabUrl(), "", "",
           metadata.filename, metadata.sha256, metadata.mime_type,
           extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
-          DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response,
-          stored_result->user_justification);
+          DeepScanAccessPoint::DOWNLOAD, metadata.size, referrer_chain,
+          metadata.scan_response, stored_result->user_justification);
     }
   } else {
     ReportAnalysisConnectorWarningBypass(
@@ -158,7 +165,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
         base::HexEncode(download->GetHash()), download->GetMimeType(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
         DeepScanAccessPoint::DOWNLOAD, download->GetTotalBytes(),
-        enterprise_connectors::ContentAnalysisResponse(),
+        referrer_chain, enterprise_connectors::ContentAnalysisResponse(),
         /*user_justification=*/std::nullopt);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

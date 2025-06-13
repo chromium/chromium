@@ -97,6 +97,7 @@ void ReportAnalysisConnectorWarningBypass(
     const std::string& content_transfer_method,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
+    const safe_browsing::ReferrerChain& referrer_chain,
     const enterprise_connectors::ContentAnalysisResponse& response,
     std::optional<std::u16string> user_justification);
 
