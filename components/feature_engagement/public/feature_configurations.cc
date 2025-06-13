@@ -1903,6 +1903,25 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+  if (kIPHAutofillEnableLoyaltyCardsFeature.name == feature->name) {
+    // A config that allows autofill loyalty card IPH to be shown
+    // only one time when the user first encounter the feature.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.session_rate_impact.type = SessionRateImpact::Type::ALL;
+    config.trigger = EventConfig("keyboard_accessory_loyalty_cards_iph_trigger",
+                                 Comparator(LESS_THAN, 1),
+                                 feature_engagement::kMaxStoragePeriod,
+                                 feature_engagement::kMaxStoragePeriod);
+    config.used =
+        EventConfig("keyboard_accessory_loyalty_cards_autofilled",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
