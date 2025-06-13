@@ -2764,7 +2764,7 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/424245323 [ Mac14 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynn.html [ Skip Timeout ]
-crbug.com/424242611 [ Win11-arm64 ] external/wpt/orientation-sensor/RelativeOrientationSensor.https.html [ Pass Timeout ]
+crbug.com/424242611 [ Win11-arm64 ] external/wpt/orientation-sensor/RelativeOrientationSensor.https.html [ Failure Pass Timeout ]
 crbug.com/424229863 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/context.py [ Failure ]
 crbug.com/424229863 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/disable_simulation.py [ Failure ]
 crbug.com/424229863 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_gatt_connection_response/simulate_gatt_connection_response.py [ Failure ]
