@@ -456,6 +456,24 @@ INSTANTIATE_TEST_SUITE_P(
             .heuristic_type = EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
             .expected_result = EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
             .expected_source = AutofillPredictionSource::kHeuristics},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnrecognized,
+            .server_type = NO_SERVER_DATA,
+            .heuristic_type = LOYALTY_MEMBERSHIP_ID,
+            .expected_result = LOYALTY_MEMBERSHIP_ID,
+            .expected_source = AutofillPredictionSource::kHeuristics},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnrecognized,
+            .server_type = UNKNOWN_TYPE,
+            .heuristic_type = LOYALTY_MEMBERSHIP_ID,
+            .expected_result = LOYALTY_MEMBERSHIP_ID,
+            .expected_source = AutofillPredictionSource::kHeuristics},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnrecognized,
+            .server_type = PHONE_HOME_NUMBER,
+            .heuristic_type = LOYALTY_MEMBERSHIP_ID,
+            .expected_result = PHONE_HOME_NUMBER,
+            .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
         // Test non-override behaviour.
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kStreetAddress,

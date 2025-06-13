@@ -544,6 +544,12 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
     // predictions get precedence over the server predictions.
     believe_server = believe_server && (heuristic_type_local != IBAN_VALUE);
 
+    // For loyalty card fields the heuristic predictions get precedence over
+    // `UNKNOWN_TYPE` server prediction.
+    believe_server =
+        believe_server && !(heuristic_type_local == LOYALTY_MEMBERSHIP_ID &&
+                            server_type_local == UNKNOWN_TYPE);
+
     if (believe_server) {
       return {AutofillType(server_type_local),
               AutofillPredictionSource::kServerCrowdsourcing};
