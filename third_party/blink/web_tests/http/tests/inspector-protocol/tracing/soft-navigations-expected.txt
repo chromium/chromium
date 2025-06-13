@@ -6,6 +6,7 @@ Recording started
 Waited for LCP element with id=click-target
 
 Got soft navigation performance entry: http://127.0.0.1:8000/greeting
+Got soft LCP element: Hello, world.
 
 Stopping tracing and analyzing events.
 Tracing complete

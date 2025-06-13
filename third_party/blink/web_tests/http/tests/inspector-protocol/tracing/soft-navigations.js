@@ -20,11 +20,13 @@
   await dp.Page.navigate({url});
 
 
-  const lcpElementId = await session.evaluateAsync(`new Promise(resolve => {
-    new PerformanceObserver(list => {
-      resolve(list.getEntries()[0].id);
-    }).observe({type: 'largest-contentful-paint', buffered: true});
-  })`);
+  const lcpElementId = await session.evaluateAsync(function() {
+    return new Promise(resolve => {
+      new PerformanceObserver(list => {
+        resolve(list.getEntries()[0].id);
+      }).observe({type: 'largest-contentful-paint', buffered: true});
+    })
+  });
   testRunner.log('\nWaited for LCP element with id=' + lcpElementId);
 
   // We'll be clicking the center of the click target; it's important that this
@@ -55,21 +57,42 @@
   // The click which causes the soft navigation (via its click handler).
   userInteractionClick(clickTargetCenter);
 
-  // Use the PerformanceObserver to wait for the soft navigation.
-  const softNavigationName =
-      await session.evaluateAsync(`new Promise(resolve => {
-    new PerformanceObserver(list => {
-      resolve(list.getEntries()[0].name);
-    }).observe({type: 'soft-navigation', buffered: true});
-  })`);
+  // Use the PerformanceObserver to wait for both the soft navigation and the
+  // soft LCP element.
+  const [softNavigationName, softLcpElement] =
+      await session.evaluateAsync(function() {
+        return Promise.all([
+          new Promise(resolve => {
+            new PerformanceObserver(list => {
+              resolve(list.getEntries()[0].name);
+            }).observe({type: 'soft-navigation', buffered: true});
+          }),
+          new Promise(resolve => {
+            const entries = [];
+            new PerformanceObserver(list => {
+              entries.push(...list.getEntries());
+              // We need the second LCP entry, the first one is the one from
+              // the initial navigation, prior to the soft navigation.
+              if (entries.length == 2) {
+                resolve(entries[1].element.innerHTML);
+              }
+            }).observe({
+              type: 'largest-contentful-paint',
+              includeSoftNavigationObservations: true,
+              buffered: true
+            });
+          })
+        ]);
+      });
   testRunner.log(
       '\nGot soft navigation performance entry: ' + softNavigationName);
+  testRunner.log('Got soft LCP element: ' + softLcpElement);
 
   // Stop tracing and log the SoftNavigation event.
   testRunner.log('\nStopping tracing and analyzing events.');
   const unfilteredEvents = await tracingHelper.stopTracing();
 
-  // Maps timestamps (monononically increasing double) to a counter.
+  // Maps timestamps (monotonically increasing double) to a counter.
   class TimestampMapper {
     constructor() {
       this.time = 0;
@@ -112,7 +135,9 @@
   for (const event of unfilteredEvents) {
     if (event.name === 'SoftNavigationHeuristics_SoftNavigationDetected') {
       testRunner.log('-> SoftNavigation event');
-      testRunner.log('   interactionTimestamp: ' + timestamps.map(event.args.context.interactionTimestamp));
+      testRunner.log(
+          '   interactionTimestamp: ' +
+          timestamps.map(event.args.context.interactionTimestamp));
       testRunner.log('   ts: ' + timestamps.map(event.ts));
       testRunner.log('   frame: ' + ids.map(event.args.frame));
       testRunner.log('   navigationId: ' + ids.map(event.args.navigationId));
