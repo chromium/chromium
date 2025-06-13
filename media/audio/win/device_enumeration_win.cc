@@ -9,6 +9,7 @@
 #include <MMDeviceAPI.h>
 
 #include <Functiondiscoverykeys_devpkey.h>
+#include <devicetopology.h>
 #include <mmsystem.h>
 #include <stddef.h>
 #include <wrl/client.h>
@@ -22,6 +23,8 @@
 #include "media/audio/win/core_audio_util_win.h"
 
 using base::win::ScopedCoMem;
+using base::win::ScopedPropVariant;
+using Microsoft::WRL::ComPtr;
 
 // Taken from Mmddk.h.
 #define DRV_RESERVED 0x0800
@@ -29,6 +32,51 @@ using base::win::ScopedCoMem;
 #define DRV_QUERYFUNCTIONINSTANCEIDSIZE (DRV_RESERVED + 18)
 
 namespace media {
+namespace {
+
+// Returns the device instance id for `audio_device`.  Returns empty string
+// after a failure. Example output for a USB audio device would be:
+//
+// USB\VID_046D&PID_09A6&MI_02\6&318d810e&1&0002
+//
+// A Bluetooth audio device returns something like:
+//
+// BTHHFENUM\BthHFPAudio\8&39e29755&0&97
+//
+// Looks at the device topology to fetch the PKEY_Device_InstanceId of the
+// associated physical audio device.
+std::string GetDeviceInstanceId(IMMDevice* audio_device,
+                                IMMDeviceEnumerator* enumerator) {
+  ComPtr<IDeviceTopology> topology;
+  ComPtr<IConnector> connector;
+  ScopedCoMem<WCHAR> filter_id;
+  if (FAILED(audio_device->Activate(__uuidof(IDeviceTopology), CLSCTX_ALL, NULL,
+                                    &topology)) ||
+      // For our purposes checking the first connected device should be enough
+      // and if there are cases where there are more than one device connected
+      // we're not sure how to handle that anyway. So we pass 0.
+      FAILED(topology->GetConnector(0, &connector)) ||
+      FAILED(connector->GetDeviceIdConnectedTo(&filter_id))) {
+    return std::string();
+  }
+
+  // Now look at the properties of the connected device node and fetch the
+  // instance id (PKEY_Device_InstanceId) of the device node.
+  ComPtr<IMMDevice> device_node;
+  ComPtr<IPropertyStore> properties;
+  ScopedPropVariant instance_id;
+  if (FAILED(enumerator->GetDevice(filter_id, &device_node)) ||
+      FAILED(device_node->OpenPropertyStore(STGM_READ, &properties)) ||
+      FAILED(properties->GetValue(PKEY_Device_InstanceId,
+                                  instance_id.Receive())) ||
+      instance_id.get().vt != VT_LPWSTR) {
+    return std::string();
+  }
+
+  return base::WideToUTF8(instance_id.get().pwszVal);
+}
+
+}  // namespace
 
 static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
                                   AudioDeviceNames* device_names) {
@@ -78,7 +126,7 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
     Microsoft::WRL::ComPtr<IPropertyStore> properties;
     hr = audio_device->OpenPropertyStore(STGM_READ, &properties);
     if (SUCCEEDED(hr)) {
-      base::win::ScopedPropVariant friendly_name;
+      ScopedPropVariant friendly_name;
       hr = properties->GetValue(PKEY_Device_FriendlyName,
                                 friendly_name.Receive());
 
@@ -88,10 +136,13 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
         device.device_name = base::WideToUTF8(friendly_name.get().pwszVal);
       }
 
-      // Append suffix to USB and Bluetooth devices.
-      std::string controller_id =
-          CoreAudioUtil::GetAudioControllerID(audio_device.Get());
-      std::string suffix = GetDeviceSuffixWin(controller_id);
+      // Append a suffix to USB and Bluetooth devices.  For USB devices, the
+      // suffix contains the vendor id and product id using the format
+      // (VID:PID). For example: (045e:0810).  For Bluetooth devices, the suffix
+      // is (Bluetooth).
+      const std::string device_instance_id =
+          GetDeviceInstanceId(audio_device.Get(), enumerator.Get());
+      std::string suffix = GetDeviceSuffixWin(device_instance_id);
       if (!suffix.empty())
         device.device_name += suffix;
     }
