@@ -92,8 +92,11 @@ constexpr char kTestPageTitle[] = "Page Title";
 // The url parameter key for the video context.
 constexpr char kVideoContextParamKey[] = "vidcip";
 
-// The timestamp param.
-constexpr char kStartTimeQueryParam[] = "qsubts";
+// Query parameter for the query submission time.
+inline constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
+
+// Query parameter for the perceived query submission time.
+inline constexpr char kUserPerceivedStateTimeQueryParameter[] = "pqsubts";
 
 // The visual search interaction log data param.
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
@@ -998,9 +1001,13 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.EndQuery();
 
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
 
   ASSERT_TRUE(full_image_response_future.IsReady());
 
@@ -1055,6 +1062,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
                    .has_query_metadata());
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kFullPageObjectsRequestFetchLatency),
             1);
@@ -1206,9 +1214,13 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.EndQuery();
 
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
   std::string encoded_vsint;
   bool has_vsint = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()),
@@ -1269,6 +1281,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
                    .has_query_metadata());
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kFullPageObjectsRequestFetchLatency),
             1);
@@ -1333,9 +1346,13 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.EndQuery();
 
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
   std::string encoded_vsint;
   bool has_vsint = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()),
@@ -1397,6 +1414,7 @@ TEST_F(LensOverlayQueryControllerTest,
                 .query(),
             kTestQueryText);
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kFullPageObjectsRequestFetchLatency),
             1);
@@ -1446,9 +1464,13 @@ TEST_F(LensOverlayQueryControllerTest,
                              &actual_encoded_video_context);
 
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
 
   auto vsint = GetVsintFromUrl(url_response_future.Get().url());
   ASSERT_EQ(vsint.object_id(), "");
@@ -1464,6 +1486,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(latest_suggest_inputs_.has_contextual_visual_input_type());
   ASSERT_EQ(actual_encoded_video_context, kTestEncodedVideoContext);
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kFullPageObjectsRequestFetchLatency),
             1);
@@ -1562,9 +1585,13 @@ TEST_F(LensOverlayQueryControllerTest,
   // Check search URL is correct.
   ASSERT_TRUE(url_response_future.IsReady());
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
   std::string visual_input_type;
   bool has_visual_input_type = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
@@ -1584,6 +1611,7 @@ TEST_F(LensOverlayQueryControllerTest,
                 .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "pdf");
   ASSERT_TRUE(has_invocation_source);
@@ -1700,9 +1728,13 @@ TEST_F(LensOverlayQueryControllerTest,
   // Check search URL is correct.
   ASSERT_TRUE(url_response_future.IsReady());
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
   std::string visual_input_type;
   bool has_visual_input_type = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
@@ -1722,6 +1754,7 @@ TEST_F(LensOverlayQueryControllerTest,
                 .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "wp");
   ASSERT_TRUE(has_invocation_source);
@@ -1838,9 +1871,13 @@ TEST_F(LensOverlayQueryControllerTest,
   // Check search URL is correct.
   ASSERT_TRUE(url_response_future.IsReady());
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
   std::string visual_input_type;
   bool has_visual_input_type = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
@@ -1860,6 +1897,7 @@ TEST_F(LensOverlayQueryControllerTest,
                 .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "wp");
   ASSERT_TRUE(has_invocation_source);
@@ -3923,9 +3961,13 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF) {
   // Check search URL is correct.
   ASSERT_TRUE(url_response_future.IsReady());
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
   std::string visual_input_type;
   bool has_visual_input_type = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
@@ -3945,6 +3987,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF) {
                 .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "pdf");
   ASSERT_TRUE(has_invocation_source);
@@ -4145,9 +4188,13 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
   // Check search URL is correct.
   ASSERT_TRUE(url_response_future.IsReady());
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
   std::string visual_input_type;
   bool has_visual_input_type = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
@@ -4167,6 +4214,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
                 .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "wp");
   ASSERT_TRUE(has_invocation_source);
@@ -4312,9 +4360,13 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDFWithNewContentPayload) {
   // Check search URL is correct.
   ASSERT_TRUE(url_response_future.IsReady());
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
   std::string visual_input_type;
   bool has_visual_input_type = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
@@ -4334,6 +4386,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDFWithNewContentPayload) {
                 .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "pdf");
   ASSERT_TRUE(has_invocation_source);
@@ -4477,9 +4530,13 @@ TEST_F(LensOverlayQueryControllerTest,
   // Check search URL is correct.
   ASSERT_TRUE(url_response_future.IsReady());
   std::string unused_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &unused_start_time);
+  bool has_start_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kUserPerceivedStateTimeQueryParameter, &unused_start_time);
+  std::string unused_query_submission_time;
+  bool has_query_submission_time = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kQuerySubmissionTimeQueryParameter,
+      &unused_query_submission_time);
   std::string visual_input_type;
   bool has_visual_input_type = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
@@ -4499,6 +4556,7 @@ TEST_F(LensOverlayQueryControllerTest,
                 .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_query_submission_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "wp");
   ASSERT_TRUE(has_invocation_source);

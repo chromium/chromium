@@ -128,8 +128,14 @@ inline constexpr char kClientIdQueryParameter[] = "client";
 // supported translate languages.
 inline constexpr char kClientIdQueryParameterValue[] = "lens-overlay";
 
-// Query parameter for the start time.
-inline constexpr char kStartTimeQueryParameter[] = "qsubts";
+// Query parameter for the query submission time. This should be set to the
+// time when the query leaves the client and is sent to the server.
+inline constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
+
+// Query parameter for the perceived query submission time. This should
+// be set to the time when the user performed the action that triggered
+// the query.
+inline constexpr char kUserPerceivedStateTimeQueryParameter[] = "pqsubts";
 
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
@@ -283,6 +289,12 @@ GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode) {
                     : kDarkModeParameterLightValue);
 }
 
+GURL AppendQuerySubmissionTimeParamToURL(const GURL& url_to_modify) {
+  return net::AppendOrReplaceQueryParameter(
+      url_to_modify, kQuerySubmissionTimeQueryParameter,
+      base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch()));
+}
+
 GURL BuildTextOnlySearchURL(
     base::Time query_start_time,
     const std::string& text_query,
@@ -320,8 +332,10 @@ GURL BuildTextOnlySearchURL(
         AppendVideoContextParamToURL(url_with_query_params, page_url);
   }
   url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kStartTimeQueryParameter,
+      url_with_query_params, kUserPerceivedStateTimeQueryParameter,
       base::NumberToString(query_start_time.InMillisecondsSinceUnixEpoch()));
+  url_with_query_params =
+      AppendQuerySubmissionTimeParamToURL(url_with_query_params);
   return url_with_query_params;
 }
 
@@ -383,9 +397,10 @@ GURL BuildLensSearchURL(
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kRequestIdParameterKey, encoded_request_id);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kStartTimeQueryParameter,
+      url_with_query_params, kUserPerceivedStateTimeQueryParameter,
       base::NumberToString(query_start_time.InMillisecondsSinceUnixEpoch()));
-
+  url_with_query_params =
+      AppendQuerySubmissionTimeParamToURL(url_with_query_params);
   return url_with_query_params;
 }
 
