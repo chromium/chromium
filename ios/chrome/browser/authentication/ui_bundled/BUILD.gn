@@ -237,6 +237,8 @@ source_set("eg_test_support+eg2") {
   sources = [
     "expected_signin_histograms.h",
     "expected_signin_histograms.mm",
+    "separate_profiles_util.h",
+    "separate_profiles_util.mm",
     "signin_earl_grey.h",
     "signin_earl_grey.mm",
     "signin_earl_grey_app_interface.h",
@@ -255,11 +257,14 @@ source_set("eg_test_support+eg2") {
     "//components/signin/public/base",
     "//components/sync/base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/account_menu:constants",
     "//ios/chrome/browser/authentication/ui_bundled/cells:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/history_sync:pref_names",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/recent_tabs/ui_bundled:ui_constants",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
@@ -283,8 +288,6 @@ source_set("eg2_tests") {
     "separate_profiles_egtest.mm",
     "separate_profiles_migration_egtest.mm",
     "separate_profiles_rollback_egtest.mm",
-    "separate_profiles_util.h",
-    "separate_profiles_util.mm",
   ]
   deps = [
     ":eg_test_support+eg2",
