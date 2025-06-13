@@ -120,6 +120,7 @@ action("merge_deb_dependencies") {
     additional_deps,
     "debian/deb_version.py",
     "debian/package_version_interval.py",
+    "//build/action_helpers.py",
   ]
   outputs = [ "$root_out_dir/deb_common.deps" ]
   args = [

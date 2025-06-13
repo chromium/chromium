@@ -3,9 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import sys
 
 import package_version_interval
+
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             os.path.pardir, os.path.pardir, os.path.pardir,
+                             os.path.pardir, 'build'))
+import action_helpers
 
 if len(sys.argv) < 3:
   print ('Usage: %s output_deps_file input1_deps_file input2_deps_file ...' %
@@ -38,7 +44,7 @@ for input_filename in input_filenames:
     if should_append_interval_set:
       package_interval_sets.append(interval_set)
 
-with open(output_filename, 'w') as output_file:
+with action_helpers.atomic_output(output_filename, mode='w') as output_file:
   lines = [interval_set.formatted() + '\n'
            for interval_set in package_interval_sets]
   output_file.write(''.join(sorted(lines)))
