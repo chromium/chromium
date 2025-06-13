@@ -56,9 +56,33 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
   gfx::Size container_size(width, height);
   gfx::Rect new_devtools_bounds;
   gfx::Rect new_contents_bounds;
+  gfx::Size devtools_and_content_size = container_size;
 
-  ApplyDevToolsContentsResizingStrategy(
-      strategy_, container_size, &new_devtools_bounds, &new_contents_bounds);
+  if (new_tab_footer_view_ && new_tab_footer_view_->GetVisible()) {
+    const int footer_total_height =
+        kNewTabFooterHeight + kNewTabFooterSeparatorHeight;
+    devtools_and_content_size.set_height(devtools_and_content_size.height() -
+                                         footer_total_height);
+
+    layouts.child_layouts.emplace_back(
+        new_tab_footer_view_separator_.get(),
+        new_tab_footer_view_separator_->GetVisible(),
+        gfx::Rect(0, devtools_and_content_size.height(), container_size.width(),
+                  kNewTabFooterSeparatorHeight),
+        views::SizeBounds(container_size));
+
+    layouts.child_layouts.emplace_back(
+        new_tab_footer_view_.get(), new_tab_footer_view_->GetVisible(),
+        gfx::Rect(
+            0,
+            devtools_and_content_size.height() + kNewTabFooterSeparatorHeight,
+            container_size.width(), kNewTabFooterHeight),
+        views::SizeBounds(container_size));
+  }
+
+  ApplyDevToolsContentsResizingStrategy(strategy_, devtools_and_content_size,
+                                        &new_devtools_bounds,
+                                        &new_contents_bounds);
 
   // DevTools cares about the specific position, so we have to compensate RTL
   // layout here.
@@ -70,29 +94,6 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
       devtools_scrim_view_.get(), devtools_scrim_view_->GetVisible(),
       host_view()->GetMirroredRect(new_devtools_bounds),
       views::SizeBounds(container_size));
-
-  // New Tab Footer view is displayed at the bottom of the contents view.
-  if (new_tab_footer_view_ && new_tab_footer_view_->GetVisible()) {
-    const int new_contents_height = new_contents_bounds.height() -
-                                    kNewTabFooterHeight -
-                                    kNewTabFooterSeparatorHeight;
-
-    // Shrink web contents height to fit the Footer.
-    new_contents_bounds.set_height(new_contents_height);
-
-    layouts.child_layouts.emplace_back(
-        new_tab_footer_view_separator_.get(),
-        new_tab_footer_view_separator_->GetVisible(),
-        gfx::Rect(0, new_contents_height, container_size.width(),
-                  kNewTabFooterSeparatorHeight),
-        views::SizeBounds(container_size));
-
-    layouts.child_layouts.emplace_back(
-        new_tab_footer_view_.get(), new_tab_footer_view_->GetVisible(),
-        gfx::Rect(0, new_contents_height + kNewTabFooterSeparatorHeight, width,
-                  kNewTabFooterHeight),
-        views::SizeBounds(container_size));
-  }
 
   const auto& contents_rect = host_view()->GetMirroredRect(new_contents_bounds);
   views::SizeBounds optional_size_bound = views::SizeBounds(container_size);
