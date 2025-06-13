@@ -32,13 +32,13 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
+#include "components/browsing_data/core/features.h"
 #include "components/browsing_data/core/history_notice_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/common/pref_names.h"
@@ -74,7 +74,8 @@ std::vector<std::string> GetAdvancedCounterPrefs() {
       browsing_data::prefs::kDeleteSiteSettings,
   };
 
-  if (!base::FeatureList::IsEnabled(features::kDbdRevampDesktop)) {
+  if (!base::FeatureList::IsEnabled(
+          browsing_data::features::kDbdRevampDesktop)) {
     counter_prefs_advanced.push_back(browsing_data::prefs::kDeletePasswords);
   }
 
@@ -84,7 +85,8 @@ std::vector<std::string> GetAdvancedCounterPrefs() {
 std::vector<std::string> GetBasicCounterPrefs() {
   std::vector<std::string> counter_prefs_basic = {};
 
-  if (!base::FeatureList::IsEnabled(features::kDbdRevampDesktop)) {
+  if (!base::FeatureList::IsEnabled(
+          browsing_data::features::kDbdRevampDesktop)) {
     counter_prefs_basic.push_back(browsing_data::prefs::kDeleteCacheBasic);
   }
 

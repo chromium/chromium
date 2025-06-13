@@ -69,15 +69,14 @@ void HistoryCounter::Count() {
   domain_fetching_finished_ = false;
 
   // Count the locally stored items.
+  // TODO(crbug.com/397187800): Clean up GetHistoryCount logic once
+  // kDbdRevampDesktop is launched.
   history_service_->GetHistoryCount(
       GetPeriodStart(), GetPeriodEnd(),
       base::BindOnce(&HistoryCounter::OnGetLocalHistoryCount,
                      weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
 
-  // TODO(crbug.com/397187800): Once the Desktop UI is migrated to the new
-  // strings based on domains, consider only using the GetUniqueDomainsVisited
-  // call.
   history_service_->GetUniqueDomainsVisited(
       GetPeriodStart(), GetPeriodEnd(),
       base::BindOnce(&HistoryCounter::OnGetUniqueDomains,

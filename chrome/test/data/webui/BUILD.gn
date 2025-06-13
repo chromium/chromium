@@ -209,6 +209,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/whats_new",
       "//components/bookmarks/browser",
       "//components/bookmarks/managed",
+      "//components/browsing_data/core",
       "//components/commerce/core:account_checker_test_support",
       "//components/commerce/core:feature_list",
       "//components/commerce/core:shopping_service_test_support",

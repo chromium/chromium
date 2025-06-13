@@ -195,14 +195,6 @@ BASE_FEATURE(kDataLeakPreventionFilesRestriction,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-// Enables a revamped Delete Browsing Data dialog. This includes UI changes and
-// removal of the bulk password deletion option from the dialog.
-BASE_FEATURE(kDbdRevampDesktop,
-             "DbdRevampDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
 // Whether to allow installed-by-default web apps to be installed or not.
 BASE_FEATURE(kPreinstalledWebAppInstallation,
              "DefaultWebAppInstallation",

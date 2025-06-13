@@ -97,6 +97,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/browsing_data/core/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -623,7 +624,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // Delete Browsing Data
   html_source->AddBoolean(
       "enableDeleteBrowsingDataRevamp",
-      base::FeatureList::IsEnabled(features::kDbdRevampDesktop));
+      base::FeatureList::IsEnabled(browsing_data::features::kDbdRevampDesktop));
 
   html_source->AddBoolean(
       "enableSupportForHomeAndWork",
