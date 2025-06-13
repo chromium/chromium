@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_ANDROID_CONTENT_FILTERS_OBSERVER_BRIDGE_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_ANDROID_CONTENT_FILTERS_OBSERVER_BRIDGE_H_
 
-#include <string>
-
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
@@ -24,9 +22,6 @@ class ContentFiltersObserverBridge {
   explicit ContentFiltersObserverBridge(std::string_view setting_name,
                                         base::RepeatingClosure on_enabled,
                                         base::RepeatingClosure on_disabled);
-  ContentFiltersObserverBridge(const ContentFiltersObserverBridge&) = delete;
-  ContentFiltersObserverBridge& operator=(
-      const ContentFiltersObserverBridge&) = delete;
   ~ContentFiltersObserverBridge();
 
   // Called after creating the bridge and when the setting is enabled or
@@ -34,10 +29,9 @@ class ContentFiltersObserverBridge {
   void OnChange(JNIEnv* env, bool enabled);
 
  private:
-  std::string setting_name_;
+  base::android::ScopedJavaGlobalRef<jobject> bridge_;
   base::RepeatingClosure on_enabled_;
   base::RepeatingClosure on_disabled_;
-  base::android::ScopedJavaGlobalRef<jobject> bridge_;
 };
 
 }  // namespace supervised_user
