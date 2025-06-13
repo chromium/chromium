@@ -26,11 +26,8 @@ class SuccessfulPasswordChangeBubbleController
   void FinishPasswordChange();
   void AuthenticateUser(base::OnceCallback<void(bool)> auth_callback);
 
-  std::u16string GetDisplayOrigin() const;
   std::u16string GetUsername() const;
   std::u16string GetNewPassword() const;
-
-  void NavigateToPasswordChangeSettings();
 
   base::WeakPtr<SuccessfulPasswordChangeBubbleController> GetWeakPtr();
 

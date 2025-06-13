@@ -54,15 +54,3 @@ TEST_F(SuccessfulPasswordChangeBubbleControllerTest,
       "PasswordManager.PasswordChange.SuccessBubble",
       metrics_util::CLICKED_MANAGE_PASSWORD, 1);
 }
-
-TEST_F(SuccessfulPasswordChangeBubbleControllerTest,
-       MetricsReportedForAboutPasswordChangeLink) {
-  base::HistogramTester histogram_tester;
-  CreateController();
-
-  controller_->NavigateToPasswordChangeSettings();
-  controller_.reset();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordChange.SuccessBubble",
-      metrics_util::CLICKED_ABOUT_PASSWORD_CHANGE, 1);
-}

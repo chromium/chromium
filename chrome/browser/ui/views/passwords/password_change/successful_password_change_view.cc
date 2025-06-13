@@ -9,10 +9,10 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/successful_password_change_bubble_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
-#include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -37,16 +37,6 @@ gfx::Insets ComputeRowMargins() {
   gfx::Insets margins = layout_provider->GetInsetsMetric(views::INSETS_DIALOG);
   margins.set_top_bottom(0, 0);
   return margins;
-}
-
-std::unique_ptr<views::Label> CreateBodyText(const std::u16string& domain) {
-  auto body_text = std::make_unique<views::Label>();
-  body_text->SetText(domain);
-  body_text->SetMultiLine(false);
-  body_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  body_text->SetBorder(views::CreateEmptyBorder(ComputeRowMargins()));
-  body_text->SetID(SuccessfulPasswordChangeView::kBodyTextLabelId);
-  return body_text;
 }
 
 std::unique_ptr<views::View> CreateUsernameLabel(
@@ -201,21 +191,20 @@ SuccessfulPasswordChangeView::SuccessfulPasswordChangeView(
   box_layout->set_cross_axis_alignment(views::LayoutAlignment::kStretch);
   box_layout->SetCollapseMarginsSpacing(true);
   box_layout->set_between_child_spacing(spacing);
-  box_layout->set_inside_border_insets(gfx::Insets::TLBR(0, 0, spacing, 0));
+  box_layout->set_inside_border_insets(
+      gfx::Insets::TLBR(spacing, 0, spacing, 0));
   // Set the margins to 0 such that the `root_view` fills the whole page bubble
   // width.
   set_margins(gfx::Insets());
 
-  root_view->AddChildView(CreateBodyText(controller_->GetDisplayOrigin()));
   root_view->AddChildView(CreateUsernamePasswordWithEyeIcon(controller_.get()));
   root_view->AddChildView(std::make_unique<views::Separator>());
   root_view->AddChildView(CreateManagePasswordsView(base::BindRepeating(
       &SuccessfulPasswordChangeBubbleController::OpenPasswordManager,
       controller_->GetWeakPtr())));
 
+  SetShowIcon(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  SetFootnoteView(CreateFooterView());
-
   SetCloseCallback(base::BindRepeating(
       [](SuccessfulPasswordChangeView* view) {
         // When dialog is closed explicitly finish password change flow to
@@ -228,19 +217,6 @@ SuccessfulPasswordChangeView::SuccessfulPasswordChangeView(
       this));
 }
 
-std::unique_ptr<views::View> SuccessfulPasswordChangeView::CreateFooterView() {
-  base::RepeatingClosure navigate_to_settings =
-      base::BindRepeating(&SuccessfulPasswordChangeBubbleController::
-                              NavigateToPasswordChangeSettings,
-                          base::Unretained(controller_.get()));
-  return CreateGooglePasswordManagerLabel(
-      /*text_message_id=*/
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FOOTER,
-      /*link_message_id=*/
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
-      navigate_to_settings);
-}
-
 SuccessfulPasswordChangeView::~SuccessfulPasswordChangeView() = default;
 
 PasswordBubbleControllerBase* SuccessfulPasswordChangeView::GetController() {
@@ -250,6 +226,11 @@ PasswordBubbleControllerBase* SuccessfulPasswordChangeView::GetController() {
 const PasswordBubbleControllerBase*
 SuccessfulPasswordChangeView::GetController() const {
   return controller_.get();
+}
+
+ui::ImageModel SuccessfulPasswordChangeView::GetWindowIcon() {
+  return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                        ui::kColorIcon);
 }
 
 void SuccessfulPasswordChangeView::AddedToWidget() {

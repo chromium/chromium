@@ -72,11 +72,6 @@ void SuccessfulPasswordChangeBubbleController::AuthenticateUser(
   }
 }
 
-std::u16string SuccessfulPasswordChangeBubbleController::GetDisplayOrigin()
-    const {
-  return password_change_delegate_->GetDisplayOrigin();
-}
-
 std::u16string SuccessfulPasswordChangeBubbleController::GetUsername() const {
   return password_change_delegate_->GetUsername();
 }
@@ -84,12 +79,6 @@ std::u16string SuccessfulPasswordChangeBubbleController::GetUsername() const {
 std::u16string SuccessfulPasswordChangeBubbleController::GetNewPassword()
     const {
   return password_change_delegate_->GetGeneratedPassword();
-}
-
-void SuccessfulPasswordChangeBubbleController::
-    NavigateToPasswordChangeSettings() {
-  dismissal_reason_ = metrics_util::CLICKED_ABOUT_PASSWORD_CHANGE;
-  delegate_->NavigateToPasswordChangeSettings();
 }
 
 base::WeakPtr<SuccessfulPasswordChangeBubbleController>

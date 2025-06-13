@@ -25,11 +25,11 @@
 #include "ui/views/test/button_test_api.h"
 #include "url/gurl.h"
 
-using testing::Return;
-using testing::ReturnRef;
-
 namespace {
-const std::u16string kDomain = u"demo.com";
+
+using ::testing::Return;
+using ::testing::ReturnRef;
+
 const std::u16string kTestEmail = u"elisa.buckett@gmail.com";
 const std::u16string kPassword = u"cE1L45Vgxyzlu8";
 
@@ -45,8 +45,6 @@ class SuccessfulPasswordChangeViewTest : public PasswordBubbleViewTestBase {
     password_change_delegate_ = std::make_unique<PasswordChangeDelegateMock>();
     ON_CALL(*model_delegate_mock(), GetPasswordChangeDelegate())
         .WillByDefault(Return(password_change_delegate_.get()));
-    ON_CALL(*password_change_delegate_, GetDisplayOrigin())
-        .WillByDefault(Return(kDomain));
     ON_CALL(*password_change_delegate_, GetUsername())
         .WillByDefault(ReturnRef(kTestEmail));
     ON_CALL(*password_change_delegate_, GetGeneratedPassword())
@@ -89,14 +87,11 @@ TEST_F(SuccessfulPasswordChangeViewTest, BubbleLayout) {
                 IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGED_TITLE));
 
   EXPECT_EQ(
-      kDomain,
-      GetLabelById(SuccessfulPasswordChangeView::kBodyTextLabelId)->GetText());
+      GetLabelById(SuccessfulPasswordChangeView::kUsernameLabelId)->GetText(),
+      kTestEmail);
   EXPECT_EQ(
-      kTestEmail,
-      GetLabelById(SuccessfulPasswordChangeView::kUsernameLabelId)->GetText());
-  EXPECT_EQ(
-      kPassword,
-      GetLabelById(SuccessfulPasswordChangeView::kPasswordLabelId)->GetText());
+      GetLabelById(SuccessfulPasswordChangeView::kPasswordLabelId)->GetText(),
+      kPassword);
 
   EXPECT_TRUE(
       view()->GetViewByID(SuccessfulPasswordChangeView::kEyeIconButtonId));
@@ -149,13 +144,4 @@ TEST_F(SuccessfulPasswordChangeViewTest, EyeButtonClick) {
   // Verify password is hidden.
   EXPECT_TRUE(GetLabelById(SuccessfulPasswordChangeView::kPasswordLabelId)
                   ->GetObscured());
-}
-
-TEST_F(SuccessfulPasswordChangeViewTest, PasswordChangeLinkClicked) {
-  CreateAndShowView();
-
-  EXPECT_CALL(*model_delegate_mock(), NavigateToPasswordChangeSettings);
-  auto* controller = static_cast<SuccessfulPasswordChangeBubbleController*>(
-      static_cast<PasswordBubbleViewBase*>(view())->GetController());
-  controller->NavigateToPasswordChangeSettings();
 }
