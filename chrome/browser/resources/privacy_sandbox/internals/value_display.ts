@@ -27,6 +27,20 @@ export class ValueDisplayElement extends CustomElement {
     return getTemplate();
   }
 
+  flattenValue(value: Value): any {
+    if (value.listValue != null) {
+      return value.listValue.storage.map(v => this.flattenValue(v));
+    } else if (value.dictionaryValue != null) {
+      const flattenedDictionary: {[key: string]: any} = {};
+      for (const [k, v] of Object.entries(value.dictionaryValue.storage)) {
+        flattenedDictionary[k] = this.flattenValue(v);
+      }
+      return flattenedDictionary;
+    } else {
+      return value;
+    }
+  }
+
   configure(value: Value, logicalFn: LogicalFn = defaultLogicalFn) {
     const tElem = this.shadowRoot!.querySelector<HTMLElement>(`#type`)!;
     const vElem = this.shadowRoot!.querySelector<HTMLElement>(`#value`)!;
@@ -62,11 +76,21 @@ export class ValueDisplayElement extends CustomElement {
 
     } else if (value.listValue != null) {
       tElem.textContent = '(list)';
-      vElem.textContent = JSON.stringify(value.listValue.storage);
+
+      // The pre element is used to preserve line breaks and spaces
+      const jsonValueElement = document.createElement('pre');
+      jsonValueElement.id = 'json-value';
+      jsonValueElement.textContent =
+          JSON.stringify(this.flattenValue(value), null, 2);
+      vElem.appendChild(jsonValueElement);
 
     } else if (value.dictionaryValue != null) {
       tElem.textContent = '(dictionary)';
-      vElem.textContent = JSON.stringify(value.dictionaryValue.storage);
+      const jsonValueElement = document.createElement('pre');
+      jsonValueElement.id = 'json-value';
+      jsonValueElement.textContent =
+          JSON.stringify(this.flattenValue(value), null, 2);
+      vElem.appendChild(jsonValueElement);
 
     } else if (value.binaryValue != null) {
       tElem.textContent = '(binary)';

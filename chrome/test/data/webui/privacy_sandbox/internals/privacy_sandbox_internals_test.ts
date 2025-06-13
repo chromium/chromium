@@ -159,6 +159,12 @@ suite('ValueDisplayElementTest', function() {
     assertEquals(span.textContent, s);
   };
 
+  const assertJsonValue = (s: string) => {
+    const jsonValueElement = valueElement.$('#json-value');
+    assertTrue(!!jsonValueElement);
+    assertEquals(jsonValueElement.textContent, s);
+  };
+
   test('null', () => {
     v.nullValue = 1;
     valueElement.configure(v);
@@ -229,8 +235,9 @@ suite('ValueDisplayElementTest', function() {
       return v;
     });
     valueElement.configure(v);
-    assertValue(
-        '[{"intValue":1},{"intValue":2},{"intValue":3},{"intValue":4}]');
+    assertJsonValue(JSON.stringify(
+        [{'intValue': 1}, {'intValue': 2}, {'intValue': 3}, {'intValue': 4}],
+        null, 2));
     assertType('(list)');
   });
 
@@ -242,7 +249,54 @@ suite('ValueDisplayElementTest', function() {
     v2.stringValue = 'bikes';
     v.dictionaryValue.storage = {'v1': v1, 'v2': v2};
     valueElement.configure(v);
-    assertValue('{"v1":{"intValue":10},"v2":{"stringValue":"bikes"}}');
+    assertJsonValue(JSON.stringify(
+        {'v1': {'intValue': 10}, 'v2': {'stringValue': 'bikes'}}, null, 2));
+    assertType('(dictionary)');
+  });
+
+  test('flattens list with nested dictionary', () => {
+    const vDict = {} as DictionaryValue;
+    const v1: Value = {} as Value;
+    v1.intValue = 10;
+    const v2: Value = {} as Value;
+    v2.stringValue = 'bikes';
+    vDict.storage = {'v1': v1, 'v2': v2};
+
+    v.listValue = {} as ListValue;
+    v.listValue.storage = [
+      {dictionaryValue: vDict} as Value,
+    ];
+
+    valueElement.configure(v);
+    assertJsonValue(JSON.stringify(
+        [{'v1': {'intValue': 10}, 'v2': {'stringValue': 'bikes'}}], null, 2));
+    assertType('(list)');
+  });
+
+  test('flattens dictionary with nested list', () => {
+    const vList = {} as ListValue;
+    vList.storage = [1, 2, 3, 4].map((x) => {
+      const v: Value = {} as Value;
+      v.intValue = x;
+      return v;
+    });
+
+    v.dictionaryValue = {} as DictionaryValue;
+    v.dictionaryValue.storage = {
+      'someKey': {listValue: vList} as Value,
+    };
+
+    valueElement.configure(v);
+    assertJsonValue(JSON.stringify(
+        {
+          'someKey': [
+            {'intValue': 1},
+            {'intValue': 2},
+            {'intValue': 3},
+            {'intValue': 4},
+          ],
+        },
+        null, 2));
     assertType('(dictionary)');
   });
 
