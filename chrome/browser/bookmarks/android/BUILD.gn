@@ -224,6 +224,7 @@ android_library("javatests") {
     "//chrome/browser/bookmarks/android/junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",
     "//chrome/browser/bookmarks/android/junit/src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/AccountBookmarkTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkBatchUploadCardRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkBridgeTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkOpenerTest.java",
