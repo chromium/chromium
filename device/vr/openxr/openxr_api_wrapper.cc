@@ -41,9 +41,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <dxgi1_2.h>
-
-#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #endif
+
 namespace device {
 
 namespace {
