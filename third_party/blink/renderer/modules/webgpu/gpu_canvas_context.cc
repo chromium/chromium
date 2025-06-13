@@ -191,11 +191,11 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
 CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
   if (!swap_buffers_) {
-    return Host()->ResourceProvider();
+    return Host()->ResourceProviderDEPRECATED();
   }
 
-  if (Host()->ResourceProvider() &&
-      Host()->ResourceProvider()->Size() != swap_buffers_->Size()) {
+  if (Host()->ResourceProviderDEPRECATED() &&
+      Host()->ResourceProviderDEPRECATED()->Size() != swap_buffers_->Size()) {
     Host()->DiscardResourceProvider();
   }
 

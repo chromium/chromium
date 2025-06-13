@@ -553,7 +553,7 @@ OffscreenCanvas::GetOrCreateResourceProviderForCanvas2DOrImageBitmap() {
     return nullptr;
   }
 
-  if (CanvasResourceProvider* provider = ResourceProvider()) {
+  if (CanvasResourceProvider* provider = ResourceProviderDEPRECATED()) {
     if (!provider->IsValid()) {
       // The canvas context is not lost but the provider is invalid. This
       // happens if the GPU process dies in the middle of a render task. The
@@ -633,17 +633,17 @@ OffscreenCanvas::GetOrCreateResourceProviderForCanvas2DOrImageBitmap() {
 
   ReplaceResourceProvider(std::move(provider));
 
-  if (ResourceProvider() && ResourceProvider()->IsValid()) {
+  if (ResourceProviderDEPRECATED() && ResourceProviderDEPRECATED()->IsValid()) {
     // todo(crbug/1064363)  Add a separate UMA for Offscreen Canvas usage and
     // understand if the if (ResourceProvider() &&
     // ResourceProvider()->IsValid()) is really needed.
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                              ResourceProvider()->IsAccelerated());
+                              ResourceProviderDEPRECATED()->IsAccelerated());
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                  ResourceProvider()->GetType());
+                                  ResourceProviderDEPRECATED()->GetType());
     DidDraw();
   }
-  return ResourceProvider();
+  return ResourceProviderDEPRECATED();
 }
 
 void OffscreenCanvas::DidDraw(const SkIRect& rect) {

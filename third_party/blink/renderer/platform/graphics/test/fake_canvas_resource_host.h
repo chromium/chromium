@@ -37,8 +37,9 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   size_t GetMemoryUsage() const override { return 0; }
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D()
       override {
-    if (ResourceProvider())
-      return ResourceProvider();
+    if (ResourceProviderDEPRECATED()) {
+      return ResourceProviderDEPRECATED();
+    }
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kCallClear;
     std::unique_ptr<CanvasResourceProvider> provider;
@@ -64,7 +65,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
 
     ReplaceResourceProvider(std::move(provider));
 
-    return ResourceProvider();
+    return ResourceProviderDEPRECATED();
   }
 
   void SetPageVisible(bool visible) {

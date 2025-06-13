@@ -87,10 +87,10 @@ void SetPageVisible(
   if (!page_visible) {
     // Trigger hibernation.
     scoped_refptr<StaticBitmapImage> snapshot =
-        host->ResourceProvider()->Snapshot(FlushReason::kHibernating);
+        host->ResourceProviderDEPRECATED()->Snapshot(FlushReason::kHibernating);
     hibernation_handler->SaveForHibernation(
         snapshot->PaintImageForCurrentFrame().GetSwSkImage(),
-        host->ResourceProvider()->ReleaseRecorder());
+        host->ResourceProviderDEPRECATED()->ReleaseRecorder());
     EXPECT_TRUE(hibernation_handler->IsHibernating());
   } else {
     // End hibernation.
@@ -231,7 +231,7 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
 
   EXPECT_TRUE(host.GetRasterMode() == RasterMode::kGPU);
   EXPECT_FALSE(handler.IsHibernating());
-  EXPECT_TRUE(host.ResourceProvider()->IsValid());
+  EXPECT_TRUE(host.ResourceProviderDEPRECATED()->IsValid());
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {

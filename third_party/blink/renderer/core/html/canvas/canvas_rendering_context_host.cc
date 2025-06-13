@@ -146,7 +146,7 @@ bool CanvasRenderingContextHost::IsImageBitmapRenderingContext() const {
 CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForCanvas2D() {
   CHECK(IsRenderingContext2D());
-  auto* provider = ResourceProvider();
+  auto* provider = ResourceProviderDEPRECATED();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
       provider = CreateCanvasResourceProvider2D();
@@ -170,7 +170,7 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
       ReplaceResourceProvider(CreateCanvasResourceProviderWebGL());
-      provider = ResourceProvider();
+      provider = ResourceProviderDEPRECATED();
     }
     if (!provider) {
       did_fail_to_create_resource_provider_ = true;
@@ -187,7 +187,7 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
 CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
   CHECK(IsWebGPU());
-  auto* provider = ResourceProvider();
+  auto* provider = ResourceProviderDEPRECATED();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
       provider = CreateCanvasResourceProviderWebGPU();

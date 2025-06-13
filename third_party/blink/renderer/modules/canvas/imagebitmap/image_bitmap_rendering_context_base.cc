@@ -147,11 +147,11 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
   }
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
-  Host()->ResourceProvider()->Canvas().drawImage(
+  Host()->ResourceProviderDEPRECATED()->Canvas().drawImage(
       image->PaintImageForCurrentFrame(), 0, 0, SkSamplingOptions(),
       &paint_flags);
   scoped_refptr<CanvasResource> resource =
-      Host()->ResourceProvider()->ProduceCanvasResource(
+      Host()->ResourceProviderDEPRECATED()->ProduceCanvasResource(
           FlushReason::kNon2DCanvas);
   Host()->PushFrame(
       std::move(resource),
