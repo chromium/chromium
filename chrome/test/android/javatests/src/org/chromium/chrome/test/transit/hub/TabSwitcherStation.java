@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.util.TabBinningUtil;
@@ -214,8 +215,10 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     public TabSwitcherSearchStation openTabSwitcherSearch() {
         TabSwitcherSearchStation searchStation = new TabSwitcherSearchStation(mIsIncognito);
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
+        searchStation.addInitialFacility(softKeyboard);
         travelToSync(searchStation, searchElement.getClickTrigger());
-        searchStation.focusAndDropSoftKeyboard();
+        softKeyboard.close();
         return searchStation;
     }
 
