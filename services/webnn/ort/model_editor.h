@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/strings/cstring_view.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 
 namespace webnn::ort {
@@ -30,6 +32,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
     ScopedOrtModel model;
     // The external data should be kept alive during graph inferencing.
     std::vector<base::HeapArray<uint8_t>> external_data;
+    base::flat_map<std::string, std::string>
+        operand_input_name_to_onnx_input_name;
+    base::flat_map<std::string, std::string>
+        operand_output_name_to_onnx_output_name;
   };
 
   ModelEditor();
@@ -37,9 +43,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
   ModelEditor(const ModelEditor&) = delete;
   ModelEditor& operator=(const ModelEditor&) = delete;
 
-  void AddInput(base::cstring_view name, const OperandDescriptor& descriptor);
+  void AddInput(base::cstring_view name, const mojom::Operand& input);
 
-  void AddOutput(base::cstring_view name, const OperandDescriptor& descriptor);
+  void AddOutput(base::cstring_view name, const mojom::Operand& output);
 
   void AddInitializer(base::cstring_view name,
                       std::unique_ptr<WebNNConstantOperand> constant_operand);
@@ -97,6 +103,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
   std::unique_ptr<ModelInfo> model_info_;
 
   bool has_built_ = false;
+
+  std::vector<std::pair<std::string, std::string>>
+      operand_input_name_to_onnx_input_name_map;
+  std::vector<std::pair<std::string, std::string>>
+      operand_output_name_to_onnx_output_name_map;
 };
 
 }  // namespace webnn::ort

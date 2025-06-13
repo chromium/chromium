@@ -21,6 +21,7 @@ class BufferContentOrt {
 
   ~BufferContentOrt();
 
+  OrtValue* tensor() const { return tensor_.get(); }
   base::span<uint8_t> AsSpan() const;
 
  private:

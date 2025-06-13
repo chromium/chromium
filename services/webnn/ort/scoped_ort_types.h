@@ -34,6 +34,13 @@ struct ScopedOrtTypeTraitsHelper<OrtEnv*> {
 };
 
 template <>
+struct ScopedOrtTypeTraitsHelper<OrtSession*> {
+  static void Free(OrtSession* value) {
+    PlatformFunctions::GetInstance()->ort_api()->ReleaseSession(value);
+  }
+};
+
+template <>
 struct ScopedOrtTypeTraitsHelper<OrtSessionOptions*> {
   static void Free(OrtSessionOptions* value) {
     PlatformFunctions::GetInstance()->ort_api()->ReleaseSessionOptions(value);
@@ -117,6 +124,7 @@ using ScopedOrtType = base::ScopedGeneric<T*, ScopedOrtTypeTraits<T*>>;
 }  // namespace internal
 
 using ScopedOrtEnv = internal::ScopedOrtType<OrtEnv>;
+using ScopedOrtSession = internal::ScopedOrtType<OrtSession>;
 using ScopedOrtSessionOptions = internal::ScopedOrtType<OrtSessionOptions>;
 using ScopedOrtStatus = internal::ScopedOrtType<OrtStatus>;
 using ScopedOrtValue = internal::ScopedOrtType<OrtValue>;

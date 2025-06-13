@@ -4,11 +4,14 @@
 
 #include "services/webnn/ort/ort_session_options.h"
 
+#include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/webnn_switches.h"
 #include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_session_options_config_keys.h"
 
 namespace webnn::ort {
@@ -29,8 +32,18 @@ SessionOptions::Create(mojom::Device device_type) {
   ScopedOrtSessionOptions session_options;
   CHECK_STATUS(ort_api->CreateSessionOptions(
       ScopedOrtSessionOptions::Receiver(session_options).get()));
-  // TODO(crbug.com/416539420): Add a switch to dump model once ORT backend can
-  // build a model.
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtDumpModel)) {
+    static uint64_t dump_count = 0;
+    base::FilePath dump_directory =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kWebNNOrtDumpModel);
+    base::FilePath dump_path = dump_directory.AppendASCII(
+        base::StringPrintf("model%d.onnx", dump_count++));
+    CHECK_STATUS(ort_api->SetOptimizedModelFilePath(session_options.get(),
+                                                    dump_path.value().c_str()));
+  }
 
   // Enable strict shape type inference check. All inconsistencies encountered
   // will expose errors during session creation. For example, if the graph

@@ -6,6 +6,7 @@
 
 #include "base/notimplemented.h"
 #include "services/webnn/ort/buffer_content_ort.h"
+#include "services/webnn/ort/graph_impl_ort.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -194,8 +195,10 @@ void ContextImplOrt::CreateGraphImpl(
         constant_operands,
     base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
     CreateGraphImplCallback callback) {
-  // TODO(crbug.com/416535744): Implement GraphImpl for ORT backend.
-  NOTIMPLEMENTED();
+  GraphImplOrt::CreateAndBuild(
+      std::move(receiver), std::move(graph_info),
+      std::move(compute_resource_info), std::move(constant_operands),
+      std::move(constant_tensor_operands), this, std::move(callback));
 }
 
 void ContextImplOrt::CreateTensorImpl(

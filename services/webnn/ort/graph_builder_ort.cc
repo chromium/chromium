@@ -415,8 +415,7 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
                              mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
   for (OperandId input_id : graph_info_->input_operands) {
-    model_editor_.AddInput(GetOperandNameById(input_id),
-                           GetOperand(input_id).descriptor);
+    model_editor_.AddInput(GetOperandNameById(input_id), GetOperand(input_id));
   }
 
   for (auto& [constant_id, constant_operand] : constant_operands_) {
@@ -528,7 +527,7 @@ GraphBuilderOrt::BuildModel() {
 
   for (OperandId output_id : graph_info_->output_operands) {
     model_editor_.AddOutput(GetOperandNameById(output_id),
-                            GetOperand(output_id).descriptor);
+                            GetOperand(output_id));
   }
 
   return model_editor_.BuildAndTakeModelInfo();

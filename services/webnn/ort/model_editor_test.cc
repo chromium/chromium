@@ -28,7 +28,10 @@ TEST_F(WebNNOrtModelEditorTest, AddAndGather) {
   auto input_desc = OperandDescriptor::CreateForDeserialization(
       OperandDataType::kUint32, {4, 2, 4});
   ASSERT_TRUE(input_desc.has_value());
-  model_editor.AddInput(input, input_desc.value());
+  mojom::OperandPtr input_operand =
+      mojom::Operand::New(mojom::Operand::Kind::kInput,
+                          std::move(input_desc.value()), "input_operand");
+  model_editor.AddInput(input, *input_operand);
 
   // Add two initializers.
   constexpr base::cstring_view add_initializer = "add_initializer";
@@ -81,9 +84,13 @@ TEST_F(WebNNOrtModelEditorTest, AddAndGather) {
       gather_outputs, gather_attrs);
 
   // Add an output.
-  model_editor.AddOutput(output, OperandDescriptor::CreateForDeserialization(
-                                     OperandDataType::kUint32, {4, 4, 4})
-                                     .value());
+  auto output_desc = OperandDescriptor::CreateForDeserialization(
+      OperandDataType::kUint32, {4, 4, 4});
+  ASSERT_TRUE(output_desc.has_value());
+  mojom::OperandPtr output_operand =
+      mojom::Operand::New(mojom::Operand::Kind::kOutput,
+                          std::move(output_desc.value()), "output_operand");
+  model_editor.AddOutput(output, *output_operand);
 
   std::unique_ptr<ModelEditor::ModelInfo> model_info =
       model_editor.BuildAndTakeModelInfo();
@@ -103,7 +110,10 @@ TEST_F(WebNNOrtModelEditorTest, ReshapeToScalar) {
   auto input_desc = OperandDescriptor::CreateForDeserialization(
       OperandDataType::kInt32, {1, 1, 1, 1});
   ASSERT_TRUE(input_desc.has_value());
-  model_editor.AddInput(input, input_desc.value());
+  mojom::OperandPtr input_operand =
+      mojom::Operand::New(mojom::Operand::Kind::kInput,
+                          std::move(input_desc.value()), "input_operand");
+  model_editor.AddInput(input, *input_operand);
 
   // Add an initializer which is an empty tensor that represents an empty shape
   // of a scalar.
@@ -125,7 +135,10 @@ TEST_F(WebNNOrtModelEditorTest, ReshapeToScalar) {
   auto output_desc =
       OperandDescriptor::CreateForDeserialization(OperandDataType::kInt32, {});
   ASSERT_TRUE(output_desc.has_value());
-  model_editor.AddOutput(output, output_desc.value());
+  mojom::OperandPtr output_operand =
+      mojom::Operand::New(mojom::Operand::Kind::kOutput,
+                          std::move(output_desc.value()), "output_operand");
+  model_editor.AddOutput(output, *output_operand);
 
   std::unique_ptr<ModelEditor::ModelInfo> model_info =
       model_editor.BuildAndTakeModelInfo();

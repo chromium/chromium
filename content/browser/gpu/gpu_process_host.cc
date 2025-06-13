@@ -328,6 +328,7 @@ static const char* const kSwitchNames[] = {
 #endif
 #if BUILDFLAG(IS_WIN)
     switches::kWebNNOrtLoggingLevel,
+    switches::kWebNNOrtDumpModel,
 #endif
 };
 

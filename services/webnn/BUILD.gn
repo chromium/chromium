@@ -177,6 +177,8 @@ component("webnn_service") {
       "ort/context_provider_ort.h",
       "ort/graph_builder_ort.cc",
       "ort/graph_builder_ort.h",
+      "ort/graph_impl_ort.cc",
+      "ort/graph_impl_ort.h",
       "ort/model_editor.cc",
       "ort/model_editor.h",
       "ort/ort_data_type.cc",

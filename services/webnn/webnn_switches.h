@@ -32,6 +32,10 @@ inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
 // Other severity levels could be "INFO", "WARNING", "ERROR" (default), and
 // "FATAL".
 inline constexpr char kWebNNOrtLoggingLevel[] = "webnn-ort-logging-level";
+// Set the folder specified by --webnn-ort-dump-model for ONNX Runtime to save
+// optimized ONNX model after graph level transformations.
+// Usage: --no-sandbox --webnn-ort-dump-model=/tmp/ort_models
+inline constexpr char kWebNNOrtDumpModel[] = "webnn-ort-dump-model";
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace switches
