@@ -28,7 +28,7 @@ public class SecurityStateModel {
         return SecurityStateModelJni.get().getSecurityLevelForWebContents(webContents);
     }
 
-    public static boolean isContentDangerous(WebContents webContents) {
+    public static boolean isContentDangerous(@Nullable WebContents webContents) {
         return getSecurityLevelForWebContents(webContents) == ConnectionSecurityLevel.DANGEROUS;
     }
 

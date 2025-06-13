@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.feedback;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Map;
  * Used for gathering feedback from the feed in Chrome and bundling it into a set of Key - Value
  * pairs used to submit feedback requests.
  */
+@NullMarked
 public class FeedFeedbackCollector extends FeedbackCollector<FeedFeedbackCollector.InitParams>
         implements Runnable {
     /** Initialization parameters needed by the Feed overload of FeedbackCollector<T>. */

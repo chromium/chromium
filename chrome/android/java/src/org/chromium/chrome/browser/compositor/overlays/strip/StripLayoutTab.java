@@ -16,12 +16,13 @@ import android.util.FloatProperty;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -46,6 +47,7 @@ import java.util.Optional;
  * {@link StripLayoutTab} is used to keep track of the strip position and rendering information for
  * a particular tab so it can draw itself onto the GL canvas.
  */
+@NullMarked
 public class StripLayoutTab extends StripLayoutView {
     /** An observer interface for StripLayoutTab. */
     public interface Observer {
@@ -164,7 +166,7 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mShowingCloseButton = true;
 
     // Content Animations
-    private CompositorAnimator mButtonOpacityAnimation;
+    private @Nullable CompositorAnimator mButtonOpacityAnimation;
 
     private float mLoadingSpinnerRotationDegrees;
 
@@ -641,7 +643,11 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     @Override
-    public void setTouchTargetInsets(Float left, Float top, Float right, Float bottom) {
+    public void setTouchTargetInsets(
+            @Nullable Float left,
+            @Nullable Float top,
+            @Nullable Float right,
+            @Nullable Float bottom) {
         super.setTouchTargetInsets(left, top, right, bottom);
         // The vertical insets of the close button should match that of the parent tab.
         mCloseButton.setTouchTargetInsets(null, top, null, bottom);

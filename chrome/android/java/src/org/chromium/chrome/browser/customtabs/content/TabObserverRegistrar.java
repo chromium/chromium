@@ -122,7 +122,8 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
         }
     }
 
-    public void unregisterActivityTabObserver(CustomTabTabObserver observer) {
+    public void unregisterActivityTabObserver(@Nullable CustomTabTabObserver observer) {
+        if (observer == null) return;
         mActivityTabObservers.removeObserver(observer);
         Tab activeTab = mTabProvider.getTab();
         if (activeTab != null) {

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 
 /**
@@ -12,6 +13,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
  * DEPRECATED, please use {@link LayoutStateObserver} instead.
  */
 @Deprecated
+@NullMarked
 public interface SceneChangeObserver {
     /**
      * Called when the active {@link Layout} changes.

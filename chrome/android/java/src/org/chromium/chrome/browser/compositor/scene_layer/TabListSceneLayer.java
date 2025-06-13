@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.scene_layer;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.RectF;
@@ -11,6 +13,8 @@ import android.graphics.RectF;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -28,9 +32,10 @@ import org.chromium.ui.util.ColorUtils;
  * TODO(changwan): change layouts to share one instance of this.
  */
 @JNINamespace("android")
+@NullMarked
 public class TabListSceneLayer extends SceneLayer {
     private long mNativePtr;
-    private TabModelSelector mTabModelSelector;
+    private @Nullable TabModelSelector mTabModelSelector;
     private boolean mIsInitialized;
 
     public void setTabModelSelector(TabModelSelector tabModelSelector) {
@@ -81,7 +86,6 @@ public class TabListSceneLayer extends SceneLayer {
         final int tabListBgColor = getTabListBackgroundColor(context);
 
         LayoutTab[] tabs = layout.getLayoutTabsToRender();
-        int tabsCount = tabs != null ? tabs.length : 0;
 
         if (!mIsInitialized) {
             init(tabContentManager, resourceManager);
@@ -119,7 +123,9 @@ public class TabListSceneLayer extends SceneLayer {
         int contentOffset = browserControls != null ? browserControls.getContentOffset() : 0;
         final int urlBarBackgroundId = R.drawable.modern_location_bar;
 
+        int tabsCount = tabs != null ? tabs.length : 0;
         for (int i = 0; i < tabsCount; i++) {
+            assumeNonNull(tabs);
             LayoutTab t = tabs[i];
             final float decoration = t.getDecorationAlpha();
             boolean useIncognitoColors = t.isIncognito();

@@ -48,7 +48,7 @@ public class CustomTabTaskDescriptionIconGenerator {
      * @param largestFavicon The largest favicon available at the page URL.
      * @return The icon to use in the recent tasks list.
      */
-    public @Nullable Bitmap getBitmap(GURL pageUrl, Bitmap largestFavicon) {
+    public @Nullable Bitmap getBitmap(GURL pageUrl, @Nullable Bitmap largestFavicon) {
         if (largestFavicon != null
                 && largestFavicon.getWidth() >= mMinSizePx
                 && largestFavicon.getHeight() >= mMinSizePx) {

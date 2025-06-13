@@ -12,6 +12,7 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 
 /** Class for a CompositorButton that uses tint instead of multiple drawable resources. */
@@ -40,7 +41,7 @@ public class TintedCompositorButton extends CompositorButton {
             StripLayoutView parentView,
             float width,
             float height,
-            TooltipHandler tooltipHandler,
+            @Nullable TooltipHandler tooltipHandler,
             StripLayoutViewOnClickHandler clickHandler,
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             @DrawableRes int resource,

@@ -65,7 +65,7 @@ public class CompositorButton extends StripLayoutView {
     private boolean mIsHovered;
     private String mAccessibilityDescriptionIncognito = "";
 
-    private final TooltipHandler mTooltipHandler;
+    private final @Nullable TooltipHandler mTooltipHandler;
 
     // @StripLayoutView the button was embedded in. Null if it's not a child view.
     @Nullable private final StripLayoutView mParentView;
@@ -88,7 +88,7 @@ public class CompositorButton extends StripLayoutView {
             StripLayoutView parentView,
             float width,
             float height,
-            TooltipHandler tooltipHandler,
+            @Nullable TooltipHandler tooltipHandler,
             StripLayoutViewOnClickHandler clickHandler,
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             float clickSlopDp) {

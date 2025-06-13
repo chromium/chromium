@@ -632,7 +632,7 @@ public abstract class Layout {
      * @return                  A {@link SceneLayer} that represents the content for this
      *                          {@link Layout}.
      */
-    public final SceneLayer getUpdatedSceneLayer(
+    public final @Nullable SceneLayer getUpdatedSceneLayer(
             RectF viewport,
             RectF visibleViewport,
             TabContentManager tabContentManager,
@@ -668,7 +668,7 @@ public abstract class Layout {
      *
      * @return The scene layer for this {@link Layout}.
      */
-    protected abstract SceneLayer getSceneLayer();
+    protected abstract @Nullable SceneLayer getSceneLayer();
 
     /**
      * Update {@link SceneLayer} instance this layout holds. Any class inheriting {@link Layout}

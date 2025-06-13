@@ -14,6 +14,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
@@ -415,7 +416,11 @@ public abstract class StripLayoutView implements VirtualView {
      * @param right Right inset to apply to touch target.
      * @param bottom Bottom inset to apply to touch target.
      */
-    public void setTouchTargetInsets(Float left, Float top, Float right, Float bottom) {
+    public void setTouchTargetInsets(
+            @Nullable Float left,
+            @Nullable Float top,
+            @Nullable Float right,
+            @Nullable Float bottom) {
         if (left != null) mTouchTargetInsetLeft = left;
         if (right != null) mTouchTargetInsetRight = right;
         if (top != null) mTouchTargetInsetTop = top;

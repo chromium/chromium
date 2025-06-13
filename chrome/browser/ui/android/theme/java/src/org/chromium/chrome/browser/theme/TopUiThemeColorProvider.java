@@ -89,7 +89,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      * @return Theme color or the given fallback color if the default color is
      *         used or there is no current tab.
      */
-    public int getThemeColorOrFallback(Tab tab, int fallbackColor) {
+    public int getThemeColorOrFallback(@Nullable Tab tab, int fallbackColor) {
         return (tab == null || mIsDefaultColorUsed) ? fallbackColor : getThemeColor();
     }
 
