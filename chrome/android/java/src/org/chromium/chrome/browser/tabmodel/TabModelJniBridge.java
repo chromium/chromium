@@ -26,35 +26,29 @@ import org.chromium.url.Origin;
 public abstract class TabModelJniBridge implements TabModelInternal {
     private final Profile mProfile;
 
-    /** The type of the Activity for which this tab model works. */
-    private final @ActivityType int mActivityType;
-
-    /** Whether the model is for archvied tabs. */
-    private final boolean mIsArchivedTabModel;
-
     /** Native TabModelJniBridge pointer, which will be set by {@link #initializeNative()}. */
     private long mNativeTabModelJniBridge;
 
     /**
      * @param profile The profile this TabModel belongs to.
+     */
+    public TabModelJniBridge(Profile profile) {
+        mProfile = profile;
+    }
+
+    /**
+     * Initializes the native-side counterpart to this class.
+     *
      * @param activityType The type of activity this TabModel was created in.
      * @param isArchivedTabModel Whether this tab model is for archived tabs. When true, excludes
      *     the model from broadcasting sync updates.
      */
-    public TabModelJniBridge(
-            Profile profile, @ActivityType int activityType, boolean isArchivedTabModel) {
-        mProfile = profile;
-        mActivityType = activityType;
-        mIsArchivedTabModel = isArchivedTabModel;
-    }
-
-    /** Initializes the native-side counterpart to this class. */
     @CallSuper
-    protected void initializeNative(Profile profile) {
+    protected void initializeNative(@ActivityType int activityType, boolean isArchivedTabModel) {
         assert mNativeTabModelJniBridge == 0;
         mNativeTabModelJniBridge =
                 TabModelJniBridgeJni.get()
-                        .init(TabModelJniBridge.this, profile, mActivityType, mIsArchivedTabModel);
+                        .init(TabModelJniBridge.this, mProfile, activityType, isArchivedTabModel);
     }
 
     /** Returns whether the native-side pointer has been initialized. */

@@ -92,7 +92,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         selector,
                         normalTabRemover,
                         /* supportUndo= */ true,
-                        /* isArchivedTabModel= */ true);
+                        /* isArchivedTabModel= */ false);
         TabRemover incognitoTabRemover =
                 new PassthroughTabRemover(
                         () ->
@@ -113,10 +113,9 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         /* supportUndo= */ false,
                         /* trackInNativeModelList= */ true);
 
-        TabUngrouperFactory factory =
-                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
-                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
-        selector.initialize(normalTabModel, incognitoTabModel, factory);
+        selector.initialize(
+                TabModelHolderFactory.createTabModelHolderForTesting(normalTabModel),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(incognitoTabModel));
 
         return selector;
     }

@@ -82,9 +82,9 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                             assumeNonNull(regularFilter);
                             return regularFilter;
                         });
-        // TODO(crbug.com/331688951): Consider using a custom TabModel.
-        TabModelImpl normalModel =
-                new TabModelImpl(
+
+        TabModelHolder normalModelHolder =
+                TabModelHolderFactory.createTabModelHolder(
                         mProfile,
                         ActivityType.TABBED,
                         tabCreator,
@@ -97,41 +97,26 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                         this,
                         tabRemover,
                         /* supportUndo= */ true,
-                        /* isArchivedTabModel= */ true) {
-                    @Override
-                    public int index() {
-                        // Intentional noop.
-                        return INVALID_TAB_INDEX;
-                    }
-
-                    @Override
-                    public void setIndex(int i, final @TabSelectionType int type) {
-                        // Intentional noop.
-                    }
-
-                    @Override
-                    public @Nullable Tab getNextTabIfClosed(int id, boolean uponExit) {
-                        return null;
-                    }
-                };
+                        /* isArchivedTabModel= */ true,
+                        ArchivedTabModelSelectorImpl::createTabUngrouper);
         if (tabCreator instanceof NeedsTabModel needsTabModel) {
-            needsTabModel.setTabModel(normalModel);
+            needsTabModel.setTabModel(normalModelHolder.tabModel);
         }
 
-        onNativeLibraryReadyInternal(
-                tabContentProvider,
-                normalModel,
-                EmptyTabModel.getInstance(/* isIncognito= */ true));
+        IncognitoTabModelHolder incognitoModelHolder =
+                TabModelHolderFactory.createEmptyIncognitoTabModelHolder();
+
+        onNativeLibraryReadyInternal(tabContentProvider, normalModelHolder, incognitoModelHolder);
     }
 
     @EnsuresNonNull("mTabContentManager")
     @VisibleForTesting
     void onNativeLibraryReadyInternal(
             TabContentManager tabContentProvider,
-            TabModelInternal normalModel,
-            IncognitoTabModelInternal incognitoModel) {
+            TabModelHolder normalModelHolder,
+            IncognitoTabModelHolder incognitoModelHolder) {
         mTabContentManager = tabContentProvider;
-        initialize(normalModel, incognitoModel, ArchivedTabModelSelectorImpl::createTabUngrouper);
+        initialize(normalModelHolder, incognitoModelHolder);
 
         new TabModelSelectorTabObserver(this) {
             @Override
@@ -158,12 +143,12 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
     /**
      * Exposed to allow tests to initialize the selector with different tab models.
      *
-     * @param normalModel The normal tab model.
-     * @param incognitoModel The incognito tab model.
+     * @param normalModelHolder The normal tab model.
+     * @param incognitoModelHolder The incognito tab model.
      */
     public void initializeForTesting(
-            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
-        initialize(normalModel, incognitoModel, ArchivedTabModelSelectorImpl::createTabUngrouper);
+            TabModelHolder normalModelHolder, IncognitoTabModelHolder incognitoModelHolder) {
+        initialize(normalModelHolder, incognitoModelHolder);
     }
 
     @Override

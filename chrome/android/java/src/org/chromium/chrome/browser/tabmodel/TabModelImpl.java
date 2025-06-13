@@ -83,13 +83,14 @@ public class TabModelImpl extends TabModelJniBridge {
     private final TabContentManager mTabContentManager;
     private final TabModelDelegate mModelDelegate;
     private final TabRemover mTabRemover;
-    private final ObserverList<TabModelObserver> mObservers;
+    private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>();
+    private final boolean mIsArchivedTabModel;
 
     /** This specifies the current {@link Tab} in {@link #mTabs}. */
     private int mIndex = INVALID_TAB_INDEX;
@@ -181,7 +182,7 @@ public class TabModelImpl extends TabModelJniBridge {
             TabRemover tabRemover,
             boolean supportUndo,
             boolean isArchivedTabModel) {
-        super(profile, activityType, isArchivedTabModel);
+        super(profile);
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
@@ -196,10 +197,10 @@ public class TabModelImpl extends TabModelJniBridge {
             mPendingTabClosureManager =
                     new PendingTabClosureManager(this, new PendingTabClosureDelegateImpl());
         }
-        mObservers = new ObserverList<>();
+        mIsArchivedTabModel = isArchivedTabModel;
         // The call to initializeNative() should be as late as possible, as it results in calling
         // observers on the native side, which may in turn call |addObserver()| on this object.
-        initializeNative(profile);
+        initializeNative(activityType, isArchivedTabModel);
     }
 
     @Override
@@ -413,6 +414,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public @Nullable Tab getNextTabIfClosed(int id, boolean uponExit) {
+        if (mIsArchivedTabModel) return null;
         return getNextTabIfClosed(id, uponExit, TabCloseType.SINGLE);
     }
 
@@ -781,6 +783,7 @@ public class TabModelImpl extends TabModelJniBridge {
     // This function is complex and its behavior depends on persisted state, including mIndex.
     @Override
     public void setIndex(int i, final @TabSelectionType int type) {
+        if (mIsArchivedTabModel) return;
         try {
             TraceEvent.begin("TabModelImpl.setIndex");
             int lastId = getLastId(type);
@@ -1096,6 +1099,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public int index() {
+        if (mIsArchivedTabModel) return INVALID_TAB_INDEX;
         return mIndex;
     }
 

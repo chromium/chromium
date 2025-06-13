@@ -214,7 +214,19 @@ public class TabPersistentStoreTest {
                                     TestTabModelSelector.this,
                                     tabRemover,
                                     /* supportUndo= */ true,
-                                    /* isArchivedTabModel= */ true);
+                                    /* isArchivedTabModel= */ false) {
+                                @Override
+                                public void initializeNative(
+                                        int activityType, boolean isArchivedTabModel) {
+                                    // Skip setting up the TabModelObserverJniBridge by using
+                                    // isArchivedTabModel = true. This test uses MockTab which has
+                                    // no native pointer while still initializing the native half of
+                                    // the TabModel leading to crashes from the
+                                    // TabModelObserverJniBridge. It needs to be refactored.
+                                    super.initializeNative(
+                                            activityType, /* isArchivedTabModel= */ true);
+                                }
+                            };
                         }
                     };
             TabModelImpl regularTabModel = ThreadUtils.runOnUiThreadBlocking(callable);
@@ -236,10 +248,10 @@ public class TabPersistentStoreTest {
                                     NO_RESTORE_TYPE,
                                     this,
                                     incognitoTabRemover));
-            TabUngrouperFactory factory =
-                    (isIncognitoBranded, tabGroupModelFilterSupplier) ->
-                            new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
-            initialize(regularTabModel, incognitoTabModel, factory);
+            initialize(
+                    TabModelHolderFactory.createTabModelHolderForTesting(regularTabModel),
+                    TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
+                            incognitoTabModel));
         }
 
         @Override

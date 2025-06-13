@@ -157,13 +157,11 @@ public class TabModelSelectorTabObserverTest {
         TestTabModelSelectorTabObserver observer = createTabModelSelectorTabObserver();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabUngrouperFactory factory =
-                            (isIncognitoBranded, tabGroupModelFilterSupplier) ->
-                                    new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
                     selector.initialize(
-                            sTestRule.getNormalTabModel(),
-                            sTestRule.getIncognitoTabModel(),
-                            factory);
+                            TabModelHolderFactory.createTabModelHolderForTesting(
+                                    sTestRule.getNormalTabModel()),
+                            TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
+                                    sTestRule.getIncognitoTabModel()));
                 });
 
         Tab normalTab1 = createTestTab(false);

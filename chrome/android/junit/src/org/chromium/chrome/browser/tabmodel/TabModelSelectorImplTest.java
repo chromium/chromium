@@ -145,7 +145,9 @@ public class TabModelSelectorImplTest {
 
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(
-                mMockTabContentManager, mRegularTabModel, mIncognitoTabModel);
+                mMockTabContentManager,
+                TabModelHolderFactory.createTabModelHolderForTesting(mRegularTabModel),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(mIncognitoTabModel));
 
         assertEquals(
                 mTabModelSelector.getModel(/* incognito= */ false),
@@ -472,10 +474,9 @@ public class TabModelSelectorImplTest {
                         NO_RESTORE_TYPE,
                         /* startIncognito= */ false);
         when(regularModel.isActiveModel()).thenReturn(true);
-        TabUngrouperFactory factory =
-                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
-                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
-        mTabModelSelector.initializeForTesting(regularModel, mIncognitoTabModel, factory);
+        mTabModelSelector.initializeForTesting(
+                TabModelHolderFactory.createTabModelHolderForTesting(regularModel),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(mIncognitoTabModel));
         TabModelSelectorObserver observer =
                 new TabModelSelectorObserver() {
                     @Override
@@ -518,10 +519,9 @@ public class TabModelSelectorImplTest {
                         NO_RESTORE_TYPE,
                         /* startIncognito= */ false);
         when(regularModel.isActiveModel()).thenReturn(true);
-        TabUngrouperFactory factory =
-                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
-                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
-        mTabModelSelector.initializeForTesting(regularModel, mIncognitoTabModel, factory);
+        mTabModelSelector.initializeForTesting(
+                TabModelHolderFactory.createTabModelHolderForTesting(regularModel),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(mIncognitoTabModel));
         mTabModelSelector.markTabStateInitialized();
         verify(regularModel, never()).broadcastSessionRestoreComplete();
     }

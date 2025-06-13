@@ -175,10 +175,9 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         delegate,
                         incognitoTabRemover);
 
-        TabUngrouperFactory factory =
-                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
-                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
-        mSelector.initialize(mNormalTabModel, mIncognitoTabModel, factory);
+        mSelector.initialize(
+                TabModelHolderFactory.createTabModelHolderForTesting(mNormalTabModel),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(mIncognitoTabModel));
     }
 
     /** Test TabModel that exposes the needed capabilities for testing. */
@@ -207,7 +206,15 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                     modelDelegate,
                     tabRemover,
                     /* supportUndo= */ false,
-                    /* isArchivedTabModel= */ true);
+                    /* isArchivedTabModel= */ false);
+        }
+
+        @Override
+        public void initializeNative(int activityType, boolean isArchivedTabModel) {
+            // Skip setting up the TabModelObserverJniBridge by using isArchivedTabModel = true.
+            // Initializing this leads to unexpected observers being added and crashes due to
+            // mObserverSet not being initialized. This test should be refactored.
+            super.initializeNative(activityType, /* isArchivedTabModel= */ true);
         }
 
         @Override

@@ -92,11 +92,10 @@ public class TabModelSelectorTabModelObserverTest {
                         registrationCompleteCallback.notifyCalled();
                     }
                 };
-        TabUngrouperFactory factory =
-                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
-                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
         mSelector.initialize(
-                sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel(), factory);
+                TabModelHolderFactory.createTabModelHolderForTesting(sTestRule.getNormalTabModel()),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
+                        sTestRule.getIncognitoTabModel()));
         registrationCompleteCallback.waitForCallback(0);
         assertAllModelsHaveObserver(mSelector, observer);
     }

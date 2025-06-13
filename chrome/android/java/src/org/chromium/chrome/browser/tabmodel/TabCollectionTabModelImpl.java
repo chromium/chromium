@@ -77,11 +77,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             boolean isArchivedTabModel,
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator) {
-        super(profile, activityType, isArchivedTabModel);
+        super(profile);
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
 
-        initializeNative(profile);
+        initializeNative(activityType, isArchivedTabModel);
     }
 
     @Override
@@ -254,11 +254,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // TabModelJniBridge overrides.
 
     @Override
-    public void initializeNative(Profile profile) {
-        super.initializeNative(profile);
+    public void initializeNative(@ActivityType int activityType, boolean isArchivedTabModel) {
+        super.initializeNative(activityType, isArchivedTabModel);
         assert mNativeTabCollectionTabModelImplPtr == 0;
         mNativeTabCollectionTabModelImplPtr =
-                TabCollectionTabModelImplJni.get().init(this, profile);
+                TabCollectionTabModelImplJni.get().init(this, getProfile());
     }
 
     @Override

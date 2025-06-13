@@ -86,37 +86,23 @@ public abstract class TabModelSelectorBase
                         mTabModelSupplier, tabModel -> tabModel.getTabCountSupplier());
     }
 
-    private static List<TabGroupModelFilterInternal> createTabGroupModelFilters(
-            List<TabModelInternal> tabModels, TabUngrouperFactory tabUngrouperFactory) {
-        List<TabGroupModelFilterInternal> filters = new ArrayList<>(tabModels.size());
-        for (TabModelInternal tabModel : tabModels) {
-            boolean isIncognitoBranded = tabModel.isIncognitoBranded();
-            TabGroupModelFilter[] filterHolder = new TabGroupModelFilter[1];
-            TabUngrouper tabUngrouper =
-                    tabUngrouperFactory.create(isIncognitoBranded, () -> filterHolder[0]);
-            TabGroupModelFilterInternal filter = new TabGroupModelFilterImpl(tabModel, tabUngrouper);
-            filterHolder[0] = filter;
-            filters.add(filter);
-        }
-        return filters;
-    }
-
     @Initializer
     protected final void initialize(
-            TabModelInternal normalModel,
-            IncognitoTabModelInternal incognitoModel,
-            TabUngrouperFactory tabUngrouperFactory) {
+            TabModelHolder normalModelHolder, IncognitoTabModelHolder incognitoModelHolder) {
         // Only normal and incognito supported for now.
         assert mTabModelInternals.isEmpty();
 
-        mTabModelInternals.add(normalModel);
-        mTabModelInternals.add(incognitoModel);
+        mTabModelInternals.add(normalModelHolder.tabModel);
+        mTabModelInternals.add(incognitoModelHolder.tabModel);
         mTabModels.addAll(mTabModelInternals);
-        mIncognitoTabModel = incognitoModel;
+        mIncognitoTabModel = incognitoModelHolder.tabModel;
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
         mTabGroupModelFilterProvider.init(
-                this, createTabGroupModelFilters(mTabModelInternals, tabUngrouperFactory));
+                this,
+                List.of(
+                        normalModelHolder.tabGroupModelFilter,
+                        incognitoModelHolder.tabGroupModelFilter));
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
@@ -148,8 +134,8 @@ public abstract class TabModelSelectorBase
         }
         mIncognitoTabModel.addIncognitoObserver(this);
 
-        incognitoModel.setActive(mStartIncognito);
-        normalModel.setActive(!mStartIncognito);
+        incognitoModelHolder.tabModel.setActive(mStartIncognito);
+        normalModelHolder.tabModel.setActive(!mStartIncognito);
         mTabModelSupplier.set(mTabModelInternals.get(activeModelIndex));
 
         notifyChanged();

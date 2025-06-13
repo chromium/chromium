@@ -196,7 +196,7 @@ public class TabModelImplUnitTest {
                         mTabModelDelegate,
                         tabRemover,
                         /* supportUndo= */ true,
-                        /* isArchivedTabModel= */ true);
+                        /* isArchivedTabModel= */ false);
         when(mTabModelSelector.getModel(isIncognito)).thenReturn(tabModel);
         tabModel.setActive(isActive);
         if (isActive) {

@@ -4,20 +4,17 @@
 
 package org.chromium.chrome.test.util.browser.tabmodel;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelInternal;
-import org.chromium.chrome.browser.tabmodel.PassthroughTabUngrouper;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelHolderFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelInternal;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
@@ -38,9 +35,10 @@ public class MockTabModelSelector extends TabModelSelectorBase {
             MockTabModel.MockTabModelDelegate delegate) {
         super(null, false);
         initialize(
-                new MockTabModel(profile, delegate),
-                new MockTabModel(incognitoProfile, delegate),
-                MockTabModelSelector::createTabUngrouper);
+                TabModelHolderFactory.createTabModelHolderForTesting(
+                        new MockTabModel(profile, delegate)),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
+                        new MockTabModel(incognitoProfile, delegate)));
         for (int i = 0; i < tabCount; i++) {
             addMockTab();
         }
@@ -63,7 +61,9 @@ public class MockTabModelSelector extends TabModelSelectorBase {
             TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         destroy();
         getTabGroupModelFilterProvider().resetTabGroupModelFilterListForTesting();
-        initialize(normalModel, incognitoModel, MockTabModelSelector::createTabUngrouper);
+        initialize(
+                TabModelHolderFactory.createTabModelHolderForTesting(normalModel),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(incognitoModel));
     }
 
     private static int nextIdOffset() {
@@ -102,10 +102,5 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     @Override
     public MockTab getCurrentTab() {
         return (MockTab) super.getCurrentTab();
-    }
-
-    private static TabUngrouper createTabUngrouper(
-            boolean isIncognitoBranded, Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
-        return new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
     }
 }

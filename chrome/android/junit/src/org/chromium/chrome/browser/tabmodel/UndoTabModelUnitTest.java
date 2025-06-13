@@ -179,7 +179,7 @@ public class UndoTabModelUnitTest {
                             mTabModelDelegate,
                             tabRemover,
                             supportUndo,
-                            /* isArchivedTabModel= */ true);
+                            /* isArchivedTabModel= */ false);
             when(mTabModelSelector.getModel(true)).thenReturn(tabModel);
         } else {
             tabModel =
@@ -195,7 +195,7 @@ public class UndoTabModelUnitTest {
                             mTabModelDelegate,
                             tabRemover,
                             supportUndo,
-                            /* isArchivedTabModel= */ true);
+                            /* isArchivedTabModel= */ false);
             when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
         }
         // Assume the model is the current and active model.

@@ -115,7 +115,9 @@ public class ArchivedTabModelSelectorImplTest {
         MockTabModel incognitoTabModel = new MockTabModel(mIncognitoProfile, null);
         incognitoTabModel.setTabRemoverForTesting(incognitoTabRemover);
         mTabModelSelector.onNativeLibraryReadyInternal(
-                mMockTabContentManager, regularTabModel, incognitoTabModel);
+                mMockTabContentManager,
+                TabModelHolderFactory.createTabModelHolderForTesting(regularTabModel),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(incognitoTabModel));
 
         assertEquals(
                 mTabModelSelector.getModel(/* incognito= */ false),
