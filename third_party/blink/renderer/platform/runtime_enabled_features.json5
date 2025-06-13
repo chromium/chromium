@@ -1828,12 +1828,6 @@
       public: true,
     },
     {
-      // Scale very large height and width of HTML Element
-      // to allow DnD.
-      name: "DnDScaleHeightAndWidthToMaxDimension",
-      status: "stable",
-    },
-    {
       name: "DocumentCookie",
     },
     {

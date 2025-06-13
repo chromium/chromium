@@ -113,14 +113,12 @@ class DraggedNodeImageBuilder {
 
     // Maximum reasonable dimension for a drag image which won't crash during
     // memory allocation and DnD operation.
-    if (RuntimeEnabledFeatures::DnDScaleHeightAndWidthToMaxDimensionEnabled()) {
-      const int kMaxDimension = 64 * 128;
-      if (absolute_bounding_box.width() > kMaxDimension) {
-        absolute_bounding_box.set_width(kMaxDimension);
-      }
-      if (absolute_bounding_box.height() > kMaxDimension) {
-        absolute_bounding_box.set_height(kMaxDimension);
-      }
+    const int kMaxDimension = 64 * 128;
+    if (absolute_bounding_box.width() > kMaxDimension) {
+      absolute_bounding_box.set_width(kMaxDimension);
+    }
+    if (absolute_bounding_box.height() > kMaxDimension) {
+      absolute_bounding_box.set_height(kMaxDimension);
     }
 
     gfx::RectF bounding_box =
