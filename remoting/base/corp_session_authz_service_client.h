@@ -58,8 +58,8 @@ class CorpSessionAuthzServiceClient : public SessionAuthzServiceClient {
       std::string_view verb,
       std::unique_ptr<google::protobuf::MessageLite> request_message,
       CallbackType callback,
-      std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy =
-          ProtobufHttpRequestConfig::CreateDefaultRetryPolicy());
+      scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy =
+          ProtobufHttpRequestConfig::GetSimpleRetryPolicy());
 
   std::unique_ptr<OAuthTokenGetter> oauth_token_getter_;
   ProtobufHttpClient http_client_;

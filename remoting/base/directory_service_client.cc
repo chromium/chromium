@@ -157,13 +157,15 @@ void DirectoryServiceClient::DeleteHost(const std::string& host_id,
   auto delete_host_request = std::make_unique<apis::v1::DeleteHostRequest>();
   delete_host_request->set_host_id(host_id);
   ExecuteRequest(kDeleteHostTrafficAnnotation, path,
-                 std::move(delete_host_request), std::move(callback));
+                 /*enable_retries=*/true, std::move(delete_host_request),
+                 std::move(callback));
 }
 
 void DirectoryServiceClient::GetHostList(GetHostListCallback callback) {
   constexpr char path[] = "/v1/directory:gethostlist";
 
   ExecuteRequest(kGetHostListTrafficAnnotation, path,
+                 /*enable_retries=*/true,
                  std::make_unique<apis::v1::GetHostListRequest>(),
                  std::move(callback));
 }
@@ -178,7 +180,8 @@ void DirectoryServiceClient::GetManagedChromeOsHost(
   request->set_client_os_version(STRINGIZE(VERSION));
 
   // TODO: joedow - Fix the traffic annotation.
-  ExecuteRequest(kGetHostListTrafficAnnotation, path, std::move(request),
+  ExecuteRequest(kGetHostListTrafficAnnotation, path,
+                 /*enable_retries=*/true, std::move(request),
                  std::move(callback));
 }
 
@@ -214,7 +217,9 @@ void DirectoryServiceClient::LegacyHeartbeat(
     }
   }
 
-  ExecuteRequest(kLegacyHeartbeatTrafficAnnotation, path, std::move(request),
+  // HeartbeatSender has its own retry logic, so we disable it here.
+  ExecuteRequest(kLegacyHeartbeatTrafficAnnotation, path,
+                 /*enable_retries=*/false, std::move(request),
                  std::move(callback));
 }
 
@@ -233,7 +238,10 @@ void DirectoryServiceClient::RegisterHost(const std::string& host_id,
   register_host_request->set_host_name(host_name);
   register_host_request->set_public_key(public_key);
   register_host_request->set_host_client_id(host_client_id);
-  ExecuteRequest(kRegisterHostTrafficAnnotation, path,
+
+  // RegisterHost is non-idempotent (potentially multiple host records will be
+  // created), so retries may not be safe.
+  ExecuteRequest(kRegisterHostTrafficAnnotation, path, /*enable_retries=*/false,
                  std::move(register_host_request), std::move(callback));
 }
 
@@ -244,7 +252,9 @@ void DirectoryServiceClient::SendHeartbeat(const std::string& directory_id,
   auto request = std::make_unique<apis::v1::SendHeartbeatRequest>();
   request->set_host_id(directory_id);
 
-  ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, std::move(request),
+  // HeartbeatSender has its own retry logic, so we disable it here.
+  ExecuteRequest(kSendHeartbeatTrafficAnnotation, path,
+                 /*enable_retries=*/false, std::move(request),
                  std::move(callback));
 }
 
@@ -256,12 +266,16 @@ template <typename CallbackType>
 void DirectoryServiceClient::ExecuteRequest(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const std::string& path,
+    bool enable_retries,
     std::unique_ptr<google::protobuf::MessageLite> request_message,
     CallbackType callback) {
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = path;
   request_config->request_message = std::move(request_message);
+  if (enable_retries) {
+    request_config->UseSimpleRetryPolicy();
+  }
 
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));

@@ -4,12 +4,14 @@
 
 #include "remoting/base/session_authz_service_client.h"
 
+#include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "remoting/base/protobuf_http_request_config.h"
 
 namespace remoting {
 
 // static
-std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy>
+scoped_refptr<ProtobufHttpRequestConfig::RetryPolicy>
 SessionAuthzServiceClient::GetReauthRetryPolicy(
     base::TimeTicks token_expire_time) {
   static constexpr net::BackoffEntry::Policy kBackoffPolicy = {
@@ -23,9 +25,13 @@ SessionAuthzServiceClient::GetReauthRetryPolicy(
       // initial delay is technically used.
       .always_use_initial_delay = false,
   };
+
+  auto policy = base::MakeRefCounted<ProtobufHttpRequestConfig::RetryPolicy>();
+  policy->backoff_policy = &kBackoffPolicy;
   // Add some leeway to account for network latencies.
-  return ProtobufHttpRequestConfig::CreateRetryPolicy(
-      kBackoffPolicy, token_expire_time - base::Seconds(5));
+  policy->retry_timeout =
+      token_expire_time - base::TimeTicks::Now() - base::Seconds(5);
+  return policy;
 }
 
 }  // namespace remoting

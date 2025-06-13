@@ -213,7 +213,7 @@ void CorpSessionAuthzServiceClient::ExecuteRequest(
     std::string_view verb,
     std::unique_ptr<google::protobuf::MessageLite> request_message,
     CallbackType callback,
-    std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy) {
+    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy) {
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = base::StrCat({session_authz_path_, ":", verb});

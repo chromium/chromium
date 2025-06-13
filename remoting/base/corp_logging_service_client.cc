@@ -80,6 +80,7 @@ void CorpLoggingServiceClient::ReportSessionDisconnected(
   request_config->provide_certificate = true;
   request_config->request_message =
       internal::GetReportSessionDisconnectedRequest(request_struct);
+  request_config->UseSimpleRetryPolicy();
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(base::BindOnce([](const HttpStatus& status,

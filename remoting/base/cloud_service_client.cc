@@ -436,7 +436,7 @@ void CloudServiceClient::ReauthorizeHost(
     const std::string& session_reauth_token,
     const std::string& session_id,
     std::string_view instance_identity_token,
-    std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy,
+    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy,
     ReauthorizeHostCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:reauthorizeHost";
 
@@ -462,7 +462,7 @@ void CloudServiceClient::ExecuteRequest(
     const std::string& method,
     std::unique_ptr<google::protobuf::MessageLite> request_message,
     CallbackType callback,
-    std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy> retry_policy) {
+    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy) {
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = path;

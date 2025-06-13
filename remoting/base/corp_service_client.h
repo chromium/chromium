@@ -88,6 +88,7 @@ class CorpServiceClient {
       const std::string& path,
       const std::string& method,
       bool unauthenticated,
+      bool enable_retries,
       std::unique_ptr<google::protobuf::MessageLite> request_message,
       CallbackType callback);
 

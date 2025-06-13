@@ -234,8 +234,11 @@ void FtlMessagingClient::SendMessage(
     request->add_dest_registration_ids(destination_registration_id);
   }
 
+  // SendMessage is non-idempotent (potentially duplicate messages will be
+  // sent), so retries may not be safe.
   ExecuteRequest(kSendMessageTrafficAnnotation, kSendMessagePath,
-                 std::move(request), &FtlMessagingClient::OnSendMessageResponse,
+                 /*enable_retries=*/false, std::move(request),
+                 &FtlMessagingClient::OnSendMessageResponse,
                  std::move(on_done));
 }
 
@@ -257,12 +260,16 @@ template <typename CallbackFunctor>
 void FtlMessagingClient::ExecuteRequest(
     const net::NetworkTrafficAnnotationTag& tag,
     const std::string& path,
+    bool enable_retries,
     std::unique_ptr<google::protobuf::MessageLite> request,
     CallbackFunctor callback_functor,
     DoneCallback on_done) {
   auto config = std::make_unique<ProtobufHttpRequestConfig>(tag);
   config->request_message = std::move(request);
   config->path = path;
+  if (enable_retries) {
+    config->UseSimpleRetryPolicy();
+  }
   auto http_request = std::make_unique<ProtobufHttpRequest>(std::move(config));
   http_request->SetResponseCallback(base::BindOnce(
       callback_functor, base::Unretained(this), std::move(on_done)));
@@ -285,6 +292,7 @@ void FtlMessagingClient::BatchAckMessages(
   VLOG(1) << "Acking " << request.message_ids_size() << " messages";
 
   ExecuteRequest(kAckMessagesTrafficAnnotation, kBatchAckMessagesPath,
+                 /*enable_retries=*/true,
                  std::make_unique<ftl::BatchAckMessagesRequest>(request),
                  &FtlMessagingClient::OnBatchAckMessagesResponse,
                  std::move(on_done));

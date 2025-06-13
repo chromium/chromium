@@ -100,12 +100,14 @@ class ProtobufHttpRequestBase {
 
   std::unique_ptr<const ProtobufHttpRequestConfig> config_;
 
-  // Non-null iff `config_.retry_policy` is configured.
-  std::unique_ptr<RetryEntry> retry_entry_;
-
   // These are only set after StartRequest() is called.
   CreateUrlLoader create_url_loader_;
   raw_ptr<network::mojom::URLLoaderFactory> loader_factory_;
+  // Non-null iff StartRequest() is called and `config_.retry_policy` is
+  // configured.
+  // `retry_entry_` must be deleted before `config_` since it holds a raw_ptr to
+  // `config_`.
+  std::unique_ptr<RetryEntry> retry_entry_;
 
 #if DCHECK_IS_ON()
   base::TimeTicks request_deadline_;

@@ -74,6 +74,7 @@ class FtlMessagingClient final : public MessagingClient {
   template <typename CallbackFunctor>
   void ExecuteRequest(const net::NetworkTrafficAnnotationTag& tag,
                       const std::string& path,
+                      bool enable_retries,
                       std::unique_ptr<google::protobuf::MessageLite> request,
                       CallbackFunctor callback_functor,
                       DoneCallback on_done);

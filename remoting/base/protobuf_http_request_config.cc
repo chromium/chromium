@@ -4,23 +4,16 @@
 
 #include "remoting/base/protobuf_http_request_config.h"
 
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace remoting {
 
 // static
-std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy>
-ProtobufHttpRequestConfig::CreateRetryPolicy(
-    const net::BackoffEntry::Policy& backoff_policy,
-    base::TimeTicks retry_deadline) {
-  return std::make_unique<ProtobufHttpRequestConfig::RetryPolicy>(
-      &backoff_policy, retry_deadline);
-}
-
-// static
-std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy>
-ProtobufHttpRequestConfig::CreateDefaultRetryPolicy() {
+scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy>
+ProtobufHttpRequestConfig::GetSimpleRetryPolicy() {
   static constexpr net::BackoffEntry::Policy kBackoffPolicy = {
       .num_errors_to_ignore = 0,
       .initial_delay_ms = base::Seconds(1).InMilliseconds(),
@@ -33,8 +26,14 @@ ProtobufHttpRequestConfig::CreateDefaultRetryPolicy() {
       .always_use_initial_delay = false,
   };
 
-  return CreateRetryPolicy(kBackoffPolicy,
-                           base::TimeTicks::Now() + base::Minutes(1));
+  static base::NoDestructor<scoped_refptr<RetryPolicy>> policy([]() {
+    auto policy = base::MakeRefCounted<RetryPolicy>();
+    policy->backoff_policy = &kBackoffPolicy;
+    policy->retry_timeout = base::Minutes(1);
+    return policy;
+  }());
+
+  return *policy;
 }
 
 ProtobufHttpRequestConfig::ProtobufHttpRequestConfig(
@@ -46,6 +45,10 @@ ProtobufHttpRequestConfig::~ProtobufHttpRequestConfig() = default;
 void ProtobufHttpRequestConfig::Validate() const {
   DCHECK(request_message);
   DCHECK(!path.empty());
+}
+
+void ProtobufHttpRequestConfig::UseSimpleRetryPolicy() {
+  retry_policy = GetSimpleRetryPolicy();
 }
 
 }  // namespace remoting

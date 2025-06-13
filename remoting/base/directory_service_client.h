@@ -90,6 +90,7 @@ class DirectoryServiceClient {
   void ExecuteRequest(
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const std::string& path,
+      bool enable_retries,
       std::unique_ptr<google::protobuf::MessageLite> request_message,
       CallbackType callback);
 

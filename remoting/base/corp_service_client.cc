@@ -84,10 +84,13 @@ void CorpServiceClient::ProvisionCorpMachine(
           policy_exception_justification:
             "Not implemented."
         })");
+
+  // ProvisionCorpMachine is non-idempotent (potentially multiple host records
+  // will be created), so retries may not be safe.
   ExecuteRequest(
       traffic_annotation, internal::GetMachineProvisioningRequestPath(),
-      net::HttpRequestHeaders::kPostMethod,
-      /*unauthenticated=*/true,
+      net::HttpRequestHeaders::kPostMethod, /*unauthenticated=*/true,
+      /*enable_retries=*/false,
       internal::GetMachineProvisioningRequest(
           owner_email, fqdn, public_key, STRINGIZE(VERSION), existing_host_id),
           std::move(callback));
@@ -134,6 +137,7 @@ void CorpServiceClient::ReportProvisioningError(
                  internal::GetReportProvisioningErrorRequestPath(),
                  net::HttpRequestHeaders::kPostMethod,
                  /*unauthenticated=*/true,
+                 /*enable_retries=*/true,
                  internal::GetReportProvisioningErrorRequest(
                      directory_id, error_message, version),
                  std::move(callback));
@@ -170,9 +174,11 @@ void CorpServiceClient::SendHeartbeat(const std::string& directory_id,
           policy_exception_justification:
             "Not implemented."
         })");
+
+  // HeartbeatSender has its own retry logic, so we disable it here.
   ExecuteRequest(traffic_annotation, internal::GetSendHeartbeatRequestPath(),
                  net::HttpRequestHeaders::kPostMethod,
-                 /*unauthenticated=*/false,
+                 /*unauthenticated=*/false, /*enable_retries=*/false,
                  internal::GetSendHeartbeatRequest(directory_id),
                  std::move(callback));
 }
@@ -223,6 +229,7 @@ void CorpServiceClient::UpdateRemoteAccessHost(
       traffic_annotation, internal::GetUpdateRemoteAccessHostRequestPath(),
       net::HttpRequestHeaders::kPatchMethod,
       /*unauthenticated=*/false,
+      /*enable_retries=*/true,
       internal::GetUpdateRemoteAccessHostRequest(
           directory_id, std::move(host_version), std::move(signaling_id),
           std::move(offline_reason), std::move(os_name), std::move(os_version)),
@@ -239,6 +246,7 @@ void CorpServiceClient::ExecuteRequest(
     const std::string& path,
     const std::string& method,
     bool unauthenticated,
+    bool enable_retries,
     std::unique_ptr<google::protobuf::MessageLite> request_message,
     CallbackType callback) {
   auto request_config =
@@ -255,6 +263,9 @@ void CorpServiceClient::ExecuteRequest(
   }
   request_config->provide_certificate = true;
   request_config->request_message = std::move(request_message);
+  if (enable_retries) {
+    request_config->UseSimpleRetryPolicy();
+  }
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(std::move(callback));

@@ -466,8 +466,7 @@ TEST_F(ProtobufHttpClientTest,
   MockEchoResponseCallback response_callback;
 
   auto request_config = CreateDefaultRequestConfig();
-  request_config->retry_policy =
-      ProtobufHttpRequestConfig::CreateDefaultRetryPolicy();
+  request_config->UseSimpleRetryPolicy();
   auto request = CreateDefaultTestRequest(std::move(request_config));
   request->SetResponseCallback(response_callback.Get());
   client_.ExecuteRequest(std::move(request));
@@ -506,8 +505,7 @@ TEST_F(ProtobufHttpClientTest,
   MockEchoResponseCallback response_callback;
 
   auto request_config = CreateDefaultRequestConfig();
-  request_config->retry_policy =
-      ProtobufHttpRequestConfig::CreateDefaultRetryPolicy();
+  request_config->UseSimpleRetryPolicy();
   auto request = CreateDefaultTestRequest(std::move(request_config));
   request->SetResponseCallback(response_callback.Get());
   client_.ExecuteRequest(std::move(request));
@@ -551,8 +549,7 @@ TEST_F(ProtobufHttpClientTest,
   MockEchoResponseCallback response_callback;
 
   auto request_config = CreateDefaultRequestConfig();
-  request_config->retry_policy =
-      ProtobufHttpRequestConfig::CreateDefaultRetryPolicy();
+  request_config->UseSimpleRetryPolicy();
   auto request = CreateDefaultTestRequest(std::move(request_config));
   request->SetResponseCallback(response_callback.Get());
   client_.ExecuteRequest(std::move(request));

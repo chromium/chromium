@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_request_config.h"
@@ -45,7 +46,7 @@ class SessionAuthzServiceClient {
                                ReauthorizeHostCallback callback) = 0;
 
  protected:
-  static std::unique_ptr<ProtobufHttpRequestConfig::RetryPolicy>
+  static scoped_refptr<ProtobufHttpRequestConfig::RetryPolicy>
   GetReauthRetryPolicy(base::TimeTicks token_expire_time);
 
   SessionAuthzServiceClient() = default;

@@ -97,6 +97,7 @@ void IceConfigFetcherDefault::GetIceConfig(OnIceConfigCallback callback) {
     request_config->authenticated = false;
     request_config->api_key = google_apis::GetRemotingAPIKey();
   }
+  request_config->UseSimpleRetryPolicy();
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(base::BindOnce(
