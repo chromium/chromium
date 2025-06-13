@@ -268,11 +268,12 @@ CGFloat HeaderBottomPadding(UITraitCollection* trait_collection) {
 }
 
 void ConfigureSearchHintLabel(UILabel* search_hint_label,
-                              UIView* search_tab_target) {
+                              UIView* search_tab_target,
+                              NSString* placeholder_text) {
   [search_hint_label setTranslatesAutoresizingMaskIntoConstraints:NO];
   [search_tab_target addSubview:search_hint_label];
 
-  [search_hint_label setText:l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT)];
+  [search_hint_label setText:placeholder_text];
   if (base::i18n::IsRTL()) {
     [search_hint_label setTextAlignment:NSTextAlignmentRight];
   }

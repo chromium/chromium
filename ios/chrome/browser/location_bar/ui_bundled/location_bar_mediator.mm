@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -72,6 +73,15 @@
       search_engines::SupportsSearchByImage(self.templateURLService);
   self.searchEngineSupportsLens =
       search_engines::SupportsSearchImageWithLens(self.templateURLService);
+  const TemplateURL* defaultSearchProvider =
+      self.templateURLService->GetDefaultSearchProvider();
+  NSString* providerName =
+      defaultSearchProvider
+          ? [NSString
+                cr_fromString16:defaultSearchProvider
+                                    ->AdjustedShortNameForLocaleDirection()]
+          : @"";
+  [self.consumer setSearchProviderName:providerName];
 }
 
 #pragma mark - Setters

@@ -12,6 +12,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -48,6 +50,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -108,6 +111,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 // Whether or not the user is signed in.
 @property(nonatomic, assign) BOOL isSignedIn;
+
+// Name of the default search engine. Used for the omnibox placeholder text.
+@property(nonatomic, copy) NSString* defaultSearchEngineName;
 
 @end
 
@@ -310,6 +316,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
         initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
     self.headerView.isGoogleDefaultSearchEngine =
         self.isGoogleDefaultSearchEngine;
+    self.headerView.placeholderText = self.placeholderText;
     self.headerView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.headerView];
     AddSameConstraints(self.headerView, self.view);
@@ -437,8 +444,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       (fakeOmniboxHeight - kFakeLocationBarHeightMargin) / 2;
   self.accessibilityButton.clipsToBounds = YES;
   self.accessibilityButton.isAccessibilityElement = YES;
-  self.accessibilityButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+  self.accessibilityButton.accessibilityLabel = self.placeholderText;
   [self.fakeOmnibox addSubview:self.accessibilityButton];
   self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.fakeOmnibox, self.accessibilityButton);
@@ -858,6 +864,14 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   [self updateVoiceSearchDisplay];
 }
 
+- (void)setDefaultSearchEngineName:(NSString*)defaultSearchEngineName {
+  if (_defaultSearchEngineName == defaultSearchEngineName) {
+    return;
+  }
+  _defaultSearchEngineName = defaultSearchEngineName;
+  self.headerView.placeholderText = self.placeholderText;
+}
+
 - (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
                                 name:(NSString*)name
                                email:(NSString*)email {
@@ -1061,6 +1075,16 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     [self.headerView
         updateButtonsForUserInterfaceStyle:self.traitCollection
                                                .userInterfaceStyle];
+  }
+}
+
+// Returns the omnibox placeholder text.
+- (NSString*)placeholderText {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
+                                   self.defaultSearchEngineName.cr_UTF16String);
+  } else {
+    return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
   }
 }
 

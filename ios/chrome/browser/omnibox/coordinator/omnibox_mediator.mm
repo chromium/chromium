@@ -101,7 +101,7 @@ using base::UserMetricsAction;
 - (void)setConsumer:(id<OmniboxConsumer>)consumer {
   _consumer = consumer;
 
-  [self updateConsumerEmptyTextImage];
+  [self updateConsumerEmptyTextAndImage];
   [self setDefaultLeftImage];
 }
 
@@ -148,7 +148,7 @@ using base::UserMetricsAction;
   self.searchEngineSupportsLens =
       search_engines::SupportsSearchImageWithLens(templateUrlService);
   self.currentDefaultSearchEngineFavicon = nil;
-  [self updateConsumerEmptyTextImage];
+  [self updateConsumerEmptyTextAndImage];
 }
 
 #pragma mark - OmniboxMutator
@@ -400,7 +400,7 @@ using base::UserMetricsAction;
   }
 }
 
-- (void)updateConsumerEmptyTextImage {
+- (void)updateConsumerEmptyTextAndImage {
   [_consumer
       updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
   [_consumer updateLensImageSupported:self.searchEngineSupportsLens];

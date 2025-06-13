@@ -9,6 +9,7 @@
 
 @class GradientView;
 @class TabGroupIndicatorView;
+@class OmniboxContainerView;
 
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
@@ -39,7 +40,7 @@
 // Fake cancel button, used for animations. Hidden by default.
 @property(nonatomic, strong) UIView* cancelButton;
 // Fake omnibox, used for animations. Hidden by default.
-@property(nonatomic, strong) UIView* omnibox;
+@property(nonatomic, strong) OmniboxContainerView* omnibox;
 
 @property(nonatomic, strong)
     NSLayoutConstraint* fakeLocationBarLeadingConstraint;
@@ -53,6 +54,9 @@
 
 // `YES` if Google is the default search engine.
 @property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
+
+// Name of the default search engine. Used for the omnibox placeholder text.
+@property(nonatomic, copy) NSString* placeholderText;
 
 // Should be set to YES if an animation will run that requires animating the
 // font scale, for example, during a fakebox defocus animation.
