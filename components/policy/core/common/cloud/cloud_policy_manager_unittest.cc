@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -23,6 +24,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "mock_cloud_policy_client.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -336,6 +338,57 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
   EXPECT_TRUE(expected_bundle_.Equals(manager_->policies()));
   Mock::VerifyAndClearExpectations(&observer_);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(CloudPolicyManagerTest, ComponentPolicyInitWithPendingRefresh) {
+  auto client_ptr = std::make_unique<MockCloudPolicyClient>();
+  MockCloudPolicyClient* client = client_ptr.get();
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  manager_->CreateComponentPolicy(temp_dir.GetPath(), client);
+  manager_->core()->Connect(std::move(client_ptr));
+
+  // Simulate a store load.
+  store_->set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_.policy_data()));
+  EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
+  EXPECT_CALL(*client, SetupRegistration(_, _, _));
+  store_->NotifyStoreLoaded();
+  Mock::VerifyAndClearExpectations(client);
+  Mock::VerifyAndClearExpectations(&observer_);
+
+  // Acknowledge registration.
+  client->SetDMToken(policy_.policy_data().request_token());
+
+  // Start a refresh.
+  EXPECT_CALL(observer_, OnUpdatePolicy(_)).Times(0);
+  EXPECT_CALL(*client, FetchPolicy(_));
+  manager_->RefreshPolicies(PolicyFetchReason::kTest);
+  Mock::VerifyAndClearExpectations(client);
+  Mock::VerifyAndClearExpectations(&observer_);
+  store_->policy_map_ = policy_map_.Clone();
+
+  // A stray reload from component policy should be suppressed as it's not
+  // ready.
+  EXPECT_CALL(observer_, OnUpdatePolicy(_)).Times(0);
+  manager_->OnComponentCloudPolicyUpdated();
+  Mock::VerifyAndClearExpectations(&observer_);
+
+  // Component policy is ready, the next refresh ignore ongoing refresh
+  // suppression.
+  manager_->component_policy_service()->SetIsInitializedForTesting(true);
+  EXPECT_CALL(observer_, OnUpdatePolicy(_)).Times(1);
+  manager_->OnComponentCloudPolicyUpdated();
+  Mock::VerifyAndClearExpectations(&observer_);
+
+  // However, the second component policy refresh will be suppressed as usual.
+  EXPECT_CALL(observer_, OnUpdatePolicy(_)).Times(0);
+  manager_->OnComponentCloudPolicyUpdated();
+  Mock::VerifyAndClearExpectations(&observer_);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(CloudPolicyManagerTest, SignalOnError) {
   // Simulate a failed load and verify that it triggers OnUpdatePolicy().

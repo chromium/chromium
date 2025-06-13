@@ -34,6 +34,9 @@ class MockCloudPolicyManager : public CloudPolicyManager {
   using CloudPolicyManager::client;
   using CloudPolicyManager::service;
   using CloudPolicyManager::store;
+
+  void CreateComponentPolicy(const base::FilePath& path,
+                             CloudPolicyClient* client);
 };
 
 }  // namespace policy

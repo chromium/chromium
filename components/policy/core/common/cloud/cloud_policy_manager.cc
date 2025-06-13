@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -28,6 +29,10 @@
 #endif
 
 namespace policy {
+
+BASE_FEATURE(kPublishPolicyWithoutWaiting,
+             "PublishPolicyWithoutWaiting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 CloudPolicyManager::CloudPolicyManager(
     const std::string& policy_type,
@@ -113,16 +118,43 @@ void CloudPolicyManager::OnComponentCloudPolicyUpdated() {
   CheckAndPublishPolicy();
 }
 
-void CloudPolicyManager::CheckAndPublishPolicy() {
-  if (IsInitializationComplete(POLICY_DOMAIN_CHROME) &&
-      !waiting_for_policy_refresh_) {
-    PolicyBundle bundle;
-    GetChromePolicy(
-        &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())));
-    if (component_policy_service_)
-      bundle.MergeFrom(component_policy_service_->policy());
-    UpdatePolicy(std::move(bundle));
+bool CloudPolicyManager::CanPublishPolicy() const {
+  if (!IsInitializationComplete(POLICY_DOMAIN_CHROME)) {
+    return false;
   }
+
+  if (!waiting_for_policy_refresh_) {
+    return true;
+  }
+
+  // Component policy service initializaion is async. Its first publish might be
+  // blocked by first cloud policy refresh.
+  //
+  // Skip the `waiting_for_policy_refresh_` check if component policies are
+  // ready but never published.
+  if (base::FeatureList::IsEnabled(kPublishPolicyWithoutWaiting) &&
+      component_policy_service_ &&
+      component_policy_service_->is_initialized() &&
+      !is_component_policy_published_) {
+    return true;
+  }
+
+  return false;
+}
+
+void CloudPolicyManager::CheckAndPublishPolicy() {
+  if (!CanPublishPolicy()) {
+    return;
+  }
+  PolicyBundle bundle;
+  GetChromePolicy(
+      &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())));
+  if (component_policy_service_ &&
+      component_policy_service_->is_initialized()) {
+    bundle.MergeFrom(component_policy_service_->policy());
+    is_component_policy_published_ = true;
+  }
+  UpdatePolicy(std::move(bundle));
 }
 
 void CloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {

@@ -146,6 +146,10 @@ class POLICY_EXPORT ComponentCloudPolicyService
   // the registration state is tracked by looking at the CloudPolicyStore
   // instead.
 
+  void SetIsInitializedForTesting(bool is_initialized) {
+    policy_installed_ = is_initialized;
+  }
+
  private:
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   class Backend;

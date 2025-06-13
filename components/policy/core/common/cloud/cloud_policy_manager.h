@@ -84,6 +84,9 @@ class POLICY_EXPORT CloudPolicyManager
   void OnComponentCloudPolicyUpdated() override;
 
  protected:
+  // Returns true if policy can be published now.
+  bool CanPublishPolicy() const;
+
   // Check whether fully initialized and if so, publish policy by calling
   // ConfigurationPolicyStore::UpdatePolicy().
   void CheckAndPublishPolicy();
@@ -116,6 +119,13 @@ class POLICY_EXPORT CloudPolicyManager
   std::unique_ptr<CloudPolicyStore> store_;
   CloudPolicyCore core_;
   std::unique_ptr<ComponentCloudPolicyService> component_policy_service_;
+
+  // Has component policy ever been published.
+  //
+  // Note that this flag is put here instead of ComponentCloudPolicyService
+  // because it's policy provider's duty to publish latest policy values. Hence
+  // lower level class doesn't need to know or maintain such state.
+  bool is_component_policy_published_ = false;
 
   // Whether there's a policy refresh operation pending, in which case all
   // policy update notifications are deferred until after it completes.

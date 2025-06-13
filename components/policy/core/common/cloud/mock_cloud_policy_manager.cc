@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "mock_cloud_policy_manager.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
 namespace policy {
@@ -26,5 +27,11 @@ MockCloudPolicyManager::MockCloudPolicyManager(
           network::TestNetworkConnectionTracker::CreateGetter()) {}
 
 MockCloudPolicyManager::~MockCloudPolicyManager() = default;
+
+void MockCloudPolicyManager::CreateComponentPolicy(const base::FilePath& path,
+                                                   CloudPolicyClient* client) {
+  CreateComponentCloudPolicyService(dm_protocol::kChromeExtensionPolicyType,
+                                    path, client, schema_registry());
+}
 
 }  // namespace policy
