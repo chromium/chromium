@@ -208,6 +208,7 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
+    "card_info_retrieval_egtest.mm",
     "card_unmask_authentication_egtest.mm",
     "otp_input_dialog_egtest.mm",
   ]
