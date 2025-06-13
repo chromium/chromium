@@ -38,12 +38,7 @@ test_with_window((w) => {
     'div', 'p',
     'nothtmlbutnohyphen',
     '-not-initial-a-z', '0not-initial-a-z', 'Not-initial-a-z',
-    'intermediate-UPPERCASE-letters',
-    'bad-\u00b6', 'bad-\u00b8', 'bad-\u00bf', 'bad-\u00d7', 'bad-\u00f7',
-    'bad-\u037e', 'bad-\u037e', 'bad-\u2000', 'bad-\u200e', 'bad-\u203e',
-    'bad-\u2041', 'bad-\u206f', 'bad-\u2190', 'bad-\u2bff', 'bad-\u2ff0',
-    'bad-\u3000', 'bad-\ud800', 'bad-\uf8ff', 'bad-\ufdd0', 'bad-\ufdef',
-    'bad-\ufffe', 'bad-\uffff', 'bad-' + String.fromCodePoint(0xf0000)
+    'intermediate-UPPERCASE-letters'
   ];
   class X extends w.HTMLElement {}
   invalid_names.forEach((name) => {
@@ -52,6 +47,27 @@ test_with_window((w) => {
     })
   });
 }, 'Invalid names');
+
+test_with_window((w) => {
+  let nextClassNumber = 1;
+  function createElementClass() {
+    const name = `CustomElement${nextClassNumber++}`;
+    const newClass = function() {};
+    newClass.prototype = HTMLElement;
+    return newClass;
+  }
+
+  let valid_names = [
+    'bad-\u00b6', 'bad-\u00b8', 'bad-\u00bf', 'bad-\u00d7', 'bad-\u00f7',
+    'bad-\u037e', 'bad-\u2000', 'bad-\u200e', 'bad-\u203e',
+    'bad-\u2041', 'bad-\u206f', 'bad-\u2190', 'bad-\u2bff', 'bad-\u2ff0',
+    'bad-\u3000', 'bad-\ud800', 'bad-\uf8ff', 'bad-\ufdd0', 'bad-\ufdef',
+    'bad-\ufffe', 'bad-\uffff', 'bad-' + String.fromCodePoint(0xf0000)
+  ];
+  valid_names.forEach((name) => {
+    w.customElements.define(name, createElementClass());
+  });
+}, 'Valid names');
 
 test_with_window((w) => {
   class X extends w.HTMLElement {}

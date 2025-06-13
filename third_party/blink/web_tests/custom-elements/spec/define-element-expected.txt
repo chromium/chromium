@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Invalid names
-  assert_throws_dom: function "() => {\n      w.customElements.define(name, X);\n    }" did not throw
-Harness: the test ran to completion.
-
