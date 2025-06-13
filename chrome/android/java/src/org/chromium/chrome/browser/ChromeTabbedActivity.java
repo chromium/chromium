@@ -33,7 +33,6 @@ import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
@@ -71,6 +70,7 @@ import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.supplier.UnwrapObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -560,7 +560,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     @Nullable private ExtensionKeybindingRegistry mExtensionKeybindingRegistry;
 
-    private @Nullable XrSceneCoreSessionManager mXrSceneCoreSessionManager;
+    private final LazyOneshotSupplier<@Nullable XrSceneCoreSessionManager>
+            mXrSceneCoreSessionManagerSupplier =
+                    LazyOneshotSupplier.fromSupplier(this::createXrSceneCoreSessionManager);
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
 
     /** Constructs a ChromeTabbedActivity. */
@@ -859,7 +861,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         rootViewSupplier::get,
                         incognitoSupplier,
                         adaptOnOverviewColorAlphaChange(),
-                        getXrSceneCoreSessionManager());
+                        mXrSceneCoreSessionManagerSupplier.get());
 
         return hubLayoutDependencyHolder;
     }
@@ -1125,7 +1127,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private void onTabSwitcherClicked() {
-        var xrSceneCoreSessionManager = getXrSceneCoreSessionManager();
+        var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
         if (xrSceneCoreSessionManager != null) {
             // Do nothing if space mode switch is already started.
             xrSceneCoreSessionManager.startSpaceModeChange(
@@ -1554,13 +1556,14 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     && IntentHandler.wasIntentSenderChrome(intent)
                     && isInOverviewMode()) {
                 // Request switching to Home Space mode on XR.
-                if (mXrSceneCoreSessionManager != null) {
+                var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
+                if (xrSceneCoreSessionManager != null) {
                     boolean isFsm =
-                            mXrSceneCoreSessionManager.getXrSpaceModeObservableSupplier().get();
+                            xrSceneCoreSessionManager.getXrSpaceModeObservableSupplier().get();
                     if (isFsm) {
-                        mXrSceneCoreSessionManager.startSpaceModeChange(
+                        xrSceneCoreSessionManager.startSpaceModeChange(
                                 /* fsmModeRequested= */ false,
-                                () -> mXrSceneCoreSessionManager.finishSpaceModeChange());
+                                () -> xrSceneCoreSessionManager.finishSpaceModeChange());
                     }
                 }
                 hideOverview(/* animate= */ true);
@@ -3969,12 +3972,13 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mExtensionKeybindingRegistry = null;
         }
 
-        if (mXrSceneCoreSessionManager != null) {
-            mXrSceneCoreSessionManager
+        if (mXrSceneCoreSessionManagerSupplier.hasValue()
+                && mXrSceneCoreSessionManagerSupplier.get() != null) {
+            var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
+            xrSceneCoreSessionManager
                     .getXrSpaceModeObservableSupplier()
                     .removeObserver(mOnXrSpaceModeChanged);
-            mXrSceneCoreSessionManager.destroy();
-            mXrSceneCoreSessionManager = null;
+            xrSceneCoreSessionManager.destroy();
         }
 
         super.onDestroyInternal();
@@ -4370,22 +4374,25 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
     }
 
-    private @Nullable XrSceneCoreSessionManager getXrSceneCoreSessionManager() {
+    private @Nullable XrSceneCoreSessionManager createXrSceneCoreSessionManager() {
+        assert !mXrSceneCoreSessionManagerSupplier.hasValue();
+
+        XrSceneCoreSessionManager xrSceneCoreSessionManager = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             // TODO(crbug.com/422134376): To detect "Android XR" query OS instead of device's
             // properties.
-            if (XrUtils.isXrDevice() && mXrSceneCoreSessionManager == null) {
-                mXrSceneCoreSessionManager = new XrSceneCoreSessionManagerImpl(this);
-                mXrSceneCoreSessionManager
+            if (XrUtils.isXrDevice()) {
+                xrSceneCoreSessionManager = new XrSceneCoreSessionManagerImpl(this);
+                xrSceneCoreSessionManager
                         .getXrSpaceModeObservableSupplier()
                         .addSyncObserver(mOnXrSpaceModeChanged);
             }
         }
-        return mXrSceneCoreSessionManager;
+        return xrSceneCoreSessionManager;
     }
 
     private @Nullable ObservableSupplier<Boolean> getXrSpaceModeObservableSupplier() {
-        var xrSceneCoreSessionManager = getXrSceneCoreSessionManager();
+        var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
         return xrSceneCoreSessionManager != null
                 ? xrSceneCoreSessionManager.getXrSpaceModeObservableSupplier()
                 : null;
