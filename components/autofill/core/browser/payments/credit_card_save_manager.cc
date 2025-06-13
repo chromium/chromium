@@ -598,11 +598,9 @@ void CreditCardSaveManager::InitVirtualCardEnroll(
 
   if (auto* virtual_card_enrollment_manager =
       client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager()) {
-    virtual_card_enrollment_manager->InitVirtualCardEnroll(
+    virtual_card_enrollment_manager
+      ->InitVirtualCardEnroll(
         credit_card, VirtualCardEnrollmentSource::kUpstream,
-        base::BindOnce(
-            &VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble,
-            virtual_card_enrollment_manager->GetWeakPtr()),
         std::move(get_details_for_enrollment_response_details));
   }
 }

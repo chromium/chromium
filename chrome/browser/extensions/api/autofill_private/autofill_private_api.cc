@@ -702,16 +702,11 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
-  auto* virtual_card_enrollment_manager =
-      autofill_client()
-          ->GetPaymentsAutofillClient()
-          ->GetVirtualCardEnrollmentManager();
-  CHECK(virtual_card_enrollment_manager);
-  virtual_card_enrollment_manager->InitVirtualCardEnroll(
-      *card, autofill::VirtualCardEnrollmentSource::kSettingsPage,
-      base::BindOnce(
-          &autofill::VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble,
-          virtual_card_enrollment_manager->GetWeakPtr()));
+  autofill_client()
+      ->GetPaymentsAutofillClient()
+      ->GetVirtualCardEnrollmentManager()
+      ->InitVirtualCardEnroll(
+          *card, autofill::VirtualCardEnrollmentSource::kSettingsPage);
   return RespondNow(NoArguments());
 }
 

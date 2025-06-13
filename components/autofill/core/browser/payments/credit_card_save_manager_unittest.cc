@@ -315,13 +315,13 @@ class MockVirtualCardEnrollmentManager
       InitVirtualCardEnroll,
       (const CreditCard& credit_card,
        VirtualCardEnrollmentSource virtual_card_enrollment_source,
-       VirtualCardEnrollmentManager::VirtualCardEnrollmentFieldsLoadedCallback
-           virtual_card_enrollment_fields_loaded_callback,
        std::optional<payments::GetDetailsForEnrollmentResponseDetails>
            get_details_for_enrollment_response_details,
        PrefService* user_prefs,
        VirtualCardEnrollmentManager::RiskAssessmentFunction
-           risk_assessment_function),
+           risk_assessment_function,
+       VirtualCardEnrollmentManager::VirtualCardEnrollmentFieldsLoadedCallback
+           virtual_card_enrollment_fields_loaded_callback),
       (override));
 };
 
@@ -6801,7 +6801,7 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
         .WillOnce(DoAll(
             SaveArg<0>(&arg_credit_card),
             SaveArg<1>(&arg_virtual_card_enrollment_source),
-            SaveArg<3>(&arg_get_details_for_enrollment_response_details)));
+            SaveArg<2>(&arg_get_details_for_enrollment_response_details)));
   }
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
   credit_card_save_manager_->OnDidUploadCard(

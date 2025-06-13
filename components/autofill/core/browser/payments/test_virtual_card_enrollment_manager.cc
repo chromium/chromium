@@ -47,14 +47,11 @@ void TestVirtualCardEnrollmentManager::
 
 void TestVirtualCardEnrollmentManager::Reset() {
   reset_called_ = true;
-  VirtualCardEnrollmentManager::Reset();
 }
 
-void TestVirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble(
-    VirtualCardEnrollmentFields* virtual_card_enrollment_fields) {
+void TestVirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
   bubble_shown_ = true;
-  VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble(
-      virtual_card_enrollment_fields);
+  VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble();
 }
 
 void TestVirtualCardEnrollmentManager::
