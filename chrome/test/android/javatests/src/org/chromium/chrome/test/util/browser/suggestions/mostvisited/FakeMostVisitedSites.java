@@ -71,7 +71,7 @@ public class FakeMostVisitedSites implements MostVisitedSites {
     @Override
     public void setObserver(Observer observer, int numResults) {
         mObserver = observer;
-        notifyTileSuggestionsAvailable();
+        notifyTileSuggestionsAvailable(/* isUserTriggered= */ false);
     }
 
     @Override
@@ -105,26 +105,38 @@ public class FakeMostVisitedSites implements MostVisitedSites {
     }
 
     /**
-     * Sets new tile suggestion data.
+     * Sets new tile suggestion data, assuming triggered by user action.
      *
      * <p>If there is an observer it will be notified and the call has to be made on the UI thread.
      */
     public void setTileSuggestions(List<SiteSuggestion> suggestions) {
         mSites = new ArrayList<>(suggestions);
-        notifyTileSuggestionsAvailable();
+        notifyTileSuggestionsAvailable(/* isUserTriggered= */ true);
+    }
+
+    /** Same as above, but assumes no direct user involvement. */
+    public void setTileSuggestionsPassive(List<SiteSuggestion> suggestions) {
+        mSites = new ArrayList<>(suggestions);
+        notifyTileSuggestionsAvailable(/* isUserTriggered= */ false);
     }
 
     /**
-     * Sets new tile suggestion data.
+     * Sets new tile suggestion data, assuming triggered by user action.
      *
-     * If there is an observer it will be notified and the call has to be made on the UI thread.
+     * <p>If there is an observer it will be notified and the call has to be made on the UI thread.
      */
     public void setTileSuggestions(SiteSuggestion... suggestions) {
         setTileSuggestions(Arrays.asList(suggestions));
     }
 
+    /** Same as above, but assumes no direct user involvement. */
+    public void setTileSuggestionsPassive(SiteSuggestion... suggestions) {
+        setTileSuggestionsPassive(Arrays.asList(suggestions));
+    }
+
     /**
-     * Sets new tile suggestion data, generating fake data for the missing properties.
+     * Sets new tile suggestion data, generating fake data for the missing properties, assuming
+     * triggered by user action.
      *
      * <p>If there is an observer it will be notified and the call has to be made on the UI thread.
      *
@@ -135,7 +147,14 @@ public class FakeMostVisitedSites implements MostVisitedSites {
         setTileSuggestions(createSiteSuggestions(urls));
     }
 
-    /** @return An unmodifiable view of the current list of sites. */
+    /** Same as above, but assumes no direct user involvement. */
+    public void setTileSuggestionsPassive(String... urls) {
+        setTileSuggestionsPassive(createSiteSuggestions(urls));
+    }
+
+    /**
+     * @return An unmodifiable view of the current list of sites.
+     */
     public List<SiteSuggestion> getCurrentSites() {
         return Collections.unmodifiableList(mSites);
     }
@@ -159,7 +178,7 @@ public class FakeMostVisitedSites implements MostVisitedSites {
                 TileSectionType.PERSONALIZED);
     }
 
-    private void notifyTileSuggestionsAvailable() {
+    private void notifyTileSuggestionsAvailable(boolean isUserTriggered) {
         if (mObserver == null) return;
 
         // Notifying the observer usually results in view modifications, so this call should always
@@ -169,6 +188,6 @@ public class FakeMostVisitedSites implements MostVisitedSites {
         // a signal that the test started and this is not the setup anymore.
         ThreadUtils.assertOnUiThread();
 
-        mObserver.onSiteSuggestionsAvailable(mSites);
+        mObserver.onSiteSuggestionsAvailable(isUserTriggered, mSites);
     }
 }

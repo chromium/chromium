@@ -82,6 +82,7 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
  private:
   // ntp_tiles::MostVisitedSites::Observer:
   void OnURLsAvailable(
+      bool is_user_triggered,
       const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
           sections) override;
   void OnIconMadeAvailable(const GURL& site_url) override;

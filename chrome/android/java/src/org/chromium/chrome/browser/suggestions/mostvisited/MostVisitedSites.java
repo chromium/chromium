@@ -18,12 +18,19 @@ import java.util.List;
 public interface MostVisitedSites extends CustomLinkOperations {
     /** An interface for handling events in {@link MostVisitedSites}. */
     interface Observer {
-        /** This is called when the list of most visited URLs is initially available or updated. */
-        void onSiteSuggestionsAvailable(List<SiteSuggestion> siteSuggestions);
+        /**
+         * This is called when the list of most visited URLs is initially available or updated.
+         *
+         * @param isUserTriggered Whether the event is triggered by direct user action. This is
+         *     useful for deciding whether tile update should be eager or deferred.
+         * @param siteSuggestions The list of suggested most visited URLs, with more information.
+         */
+        void onSiteSuggestionsAvailable(
+                boolean isUserTriggered, List<SiteSuggestion> siteSuggestions);
 
         /**
-         * This is called when a previously uncached icon has been fetched.
-         * Parameters guaranteed to be non-null.
+         * This is called when a previously uncached icon has been fetched. Parameters guaranteed to
+         * be non-null.
          *
          * @param siteUrl URL of site with newly-cached icon.
          */

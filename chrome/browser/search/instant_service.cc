@@ -192,6 +192,7 @@ void InstantService::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 void InstantService::OnURLsAvailable(
+    bool is_user_triggered,
     const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
         sections) {
   DCHECK(most_visited_sites_);

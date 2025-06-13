@@ -58,7 +58,7 @@ TEST_F(InstantServiceTest, GetNTPTileSuggestion) {
   std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector> suggestions_map;
   suggestions_map[ntp_tiles::SectionType::PERSONALIZED] = suggestions;
 
-  instant_service_->OnURLsAvailable(suggestions_map);
+  instant_service_->OnURLsAvailable(false, suggestions_map);
 
   auto items = instant_service_->most_visited_info_->items;
   ASSERT_EQ(1, (int)items.size());

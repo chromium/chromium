@@ -170,10 +170,11 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * Parameters guaranteed to be non-null.
      */
     @CalledByNative
-    private void onURLsAvailable(@JniType("std::vector") List<SiteSuggestion> suggestions) {
+    private void onURLsAvailable(
+            boolean isUserTriggered, @JniType("std::vector") List<SiteSuggestion> suggestions) {
         // Don't notify observer if we've already been destroyed.
         if (mNativeMostVisitedSitesBridge != 0 && mWrappedObserver != null) {
-            mWrappedObserver.onSiteSuggestionsAvailable(suggestions);
+            mWrappedObserver.onSiteSuggestionsAvailable(isUserTriggered, suggestions);
         }
     }
 

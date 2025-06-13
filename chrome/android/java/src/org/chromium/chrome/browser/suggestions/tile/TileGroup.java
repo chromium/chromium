@@ -36,40 +36,16 @@ import java.util.List;
 public class TileGroup implements MostVisitedSites.Observer {
 
     /**
-     * onSiteSuggestionsAvailable() is asynchronously called from two sources:
+     * This class marshals data involving deferred updates or actions involving suggestion tiles.
      *
-     * <p>1. Backend updates, e.g., triggered by changes from other NTP.
-     *
-     * <p>2. Tile UI updates originating from the current NTP, involving API calls to {@link
-     * Delegate} or {@link CustomTileModificationDelegate}.
-     *
-     * <p>For (2), we'd like to pass data from pre-API calls to onSiteSuggestionsAvailable() and
-     * direct downstream flow (e.g., to call loadTiles()). One way to do this is to pass to the API
-     * and then received by onSiteSuggestionsAvailable() -- but the current code does not do this.
-     *
-     * <p>Instead, the "trans-API" data are stored as fields. This is simple but somewhat sloppy.
-     * This class marshalls these trans-API fields in one place. This also simplifies access from
-     * {@link Delegate} or {@link CustomTileModificationDelegate}.
+     * <p>Suggestions data changes can be caused by (1) the current NTP, or (2) another NTP. This
+     * leads to {@link onSiteSuggestionsAvailable()} call with suggestions passed. Render
+     * suggestions we'd call {@link loadTiles()}. This call may be deferred as an optimization to
+     * avoid useless rendering (e.g., when an NTP is not visible).
      */
     public static class PendingChanges {
-        /** Most recently received tile data that has not been displayed yet. */
-        public @Nullable List<SiteSuggestion> tiles;
-
-        /**
-         * URL of the most recently removed tile. Used to identify when a tile removal is confirmed
-         * by the tile backend.
-         */
-        public @Nullable GURL removalUrl;
-
-        /**
-         * URL of the most recently added tile. Used to identify when a given tile's insertion is
-         * confirmed by the tile backend. This is relevant when a previously existing tile is
-         * removed, then the user undoes the action and wants that tile back.
-         */
-        public @Nullable GURL insertionUrl;
-
-        /** Flag to indicate that Custom Tiles are being changed. */
-        public boolean customTilesIndicator;
+        /** Most recently received tile data pending displayed (eager or deferred). */
+        public @Nullable List<SiteSuggestion> siteSuggestions;
 
         /** List of tasks to run after tiles are reloaded and re-rendered. */
         public final LinkedList<Runnable> taskToRunAfterTileReload = new LinkedList<>();
@@ -79,9 +55,6 @@ public class TileGroup implements MostVisitedSites.Observer {
      * Performs work in other parts of the system that the {@link TileGroup} should not know about.
      */
     public interface Delegate extends CustomLinkOperations {
-
-        /** Setter to pass object to provide feedback to onSiteSuggestionsAvailable(). */
-        void setPendingChanges(PendingChanges pendingChanges);
 
         /**
          * @param tile The tile corresponding to the most visited item to remove.
@@ -417,7 +390,6 @@ public class TileGroup implements MostVisitedSites.Observer {
         mUiDelegate.addDestructionObserver(mOfflineModelObserver);
         mCustomTileModificationDelegate = new CustomTileModificationDelegateImpl();
 
-        mTileGroupDelegate.setPendingChanges(mPendingChanges);
         mPrerenderDelay =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2,
@@ -426,45 +398,13 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     @Override
-    public void onSiteSuggestionsAvailable(List<SiteSuggestion> siteSuggestions) {
-        // Only transforms the incoming tiles and stores them in a buffer for when we decide to
-        // refresh the tiles in the UI.
-
-        boolean removalCompleted = mPendingChanges.removalUrl != null;
-        boolean insertionCompleted = mPendingChanges.insertionUrl == null;
-        boolean forceUpdate = false;
-
-        mPendingChanges.tiles = new ArrayList<>();
-        for (SiteSuggestion suggestion : siteSuggestions) {
-            mPendingChanges.tiles.add(suggestion);
-
-            // Only tiles in the personal section can be modified.
-            if (suggestion.sectionType != TileSectionType.PERSONALIZED) continue;
-            if (suggestion.url.equals(mPendingChanges.removalUrl)) removalCompleted = false;
-            if (suggestion.url.equals(mPendingChanges.insertionUrl)) insertionCompleted = true;
-        }
-
-        boolean expectedChangeCompleted = false;
-        if (mPendingChanges.removalUrl != null && removalCompleted) {
-            mPendingChanges.removalUrl = null;
-            expectedChangeCompleted = true;
-        }
-        if (mPendingChanges.insertionUrl != null && insertionCompleted) {
-            mPendingChanges.insertionUrl = null;
-            expectedChangeCompleted = true;
-        }
-        if (mPendingChanges.customTilesIndicator) {
-            mPendingChanges.customTilesIndicator = false;
-            expectedChangeCompleted = true;
-            forceUpdate = true;
-        }
-
-        if (!mHasReceivedData || !mUiDelegate.isVisible() || expectedChangeCompleted) {
-            loadTiles(forceUpdate);
-            for (Runnable task : mPendingChanges.taskToRunAfterTileReload) {
-                task.run();
-            }
-            mPendingChanges.taskToRunAfterTileReload.clear();
+    public void onSiteSuggestionsAvailable(
+            boolean isUserTriggered, List<SiteSuggestion> siteSuggestions) {
+        // Store incoming suggestions for later usage by loadTiles(). This may happen eagerly below
+        // if conditions are met, or deferred to onSwitchToForeground().
+        mPendingChanges.siteSuggestions = new ArrayList<>(siteSuggestions);
+        if (!mHasReceivedData || !mUiDelegate.isVisible() || isUserTriggered) {
+            loadTiles(); // Eager update.
         }
     }
 
@@ -520,7 +460,9 @@ public class TileGroup implements MostVisitedSites.Observer {
      */
     public void onSwitchToForeground(boolean trackLoadTask) {
         if (trackLoadTask) addTask(TileTask.FETCH_DATA);
-        if (mPendingChanges.tiles != null) loadTiles(/* forceUpdate= */ false);
+        if (mPendingChanges.siteSuggestions != null) {
+            loadTiles(); // Deferred update.
+        }
         if (trackLoadTask) removeTask(TileTask.FETCH_DATA);
     }
 
@@ -528,66 +470,43 @@ public class TileGroup implements MostVisitedSites.Observer {
         return mTileSetupDelegate;
     }
 
-    /**
-     * Loads tile data from {@link #mPendingChanges.tiles} and clears it afterwards.
-     *
-     * @param forceUpdate Flag to force an update even if tile composition remains the same. A
-     *     particular use case is Custom Tile reordering, which keeps the set of suggestions the
-     *     same but still requires update.
-     */
-    private void loadTiles(boolean forceUpdate) {
-        assert mPendingChanges.tiles != null;
+    /** Loads tile data from {@link #mPendingChanges.siteSuggestions} and clears it afterwards. */
+    private void loadTiles() {
+        assert mPendingChanges.siteSuggestions != null;
 
         boolean isInitialLoad = !mHasReceivedData;
         mHasReceivedData = true;
 
-        boolean dataChanged = forceUpdate || isInitialLoad;
-        List<Tile> personalisedTiles = mTileSections.get(TileSectionType.PERSONALIZED);
-        int oldPersonalisedTilesCount = personalisedTiles == null ? 0 : personalisedTiles.size();
+        List<Tile> oldPersonalizedTiles = mTileSections.get(TileSectionType.PERSONALIZED);
 
-        SparseArray<List<Tile>> newSites = createEmptyTileData();
-        for (int i = 0; i < mPendingChanges.tiles.size(); ++i) {
-            SiteSuggestion suggestion = mPendingChanges.tiles.get(i);
-            if (findTile(suggestion) == null) {
-                // Don't reuse the Tile found, since index might change.
-                dataChanged = true;
+        mTileSections = createTileData(mPendingChanges.siteSuggestions);
+        mPendingChanges.siteSuggestions = null;
+
+        List<Tile> newPersonalizedTiles = mTileSections.get(TileSectionType.PERSONALIZED);
+
+        boolean dataChanged =
+                isInitialLoad || !tileListAreEqual(oldPersonalizedTiles, newPersonalizedTiles);
+
+        if (dataChanged) {
+            mCustomTileCountIsUnderLimit =
+                    TileUtils.customTileCountIsUnderLimit(newPersonalizedTiles);
+
+            mOfflineModelObserver.updateAllSuggestionsOfflineAvailability();
+
+            if (isInitialLoad || oldPersonalizedTiles.size() != newPersonalizedTiles.size()) {
+                mObserver.onTileCountChanged();
             }
 
-            List<Tile> sectionTiles = newSites.get(suggestion.sectionType);
-            if (sectionTiles == null) {
-                sectionTiles = new ArrayList<>();
-                newSites.append(suggestion.sectionType, sectionTiles);
-            }
+            if (isLoadTracked()) addTask(TileTask.SCHEDULE_ICON_FETCH);
+            mObserver.onTileDataChanged();
 
-            // Duplicate should not exist but they may. See https://crbug.com/703628
-            if (findTileByUrl(suggestion.url, sectionTiles) != null) continue;
-
-            sectionTiles.add(new Tile(suggestion, i));
+            if (isInitialLoad) removeTask(TileTask.FETCH_DATA);
         }
 
-        mTileSections = newSites;
-        mPendingChanges.tiles = null;
-
-        // TODO(dgn): change these events, maybe introduce new ones or just change semantics? This
-        // will depend on the UI to be implemented and the desired refresh behaviour.
-        List<Tile> personalizedTiles = mTileSections.get(TileSectionType.PERSONALIZED);
-        int numberOfPersonalizedTiles = personalizedTiles == null ? 0 : personalizedTiles.size();
-        boolean countChanged =
-                isInitialLoad || numberOfPersonalizedTiles != oldPersonalisedTilesCount;
-        dataChanged = dataChanged || countChanged;
-
-        if (!dataChanged) return;
-
-        mCustomTileCountIsUnderLimit = TileUtils.customTileCountIsUnderLimit(personalizedTiles);
-
-        mOfflineModelObserver.updateAllSuggestionsOfflineAvailability();
-
-        if (countChanged) mObserver.onTileCountChanged();
-
-        if (isLoadTracked()) addTask(TileTask.SCHEDULE_ICON_FETCH);
-        mObserver.onTileDataChanged();
-
-        if (isInitialLoad) removeTask(TileTask.FETCH_DATA);
+        for (Runnable task : mPendingChanges.taskToRunAfterTileReload) {
+            task.run();
+        }
+        mPendingChanges.taskToRunAfterTileReload.clear();
     }
 
     protected @Nullable Tile findTile(SiteSuggestion suggestion) {
@@ -603,7 +522,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * @param tiles The section to search in, represented by the contained list of tiles.
      * @return A tile matching the provided URL and section, or {@code null} if none is found.
      */
-    private Tile findTileByUrl(GURL url, @Nullable List<Tile> tiles) {
+    private static Tile findTileByUrl(GURL url, @Nullable List<Tile> tiles) {
         if (tiles == null) return null;
         for (Tile tile : tiles) {
             if (tile.getUrl().equals(url)) return tile;
@@ -689,6 +608,42 @@ public class TileGroup implements MostVisitedSites.Observer {
         return newTileData;
     }
 
+    private static SparseArray<List<Tile>> createTileData(List<SiteSuggestion> suggestions) {
+        SparseArray<List<Tile>> newTileData = createEmptyTileData();
+        for (int i = 0; i < suggestions.size(); ++i) {
+            SiteSuggestion suggestion = suggestions.get(i);
+
+            List<Tile> sectionTiles = newTileData.get(suggestion.sectionType);
+            if (sectionTiles == null) {
+                sectionTiles = new ArrayList<>();
+                newTileData.append(suggestion.sectionType, sectionTiles);
+            }
+
+            // Duplicate should not exist but they may. See https://crbug.com/703628
+            if (findTileByUrl(suggestion.url, sectionTiles) != null) continue;
+
+            sectionTiles.add(new Tile(suggestion, i));
+        }
+
+        return newTileData;
+    }
+
+    private boolean tileListAreEqual(
+            @Nullable List<Tile> tileList1, @Nullable List<Tile> tileList2) {
+        if (tileList1 == null) return tileList2 == null || tileList2.isEmpty();
+        if (tileList2 == null) return tileList1.isEmpty();
+        int n = tileList1.size();
+        if (tileList2.size() != n) return false;
+        for (int i = 0; i < n; ++i) {
+            Tile tile1 = tileList1.get(i);
+            Tile tile2 = tileList2.get(i);
+            if (!tile1.getData().equals(tile2.getData())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /** Called before this instance is abandoned to the garbage collector. */
     public void destroy() {
         // The mOfflineModelObserver which implements SuggestionsOfflineModelObserver adds itself
@@ -771,13 +726,11 @@ public class TileGroup implements MostVisitedSites.Observer {
             }
 
             // On success, onSiteSuggestionsAvailable() triggers.
-            mPendingChanges.customTilesIndicator = true;
             Runnable onSuccessCallback = () -> handleCustomTileAdd(url);
             mPendingChanges.taskToRunAfterTileReload.add(onSuccessCallback);
             boolean success = mTileGroupDelegate.addCustomLink(name, url, pos);
             if (!success) {
                 mPendingChanges.taskToRunAfterTileReload.removeLastOccurrence(onSuccessCallback);
-                mPendingChanges.customTilesIndicator = false;
             }
             return success;
         }
@@ -790,21 +743,17 @@ public class TileGroup implements MostVisitedSites.Observer {
             }
 
             // On success, onSiteSuggestionsAvailable() triggers.
-            mPendingChanges.customTilesIndicator = true;
             Runnable onSuccessCallback = () -> handleCustomTileAdd(url);
             mPendingChanges.taskToRunAfterTileReload.add(onSuccessCallback);
             boolean success = mTileGroupDelegate.assignCustomLink(keyUrl, name, url);
             if (!success) {
                 mPendingChanges.taskToRunAfterTileReload.removeLastOccurrence(onSuccessCallback);
-                mPendingChanges.customTilesIndicator = false;
             }
             return success;
         }
 
         private void deleteCustomLinkAndUpdateOnSuccess(Tile tile) {
             // On success, onSiteSuggestionsAvailable() triggers.
-            mPendingChanges.customTilesIndicator = true;
-
             if (mTileGroupDelegate.deleteCustomLink(tile.getUrl())) {
                 mTileGroupDelegate.showTileUnpinSnackbar(
                         () -> {
@@ -812,18 +761,11 @@ public class TileGroup implements MostVisitedSites.Observer {
                             addCustomLinkAndUpdateOnSuccess(
                                     tile.getTitle(), tile.getUrl(), tile.getIndex());
                         });
-            } else {
-                mPendingChanges.customTilesIndicator = false;
             }
         }
 
         private boolean reorderCustomLinkAndUpdateOnSuccess(GURL url, int newPos) {
-            mPendingChanges.customTilesIndicator = true;
-            boolean success = mTileGroupDelegate.reorderCustomLink(url, newPos);
-            if (!success) {
-                mPendingChanges.customTilesIndicator = false;
-            }
-            return success;
+            return mTileGroupDelegate.reorderCustomLink(url, newPos);
         }
     }
 

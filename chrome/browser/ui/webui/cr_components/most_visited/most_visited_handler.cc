@@ -273,6 +273,7 @@ void MostVisitedHandler::CancelPrerender() {
 }
 
 void MostVisitedHandler::OnURLsAvailable(
+    bool is_user_triggered,
     const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
         sections) {
   auto* template_url_service =

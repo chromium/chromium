@@ -14,6 +14,7 @@ MostVisitedSitesObserverBridge::MostVisitedSitesObserverBridge(
 MostVisitedSitesObserverBridge::~MostVisitedSitesObserverBridge() {}
 
 void MostVisitedSitesObserverBridge::OnURLsAvailable(
+    bool is_user_triggered,
     const std::map<SectionType, NTPTilesVector>& sections) {
   const NTPTilesVector& most_visited = sections.at(SectionType::PERSONALIZED);
   [observer_ onMostVisitedURLsAvailable:most_visited];

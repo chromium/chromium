@@ -267,6 +267,7 @@ void NTPTilesInternalsMessageHandler::SendTiles(
 }
 
 void NTPTilesInternalsMessageHandler::OnURLsAvailable(
+    bool is_user_triggered,
     const std::map<SectionType, NTPTilesVector>& sections) {
   cancelable_task_tracker_.TryCancelAll();
 

@@ -41,6 +41,7 @@ class MostVisitedSitesObserverBridge : public MostVisitedSites::Observer {
   ~MostVisitedSitesObserverBridge() override;
 
   void OnURLsAvailable(
+      bool is_user_triggered,
       const std::map<SectionType, NTPTilesVector>& sections) override;
   void OnIconMadeAvailable(const GURL& site_url) override;
 

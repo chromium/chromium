@@ -136,6 +136,7 @@ class MostVisitedSitesBridge::JavaObserver : public MostVisitedSites::Observer {
   JavaObserver& operator=(const JavaObserver&) = delete;
 
   void OnURLsAvailable(
+      bool is_user_triggered,
       const std::map<SectionType, NTPTilesVector>& sections) override;
 
   void OnIconMadeAvailable(const GURL& site_url) override;
@@ -150,6 +151,7 @@ MostVisitedSitesBridge::JavaObserver::JavaObserver(
     : observer_(env, obj) {}
 
 void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
+    bool is_user_triggered,
     const std::map<SectionType, NTPTilesVector>& sections) {
   JNIEnv* env = AttachCurrentThread();
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> suggestions;
@@ -162,7 +164,8 @@ void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
           static_cast<int32_t>(tile.source), section_type));
     }
   }
-  Java_MostVisitedSitesBridge_onURLsAvailable(env, observer_, suggestions);
+  Java_MostVisitedSitesBridge_onURLsAvailable(env, observer_, is_user_triggered,
+                                              suggestions);
 }
 
 void MostVisitedSitesBridge::JavaObserver::OnIconMadeAvailable(
