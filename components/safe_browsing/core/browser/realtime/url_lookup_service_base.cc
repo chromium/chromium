@@ -387,19 +387,33 @@ void RealTimeUrlLookupServiceBase::StartLookup(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     SessionID tab_id,
     std::optional<internal::ReferringAppInfo> referring_app_info) {
+  StartMaybeCachedLookup(url, std::move(response_callback),
+                         callback_task_runner, tab_id,
+                         std::move(referring_app_info), /*use_cache=*/true);
+}
+
+void RealTimeUrlLookupServiceBase::StartMaybeCachedLookup(
+    const GURL& url,
+    RTLookupResponseCallback response_callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info,
+    bool use_cache) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
   // Check cache.
-  std::unique_ptr<RTLookupResponse> cache_response =
-      GetCachedRealTimeUrlVerdict(url);
-  if (cache_response) {
-    callback_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(response_callback),
-                                  /* is_rt_lookup_successful */ true,
-                                  /* is_cached_response */ true,
-                                  std::move(cache_response)));
-    return;
+  if (use_cache) {
+    std::unique_ptr<RTLookupResponse> cache_response =
+        GetCachedRealTimeUrlVerdict(url);
+    if (cache_response) {
+      callback_task_runner->PostTask(
+          FROM_HERE, base::BindOnce(std::move(response_callback),
+                                    /* is_rt_lookup_successful */ true,
+                                    /* is_cached_response */ true,
+                                    std::move(cache_response)));
+      return;
+    }
   }
 
   if (IsInBackoffMode()) {

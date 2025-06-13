@@ -114,6 +114,18 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       SessionID tab_id,
       std::optional<internal::ReferringAppInfo> referring_app_info);
 
+  // Start the full URL lookup for |url| and call |response_callback|
+  // on |callback_task_runner| when response is received. |use_cache| may be
+  // set to `false` to skip the URL verdict cache check.
+  // This function is overridden in unit tests.
+  virtual void StartMaybeCachedLookup(
+      const GURL& url,
+      RTLookupResponseCallback response_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info,
+      bool use_cache);
+
   // Similar to the function StartLookup above,
   // but to send Protego sampled request specifically.
   virtual void SendSampledRequest(

@@ -1815,4 +1815,29 @@ TEST_F(RealTimeUrlLookupServiceTest, TestRetriableErrors) {
   EXPECT_TRUE(IsInBackoffMode());
 }
 
+TEST_F(RealTimeUrlLookupServiceTest, TestVerdictCacheBypass) {
+  // Cache url response
+  EnableRealTimeUrlLookup({}, {});
+  GURL url(kTestUrl);
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
+                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                        "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+
+  // Exactly one network request should be made.
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  EXPECT_CALL(request_callback, Run(_)).Times(1);
+
+  WaitableMockRTLookupResponseCallback response_callback;
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
+                                     /* is_cached_response */ false, _));
+  rt_service()->StartMaybeCachedLookup(
+      GURL(kTestUrl), response_callback.Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(), SessionID::InvalidValue(),
+      std::nullopt, false);
+  response_callback.Wait();
+}
+
 }  // namespace safe_browsing
