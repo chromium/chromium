@@ -4493,6 +4493,8 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="The report is corrupt or invalid and was dropped"/>
 </enum>
 
+<!--LINT.IfChange(FeedbackSource) -->
+
 <enum name="FeedbackSource">
   <int value="0" label="Arc App"/>
   <int value="1" label="Ash"/>
@@ -4540,7 +4542,10 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="43" label="Borealis"/>
   <int value="44" label="Sunfish"/>
   <int value="45" label="Boca App"/>
+  <int value="46" label="Tracking Protections"/>
 </enum>
+
+<!--LINT.ThenChange(//chrome/browser/feedback/public/feedback_source.h:FeedbackSource) -->
 
 <enum name="FetchKeepAliveRequestMetricType">
   <int value="0" label="kFetch"/>

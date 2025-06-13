@@ -174,6 +174,11 @@ void CookieControlsContentView::SetTrackingProtectionsButtonVisible(
   tracking_protections_button_->SetVisible(visible);
 }
 
+void CookieControlsContentView::UpdateFeedbackButtonSubtitle(
+    const std::u16string& subtitle) {
+  feedback_button_->SetSubtitleText(subtitle);
+}
+
 void CookieControlsContentView::SetTrackingProtectionsButtonLabel(
     const std::u16string& label) {
   tracking_protections_button_->SetText(label);
@@ -242,7 +247,7 @@ void CookieControlsContentView::AddFeedbackSection() {
 
   feedback_section_->AddChildView(CreatePaddedSeparator());
 
-  auto* feedback_button =
+  feedback_button_ =
       feedback_section_->AddChildView(std::make_unique<RichHoverButton>(
           base::BindRepeating(
               &CookieControlsContentView::NotifyFeedbackButtonPressedCallback,
@@ -254,8 +259,8 @@ void CookieControlsContentView::AddFeedbackSection() {
               IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION),
           launch_icon));
 
-  feedback_button->SetProperty(views::kElementIdentifierKey, kFeedbackButton);
-  feedback_button->SetTooltipText(l10n_util::GetStringUTF16(
+  feedback_button_->SetProperty(views::kElementIdentifierKey, kFeedbackButton);
+  feedback_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE));
 }
 

@@ -344,6 +344,9 @@
       <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL" desc="" translateable="false">
         Tracking protections enabled
       </message>
+      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" desc="" translateable="false">
+        Tell us why you paused tracking protections on this site
+      </message>
       <!-- Page Info -->
       <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="" formatter_data="android_java" translateable="false">
         Privacy and site data
@@ -374,6 +377,9 @@
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
             Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
           </message>
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="" translateable="false">
+            Help us improve Chrome by telling us why you paused tracking protections
+          </message>
         </then>
         <else>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
@@ -390,6 +396,9 @@
           </message>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
             Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+          </message>
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="" translateable="false">
+            Help us improve Chromium by telling us why you paused tracking protections
           </message>
         </else>
       </if>

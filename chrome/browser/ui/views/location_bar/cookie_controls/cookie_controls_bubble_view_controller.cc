@@ -24,6 +24,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -214,6 +215,7 @@ void CookieControlsBubbleViewController::FillViewForTrackingProtections() {
     desc = IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION;
     button_label = IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL;
   }
+  bubble_view_->GetContentView()->SetTrackingProtectionsButtonVisible(true);
   bubble_view_->GetContentView()->SetCookiesRowVisible(false);
   bubble_view_->UpdateTitle(
       l10n_util::GetStringUTF16(IDS_INCOGNITO_TRACKING_PROTECTIONS_HEADER));
@@ -222,6 +224,9 @@ void CookieControlsBubbleViewController::FillViewForTrackingProtections() {
   bubble_view_->GetContentView()->SetTrackingProtectionsButtonLabel(
       l10n_util::GetStringUTF16(button_label));
   bubble_view_->GetContentView()->SetFeedbackSectionVisibility(tp_paused);
+  bubble_view_->GetContentView()->UpdateFeedbackButtonSubtitle(
+      l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION));
   bubble_view_->GetContentView()->PreferredSizeChanged();
 }
 
@@ -332,16 +337,29 @@ void CookieControlsBubbleViewController::OnTrackingProtectionsButtonPressed() {
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
-  base::RecordAction(
-      base::UserMetricsAction("CookieControls.Bubble.SendFeedback"));
-  chrome::ShowFeedbackPage(
-      chrome::FindBrowserWithTab(web_contents_.get()),
-      feedback::kFeedbackSourceCookieControls,
-      /*description_template=*/std::string(),
-      l10n_util::GetStringUTF8(
-          IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER),
-      "cookie-controls",
-      /*extra_diagnostics=*/std::string());
+  if (privacy_sandbox::IsTrackingProtectionsUi(controls_state_)) {
+    chrome::ShowFeedbackPage(
+        chrome::FindBrowserWithTab(web_contents_.get()),
+        feedback::kFeedbackSourceTrackingProtections,
+        /*description_template=*/std::string(),
+        l10n_util::GetStringUTF8(
+            IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER),
+        "tracking-protections",
+        /*extra_diagnostics=*/std::string());
+    base::RecordAction(
+        base::UserMetricsAction("TrackingProtections.Bubble.SendFeedback"));
+  } else {
+    chrome::ShowFeedbackPage(
+        chrome::FindBrowserWithTab(web_contents_.get()),
+        feedback::kFeedbackSourceCookieControls,
+        /*description_template=*/std::string(),
+        l10n_util::GetStringUTF8(
+            IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER),
+        "cookie-controls",
+        /*extra_diagnostics=*/std::string());
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.SendFeedback"));
+  }
 }
 
 std::unique_ptr<views::View>
