@@ -302,14 +302,55 @@ public class CustomTabActivityNavigationControllerTest {
     public void observerDefaultsToOS_WhenOnlyOneTabRemains() {
         CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
         when(mTabController.onlyOneTabRemaining()).thenReturn(false);
+        when(mTabController.getTabCount()).thenReturn(2);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
-        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        // With multiple tabs, predictive back enabled, and initial tab mode set (default),
+        // Chrome should handle the back press.
+        mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
+        Assert.assertTrue(
+                "Chrome should handle back press when multiple tabs are present.",
+                mNavigationController.getHandleBackPressChangedSupplier().get());
+
+        // Now, simulate only one tab remaining.
+        mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        // When only one tab remains, and predictive back conditions are met,
+        // the OS should handle the back press (supplier should be false).
+        mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
+        Assert.assertFalse(
+                "OS should handle back press when only one tab remains.",
+                mNavigationController.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void observerDefaultsToOS_WhenInitialTabCountNotReflected() {
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
+        when(mTabController.onlyOneTabRemaining()).thenReturn(false);
+        when(mTabController.getTabCount()).thenReturn(0);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
+        mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        mNavigationController
+                .getTabObserverForTesting()
+                .onInitialTabCreated(env.prepareTab(), TabCreationMode.EARLY);
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void doesNotFinish_WhenOnAllTabsClosedDefersToOS() {
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
         Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+
+        mNavigationController.getTabObserverForTesting().onAllTabsClosed();
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
 
     @Test

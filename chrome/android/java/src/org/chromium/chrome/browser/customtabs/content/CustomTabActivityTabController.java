@@ -200,8 +200,18 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     }
 
     /**
-     * Checks if the current tab contains unload events and if so it opens the dialog
-     * to ask the user before closing the tab.
+     * Returns the number of tabs in the current model.
+     *
+     * @return The number of tabs.
+     */
+    public int getTabCount() {
+        TabModel model = mTabFactory.getTabModelSelector().getCurrentModel();
+        return model.getCount();
+    }
+
+    /**
+     * Checks if the current tab contains unload events and if so it opens the dialog to ask the
+     * user before closing the tab.
      *
      * @return Whether we ran the unload events or not.
      */

@@ -388,4 +388,22 @@ public class CustomTabActivityTabControllerUnitTest {
         mTabController.finishNativeInitialization();
         assertEquals(tab, env.tabProvider.getTab());
     }
+
+    @Test
+    public void getTabCount_noTabs() {
+        when(env.tabModel.getCount()).thenReturn(0);
+        assertEquals(0, mTabController.getTabCount());
+    }
+
+    @Test
+    public void getTabCount_oneTab() {
+        when(env.tabModel.getCount()).thenReturn(1);
+        assertEquals(1, mTabController.getTabCount());
+    }
+
+    @Test
+    public void getTabCount_multipleTabs() {
+        when(env.tabModel.getCount()).thenReturn(5);
+        assertEquals(5, mTabController.getTabCount());
+    }
 }
