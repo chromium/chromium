@@ -107,7 +107,7 @@ std::u16string GetDisplayNameForCountry(std::string_view country_code,
 
 // Converts all - into _, to be consistent with ICU and file system names.
 COMPONENT_EXPORT(UI_BASE)
-std::string NormalizeLocale(const std::string& locale);
+std::string NormalizeLocale(std::string_view locale);
 
 // Produce a vector of parent locales for given locale.
 // It includes the current locale in the result.

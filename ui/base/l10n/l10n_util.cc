@@ -715,10 +715,9 @@ std::u16string GetDisplayNameForCountry(std::string_view country_code,
                                  display_locale, false);
 }
 
-std::string NormalizeLocale(const std::string& locale) {
+std::string NormalizeLocale(std::string_view locale) {
   std::string normalized_locale(locale);
-  std::replace(normalized_locale.begin(), normalized_locale.end(), '-', '_');
-
+  std::ranges::replace(normalized_locale, '-', '_');
   return normalized_locale;
 }
 
