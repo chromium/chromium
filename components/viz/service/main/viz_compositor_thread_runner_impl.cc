@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
-#include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/display_embedder/output_surface_provider_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/gmb_video_frame_pool_context_provider_impl.h"
@@ -165,10 +164,6 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
 
   if (gpu_service) {
     // Create OutputSurfaceProvider usable for GPU + software compositing.
-    gpu_memory_buffer_manager_ =
-        std::make_unique<InProcessGpuMemoryBufferManager>(
-            gpu_service->gpu_memory_buffer_factory(),
-            gpu_service->sync_point_manager());
     output_surface_provider_ =
         std::make_unique<OutputSurfaceProviderImpl>(gpu_service, headless);
 
@@ -238,7 +233,6 @@ void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
   hint_session_factory_.reset();
   output_surface_provider_.reset();
   gmb_video_frame_pool_context_provider_.reset();
-  gpu_memory_buffer_manager_.reset();
 }
 
 }  // namespace viz
