@@ -147,6 +147,13 @@ export class SearchboxElement extends SearchboxElementBase {
         reflectToAttribute: true,
       },
 
+      composeIcon: {
+        type: String,
+        value: () =>
+            '//resources/cr_components/searchbox/icons/search_spark.svg',
+        reflectToAttribute: true,
+      },
+
       //========================================================================
       // Private properties
       //========================================================================
@@ -292,6 +299,7 @@ export class SearchboxElement extends SearchboxElementBase {
   declare searchboxChromeRefreshTheming: boolean;
   declare searchboxSteadyStateShadow: boolean;
   declare composeButtonEnabled: boolean;
+  declare composeIcon: string;
   declare showThumbnail: boolean;
   declare private inputAriaLive_: string;
   declare private isLensSearchbox_: boolean;

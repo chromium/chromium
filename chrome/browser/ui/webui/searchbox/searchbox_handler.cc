@@ -460,7 +460,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"searchBoxHintMultimodal", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL},
       {"searchboxThumbnailLabel",
        IDS_GOOGLE_SEARCH_BOX_MULTIMODAL_IMAGE_THUMBNAIL},
-      {"voiceSearchButtonLabel", IDS_TOOLTIP_MIC_SEARCH}};
+      {"voiceSearchButtonLabel", IDS_TOOLTIP_MIC_SEARCH},
+      {"searchboxComposeButtonText", IDS_NTP_COMPOSE_ENTRYPOINT}};
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(
