@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
@@ -137,24 +138,26 @@ void TestingBrowserProcess::DeleteInstance() {
 }
 
 // static
-void TestingBrowserProcess::StartTearDown() {
-  TestingBrowserProcess* browser_process = TestingBrowserProcess::GetGlobal();
-  if (browser_process) {
-    browser_process->ShutdownBrowserPolicyConnector();
-  }
-}
-
-// static
 void TestingBrowserProcess::TearDownAndDeleteInstance() {
-  TestingBrowserProcess::StartTearDown();
   TestingBrowserProcess::DeleteInstance();
 }
 
 TestingBrowserProcess::TestingBrowserProcess()
     : platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
-      os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {}
+      os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {
+  // Observe TaskEnvironment to get a chance to teardown components before
+  // ThreadPool is destroyed.
+  // In production, BrowserProcess is destroyed while ThreadPool is still
+  // active.
+  base::test::TaskEnvironment::AddDestructionObserver(this);
+}
 
 TestingBrowserProcess::~TestingBrowserProcess() {
+  base::test::TaskEnvironment::RemoveDestructionObserver(this);
+
+  // Tear down components for tests that do not have TaskEnvironment.
+  MaybeStartTearDown();
+
   EXPECT_FALSE(local_state_);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ExtensionsBrowserClient::Set(nullptr);
@@ -587,6 +590,12 @@ void TestingBrowserProcess::CreateGlobalFeaturesForTesting() {
   features_->application_locale_storage()->Set("en");
 }
 
+void TestingBrowserProcess::WillDestroyCurrentTaskEnvironment() {
+  // BrowserProcessImpl::StartTearDown() is triggered on PostMainMessageLoop in
+  // production, which happens before ThreadPool is destroyed.
+  MaybeStartTearDown();
+}
+
 resource_coordinator::TabManager* TestingBrowserProcess::GetTabManager() {
   return resource_coordinator_parts()->tab_manager();
 }
@@ -628,6 +637,15 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
     created_browser_policy_connector_ = false;
   }
   local_state_ = local_state;
+}
+
+void TestingBrowserProcess::MaybeStartTearDown() {
+  if (is_torn_down_) {
+    return;
+  }
+  is_torn_down_ = true;
+
+  ShutdownBrowserPolicyConnector();
 }
 
 void TestingBrowserProcess::ShutdownBrowserPolicyConnector() {

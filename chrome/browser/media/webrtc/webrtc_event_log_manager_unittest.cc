@@ -311,10 +311,6 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
     // Guard against unexpected state changes.
     EXPECT_TRUE(webrtc_state_change_instructions_.empty());
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-    TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
-#endif
   }
 
   void SetUp() override {
@@ -325,6 +321,12 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     LoadMainTestProfile();
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(&provider_);
+#endif
+  }
+
+  void TearDown() override {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(nullptr);
 #endif
   }
 
