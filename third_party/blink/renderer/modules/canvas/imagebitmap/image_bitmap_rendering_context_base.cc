@@ -53,8 +53,7 @@ scoped_refptr<StaticBitmapImage>
 ImageBitmapRenderingContextBase::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
-  CanvasResourceProvider* provider = Host()->ResourceProvider();
-  return provider ? provider->Snapshot(reason) : nullptr;
+  return GetImage(reason);
 }
 
 void ImageBitmapRenderingContextBase::Dispose() {
