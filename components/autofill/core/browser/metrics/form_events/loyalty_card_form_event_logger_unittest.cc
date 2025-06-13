@@ -17,6 +17,7 @@
 namespace autofill::autofill_metrics {
 
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
+using UkmFormEventType = ukm::builders::Autofill_FormEvent;
 using test::CreateTestFormField;
 using ::testing::IsEmpty;
 
@@ -256,6 +257,14 @@ class LoyaltyCardFormEventLoggerBaseKeyMetricsTest
 
   void TearDown() override { TearDownHelper(); }
 
+  void AppendLoyaltyCardFormEventUkm(
+      const FormEvent& form_event,
+      std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics) {
+    AppendFormEventUkm(
+        form_event, /*form_types=*/{FormTypeNameForLogging::kLoyaltyCardForm},
+        expected_metrics);
+  }
+
   // Fillable form.
   FormData form_;
   std::vector<FieldType> field_types_;
@@ -347,6 +356,90 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kLoyaltyCardForm})}}});
 }
+
+// Validate Autofill.KeyMetrics.* in case the user has filled a suggestion.
+TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, UserAcceptsSuggestion) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate that suggestion is shown and user accepts it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[1].global_id());
+  DidShowAutofillSuggestions(form_, /*field_index=*/1);
+  FillLoyaltyCard(form_, valuables_data_manager().GetLoyaltyCards()[0],
+                  /*field_index=*/1);
+
+  SubmitForm(form_);
+
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FormSubmission.Autofilled.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType",
+      GetBucketForAcceptanceMetricsGroupedByFieldType(
+          field_types_[1], /*suggestion_accepted=*/true),
+      1);
+
+  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
+              {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
+              {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
+              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+
+  // Verify that the FORM_EVENT_LOCAL_SUGGESTION_FILLED and
+  // FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE events are logged by the logger,
+  // other events are logged by the base logger.
+  std::vector<std::vector<ExpectedUkmMetricsPair>> expected_form_event_metrics;
+  // Form parsed.
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_DID_PARSE_FORM,
+                                &expected_form_event_metrics);
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_DID_PARSE_FORM,
+                                &expected_form_event_metrics);
+  // User interacted with the form.
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_INTERACTED_ONCE,
+                                &expected_form_event_metrics);
+  // Suggestion shown.
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_SUGGESTIONS_SHOWN,
+                                &expected_form_event_metrics);
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE,
+                                &expected_form_event_metrics);
+  // Suggestion filled.
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_LOCAL_SUGGESTION_FILLED,
+                                &expected_form_event_metrics);
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE,
+                                &expected_form_event_metrics);
+  // Form submitted.
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE,
+                                &expected_form_event_metrics);
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE,
+                                &expected_form_event_metrics);
+  // Suggestion submitted.
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE,
+                                &expected_form_event_metrics);
+  AppendLoyaltyCardFormEventUkm(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE,
+                                &expected_form_event_metrics);
+
+  VerifyUkm(&test_ukm_recorder(), form_, UkmFormEventType::kEntryName,
+            expected_form_event_metrics);
+}
+
 // Validate Autofill.KeyMetrics.* in case the user has to fix the filled data.
 TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   base::HistogramTester histogram_tester;

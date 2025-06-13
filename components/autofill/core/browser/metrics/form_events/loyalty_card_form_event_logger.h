@@ -19,7 +19,8 @@ class LoyaltyCardFormEventLogger : public FormEventLoggerBase {
   ~LoyaltyCardFormEventLogger() override;
 
   // Triggered when the autofill manager fills a loyalty card suggestion.
-  void OnDidFillSuggestion(const AutofillField& field);
+  void OnDidFillSuggestion(const FormStructure& form,
+                           const AutofillField& field);
 
   // Triggered when the list of loyalty card suggestions is loaded by the
   // autofill manager.

@@ -100,6 +100,17 @@ void VerifyDeveloperEngagementUkm(
   }
 }
 
+void AppendFormEventUkm(
+    const FormEvent& form_event,
+    const DenseSet<FormTypeNameForLogging>& form_types,
+    std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics) {
+  expected_metrics->emplace_back(std::vector<ExpectedUkmMetricsPair>{
+      {UkmFormEventType::kAutofillFormEventName, static_cast<int>(form_event)},
+      {UkmFormEventType::kMillisecondsSinceFormParsedName, 0},
+      {UkmFormEventType::kFormTypesName,
+       AutofillMetrics::FormTypesToBitVector(form_types)}});
+}
+
 void AppendFieldFillStatusUkm(
     const FormData& form,
     std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics) {

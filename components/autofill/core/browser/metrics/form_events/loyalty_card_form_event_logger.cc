@@ -7,6 +7,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/form_events/form_events.h"
 
 namespace autofill::autofill_metrics {
 
@@ -23,8 +24,13 @@ void LoyaltyCardFormEventLogger::UpdateLoyaltyCardsAvailabilityForReadiness(
 }
 
 void LoyaltyCardFormEventLogger::OnDidFillSuggestion(
+    const FormStructure& form,
     const AutofillField& field) {
-  has_logged_form_filling_suggestion_filled_ = true;
+  Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
+  if (!has_logged_form_filling_suggestion_filled_) {
+    has_logged_form_filling_suggestion_filled_ = true;
+    Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
+  }
   FieldType field_type = field.Type().GetStorableType();
   field_types_with_shown_suggestions_.erase(field_type);
   field_types_with_accepted_suggestions_.insert(field_type);

@@ -49,6 +49,11 @@ void VerifyDeveloperEngagementUkm(
     const DenseSet<FormTypeNameForLogging>& form_types,
     const std::vector<int64_t>& expected_metric_values);
 
+void AppendFormEventUkm(
+    const FormEvent& form_event,
+    const DenseSet<FormTypeNameForLogging>& form_types,
+    std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics);
+
 void AppendFieldFillStatusUkm(
     const FormData& form,
     std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics);

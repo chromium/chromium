@@ -1744,7 +1744,7 @@ void BrowserAutofillManager::FillOrPreviewField(
   if (action_persistence == mojom::ActionPersistence::kFill &&
       type == SuggestionType::kLoyaltyCardEntry) {
     metrics_->loyalty_card_form_event_logger.OnDidFillSuggestion(
-        *autofill_field);
+        *form_structure, *autofill_field);
   }
 }
 
