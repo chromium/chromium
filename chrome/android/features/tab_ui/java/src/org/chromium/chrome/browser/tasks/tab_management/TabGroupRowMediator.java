@@ -230,14 +230,7 @@ class TabGroupRowMediator {
             }
         } else if (state == GroupWindowState.HIDDEN) {
             String syncId = savedTabGroup.syncId;
-            boolean isTabGroupArchived = savedTabGroup.archivalTimeMs != null;
             mTabGroupUiActionHandler.openTabGroup(syncId);
-            if (isTabGroupArchived) {
-                RecordUserAction.record("TabGroups.RestoreFromTabGroupPane");
-                RecordHistogram.recordCount1000Histogram(
-                        "TabGroups.RestoreFromTabGroupPane.TabCount",
-                        savedTabGroup.savedTabs.size());
-            }
             savedTabGroup = mTabGroupSyncService.getGroup(syncId);
         }
 

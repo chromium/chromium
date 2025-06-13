@@ -499,7 +499,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private void rescueArchivedTabGroups() {
         if (mTabGroupSyncService == null) return;
 
-        if (mRescueTabGroupsCalled) return; // prevents calling when already called once
+        if (mRescueTabGroupsCalled) return;
         mRescueTabGroupsCalled = true;
 
         // Clear all {@link SavedTabGroup}s of possible archived status as the rescue operation.

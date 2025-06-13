@@ -26,7 +26,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -194,24 +193,15 @@ public class TabGroupSyncRemoteObserverUnitTest {
     @Test
     public void testTabGroupRemoved() {
         addOneTab();
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "TabGroups.CloseTabGroupsDeletedRemotely", 1);
         mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_1, TriggerSource.REMOTE);
         verify(mLocalMutationHelper).closeTabGroup(any(), eq(ClosingSource.DELETED_FROM_SYNC));
-        histogramExpectation.assertExpected();
     }
 
     @Test
     public void testTabGroupRemovedForDifferentWindow() {
         addOneTab();
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("TabGroups.CloseTabGroupsDeletedRemotely")
-                        .build();
         mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_2, TriggerSource.REMOTE);
         verify(mLocalMutationHelper, never()).closeTabGroup(any(), anyInt());
-        histogramExpectation.assertExpected();
     }
 
     @Test

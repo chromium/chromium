@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
@@ -93,16 +92,12 @@ public class StartupHelper {
 
     private void closeDeletedGroupsFromTabModel() {
         LogUtils.log(TAG, "closeDeletedGroupsFromTabModel");
-        int tabGroupsClosed = 0;
         for (LocalTabGroupId tabGroupId : mTabGroupSyncService.getDeletedGroupIds()) {
             if (!TabGroupSyncUtils.isInCurrentWindow(mTabGroupModelFilter, tabGroupId)) continue;
 
             mLocalTabGroupMutationHelper.closeTabGroup(
                     tabGroupId, ClosingSource.CLEANED_UP_ON_STARTUP);
-            tabGroupsClosed++;
         }
-        RecordHistogram.recordCount1000Histogram(
-                "TabGroups.CloseTabGroupsDeletedRemotely", tabGroupsClosed);
     }
 
     /**

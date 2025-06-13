@@ -253,21 +253,14 @@ public class TabArchiverImpl implements TabArchiver {
 
         if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
                 && mTabGroupSyncService != null) {
-            int archivedTabGroups = 0;
             for (Token tabGroupId : archivedTabGroupIds) {
                 LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
                 SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(localTabGroupId);
                 if (savedTabGroup != null && savedTabGroup.syncId != null) {
                     mTabGroupSyncService.updateArchivalStatus(
                             savedTabGroup.syncId, /* archivalStatus= */ true);
-                    archivedTabGroups++;
-                    RecordHistogram.recordCount1000Histogram(
-                            "TabGroups.TabGroupDeclutter.ArchivedTabGroupTabCount",
-                            savedTabGroup.savedTabs.size());
                 }
             }
-            RecordHistogram.recordCount1000Histogram(
-                    "TabGroups.TabGroupDeclutter.ArchivedTabGroups", archivedTabGroups);
         }
 
         int tabCount = tabs.size();

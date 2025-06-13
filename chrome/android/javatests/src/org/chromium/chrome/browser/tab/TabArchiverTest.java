@@ -65,7 +65,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.Arrays;
@@ -313,9 +312,6 @@ public class TabArchiverTest {
         String syncId = "sync_id";
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = syncId;
-        SavedTabGroupTab savedTabGroupTab1 = new SavedTabGroupTab();
-        SavedTabGroupTab savedTabGroupTab2 = new SavedTabGroupTab();
-        savedTabGroup.savedTabs = Arrays.asList(savedTabGroupTab1, savedTabGroupTab2);
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
 
         Tab tab =
@@ -339,8 +335,6 @@ public class TabArchiverTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Tabs.TabArchived.TabCount", 1)
-                        .expectIntRecords("TabGroups.TabGroupDeclutter.ArchivedTabGroups", 1)
-                        .expectIntRecords("TabGroups.TabGroupDeclutter.ArchivedTabGroupTabCount", 2)
                         .build();
         runOnUiThreadBlocking(
                 () ->
@@ -395,8 +389,6 @@ public class TabArchiverTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Tabs.TabArchived.TabCount", 1)
-                        .expectNoRecords("TabGroups.TabGroupDeclutter.ArchivedTabGroups")
-                        .expectNoRecords("TabGroups.TabGroupDeclutter.ArchivedTabGroupTabCount")
                         .build();
         // The grouped tab should be skipped.
         runOnUiThreadBlocking(
@@ -415,14 +407,6 @@ public class TabArchiverTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
     public void testGroupedTabsAreArchived() {
-        String syncId = "sync_id";
-        SavedTabGroup savedTabGroup = new SavedTabGroup();
-        savedTabGroup.syncId = syncId;
-        SavedTabGroupTab savedTabGroupTab1 = new SavedTabGroupTab();
-        SavedTabGroupTab savedTabGroupTab2 = new SavedTabGroupTab();
-        savedTabGroup.savedTabs = Arrays.asList(savedTabGroupTab1, savedTabGroupTab2);
-        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
-
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
@@ -456,8 +440,6 @@ public class TabArchiverTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Tabs.TabArchived.TabCount", 1)
-                        .expectIntRecords("TabGroups.TabGroupDeclutter.ArchivedTabGroups", 1)
-                        .expectIntRecords("TabGroups.TabGroupDeclutter.ArchivedTabGroupTabCount", 2)
                         .build();
         // The grouped tab should not be added to the archived tab model and have been closed from
         // the regular tab model.

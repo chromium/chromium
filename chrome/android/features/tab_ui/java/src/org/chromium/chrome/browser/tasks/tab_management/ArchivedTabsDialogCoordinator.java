@@ -126,19 +126,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 public void restoreAllArchivedTabs() {
                     List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel);
                     int tabCount = tabs.size();
-                    List<String> archivedTabGroupSyncIds = getArchivedTabGroupSyncIds();
-                    int tabGroupTabCount = getSyncedTabGroupTabsCount(archivedTabGroupSyncIds);
                     ArchivedTabsDialogCoordinator.this.restoreArchivedTabs(
-                            tabs, archivedTabGroupSyncIds);
+                            tabs, getArchivedTabGroupSyncIds());
                     RecordHistogram.recordCount1000Histogram(
                             "Tabs.RestoreAllArchivedTabsMenuItem.TabCount", tabCount);
                     RecordUserAction.record("Tabs.RestoreAllArchivedTabsMenuItem");
-                    RecordHistogram.recordCount1000Histogram(
-                            "TabGroups.RestoreAllArchivedTabsMenuItem.TabGroupCount",
-                            archivedTabGroupSyncIds.size());
-                    RecordHistogram.recordCount1000Histogram(
-                            "TabGroups.RestoreAllArchivedTabsMenuItem.TabGroupTabCount",
-                            tabGroupTabCount);
                 }
 
                 @Override
@@ -162,12 +154,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     RecordHistogram.recordCount1000Histogram(
                             "Tabs.RestoreArchivedTabsMenuItem.TabCount", tabCount);
                     RecordUserAction.record("Tabs.RestoreArchivedTabsMenuItem");
-                    RecordHistogram.recordCount1000Histogram(
-                            "TabGroups.RestoreArchivedTabsMenuItem.TabGroupCount",
-                            tabGroupSyncIds.size());
-                    RecordHistogram.recordCount1000Histogram(
-                            "TabGroups.RestoreArchivedTabsMenuItem.TabGroupTabCount",
-                            getSyncedTabGroupTabsCount(tabGroupSyncIds));
                 }
 
                 @Override
@@ -181,12 +167,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     RecordHistogram.recordCount1000Histogram(
                             "Tabs.CloseArchivedTabsMenuItem.TabCount", tabs.size());
                     RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
-                    RecordHistogram.recordCount1000Histogram(
-                            "TabGroups.CloseArchivedTabsMenuItem.TabGroupCount",
-                            tabGroupSyncIds.size());
-                    RecordHistogram.recordCount1000Histogram(
-                            "TabGroups.CloseArchivedTabsMenuItem.TabGroupTabCount",
-                            getSyncedTabGroupTabsCount(tabGroupSyncIds));
                 }
             };
 
@@ -270,10 +250,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                     mTabGroupUiActionHandlerSupplier.get(),
                                     mCurrentTabGroupModelFilterSupplier.get(),
                                     requestOpenTabGroupDialog);
-                            RecordUserAction.record("TabGroups.RestoreSingleTabGroup");
-                            RecordHistogram.recordCount1000Histogram(
-                                    "TabGroups.RestoreSingleTabGroup.TabGroupTabCount",
-                                    savedTabGroup.savedTabs.size());
                         }
                     };
                 }
@@ -787,12 +763,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     RecordHistogram.recordCount1000Histogram(
                             "Tabs.CloseAllArchivedTabs.TabCount", tabCount);
                     RecordUserAction.record("Tabs.CloseAllArchivedTabsMenuItem");
-                    RecordHistogram.recordCount1000Histogram(
-                            "TabGroups.CloseAllArchivedTabGroups.TabGroupCount",
-                            archivedTabGroupSyncIds.size());
-                    RecordHistogram.recordCount1000Histogram(
-                            "TabGroups.CloseAllArchivedTabGroups.TabGroupTabCount",
-                            tabGroupTabsCount);
                 });
     }
 

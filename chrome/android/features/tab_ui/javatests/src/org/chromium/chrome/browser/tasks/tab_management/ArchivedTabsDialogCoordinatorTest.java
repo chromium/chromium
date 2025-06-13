@@ -86,7 +86,6 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -410,13 +409,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(1, mUserActionTester.getActionCount("Tabs.OpenArchivedTabsSettingsMenuItem"));
 
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Tabs.ArchiveSettings.TimeDeltaPreference", 0);
-
         mArchivedTabModelOrchestrator.resetRescueArchivedTabsForTesting();
         onView(withText("Never")).perform(click());
-        histogramExpectation.assertExpected();
 
         CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 3);
         assertEquals(0, mArchivedTabModel.getCount());
@@ -858,11 +852,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Tabs.CloseAllArchivedTabs.TabCount", 1)
-                        .expectIntRecords("TabGroups.CloseAllArchivedTabGroups.TabGroupCount", 1)
-                        .expectIntRecords("TabGroups.CloseAllArchivedTabGroups.TabGroupTabCount", 1)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher("Tabs.CloseAllArchivedTabs.TabCount", 1);
 
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
         onView(withText("Close all inactive tabs")).perform(click());
@@ -901,11 +891,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
 
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Tabs.CloseArchivedTabsMenuItem.TabCount", 2)
-                        .expectIntRecords("TabGroups.CloseArchivedTabsMenuItem.TabGroupCount", 1)
-                        .expectIntRecords("TabGroups.CloseArchivedTabsMenuItem.TabGroupTabCount", 1)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.CloseArchivedTabsMenuItem.TabCount", 2);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.actionRobot.clickItemAtAdapterPosition(2);
@@ -946,11 +933,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
 
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Tabs.CloseArchivedTabsMenuItem.TabCount", 2)
-                        .expectIntRecords("TabGroups.CloseArchivedTabsMenuItem.TabGroupCount", 1)
-                        .expectIntRecords("TabGroups.CloseArchivedTabsMenuItem.TabGroupTabCount", 1)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.CloseArchivedTabsMenuItem.TabCount", 2);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.actionRobot.clickItemAtAdapterPosition(2);
@@ -986,13 +970,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
 
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Tabs.RestoreAllArchivedTabsMenuItem.TabCount", 1)
-                        .expectIntRecords(
-                                "TabGroups.RestoreAllArchivedTabsMenuItem.TabGroupCount", 1)
-                        .expectIntRecords(
-                                "TabGroups.RestoreAllArchivedTabsMenuItem.TabGroupTabCount", 1)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.RestoreAllArchivedTabsMenuItem.TabCount", 1);
         assertEquals(1, mRegularTabModel.getCount());
 
         // Mock the sync backend being initialized so the tab group is restored via
@@ -1034,12 +1013,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
 
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Tabs.RestoreArchivedTabsMenuItem.TabCount", 1)
-                        .expectIntRecords("TabGroups.RestoreArchivedTabsMenuItem.TabGroupCount", 1)
-                        .expectIntRecords(
-                                "TabGroups.RestoreArchivedTabsMenuItem.TabGroupTabCount", 1)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.RestoreArchivedTabsMenuItem.TabCount", 1);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
@@ -1062,89 +1037,6 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
         assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreArchivedTabsMenuItem"));
-    }
-
-    @Test
-    @MediumTest
-    public void testCloseArchivedTabGroup_PressCloseButton() throws Exception {
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
-        SavedTabGroup savedTabGroup =
-                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
-        addArchivedTab(new GURL("https://google.com"), "test 1");
-        addArchivedTab(new GURL("https://google.com"), "test 2");
-
-        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
-        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
-
-        assertEquals(1, mRegularTabModel.getCount());
-        assertEquals(2, mArchivedTabModel.getCount());
-
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "TabGroups.ArchivedTabGroupManualCloseOnInactiveSurface.TabGroupTabCount",
-                        1);
-
-        mRobot.actionRobot.clickViewIdAtAdapterPosition(0, R.id.action_button);
-
-        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
-        savedTabGroup.archivalTimeMs = null;
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
-        mRobot.resultRobot.verifyAdapterHasItemCount(2);
-
-        assertEquals(1, mRegularTabModel.getCount());
-        assertEquals(2, mArchivedTabModel.getCount());
-        histogramExpectation.assertExpected();
-        assertEquals(
-                1,
-                mUserActionTester.getActionCount(
-                        "TabGroups.ArchivedTabGroupManualCloseOnInactiveSurface"));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
-    public void testRestoreArchivedTabGroup_ClickIntoTabGroup() {
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
-        SavedTabGroup savedTabGroupInitial =
-                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
-        SavedTabGroup savedTabGroupLocalIdSet =
-                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
-        savedTabGroupLocalIdSet.localId = new LocalTabGroupId(new Token(123L, 123L));
-
-        addArchivedTab(new GURL("https://google.com"), "test 1");
-        addArchivedTab(new GURL("https://google.com"), "test 2");
-
-        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
-        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
-        ThreadUtils.runOnUiThreadBlocking(() -> notifyTabGroupSyncObserversWithInitialization());
-        // Override getGroup mock defined in createSavedTabGroup to support changing state.
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1))
-                .thenReturn(
-                        savedTabGroupInitial,
-                        savedTabGroupInitial,
-                        savedTabGroupInitial,
-                        savedTabGroupLocalIdSet,
-                        savedTabGroupLocalIdSet);
-
-        assertEquals(1, mRegularTabModel.getCount());
-        assertEquals(2, mArchivedTabModel.getCount());
-
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "TabGroups.RestoreSingleTabGroup.TabGroupTabCount", 1);
-
-        mRobot.actionRobot.clickItemAtAdapterPosition(0);
-
-        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
-        savedTabGroupLocalIdSet.archivalTimeMs = null;
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroupLocalIdSet));
-
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(2, mArchivedTabModel.getCount());
-        histogramExpectation.assertExpected();
-        assertEquals(1, mUserActionTester.getActionCount("TabGroups.RestoreSingleTabGroup"));
     }
 
     private Tab addArchivedTab(GURL url, String title) {

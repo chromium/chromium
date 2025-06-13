@@ -44750,36 +44750,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="TabGroups.ArchivedTabGroupManualCloseOnInactiveSurface">
-  <owner>wylieb@google.com</owner>
-  <owner>evanluo@google.com</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <description>
-    Recorded when archived tab group is closed due to user manually clicking the
-    X button of the tab group in the inactive pane.
-  </description>
-</action>
-
-<action name="TabGroups.RestoreFromTabGroupPane">
-  <owner>wylieb@google.com</owner>
-  <owner>evanluo@google.com</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <description>
-    Recorded when an archived tab group is restored when the user opens the same
-    tab group from the tab group pane.
-  </description>
-</action>
-
-<action name="TabGroups.RestoreSingleTabGroup">
-  <owner>wylieb@google.com</owner>
-  <owner>evanluo@google.com</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <description>
-    Recorded when archived tab group is restored due to user manually clicking
-    into the tab group in the inactive pane.
-  </description>
-</action>
-
 <action name="TabGroups.Shared.SwitchGroupedTab">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab_group_sync;
 import android.text.TextUtils;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -136,7 +135,6 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
         mEnableLocalObserverCallback.onResult(false);
         mLocalTabGroupMutationHelper.closeTabGroup(localId, ClosingSource.DELETED_FROM_SYNC);
-        RecordHistogram.recordCount1000Histogram("TabGroups.CloseTabGroupsDeletedRemotely", 1);
         mEnableLocalObserverCallback.onResult(true);
     }
 
