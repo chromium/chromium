@@ -146,23 +146,6 @@ std::optional<CachedUserStatus> GlicUserStatusFetcher::GetCachedUserStatus(
       last_updated_default_value};
 }
 
-// static.
-bool GlicUserStatusFetcher::IsDisabled(Profile* profile) {
-  if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck)) {
-    if (auto cached_user_status =
-            GlicUserStatusFetcher::GetCachedUserStatus(profile);
-        cached_user_status.has_value()) {
-      if (cached_user_status->user_status_code ==
-              UserStatusCode::DISABLED_BY_ADMIN ||
-          cached_user_status->user_status_code ==
-              UserStatusCode::DISABLED_OTHER) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 bool GlicUserStatusFetcher::IsEnterpriseAccount() {
   if (profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings) ==
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled)) {
@@ -203,16 +186,49 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
 
   // only send user status request when primary account exists and refresh
   // token is available.
-  if (identity_manager->HasPrimaryAccountWithRefreshToken(
+  if (!identity_manager->HasPrimaryAccountWithRefreshToken(
           signin::ConsentLevel::kSignin)) {
-    // Only send the RPC for enterprise account.
-    if (!IsEnterpriseAccount()) {
-      return;
-    }
-    FetchNow();
-  } else {
     is_user_status_waiting_for_refresh_token_ = true;
+    return;
   }
+
+  // Only send the RPC for enterprise account.
+  if (!IsEnterpriseAccount()) {
+    return;
+  }
+
+  // Cancel any ongoing fetch. This will do nothing if the request is already
+  // finished.
+  CancelUserStatusUpdateIfNeeded();
+
+  // schedule next run regardless.
+  ScheduleUserStatusUpdate(features::kGlicUserStatusRequestDelay.Get());
+
+  auto gaia_id_hash = GetGaiaIdHashForPrimaryAccount(profile_);
+  if (!gaia_id_hash.has_value()) {
+    return;
+  }
+
+  request_sender_ = std::make_unique<google_apis::RequestSender>(
+      std::make_unique<google_apis::AuthService>(
+          identity_manager,
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          profile_->GetURLLoaderFactory(),
+          std::vector<std::string>{oauth2_scope_}),
+      profile_->GetURLLoaderFactory(),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+          .get(),
+      /*custom_user_agent=*/std::string(), kTrafficAnnotation);
+
+  auto request = std::make_unique<GlicUserStatusRequest>(
+      request_sender_.get(), endpoint_,
+      base::BindOnce(&GlicUserStatusFetcher::ProcessResponse,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     gaia_id_hash.value().ToBase64()));
+  cancel_closure_ =
+      request_sender_->StartRequestWithAuthRetry(std::move(request));
 }
 
 void GlicUserStatusFetcher::ScheduleUserStatusUpdate(
@@ -237,60 +253,14 @@ std::optional<signin::GaiaIdHash>
 GlicUserStatusFetcher::GetGaiaIdHashForPrimaryAccount(Profile* profile) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile);
-
-  if (!identity_manager) {
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return std::nullopt;
   }
 
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return std::nullopt;
-  }
   CoreAccountInfo primary_account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
   return signin::GaiaIdHash::FromGaiaId(primary_account.gaia);
-}
-
-void GlicUserStatusFetcher::FetchNow() {
-  // Cancel any ongoing fetch. This will do nothing if the request is already
-  // finished.
-  CancelUserStatusUpdateIfNeeded();
-
-  // schedule next run regardless.
-  ScheduleUserStatusUpdate(features::kGlicUserStatusRequestDelay.Get());
-
-  auto account_info = GetGaiaIdHashForPrimaryAccount(profile_);
-
-  if (!account_info.has_value()) {
-    return;
-  }
-
-  std::vector<std::string> scopes;
-  scopes.push_back(oauth2_scope_);
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-
-  request_sender_ = std::make_unique<google_apis::RequestSender>(
-      std::make_unique<google_apis::AuthService>(
-          identity_manager,
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          profile_->GetURLLoaderFactory(),
-          std::vector<std::string>{oauth2_scope_}),
-      profile_->GetURLLoaderFactory(),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
-          .get(),
-      /*custom_user_agent=*/std::string(), kTrafficAnnotation);
-
-  auto request = std::make_unique<GlicUserStatusRequest>(
-      request_sender_.get(), endpoint_,
-      base::BindOnce(&GlicUserStatusFetcher::ProcessResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     account_info.value().ToBase64()));
-  cancel_closure_ =
-      request_sender_->StartRequestWithAuthRetry(std::move(request));
 }
 
 void GlicUserStatusFetcher::CancelUserStatusUpdateIfNeeded() {

@@ -63,7 +63,6 @@ class GlicUserStatusFetcher {
   ~GlicUserStatusFetcher();
 
   static std::optional<CachedUserStatus> GetCachedUserStatus(Profile* profile);
-  static bool IsDisabled(Profile* profile);
 
   bool IsEnterpriseAccount();
   void InvalidateCachedStatus();
@@ -77,10 +76,6 @@ class GlicUserStatusFetcher {
  private:
   static std::optional<signin::GaiaIdHash> GetGaiaIdHashForPrimaryAccount(
       Profile* profile);
-
-  void CreateRequestSender();
-
-  void FetchNow();
 
   void ProcessResponse(const std::string& account_id_hash,
                        CachedUserStatus user_status);
