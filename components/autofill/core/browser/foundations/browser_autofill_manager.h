@@ -444,11 +444,8 @@ class BrowserAutofillManager : public AutofillManager {
   // method should be called after we learned that JavaScript modified an
   // autofilled field. It's responsible for assessing the nature of the
   // modification. `cleared_value` is true if JS wiped the previous value.
-  // TODO(crbug.com/40227496): Remove `cleared_value` when `field` starts
-  // containing the actual current value of the field.
   void AnalyzeJavaScriptChangedAutofilledValue(const FormStructure& form,
-                                               AutofillField& field,
-                                               bool cleared_value);
+                                               AutofillField& field);
 
   // Populates all the fields (except for ablation study related fields) in
   // `SuggestionsContext` based on the given params.

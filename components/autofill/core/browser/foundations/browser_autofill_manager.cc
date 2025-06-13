@@ -976,9 +976,9 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
   // Log events when user edits the field.
   // If the user types into the same field multiple times, repeated
   // TypingFieldLogEvents are coalesced.
-  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   autofill_field->AppendLogEventIfNotRepeated(TypingFieldLogEvent{
-      .has_value_after_typing = ToOptionalBoolean(!field.value().empty())});
+      .has_value_after_typing =
+          ToOptionalBoolean(!autofill_field->value().empty())});
 
   UpdatePendingForm(form);
 
@@ -993,7 +993,7 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
     autofill_field->set_is_autofilled(false);
     autofill_field->set_previously_autofilled(true);
     if (logger) {
-      logger->OnEditedAutofilledField(field.global_id());
+      logger->OnEditedAutofilledField(autofill_field->global_id());
     }
     if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
         delegate &&
@@ -1003,7 +1003,7 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
     }
   } else {
     if (logger) {
-      logger->OnEditedNonFilledField(field.global_id());
+      logger->OnEditedNonFilledField(autofill_field->global_id());
     }
   }
   UpdateInitialInteractionTimestamp(timestamp);
@@ -2293,8 +2293,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
                              &form_structure, &autofill_field)) {
     return;
   }
-  AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field,
-                                          field.value().empty());
+  AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field);
   form_filler_->MaybeTriggerRefill(
       form, *form_structure, RefillTriggerReason::kExpirationDateFormatted,
       AutofillTriggerSource::kJavaScriptChangedAutofilledValue, field,
@@ -2395,12 +2394,11 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
 
 void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
     const FormStructure& form,
-    AutofillField& field,
-    bool cleared_value) {
+    AutofillField& field) {
   // We are interested in reporting the events where JavaScript resets an
   // autofilled value immediately after filling. For a reset, the value
   // needs to be empty.
-  if (!cleared_value) {
+  if (!field.value().empty()) {
     return;
   }
   std::optional<base::TimeTicks> original_fill_time =
