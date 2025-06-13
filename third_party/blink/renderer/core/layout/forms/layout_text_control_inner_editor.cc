@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control_inner_editor.h"
 
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
-#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 
 namespace blink {
 

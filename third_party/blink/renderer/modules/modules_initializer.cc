@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/trace_event.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view_transition_content.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "ui/gfx/geometry/rect_conversions.h"

@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/editing/commands/typing_command.h"
 
-#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
