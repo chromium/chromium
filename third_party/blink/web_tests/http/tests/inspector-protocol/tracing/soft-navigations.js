@@ -1,14 +1,24 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  // Load test page and wait for the LCP element (it's also the click target).
-  const {page, session, dp} = await testRunner.startURL(
-      'http://127.0.0.1:8000/inspector-protocol/resources/soft-navigations.html',
-      'Tests trace events for soft navigations.');
+  const {session, dp} =
+      await testRunner.startBlank('Tests trace events for soft navigations.');
 
   // Check if the browser supports soft-navigation.
   testRunner.log(
       '\nPerformanceObserver supports "soft-navigation": ' +
       await session.evaluate(
           `PerformanceObserver.supportedEntryTypes.includes('soft-navigation')`));
+
+  // Start tracing and observe the devtools.timeline category.
+  const TracingHelper =
+      await testRunner.loadScript('../resources/tracing-test.js');
+  const tracingHelper = new TracingHelper(testRunner, session);
+  await tracingHelper.startTracing('devtools.timeline');
+
+  // Load test page and wait for the LCP element (it's also the click target).
+  const url =
+      'http://127.0.0.1:8000/inspector-protocol/resources/soft-navigations.html';
+  await dp.Page.navigate({url});
+
 
   const lcpElementId = await session.evaluateAsync(`new Promise(resolve => {
     new PerformanceObserver(list => {
@@ -42,12 +52,6 @@
     return {x: (rect.left + rect.width) / 2, y: (rect.top + rect.height) / 2};
   });
 
-  // Start tracing and observe the devtools.timeline category.
-  const TracingHelper =
-      await testRunner.loadScript('../resources/tracing-test.js');
-  const tracingHelper = new TracingHelper(testRunner, session);
-  await tracingHelper.startTracing('devtools.timeline');
-
   // The click which causes the soft navigation (via its click handler).
   userInteractionClick(clickTargetCenter);
 
@@ -58,16 +62,78 @@
       resolve(list.getEntries()[0].name);
     }).observe({type: 'soft-navigation', buffered: true});
   })`);
-  testRunner.log('\nGot soft navigation performance entry: ' + softNavigationName);
+  testRunner.log(
+      '\nGot soft navigation performance entry: ' + softNavigationName);
 
   // Stop tracing and log the SoftNavigation event.
-  await tracingHelper.stopTracing();
-  const Phase = TracingHelper.Phase;
-  const softNavigationEvent = tracingHelper.findEvent(
-      'SoftNavigationHeuristics_SoftNavigationDetected', Phase.INSTANT);
+  testRunner.log('\nStopping tracing and analyzing events.');
+  const unfilteredEvents = await tracingHelper.stopTracing();
 
-  testRunner.log('\nGot SoftNavigation event:');
-  tracingHelper.logEventShape(softNavigationEvent);
+  // Maps timestamps (monononically increasing double) to a counter.
+  class TimestampMapper {
+    constructor() {
+      this.time = 0;
+      this.counter = 0;
+    }
+
+    map(timestamp) {
+      if (this.time === timestamp) {
+        return this.counter;
+      }
+      if (this.time > timestamp) {
+        throw new Error('Timestamps not in chronological order');
+      }
+      this.time = timestamp;
+      this.counter++;
+      return this.counter;
+    }
+  }
+
+  // Maps actual IDs (e.g. navigationId) to logical IDs (e.g. 'id_0').
+  class IdMapper {
+    constructor() {
+      this.logicalIdByActualId = new Map();
+    }
+
+    map(id) {
+      let logical = this.logicalIdByActualId.get(id);
+      if (!logical) {
+        logical = 'id_' + this.logicalIdByActualId.size;
+        this.logicalIdByActualId.set(id, logical);
+      }
+      return logical;
+    }
+  }
+
+  const timestamps = new TimestampMapper();
+  const ids = new IdMapper();
+  const softNavs = [];
+  const lcpCandidates = [];
+  for (const event of unfilteredEvents) {
+    if (event.name === 'SoftNavigationHeuristics_SoftNavigationDetected') {
+      testRunner.log('-> SoftNavigation event');
+      testRunner.log('   interactionTimestamp: ' + timestamps.map(event.args.context.interactionTimestamp));
+      testRunner.log('   ts: ' + timestamps.map(event.ts));
+      testRunner.log('   frame: ' + ids.map(event.args.frame));
+      testRunner.log('   navigationId: ' + ids.map(event.args.navigationId));
+      testRunner.log('   initialURL: ' + event.args.context.initialURL)
+      testRunner.log('   mostRecentURL: ' + event.args.context.mostRecentURL)
+      softNavs.push(event);
+    } else if (event.name === 'largestContentfulPaint::Candidate') {
+      testRunner.log('-> LCP candidate event');
+      testRunner.log('   ts: ' + timestamps.map(event.ts));
+      testRunner.log('   frame: ' + ids.map(event.args.frame));
+      testRunner.log(
+          '   navigationId: ' + ids.map(event.args.data.navigationId));
+      lcpCandidates.push(event);
+    }
+  }
+
+  testRunner.log('\nSoftNavigation event shape:');
+  tracingHelper.logEventShape(softNavs[0]);
+
+  testRunner.log('\nLCP candidate event shape:');
+  tracingHelper.logEventShape(lcpCandidates[0]);
 
   testRunner.completeTest();
 })

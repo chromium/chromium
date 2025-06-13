@@ -2745,7 +2745,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_InputEventsForClick) {
 class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
  public:
   void TestSoftNavigation(bool wait_for_second_lcp) {
-    StartTracing();
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -2830,72 +2829,6 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     // The histogram value represents the low end of the bucket, not the actual
     // value. Therefore it is lower or equal to the web exposed value.
     ASSERT_LE(lcp_value_bucket_start, lcp_start_before);
-
-    VerifyTraceEvents(StopTracing(), wait_for_second_lcp ? 3UL : 1UL);
-  }
-
- private:
-  void StartTracing() {
-    base::RunLoop wait_for_tracing;
-    content::TracingController::GetInstance()->StartTracing(
-        base::trace_event::TraceConfig(
-            "{\"included_categories\": [\"devtools.timeline\"]}"),
-        wait_for_tracing.QuitClosure());
-    wait_for_tracing.Run();
-  }
-
-  std::string StopTracing() {
-    base::RunLoop wait_for_tracing;
-    std::string trace_output;
-    content::TracingController::GetInstance()->StopTracing(
-        content::TracingController::CreateStringEndpoint(
-            base::BindLambdaForTesting(
-                [&](std::unique_ptr<std::string> trace_str) {
-                  trace_output = std::move(*trace_str);
-                  wait_for_tracing.Quit();
-                })));
-    wait_for_tracing.Run();
-    return trace_output;
-  }
-
-  void VerifyTraceEvents(const std::string& trace_str,
-                         size_t expected_event_number) {
-    std::unique_ptr<TraceAnalyzer> analyzer(TraceAnalyzer::Create(trace_str));
-    TraceEventVector events;
-    auto query =
-        Query::EventNameIs("SoftNavigationHeuristics_SoftNavigationDetected") ||
-        Query::EventNameIs("largestContentfulPaint::Candidate");
-    size_t num_events = analyzer->FindEvents(query, &events);
-    EXPECT_EQ(expected_event_number, num_events);
-
-    std::string previous_frame;
-    std::string navigation_id;
-    double soft_navigation_timestamp = 0.0;
-    for (auto* event : events) {
-      EXPECT_TRUE(event->HasStringArg("frame"));
-      std::string frame = event->GetKnownArgAsString("frame");
-      if (!previous_frame.empty()) {
-        EXPECT_EQ(frame, previous_frame);
-      }
-      previous_frame = frame;
-      if (event->name == "SoftNavigationHeuristics_SoftNavigationDetected") {
-        soft_navigation_timestamp = event->timestamp;
-        EXPECT_TRUE(event->HasStringArg("navigationId"));
-        navigation_id = event->GetKnownArgAsString("navigationId");
-      } else if (soft_navigation_timestamp > 0.0) {
-        EXPECT_LE(soft_navigation_timestamp, event->timestamp);
-        EXPECT_EQ(event->name, "largestContentfulPaint::Candidate");
-        base::Value::Dict data = event->GetKnownArgAsDict("data");
-        if (!navigation_id.empty()) {
-          EXPECT_EQ(navigation_id, *data.FindString("navigationId"));
-        }
-      }
-    }
-    // If we have more than one event, one of them needs to be a soft
-    // navigation.
-    if (expected_event_number > 1) {
-      EXPECT_TRUE(soft_navigation_timestamp > 0);
-    }
   }
 };
 
@@ -2904,8 +2837,7 @@ class SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PageLoadMetricsBrowserTest::SetUpCommandLine(command_line);
-    features_list_.InitWithFeatures({blink::features::kSoftNavigationHeuristics,
-                                     blink::features::kNavigationId},
+    features_list_.InitWithFeatures({blink::features::kSoftNavigationHeuristics},
                                     {});
   }
 
@@ -2913,15 +2845,12 @@ class SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag
   base::test::ScopedFeatureList features_list_;
 };
 
-// TODO(crbug.com/341578843): Flaky on many platforms.
-IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, DISABLED_SoftNavigation) {
+IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, SoftNavigation) {
   TestSoftNavigation(/*wait_for_second_lcp=*/false);
 }
 
-// TODO(crbug.com/40946340): Flaky on several platforms.
 IN_PROC_BROWSER_TEST_F(
-    SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag,
-    DISABLED_SoftNavigation) {
+    SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag, SoftNavigation) {
   TestSoftNavigation(/*wait_for_second_lcp=*/true);
 }
 
