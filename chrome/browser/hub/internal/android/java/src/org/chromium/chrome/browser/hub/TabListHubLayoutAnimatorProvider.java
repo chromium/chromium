@@ -209,7 +209,7 @@ public class TabListHubLayoutAnimatorProvider implements HubLayoutAnimatorProvid
 
         ObjectAnimator fadeAnimator =
                 ObjectAnimator.ofFloat(toolbarView, View.ALPHA, mInitialAlpha, mFinalAlpha);
-        fadeAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+        fadeAnimator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
         fadeAnimator.setDuration(duration);
         fadeAnimator.addUpdateListener(
                 animation -> {
