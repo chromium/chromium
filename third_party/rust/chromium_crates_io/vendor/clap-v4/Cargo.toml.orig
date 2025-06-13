@@ -21,12 +21,12 @@ include = [
   "Cargo.toml",
   "LICENSE*",
   "README.md",
-  "benches/**/*",
   "examples/**/*"
 ]
 
 [workspace.lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }
+unnameable_types = "allow"
 unreachable_pub = "warn"
 unsafe_op_in_unsafe_fn = "warn"
 unused_lifetimes = "warn"
@@ -69,7 +69,7 @@ lossy_float_literal = "warn"
 macro_use_imports = "warn"
 mem_forget = "warn"
 mutex_integer = "warn"
-needless_continue = "warn"
+needless_continue = "allow"
 needless_for_each = "warn"
 negative_feature_names = "warn"
 path_buf_push_overwrite = "warn"
@@ -78,6 +78,7 @@ rc_mutex = "warn"
 redundant_feature_names = "warn"
 ref_option_ref = "warn"
 rest_pat_in_fully_bound_structs = "warn"
+result_large_err = "allow"
 same_functions_in_if_condition = "warn"
 self_named_module_files = "warn"
 semicolon_if_nothing_returned = "warn"
@@ -97,9 +98,18 @@ multiple_bound_locations = "allow"
 assigning_clones = "allow"
 blocks_in_conditions = "allow"
 
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+# debug = "line-tables-only"  # requires Cargo 1.71
+
 [package]
 name = "clap"
-version = "4.5.39"
+version = "4.5.40"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 categories = ["command-line-interface"]
 keywords = [
@@ -176,8 +186,8 @@ unstable-markdown = ["clap_derive/unstable-markdown"]
 bench = false
 
 [dependencies]
-clap_builder = { path = "./clap_builder", version = "=4.5.39", default-features = false }
-clap_derive = { path = "./clap_derive", version = "=4.5.32", optional = true }
+clap_builder = { path = "./clap_builder", version = "=4.5.40", default-features = false }
+clap_derive = { path = "./clap_derive", version = "=4.5.40", optional = true }
 
 [dev-dependencies]
 trybuild = "1.0.91"

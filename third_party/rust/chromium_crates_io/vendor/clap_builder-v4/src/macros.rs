@@ -530,7 +530,22 @@ macro_rules! arg_impl {
 /// [`Arg`]: crate::Arg
 #[macro_export]
 macro_rules! arg {
+    ( -$($tail:tt)+ ) => {{
+        let arg = $crate::Arg::default();
+        let arg = $crate::arg_impl! {
+            @arg (arg) -$($tail)+
+        };
+        debug_assert_ne!(arg.get_id(), "", "Without a value or long flag, the `name:` prefix is required");
+        arg
+    }};
     ( $name:ident: $($tail:tt)+ ) => {{
+        let arg = $crate::Arg::new($crate::arg_impl! { @string $name });
+        let arg = $crate::arg_impl! {
+            @arg (arg) $($tail)+
+        };
+        arg
+    }};
+    ( $name:literal: $($tail:tt)+ ) => {{
         let arg = $crate::Arg::new($crate::arg_impl! { @string $name });
         let arg = $crate::arg_impl! {
             @arg (arg) $($tail)+

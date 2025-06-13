@@ -11,7 +11,7 @@
 //! - [Cookbook][_cookbook]
 //! - [FAQ][_faq]
 //! - [Discussions](https://github.com/clap-rs/clap/discussions)
-//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.39/CHANGELOG.md) (includes major version migration
+//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.40/CHANGELOG.md) (includes major version migration
 //!   guides)
 //!
 //! ## Aspirations
@@ -100,3 +100,7 @@ pub mod _faq;
 pub mod _features;
 #[cfg(feature = "unstable-doc")]
 pub mod _tutorial;
+
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctests;
