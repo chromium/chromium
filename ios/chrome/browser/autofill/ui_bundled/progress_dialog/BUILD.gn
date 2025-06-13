@@ -53,6 +53,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/ui_bundled:autofill_ui_constants",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled/authentication:egtest_util",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

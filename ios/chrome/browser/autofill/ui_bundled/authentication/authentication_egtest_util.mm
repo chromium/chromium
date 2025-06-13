@@ -32,3 +32,6 @@ NSString* const kSelectChallengeOptionRequestUrl =
     @"selectchallengeoption";
 NSString* const kSelectChallengeOptionResponseSuccess =
     @"{\"context_token\":\"fake_context_token\"}";
+NSString* const kUnmaskCardSuccessResponseNoAuthNeeded =
+    @"{ \"pan\": \"5411111111112109\",\"dcvv\": \"123\", "
+    @"\"expiration\":{\"month\":4, \"year\":2100} }";

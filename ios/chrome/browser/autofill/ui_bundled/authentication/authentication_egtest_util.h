@@ -30,4 +30,8 @@ extern NSString* const kSelectChallengeOptionRequestUrl;
 // sent out.
 extern NSString* const kSelectChallengeOptionResponseSuccess;
 
+// The fake response from the payment server when a success code is successfully
+// sent out.
+extern NSString* const kUnmaskCardSuccessResponseNoAuthNeeded;
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTHENTICATION_AUTHENTICATION_EGTEST_UTIL_H_
