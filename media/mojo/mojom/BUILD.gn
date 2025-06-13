@@ -870,6 +870,10 @@ mojom("speech_recognition") {
           cpp = "::media::HypothesisParts"
         },
         {
+          mojom = "media.mojom.MediaTimestampRange"
+          cpp = "::media::MediaTimestampRange"
+        },
+        {
           mojom = "media.mojom.TimingInformation"
           cpp = "::media::TimingInformation"
         },

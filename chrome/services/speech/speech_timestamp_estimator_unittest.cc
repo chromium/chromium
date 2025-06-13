@@ -14,7 +14,7 @@ namespace {
 using SpeechTimestamp = SpeechTimestampEstimator::SpeechTimestamp;
 using PlaybackDuration = SpeechTimestampEstimator::PlaybackDuration;
 using MediaTimestamp = SpeechTimestampEstimator::MediaTimestamp;
-using MediaTimestampRange = SpeechTimestampEstimator::MediaTimestampRange;
+using MediaTimestampRange = media::MediaTimestampRange;
 using MediaRanges = SpeechTimestampEstimator::MediaRanges;
 
 using SpeechTimestampRange = std::pair<SpeechTimestamp, SpeechTimestamp>;
@@ -25,19 +25,17 @@ SpeechTimestampRange SpeechSecondsRange(int start, int end) {
 }
 
 MediaTimestampRange MediaSecondsRange(int start, int end) {
-  return {base::Seconds(start), base::Seconds(end)};
+  return {.start = base::Seconds(start), .end = base::Seconds(end)};
 }
 
-void VerifyRanges(const MediaRanges& actual, const MediaRanges& expected) {
-  EXPECT_EQ(actual.size(), expected.size());
-  for (auto [actual_range, expected_range] : base::zip(actual, expected)) {
-    auto [actual_start, actual_end] = actual_range;
-    auto [expected_start, expected_end] = expected_range;
+void VerifyRanges(const MediaRanges& actual_ranges,
+                  const MediaRanges& expected_ranges) {
+  EXPECT_EQ(actual_ranges.size(), expected_ranges.size());
+  for (auto [actual, expected] : base::zip(actual_ranges, expected_ranges)) {
+    EXPECT_EQ(actual.start, expected.start);
+    EXPECT_EQ(actual.end, expected.end);
 
-    EXPECT_EQ(actual_start, expected_start);
-    EXPECT_EQ(actual_end, expected_end);
-
-    EXPECT_LT(actual_start, actual_end);
+    EXPECT_LT(actual.start, actual.end);
   }
 }
 

@@ -11,6 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace speech {
 
@@ -42,8 +43,7 @@ class SpeechTimestampEstimator {
 
   // Note: these `base::TimeDelta`s are `MediaTimestamp`s, but avoid forcing
   // callers to deal with the `base::StrongAlias`.
-  using MediaTimestampRange = std::pair<base::TimeDelta, base::TimeDelta>;
-  using MediaRanges = std::vector<MediaTimestampRange>;
+  using MediaRanges = std::vector<media::MediaTimestampRange>;
 
   // Represents a chunk of originating media played for a certain amount of
   // time, and its position in the queue of all audio sent to the speech

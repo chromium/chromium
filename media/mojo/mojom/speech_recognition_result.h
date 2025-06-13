@@ -37,6 +37,16 @@ struct HypothesisParts {
   base::TimeDelta hypothesis_part_offset;
 };
 
+// A [`start`, `end`) range of media presentation timestamps.
+struct MediaTimestampRange {
+  // Inclusive start of the range.
+  base::TimeDelta start;
+  // Exclusive end of the range.
+  base::TimeDelta end;
+
+  bool operator==(const MediaTimestampRange& rhs) const = default;
+};
+
 struct TimingInformation {
   TimingInformation();
   TimingInformation(const TimingInformation&);
@@ -60,6 +70,15 @@ struct TimingInformation {
   // must be optional. Hypothesis parts maybe non-empty optional containing a
   // zero length vector if no words were spoken during the event's time span.
   std::optional<std::vector<HypothesisParts>> hypothesis_parts;
+
+  // The presentation timestamps of media that originated the transcription.
+  // Might contain multiple (possibly overlapping) ranges if the originating
+  // media was seeked. Ranges will appear in the order in which the audio was
+  // given to SODA, such that the first range matches `audio_start_time`, and
+  // the last range matches `audio_end_time`.
+  // Note: this metadata is provided by Chromium, and doesn't have a SODA
+  //       equivalent.
+  std::optional<std::vector<MediaTimestampRange>> originating_media_timestamps;
 };
 
 // A speech recognition result created by the speech service and passed to the

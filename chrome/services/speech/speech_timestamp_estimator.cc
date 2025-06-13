@@ -227,11 +227,12 @@ MediaRanges SpeechTimestampEstimator::TakeTimestampsInRange(
   results.reserve(playbacks.size());
 
   // Convert playback chunks into media start/end presentation timestamps.
-  std::ranges::transform(playbacks, std::back_inserter(results),
-                         [](const PlaybackChunk& chunk) {
-                           return std::make_pair(chunk.media_start.value(),
-                                                 chunk.MediaEnd().value());
-                         });
+  std::ranges::transform(
+      playbacks, std::back_inserter(results),
+      [](const PlaybackChunk& chunk) -> media::MediaTimestampRange {
+        return {.start = chunk.media_start.value(),
+                .end = chunk.MediaEnd().value()};
+      });
 
   return results;
 }

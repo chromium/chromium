@@ -30,6 +30,26 @@ bool StructTraits<
   return true;
 }
 
+bool StructTraits<media::mojom::MediaTimestampRangeDataView,
+                  media::MediaTimestampRange>::
+    Read(media::mojom::MediaTimestampRangeDataView data,
+         media::MediaTimestampRange* out) {
+  base::TimeDelta start;
+  base::TimeDelta end;
+
+  if (!data.ReadStart(&start) || !data.ReadEnd(&end)) {
+    return false;
+  }
+
+  if (start >= end) {
+    return false;
+  }
+
+  out->start = start;
+  out->end = end;
+  return true;
+}
+
 bool StructTraits<media::mojom::TimingInformationDataView,
                   media::TimingInformation>::
     Read(media::mojom::TimingInformationDataView data,
@@ -37,10 +57,13 @@ bool StructTraits<media::mojom::TimingInformationDataView,
   base::TimeDelta audio_start_time = kZeroTime;
   base::TimeDelta audio_end_time = kZeroTime;
   std::optional<std::vector<media::HypothesisParts>> hypothesis_parts;
+  std::optional<std::vector<media::MediaTimestampRange>>
+      originating_media_timestamps;
 
   if (!data.ReadAudioStartTime(&audio_start_time) ||
       !data.ReadAudioEndTime(&audio_end_time) ||
-      !data.ReadHypothesisParts(&hypothesis_parts)) {
+      !data.ReadHypothesisParts(&hypothesis_parts) ||
+      !data.ReadOriginatingMediaTimestamps(&originating_media_timestamps)) {
     return false;
   }
 
@@ -59,9 +82,13 @@ bool StructTraits<media::mojom::TimingInformationDataView,
     }
   }
 
+  // `originating_media_timestamps` should have already failed to deserialize if
+  // any of its MediaTimestampRanges has a start a `start` >= `end`.
+
   out->audio_start_time = audio_start_time;
   out->audio_end_time = audio_end_time;
   out->hypothesis_parts = std::move(hypothesis_parts);
+  out->originating_media_timestamps = std::move(originating_media_timestamps);
   return true;
 }
 

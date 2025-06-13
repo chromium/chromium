@@ -26,6 +26,8 @@ class SodaClient;
 
 namespace speech {
 
+class SpeechTimestampEstimator;
+
 class SpeechRecognitionRecognizerImpl
     : public media::mojom::SpeechRecognitionRecognizer,
       public AudioSourceConsumer,
@@ -166,6 +168,10 @@ class SpeechRecognitionRecognizerImpl
   // Reset and initialize the SODA client.
   void ResetSoda();
 
+  // Updates `timestamp_estimator_` with `media_start_pts`.
+  void AddMediaTimestampToEstimator(
+      const std::optional<base::TimeDelta>& media_start_pts);
+
   // The remote endpoint for the mojo pipe used to return transcribed audio from
   // the speech recognition service to the browser process.
   mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> client_remote_;
@@ -198,6 +204,10 @@ class SpeechRecognitionRecognizerImpl
   // Time the most recent nonzero data was processed.
   // Used when options_->skip_continuously_empty_audio == true.
   base::Time last_non_empty_audio_time_ = base::Time::Now();
+
+  // Tracks which media timestamps originated speech transcriptions.
+  // This is reset (and pending estimated are lost) every time SODA is reset.
+  std::unique_ptr<SpeechTimestampEstimator> timestamp_estimator_;
 
   // Whether the speech recognition session contains any recognized speech. Used
   // for logging purposes only.
