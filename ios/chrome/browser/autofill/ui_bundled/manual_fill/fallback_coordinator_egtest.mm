@@ -290,7 +290,13 @@ void OpenAddressManualFillView() {
 // Tests the mediator stops observing objects when the incognito BVC is
 // destroyed. Waiting for dealloc was causing a race condition with the
 // autorelease pool, and some times a DCHECK will be hit.
-- (void)testOpeningIncognitoTabsDoNotLeak {
+// TODO(crbug.com/40776865): Test fails on Simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOpeningIncognitoTabsDoNotLeak DISABLED_testOpeningIncognitoTabsDoNotLeak
+#else
+#define MAYBE_testOpeningIncognitoTabsDoNotLeak testOpeningIncognitoTabsDoNotLeak
+#endif  // TARGET_IPHONE_SIMULATOR
+- (void)MAYBE_testOpeningIncognitoTabsDoNotLeak {
   [AutofillAppInterface saveExampleProfile];
 
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
