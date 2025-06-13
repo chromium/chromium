@@ -362,6 +362,7 @@ export const MainPageMixin = dedupingMixin(
               // sub-subpage entry point.
             } else if (newState === RouteState.TOP_LEVEL) {
               this.enterMainPage_(oldRoute!);
+              this.switchToSections_(TOP_LEVEL_EQUIVALENT_ROUTE);
             } else if (newState === RouteState.DIALOG) {
               // The only known cases currently for such a transition are from
               // 1) /synceSetup to /signOut
