@@ -944,6 +944,22 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
     }
   }
 
+  if (element.HasLocalName(html_names::kInputTag.LocalName())) {
+    if (const AtomicString& input_type =
+            element.getAttribute(html_names::kTypeAttr);
+        !input_type.IsNull()) {
+      for (const auto bundle : match_request.RuleSetsWithInputRules()) {
+        if (CollectMatchingRulesForList<stop_at_first_match>(
+                bundle.rule_set->InputRules(input_type.LowerASCII()),
+                match_request, bundle.rule_set, bundle.style_sheet_index,
+                checker, context.context) &&
+            stop_at_first_match) {
+          return true;
+        }
+      }
+    }
+  }
+
   if (element.IsLink()) {
     for (const auto bundle : match_request.RuleSetsWithLinkPseudoClassRules()) {
       if (CollectMatchingRulesForList<stop_at_first_match>(

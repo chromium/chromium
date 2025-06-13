@@ -21,6 +21,9 @@ void RuleSetGroup::AddRuleSet(RuleSet* rule_set) {
   if (!rule_set->UniversalRules().empty()) {
     has_universal_rules_ |= rule_set_mask;
   }
+  if (rule_set->HasAnyInputRules()) {
+    has_any_input_rules_ |= rule_set_mask;
+  }
   if (!rule_set->LinkPseudoClassRules().empty()) {
     has_link_pseudo_class_rules_ |= rule_set_mask;
   }

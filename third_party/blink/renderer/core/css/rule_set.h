@@ -436,6 +436,20 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   base::span<const RuleData> TagRules(const AtomicString& key) const {
     return tag_rules_.Find(key);
   }
+  bool HasAnyInputRules() const { return !input_rules_.IsEmpty(); }
+
+  // Rules with a subject of the form input[type="<key>"], including
+  // case-insensitive ones. These are common in our UA stylesheet
+  // and would otherwise give large amounts of false positives in bucketing,
+  // so we special-case this. We do not verify the namespace of the tag
+  // nor the attribute; that is up to selector matching. This allows us
+  // to include such rules both from the UA stylesheet (which only affects
+  // elements in the HTML namespace) and from author stylesheets (which
+  // typically do not include a namespace).
+  base::span<const RuleData> InputRules(const AtomicString& key) const {
+    return input_rules_.Find(key);
+  }
+
   base::span<const RuleData> UAShadowPseudoElementRules(
       const AtomicString& key) const {
     return ua_shadow_pseudo_element_rules_.Find(key);
@@ -716,6 +730,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   SubstringMatcherMap attr_substring_matchers_;
   RuleMap tag_rules_;
   RuleMap ua_shadow_pseudo_element_rules_;
+  RuleMap input_rules_;
   HeapVector<RuleData> link_pseudo_class_rules_;
   HeapVector<RuleData> cue_pseudo_rules_;
   HeapVector<RuleData> focus_pseudo_class_rules_;
