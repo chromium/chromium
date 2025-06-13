@@ -540,6 +540,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.Navigation.FinishReason" enum="FinishReason"
+    expires_after="2025-10-29">
+  <owner>adelm@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    The reason the custom tab activity was finished. Recorded during the
+    #finish() phase under CustomTabActivityNavigationController.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Omnibox.EnabledState" units="BooleanEnabled"
     expires_after="2025-09-01">
   <owner>ender@google.com</owner>
