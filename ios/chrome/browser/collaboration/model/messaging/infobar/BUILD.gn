@@ -40,6 +40,7 @@ source_set("unit_tests") {
     "//components/collaboration/public",
     "//components/saved_tab_groups/test_support",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/ui_bundled:test_support",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

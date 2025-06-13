@@ -171,8 +171,16 @@ void CollaborationGroupInfoBarDelegate::ClearCollaborationGroupInfobars(
   const auto& infobars = infobar_manager->infobars();
   for (int i = static_cast<int>(infobars.size()) - 1; i >= 0; --i) {
     infobars::InfoBar* infobar = infobars[i];
+
+    InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(infobar);
+    if (infobar_ios->infobar_type() !=
+        InfobarType::kInfobarTypeCollaborationGroup) {
+      continue;
+    }
+
     CollaborationGroupInfoBarDelegate* delegate =
-        static_cast<CollaborationGroupInfoBarDelegate*>(infobar->delegate());
+        static_cast<CollaborationGroupInfoBarDelegate*>(
+            infobar_ios->delegate());
     if (!delegate) {
       continue;
     }
