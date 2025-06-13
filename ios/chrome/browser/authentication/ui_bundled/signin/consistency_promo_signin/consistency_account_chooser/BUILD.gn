@@ -28,6 +28,7 @@ source_set("consistency_account_chooser") {
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin:layout",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

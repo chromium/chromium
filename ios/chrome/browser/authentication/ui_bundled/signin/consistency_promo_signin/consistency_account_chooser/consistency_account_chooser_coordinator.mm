@@ -103,6 +103,13 @@
   [self.delegate consistencyAccountChooserCoordinatorOpenAddAccount:self];
 }
 
+- (void)consistencyAccountChooserTableViewControllerWantsToGoBack:
+    (ConsistencyAccountChooserViewController*)viewController {
+  CHECK_EQ(viewController, self.accountChooserViewController,
+           base::NotFatalUntil::M140);
+  [self.delegate consistencyAccountChooserCoordinatorWantsToBeStopped:self];
+}
+
 - (void)showManagementHelpPage {
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:GURL(kManagementLearnMoreURL)];

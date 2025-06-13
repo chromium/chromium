@@ -408,6 +408,14 @@
   [self openAddAccountCoordinatorWithHasAccounts:YES];
 }
 
+- (void)consistencyAccountChooserCoordinatorWantsToBeStopped:
+    (ConsistencyAccountChooserCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.accountChooserCoordinator,
+           base::NotFatalUntil::M140);
+  [self stopAccountChooserCoordinator];
+  [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark - ConsistencyDefaultAccountCoordinatorDelegate
 
 - (void)consistencyDefaultAccountCoordinatorSkip:
