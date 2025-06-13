@@ -111,6 +111,7 @@ class LensOverlayPageActionIconViewTest
     if (IsMigrationEnabled()) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{lens::features::kLensOverlay, {}},
+           {lens::features::kLensOverlayOmniboxEntryPoint, {}},
            {::features::kPageActionsMigration,
             {
                 {::features::kPageActionsMigrationLensOverlay.name, "true"},
@@ -118,7 +119,9 @@ class LensOverlayPageActionIconViewTest
           {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {lens::features::kLensOverlay}, {::features::kPageActionsMigration});
+          {lens::features::kLensOverlay,
+           lens::features::kLensOverlayOmniboxEntryPoint},
+          {::features::kPageActionsMigration});
     }
   }
 

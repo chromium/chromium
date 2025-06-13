@@ -129,6 +129,8 @@ class LensOverlayHomeworkPageActionIconViewTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {base::test::FeatureRefAndParams(lens::features::kLensOverlay, {}),
          base::test::FeatureRefAndParams(
+             lens::features::kLensOverlayOmniboxEntryPoint, {}),
+         base::test::FeatureRefAndParams(
              lens::features::kLensOverlayEduActionChip,
              {{"url-allow-filters", "[\"*\"]"},
               {"url-path-match-allow-filters", "[\"select\"]"}})},

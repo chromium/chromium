@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -434,7 +435,8 @@ class LocationBarViewPageActionMigrationTest
   LocationBarViewPageActionMigrationTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{::features::kPageActionsMigration,
-          {{::features::kPageActionsMigrationLensOverlay.name, "true"}}}},
+          {{::features::kPageActionsMigrationLensOverlay.name, "true"}}},
+         {lens::features::kLensOverlayOmniboxEntryPoint, {}}},
         {});
   }
   ~LocationBarViewPageActionMigrationTest() override = default;
@@ -454,7 +456,7 @@ class LocationBarViewPageActionMigrationTest
 #if BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_LocationBarFocusOrder DISABLED_LocationBarFocusOrder
 #else
-#define MAYBE_LocationBarFocusOrder ocationBarFocusOrder
+#define MAYBE_LocationBarFocusOrder LocationBarFocusOrder
 #endif
 
 // Tests that shifting focus from the omnibox will focus the migrated page

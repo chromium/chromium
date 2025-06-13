@@ -493,6 +493,10 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusTraversal) {
   chrome::FocusLocationBar(browser());
   obs.WaitForFocusChange();
   ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
+
+  // Simulate ESC being pressed to close the omnibox suggestions popup.
+  browser()->window()->GetLocationBar()->GetOmniboxView()->CloseOmniboxPopup();
+
   // Loop through the focus chain twice in each direction for good measure.
   TestFocusTraversal(false);
   TestFocusTraversal(false);

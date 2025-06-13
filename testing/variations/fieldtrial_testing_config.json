@@ -7790,6 +7790,69 @@
             ]
         }
     ],
+    "DesktopOmniboxContextualSearch": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "_enabled_OnFocusZPS_NoPrefetch_LensAction",
+                    "params": {
+                        "Limit": "0",
+                        "OmniboxZpsMaxSearchSuggestions": "3",
+                        "OmniboxZpsMaxSuggestions": "6",
+                        "OmniboxZpsMaxUrlSuggestions": "3",
+                        "OnFocusMaxSearchSuggestions": "3",
+                        "OnFocusMaxUrlSuggestions": "3",
+                        "OnFocusMostVisitedMaxSuggestions": "6"
+                    },
+                    "enable_features": [
+                        "OmniboxContextualSearchOnFocusSuggestions",
+                        "OmniboxFocusTriggersWebAndSRPZeroSuggest",
+                        "OmniboxHideSuggestionGroupHeaders",
+                        "OmniboxUrlSuggestionsOnFocus",
+                        "OmniboxZeroSuggestSynchronousMatchesOnly",
+                        "OmniboxZpsSuggestionLimit"
+                    ],
+                    "disable_features": [
+                        "LensOverlayOmniboxEntryPoint"
+                    ]
+                },
+                {
+                    "name": "_enabled_OnFocusZPS_ContextualSearchAndUrlSuggestions_LensAction",
+                    "params": {
+                        "OmniboxZpsMaxSearchSuggestions": "3",
+                        "OmniboxZpsMaxSuggestions": "6",
+                        "OmniboxZpsMaxUrlSuggestions": "3",
+                        "OnFocusMaxSearchSuggestions": "3",
+                        "OnFocusMaxUrlSuggestions": "3",
+                        "OnFocusMostVisitedMaxSuggestions": "6"
+                    },
+                    "enable_features": [
+                        "ContextualZeroSuggestLensFulfillment",
+                        "OmniboxContextualSearchOnFocusSuggestions",
+                        "OmniboxFocusTriggersWebAndSRPZeroSuggest",
+                        "OmniboxHideSuggestionGroupHeaders",
+                        "OmniboxUrlSuggestionsOnFocus",
+                        "OmniboxZeroSuggestSynchronousMatchesOnly",
+                        "OmniboxZpsSuggestionLimit",
+                        "SendContextualUrlSuggestParam",
+                        "SendPageTitleSuggestParam",
+                        "ShowSuggestionsOnNoApc",
+                        "UseApcPaywallSignal",
+                        "ZeroSuggestPrefetchingOnWeb"
+                    ],
+                    "disable_features": [
+                        "LensOverlayOmniboxEntryPoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxRichAutocompletionMinChar": [
         {
             "platforms": [
@@ -16012,34 +16075,6 @@
                     },
                     "enable_features": [
                         "OmniboxOnDeviceHeadProviderNonIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxOnFocusZPSV1": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_6_Suggestions",
-                    "params": {
-                        "OnFocusMaxSearchSuggestions": "3",
-                        "OnFocusMaxUrlSuggestions": "3",
-                        "OnFocusMostVisitedMaxSuggestions": "6"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveyForOmniboxOnFocusZps",
-                        "OmniboxFocusTriggersWebAndSRPZeroSuggest",
-                        "OmniboxHideSuggestionGroupHeaders",
-                        "OmniboxUrlSuggestionsOnFocus",
-                        "ZeroSuggestPrefetchingOnWeb"
                     ]
                 }
             ]

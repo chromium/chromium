@@ -4571,10 +4571,8 @@ class LensOverlayControllerEntrypointsBrowserTest
   void SetupFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {lens::features::kLensOverlay, {}},
-        {lens::features::kLensOverlayContextualSearchbox,
-         {
-
-         }},
+        {lens::features::kLensOverlayContextualSearchbox, {}},
+        {lens::features::kLensOverlayOmniboxEntryPoint, {}},
         {lens::features::kLensOverlaySurvey, {}},
         {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}};
     if (IsPageActionsMigrationEnabled()) {

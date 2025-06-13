@@ -115,8 +115,13 @@ MATCHER(IsChipCollapsed, "Check if the chip is collapsed") {
 class PageActionUiTestBase {
  public:
   PageActionUiTestBase() {
-    feature_list_.InitWithFeatures({features::kPageActionsMigration},
-                                   {lens::features::kLensOverlay});
+    // TODO(crbug.com/424806660): These tests should not be reliant on
+    // kLensOverlayOmniboxEntryPoint being enabled, but disabling it causes them
+    // to fail.
+    feature_list_.InitWithFeatures(
+        {features::kPageActionsMigration,
+         lens::features::kLensOverlayOmniboxEntryPoint},
+        {lens::features::kLensOverlay});
   }
 
   virtual ~PageActionUiTestBase() = default;
