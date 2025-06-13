@@ -1655,7 +1655,7 @@
 <translation id="2136476978468204130">入力したパスフレーズが正しくありません</translation>
 <translation id="2137128126782078222"><ph name="WEBSITE" /> からの通知を許可しない</translation>
 <translation id="2139919072249842737">設定ボタン</translation>
-<translation id="2140788884185208305">電池の状態</translation>
+<translation id="2140788884185208305">バッテリー ヘルス</translation>
 <translation id="2142328300403846845">別のユーザーとしてリンクを開く</translation>
 <translation id="2142484069755256151">Google パスワード マネージャーの 6 桁のリカバリ PIN を作成（PIN の <ph name="NUM_DIGIT" />/6 桁）してください</translation>
 <translation id="2142582065325732898">最近使った Chrome タブを表示するには、<ph name="LINK1_BEGIN" />Chrome 同期<ph name="LINK1_END" />を有効にします。<ph name="LINK2_BEGIN" />詳細<ph name="LINK2_END" /></translation>

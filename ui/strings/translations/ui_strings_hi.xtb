@@ -119,7 +119,7 @@
 <translation id="4729257764711776855">नंबर</translation>
 <translation id="4746179598275229723">एक्सटेंशन अनपिन किया गया</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 माह शेष}one{# माह शेष}other{# माह शेष}}</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन के पास कोई एक्सटेंशन होना चाहिए}one{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन के पास कोई एक्सटेंशन होना चाहिए}other{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन के पास कुछ एक्सटेंशन होने चाहिए}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन को एक्सटेंशन की ज़रूरत है}one{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन को एक्सटेंशन की ज़रूरत है}other{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन को एक्सटेंशन की ज़रूरत है}}</translation>
 <translation id="482932175346970750">अपने ब्राउज़र में <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप करें</translation>
 <translation id="4888938634149558681">कॉल करें</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>

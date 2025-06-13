@@ -1293,7 +1293,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6850830437481525139">Zatvorenih kartica: <ph name="TAB_COUNT" /></translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audio fajlovi, 1 audio fajl na listi}one{Audio fajlovi, # audio fajl na listi}few{Audio fajlovi, # audio fajla na listi}other{Audio fajlovi, # audio fajlova na listi}}</translation>
 <translation id="685850645784703949">Google Discover – isključeno</translation>
-<translation id="6861722405755529743">Dugme za preklopni meni trake sa obeleživačima</translation>
+<translation id="6861722405755529743">Dugme za dodatne opcije trake sa obeleživačima</translation>
 <translation id="686366188661646310">Želite da izbrišete lozinku?</translation>
 <translation id="6864459304226931083">Preuzmi sliku</translation>
 <translation id="686490460830618322">Tabela sa filterima aplikacija</translation>

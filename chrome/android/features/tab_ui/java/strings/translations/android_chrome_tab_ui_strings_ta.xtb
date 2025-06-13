@@ -72,7 +72,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ஷேர் ஷீட் மாதிரிக்காட்சியின் சிறுபடம்.</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
-<translation id="3940195383040445971">தாவல்களில் விலையைக் கண்காணித்தல்</translation>
+<translation id="3940195383040445971">பக்கங்களில் விலையைக் கண்காணித்தல்</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> புதிய பக்கம், <ph name="ANY_CLOSED" /> மூடப்பட்டது}other{<ph name="MANY_ADDED" /> புதிய பக்கங்கள், <ph name="ANY_CLOSED" /> மூடப்பட்டது}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{பக்கத்தைக் குழுவாக்கு}other{பக்கங்களைக் குழுவாக்கு}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{செயலில் இல்லாத <ph name="TABS_COUNT_ONE" /> பக்கம்}other{செயலில் இல்லாத <ph name="TABS_COUNT_MANY" /> பக்கங்கள்}}</translation>
