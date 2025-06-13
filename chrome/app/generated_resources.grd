@@ -5482,6 +5482,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_LOGIN" desc="Permission string for access to Login API.">
           Launch and exit managed guest sessions
         </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_LOGIN" desc="Permission string for access to Enterprise Login API.">
+          Exit managed guest sessions
+        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_LOGIN_SCREEN_UI" desc="Permission string for access to login screen UI.">
           Display UI on the login screen
         </message>

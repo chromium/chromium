@@ -9503,6 +9503,7 @@ test("unit_tests") {
         "../browser/chromeos/extensions/wm/wm_desks_private_events_unittest.cc",
         "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api_ash_unittest.cc",
         "../browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_unittest.cc",
+        "../browser/extensions/api/enterprise_login/enterprise_login_api_unittest.cc",
         "../browser/extensions/api/file_system/consent_provider_unittest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_private_api_chromeos_unittest.cc",
         "../browser/extensions/api/image_writer_private/removable_storage_provider_chromeos_unittest.cc",

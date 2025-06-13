@@ -98,6 +98,7 @@ if (enable_extensions) {
       "echo_private.json",
       "enterprise_device_attributes.idl",
       "enterprise_kiosk_input.idl",
+      "enterprise_login.idl",
       "enterprise_networking_attributes.idl",
       "enterprise_platform_keys.idl",
       "enterprise_platform_keys_internal.idl",

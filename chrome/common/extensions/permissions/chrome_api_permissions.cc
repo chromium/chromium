@@ -83,6 +83,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kEnterpriseKioskInput, "enterprise.kioskInput",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kEnterpriseLogin, "enterprise.login"},
     {APIPermissionID::kEnterpriseNetworkingAttributes,
      "enterprise.networkingAttributes",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},

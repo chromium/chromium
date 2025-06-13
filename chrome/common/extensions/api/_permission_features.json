@@ -300,6 +300,12 @@
     // TODO(b/307230150): Clean up API flag
     "feature_flag": "ApiEnterpriseKioskInput"
   },
+  "enterprise.login": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "location": "policy",
+    "platforms": ["chromeos"]
+  },
   "enterprise.platformKeys": [{
     "channel": "stable",
     "platforms": ["chromeos"],

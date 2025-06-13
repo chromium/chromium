@@ -413,6 +413,10 @@
     "dependencies": ["permission:enterprise.kioskInput"],
     "contexts": ["privileged_extension"]
   },
+  "enterprise.login": {
+    "dependencies": ["permission:enterprise.login"],
+    "contexts": ["privileged_extension"]
+  },
   "enterprise.networkingAttributes": {
     "dependencies": ["permission:enterprise.networkingAttributes"],
     "contexts": ["privileged_extension"]
