@@ -49,10 +49,10 @@ public class UnsubscribedNotificationsNotificationManagerTest {
         assertEquals(1, notifications.size());
         Notification notification = notifications.get(0).notification;
         assertEquals(
-                "Chrome unsubscribed you from notifications",
+                "Unsubscribed from one unused site",
                 notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Removed notification permissions from one site you haven’t visited recently",
+                "Chrome stopped notifications from this site. You can review and manage.",
                 notification.extras.getString(Notification.EXTRA_TEXT));
         assertEquals("Review", notification.actions[0].title);
         assertNotNull(notification.actions[0].actionIntent);
@@ -68,10 +68,10 @@ public class UnsubscribedNotificationsNotificationManagerTest {
         assertEquals(1, notifications.size());
         Notification notification = notifications.get(0).notification;
         assertEquals(
-                "Chrome unsubscribed you from notifications",
+                "Unsubscribed from 2 unused sites",
                 notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Removed notification permissions from 2 sites you haven’t visited recently",
+                "Chrome stopped notifications from these sites. You can review and manage.",
                 notification.extras.getString(Notification.EXTRA_TEXT));
     }
 
@@ -87,7 +87,10 @@ public class UnsubscribedNotificationsNotificationManagerTest {
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         assertEquals(
-                "Removed notification permissions from one site you haven’t visited recently",
+                "Unsubscribed from one unused site",
+                notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
+        assertEquals(
+                "Chrome stopped notifications from this site. You can review and manage.",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
         UnsubscribedNotificationsNotificationManager.displayNotification(3);
@@ -95,7 +98,10 @@ public class UnsubscribedNotificationsNotificationManagerTest {
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsAfter.size());
         assertEquals(
-                "Removed notification permissions from 3 sites you haven’t visited recently",
+                "Unsubscribed from 3 unused sites",
+                notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
+        assertEquals(
+                "Chrome stopped notifications from these sites. You can review and manage.",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
         assertThat(
@@ -121,10 +127,10 @@ public class UnsubscribedNotificationsNotificationManagerTest {
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         assertEquals(
-                "Chrome unsubscribed you from notifications",
+                "Unsubscribed from one unused site",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Removed notification permissions from one site you haven’t visited recently",
+                "Chrome stopped notifications from this site. You can review and manage.",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
         UnsubscribedNotificationsNotificationManager.updateNotification(2);
@@ -132,10 +138,10 @@ public class UnsubscribedNotificationsNotificationManagerTest {
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsAfter.size());
         assertEquals(
-                "Chrome unsubscribed you from notifications",
+                "Unsubscribed from 2 unused sites",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Removed notification permissions from 2 sites you haven’t visited recently",
+                "Chrome stopped notifications from these sites. You can review and manage.",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
         assertEquals(

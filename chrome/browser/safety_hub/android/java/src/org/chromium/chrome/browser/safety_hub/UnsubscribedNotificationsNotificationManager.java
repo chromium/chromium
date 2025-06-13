@@ -109,7 +109,10 @@ public class UnsubscribedNotificationsNotificationManager {
         Context context = ContextUtils.getApplicationContext();
         Resources res = context.getResources();
         String title =
-                res.getString(R.string.safety_hub_unsubscribed_notifications_notification_title);
+                res.getQuantityString(
+                        R.plurals.safety_hub_unsubscribed_notifications_notification_title,
+                        numRevokedPermissions,
+                        numRevokedPermissions);
         String contents =
                 res.getQuantityString(
                         R.plurals.safety_hub_unsubscribed_notifications_notification_message,

@@ -1959,12 +1959,14 @@ Your Google account may have other forms of browsing history like searches and a
         other {Chrome found # reused passwords that you could improve}}
       </message>
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_TITLE" desc="Title for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
-        Chrome unsubscribed you from notifications
+        {NUM_REVOKED_PERMISSIONS, plural,
+        =1 {Unsubscribed from one unused site}
+        other {Unsubscribed from # unused sites}}
       </message>
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
         {NUM_REVOKED_PERMISSIONS, plural,
-        =1 {Removed notification permissions from one site you haven’t visited recently}
-        other {Removed notification permissions from # sites you haven’t visited recently}}
+        =1 {Chrome stopped notifications from this site. You can review and manage.}
+        other {Chrome stopped notifications from these sites. You can review and manage.}}
       </message>
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_ACK" desc="Button to acknowledge the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
         Got it
