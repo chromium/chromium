@@ -18,6 +18,10 @@ class Checkbox;
 class Label;
 }  // namespace views
 
+namespace enterprise_watermark {
+class WatermarkView;
+}  // namespace enterprise_watermark
+
 struct SliderInfo {
   std::string label;
   double initial_value;

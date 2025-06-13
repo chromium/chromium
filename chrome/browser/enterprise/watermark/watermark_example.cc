@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_canvas.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform.h"
@@ -21,6 +22,9 @@
 #include "ui/views/layout/layout_manager.h"
 
 namespace {
+
+constexpr SkColor kDefaultExampleFillColor = SkColorSetARGB(0x2A, 0, 0, 0);
+constexpr SkColor kDefaultExampleOutlineColor = SkColorSetARGB(0x3D, 0, 0, 0);
 
 class GradientView : public views::View {
  public:
@@ -70,8 +74,9 @@ void WatermarkExample::CreateExampleView(views::View* container) {
   watermark_container->AddChildView(std::make_unique<GradientView>());
   watermark_container->SetPaintToLayer();
   watermark_view_ = watermark_container->AddChildView(
-      std::make_unique<enterprise_watermark::WatermarkView>(
-          "Private! Confidential"));
+      std::make_unique<enterprise_watermark::WatermarkView>());
+  watermark_view_->SetString("Private! Confidential", kDefaultExampleFillColor,
+                             kDefaultExampleOutlineColor);
   box_layout->SetFlexForView(watermark_container, 13);
 
   // Background checkbox and text
@@ -207,7 +212,9 @@ WatermarkTextArea::WatermarkTextArea(enterprise_watermark::WatermarkView* view)
 
 void WatermarkTextArea::OnTextChanged() {
   Textfield::OnTextChanged();
-  watermark_view_->SetString(base::UTF16ToUTF8(GetText()));
+  watermark_view_->SetString(base::UTF16ToUTF8(GetText()),
+                             kDefaultExampleFillColor,
+                             kDefaultExampleOutlineColor);
 }
 
 BEGIN_METADATA(WatermarkTextArea)
