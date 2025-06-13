@@ -288,9 +288,9 @@ public abstract class Transition {
             }
 
             if (primary.mTries != null) {
-                builder.withTimeout(primary.mTries);
+                builder.withTries(primary.mTries);
             } else if (secondary.mTries != null) {
-                builder.withTimeout(secondary.mTries);
+                builder.withTries(secondary.mTries);
             }
 
             if (primary.mPossiblyAlreadyFulfilled != null) {
@@ -339,8 +339,7 @@ public abstract class Transition {
              * timeout.
              */
             public Builder withRetry() {
-                mTries = 2;
-                return this;
+                return withTries(2);
             }
 
             /**
@@ -348,7 +347,11 @@ public abstract class Transition {
              * finish within the timeout.
              */
             public Builder withNoRetry() {
-                mTries = 1;
+                return withTries(1);
+            }
+
+            private Builder withTries(int tries) {
+                mTries = tries;
                 return this;
             }
 
