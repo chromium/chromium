@@ -147,6 +147,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void SetModulesVisible(bool visible) override;
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void UpdateDisabledModules() override;
+  void UpdateFooterVisibility() override;
   void OnModulesLoadedWithData(
       const std::vector<std::string>& module_ids) override;
   void OnModuleUsed(const std::string& module_id) override;
@@ -173,6 +174,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                       const std::optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
   void IncrementComposeButtonShownCount() override;
+
+  void OnFooterVisibilityUpdated();
 
   void SetCustomizeChromeSidePanelControllerForTesting(
       customize_chrome::SidePanelController* side_panel_controller);
@@ -277,6 +280,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                      std::unique_ptr<network::SimpleURLLoader>>
       loader_map_;
   PrefChangeRegistrar pref_change_registrar_;
+  PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<PromoService> promo_service_;
   raw_ptr<MicrosoftAuthService> microsoft_auth_service_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;

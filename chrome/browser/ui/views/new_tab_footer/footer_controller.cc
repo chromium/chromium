@@ -8,15 +8,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
-#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
-#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -25,19 +21,22 @@
 namespace new_tab_footer {
 
 namespace {
-bool IsNtp(const GURL& url,
-           content::WebContents* web_contents,
-           Profile* profile) {
-  content::NavigationEntry* entry =
-      web_contents->GetController().GetLastCommittedEntry();
-  if (entry->IsInitialEntry()) {
-    entry = web_contents->GetController().GetVisibleEntry();
-  }
-  return NewTabUI::IsNewTab(url) || NewTabPageUI::IsNewTabPageOrigin(url) ||
-         NewTabPageThirdPartyUI::IsNewTabPageOrigin(url) ||
-         search::NavEntryIsInstantNTP(web_contents, entry) ||
-         ntp_footer::IsExtensionNtp(url, profile);
+// Adding any new conditions that show the footer on the 1P NTP should also
+// update the visibility confition for the `Customize Chrome` buttons amd theme
+// attribution on the NTP.
+// LINT.IfChange(WillShowFooter)
+bool WillShowFooter(const GURL& url,
+                    content::WebContents* web_contents,
+                    Profile* profile) {
+  const bool will_show_extension =
+      ntp_footer::IsExtensionNtp(url, profile) &&
+      profile->GetPrefs()->GetBoolean(
+          prefs::kNTPFooterExtensionAttributionEnabled) &&
+      profile->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible);
+  return will_show_extension ||
+         ntp_footer::WillShowManagementNotice(url, web_contents, profile);
 }
+// LINT.ThenChange(chrome/browser/ui/webui/new_tab_page/new_tab_footer_handler.cc:OnFooterVisibilityUpdated)
 }  // namespace
 
 NewTabFooterController::NewTabFooterController(BrowserWindowInterface* browser,
@@ -98,21 +97,14 @@ void NewTabFooterController::UpdateFooterVisibility(bool log_on_load_metric) {
     url = web_contents()->GetController().GetVisibleEntry()->GetURL();
   }
 
-  const bool is_ntp = IsNtp(url, web_contents(), profile_);
-  const bool managed_ntp =
-      is_ntp && enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_);
-  const bool show =
-      managed_ntp ||
-      (profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible) &&
-       ntp_footer::CanShowExtensionFooter(url, profile_));
-
+  const bool show = WillShowFooter(url, web_contents(), profile_);
   if (show) {
     footer_->ShowUI(load_start_timestamp, url);
   } else {
     footer_->CloseUI();
   }
 
-  if (is_ntp && log_on_load_metric) {
+  if (ntp_footer::IsNtp(url, web_contents(), profile_) && log_on_load_metric) {
     base::UmaHistogramBoolean("NewTabPage.Footer.VisibleOnLoad", show);
   }
 }

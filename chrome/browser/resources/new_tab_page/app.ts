@@ -165,6 +165,8 @@ export class AppElement extends AppElementBase {
 
       showWallpaperSearch_: {type: Boolean},
 
+      isFooterVisible_: {type: Boolean},
+
       selectedCustomizeDialogPage_: {type: String},
       showVoiceSearchOverlay_: {type: Boolean},
 
@@ -301,6 +303,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
   accessor composeboxEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposebox');
+  protected accessor isFooterVisible_: boolean = false;
+
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private customizeButtonsCallbackRouter_:
@@ -311,6 +315,7 @@ export class AppElement extends AppElementBase {
   private setThemeListenerId_: number|null = null;
   private setCustomizeChromeSidePanelVisibilityListener_: number|null = null;
   private setWallpaperSearchButtonVisibilityListener_: number|null = null;
+  private footerVisibilityUpdatedListener_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   private shouldPrintPerformance_: boolean = false;
   private backgroundImageLoadStartEpoch_: number = 0;
@@ -426,6 +431,13 @@ export class AppElement extends AppElementBase {
               }
             });
 
+    this.footerVisibilityUpdatedListener_ =
+        this.callbackRouter_.footerVisibilityUpdated.addListener(
+            (visible: boolean) => {
+              this.isFooterVisible_ = visible;
+            });
+    this.pageHandler_.updateFooterVisibility();
+
     // Open Customize Chrome if there are Customize Chrome URL params.
     if (this.showCustomize_) {
       this.setCustomizeChromeSidePanelVisible_(this.showCustomize_);
@@ -487,6 +499,7 @@ export class AppElement extends AppElementBase {
         this.setWallpaperSearchButtonVisibilityListener_!);
     this.customizeButtonsCallbackRouter_.removeListener(
         this.setCustomizeChromeSidePanelVisibilityListener_!);
+    this.callbackRouter_.removeListener(this.footerVisibilityUpdatedListener_!);
     this.eventTracker_.removeAll();
   }
 

@@ -70,33 +70,33 @@
         </ntp-modules>
       `}
     ` : ''}
-    <a id="backgroundImageAttribution"
-        href="${this.backgroundImageAttributionUrl_}"
-        ?hidden="${!this.backgroundImageAttribution1_}">
-      <div id="backgroundImageAttribution1Container">
-        <div id="linkIcon" ?hidden="${!this.backgroundImageAttributionUrl_}"></div>
-        <div id="backgroundImageAttribution1">
-          ${this.backgroundImageAttribution1_}
+  ${!this.isFooterVisible_ ? html`
+      <a id="backgroundImageAttribution"
+          href="${this.backgroundImageAttributionUrl_}"
+          ?hidden="${!this.backgroundImageAttribution1_}">
+        <div id="backgroundImageAttribution1Container">
+          <div id="linkIcon" ?hidden="${!this.backgroundImageAttributionUrl_}"></div>
+          <div id="backgroundImageAttribution1">
+            ${this.backgroundImageAttribution1_}
+          </div>
         </div>
-      </div>
-      <div id="backgroundImageAttribution2"
-          ?hidden="${!this.backgroundImageAttribution2_}">
-        ${this.backgroundImageAttribution2_}
-      </div>
-    </a>
-    <!-- TODO(crbug.com/409296433) Hide ntp-customize-buttons on new-tab-page when
-      footer is enabled and visible. -->
-    <ntp-customize-buttons id="customizeButtons"
-        ?modules-shown-to-user="${this.modulesShownToUser}"
-        ?show-background-image="${this.showBackgroundImage_}"
-        ?show-customize="${this.showCustomize_}"
-        ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
-        ?show-wallpaper-search="${this.showWallpaperSearch_}"
-        ?show-wallpaper-search-button="${this.showWallpaperSearchButton_}"
-        ?wallpaper-search-button-animation-enabled="${this.wallpaperSearchButtonAnimationEnabled_}"
-        @customize-click="${this.onCustomizeClick_}"
-        @wallpaper-search-click="${this.onWallpaperSearchClick_}">
-    </ntp-customize-buttons>
+        <div id="backgroundImageAttribution2"
+            ?hidden="${!this.backgroundImageAttribution2_}">
+          ${this.backgroundImageAttribution2_}
+        </div>
+      </a>
+      <ntp-customize-buttons id="customizeButtons"
+          ?modules-shown-to-user="${this.modulesShownToUser}"
+          ?show-background-image="${this.showBackgroundImage_}"
+          ?show-customize="${this.showCustomize_}"
+          ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
+          ?show-wallpaper-search="${this.showWallpaperSearch_}"
+          ?show-wallpaper-search-button="${this.showWallpaperSearchButton_}"
+          ?wallpaper-search-button-animation-enabled="${this.wallpaperSearchButtonAnimationEnabled_}"
+          @customize-click="${this.onCustomizeClick_}"
+          @wallpaper-search-click="${this.onWallpaperSearchClick_}">
+      </ntp-customize-buttons>
+    ` : ''}
     ${this.showThemeAttribution_() ? html`
       <div id="themeAttribution">
         <div>$i18n{themeCreatedBy}</div>

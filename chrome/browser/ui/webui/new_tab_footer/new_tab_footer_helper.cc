@@ -6,9 +6,14 @@
 
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
+#include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
+#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/navigation_entry.h"
 #include "extensions/common/constants.h"
 
 namespace ntp_footer {
@@ -28,12 +33,24 @@ bool IsExtensionNtp(const GURL& url, Profile* profile) {
   return extension_managing_ntp->id() == url.host();
 }
 
-bool CanShowExtensionFooter(const GURL& url, Profile* profile) {
-  if (!IsExtensionNtp(url, profile)) {
-    return false;
+bool IsNtp(const GURL& url,
+           content::WebContents* web_contents,
+           Profile* profile) {
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  if (entry->IsInitialEntry()) {
+    entry = web_contents->GetController().GetVisibleEntry();
   }
+  return NewTabUI::IsNewTab(url) || NewTabPageUI::IsNewTabPageOrigin(url) ||
+         NewTabPageThirdPartyUI::IsNewTabPageOrigin(url) ||
+         search::NavEntryIsInstantNTP(web_contents, entry) ||
+         ntp_footer::IsExtensionNtp(url, profile);
+}
 
-  return profile->GetPrefs()->GetBoolean(
-      prefs::kNTPFooterExtensionAttributionEnabled);
+bool WillShowManagementNotice(const GURL& url,
+                              content::WebContents* web_contents,
+                              Profile* profile) {
+  return IsNtp(url, web_contents, profile) &&
+         enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile);
 }
 }  // namespace ntp_footer

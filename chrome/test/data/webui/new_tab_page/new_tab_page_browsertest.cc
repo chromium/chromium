@@ -230,6 +230,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MicrosoftAuth) {
           "runMochaSuite('NewTabPageAppTest MicrosoftAuth')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, NewTabFooter) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest NewTabFooter')");
+}
+
 class NewTabPageModulesMostRelevantTabResumptionModuleTest
     : public NewTabPageBrowserTest {
  protected:
