@@ -70,6 +70,10 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   ScopedGObject<GtkIMContext> gtk_context_ = nullptr;
   ScopedGObject<GtkIMContext> gtk_simple_context_ = nullptr;
 
+  // These correspond to the GtkImContexts above.
+  raw_ptr<GdkWindow> last_set_client_window_for_gtk_context_ = nullptr;
+  raw_ptr<GdkWindow> last_set_client_window_for_gtk_simple_comtext_ = nullptr;
+
   // Last known caret bounds relative to the screen coordinates, in DIPs.
   // Effective only on non-simple context.
   gfx::Rect last_caret_bounds_;

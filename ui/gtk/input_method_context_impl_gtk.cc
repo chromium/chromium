@@ -202,7 +202,15 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
 
     auto* window = GetTargetWindow(key_event);
     event->window = window;
-    gtk_im_context_set_client_window(gtk_context, window);
+
+    auto& last_set_client_window =
+        gtk_context == gtk_context_
+            ? last_set_client_window_for_gtk_context_
+            : last_set_client_window_for_gtk_simple_comtext_;
+    if (last_set_client_window != window) {
+      gtk_im_context_set_client_window(gtk_context, window);
+      last_set_client_window = window;
+    }
   }
 
   // Convert the last known caret bounds relative to the screen coordinates
