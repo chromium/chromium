@@ -87,7 +87,8 @@ public class ResponseHelper {
                 hint.contains("password") ? "password for #" + (index + 1) : value;
         Presentations.Builder presentationsBuilder =
                 new Presentations.Builder()
-                        .setDialogPresentation(newDatasetPresentation(displayValue));
+                        .setDialogPresentation(newDatasetPresentation(displayValue))
+                        .setMenuPresentation(newDatasetPresentation(displayValue));
         if (mInlineHelper.hasInlineRequest()) {
             presentationsBuilder.setInlinePresentation(
                     mInlineHelper.createInlineDataset(displayValue, index));
