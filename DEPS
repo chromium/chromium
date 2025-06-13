@@ -2000,7 +2000,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + '936b9ab5515dead115606559502e3864958f7f6e',
 
   'src/third_party/cpuinfo/src':
-    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + '6c9eb84ba310f237cea13c478be50102e1128e9b',
+    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + 'd7427551d6531037da216d20cd36feb19ed4905f',
 
   'src/third_party/crc32c/src':
     Var('chromium_git') + '/external/github.com/google/crc32c.git' + '@' + 'd3d60ac6e0f16780bcfcc825385e1d338801a558',
@@ -2028,7 +2028,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/jk-jeon/dragonbox.git' + '@' + '6c7c925b571d54486b9ffae8d9d18a822801cbda',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '21e89b930c6af56dbdaeea2a91d8b9d6fd2c208a',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + 'd0b490ee091629068e0c11953419eb089f9e6bb2',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -2870,7 +2870,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '60fb9c76b41f0e4d6cfdd6b1bd2fabe443455306',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '75530866a843d37eb98dfc75c2eb152634335949',
 
   'src/third_party/turbine/cipd': {
       'packages': [
@@ -2961,7 +2961,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '888719e9a4b11251d03ad2d6526da7f2e2b57308',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'a0a1bd4b3de97b356d7b106bf7fd3def6ad2103f',
 
   'src/third_party/libei/cipd': {
 

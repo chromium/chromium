@@ -1856,6 +1856,7 @@ source_set("xnnpack") {
     "src/src/operator-delete.c",
     "src/src/operator-run.c",
     "src/src/operator-utils.c",
+    "src/src/pack-lh.cc",
     "src/src/params.c",
     "src/src/runtime.c",
     "src/src/sanitizers.c",
@@ -1899,6 +1900,7 @@ source_set("xnnpack_standalone") {
     "src/src/operator-delete.c",
     "src/src/operator-run.c",
     "src/src/operator-utils.c",
+    "src/src/pack-lh.cc",
     "src/src/params.c",
     "src/src/runtime.c",
     "src/src/sanitizers.c",
@@ -9629,6 +9631,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vapproxgelu/gen/f32-vapproxgelu-sse2-rational-12-10-div.c",
+      "src/src/f32-vapproxgelu/gen/f32-vapproxgelu-sse2fma-rational-12-10-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9655,6 +9658,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vapproxgelu/gen/f32-vapproxgelu-sse2-rational-12-10-div.c",
+      "src/src/f32-vapproxgelu/gen/f32-vapproxgelu-sse2fma-rational-12-10-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -10957,6 +10961,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vcos/gen/f32-vcos-sse2-rational-5-4-div.c",
+      "src/src/f32-vcos/gen/f32-vcos-sse2fma-rational-5-4-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -10983,6 +10988,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vcos/gen/f32-vcos-sse2-rational-5-4-div.c",
+      "src/src/f32-vcos/gen/f32-vcos-sse2fma-rational-5-4-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -11495,6 +11501,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vexp/gen/f32-vexp-sse2-rational-3-2-div.c",
+      "src/src/f32-vexp/gen/f32-vexp-sse2fma-rational-3-2-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -11521,6 +11528,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vexp/gen/f32-vexp-sse2-rational-3-2-div.c",
+      "src/src/f32-vexp/gen/f32-vexp-sse2fma-rational-3-2-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -11764,6 +11772,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vgelu/gen/f32-vgelu-sse2-rational-12-10-div.c",
+      "src/src/f32-vgelu/gen/f32-vgelu-sse2fma-rational-12-10-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -11790,6 +11799,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vgelu/gen/f32-vgelu-sse2-rational-12-10-div.c",
+      "src/src/f32-vgelu/gen/f32-vgelu-sse2fma-rational-12-10-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -12033,6 +12043,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vhswish/gen/f32-vhswish-sse2.c",
+      "src/src/f32-vhswish/gen/f32-vhswish-sse2fma.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -12059,6 +12070,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vhswish/gen/f32-vhswish-sse2.c",
+      "src/src/f32-vhswish/gen/f32-vhswish-sse2fma.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -12300,6 +12312,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vlog/gen/f32-vlog-sse2-rational-3-3-div.c",
+      "src/src/f32-vlog/gen/f32-vlog-sse2fma-rational-3-3-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -12326,6 +12339,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vlog/gen/f32-vlog-sse2-rational-3-3-div.c",
+      "src/src/f32-vlog/gen/f32-vlog-sse2fma-rational-3-3-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13183,6 +13197,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-rsqrt.c",
       "src/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-sqrt.c",
     ]
 
@@ -13209,6 +13224,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-rsqrt.c",
       "src/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-sqrt.c",
     ]
 
@@ -13779,6 +13795,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vsin/gen/f32-vsin-sse2-rational-5-4-div.c",
+      "src/src/f32-vsin/gen/f32-vsin-sse2fma-rational-5-4-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13805,6 +13822,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vsin/gen/f32-vsin-sse2-rational-5-4-div.c",
+      "src/src/f32-vsin/gen/f32-vsin-sse2fma-rational-5-4-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13992,6 +14010,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-sse2-rsqrt.c",
       "src/src/f32-vsqrt/gen/f32-vsqrt-sse2-sqrt.c",
     ]
 
@@ -14018,6 +14037,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-sse2-rsqrt.c",
       "src/src/f32-vsqrt/gen/f32-vsqrt-sse2-sqrt.c",
     ]
 
@@ -14262,6 +14282,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vtanh/gen/f32-vtanh-sse2-rational-9-8-div.c",
+      "src/src/f32-vtanh/gen/f32-vtanh-sse2fma-rational-9-8-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -14288,6 +14309,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vtanh/gen/f32-vtanh-sse2-rational-9-8-div.c",
+      "src/src/f32-vtanh/gen/f32-vtanh-sse2fma-rational-9-8-div.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -33652,12 +33674,14 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-minmax-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-relu-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-neon-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8s4-minmax-neonfma.c",
+      "src/src/f32-gemm/gen/f32-gemm-4x16-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-aarch64-neonfma-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-neon-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-scalar.c",
@@ -33691,12 +33715,14 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-minmax-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-relu-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-neon-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8s4-minmax-neonfma.c",
+      "src/src/f32-gemm/gen/f32-gemm-4x16-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-aarch64-neonfma-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-neon-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-scalar.c",
@@ -33926,12 +33952,14 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-minmax-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-relu-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-neon-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8s4-minmax-neonfma.c",
+      "src/src/f32-igemm/gen/f32-igemm-4x16-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-aarch64-neonfma-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-neon-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-scalar.c",
@@ -33965,12 +33993,14 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-minmax-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-relu-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-neon-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8s4-minmax-neonfma.c",
+      "src/src/f32-igemm/gen/f32-igemm-4x16-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-aarch64-neonfma-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-neon-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-scalar.c",
@@ -41447,6 +41477,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/x32-packw/gen/x32-packw-gio-neon-u2.c",
+      "src/src/x32-packw/gen/x32-packw-x16-gemm-goi-neon-ld4lane-u4-prfm.c",
       "src/src/x32-packw/gen/x32-packw-x2-gemm-gio-scalar.c",
       "src/src/x32-packw/gen/x32-packw-x2-gemm-goi-neon-ld2lane-u2-prfm.c",
       "src/src/x32-packw/gen/x32-packw-x2-gemm-goi-scalar-float-u4.c",
@@ -41478,6 +41510,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/x32-packw/gen/x32-packw-gio-neon-u2.c",
+      "src/src/x32-packw/gen/x32-packw-x16-gemm-goi-neon-ld4lane-u4-prfm.c",
       "src/src/x32-packw/gen/x32-packw-x2-gemm-gio-scalar.c",
       "src/src/x32-packw/gen/x32-packw-x2-gemm-goi-neon-ld2lane-u2-prfm.c",
       "src/src/x32-packw/gen/x32-packw-x2-gemm-goi-scalar-float-u4.c",
