@@ -12087,6 +12087,21 @@
             ]
         }
     ],
+    "IOSEnablePasswordManagerTrustedVaultWidget": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSEnablePasswordManagerTrustedVaultWidget"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSEnterpriseRealtimeEventReporting": [
         {
             "platforms": [
