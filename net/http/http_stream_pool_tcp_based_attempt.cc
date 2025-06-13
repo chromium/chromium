@@ -140,6 +140,7 @@ void HttpStreamPool::TcpBasedAttempt::Start() {
   manager_->net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_START, [&] {
         base::Value::Dict dict = manager_->GetStatesAsNetLogParams();
+        dict.Set("ip_endpoint", ip_endpoint().ToString());
         attempt()->net_log().source().AddToEventParameters(dict);
         return dict;
       });

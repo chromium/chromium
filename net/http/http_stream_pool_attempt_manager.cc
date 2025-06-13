@@ -849,7 +849,7 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_COMPLETED,
       [&] {
         base::Value::Dict dict = GetStatesAsNetLogParams();
-        dict.Set("result", ErrorToString(rv));
+        dict.Set("result", rv);
         if (net_error_details_.quic_connection_error != quic::QUIC_NO_ERROR) {
           dict.Set("quic_error", quic::QuicErrorCodeToString(
                                      net_error_details_.quic_connection_error));
@@ -936,6 +936,15 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
            CanAttemptResultToString(CanAttemptConnection()));
   dict.Set("service_endpoint_request_finished",
            service_endpoint_request_finished_);
+  if (service_endpoint_request_ &&
+      !service_endpoint_request_->GetEndpointResults().empty()) {
+    base::Value::List service_endpoints;
+    for (const auto& endpoint :
+         service_endpoint_request_->GetEndpointResults()) {
+      service_endpoints.Append(endpoint.ToValue());
+    }
+    dict.Set("service_endpoints", std::move(service_endpoints));
+  }
   dict.Set("tcp_based_attempt_state",
            TcpBasedAttemptStateToString(tcp_based_attempt_state_));
   dict.Set("tcp_based_attempt_delay_ms",
@@ -996,7 +1005,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
   dict.Set("enable_alternative_services", IsAlternativeServiceEnabled());
   dict.Set("quic_attempt_alive", !!quic_attempt_);
   if (quic_attempt_result_.has_value()) {
-    dict.Set("quic_attempt_result", ErrorToString(*quic_attempt_result_));
+    dict.Set("quic_attempt_result", *quic_attempt_result_);
   }
   return dict;
 }
