@@ -205,10 +205,6 @@ if (!is_win) {
       current_toolchain == default_system_allocator_toolchain) {
     # Contains the code shared by both {micro,mini}dump_stackwalk.
     static_library("stackwalk_common") {
-      # TODO(https://crbug.com/424364315): Disable modules build due to
-      # <stdint.h> include inside libdis namespace in disassembler_x86.h.
-      use_libcxx_modules = false
-
       # Binaries that use this library are not debugged frequently and
       # performance is vastly reduced without optimizations. So, force maximum
       # optimization to get the lowest runtimes in Chromium tests that use these
