@@ -8526,7 +8526,7 @@ crbug.com/340651310 external/wpt/uievents/mouse/mouse_boundary_events_after_reap
 b/40270061 http/tests/inspector-protocol/tracing/runtime-stats.js [ Crash Failure Pass Timeout ]
 
 #Loading bug triage 2024-05-16
-crbug.com/339833760 [ Win ] virtual/viewport-and-meta-enabled/http/tests/preload/meta-viewport-link-headers-imagesrcset.php [ Failure Pass ]
+crbug.com/339833760 [ Win ] virtual/viewport-and-meta-enabled/http/tests/preload/meta-viewport-link-headers-imagesrcset.php [ Failure Pass Timeout ]
 
 # Gardener 2024-05-29
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-user-gesture.html [ Failure Pass ]
