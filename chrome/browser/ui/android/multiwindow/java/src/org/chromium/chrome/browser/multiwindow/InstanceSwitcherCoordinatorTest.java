@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.multiwindow;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
@@ -28,13 +28,10 @@ import static org.hamcrest.Matchers.not;
 
 import android.view.View;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -391,39 +388,43 @@ public class InstanceSwitcherCoordinatorTest {
                             Arrays.asList(instances));
                 });
 
-        // Verify that we show info message that users can have up to 5 windows when there are more
-        // than maximum number of windows.
-        onView(withId(R.id.active_instance_list))
-                .inRoot(isDialog())
-                .check(
-                        matches(
-                                atPosition(
-                                        5,
-                                        hasDescendant(
-                                                allOf(
-                                                        withText(R.string.max_number_of_windows),
-                                                        isDisplayed())))));
+        // Verify that we show max info message that users can have up to 5 windows when there are
+        // more than maximum number of windows.
+        String activeMaxInfoText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.max_number_of_windows_instance_switcher_v2, 5, 2);
+        onView(withText(activeMaxInfoText)).inRoot(isDialog()).check(matches(isDisplayed()));
 
-        // Switch to the inactive instance tab and close the inactive instance.
+        // Verify + new window command is not added to the dialog.
+        onView(withId(R.id.new_window)).inRoot(isDialog()).check(doesNotExist());
+
+        // Switch to the inactive instance tab, verify we show max instance info message in inactive
+        // list and close the inactive instance.
+        String inactiveMaxInfoText =
+                activeMaxInfoText
+                        + " "
+                        + mActivityTestRule
+                                .getActivity()
+                                .getString(R.string.persisted_instance_deletion_message);
         onView(allOf(withText("Inactive (1)"), isDescendantOfA(withId(R.id.tabs))))
                 .perform(click());
+        onView(withText(inactiveMaxInfoText)).inRoot(isDialog()).check(matches(isDisplayed()));
         closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
 
         // Verify that we show max instance info message on the active instance tab.
         onView(allOf(withText("Active (5)"), isDescendantOfA(withId(R.id.tabs)))).perform(click());
-        onView(withId(R.id.active_instance_list))
-                .inRoot(isDialog())
-                .check(
-                        matches(
-                                atPosition(
-                                        5,
-                                        hasDescendant(
-                                                allOf(
-                                                        withText(R.string.max_number_of_windows),
-                                                        isDisplayed())))));
+        activeMaxInfoText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.max_number_of_windows_instance_switcher_v2, 5, 1);
+        onView(withText(activeMaxInfoText)).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Close an active instance.
         closeInstanceAt(2, /* isActiveInstance= */ true, closeCallbackHelper);
+
+        // Verify max instance info message is gone.
+        onView(withText(activeMaxInfoText)).inRoot(isDialog()).check(matches(not(isDisplayed())));
 
         // List positions 0 ~ 3: instances. 4: 'new window' command.
         onView(withId(R.id.active_instance_list))
@@ -588,26 +589,5 @@ public class InstanceSwitcherCoordinatorTest {
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .perform(click());
         closeCallbackHelper.waitForCallback(closeCallbackCount);
-    }
-
-    private static Matcher<View> atPosition(final int position, final Matcher<View> itemMatcher) {
-        return new BoundedMatcher<>(RecyclerView.class) {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("has item at position " + position + ": ");
-                itemMatcher.describeTo(description);
-            }
-
-            @Override
-            protected boolean matchesSafely(final RecyclerView view) {
-                RecyclerView.ViewHolder viewHolder =
-                        view.findViewHolderForAdapterPosition(position);
-                if (viewHolder == null) {
-                    // Has no item at this position.
-                    return false;
-                }
-                return itemMatcher.matches(viewHolder.itemView);
-            }
-        };
     }
 }

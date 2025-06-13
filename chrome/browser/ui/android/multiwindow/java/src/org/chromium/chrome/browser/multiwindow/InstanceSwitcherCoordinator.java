@@ -29,6 +29,7 @@ import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -90,7 +91,9 @@ public class InstanceSwitcherCoordinator {
     private @Nullable PropertyModel mDialog;
     private @Nullable InstanceInfo mItemToDelete;
     private @Nullable PropertyModel mNewWindowModel;
+    private @MonotonicNonNull TextView mMaxInfoView;
     private boolean mNewWindowEnabled;
+    private boolean mIsInactiveListShowing;
 
     /**
      * Show instance switcher modal dialog UI.
@@ -177,6 +180,8 @@ public class InstanceSwitcherCoordinator {
                                     isActiveTab ? View.VISIBLE : View.GONE);
                             inactiveInstancesList.setVisibility(
                                     isActiveTab ? View.GONE : View.VISIBLE);
+                            mIsInactiveListShowing = !isActiveTab;
+                            updateMaxInfoTextView();
                         }
 
                         @Override
@@ -247,13 +252,9 @@ public class InstanceSwitcherCoordinator {
         mNewWindowModel = new PropertyModel(InstanceSwitcherItemProperties.ALL_KEYS);
         enableNewWindowCommand(items.size() < mMaxInstanceCount);
         mModelList.add(new ModelListAdapter.ListItem(EntryType.COMMAND, mNewWindowModel));
-        if (isInstanceSwitcherV2Enabled()) {
-            // "+New window" should only be added to the active instances list.
-            mActiveModelList.add(new ModelListAdapter.ListItem(EntryType.COMMAND, mNewWindowModel));
-            // Exclude COMMAND item from active instance count.
-            int numActiveInstances = mActiveModelList.size() - 1;
-            updateTabTitle(numActiveInstances, mInactiveModelList.size());
-        }
+
+        // Update UI state for instance switcher v2.
+        updateCommandUiState();
 
         mDialog = createDialog(mDialogView);
         mModalDialogManager.showDialog(mDialog, ModalDialogType.APP);
@@ -367,6 +368,78 @@ public class InstanceSwitcherCoordinator {
         mModalDialogManager.dismissDialog(mDialog, cause);
     }
 
+    /**
+     * Updates the UI state for Instance Switcher V2 when the dialog starts showing or needs
+     * refresh.
+     *
+     * <p>This includes:
+     *
+     * <ul>
+     *   <li>Conditionally appending the "+ New window" command to the active model list.
+     *   <li>Updating the message and visibility of the max_instance_info TextView.
+     *   <li>Refreshing the tab title with the current number of active and inactive instances.
+     * </ul>
+     */
+    private void updateCommandUiState() {
+        if (!isInstanceSwitcherV2Enabled()) return;
+        int numActiveInstances = mActiveModelList.size();
+        int numInactiveInstances = mInactiveModelList.size();
+        if (mNewWindowEnabled) {
+            if (mActiveModelList.get(numActiveInstances - 1).type != EntryType.COMMAND) {
+                // "+New window" should only be added to the active instances list when new window
+                // command is enabled.
+                mActiveModelList.add(
+                        new ModelListAdapter.ListItem(
+                                EntryType.COMMAND, assumeNonNull(mNewWindowModel)));
+            } else {
+                numActiveInstances -= 1;
+            }
+        }
+        updateMaxInfoTextView();
+        updateTabTitle(numActiveInstances, numInactiveInstances);
+    }
+
+    private void updateMaxInfoTextView() {
+        if (mMaxInfoView == null) {
+            mMaxInfoView = mDialogView.findViewById(R.id.max_instance_info);
+        }
+        if (mNewWindowEnabled) {
+            mMaxInfoView.setVisibility(View.GONE);
+            return;
+        } else {
+            int overLimitCount = getTotalInstanceCount() - mMaxInstanceCount + 1;
+            StringBuilder msgBuilder = new StringBuilder();
+            msgBuilder.append(
+                    mContext.getString(
+                            R.string.max_number_of_windows_instance_switcher_v2,
+                            mMaxInstanceCount,
+                            overLimitCount));
+
+            // Append additional text for inactive list.
+            if (mIsInactiveListShowing) {
+                msgBuilder
+                        .append(" ")
+                        .append(mContext.getString(R.string.persisted_instance_deletion_message));
+            }
+            mMaxInfoView.setText(msgBuilder.toString());
+            mMaxInfoView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private int getTotalInstanceCount() {
+        if (!isInstanceSwitcherV2Enabled()) {
+            // Exclude COMMAND item from list size.
+            return mModelList.size() - 1;
+        }
+        int numActiveInstances = mActiveModelList.size();
+        int numInactiveInstances = mInactiveModelList.size();
+        // Exclude COMMAND item from active list size if exists.
+        if (mActiveModelList.get(numActiveInstances - 1).type == EntryType.COMMAND) {
+            numActiveInstances -= 1;
+        }
+        return numActiveInstances + numInactiveInstances;
+    }
+
     private void removeInstance(InstanceInfo item) {
         int instanceId = item.instanceId;
 
@@ -380,21 +453,13 @@ public class InstanceSwitcherCoordinator {
 
         mCloseCallback.onResult(item);
         RecordUserAction.record("Android.WindowManager.CloseWindow");
-
-        int instanceCount;
-        if (isInstanceSwitcherV2Enabled()) {
-            // Exclude COMMAND item from list size.
-            int numActiveInstances = mActiveModelList.size() - 1;
-            int numInactiveInstances = mInactiveModelList.size();
-            instanceCount = numActiveInstances + numInactiveInstances;
-            updateTabTitle(numActiveInstances, numInactiveInstances);
-        } else {
-            // Exclude COMMAND item from list size.
-            instanceCount = mModelList.size() - 1;
-        }
+        int instanceCount = getTotalInstanceCount();
 
         // Update new window item based on instance count after instance removal.
         enableNewWindowCommand(instanceCount < mMaxInstanceCount);
+
+        // Update UI State for Instance Switcher v2.
+        updateCommandUiState();
     }
 
     private void removeItemFromModelList(int instanceId, ModelList list) {

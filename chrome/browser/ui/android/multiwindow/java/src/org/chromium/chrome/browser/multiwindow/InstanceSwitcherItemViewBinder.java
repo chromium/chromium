@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -55,10 +56,12 @@ class InstanceSwitcherItemViewBinder {
 
         } else if (InstanceSwitcherItemProperties.ENABLE_COMMAND == propertyKey) {
             View newWindow = view.findViewById(R.id.new_window);
-            View maxInfo = view.findViewById(R.id.max_info);
             boolean enabled = model.get(InstanceSwitcherItemProperties.ENABLE_COMMAND);
             newWindow.setVisibility(enabled ? View.VISIBLE : View.GONE);
-            maxInfo.setVisibility(enabled ? View.GONE : View.VISIBLE);
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER_V2)) {
+                View maxInfo = view.findViewById(R.id.max_info);
+                maxInfo.setVisibility(enabled ? View.GONE : View.VISIBLE);
+            }
         }
     }
 }

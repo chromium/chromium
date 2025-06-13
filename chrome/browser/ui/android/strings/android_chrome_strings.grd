@@ -5318,6 +5318,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MAX_NUMBER_OF_WINDOWS" desc="Toast message for when the user has tried to start more than 5 instances of Chrome window.">
         You can have up to 5 windows.
       </message>
+      <message name="IDS_MAX_NUMBER_OF_WINDOWS_INSTANCE_SWITCHER_V2" desc="Message to notify the user that the total number of persisted instances exceeds the window limit.">
+        You can have up to <ph name="MAX_WINDOW_COUNT">%1$d</ph> total windows. To restore a window, close <ph name="WINDOW_COUNT">%2$d</ph> active or inactive windows.
+      </message>
+      <message name="IDS_PERSISTED_INSTANCE_DELETION_MESSAGE" desc="Message to notify the user about permanent deletion of persisted instances.">
+        Inactive windows are permanently deleted after 6 months of being inactive.
+      </message>
       <message name="IDS_TAB_DROPPED_DIFFERENT_MODEL" desc="Toast that appears when a tab is dropped into tab strip with a different profile (regular v.s. incognito).">
         You can find all open tabs in the tab switcher
       </message>
