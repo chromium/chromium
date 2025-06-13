@@ -78,15 +78,3 @@ void ChromeAutofillAiClient::ShowSaveOrUpdateBubble(
 #endif  // !BUILDFLAG(IS_ANDROID)
   std::move(prompt_acceptance_callback).Run(EntitySaveOrUpdatePromptResult());
 }
-
-optimization_guide::ModelQualityLogsUploaderService*
-ChromeAutofillAiClient::GetMqlsUploadService() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  OptimizationGuideKeyedService* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!optimization_guide_keyed_service) {
-    return nullptr;
-  }
-  return optimization_guide_keyed_service->GetModelQualityLogsUploaderService();
-}

@@ -33,8 +33,6 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   // AutofillAiClient:
   autofill::ContentAutofillClient& GetAutofillClient() override;
   autofill_ai::AutofillAiManager& GetManager() override;
-  optimization_guide::ModelQualityLogsUploaderService* GetMqlsUploadService()
-      override;
   void ShowSaveOrUpdateBubble(
       autofill::EntityInstance new_entity,
       std::optional<autofill::EntityInstance> old_entity,

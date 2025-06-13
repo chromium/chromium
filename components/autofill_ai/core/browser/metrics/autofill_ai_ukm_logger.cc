@@ -112,7 +112,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
                                         bool edited_autofilled_field,
                                         bool opt_in_status) {
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
-          autofill_client_->GetMqlsUploadService();
+          autofill_client_->GetAutofillClient().GetMqlsUploadService();
       uploader_ && autofill::MayPerformAutofillAiAction(
                        autofill_client_->GetAutofillClient(),
                        autofill::AutofillAiAction::kLogToMqls)) {
@@ -179,7 +179,7 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
           autofill::UNKNOWN_TYPE));
 
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
-          autofill_client_->GetMqlsUploadService();
+          autofill_client_->GetAutofillClient().GetMqlsUploadService();
       uploader_ && autofill::MayPerformAutofillAiAction(
                        autofill_client_->GetAutofillClient(),
                        autofill::AutofillAiAction::kLogToMqls)) {
@@ -188,7 +188,9 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
     // necessary to check if the user is opted in because it is assumed that all
     // field event types can only occur if the user is opted in for Autofill AI.
     optimization_guide::ModelQualityLogEntry log_entry(
-        autofill_client_->GetMqlsUploadService()->GetWeakPtr());
+        autofill_client_->GetAutofillClient()
+            .GetMqlsUploadService()
+            ->GetWeakPtr());
 
     optimization_guide::proto::AutofillAiFieldEvent* mqls_field_event =
         log_entry.log_ai_data_request()

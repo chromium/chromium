@@ -65,10 +65,6 @@ class AutofillAiClient {
   // client.
   virtual AutofillAiManager& GetManager() = 0;
 
-  // Returns the service used in order to log metrics into MQLS.
-  virtual optimization_guide::ModelQualityLogsUploaderService*
-  GetMqlsUploadService() = 0;
-
   // Shows a bubble asking whether the user wants to save or update Autofill AI
   // data. `old_entity` is present in the update cases. It is used to give users
   // a better understanding of what was updated.

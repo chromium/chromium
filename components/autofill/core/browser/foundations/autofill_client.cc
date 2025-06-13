@@ -255,4 +255,9 @@ const syncer::SyncService* AutofillClient::GetSyncService() const {
       const_cast<AutofillClient*>(this)->GetSyncService());
 }
 
+optimization_guide::ModelQualityLogsUploaderService*
+AutofillClient::GetMqlsUploadService() {
+  return nullptr;
+}
+
 }  // namespace autofill

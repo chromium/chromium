@@ -90,18 +90,30 @@ std::string GetCorrectionAfterFillHistogram(bool submitted) {
                             submitted ? submitted_str : abandoned_str);
 }
 
+class MockAutofillClient : public autofill::TestAutofillClient {
+ public:
+  MockAutofillClient() = default;
+  MockAutofillClient(const MockAutofillClient&) = delete;
+  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
+  ~MockAutofillClient() override = default;
+
+  MOCK_METHOD(optimization_guide::ModelQualityLogsUploaderService*,
+              GetMqlsUploadService,
+              (),
+              (override));
+};
+
 class BaseAutofillAiTest : public testing::Test {
  public:
   BaseAutofillAiTest() {
+    ON_CALL(client_, GetAutofillClient)
+        .WillByDefault(ReturnRef(autofill_client()));
     autofill_client().set_entity_data_manager(
         std::make_unique<autofill::EntityDataManager>(
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));
-
     manager_ = std::make_unique<AutofillAiManager>(&client_, &strike_database_);
-    ON_CALL(client_, GetAutofillClient)
-        .WillByDefault(ReturnRef(autofill_client()));
   }
 
   AutofillAiManager& manager() { return *manager_; }
@@ -140,7 +152,7 @@ class BaseAutofillAiTest : public testing::Test {
     return form;
   }
 
-  autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
+  MockAutofillClient& autofill_client() { return autofill_client_; }
   MockAutofillAiClient& client() { return client_; }
 
  private:
@@ -148,7 +160,7 @@ class BaseAutofillAiTest : public testing::Test {
       autofill::features::kAutofillAiWithDataSchema};
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  autofill::TestAutofillClient autofill_client_;
+  NiceMock<MockAutofillClient> autofill_client_;
   NiceMock<MockAutofillAiClient> client_;
   std::unique_ptr<AutofillAiManager> manager_;
   autofill::TestStrikeDatabase strike_database_;
@@ -317,7 +329,7 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
         local_state_.registry());
     optimization_guide::model_execution::prefs::RegisterProfilePrefs(
         local_state_.registry());
-    ON_CALL(client(), GetMqlsUploadService)
+    ON_CALL(autofill_client(), GetMqlsUploadService)
         .WillByDefault(testing::Return(logs_uploader_.get()));
   }
 

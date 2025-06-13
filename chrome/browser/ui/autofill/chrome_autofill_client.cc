@@ -38,6 +38,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -1182,6 +1183,22 @@ void ChromeAutofillClient::TriggerPlusAddressUserPerceptionSurvey(
       HatsServiceFactory::GetForProfile(profile,
                                         /*create_if_necessary=*/true),
       delegate, survey_type);
+}
+
+optimization_guide::ModelQualityLogsUploaderService*
+ChromeAutofillClient::GetMqlsUploadService() {
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!optimization_guide_keyed_service) {
+    return nullptr;
+  }
+  return optimization_guide_keyed_service->GetModelQualityLogsUploaderService();
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace autofill

@@ -65,6 +65,10 @@ namespace ukm {
 class UkmRecorder;
 }
 
+namespace optimization_guide {
+class ModelQualityLogsUploaderService;
+}
+
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
 }
@@ -618,6 +622,10 @@ class AutofillClient {
   // TODO: crbug.com/348139343 - Move back for components/plus_addresses.
   virtual void TriggerPlusAddressUserPerceptionSurvey(
       plus_addresses::hats::SurveyType survey_type);
+
+  // Returns the service used in order to log metrics into MQLS.
+  virtual optimization_guide::ModelQualityLogsUploaderService*
+  GetMqlsUploadService();
 };
 
 }  // namespace autofill

@@ -213,6 +213,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       FieldGlobalId field_id) const final;
   void TriggerPlusAddressUserPerceptionSurvey(
       plus_addresses::hats::SurveyType survey_type) final;
+  optimization_guide::ModelQualityLogsUploaderService* GetMqlsUploadService()
+      override;
 
   // TODO(crbug.com/407666146): Create a test API.
   base::WeakPtr<AutofillSuggestionController>
