@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "RawPtrHelpers.h"
@@ -832,6 +833,59 @@ static clang::SourceLocation GetBinaryOperationOperatorLoc(
   assert(false && "Unexpected binaryOperation Node");
 }
 
+struct RangedReplacement {
+  clang::SourceRange range;
+  std::string text;
+};
+
+// Specifies an edit: `base::checked_cast<size_t>(...)`
+struct CheckedCastReplacement {
+  RangedReplacement opener;
+  RangedReplacement closer;
+};
+
+// There are three possible subspan expr replacements, respectively:
+// 1. No replacement (leave as is)
+// 2. Append a `u` to an integer literal.
+// 3. Wrap the expression in `base::checked_cast<size_t>(...)`.
+using SubspanExprReplacement =
+    std::variant<std::monostate, RangedReplacement, CheckedCastReplacement>;
+
+static SubspanExprReplacement GetSubspanExprReplacement(
+    const clang::Expr* expr,
+    const MatchFinder::MatchResult& result,
+    std::string_view key) {
+  clang::QualType type = expr->getType();
+  const clang::ASTContext& ast_context = *result.Context;
+
+  const uint64_t size_t_bits =
+      ast_context.getTypeSize(ast_context.getSizeType());
+  const bool is_unsigned_type =
+      type == ast_context.getCorrespondingUnsignedType(type);
+  if (is_unsigned_type && ast_context.getTypeSize(type) <= size_t_bits) {
+    return {};
+  }
+
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::SourceRange range =
+      getExprRange(expr, source_manager, result.Context->getLangOpts());
+
+  if (const auto* integer_literal =
+          clang::dyn_cast<clang::IntegerLiteral>(expr)) {
+    assert(integer_literal->getValue().isNonNegative());
+    return RangedReplacement{.range = range.getEnd(), .text = "u"};
+  }
+
+  EmitReplacement(key, GetIncludeDirective(range, source_manager,
+                                           "base/numerics/safe_conversions.h"));
+  EmitReplacement(key, GetIncludeDirective(range, source_manager, "cstdint",
+                                           /*is_system_include_path=*/true));
+  return CheckedCastReplacement{
+      .opener = {.range = range.getBegin(),
+                 .text = "base::checked_cast<size_t>("},
+      .closer = {.range = range.getEnd(), .text = ")"}};
+}
+
 // When a binary operation and rhs expr appear inside a macro expansion,
 // this function produces an expression like:
 //     UNSAFE_TODO(MACRO(will_be_span.data()))
@@ -1088,35 +1142,29 @@ void AppendDataCall(const MatchFinder::MatchResult& result) {
 void RewriteExprForSubspan(const clang::Expr* expr,
                            const MatchFinder::MatchResult& result,
                            std::string_view key) {
-  clang::QualType type = expr->getType();
-  const clang::ASTContext& ast_context = *result.Context;
-
-  // This logic isn't perfect: an unsigned type wider than `size_t`
-  // will pop us out of this function, but will fail the `strict_cast`
-  // imposed by `subspan()`.
-  if (type == ast_context.getCorrespondingUnsignedType(type)) {
+  const auto replacement = GetSubspanExprReplacement(expr, result, key);
+  if (const auto* u_suffix = std::get_if<RangedReplacement>(&replacement)) {
+    EmitReplacement(key,
+                    GetReplacementDirective(u_suffix->range, u_suffix->text,
+                                            *result.SourceManager));
     return;
   }
 
-  const clang::SourceManager& source_manager = *result.SourceManager;
-  const clang::SourceRange range =
-      getExprRange(expr, source_manager, result.Context->getLangOpts());
-
-  if (clang::dyn_cast<clang::IntegerLiteral>(expr)) {
-    EmitReplacement(
-        key, GetReplacementDirective(range.getEnd(), "u", source_manager));
+  if (const auto* checked_cast_replacement =
+          std::get_if<CheckedCastReplacement>(&replacement)) {
+    const auto& [opener, closer] = *checked_cast_replacement;
+    EmitReplacement(key, GetReplacementDirective(opener.range, opener.text,
+                                                 *result.SourceManager));
+    EmitReplacement(key, GetReplacementDirective(closer.range, closer.text,
+                                                 *result.SourceManager));
     return;
   }
 
-  EmitReplacement(key, GetReplacementDirective(range.getBegin(),
-                                               "base::checked_cast<size_t>(",
-                                               source_manager));
-  EmitReplacement(key,
-                  GetReplacementDirective(range.getEnd(), ")", source_manager));
-  EmitReplacement(key, GetIncludeDirective(range, source_manager,
-                                           "base/numerics/safe_conversions.h"));
-  EmitReplacement(key, GetIncludeDirective(range, source_manager, "cstdint",
-                                           /*is_system_include_path=*/true));
+  if (!std::get_if<std::monostate>(&replacement)) {
+    llvm::errs() << "Unexpected variant in `RewriteExprForSubspan()`.";
+    DumpMatchResult(result);
+    return;
+  }
 }
 
 // Handle the case where we match `&container[<offset>]` being used as a buffer.
