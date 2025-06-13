@@ -79,6 +79,21 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                  SkImageReadPixelsCallback callback,
                                  SkImage::ReadPixelsContext context);
 
+  bool asyncRescaleAndReadPixelsAndSubmit(const SkImage* src,
+                                          const SkImageInfo& dstImageInfo,
+                                          const SkIRect& srcRect,
+                                          SkImage::RescaleGamma rescaleGamma,
+                                          SkImage::RescaleMode rescaleMode,
+                                          SkImageReadPixelsCallback callback,
+                                          SkImage::ReadPixelsContext context);
+  bool asyncRescaleAndReadPixelsAndSubmit(const SkSurface* src,
+                                          const SkImageInfo& dstImageInfo,
+                                          const SkIRect& srcRect,
+                                          SkImage::RescaleGamma rescaleGamma,
+                                          SkImage::RescaleMode rescaleMode,
+                                          SkImageReadPixelsCallback callback,
+                                          SkImage::ReadPixelsContext context);
+
   void asyncRescaleAndReadPixelsYUV420(const SkImage* src,
                                        SkYUVColorSpace yuvColorSpace,
                                        sk_sp<SkColorSpace> dstColorSpace,

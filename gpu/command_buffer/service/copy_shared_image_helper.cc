@@ -614,13 +614,15 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
   }
 #endif
 
-  graphite_shared_context->asyncRescaleAndReadPixels(
-      sk_image.get(), dst_info, RectToSkIRect(src_rect),
-      SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-      base::BindOnce(&OnReadPixelsDone), &context);
   // We don't need to insert a recording since asyncRescaleAndReadPixels is a
   // context operation that inserts its own recording internally.
-  graphite_shared_context->submit(skgpu::graphite::SyncToCpu::kYes);
+  if (!graphite_shared_context->asyncRescaleAndReadPixelsAndSubmit(
+          sk_image.get(), dst_info, RectToSkIRect(src_rect),
+          SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+          base::BindOnce(&OnReadPixelsDone), &context)) {
+    return false;
+  }
+
   CHECK(context.finished);
   if (!context.async_result) {
     return false;
