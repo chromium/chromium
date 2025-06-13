@@ -570,7 +570,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)willDeleteNode:(const BookmarkNode*)node
             fromFolder:(const BookmarkNode*)folder {
   DCHECK(node);
-  if (self.displayedNode == node) {
+  if (self.displayedNode->HasAncestor(node)) {
     [self.consumer closeThisFolder];
   }
 }
