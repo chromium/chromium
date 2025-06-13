@@ -120,8 +120,8 @@ class ExtensionWebRequestTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
   TestingProfileManager profile_manager_;
+  TestingProfile profile_;
 };
 
 namespace {
