@@ -418,8 +418,9 @@ std::unique_ptr<PhoneticsInfo> DefinitionResultParser::ParsePhoneticsInfo(
   // Check if tts audio is enabled for the query.
   std::optional<bool> tts_audio_enabled =
       first_phonetics->FindBool(kPhoneticsTtsAudioEnabledKey);
-  if (tts_audio_enabled) {
-    phonetics_info->tts_audio_enabled = tts_audio_enabled.value();
+  if (tts_audio_enabled && !tts_audio_enabled.value()) {
+    phonetics_info->query_text.clear();
+    phonetics_info->locale.clear();
   }
   return phonetics_info;
 }

@@ -65,10 +65,6 @@ bool PhoneticsInfo::AudioUrlAvailable() const {
 }
 
 bool PhoneticsInfo::TtsAudioAvailable() const {
-  if (!tts_audio_enabled) {
-    return false;
-  }
-
   return !query_text.empty() && !locale.empty();
 }
 

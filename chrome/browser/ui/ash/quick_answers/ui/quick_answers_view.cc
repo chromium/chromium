@@ -627,14 +627,14 @@ void QuickAnswersView::ShowRetryView() {
   SwitchTo(retry_view_);
 }
 
-bool QuickAnswersView::ShouldAddPhoneticsAudioButton(ResultType result_type,
-                                                     GURL phonetics_audio,
-                                                     bool tts_audio_enabled) {
+bool QuickAnswersView::ShouldAddPhoneticsAudioButton(
+    ResultType result_type,
+    const quick_answers::PhoneticsInfo& phonetics_info) {
   if (result_type != ResultType::kDefinitionResult) {
     return false;
   }
 
-  return !phonetics_audio.is_empty() || tts_audio_enabled;
+  return phonetics_info.PhoneticsInfoAvailable();
 }
 
 void QuickAnswersView::SetMockGenerateTtsCallbackForTesting(

@@ -109,9 +109,9 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
  private:
   bool HasFocusInside();
   void AddFrameButtons();
-  bool ShouldAddPhoneticsAudioButton(ResultType result_type,
-                                     GURL phonetics_audio,
-                                     bool tts_audio_enabled);
+  bool ShouldAddPhoneticsAudioButton(
+      ResultType result_type,
+      const quick_answers::PhoneticsInfo& phonetics_info);
   void AddPhoneticsAudioButton(
       const quick_answers::PhoneticsInfo& phonetics_info,
       View* container);
