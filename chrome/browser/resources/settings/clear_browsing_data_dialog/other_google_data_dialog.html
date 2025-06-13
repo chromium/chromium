@@ -79,7 +79,8 @@
           using-slotted-label>
         <div slot="label">$i18n{myActivity}</div>
       </cr-link-row>
-      <cr-link-row external using-slotted-label>
+      <cr-link-row id="searchHistoryLink" on-click="onSearchHistoryClick_"
+          external using-slotted-label>
         <div slot="label">$i18n{searchHistory}</div>
       </cr-link-row>
     </div>

@@ -680,6 +680,8 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK)));
   html_source->AddString("deleteBrowsingDataMyActivityUrl",
                          chrome::kMyActivityUrlInClearBrowsingData);
+  html_source->AddString("deleteBrowsingDataSearchHistoryUrl",
+                         chrome::kSearchHistoryUrlInClearBrowsingData);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(

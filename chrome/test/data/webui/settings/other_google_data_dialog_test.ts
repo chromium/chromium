@@ -46,4 +46,12 @@ suite('OtherGoogleDataDialog', function() {
     assertEquals(
         loadTimeData.getString('deleteBrowsingDataMyActivityUrl'), url);
   });
+
+  test('SearchHistoryLinkClick', async function() {
+    dialog.$.searchHistoryLink.click();
+
+    const url = await testOpenWindowProxy.whenCalled('openUrl');
+    assertEquals(
+        loadTimeData.getString('deleteBrowsingDataSearchHistoryUrl'), url);
+  });
 });

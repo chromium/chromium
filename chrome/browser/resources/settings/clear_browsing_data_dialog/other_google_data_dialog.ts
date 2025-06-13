@@ -29,6 +29,7 @@ export interface SettingsOtherGoogleDataDialogElement {
     dialog: CrDialogElement,
     passwordManagerLink: CrLinkRowElement,
     myActivityLink: CrLinkRowElement,
+    searchHistoryLink: CrLinkRowElement,
   };
 }
 
@@ -53,6 +54,11 @@ export class SettingsOtherGoogleDataDialogElement extends PolymerElement {
   private onMyActivityClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('deleteBrowsingDataMyActivityUrl'));
+  }
+
+  private onSearchHistoryClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('deleteBrowsingDataSearchHistoryUrl'));
   }
 }
 
