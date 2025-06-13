@@ -16,7 +16,12 @@ extern const wchar_t kAppRegKey[];
 extern const wchar_t kRegValuePV[];
 // The registry value under `kAppRegKey` which stores the application's name.
 extern const wchar_t kRegValueName[];
-#endif
+
+#if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+extern const wchar_t kIcuDataFileName[];
+#endif  // ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+
+#endif  // BUILDFLAG(IS_WIN)
 
 // Install the Chrome Enterprise Companion App.
 bool Install();
