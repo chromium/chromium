@@ -173,8 +173,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   }
 
   void TriggerOnDangerousDownloadOpenedEvent() {
-    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-        referrer_chain;
+    safe_browsing::ReferrerChain referrer_chain;
     referrer_chain.Add(enterprise_connectors::test::MakeReferrerChainEntry());
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadOpened(
@@ -190,8 +189,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
                                       0);
     // TODO(mxlg): Move the tests related to the ReportingEventRouter to its own
     // unit tests file.
-    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-        referrer_chain;
+    safe_browsing::ReferrerChain referrer_chain;
     enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
         profile_)
         ->OnSecurityInterstitialShown(GURL("https://phishing.com/"), "PHISHING",
@@ -203,8 +201,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
         ->OnSecurityInterstitialProceeded(GURL("https://phishing.com/"),
                                           "PHISHING", -201);
     // TODO(mxlg): Move the ReportingEventRouter test code to its own unit test.
-    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-        referrer_chain;
+    safe_browsing::ReferrerChain referrer_chain;
     enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
         profile_)
         ->OnSecurityInterstitialProceeded(GURL("https://phishing.com/"),
@@ -212,8 +209,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   }
 
   void TriggerOnDangerousDownloadEvent() {
-    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-        referrer_chain;
+    safe_browsing::ReferrerChain referrer_chain;
     referrer_chain.Add(enterprise_connectors::test::MakeReferrerChainEntry());
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadEvent(
@@ -224,8 +220,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   }
 
   void TriggerOnDangerousDownloadEventBypass() {
-    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-        referrer_chain;
+    safe_browsing::ReferrerChain referrer_chain;
     referrer_chain.Add(enterprise_connectors::test::MakeReferrerChainEntry());
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadWarningBypassed(
@@ -237,6 +232,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
   void TriggerOnSensitiveDataEvent(
       enterprise_connectors::EventResult event_result) {
+    safe_browsing::ReferrerChain referrer_chain;
+    referrer_chain.Add(enterprise_connectors::test::MakeReferrerChainEntry());
     enterprise_connectors::ContentAnalysisResponse::Result result;
     result.set_tag("dlp");
     result.set_status(
@@ -254,17 +251,20 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             SafeBrowsingPrivateEventRouter::kTriggerFileUpload, "scan_id",
             "content_transfer_method",
             safe_browsing::DeepScanAccessPoint::UPLOAD, result, 12345,
-            event_result);
+            referrer_chain, event_result);
   }
 
   void TriggerOnUnscannedFileEvent(enterprise_connectors::EventResult result) {
+    safe_browsing::ReferrerChain referrer_chain;
+    referrer_chain.Add(enterprise_connectors::test::MakeReferrerChainEntry());
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnUnscannedFileEvent(
             GURL(kUrl), GURL(kTabUrl), kSource, kDestination,
             "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             safe_browsing::DeepScanAccessPoint::DOWNLOAD,
-            "filePasswordProtected", "content_transfer_method", 12345, result);
+            "filePasswordProtected", "content_transfer_method", 12345,
+            referrer_chain, result);
   }
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -921,6 +921,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
                 SafeBrowsingPrivateEventRouter::kKeyUrlCategory));
   EXPECT_EQ("scan_id",
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
+  const base::Value::List* referrers =
+      event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
+  EXPECT_EQ(1u, referrers->size());
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
@@ -979,6 +982,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
                 SafeBrowsingPrivateEventRouter::kKeyUrlCategory));
   EXPECT_EQ("scan_id",
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
+  const base::Value::List* referrers =
+      event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
+  EXPECT_EQ(1u, referrers->size());
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
@@ -1025,6 +1031,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
   EXPECT_EQ(
       EventResultToString(enterprise_connectors::EventResult::ALLOWED),
       *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  const base::Value::List& referrers =
+      *event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
+  EXPECT_EQ(1u, referrers.size());
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
@@ -1071,6 +1080,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
   EXPECT_EQ(
       EventResultToString(enterprise_connectors::EventResult::BLOCKED),
       *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  const base::Value::List& referrers =
+      *event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
+  EXPECT_EQ(1u, referrers.size());
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {

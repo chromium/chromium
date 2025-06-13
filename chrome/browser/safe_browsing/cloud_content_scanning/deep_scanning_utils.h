@@ -13,6 +13,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -74,6 +75,7 @@ void MaybeReportDeepScanningVerdict(
     const std::string& content_transfer_method,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
+    const safe_browsing::ReferrerChain& referrer_chain,
     BinaryUploadService::Result result,
     const enterprise_connectors::ContentAnalysisResponse& response,
     enterprise_connectors::EventResult event_result);
