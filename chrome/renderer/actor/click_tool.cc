@@ -76,8 +76,9 @@ mojom::ActionResultPtr ClickTool::Execute() {
     }
   }
 
-  return CreateAndDispatchClick(button, click_count, click_point,
-                                frame_->GetWebFrame()->FrameWidget());
+  return CreateAndDispatchClick(
+      button, click_count, click_point,
+      frame_->GetWebFrame()->LocalRoot()->FrameWidget());
 }
 
 std::string ClickTool::DebugString() const {
@@ -88,7 +89,7 @@ std::string ClickTool::DebugString() const {
 
 ClickTool::ValidatedResult ClickTool::Validate() const {
   CHECK(frame_->GetWebFrame());
-  CHECK(frame_->GetWebFrame()->FrameWidget());
+  CHECK(frame_->GetWebFrame()->LocalRoot()->FrameWidget());
 
   if (action_->target->is_coordinate()) {
     gfx::PointF click_point(action_->target->get_coordinate());

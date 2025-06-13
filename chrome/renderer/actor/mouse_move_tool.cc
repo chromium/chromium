@@ -59,7 +59,7 @@ mojom::ActionResultPtr MouseMoveTool::Execute() {
       CreateMouseEvent(blink::WebInputEvent::Type::kMouseMove, move_point);
 
   blink::WebInputEventResult move_result =
-      frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
+      frame_->GetWebFrame()->LocalRoot()->FrameWidget()->HandleInputEvent(
           blink::WebCoalescedInputEvent(mouse_move, ui::LatencyInfo()));
 
   // Note: KNotHandled probably shouldn't result in an error.
@@ -77,7 +77,7 @@ std::string MouseMoveTool::DebugString() const {
 
 MouseMoveTool::ValidatedResult MouseMoveTool::Validate() const {
   CHECK(frame_->GetWebFrame());
-  CHECK(frame_->GetWebFrame()->FrameWidget());
+  CHECK(frame_->GetWebFrame()->LocalRoot()->FrameWidget());
 
   if (action_->target->is_coordinate()) {
     gfx::PointF move_point = gfx::PointF(action_->target->get_coordinate());

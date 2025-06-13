@@ -4720,6 +4720,87 @@ std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
   return dom_node_id;
 }
 
+std::optional<int> GetDOMNodeIdFromSubframe(
+    content::RenderFrameHost& rfh,
+    std::string_view subframe_query_selector,
+    std::string_view query_selector) {
+  content::ScopedTestDevToolsProtocolClient devtools_client(rfh);
+
+  // Get the main document node.
+  const base::Value::Dict* result =
+      devtools_client.SendCommandSync("DOM.getDocument");
+  CHECK(result);
+  std::optional<int> document_id = result->FindIntByDottedPath("root.nodeId");
+  CHECK(document_id.has_value());
+
+  // Find the <iframe> element node in the main document.
+  auto params = base::Value::Dict()
+                    .Set("nodeId", document_id.value())
+                    .Set("selector", subframe_query_selector);
+  result =
+      devtools_client.SendCommandSync("DOM.querySelector", std::move(params));
+  CHECK(result);
+  std::optional<int> iframe_node_id = result->FindInt("nodeId");
+  if (!iframe_node_id || iframe_node_id.value() == 0) {
+    return std::nullopt;
+  }
+
+  // Get contentDocument of iframe.
+  params = base::Value::Dict().Set("nodeId", iframe_node_id.value());
+  result =
+      devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
+  CHECK(result);
+  std::optional<int> content_doc_backend_node_id =
+      result->FindIntByDottedPath("node.contentDocument.backendNodeId");
+  if (!content_doc_backend_node_id) {
+    return std::nullopt;
+  }
+
+  // Resolve that backendNodeId to get a Runtime objectId for the document.
+  params = base::Value::Dict().Set("backendNodeId",
+                                   content_doc_backend_node_id.value());
+  result =
+      devtools_client.SendCommandSync("DOM.resolveNode", std::move(params));
+  CHECK(result);
+  const std::string* content_doc_object_id =
+      result->FindStringByDottedPath("object.objectId");
+  if (!content_doc_object_id) {
+    return std::nullopt;
+  }
+
+  // Request the DOM nodeId for the iframe's document from its objectId.
+  params = base::Value::Dict().Set("objectId", *content_doc_object_id);
+  result =
+      devtools_client.SendCommandSync("DOM.requestNode", std::move(params));
+  CHECK(result);
+  std::optional<int> content_doc_node_id = result->FindInt("nodeId");
+  if (!content_doc_node_id || content_doc_node_id.value() == 0) {
+    return std::nullopt;
+  }
+
+  // Query for the target element within the iframe's document.
+  params = base::Value::Dict()
+               .Set("nodeId", content_doc_node_id.value())
+               .Set("selector", query_selector);
+  result =
+      devtools_client.SendCommandSync("DOM.querySelector", std::move(params));
+  CHECK(result);
+  std::optional<int> final_node_id = result->FindInt("nodeId");
+  if (!final_node_id || final_node_id.value() == 0) {
+    return std::nullopt;
+  }
+
+  params = base::Value::Dict().Set("nodeId", final_node_id.value());
+  result =
+      devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
+  CHECK(result);
+  std::optional<int> dom_node_id =
+      result->FindIntByDottedPath("node.backendNodeId");
+  CHECK(dom_node_id.has_value());
+
+  return dom_node_id;
+}
+
 namespace {
 
 class DOMContentLoadedObserver : public WebContentsObserver {

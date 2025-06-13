@@ -2217,6 +2217,36 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolInInactiveFrame) {
   ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
 }
 
+// Basic test to ensure sending a click to an element in a same-site subframe
+// works.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolSameSiteSubframe) {
+  const GURL url =
+      embedded_https_test_server().GetURL("/actor/positioned_iframe.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const GURL subframe_url = embedded_https_test_server().GetURL(
+      "/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(NavigateIframeToURL(web_contents(), "iframe", subframe_url));
+
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_FALSE(subframe->IsCrossProcessSubframe());
+  ASSERT_TRUE(subframe);
+
+  // Send a click to the button in the subframe.
+  std::optional<int> button_id =
+      GetDOMNodeIdFromSubframe(*subframe, "#iframe", "button#clickable");
+  ASSERT_TRUE(button_id);
+  BrowserAction action = MakeClick(*subframe, button_id.value());
+
+  TestFuture<mojom::ActionResultPtr> result;
+  execution_engine().Act(action, result.GetCallback());
+  ExpectOkResult(result);
+
+  // Ensure the button's event handler was invoked.
+  EXPECT_EQ(true, EvalJs(subframe, "button_clicked"));
+}
+
 }  // namespace
 
 }  // namespace actor

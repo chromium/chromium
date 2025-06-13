@@ -221,7 +221,7 @@ WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
   key_event.unmodified_text[0] = key_params.unmodified_text;
 
   WebInputEventResult result =
-      frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
+      frame_->GetWebFrame()->LocalRoot()->FrameWidget()->HandleInputEvent(
           WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
 
   return result;
@@ -273,7 +273,7 @@ mojom::ActionResultPtr TypeTool::Execute() {
         std::get<gfx::PointF>(validated_result->target);
     mojom::ActionResultPtr result = CreateAndDispatchClick(
         blink::WebMouseEvent::Button::kLeft, 1, coordinate,
-        frame_->GetWebFrame()->FrameWidget());
+        frame_->GetWebFrame()->LocalRoot()->FrameWidget());
 
     // Cancel rest of typing if initial click failed.
     if (!IsOk(*result)) {
@@ -324,7 +324,7 @@ std::string TypeTool::DebugString() const {
 
 TypeTool::ValidatedResult TypeTool::Validate() const {
   CHECK(frame_->GetWebFrame());
-  CHECK(frame_->GetWebFrame()->FrameWidget());
+  CHECK(frame_->GetWebFrame()->LocalRoot()->FrameWidget());
 
   mojom::ToolTargetPtr& target = action_->target;
   CHECK(target);

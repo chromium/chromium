@@ -256,6 +256,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   // Get the highest-level LocalFrame in this frame's in-process subtree.
   virtual WebLocalFrame* LocalRoot() = 0;
+  virtual const WebLocalFrame* LocalRoot() const = 0;
 
   // Returns the WebFrameWidget associated with this frame if there is one or
   // nullptr otherwise.

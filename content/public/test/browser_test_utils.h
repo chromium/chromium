@@ -2598,9 +2598,21 @@ void InitAndEnableRenderDocumentForAllFrames(
 std::optional<int> GetDOMNodeId(content::RenderFrameHost& rfh,
                                 std::string_view query_selector);
 
+// Returns the DOMNodeId of the node matched by the given CSS query selector
+// inside the iframe (must be a direct child of main frame, i.e. no nested
+// iframes) identified by subframe_query_selector or std::nullopt if no node
+// matches. Note: This method makes multiple renderer IPC calls (via the
+// devtools protocol) and waits for a result (an IPC back from the renderer)
+// each time.
+std::optional<int> GetDOMNodeIdFromSubframe(
+    RenderFrameHost& rfh,
+    std::string_view subframe_query_selector,
+    std::string_view query_selector);
+
 // Suspends execution in the current thread until the DOMContentLoaded event
-// fires in the given RenderFrameHost. Note, this will only observe the Document
-// associated with the given RenderFrameHost at the time of the call.
+// fires in the given RenderFrameHost. Note, this will only observe the
+// Document associated with the given RenderFrameHost at the time of the
+// call.
 [[nodiscard]] bool WaitForDOMContentLoaded(RenderFrameHost* rfh);
 
 }  // namespace content

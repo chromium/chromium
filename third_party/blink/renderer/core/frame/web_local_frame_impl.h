@@ -138,6 +138,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetName(const WebString&) override;
   bool IsProvisional() const override;
   WebLocalFrameImpl* LocalRoot() override;
+  const WebLocalFrameImpl* LocalRoot() const override;
   WebFrameWidget* FrameWidget() const override;
   WebFrame* FindFrameByName(const WebString& name) override;
   void SetEmbeddingToken(

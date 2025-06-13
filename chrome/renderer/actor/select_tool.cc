@@ -63,7 +63,7 @@ std::string SelectTool::DebugString() const {
 
 SelectTool::ValidatedResult SelectTool::Validate() const {
   CHECK(frame_->GetWebFrame());
-  CHECK(frame_->GetWebFrame()->FrameWidget());
+  CHECK(frame_->GetWebFrame()->LocalRoot()->FrameWidget());
 
   mojom::ToolTargetPtr& target = action_->target;
 

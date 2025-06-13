@@ -2683,6 +2683,10 @@ bool WebLocalFrameImpl::IsProvisional() const {
 }
 
 WebLocalFrameImpl* WebLocalFrameImpl::LocalRoot() {
+  return const_cast<WebLocalFrameImpl*>(std::as_const(*this).LocalRoot());
+}
+
+const WebLocalFrameImpl* WebLocalFrameImpl::LocalRoot() const {
   DCHECK(GetFrame());
   auto* result = FromFrame(GetFrame()->LocalFrameRoot());
   DCHECK(result);

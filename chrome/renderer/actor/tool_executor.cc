@@ -41,7 +41,8 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
   completion_callback_ = std::move(callback);
 
   WebLocalFrame* web_frame = frame_->GetWebFrame();
-  if (!web_frame || !web_frame->FrameWidget()) {
+  // Check LocalRoot in case the frame is a subframe.
+  if (!web_frame || !web_frame->LocalRoot()->FrameWidget()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ToolExecutor::ToolFinished,
