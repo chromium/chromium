@@ -175,6 +175,7 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
@@ -4455,6 +4456,11 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                         child_recalc_context);
     UpdateColumnPseudoElements(child_change, child_recalc_context);
+
+    if (IsA<HTMLMenuItemElement>(this)) {
+      UpdatePseudoElement(kPseudoIdCheckMark, child_change,
+                          child_recalc_context);
+    }
 
     if (HTMLSelectElement::CustomizableSelectEnabled(this)) {
       if (DynamicTo<HTMLOptionElement>(this)) {
@@ -9572,7 +9578,9 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
       }
       return false;
     };
-    if (!is_option_in_appearance_base_select(this)) {
+    const HTMLMenuItemElement* menu_item = DynamicTo<HTMLMenuItemElement>(this);
+    const bool checkable_menu_item = menu_item && menu_item->IsCheckable();
+    if (!is_option_in_appearance_base_select(this) && !checkable_menu_item) {
       return false;
     }
   }

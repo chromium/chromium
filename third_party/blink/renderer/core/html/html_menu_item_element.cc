@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/events/command_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -26,11 +27,14 @@ HTMLMenuItemElement::~HTMLMenuItemElement() = default;
 void HTMLMenuItemElement::Trace(Visitor* visitor) const {
   visitor->Trace(nearest_ancestor_menu_bar_);
   visitor->Trace(nearest_ancestor_menu_list_);
+  visitor->Trace(nearest_ancestor_field_set_);
   HTMLElement::Trace(visitor);
 }
 
 bool HTMLMenuItemElement::MatchesDefaultPseudoClass() const {
-  return FastHasAttribute(html_names::kCheckedAttr);
+  // TODO(406566432): This should consider the `defaultchecked` when
+  // implemented.
+  return false;
 }
 
 bool HTMLMenuItemElement::MatchesEnabledPseudoClass() const {
@@ -45,12 +49,6 @@ void HTMLMenuItemElement::ParseAttribute(
       PseudoStateChanged(CSSSelector::kPseudoDisabled);
       PseudoStateChanged(CSSSelector::kPseudoEnabled);
     }
-  } else if (name == html_names::kCheckedAttr) {
-    if (params.old_value.IsNull() != params.new_value.IsNull() && !is_dirty_) {
-      setChecked(!params.new_value.IsNull());
-      is_dirty_ = false;
-    }
-    PseudoStateChanged(CSSSelector::kPseudoDefault);
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -119,20 +117,46 @@ CommandEventType HTMLMenuItemElement::GetCommandEventType(
   return CommandEventType::kNone;
 }
 
-bool HTMLMenuItemElement::Checked() const {
+bool HTMLMenuItemElement::IsCheckable() const {
+  return nearest_ancestor_menu_list_ && nearest_ancestor_field_set_ &&
+         nearest_ancestor_field_set_->FastGetAttribute(
+             html_names::kCheckableAttr);
+}
+
+bool HTMLMenuItemElement::checked() const {
   return is_checked_;
 }
 
 void HTMLMenuItemElement::setChecked(bool checked) {
   is_dirty_ = true;
-  if (is_checked_ == checked) {
+  // Some menu items are not "checkable", and the `checked` IDL attribute is
+  // only stateful for checkable menu items.
+  if (is_checked_ == checked || (checked && !IsCheckable())) {
     return;
   }
 
   is_checked_ = checked;
   PseudoStateChanged(CSSSelector::kPseudoChecked);
 
+  // Only update the exclusivity of all other menu items rooted under the same
+  // fieldset *if* `this` is becoming checked under a fieldset that enforces
+  // exclusivity. If it is becoming unchecked, we don't have to worry about
+  // manually unchecking other menu items in the exclusive set, because it is
+  // permitted to have zero menu items checked.
+  DCHECK(nearest_ancestor_field_set_);
+  const AtomicString& checkable =
+      nearest_ancestor_field_set_->FastGetAttribute(html_names::kCheckableAttr);
+  if (is_checked_ && EqualIgnoringASCIICase(checkable, keywords::kSingle)) {
+    nearest_ancestor_field_set_->UpdateMenuItemCheckableExclusivity(this);
+  }
+
   // TODO: Accessibility mapping.
+}
+
+bool HTMLMenuItemElement::ShouldAppearChecked() const {
+  // `this` should only appear checked if we are checked, and we're in a
+  // checkable <fieldset> in a <menulist>.
+  return IsCheckable() && checked();
 }
 
 void HTMLMenuItemElement::SetDirty(bool value) {
@@ -175,6 +199,12 @@ bool HTMLMenuItemElement::ShouldHaveFocusAppearance() const {
 
 void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
+    // A menu item's checkability and ability to invoke a command are
+    // exclusive. That is, we don't explicitly disallow checkable menu items
+    // that do both, so we always give `setChecked()` the chance to set `this`
+    // as checked—this will only take effect if `IsCheckable()` is true.
+    setChecked(!checked());
+
     // Menuitems with a commandfor will dispatch a CommandEvent on the
     // invoker, and run HandleCommandInternal to perform default logic.
     if (auto* command_target = commandForElement()) {
@@ -333,16 +363,34 @@ void HTMLMenuItemElement::ResetNearestAncestorMenuBarOrMenuList() {
   }
 }
 
+void HTMLMenuItemElement::ResetNearestAncestorFieldSet() {
+  nearest_ancestor_field_set_ = nullptr;
+  // TODO(https://crbug.com/406566432): See if we want to allow ancestor field
+  // sets higher up than just the immediate parent.
+  HTMLFieldSetElement* field_set = DynamicTo<HTMLFieldSetElement>(parentNode());
+  if (!field_set) {
+    return;
+  }
+
+  nearest_ancestor_field_set_ = field_set;
+}
+
 Node::InsertionNotificationRequest HTMLMenuItemElement::InsertedInto(
     ContainerNode& insertion_point) {
   auto return_value = HTMLElement::InsertedInto(insertion_point);
+
+  // Run various ancestor/state resets.
   ResetNearestAncestorMenuBarOrMenuList();
+  ResetNearestAncestorFieldSet();
   return return_value;
 }
 
 void HTMLMenuItemElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
+
+  // Run various ancestor/state resets.
   ResetNearestAncestorMenuBarOrMenuList();
+  ResetNearestAncestorFieldSet();
   return;
 }
 

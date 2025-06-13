@@ -2093,6 +2093,21 @@ dialog:where(:modal) {
   menulist menuitem {
     display: block;
   }
+
+  menulist > fieldset {
+    margin-inline: 0;
+    border: none;
+    padding-block: 0;
+    padding-inline: 0;
+  }
+
+  menuitem::checkmark {
+    content: '\2713';
+  }
+
+  menuitem:not(:checked)::checkmark {
+    visibility: hidden;
+  }
 }
 
 /* TODO choose appearance:auto styles and set them in here with !important */

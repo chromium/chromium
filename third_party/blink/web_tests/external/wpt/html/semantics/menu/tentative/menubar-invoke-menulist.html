@@ -15,11 +15,18 @@
  <menuitem>Command 2</menuitem>
 </menulist>
 
+<menulist>
+  <fieldset checkable>
+    <menuitem id="checkable-menuitem">Show menu</menuitem>
+  </fieldset>
+</menulist>
+
 <script>
 const menubar = document.querySelector("menubar");
 const menubaritem = document.getElementById("menubaritem");
 const menulist = document.querySelector("menulist");
 const menulistitem = document.getElementById("menulistitem");
+const checkableMenuitem = document.getElementById("checkable-menuitem");
 
 test(() => {
  assert_equals(menubar.constructor, HTMLMenuBarElement);
@@ -34,31 +41,6 @@ test(() => {
  menulistitem.disabled = false;
  assert_false(menulistitem.disabled);
 }, "Menu elements are HTML elements.");
-
-test(() => {
-  // `defaultChecked`.
-  assert_equals(menubaritem.defaultChecked, undefined,
-      "menuitem does not have a defaultChecked attribute");
-
-  // `checked` content & IDL attribute behavior.
-  // By default, attribute missing/null, which translates to the false IDL
-  // boolean state.
-  assert_equals(menubaritem.getAttribute('checked'), null);
-  assert_false(menubaritem.checked);
-
-  // The IDL attribute reads from the same state that the content attribute
-  // writes to.
-  menubaritem.setAttribute("checked", "true");
-  assert_true(menubaritem.checked);
-
-  // But the IDL attribute does not reflect [1] the content attribute value,
-  // which means when it is updated, the content attribute does not change.
-  //
-  // [1]: https://html.spec.whatwg.org/C#reflect
-  menubaritem.checked = false;
-  assert_false(menubaritem.checked);
-  menubaritem.setAttribute("checked", "true");
-}, "menuitem checked attribute");
 
 test(() => {
  menubaritem.setAttribute("command", "toggle-popover");
@@ -100,4 +82,23 @@ test(() => {
  assert_false(menulist.matches(':popover-open'),
     'The menulist should not open because the menuitem command is invalid');
 }, "Menuitem with invalid command/commandfor cannot invoke menulist popover.");
+
+test(() => {
+  checkableMenuitem.command = "show-menu";
+  checkableMenuitem.commandForElement = menulist;
+
+  checkableMenuitem.click();
+  assert_true(checkableMenuitem.checked,
+      "checkable menu item becomes checked");
+  assert_true(menulist.matches(":popover-open"),
+      "menulist matches :popover-open");
+
+  checkableMenuitem.setAttribute("command", "hide-menu");
+  checkableMenuitem.click();
+
+  assert_false(checkableMenuitem.checked,
+      "checkable menu item is still checked");
+  assert_false(menulist.matches(":popover-open"),
+      "menulist no longer matches :popover-open");
+}, "Checkable menuitems can still invoke menulist popovers");
 </script>

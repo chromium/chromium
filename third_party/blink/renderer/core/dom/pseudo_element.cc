@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
@@ -83,11 +84,12 @@ PseudoElement* PseudoElement::Create(Element* parent,
                                      PseudoId pseudo_id,
                                      const AtomicString& view_transition_name) {
   if (pseudo_id == kPseudoIdCheckMark) {
-    CHECK(HTMLSelectElement::CustomizableSelectEnabled(parent));
+    CHECK(HTMLSelectElement::CustomizableSelectEnabled(parent) ||
+          RuntimeEnabledFeatures::MenuElementsEnabled());
 
-    if (!IsA<HTMLOptionElement>(parent)) {
-      // The `::checkmark` pseudo element should only be created for option
-      // elements.
+    if (!IsA<HTMLOptionElement>(parent) && !IsA<HTMLMenuItemElement>(parent)) {
+      // The `::checkmark` pseudo element should only be created for option and
+      // menuitem elements.
       return nullptr;
     }
   }

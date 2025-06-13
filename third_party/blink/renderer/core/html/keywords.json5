@@ -121,6 +121,11 @@
     "show",
     "hide",
 
+    // Experimental fieldset attribute for the menu elements proposal.
+    // https://open-ui.org/components/menu.explainer/.
+    "single",
+    "multiple",
+
     // hidden=until-found attribute
     // https://html.spec.whatwg.org/#the-hidden-attribute
     "until-found",
