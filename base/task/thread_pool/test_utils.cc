@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
@@ -19,6 +18,7 @@
 #include "base/threading/scoped_blocking_call_internal.h"
 #include "base/threading/thread_restrictions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace base::internal::test {
 
@@ -302,7 +302,7 @@ size_t MockJobTask::GetMaxConcurrency(size_t /* worker_count */) const {
 
 void MockJobTask::Run(JobDelegate* delegate) {
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](OnceClosure& closure) { std::move(closure).Run(); },
           [delegate](const RepeatingCallback<void(JobDelegate*)>& callback) {
             callback.Run(delegate);

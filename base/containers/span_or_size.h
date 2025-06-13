@@ -10,8 +10,8 @@
 #include <variant>
 
 #include "base/containers/span.h"
-#include "base/functional/overloaded.h"
 #include "base/types/optional_ref.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace base {
 
@@ -33,7 +33,7 @@ class SpanOrSize {
   SpanOrSize& operator=(SpanOrSize&&) = default;
 
   constexpr T* ptr_or_null_if_no_data() const {
-    return std::visit(Overloaded{
+    return std::visit(absl::Overload{
                           [](const base::span<T>& span) { return span.data(); },
                           [](size_t size) -> T* { return nullptr; },
                       },
@@ -41,7 +41,7 @@ class SpanOrSize {
   }
 
   constexpr size_t size() const {
-    return std::visit(Overloaded{
+    return std::visit(absl::Overload{
                           [](const base::span<T>& span) { return span.size(); },
                           [](size_t size) { return size; },
                       },
@@ -50,7 +50,7 @@ class SpanOrSize {
 
   constexpr optional_ref<const base::span<T>> span() const {
     return std::visit(
-        Overloaded{
+        absl::Overload{
             [](const base::span<T>& span) {
               return optional_ref<const base::span<T>>(span);
             },
