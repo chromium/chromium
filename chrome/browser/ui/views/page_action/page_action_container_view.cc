@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -42,9 +43,16 @@ PageActionContainerView::PageActionContainerView(
   int initial_index = 0;
   for (actions::ActionItem* action_item : action_items) {
     const auto action_item_id = action_item->GetActionId().value();
+    const auto& properties = properties_provider.GetProperties(action_item_id);
+
+    // When the page action migration is not enabled, the view should not be
+    // created to avoid conflicting with the old framework version identifier.
+    if (!IsPageActionMigrated(properties.type)) {
+      continue;
+    }
+
     PageActionView* view = AddChildView(std::make_unique<PageActionView>(
-        action_item, params,
-        properties_provider.GetProperties(action_item_id).element_identifier));
+        action_item, params, properties.element_identifier));
 
     page_action_views_[action_item_id] = view;
     chip_state_changed_callbacks_.push_back(

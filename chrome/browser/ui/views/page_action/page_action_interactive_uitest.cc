@@ -118,10 +118,22 @@ class PageActionUiTestBase {
     // TODO(crbug.com/424806660): These tests should not be reliant on
     // kLensOverlayOmniboxEntryPoint being enabled, but disabling it causes them
     // to fail.
-    feature_list_.InitWithFeatures(
-        {features::kPageActionsMigration,
-         lens::features::kLensOverlayOmniboxEntryPoint},
-        {lens::features::kLensOverlay});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {
+                features::kPageActionsMigration,
+                {
+                    {features::kPageActionsMigrationZoom.name, "true"},
+                    {features::kPageActionsMigrationTranslate.name, "true"},
+                    {features::kPageActionsMigrationMemorySaver.name, "true"},
+                },
+            },
+            {lens::features::kLensOverlayOmniboxEntryPoint, {}},
+        },
+        /*disabled_features=*/{
+            lens::features::kLensOverlay,
+        });
   }
 
   virtual ~PageActionUiTestBase() = default;
@@ -613,13 +625,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 class PageActionMetricsInteractiveUiTest : public InteractiveBrowserTest,
                                            public PageActionUiTestBase {
  public:
-  PageActionMetricsInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageActionsMigration,
-        {
-            {features::kPageActionsMigrationZoom.name, "true"},
-        });
-  }
+  PageActionMetricsInteractiveUiTest() = default;
 
   PageActionMetricsInteractiveUiTest(
       const PageActionMetricsInteractiveUiTest&) = delete;
@@ -642,9 +648,6 @@ class PageActionMetricsInteractiveUiTest : public InteractiveBrowserTest,
   auto DoZoomOut() {
     return Do([&]() { SetZoomLevel(content::PAGE_ZOOM_OUT); });
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest, ClickHistogramLogs) {

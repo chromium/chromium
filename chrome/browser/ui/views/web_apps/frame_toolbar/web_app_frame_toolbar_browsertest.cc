@@ -20,6 +20,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/download/download_display.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -49,6 +51,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -239,12 +242,23 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
             helper()->web_app_frame_toolbar());
 
   std::vector<const views::View*> page_action_views = {};
+  const auto& properties_provider =
+      page_actions::PageActionPropertiesProvider();
   for (auto action_id : helper()
                             ->app_browser()
                             ->GetAppBrowserController()
                             ->GetTitleBarPageActions()) {
     auto* page_action_view =
         helper()->web_app_frame_toolbar()->GetPageActionView(action_id);
+
+    const auto& properties = properties_provider.GetProperties(action_id);
+
+    // When the page action migration is not enabled, the view should not be
+    // created to avoid conflicting with the old framework version identifier.
+    if (!IsPageActionMigrated(properties.type)) {
+      continue;
+    }
+
     ASSERT_NE(nullptr, page_action_view);
     EXPECT_EQ(page_action_view->parent(),
               toolbar_right_container->page_action_container());

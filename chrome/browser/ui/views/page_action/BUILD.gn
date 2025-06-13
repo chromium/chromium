@@ -97,6 +97,7 @@ source_set("unit_tests") {
   deps = [
     ":page_action",
     ":test_support",
+    "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
     "//ui/events:test_support",

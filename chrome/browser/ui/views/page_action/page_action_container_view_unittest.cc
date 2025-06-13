@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/page_action/test_support/test_page_action_properties_provider.h"
@@ -17,12 +20,13 @@ namespace {
 constexpr int kDefaultBetweenIconSpacing = 8;
 constexpr int kDefaultIconSize = 16;
 
-static constexpr actions::ActionId kTestPageActionId = 0;
+static constexpr actions::ActionId kTestPageActionId = kActionZoomNormal;
 static const PageActionPropertiesMap kTestProperties = PageActionPropertiesMap{
     {
         kTestPageActionId,
         PageActionProperties{
-            .histogram_name = "Test",
+            .histogram_name = "TestZoom",
+            .type = PageActionIconType::kZoom,
         },
     },
 };
@@ -41,7 +45,12 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
 
 class PageActionContainerViewTest : public views::ViewsTestBase {
  public:
-  PageActionContainerViewTest() = default;
+  PageActionContainerViewTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageActionsMigration,
+        {{features::kPageActionsMigrationZoom.name, "true"}});
+  }
+
   ~PageActionContainerViewTest() override = default;
 
   void TearDown() override {
@@ -57,6 +66,7 @@ class PageActionContainerViewTest : public views::ViewsTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   MockIconLabelViewDelegate icon_label_view_delegate_;
 };
 
@@ -74,12 +84,14 @@ TEST_F(PageActionContainerViewTest, GetPageActionView) {
       TestPageActionPropertiesProvider(kTestProperties), DefaultViewParams());
 
   PageActionView* page_action_view =
-      page_action_container->GetPageActionView(0);
+      page_action_container->GetPageActionView(kTestPageActionId);
   ASSERT_TRUE(!!page_action_view);
-  EXPECT_EQ(0, page_action_view->GetActionId());
+  EXPECT_EQ(kTestPageActionId, page_action_view->GetActionId());
 
   // Returns null if the action ID is not found.
-  EXPECT_EQ(nullptr, page_action_container->GetPageActionView(1));
+  static constexpr actions::ActionId kNonExistantPageActionId = 1;
+  EXPECT_EQ(nullptr,
+            page_action_container->GetPageActionView(kNonExistantPageActionId));
 }
 
 }  // namespace
