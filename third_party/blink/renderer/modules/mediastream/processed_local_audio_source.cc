@@ -524,6 +524,12 @@ void ProcessedLocalAudioSource::OnCaptureProcessorCreated(
 void ProcessedLocalAudioSource::ChangeSourceImpl(
     const MediaStreamDevice& new_device) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  // Source changes are not supported for microphone audio capture.
+  CHECK_NE(new_device.type,
+           mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+  CHECK_NE(device().type, mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+
   WebRtcLogMessage("ProcessedLocalAudioSource::ChangeSourceImpl(new_device = " +
                    new_device.id + ")");
   EnsureSourceIsStopped();
