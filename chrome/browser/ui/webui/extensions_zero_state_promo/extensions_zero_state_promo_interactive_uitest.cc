@@ -35,14 +35,9 @@ class ExtensionsZeroStatePromoTestBase : public InteractiveFeaturePromoTest {
                 feature_engagement::kIPHExtensionsZeroStatePromoVariantParam
                     .GetName(iphVariant)}}}})) {}
 
-  void PreRunTestOnMainThread() override {
-    // Block zero state promo IPH during browser launch, to prevent a race
-    // condition where the IPH steals focus from the browser, and causes the
-    // PreRunTestOnMainThread method to time out waiting for the browser to
-    // come to focus.
-    auto auto_reset = ExtensionsToolbarContainerViewController::
-        BlockZeroStatePromoForTesting();
-    InProcessBrowserTest::PreRunTestOnMainThread();
+  void SetUpOnMainThread() override {
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    ExtensionsToolbarContainerViewController::WakeZeroStatePromoForTesting();
   }
 
   auto CheckZeroStatePromoClosedReason(

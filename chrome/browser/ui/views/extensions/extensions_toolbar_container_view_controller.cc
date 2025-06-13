@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,15 +20,21 @@
 #include "extensions/common/extension_features.h"
 
 namespace {
-// If true, block the Extensions Zero State Promo IPH from launching, to
-// avoid a race condition in test environments.
-bool g_block_zero_state_promo_for_testing = false;
+// Only attempt to launch the Extensions Zero State Promo IPH after this
+// timestamp, in order to reduce the cadence with which the this IPH calls
+// the User Educations system.
+std::optional<base::TimeTicks> g_zero_state_promo_next_show_time_opt =
+    std::nullopt;
+
+// The interval of time to wait for between attempting to launch the Zero
+// State Promo.
+constexpr base::TimeDelta kZeroStatePromoIntervalBetweenLaunchAttempt =
+    base::Minutes(2);
 }  // namespace
 
 // static
-base::AutoReset<bool>
-ExtensionsToolbarContainerViewController::BlockZeroStatePromoForTesting() {
-  return base::AutoReset<bool>(&g_block_zero_state_promo_for_testing, true);
+void ExtensionsToolbarContainerViewController::WakeZeroStatePromoForTesting() {
+  g_zero_state_promo_next_show_time_opt = base::TimeTicks::Now();
 }
 
 ExtensionsToolbarContainerViewController::
@@ -95,12 +102,15 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
 
   // The Extensions Zero State promo prompts users without extensions to
   // explore the Chrome Web Store.
-  //
-  // TODO(crbug.com/417543907): find a less busy method to trigger the zero
-  // state promo IPH.
-  if (!g_block_zero_state_promo_for_testing &&
-      !extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(
-          browser_->profile())) {
+  if (!g_zero_state_promo_next_show_time_opt.has_value()) {
+    g_zero_state_promo_next_show_time_opt =
+        base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
+  } else if (base::TimeTicks::Now() >=
+                 g_zero_state_promo_next_show_time_opt.value() &&
+             !extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(
+                 browser_->profile())) {
+    g_zero_state_promo_next_show_time_opt =
+        base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
     browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHExtensionsZeroStatePromoFeature);
   }
