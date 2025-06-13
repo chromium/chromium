@@ -6,6 +6,7 @@ import '../common/learn_mode_bridge.js';
 
 import {Features} from '/common/features.js';
 import {Flags} from '/common/flags.js';
+import {KeepAlive} from '/common/keep_alive.js';
 import {LocalStorage} from '/common/local_storage.js';
 import {InstanceChecker} from '/common/mv3/instance_checker.js';
 
@@ -92,6 +93,7 @@ export class Background extends ChromeVoxState {
 
   static async init(): Promise<void> {
     // Pre-initialization.
+    KeepAlive.init();
     await this.maybeCreateOffscreenDocument_();
     await Features.init();
     await Flags.init();
