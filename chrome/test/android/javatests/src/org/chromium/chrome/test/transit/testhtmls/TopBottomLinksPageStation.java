@@ -7,6 +7,7 @@ package org.chromium.chrome.test.transit.testhtmls;
 import android.util.Pair;
 
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.context_menu.LinkContextMenuFacility;
 import org.chromium.chrome.test.transit.page.PageStation;
@@ -59,6 +60,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
         public BottomFacility scrollToBottom() {
             return mHostStation
                     .scrollPageDownWithGestureTo()
+                    .withOptions(Transition.retryOption())
                     .exitFacilityAnd(this)
                     .enterFacility(new BottomFacility());
         }
@@ -84,6 +86,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
         public TopFacility scrollToTop() {
             return mHostStation
                     .scrollPageUpWithGestureTo()
+                    .withOptions(Transition.retryOption())
                     .exitFacilityAnd(this)
                     .enterFacility(new TopFacility());
         }
