@@ -97,6 +97,14 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     parent_window_ = widget->GetNativeWindow();
   }
 
+  void TearDown() override {
+    if (bubble_delegate_) {
+      bubble_delegate_->CloseBubble(::sharesheet::SharesheetResult::kCancel);
+    }
+    ASSERT_FALSE(sharesheet_widget_);
+    ChromeAshTestBase::TearDown();
+  }
+
   void ShowAndVerifyBubble(apps::IntentPtr intent,
                            ::sharesheet::LaunchSource source,
                            int num_actions_to_add = 0) {
@@ -105,7 +113,10 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     sharesheet_service->ShowBubbleForTesting(
         parent_window_, std::move(intent), source,
         /*delivered_callback=*/base::DoNothing(),
-        /*close_callback=*/base::DoNothing(), num_actions_to_add);
+        /*close_callback=*/
+        base::BindOnce(&SharesheetBubbleViewTest::OnClose,
+                       base::Unretained(this)),
+        num_actions_to_add);
     bubble_delegate_ = static_cast<SharesheetBubbleViewDelegate*>(
         sharesheet_service->GetUiDelegateForTesting(parent_window_));
     EXPECT_NE(bubble_delegate_, nullptr);
@@ -121,25 +132,25 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
 
   void CloseBubble() {
     bubble_delegate_->CloseBubble(::sharesheet::SharesheetResult::kCancel);
-    // |bubble_delegate_| and |sharesheet_bubble_view_| destruct on close.
-    bubble_delegate_ = nullptr;
-    sharesheet_bubble_view_ = nullptr;
-
-    ASSERT_FALSE(IsSharesheetVisible());
+    ASSERT_FALSE(sharesheet_widget_);
   }
 
   void CloseBubbleWithEscKey() {
     GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
-    // |bubble_delegate_| and |sharesheet_bubble_view_| destruct on close.
-    bubble_delegate_ = nullptr;
-    sharesheet_bubble_view_ = nullptr;
-
-    ASSERT_FALSE(IsSharesheetVisible());
+    ASSERT_FALSE(sharesheet_widget_);
   }
 
-  bool IsSharesheetVisible() { return sharesheet_widget_->IsVisible(); }
+  bool IsSharesheetVisible() {
+    return sharesheet_widget_ && sharesheet_widget_->IsVisible();
+  }
 
   views::Widget* sharesheet_widget() { return sharesheet_widget_; }
+
+  void OnClose(views::Widget::ClosedReason reason) {
+    sharesheet_bubble_view_ = nullptr;
+    sharesheet_widget_ = nullptr;
+    bubble_delegate_ = nullptr;
+  }
 
   SharesheetBubbleView* sharesheet_bubble_view() {
     return sharesheet_bubble_view_;
@@ -162,9 +173,9 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
  private:
   gfx::NativeWindow parent_window_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<SharesheetBubbleViewDelegate, DanglingUntriaged> bubble_delegate_;
-  raw_ptr<SharesheetBubbleView, DanglingUntriaged> sharesheet_bubble_view_;
-  raw_ptr<views::Widget, DanglingUntriaged> sharesheet_widget_;
+  raw_ptr<SharesheetBubbleViewDelegate> bubble_delegate_;
+  raw_ptr<SharesheetBubbleView> sharesheet_bubble_view_;
+  raw_ptr<views::Widget> sharesheet_widget_;
 };
 
 TEST_F(SharesheetBubbleViewTest, BubbleDoesOpenAndClose) {
