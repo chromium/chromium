@@ -121,6 +121,7 @@ void DigitalIdentityMultiStepDialogDelegate::Update(
   }
 
   SetTitle(dialog_title);
+  SetShowCloseButton(false);
   SetCancelCallbackWithClose(base::BindRepeating(
       &DigitalIdentityMultiStepDialogDelegate::OnDialogCanceled,
       base::Unretained(this)));
