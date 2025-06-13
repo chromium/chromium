@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
@@ -20,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator controller for the virtual card number (VCN) enrollment bottom sheet. */
+@NullMarked
 /*package*/ class AutofillVcnEnrollBottomSheetCoordinator {
     /** Callbacks from the VCN enrollment bottom sheet. */
     interface Delegate {
