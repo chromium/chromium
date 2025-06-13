@@ -50,6 +50,17 @@ def IsEnumTypeNameSupported(type_name: str) -> bool:
             in PARSER_KIND_FIELDWISE_ENUM_ALLOWLIST)
 
 
+def EnsureEnumAllowlistIsValid(descriptors: DescriptorDb):
+    try:
+        for enum_name in PARSER_KIND_FIELDWISE_ENUM_ALLOWLIST:
+            descriptors.GetEnumDescriptors(
+                ['.optimization_guide.proto.' + enum_name])
+    except KeyError:
+        raise RuntimeError(
+            f'enum type {enum_name} was not found among the known enums'
+        ) from None
+
+
 class Error(Exception):
     pass
 
@@ -267,12 +278,9 @@ class DescriptorDb:
     def GetMessages(self, message_types: set[str]) -> list[Message]:
         return [self._known_messages[t] for t in sorted(message_types)]
 
-    def GetEnumDescriptor(self, enum_type: str) -> EnumType:
-        return self._known_enums[enum_type]
-
     def GetEnumDescriptors(self,
                            enum_types: Iterable[str]) -> Iterable[EnumType]:
-        return [self.GetEnumDescriptor(t) for t in sorted(enum_types)]
+        return [self._known_enums[t] for t in sorted(enum_types)]
 
     def GetAllTransitiveDeps(self, message_types: set[str]) -> list[Message]:
         seen = message_types
@@ -1007,6 +1015,7 @@ def main(argv):
         out_cc.close()
 
     if options.enum_templates_h:
+        EnsureEnumAllowlistIsValid(descriptors)
         with open(options.enum_templates_h, 'w') as out:
             GenerateEnumDescriptors(out, fds, descriptors)
 
