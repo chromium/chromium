@@ -4,17 +4,11 @@
 
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 
-#include <memory>
-
-#include "base/memory/ptr_util.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "v8/include/v8-inspector-protocol.h"
 
 namespace blink {
