@@ -63,8 +63,6 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
 
   void Stop() override;
 
-  CanvasResourceProvider* PaintRenderingResultsToCanvas(
-      SourceDrawingBuffer) override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;

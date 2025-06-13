@@ -3530,21 +3530,12 @@ void WebGLRenderingContextWebGPUBase::PageVisibilityChanged() {
   NOTIMPLEMENTED();
 }
 
-CanvasResourceProvider*
-WebGLRenderingContextWebGPUBase::PaintRenderingResultsToCanvas(
-    SourceDrawingBuffer) {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 scoped_refptr<StaticBitmapImage>
 WebGLRenderingContextWebGPUBase::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
-  CanvasResourceProvider* provider =
-      PaintRenderingResultsToCanvas(source_buffer);
-
-  return provider ? provider->Snapshot(reason) : nullptr;
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 bool WebGLRenderingContextWebGPUBase::CopyRenderingResultsToVideoFrame(

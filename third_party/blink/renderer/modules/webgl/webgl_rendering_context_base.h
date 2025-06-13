@@ -713,8 +713,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool IsComposited() const override { return true; }
   bool UsingSwapChain() const override;
   void PageVisibilityChanged() override;
-  CanvasResourceProvider* PaintRenderingResultsToCanvas(
-      SourceDrawingBuffer) override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
@@ -1959,6 +1957,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                 Platform::ContextType context_type,
                                 Platform::GraphicsInfo* graphics_info);
 
+  CanvasResourceProvider* PaintRenderingResultsToCanvas(SourceDrawingBuffer);
   CanvasResourceProvider* PaintRenderingResultsToCanvasInternal(
       SourceDrawingBuffer source_buffer,
       bool& resource_provider_was_updated);

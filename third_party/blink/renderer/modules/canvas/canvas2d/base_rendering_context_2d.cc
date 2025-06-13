@@ -793,18 +793,11 @@ void BaseRenderingContext2D::Reset() {
   ResetInternal();
 }
 
-CanvasResourceProvider* BaseRenderingContext2D::PaintRenderingResultsToCanvas(
-    SourceDrawingBuffer) {
-  return Host()->ResourceProvider();
-}
-
 scoped_refptr<StaticBitmapImage>
 BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
-  CanvasResourceProvider* provider =
-      PaintRenderingResultsToCanvas(source_buffer);
-
+  CanvasResourceProvider* provider = Host()->ResourceProvider();
   return provider ? provider->Snapshot(reason) : nullptr;
 }
 

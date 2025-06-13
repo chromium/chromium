@@ -71,7 +71,6 @@ class VideoFrame;
 namespace blink {
 
 class CanvasElementHitTestRegion;
-class CanvasResourceProvider;
 class ComputedStyle;
 class Document;
 class Element;
@@ -344,11 +343,6 @@ class CORE_EXPORT CanvasRenderingContext
   }
 
   bool did_print_in_current_task() const { return did_print_in_current_task_; }
-
-  // Returns a CanvasResourceProvider containing the current content, or nullptr
-  // if it was not possible to obtain that content.
-  virtual CanvasResourceProvider* PaintRenderingResultsToCanvas(
-      SourceDrawingBuffer) = 0;
 
  protected:
   CanvasRenderingContext(CanvasRenderingContextHost*,

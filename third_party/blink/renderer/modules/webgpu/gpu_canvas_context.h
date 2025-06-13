@@ -68,8 +68,6 @@ class GPUCanvasContext : public ScriptWrappable,
   // Produces a snapshot of the current contents of the swap chain if possible
   // or else a snapshot of the most-recently presented contents.
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
-  CanvasResourceProvider* PaintRenderingResultsToCanvas(
-      SourceDrawingBuffer) final;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
@@ -115,6 +113,7 @@ class GPUCanvasContext : public ScriptWrappable,
   bool IsGPUDeviceDestroyed() override;
 
  private:
+  CanvasResourceProvider* PaintRenderingResultsToCanvas(SourceDrawingBuffer);
   scoped_refptr<WebGPUMailboxTexture> GetFrontBufferMailboxTexture();
   void DetachSwapBuffers();
   void ReplaceDrawingBuffer(bool destroy_swap_buffers);
