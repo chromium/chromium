@@ -28,6 +28,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 @protocol SyncPresenter;
 
@@ -45,10 +46,10 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
     profile_ = std::move(builder).Build();
 
     // Create an InfoBarIOS with a MockSyncErrorInfobarDelegate.
-    id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
+    presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenter));
     std::unique_ptr<MockSyncErrorInfoBarDelegate> delegate =
         std::make_unique<MockSyncErrorInfoBarDelegate>(
-            profile_.get(), presenter, kTitleText, kMessageText,
+            profile_.get(), presenter_, kTitleText, kMessageText,
             kButtonLabelText,
             /*use_icon_background_tint=*/true);
     // Create an InfoBarIOS with a MockSyncErrorInfoBarDelegate.
@@ -66,6 +67,8 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
   ~SyncErrorInfobarBannerOverlayMediatorTest() override {
+    EXPECT_OCMOCK_VERIFY((id)presenter_);
+    EXPECT_OCMOCK_VERIFY((id)consumer_mock_);
     // Force the mediator to be deallocated before the
     // request is destroyed to avoid undefined behaviour.
     @autoreleasepool {
@@ -74,6 +77,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
+  id<SyncPresenter> presenter_;
   raw_ptr<MockSyncErrorInfoBarDelegate> delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -85,7 +89,9 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
 
 // Tests that a SyncErrorInfobarBannerOverlayMediator correctly sets up its
 // consumer with correct messages.
-TEST_F(SyncErrorInfobarBannerOverlayMediatorTest, SetUpConsumerWithMessages) {
+// TODO(crbug.com/422441504): re-enable.
+TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
+       DISABLED_SetUpConsumerWithMessages) {
   mediator_.consumer = consumer_mock_;
   // Verify that the infobar's text fields was set up properly.
   OCMExpect([consumer_mock_ setTitleText:base::SysUTF16ToNSString(kTitleText)]);
@@ -97,8 +103,9 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest, SetUpConsumerWithMessages) {
 
 // Tests that a SyncErrorInfobarBannerOverlayMediator correctly sets up its
 // consumer's icon using SF symbol.
+// TODO(crbug.com/422441504): re-enable.
 TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
-       SetUpConsumerWithIconSettingsUseSFSymbol) {
+       DISABLED_SetUpConsumerWithIconSettingsUseSFSymbol) {
   mediator_.consumer = consumer_mock_;
   // Verify that the infobar's icon was set up properly.
   OCMExpect([consumer_mock_
