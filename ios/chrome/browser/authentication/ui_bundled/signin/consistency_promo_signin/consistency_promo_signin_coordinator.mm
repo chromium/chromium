@@ -430,12 +430,12 @@
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   self.accountChooserCoordinator = [[ConsistencyAccountChooserCoordinator alloc]
       initWithBaseViewController:self.navigationController
-                         browser:self.browser];
+                         browser:self.browser
+                selectedIdentity:self.defaultAccountCoordinator
+                                     .selectedIdentity];
   self.accountChooserCoordinator.delegate = self;
   self.accountChooserCoordinator.layoutDelegate = self;
-  [self.accountChooserCoordinator
-      startWithSelectedIdentity:self.defaultAccountCoordinator
-                                    .selectedIdentity];
+  [self.accountChooserCoordinator start];
   [self.navigationController
       pushViewController:self.accountChooserCoordinator.viewController
                 animated:YES];

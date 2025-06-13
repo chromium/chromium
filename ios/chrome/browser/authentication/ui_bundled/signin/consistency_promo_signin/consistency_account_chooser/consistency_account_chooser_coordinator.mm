@@ -29,14 +29,27 @@
 
 @end
 
-@implementation ConsistencyAccountChooserCoordinator
+@implementation ConsistencyAccountChooserCoordinator {
+  id<SystemIdentity> _selectedIdentity;
+}
 
-- (void)startWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                          selectedIdentity:
+                              (id<SystemIdentity>)selectedIdentity {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _selectedIdentity = selectedIdentity;
+  }
+  return self;
+}
+
+- (void)start {
   [super start];
   base::RecordAction(
       base::UserMetricsAction("Signin_BottomSheet_IdentityChooser_Opened"));
   self.mediator = [[ConsistencyAccountChooserMediator alloc]
-      initWithSelectedIdentity:selectedIdentity
+      initWithSelectedIdentity:_selectedIdentity
                identityManager:IdentityManagerFactory::GetForProfile(
                                    self.profile)
          accountManagerService:ChromeAccountManagerServiceFactory::

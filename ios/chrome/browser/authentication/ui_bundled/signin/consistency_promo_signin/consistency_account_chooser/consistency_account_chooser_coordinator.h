@@ -35,9 +35,13 @@
     delegate;
 @property(nonatomic, weak) id<ConsistencyLayoutDelegate> layoutDelegate;
 
-- (void)start NS_UNAVAILABLE;
-// Starts the coordinator with the selected identity.
-- (void)startWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                          selectedIdentity:(id<SystemIdentity>)selectedIdentity
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 
