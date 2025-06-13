@@ -27,7 +27,7 @@ class AutofillAiDelegate {
 
   // Generates AutofillAi suggestions.
   virtual std::vector<autofill::Suggestion> GetSuggestions(
-      autofill::FormGlobalId form_global_id,
+      const FormStructure& form,
       const FormFieldData& trigger_field) = 0;
 
   // Attempts to display an import bubble for `form` if Autofill AI is
@@ -43,7 +43,7 @@ class AutofillAiDelegate {
   // - `field` has AutofillAI predictions.
   // - If `form` is submitted (with appropriate values), there is at least one
   //   entity that meets the criteria for import.
-  virtual bool ShouldDisplayIph(autofill::FormGlobalId form,
+  virtual bool ShouldDisplayIph(const FormStructure& form,
                                 autofill::FieldGlobalId field) const = 0;
 
   // TODO(crbug.com/389629573): The "On*" methods below are used only for

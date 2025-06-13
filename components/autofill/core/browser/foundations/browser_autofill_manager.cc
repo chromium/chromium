@@ -1324,11 +1324,11 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
           .contains(field.global_id())) {
     std::move(callback).Run(
         /*show_suggestions=*/true,
-        delegate->GetSuggestions(form.global_id(), field),
+        delegate->GetSuggestions(*form_structure, field),
         /*ranking_context=*/std::nullopt);
     return;
-  } else if (suggestions.empty() && delegate &&
-             delegate->ShouldDisplayIph(form.global_id(), field.global_id()) &&
+  } else if (suggestions.empty() && delegate && form_structure &&
+             delegate->ShouldDisplayIph(*form_structure, field.global_id()) &&
              client().ShowAutofillFieldIphForFeature(
                  field, AutofillClient::IphFeature::kAutofillAi)) {
     return;

@@ -24,10 +24,6 @@ class MockAutofillAiClient : public AutofillAiClient {
               GetEntityDataManager,
               (),
               (override));
-  MOCK_METHOD(autofill::FormStructure*,
-              GetCachedFormStructure,
-              (const autofill::FormGlobalId& form_id),
-              (override));
   MOCK_METHOD(optimization_guide::ModelQualityLogsUploaderService*,
               GetMqlsUploadService,
               (),

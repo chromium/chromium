@@ -69,12 +69,6 @@ class AutofillAiClient {
   // Can be `nullptr` if `features::kAutofillAiWithDataSchema` is disabled.
   virtual autofill::EntityDataManager* GetEntityDataManager() = 0;
 
-  // Returns a pointer to a `FormStructure` for the corresponding `form_id`
-  // from the Autofill cache. Can be a `nullptr` when the structure was not
-  // found or if the driver is not available.
-  virtual autofill::FormStructure* GetCachedFormStructure(
-      const autofill::FormGlobalId& form_id) = 0;
-
   // Returns the service used in order to log metrics into MQLS.
   virtual optimization_guide::ModelQualityLogsUploaderService*
   GetMqlsUploadService() = 0;

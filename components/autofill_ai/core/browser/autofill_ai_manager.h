@@ -45,11 +45,11 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
 
   // autofill::AutofillAiDelegate:
   std::vector<autofill::Suggestion> GetSuggestions(
-      autofill::FormGlobalId form_global_id,
+      const autofill::FormStructure& form,
       const autofill::FormFieldData& trigger_field) override;
   bool OnFormSubmitted(const autofill::FormStructure& form,
                        ukm::SourceId ukm_source_id) override;
-  bool ShouldDisplayIph(autofill::FormGlobalId form,
+  bool ShouldDisplayIph(const autofill::FormStructure& form,
                         autofill::FieldGlobalId field) const override;
   void OnSuggestionsShown(const autofill::FormStructure& form,
                           const autofill::AutofillField& field,

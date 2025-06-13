@@ -87,17 +87,6 @@ void ChromeAutofillAiClient::ShowSaveOrUpdateBubble(
   std::move(prompt_acceptance_callback).Run(EntitySaveOrUpdatePromptResult());
 }
 
-autofill::FormStructure* ChromeAutofillAiClient::GetCachedFormStructure(
-    const autofill::FormGlobalId& form_id) {
-  autofill::ContentAutofillDriver* driver =
-      autofill::ContentAutofillDriver::GetForRenderFrameHost(
-          web_contents_->GetPrimaryMainFrame());
-  if (!driver) {
-    return nullptr;
-  }
-  return driver->GetAutofillManager().FindCachedFormById(form_id);
-}
-
 optimization_guide::ModelQualityLogsUploaderService*
 ChromeAutofillAiClient::GetMqlsUploadService() {
   Profile* profile =

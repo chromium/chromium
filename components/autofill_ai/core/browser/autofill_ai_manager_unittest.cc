@@ -214,11 +214,9 @@ TEST_F(AutofillAiManagerTest,
   FormStructure form_structure = FormStructure(form);
   AddPredictionsToFormStructure(
       form_structure, {{autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG}});
-  ON_CALL(client(), GetCachedFormStructure)
-      .WillByDefault(Return(&form_structure));
 
   AddOrUpdateEntityInstance(GetPassportEntityInstance());
-  EXPECT_THAT(manager().GetSuggestions(form.global_id(), form.fields().front()),
+  EXPECT_THAT(manager().GetSuggestions(form_structure, form.fields().front()),
               ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
                           HasType(kManageAutofillAi)));
 }
@@ -231,13 +229,11 @@ TEST_F(AutofillAiManagerTest, ShouldDisplayIph) {
   autofill::FormData form = autofill::test::GetFormData(form_description);
   FormStructure form_structure = FormStructure(form);
   AddPredictionsToFormStructure(form_structure, {{autofill::PASSPORT_NUMBER}});
-  ON_CALL(client(), GetCachedFormStructure)
-      .WillByDefault(Return(&form_structure));
   AddAutofillProfile();
   autofill::SetAutofillAiOptInStatus(autofill_client(), false);
 
-  EXPECT_TRUE(manager().ShouldDisplayIph(form.global_id(),
-                                         form.fields()[0].global_id()));
+  EXPECT_TRUE(
+      manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
 }
 
 // Tests that IPH should not be displayed if the user is opted into AutofillAI
@@ -247,13 +243,11 @@ TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphWhenOptedIn) {
   autofill::FormData form = autofill::test::GetFormData(form_description);
   FormStructure form_structure = FormStructure(form);
   AddPredictionsToFormStructure(form_structure, {{autofill::PASSPORT_NUMBER}});
-  ON_CALL(client(), GetCachedFormStructure)
-      .WillByDefault(Return(&form_structure));
   AddAutofillProfile();
   autofill::SetAutofillAiOptInStatus(autofill_client(), true);
 
-  EXPECT_FALSE(manager().ShouldDisplayIph(form.global_id(),
-                                          form.fields()[0].global_id()));
+  EXPECT_FALSE(
+      manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
 }
 
 // Tests that IPH should not be displayed if the page does not contain enough
@@ -265,13 +259,11 @@ TEST_F(AutofillAiManagerTest,
   FormStructure form_structure = FormStructure(form);
   AddPredictionsToFormStructure(form_structure,
                                 {{autofill::PASSPORT_ISSUE_DATE}});
-  ON_CALL(client(), GetCachedFormStructure)
-      .WillByDefault(Return(&form_structure));
   AddAutofillProfile();
   autofill::SetAutofillAiOptInStatus(autofill_client(), false);
 
-  EXPECT_FALSE(manager().ShouldDisplayIph(form.global_id(),
-                                          form.fields()[0].global_id()));
+  EXPECT_FALSE(
+      manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
 }
 
 // Tests that IPH is not displayed on a field without AutofillAI predictions.
@@ -282,13 +274,11 @@ TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphOnUnrelatedField) {
   AddPredictionsToFormStructure(
       form_structure,
       {{autofill::PASSPORT_NUMBER}, {autofill::PHONE_HOME_CITY_AND_NUMBER}});
-  ON_CALL(client(), GetCachedFormStructure)
-      .WillByDefault(Return(&form_structure));
   AddAutofillProfile();
   autofill::SetAutofillAiOptInStatus(autofill_client(), false);
 
-  EXPECT_FALSE(manager().ShouldDisplayIph(form.global_id(),
-                                          form.fields()[1].global_id()));
+  EXPECT_FALSE(
+      manager().ShouldDisplayIph(form_structure, form.fields()[1].global_id()));
 }
 
 class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {

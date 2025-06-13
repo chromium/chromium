@@ -366,7 +366,7 @@ void AutofillAiManager::HandleUpdatePromptResult(
 }
 
 std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
-    autofill::FormGlobalId form_global_id,
+    const FormStructure& form,
     const autofill::FormFieldData& trigger_field) {
   const AutofillClient& autofill_client = client_->GetAutofillClient();
   if (!autofill::MayPerformAutofillAiAction(
@@ -385,24 +385,18 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
     return {};
   }
 
-  FormStructure* form_structure =
-      client_->GetCachedFormStructure(form_global_id);
-  if (!form_structure) {
-    return {};
-  }
-
   const AutofillField* autofill_field =
-      form_structure->GetFieldById(trigger_field.global_id());
+      form.GetFieldById(trigger_field.global_id());
   if (!autofill_field ||
       !autofill_field->GetAutofillAiServerTypePredictions()) {
     return {};
   }
 
-  return autofill::CreateFillingSuggestions(
-      *form_structure, trigger_field, entities, autofill_client.GetAppLocale());
+  return autofill::CreateFillingSuggestions(form, trigger_field, entities,
+                                            autofill_client.GetAppLocale());
 }
 
-bool AutofillAiManager::ShouldDisplayIph(autofill::FormGlobalId form,
+bool AutofillAiManager::ShouldDisplayIph(const autofill::FormStructure& form,
                                          autofill::FieldGlobalId field) const {
   const autofill::AutofillClient& autofill_client =
       client_->GetAutofillClient();
@@ -422,14 +416,7 @@ bool AutofillAiManager::ShouldDisplayIph(autofill::FormGlobalId form,
       !paydm.HasMaskedBankAccounts()) {
     return false;
   }
-
-  const FormStructure* const form_structure =
-      client_->GetCachedFormStructure(form);
-  if (!form_structure) {
-    return false;
-  }
-  const AutofillField* const focused_field =
-      form_structure->GetFieldById(field);
+  const AutofillField* const focused_field = form.GetFieldById(field);
   if (!focused_field) {
     return false;
   }
@@ -442,8 +429,7 @@ bool AutofillAiManager::ShouldDisplayIph(autofill::FormGlobalId form,
   // Submitting the form should lead to an import if the user fills all of the
   // currently focused section's fields that are related to AutofillAI
   std::map<EntityType, DenseSet<AttributeType>> attributes_in_form;
-  for (const std::unique_ptr<AutofillField>& current_field :
-       form_structure->fields()) {
+  for (const std::unique_ptr<AutofillField>& current_field : form.fields()) {
     if (current_field->section() != focused_field->section()) {
       continue;
     }
