@@ -19,6 +19,7 @@
 #include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
@@ -70,8 +71,7 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
   if (!router)
     return;
 
-  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-      referrer_chain;
+  safe_browsing::ReferrerChain referrer_chain;
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
     referrer_chain =
         safe_browsing::GetOrIdentifyReferrerChainForEnterprise(*download);
@@ -101,8 +101,7 @@ void ReportDangerousDownloadWarningBypassed(
   if (!router)
     return;
 
-  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-      referrer_chain;
+  safe_browsing::ReferrerChain referrer_chain;
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
     referrer_chain =
         safe_browsing::GetOrIdentifyReferrerChainForEnterprise(*download);
@@ -138,8 +137,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   if (!profile)
     return;
 
-  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-      referrer_chain;
+  safe_browsing::ReferrerChain referrer_chain;
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
     referrer_chain =
         safe_browsing::GetOrIdentifyReferrerChainForEnterprise(*download);
