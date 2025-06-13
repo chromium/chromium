@@ -279,6 +279,9 @@ class CORE_EXPORT SVGElement : public Element {
 
   SMILTimeContainer* GetTimeContainer() const;
 
+  void SynchronizeAttributeInShadowInstances(const QualifiedName& name,
+                                             const AtomicString& value);
+
   Member<SVGElementRareData> svg_rare_data_;
   Member<SVGAnimatedString> class_name_;
 };

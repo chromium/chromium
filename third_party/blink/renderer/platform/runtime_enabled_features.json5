@@ -4756,6 +4756,10 @@
       status: "stable",
     },
     {
+      name: "SvgUseInstancesAttributeSync",
+      status: "stable"
+    },
+    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
     },
