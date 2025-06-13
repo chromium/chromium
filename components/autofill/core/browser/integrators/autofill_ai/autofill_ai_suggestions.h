@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_SUGGESTIONS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_SUGGESTIONS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -20,7 +21,7 @@ struct Suggestion;
 // Creates filling suggestions using `autofill::EntityInstance`s.
 std::vector<autofill::Suggestion> CreateFillingSuggestions(
     const FormStructure& form,
-    const FormFieldData& trigger_field,
+    const FormFieldData& trigger_field_data,
     base::span<const EntityInstance> entities,
     const std::string& app_locale);
 
