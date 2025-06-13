@@ -78,7 +78,7 @@ source_set("video") {
       "openh264_video_encoder.cc",
       "openh264_video_encoder.h",
     ]
-    deps += [ "//third_party/openh264:encoder" ]
+    public_deps += [ "//third_party/openh264:encoder" ]
   }
 
   if (is_apple) {
