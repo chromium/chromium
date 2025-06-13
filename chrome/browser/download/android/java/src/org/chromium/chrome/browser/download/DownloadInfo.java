@@ -248,23 +248,25 @@ public final class DownloadInfo {
 
     /**
      * Helper method to build a {@link DownloadInfo} from an {@link OfflineItem}.
-     * @param item    The {@link OfflineItem} to mimic.
+     *
+     * @param item The {@link OfflineItem} to mimic.
      * @param visuals The {@link OfflineItemVisuals} to mimic.
-     * @return        A {@link DownloadInfo} containing the relevant fields from {@code item}.
+     * @return A {@link DownloadInfo} containing the relevant fields from {@code item}.
      */
-    public static DownloadInfo fromOfflineItem(OfflineItem item, OfflineItemVisuals visuals) {
+    public static DownloadInfo fromOfflineItem(
+            OfflineItem item, @Nullable OfflineItemVisuals visuals) {
         return builderFromOfflineItem(item, visuals).build();
     }
 
     /**
      * Helper method to build a {@link DownloadInfo.Builder} from an {@link OfflineItem}.
-     * @param item    The {@link OfflineItem} to mimic.
+     *
+     * @param item The {@link OfflineItem} to mimic.
      * @param visuals The {@link OfflineItemVisuals} to mimic.
-     * @return        A {@link DownloadInfo.Builder} containing the relevant fields from
-     *                {@code item}.
+     * @return A {@link DownloadInfo.Builder} containing the relevant fields from {@code item}.
      */
     public static DownloadInfo.Builder builderFromOfflineItem(
-            OfflineItem item, OfflineItemVisuals visuals) {
+            OfflineItem item, @Nullable OfflineItemVisuals visuals) {
         int state;
         switch (item.state) {
             case OfflineItemState.COMPLETE:

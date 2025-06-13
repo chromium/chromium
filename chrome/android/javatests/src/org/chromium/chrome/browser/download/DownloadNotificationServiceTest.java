@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -251,6 +252,123 @@ public class DownloadNotificationServiceTest {
                 false,
                 PendingState.PENDING_NETWORK);
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
+        assertFalse(
+                mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
+                        notificationId1));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Download"})
+    public void testDownloadDangerousAndValidated() {
+        // Download is in-progress.
+        mDownloadNotificationService.notifyDownloadProgress(
+                ID1,
+                "dangerous.apk",
+                new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE),
+                100L,
+                1L,
+                1L,
+                mPrimaryOtrProfileId,
+                true,
+                false,
+                null,
+                null,
+                false);
+        mDownloadForegroundServiceManager.onServiceConnected();
+
+        assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
+        int notificationId1 = mDownloadNotificationService.getLastNotificationId();
+        assertTrue(
+                mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
+                        notificationId1));
+
+        // Download receives an update that it is dangerous.
+        mDownloadNotificationService.notifyDownloadDangerous(
+                ID1,
+                "dangerous.apk",
+                null,
+                false,
+                mPrimaryOtrProfileId,
+                true,
+                false,
+                DownloadDangerType.DANGEROUS_CONTENT);
+
+        assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
+        // The dangerous notification is not in the queue because it is not active.
+        assertFalse(
+                mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
+                        notificationId1));
+
+        // Download is validated and gets a progress update.
+        mDownloadNotificationService.notifyDownloadProgress(
+                ID1,
+                "dangerous.apk",
+                new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE),
+                100L,
+                1L,
+                1L,
+                mPrimaryOtrProfileId,
+                true,
+                false,
+                null,
+                null,
+                false);
+        assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
+        assertTrue(
+                mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
+                        notificationId1));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Download"})
+    public void testDownloadDangerousAndRemoved() {
+        // Download is in-progress.
+        mDownloadNotificationService.notifyDownloadProgress(
+                ID1,
+                "dangerous.apk",
+                new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE),
+                100L,
+                1L,
+                1L,
+                mPrimaryOtrProfileId,
+                true,
+                false,
+                null,
+                null,
+                false);
+        mDownloadForegroundServiceManager.onServiceConnected();
+
+        assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
+        int notificationId1 = mDownloadNotificationService.getLastNotificationId();
+        assertTrue(
+                mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
+                        notificationId1));
+
+        // Download receives an update that it is dangerous.
+        mDownloadNotificationService.notifyDownloadDangerous(
+                ID1,
+                "dangerous.apk",
+                null,
+                false,
+                mPrimaryOtrProfileId,
+                true,
+                false,
+                DownloadDangerType.DANGEROUS_CONTENT);
+
+        assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
+        // The dangerous notification is not in the queue because it is not active.
+        assertFalse(
+                mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
+                        notificationId1));
+
+        // Download is cancelled.
+        mDownloadNotificationService.notifyDownloadCanceled(ID1, false);
+
+        assertEquals(0, mDownloadNotificationService.getNotificationIds().size());
         assertFalse(
                 mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
                         notificationId1));

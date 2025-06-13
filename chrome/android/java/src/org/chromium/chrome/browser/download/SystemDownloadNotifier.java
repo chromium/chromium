@@ -9,7 +9,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.notifications.PendingNotificationTask;
 import org.chromium.components.browser_ui.notifications.ThrottlingNotificationScheduler;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
+import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.PendingState;
 
 import java.lang.annotation.Retention;
@@ -24,17 +26,18 @@ public class SystemDownloadNotifier implements DownloadNotifier {
     private DownloadNotificationService mDownloadNotificationService;
 
     /**
-     * Notification type for constructing the notification later on.
-     * TODO(qinmin): this is very ugly and it doesn't scale if we want a more general notification
-     * frame work. A better solution is to pass a notification builder or a notification into the
-     * queue, so we don't need the switch statement in updateNotification().
+     * Notification type for constructing the notification later on. TODO(qinmin): this is very ugly
+     * and it doesn't scale if we want a more general notification frame work. A better solution is
+     * to pass a notification builder or a notification into the queue, so we don't need the switch
+     * statement in updateNotification().
      */
     @IntDef({
         NotificationType.PROGRESS,
         NotificationType.PAUSED,
         NotificationType.SUCCEEDED,
         NotificationType.FAILED,
-        NotificationType.INTERRUPTED
+        NotificationType.INTERRUPTED,
+        NotificationType.DANGEROUS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface NotificationType {
@@ -43,6 +46,7 @@ public class SystemDownloadNotifier implements DownloadNotifier {
         int SUCCEEDED = 2;
         int FAILED = 3;
         int INTERRUPTED = 4;
+        int DANGEROUS = 5;
     }
 
     /** Information related to a notification. */
@@ -115,9 +119,16 @@ public class SystemDownloadNotifier implements DownloadNotifier {
     @Override
     public void notifyDownloadProgress(
             DownloadInfo info, long startTime, boolean canDownloadWhileMetered) {
+        boolean isDangerous =
+                DownloadUtils.shouldDisplayDownloadAsDangerous(
+                        info.getDangerType(), OfflineItemState.IN_PROGRESS);
         NotificationInfo notificationInfo =
                 new NotificationInfo(
-                        NotificationType.PROGRESS, info, PendingNotificationTask.Priority.LOW);
+                        isDangerous ? NotificationType.DANGEROUS : NotificationType.PROGRESS,
+                        info,
+                        isDangerous
+                                ? PendingNotificationTask.Priority.HIGH
+                                : PendingNotificationTask.Priority.LOW);
         notificationInfo.mStartTime = startTime;
         notificationInfo.mCanDownloadWhileMetered = canDownloadWhileMetered;
         addPendingNotification(notificationInfo);
@@ -257,6 +268,18 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                                 false,
                                 false,
                                 notificationInfo.mPendingState);
+                break;
+            case NotificationType.DANGEROUS:
+                getDownloadNotificationService()
+                        .notifyDownloadDangerous(
+                                info.getContentId(),
+                                info.getFileName(),
+                                info.getOriginalUrl(),
+                                info.getShouldPromoteOrigin(),
+                                info.getOtrProfileId(),
+                                notificationInfo.mCanDownloadWhileMetered,
+                                info.getIsTransient(),
+                                info.getDangerType());
                 break;
         }
     }

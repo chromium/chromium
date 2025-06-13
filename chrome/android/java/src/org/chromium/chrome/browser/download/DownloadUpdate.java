@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -42,6 +43,7 @@ public final class DownloadUpdate {
     private final long mTotalBytes;
     private final @FailState int mFailState;
     private final @PendingState int mPendingState;
+    private final @DownloadDangerType int mDangerType;
 
     private DownloadUpdate(Builder builder) {
         this.mContentId = builder.mContentId;
@@ -65,6 +67,7 @@ public final class DownloadUpdate {
         this.mTotalBytes = builder.mTotalBytes;
         this.mFailState = builder.mFailState;
         this.mPendingState = builder.mPendingState;
+        this.mDangerType = builder.mDangerType;
     }
 
     public ContentId getContentId() {
@@ -155,6 +158,10 @@ public final class DownloadUpdate {
         return mPendingState;
     }
 
+    public @DownloadDangerType int getDangerType() {
+        return mDangerType;
+    }
+
     /** Helper class for building the DownloadUpdate object. */
     public static class Builder {
         private ContentId mContentId;
@@ -178,6 +185,7 @@ public final class DownloadUpdate {
         private long mTotalBytes;
         private @FailState int mFailState;
         private @PendingState int mPendingState;
+        private @DownloadDangerType int mDangerType = DownloadDangerType.NOT_DANGEROUS;
 
         public Builder setContentId(ContentId contentId) {
             this.mContentId = contentId;
@@ -279,6 +287,11 @@ public final class DownloadUpdate {
 
         public Builder setPendingState(@PendingState int pendingState) {
             this.mPendingState = pendingState;
+            return this;
+        }
+
+        public Builder setDangerType(@DownloadDangerType int dangerType) {
+            this.mDangerType = dangerType;
             return this;
         }
 

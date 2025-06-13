@@ -29,7 +29,8 @@ public interface DownloadNotifier {
     void notifyDownloadFailed(DownloadInfo downloadInfo);
 
     /**
-     * Update the download progress notification.
+     * Update the download progress notification. Depending on the download's danger type, this can
+     * cause the download notification to reflect a Dangerous verdict from Safe Browsing.
      *
      * @param downloadInfo info about in progress download.
      * @param startTimeInMillis the startTime of the download, measured in milliseconds, between the
@@ -48,7 +49,8 @@ public interface DownloadNotifier {
     void notifyDownloadPaused(DownloadInfo downloadInfo);
 
     /**
-     * Update the download notification to paused.
+     * Update the download notification to interrupted.
+     *
      * @param downloadInfo info about in progress download.
      * @param isAutoResumable Whether the download can be auto resumed when network is available.
      * @param pendingState Reason download is pending

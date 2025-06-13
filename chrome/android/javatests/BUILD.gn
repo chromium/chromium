@@ -1721,7 +1721,10 @@ android_library("chrome_unit_test_java_org.chromium.chrome.browser.download") {
     "src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogTest.java",
   ]
 
-  deps = [ ":common_unit_test_deps_java" ]
+  deps = [
+    ":common_unit_test_deps_java",
+    "//components/download/public/common:public_java",
+  ]
 }
 
 android_library("chrome_unit_test_java_org.chromium.chrome.browser.share") {

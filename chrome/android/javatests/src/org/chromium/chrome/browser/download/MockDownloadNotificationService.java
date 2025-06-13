@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -172,6 +173,29 @@ public class MockDownloadNotificationService extends DownloadNotificationService
                                 shouldPromoteOrigin,
                                 otrProfileId,
                                 failState));
+    }
+
+    @Override
+    public void notifyDownloadDangerous(
+            ContentId id,
+            String fileName,
+            GURL originalUrl,
+            boolean shouldPromoteOrigin,
+            OtrProfileId otrProfileId,
+            boolean canDownloadWhileMetered,
+            boolean isTransient,
+            @DownloadDangerType int dangerType) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        MockDownloadNotificationService.super.notifyDownloadDangerous(
+                                id,
+                                fileName,
+                                originalUrl,
+                                shouldPromoteOrigin,
+                                otrProfileId,
+                                canDownloadWhileMetered,
+                                isTransient,
+                                dangerType));
     }
 
     @Override

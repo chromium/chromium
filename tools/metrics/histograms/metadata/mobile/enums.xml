@@ -563,6 +563,7 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="Report as safe notification button"/>
   <int value="39" label="Report warned notification as spam button."/>
   <int value="40" label="Report unwarned notification as spam button."/>
+  <int value="41" label="Download removed from history"/>
 </enum>
 
 <enum name="SystemNotificationType">

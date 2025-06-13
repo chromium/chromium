@@ -1202,6 +1202,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/download/android:file_provider_java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
+      "//components/download/public/common:public_java",
       "//components/offline_items_collection/core:core_java",
       "//content/public/android:content_main_dex_java",
       "//content/public/test/android:content_java_test_support",

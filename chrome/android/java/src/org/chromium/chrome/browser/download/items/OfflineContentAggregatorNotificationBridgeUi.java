@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadNotifier;
 import org.chromium.chrome.browser.download.DownloadServiceDelegate;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -193,6 +194,11 @@ public class OfflineContentAggregatorNotificationBridgeUi
 
     private boolean needsVisualsForUi(OfflineItem item) {
         if (item.ignoreVisuals) return false;
+        // A dangerous download doesn't need special visuals. They will always show the same
+        // "dangerous" iconography.
+        if (DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)) {
+            return false;
+        }
         switch (item.state) {
             case OfflineItemState.IN_PROGRESS:
             case OfflineItemState.PENDING:
@@ -209,6 +215,9 @@ public class OfflineContentAggregatorNotificationBridgeUi
 
     private boolean shouldCacheVisuals(OfflineItem item) {
         if (item.ignoreVisuals) return false;
+        if (DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)) {
+            return false;
+        }
         switch (item.state) {
             case OfflineItemState.IN_PROGRESS:
             case OfflineItemState.PENDING:

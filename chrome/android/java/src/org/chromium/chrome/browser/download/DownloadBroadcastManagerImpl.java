@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.A
 import static org.chromium.chrome.browser.download.DownloadNotificationService.ACTION_DOWNLOAD_RESUME;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_ID;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_NAMESPACE;
+import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_DANGER_TYPE;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.EXTRA_NOTIFICATION_ID;
 
@@ -36,9 +37,11 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.notifications.TrampolineActivityTracker;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
+import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -245,6 +248,12 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
         boolean isOffTheRecord =
                 IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false);
+        int dangerType =
+                IntentUtils.safeGetIntExtra(
+                        intent, EXTRA_DOWNLOAD_DANGER_TYPE, DownloadDangerType.NOT_DANGEROUS);
+        if (dangerType < 0 || dangerType >= DownloadDangerType.MAX) {
+            dangerType = DownloadDangerType.NOT_DANGEROUS;
+        }
 
         OtrProfileId otrProfileId;
         if (entry != null) {
@@ -259,7 +268,14 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         // Handle actions that do not require a specific entry or service delegate.
         switch (action) {
             case ACTION_NOTIFICATION_CLICKED:
-                openDownload(ContextUtils.getApplicationContext(), intent, otrProfileId, id);
+                if (org.chromium.components.browser_ui.util.DownloadUtils
+                        .shouldDisplayDownloadAsDangerous(
+                                dangerType, OfflineItemState.IN_PROGRESS)) {
+                    DownloadManagerService.openDownloadsPage(
+                            otrProfileId, DownloadOpenSource.NOTIFICATION);
+                } else {
+                    openDownload(ContextUtils.getApplicationContext(), intent, otrProfileId, id);
+                }
                 return;
 
             case ACTION_DOWNLOAD_OPEN:

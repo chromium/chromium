@@ -522,6 +522,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             return;
         }
 
+        if (itemValidatedAfterDangerous(item)) {
+            removeNotification(item.id);
+        }
+
         computeNextStepForUpdate(item);
     }
 

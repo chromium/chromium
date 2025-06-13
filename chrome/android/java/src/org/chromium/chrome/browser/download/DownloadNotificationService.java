@@ -37,6 +37,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -62,7 +63,8 @@ public class DownloadNotificationService {
         DownloadStatus.PAUSED,
         DownloadStatus.COMPLETED,
         DownloadStatus.CANCELLED,
-        DownloadStatus.FAILED
+        DownloadStatus.FAILED,
+        DownloadStatus.DANGEROUS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DownloadStatus {
@@ -71,6 +73,10 @@ public class DownloadNotificationService {
         int COMPLETED = 2;
         int CANCELLED = 3;
         int FAILED = 4;
+        // Download should be displayed as Dangerous from Safe Browsing (has one of several specific
+        // danger types), and the download is not cancelled. Note that this is a more specific
+        // condition than the download's {@link DownloadDangerType} being considered dangerous.
+        int DANGEROUS = 5;
     }
 
     public static final String ACTION_DOWNLOAD_CANCEL =
@@ -91,6 +97,8 @@ public class DownloadNotificationService {
             "org.chromium.chrome.browser.download.IS_OFF_THE_RECORD";
     static final String EXTRA_OTR_PROFILE_ID =
             "org.chromium.chrome.browser.download.OTR_PROFILE_ID";
+    static final String EXTRA_DOWNLOAD_DANGER_TYPE =
+            "org.chromium.chrome.browser.download.DOWNLOAD_DANGER_TYPE";
 
     static final String EXTRA_NOTIFICATION_BUNDLE_ICON_ID = "Chrome.NotificationBundleIconIdExtra";
 
@@ -151,7 +159,7 @@ public class DownloadNotificationService {
     }
 
     /**
-     * Adds or updates an in-progress download notification.
+     * Adds or updates an in-progress download notification. The download must not be dangerous.
      *
      * @param id The {@link ContentId} of the download.
      * @param fileName File name of the download.
@@ -575,6 +583,67 @@ public class DownloadNotificationService {
                 context, DownloadStatus.FAILED, notificationId, notification);
         mDownloadUserInitiatedTaskManager.updateDownloadStatus(
                 context, DownloadStatus.FAILED, notificationId, notification);
+    }
+
+    /**
+     * Add a dangerous download notification.
+     *
+     * @param id The {@link ContentId} of the download.
+     * @param fileName Filename of the download.
+     * @param originalUrl The original url of the downloaded file.
+     * @param shouldPromoteOrigin Whether the origin should be displayed in the notification.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
+     * @param canDownloadWhileMetered Whether the download can happen in metered network.
+     * @param isTransient Whether or not clicking on the download should launch downloads home.
+     * @param dangerType The {@link DownloadDangerType} of the download.
+     */
+    @VisibleForTesting
+    public void notifyDownloadDangerous(
+            ContentId id,
+            String fileName,
+            GURL originalUrl,
+            boolean shouldPromoteOrigin,
+            OtrProfileId otrProfileId,
+            boolean canDownloadWhileMetered,
+            boolean isTransient,
+            @DownloadDangerType int dangerType) {
+        int notificationId = getNotificationId(id);
+        Context context = ContextUtils.getApplicationContext();
+
+        DownloadUpdate downloadUpdate =
+                new DownloadUpdate.Builder()
+                        .setNotificationId(notificationId)
+                        .setContentId(id)
+                        .setFileName(fileName)
+                        .setIsOpenable(false)
+                        .setOtrProfileId(otrProfileId)
+                        .setOriginalUrl(originalUrl)
+                        .setShouldPromoteOrigin(shouldPromoteOrigin)
+                        .setDangerType(dangerType)
+                        .build();
+        Notification notification =
+                DownloadNotificationFactory.buildNotification(
+                        context, DownloadStatus.DANGEROUS, downloadUpdate, notificationId);
+
+        // We must update the shared preference entry to maintain continuity, because the DANGEROUS
+        // state is not a terminal state (the user can validate the download and continue with
+        // download progress).
+        updateNotification(
+                notificationId,
+                notification,
+                id,
+                new DownloadSharedPreferenceEntry(
+                        id,
+                        notificationId,
+                        otrProfileId,
+                        canDownloadWhileMetered,
+                        fileName,
+                        /* isAutoResumable= */ true,
+                        isTransient));
+        mDownloadForegroundServiceManager.updateDownloadStatus(
+                context, DownloadStatus.DANGEROUS, notificationId, notification);
+        mDownloadUserInitiatedTaskManager.updateDownloadStatus(
+                context, DownloadStatus.DANGEROUS, notificationId, notification);
     }
 
     private Bitmap getLargeNotificationIcon(Bitmap bitmap) {
