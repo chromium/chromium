@@ -254,8 +254,6 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // WidgetObserver overrides:
   void OnWidgetDestroying(Widget* widget) override;
   void OnWidgetShowStateChanged(Widget* widget) override;
-  void OnWidgetBoundsChanged(Widget* widget,
-                             const gfx::Rect& new_bounds) override;
 
   // Only used for testing.
   bool IsCancelAllTimerRunningForTest();
