@@ -169,7 +169,7 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::PropertyAt(
 
   const CSSPropertyValue& property = property_set_->PropertyAt(all_index_);
   return StylePropertySerializer::PropertyValueForSerializer(
-      CSSProperty::Get(property_id).GetCSSPropertyName(), &property.Value(),
+      CSSProperty::Get(property_id).GetCSSPropertyName(), property.Value(),
       property.IsImportant());
 }
 
@@ -242,7 +242,7 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::GetPropertyCSSValue(
     return nullptr;
   }
   StylePropertySerializer::PropertyValueForSerializer value = PropertyAt(index);
-  return value.Value();
+  return &value.Value();
 }
 
 bool StylePropertySerializer::CSSPropertyValueSetForSerializer::
@@ -263,11 +263,11 @@ String StylePropertySerializer::GetCustomPropertyText(
   if (is_not_first_decl) {
     result.Append(' ');
   }
-  const CSSValue* value = property.Value();
+  const CSSValue& value = property.Value();
   SerializeIdentifier(property.Name().ToAtomicString(), result,
                       is_not_first_decl);
   result.Append(": ");
-  result.Append(value->CssText());
+  result.Append(value.CssText());
   if (property.IsImportant()) {
     result.Append(" !important");
   }
@@ -330,7 +330,7 @@ String StylePropertySerializer::AsText() const {
         result.Append(GetCustomPropertyText(property, num_decls++));
         continue;
       case CSSPropertyID::kAll:
-        result.Append(GetPropertyText(name, property.Value()->CssText(),
+        result.Append(GetPropertyText(name, property.Value().CssText(),
                                       property.IsImportant(), num_decls++));
         continue;
       default:
@@ -389,7 +389,7 @@ String StylePropertySerializer::AsText() const {
       continue;
     }
 
-    result.Append(GetPropertyText(name, property.Value()->CssText(),
+    result.Append(GetPropertyText(name, property.Value().CssText(),
                                   property.IsImportant(), num_decls++));
   }
 
@@ -462,7 +462,7 @@ String StylePropertySerializer::CommonShorthandChecks(
 
     has_important |= value.IsImportant();
     has_non_important |= !value.IsImportant();
-    longhands[i] = value.Value();
+    longhands[i] = &value.Value();
   }
 
   if (has_important && has_non_important) {
@@ -795,7 +795,7 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
   int found_property_index = property_set_.FindPropertyIndex(property);
   DCHECK_NE(found_property_index, -1);
 
-  const CSSValue* val = property_set_.PropertyAt(found_property_index).Value();
+  const CSSValue* val = &property_set_.PropertyAt(found_property_index).Value();
   if (property.IDEquals(CSSPropertyID::kFontStretch)) {
     const CSSValue* keyword = GetFontStretchKeyword(val);
     if (!keyword) {
@@ -1181,12 +1181,12 @@ String StylePropertySerializer::FontValue() const {
 
   // Check that non-initial font-variant subproperties are not conflicting with
   // this serialization.
-  const CSSValue* ligatures_value = font_variant_ligatures_property.Value();
-  const CSSValue* numeric_value = font_variant_numeric_property.Value();
-  const CSSValue* east_asian_value = font_variant_east_asian_property.Value();
-  const CSSValue* feature_settings_value =
+  const CSSValue& ligatures_value = font_variant_ligatures_property.Value();
+  const CSSValue& numeric_value = font_variant_numeric_property.Value();
+  const CSSValue& east_asian_value = font_variant_east_asian_property.Value();
+  const CSSValue& feature_settings_value =
       font_feature_settings_property.Value();
-  const CSSValue* variation_settings_value =
+  const CSSValue& variation_settings_value =
       font_variation_settings_property.Value();
 
   auto IsPropertyNonInitial = [](const CSSValue& value,
@@ -1196,34 +1196,34 @@ String StylePropertySerializer::FontValue() const {
             identifier_value->GetValueID() != initial_value_id);
   };
 
-  if (IsPropertyNonInitial(*ligatures_value, CSSValueID::kNormal) ||
-      ligatures_value->IsValueList()) {
+  if (IsPropertyNonInitial(ligatures_value, CSSValueID::kNormal) ||
+      ligatures_value.IsValueList()) {
     return g_empty_string;
   }
 
-  if (IsPropertyNonInitial(*numeric_value, CSSValueID::kNormal) ||
-      numeric_value->IsValueList()) {
+  if (IsPropertyNonInitial(numeric_value, CSSValueID::kNormal) ||
+      numeric_value.IsValueList()) {
     return g_empty_string;
   }
 
-  if (IsPropertyNonInitial(*east_asian_value, CSSValueID::kNormal) ||
-      east_asian_value->IsValueList()) {
+  if (IsPropertyNonInitial(east_asian_value, CSSValueID::kNormal) ||
+      east_asian_value.IsValueList()) {
     return g_empty_string;
   }
 
-  if (IsPropertyNonInitial(*font_kerning_property.Value(), CSSValueID::kAuto) ||
-      IsPropertyNonInitial(*font_optical_sizing_property.Value(),
+  if (IsPropertyNonInitial(font_kerning_property.Value(), CSSValueID::kAuto) ||
+      IsPropertyNonInitial(font_optical_sizing_property.Value(),
                            CSSValueID::kAuto)) {
     return g_empty_string;
   }
 
-  if (IsPropertyNonInitial(*variation_settings_value, CSSValueID::kNormal) ||
-      variation_settings_value->IsValueList()) {
+  if (IsPropertyNonInitial(variation_settings_value, CSSValueID::kNormal) ||
+      variation_settings_value.IsValueList()) {
     return g_empty_string;
   }
 
-  if (IsPropertyNonInitial(*feature_settings_value, CSSValueID::kNormal) ||
-      feature_settings_value->IsValueList()) {
+  if (IsPropertyNonInitial(feature_settings_value, CSSValueID::kNormal) ||
+      feature_settings_value.IsValueList()) {
     return g_empty_string;
   }
 
@@ -1232,9 +1232,9 @@ String StylePropertySerializer::FontValue() const {
   DCHECK_NE(font_variant_alternates_property_index, -1);
   PropertyValueForSerializer font_variant_alternates_property =
       property_set_.PropertyAt(font_variant_alternates_property_index);
-  const CSSValue* alternates_value = font_variant_alternates_property.Value();
-  if (IsPropertyNonInitial(*alternates_value, CSSValueID::kNormal) ||
-      alternates_value->IsValueList()) {
+  const CSSValue& alternates_value = font_variant_alternates_property.Value();
+  if (IsPropertyNonInitial(alternates_value, CSSValueID::kNormal) ||
+      alternates_value.IsValueList()) {
     return g_empty_string;
   }
 
@@ -1243,7 +1243,7 @@ String StylePropertySerializer::FontValue() const {
   DCHECK_NE(font_variant_position_property_index, -1);
   PropertyValueForSerializer font_variant_position_property =
       property_set_.PropertyAt(font_variant_position_property_index);
-  if (IsPropertyNonInitial(*font_variant_position_property.Value(),
+  if (IsPropertyNonInitial(font_variant_position_property.Value(),
                            CSSValueID::kNormal)) {
     return g_empty_string;
   }
@@ -1253,7 +1253,7 @@ String StylePropertySerializer::FontValue() const {
     DCHECK_NE(font_variant_emoji_property_index, -1);
     PropertyValueForSerializer font_variant_emoji_property =
         property_set_.PropertyAt(font_variant_emoji_property_index);
-    if (IsPropertyNonInitial(*font_variant_emoji_property.Value(),
+    if (IsPropertyNonInitial(font_variant_emoji_property.Value(),
                              CSSValueID::kNormal)) {
       return g_empty_string;
     }
@@ -1264,9 +1264,9 @@ String StylePropertySerializer::FontValue() const {
     DCHECK_NE(font_size_adjust_property_index, -1);
     PropertyValueForSerializer font_size_adjust_property =
         property_set_.PropertyAt(font_size_adjust_property_index);
-    const CSSValue* size_adjust_value = font_size_adjust_property.Value();
-    if (IsPropertyNonInitial(*size_adjust_value, CSSValueID::kNone) ||
-        size_adjust_value->IsNumericLiteralValue()) {
+    const CSSValue& size_adjust_value = font_size_adjust_property.Value();
+    if (IsPropertyNonInitial(size_adjust_value, CSSValueID::kNone) ||
+        size_adjust_value.IsNumericLiteralValue()) {
       return g_empty_string;
     }
   }
@@ -1295,7 +1295,7 @@ String StylePropertySerializer::FontValue() const {
   StringBuilder result;
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontStyle(), result);
 
-  const CSSValue* val = font_variant_caps_property.Value();
+  const CSSValue& val = font_variant_caps_property.Value();
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(val);
   if (identifier_value &&
       (identifier_value->GetValueID() != CSSValueID::kSmallCaps &&
@@ -1313,12 +1313,12 @@ String StylePropertySerializer::FontValue() const {
   if (!result.empty()) {
     result.Append(' ');
   }
-  result.Append(font_size_property.Value()->CssText());
+  result.Append(font_size_property.Value().CssText());
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyLineHeight(), result);
   if (!result.empty()) {
     result.Append(' ');
   }
-  result.Append(font_family_property.Value()->CssText());
+  result.Append(font_family_property.Value().CssText());
   return result.ReleaseString();
 }
 
@@ -1381,11 +1381,11 @@ String StylePropertySerializer::FontSynthesisValue() const {
   PropertyValueForSerializer font_synthesis_small_caps_property =
       property_set_.PropertyAt(font_synthesis_small_caps_property_index);
 
-  const CSSValue* font_synthesis_weight_value =
+  const CSSValue& font_synthesis_weight_value =
       font_synthesis_weight_property.Value();
-  const CSSValue* font_synthesis_style_value =
+  const CSSValue& font_synthesis_style_value =
       font_synthesis_style_property.Value();
-  const CSSValue* font_synthesis_small_caps_value =
+  const CSSValue& font_synthesis_small_caps_value =
       font_synthesis_small_caps_property.Value();
 
   auto* font_synthesis_weight_identifier_value =

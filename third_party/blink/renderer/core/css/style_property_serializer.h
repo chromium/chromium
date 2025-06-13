@@ -127,23 +127,21 @@ class CORE_EXPORT StylePropertySerializer {
 
    public:
     explicit PropertyValueForSerializer(const CSSPropertyValue& property)
-        : value_(&property.Value()),
+        : value_(property.Value()),
           name_(property.Name()),
           is_important_(property.IsImportant()) {}
 
-    // TODO(sashab): Make this take a const CSSValue&.
     PropertyValueForSerializer(const CSSPropertyName& name,
-                               const CSSValue* value,
+                               const CSSValue& value,
                                bool is_important)
         : value_(value), name_(name), is_important_(is_important) {}
 
     const CSSPropertyName& Name() const { return name_; }
-    const CSSValue* Value() const { return value_; }
+    const CSSValue& Value() const { return value_; }
     bool IsImportant() const { return is_important_; }
-    bool IsValid() const { return value_; }
 
    private:
-    const CSSValue* value_;
+    const CSSValue& value_;
     CSSPropertyName name_;
     bool is_important_;
   };
