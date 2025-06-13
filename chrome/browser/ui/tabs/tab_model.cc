@@ -36,6 +36,8 @@
 
 namespace tabs {
 
+DEFINE_HANDLE_FACTORY(TabInterface);
+
 namespace {
 
 // This class exists to allow consumers to look up a TabInterface from an

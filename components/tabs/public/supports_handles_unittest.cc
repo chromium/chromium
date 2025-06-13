@@ -14,14 +14,16 @@
 namespace tabs {
 
 namespace {
-class TestClass : public SupportsHandles<TestClass> {};
+DECLARE_HANDLE_FACTORY(TestClass);
+class TestClass : public SupportsHandles<TestClassHandleFactory> {};
+DEFINE_HANDLE_FACTORY(TestClass);
 }  // namespace
 
 class SupportsHandlesTest : public testing::Test {
  public:
   template <typename T>
   void SetCounter(int32_t value) {
-    auto& helper = internal::HandleHelper<T>::GetInstance();
+    auto& helper = TestClassHandleFactory::GetInstance();
     DCHECK_CALLED_ON_VALID_SEQUENCE(helper.sequence_);
     CHECK(helper.lookup_table_.empty());
     helper.last_handle_value_ = value;

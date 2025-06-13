@@ -48,6 +48,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "content/public/browser/browser_thread.h"
@@ -111,6 +112,8 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(TabAndroidHelper);
 }  // namespace
 
 namespace tabs {
+
+DEFINE_HANDLE_FACTORY(TabInterface);
 
 // static
 TabInterface* TabInterface::GetFromContents(

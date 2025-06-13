@@ -6,9 +6,12 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
+
+DEFINE_HANDLE_FACTORY(TabCollection);
 
 // This does not create a useful iterator, but providing a default constructor
 // is required for forward iterators by the C++ spec.

@@ -37,6 +37,7 @@ source_set("tabs") {
     "split_tab_collection.cc",
     "split_tab_data.cc",
     "split_tab_visual_data.cc",
+    "supports_handles.cc",
     "tab_collection.cc",
     "tab_collection_storage.cc",
     "tab_group.cc",

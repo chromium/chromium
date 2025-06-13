@@ -19,12 +19,26 @@
 // `raw_value` which can be copied around, and even passed between programming
 // languages.
 //
-// To use handles with a class, inherit publicly from
-// `SupportsHandles<YourClassName>`. Then a handle can be retrieved from an
-// instance, and the instance retrieved from the handle:
+// To use handles with a class:
+//  - Use `DECLARE_HANDLE_FACTORY(MyClass)` just before your class declaration
+//  - Inherit from `SupportsHandles<MyClassHandleFactory>`.
+//  - In the corresponding .cc file, use `DEFINE_HANDLE_FACTORY(MyClass)`
+//
+// Example:
+// ```
+//  // in the .h file
+//  DECLARE_HANDLE_FACTORY(TabThingy);
+//  class TabThingy : public SupportsHandles<TabThingyHandleFactory> { ... };
+//
+//  // in the .cc file
+//  DEFINE_HANDLE_FACTORY(TabThingy);
+// ```
+//
+// Once you have done this, a handle can be retrieved from an instance, and the
+// instance can be retrieved from the handle:
 // ```
 //  MyClass::Handle handle = my_object->GetHandle();
-//  // Do a bunch of stuff that might delete `my_object`.
+//  // Do a bunch of stuff that might or might not delete `my_object`.
 //  if (MyClass* obj = handle.Get()) {
 //    obj->DoAThing();
 //  }
@@ -57,10 +71,101 @@
 #include <ostream>
 
 #include "base/check.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 
 namespace tabs {
+
+class SupportsHandlesTest;
+
+namespace internal {
+
+class HandleFactory;
+
+// Base class for all objects that support handles.
+class SupportsHandlesBase {
+ public:
+  virtual ~SupportsHandlesBase();
+  SupportsHandlesBase(const SupportsHandlesBase& other) = delete;
+  void operator=(const SupportsHandlesBase& other) = delete;
+
+ protected:
+  explicit SupportsHandlesBase(HandleFactory& factory);
+
+  // Looks up the object with `handle_value` in `factory`.
+  static SupportsHandlesBase* LookupHandle(HandleFactory& factory,
+                                           int32_t handle_value);
+
+ protected:
+  int32_t handle_value() const { return handle_value_; }
+
+ private:
+  const raw_ref<HandleFactory> handle_factory_;
+  const int32_t handle_value_;
+};
+
+// Provides handle lookup table storage for each class that supports handles.
+//
+// This object is strictly sequence-checked and should only ever be accessed
+// from the primary UI thread.
+class HandleFactory {
+ public:
+  HandleFactory(HandleFactory&) = delete;
+  void operator=(HandleFactory&) = delete;
+  virtual ~HandleFactory();
+
+  using StoredPointerType = SupportsHandlesBase*;
+
+  // Assigns a new, unused handle value for `object` and returns the value.
+  // Called from the constructor of `SupportsHandles`.
+  int32_t AssignHandleValue(base::PassKey<SupportsHandlesBase>,
+                            StoredPointerType object);
+
+  // Frees a handle with `handle_value`. Must be called from the destructor of
+  // `SupportsHandles`.
+  void FreeHandleValue(base::PassKey<SupportsHandlesBase>,
+                       int32_t handle_value);
+
+  // Retrieves the object associated with the given `handle_value`, or null if
+  // no such object exists.
+  StoredPointerType LookupObject(base::PassKey<SupportsHandlesBase>,
+                                 int32_t handle_value) const;
+
+ protected:
+  HandleFactory();
+
+ private:
+  friend SupportsHandlesTest;
+
+  int32_t last_handle_value_ GUARDED_BY_CONTEXT(sequence_) = 0;
+  std::map<int32_t, StoredPointerType> lookup_table_
+      GUARDED_BY_CONTEXT(sequence_);
+  SEQUENCE_CHECKER(sequence_);
+};
+
+// Created to force type safety.
+template <typename T>
+class HandleFactoryT : public HandleFactory {
+ public:
+  using ObjectType = T;
+
+  ~HandleFactoryT() override = default;
+
+ protected:
+  HandleFactoryT() = default;
+};
+
+template <typename Factory>
+concept IsHandleFactory =
+    std::derived_from<Factory,
+                      internal::HandleFactoryT<typename Factory::ObjectType>> &&
+    requires {
+      { Factory::GetInstance() } -> std::same_as<Factory&>;
+    };
+
+}  // namespace internal
 
 // Inherit from this type to have your class support handles. Objects that
 // support handles cannot be copyable or assignable:
@@ -71,22 +176,18 @@ namespace tabs {
 // It is required that `T` derive from this class. This constraint is enforced
 // via a helper class, as it cannot be enforced before SupportsHandles is
 // defined.
-template <typename T>
-class SupportsHandles {
+template <typename Factory>
+  requires internal::IsHandleFactory<Factory>
+class SupportsHandles : public internal::SupportsHandlesBase {
  public:
-  SupportsHandles();
-  virtual ~SupportsHandles();
-  SupportsHandles(const SupportsHandles& other) = delete;
-  void operator=(const SupportsHandles& other) = delete;
+  SupportsHandles() : SupportsHandlesBase(Factory::GetInstance()) {}
+  ~SupportsHandles() override = default;
 
   // The handle type for this class.
   class Handle;
 
   // Returns a unique handle value for this object.
   Handle GetHandle() const;
-
- private:
-  int32_t handle_value_;
 };
 
 // The handle type for an object of type `T`.
@@ -95,8 +196,9 @@ class SupportsHandles {
 //
 // Unlike WeakPtr there is some overhead in looking up a handle, so convenience
 // operators (bool, !, ->, *) are not provided.
-template <typename T>
-class SupportsHandles<T>::Handle {
+template <typename Factory>
+  requires internal::IsHandleFactory<Factory>
+class SupportsHandles<Factory>::Handle {
  public:
   Handle() = default;
   Handle(const Handle& other) = default;
@@ -104,7 +206,7 @@ class SupportsHandles<T>::Handle {
   Handle& operator=(const Handle& other) = default;
 
   // The object type returned by `Get()`.
-  using ObjectType = T;
+  using ObjectType = Factory::ObjectType;
 
   // Convert to/from a raw, opaque handle value. It is safe to pass this value
   // around, including to code running in other languages.
@@ -126,91 +228,58 @@ class SupportsHandles<T>::Handle {
   int32_t raw_value_ = NullValue;
 };
 
-class SupportsHandlesTest;
-
-namespace internal {
-
-// Provides handle lookup table storage for each class that supports handles.
-//
-// This object is strictly sequence-checked and should only ever be accessed
-// from the primary UI thread.
-template <typename T>
-  requires std::derived_from<T, SupportsHandles<T>>
-class HandleHelper {
- public:
-  using StoredPointerType = SupportsHandles<T>*;
-
-  // Assigns a new, unused handle value for `object` and returns the value.
-  // Called from the constructor of `SupportsHandles`.
-  int32_t AssignHandleValue(StoredPointerType object) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    CHECK(object);
-
-    // Use the next available handle value; it is an error if the value rolls
-    // back over to zero.
-    ++last_handle_value_;
-    CHECK(last_handle_value_)
-        << "Fatal handle reuse! Please curtail object creation.";
-
-    lookup_table_.emplace(last_handle_value_, object);
-    return last_handle_value_;
-  }
-
-  // Frees a handle with `handle_value`. Must be called from the destructor of
-  // `SupportsHandles`.
-  void FreeHandleValue(int32_t handle_value) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    CHECK(lookup_table_.erase(handle_value));
-  }
-
-  // Retrieves the object associated with the given `handle_value`, or null if
-  // no such object exists.
-  T* LookupObject(int32_t handle_value) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    const auto it = lookup_table_.find(handle_value);
-    return it != lookup_table_.end() ? static_cast<T*>(it->second) : nullptr;
-  }
-
-  // The lookup object is a singleton per `SupportsHandle`-derived type.
-  static HandleHelper& GetInstance() {
-    static base::NoDestructor<HandleHelper> instance;
-    return *instance;
-  }
-
- private:
-  friend SupportsHandlesTest;
-  friend class base::NoDestructor<HandleHelper<T>>;
-  HandleHelper() = default;
-  ~HandleHelper() = default;
-
-  int32_t last_handle_value_ GUARDED_BY_CONTEXT(sequence_) = 0;
-  std::map<int32_t, StoredPointerType> lookup_table_
-      GUARDED_BY_CONTEXT(sequence_);
-  SEQUENCE_CHECKER(sequence_);
-};
-
-}  // namespace internal
-
-template <typename T>
-SupportsHandles<T>::SupportsHandles()
-    : handle_value_(
-          internal::HandleHelper<T>::GetInstance().AssignHandleValue(this)) {}
-
-template <typename T>
-SupportsHandles<T>::~SupportsHandles() {
-  internal::HandleHelper<T>::GetInstance().FreeHandleValue(handle_value_);
+template <typename Factory>
+  requires internal::IsHandleFactory<Factory>
+typename SupportsHandles<Factory>::Handle SupportsHandles<Factory>::GetHandle()
+    const {
+  return Handle(handle_value());
 }
 
-template <typename T>
-typename SupportsHandles<T>::Handle SupportsHandles<T>::GetHandle() const {
-  return Handle(handle_value_);
-}
-
-template <typename T>
-T* SupportsHandles<T>::Handle::Get() const {
-  return internal::HandleHelper<T>::GetInstance().LookupObject(raw_value_);
+template <typename Factory>
+  requires internal::IsHandleFactory<Factory>
+SupportsHandles<Factory>::Handle::ObjectType*
+SupportsHandles<Factory>::Handle::Get() const {
+  return static_cast<Factory::ObjectType*>(
+      SupportsHandlesBase::LookupHandle(Factory::GetInstance(), raw_value_));
 }
 
 }  // namespace tabs
+
+// Internal; do not use.
+#define DECLARE_HANDLE_FACTORY_IMPL(ExportName, ForType)       \
+  class ForType;                                               \
+  class ExportName ForType##HandleFactory                      \
+      : public ::tabs::internal::HandleFactoryT<ForType> {     \
+   public:                                                     \
+    static ForType##HandleFactory& GetInstance();              \
+                                                               \
+   private:                                                    \
+    friend class ::base::NoDestructor<ForType##HandleFactory>; \
+    ForType##HandleFactory() = default;                        \
+    ~ForType##HandleFactory() override = default;              \
+  }
+
+// Put this in your .h file just before declaring class `ForType` which inherits
+// from `SupportsHandleFactory`. This will create a handle factory class named
+// "`ForType`HandleFactory".
+#define DECLARE_HANDLE_FACTORY(ForType) DECLARE_HANDLE_FACTORY_IMPL(, ForType)
+
+// Use this version of `DECLARE_HANDLE_FACTORY()` if you need your classes to be
+// exported, e.g.:
+// ```
+//  DECLARE_HANDLE_FACTORY_EXPORT(COMPONENT_EXPORT(MY_COMPONENT), MyClass)
+// ```
+#define DECLARE_HANDLE_FACTORY_EXPORT(ExportName, ForType) \
+  DECLARE_HANDLE_FACTORY_IMPL(ExportName, ForType)
+
+// Put this in the .cc file that corresponds to the .h file with your
+// `DECLARE_HANDLE_FACTORY()`.
+#define DEFINE_HANDLE_FACTORY(ForType)                            \
+  ForType##HandleFactory& ForType##HandleFactory::GetInstance() { \
+    static base::NoDestructor<ForType##HandleFactory> instance;   \
+    return *instance;                                             \
+  }                                                               \
+  /* Included to force a semicolon. */                            \
+  static_assert(true)
 
 #endif  // COMPONENTS_TABS_PUBLIC_SUPPORTS_HANDLES_H_

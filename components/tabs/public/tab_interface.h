@@ -42,6 +42,8 @@ class ScopedTabModalUI {
   virtual ~ScopedTabModalUI() = default;
 };
 
+DECLARE_HANDLE_FACTORY(TabInterface);
+
 // TODO(crbug.com/404889112): This interface will be reused for Android as part
 // of the effort to share tab collections between desktop and Android. Some
 // features of TabInterface are unsupported on Android. A buildflag is used to
@@ -53,7 +55,7 @@ class ScopedTabModalUI {
 // Ping erikchen for assistance if this class does not have the functionality
 // your feature needs. This comment will be deleted after there are 10+ features
 // in TabFeatures.
-class TabInterface : public SupportsHandles<TabInterface> {
+class TabInterface : public SupportsHandles<TabInterfaceHandleFactory> {
  public:
   // This method exists to ease the transition from WebContents to TabInterface.
   // This method should only be called on instances of WebContents that are

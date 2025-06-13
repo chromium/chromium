@@ -28,12 +28,14 @@ namespace tabs {
 
 class TabInterface;
 
+DECLARE_HANDLE_FACTORY(TabCollection);
+
 // This is an interface that representing the hierarchical storage of tabs.
 // This can be used to access and manipulate tabs and the state of the tabstrip.
 // Different types of collections should implement this base class based on how
 // their feature works. For example, a pinned collection can implement tab
 // collection that does not store any collection.
-class TabCollection : public SupportsHandles<TabCollection> {
+class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
  public:
   // TabIterator provides a way to traverse all tab objects within this
   // TabCollection and its sub-collections in a depth first inorder traversal
