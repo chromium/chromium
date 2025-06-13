@@ -12,6 +12,7 @@
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/test/fake_skia_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 
 namespace viz {
 namespace {
@@ -21,9 +22,16 @@ static ResourceId CreateResourceInLayerTree(
     const gfx::Size& size,
     const TestResourceFactory::TestResourceContext& resource_context,
     SharedImageFormat format) {
-  auto resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size, format,
-      resource_context.is_overlay_candidate);
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  if (resource_context.is_overlay_candidate) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
+  auto resource = TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(
+          {format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+           kPremul_SkAlphaType, usage},
+          GL_TEXTURE_2D),
+      TransferableResource::ResourceSource::kTest, gpu::SyncToken());
 
   if (resource_context.is_low_latency_rendering) {
     resource.is_low_latency_rendering = true;

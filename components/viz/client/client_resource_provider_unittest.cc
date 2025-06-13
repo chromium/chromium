@@ -548,20 +548,16 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   // raster and then read by the display compositor (e.g., for canvas), in order
   // to match a use case that would actually be put into a TransferableResource
   // in production.
-  gpu::Mailbox mailbox =
-      sii->CreateSharedImage(
-             {SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
-              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-              "TestLabel"},
-             gpu::kNullSurfaceHandle)
-          ->mailbox();
-  gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
+  auto shared_image = sii->CreateSharedImage(
+      {SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+       "TestLabel"},
+      gpu::kNullSurfaceHandle);
 
-  constexpr gfx::Size size(64, 64);
-  auto tran = TransferableResource::MakeGpu(mailbox, GL_TEXTURE_2D, sync_token,
-                                            size, SinglePlaneFormat::kRGBA_8888,
-                                            false /* is_overlay_candidate */);
+  auto tran = TransferableResource::Make(
+      shared_image, TransferableResource::ResourceSource::kTest,
+      shared_image->creation_sync_token());
   ResourceId resource = provider().ImportResource(
       tran, base::BindOnce(&MockReleaseCallback::Released,
                            base::Unretained(&release)));
@@ -574,9 +570,12 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   std::vector<TransferableResource> list;
   provider().PrepareSendToParent({resource}, &list, context_provider());
   ASSERT_EQ(1u, list.size());
-  EXPECT_LE(sync_token.release_count(), list[0].sync_token().release_count());
-  EXPECT_EQ(0,
-            memcmp(mailbox.name, list[0].mailbox().name, sizeof(mailbox.name)));
+
+  // PrepareSendToParent supposed to verify SyncToken.
+  auto verified_sync_token = tran.sync_token();
+  verified_sync_token.SetVerifyFlush();
+  EXPECT_EQ(verified_sync_token, list[0].sync_token());
+  EXPECT_EQ(shared_image->mailbox(), list[0].mailbox());
 
   // Receive the resource, then delete it, expect the SyncTokens to be
   // consistent.
