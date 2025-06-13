@@ -5220,6 +5220,7 @@ crbug.com/995663 [ Linux ] http/tests/media/autoplay/document-user-activation-cr
 crbug.com/1047293 [ Mac ] editing/pasteboard/pasteboard_with_unfocused_selection.html [ Failure Pass ]
 
 crbug.com/424416586 [ Mac ] inspector-protocol/overlay/overlay-resume-click-events.js [ Failure Pass Timeout ]
+crbug.com/424416586 [ Win ] inspector-protocol/overlay/overlay-resume-click-events.js [ Failure Pass Timeout ]
 
 # Mixed content autoupgrades make these tests not applicable, since they check for mixed content audio/video
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/audio-tag.https.html [ Failure ]
