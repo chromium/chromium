@@ -2929,7 +2929,6 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
   std::set<Tile*> unique_tiles;
   bool reached_prepaint = false;
   int non_ideal_tile_count = 0u;
-  int low_res_tile_count = 0u;
   int high_res_tile_count = 0u;
   int high_res_now_tiles = 0u;
   std::unique_ptr<TilingSetRasterQueueAll> queue =
@@ -2955,7 +2954,6 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
     }
 
     non_ideal_tile_count += priority.resolution == NON_IDEAL_RESOLUTION;
-    low_res_tile_count += priority.resolution == LOW_RESOLUTION;
     high_res_tile_count += priority.resolution == HIGH_RESOLUTION;
 
     unique_tiles.insert(prioritized_tile.tile());
@@ -2964,13 +2962,12 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
 
   EXPECT_TRUE(reached_prepaint);
   EXPECT_EQ(0, non_ideal_tile_count);
-  EXPECT_EQ(0, low_res_tile_count);
 
   // With layer size being 1000x1000 and default tile size 256x256, we expect to
   // see 4 now tiles out of 16 total high res tiles.
   EXPECT_EQ(16, high_res_tile_count);
   EXPECT_EQ(4, high_res_now_tiles);
-  EXPECT_EQ(low_res_tile_count + high_res_tile_count + non_ideal_tile_count,
+  EXPECT_EQ(high_res_tile_count + non_ideal_tile_count,
             static_cast<int>(unique_tiles.size()));
 
   std::unique_ptr<TilingSetRasterQueueRequired> required_queue =
@@ -4131,47 +4128,35 @@ void OcclusionTrackingPictureLayerImplTest::TestOcclusionForScale(
   ASSERT_TRUE(active_layer()->CanHaveTilings());
   active_layer()->SetContentsScaleForTesting(scale);
   active_layer()->tilings()->RemoveAllTilings();
-  float low_res_factor = 0.25f;
-  active_layer()
-      ->AddTiling(gfx::AxisTransform2d(low_res_factor, gfx::Vector2dF()))
-      ->set_resolution(LOW_RESOLUTION);
   active_layer()
       ->AddTiling(gfx::AxisTransform2d(scale, gfx::Vector2dF()))
       ->set_resolution(HIGH_RESOLUTION);
 
-  ASSERT_EQ(2u, active_layer()->num_tilings());
+  ASSERT_EQ(1u, active_layer()->num_tilings());
 
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   // UpdateDrawProperties with the occluding layer.
   UpdateDrawProperties(host_impl()->active_tree());
 
-  ASSERT_EQ(2u, active_layer()->num_tilings());
+  ASSERT_EQ(1u, active_layer()->num_tilings());
 
   int occluded_tile_count = 0;
-  for (size_t i = 0; i < active_layer()->num_tilings(); ++i) {
-    PictureLayerTiling* tiling = active_layer()->tilings()->tiling_at(i);
-    auto prioritized_tiles =
-        tiling->UpdateAndGetAllPrioritizedTilesForTesting();
-    std::vector<Tile*> tiles = tiling->AllTilesForTesting();
+  PictureLayerTiling* tiling = active_layer()->tilings()->tiling_at(0);
+  auto prioritized_tiles = tiling->UpdateAndGetAllPrioritizedTilesForTesting();
+  std::vector<Tile*> tiles = tiling->AllTilesForTesting();
 
-    occluded_tile_count = 0;
-    for (size_t j = 0; j < tiles.size(); ++j) {
-      if (prioritized_tiles[tiles[j]].is_occluded()) {
-        gfx::Rect scaled_content_rect = ScaleToEnclosingRect(
-            tiles[j]->content_rect(), 1.f / tiles[j]->contents_scale_key());
-        EXPECT_GE(scaled_content_rect.x(), occluding_layer_position.x());
-        occluded_tile_count++;
-      }
-    }
-
-    if (i == 0) {
-      EXPECT_EQ(scale, tiling->contents_scale_key());
-      EXPECT_EQ(occluded_tile_count, expected_occluded_count);
-    } else {
-      ASSERT_EQ(1u, i);
-      EXPECT_EQ(occluded_tile_count, 2);
+  occluded_tile_count = 0;
+  for (size_t i = 0; i < tiles.size(); ++i) {
+    if (prioritized_tiles[tiles[i]].is_occluded()) {
+      gfx::Rect scaled_content_rect = ScaleToEnclosingRect(
+          tiles[i]->content_rect(), 1.f / tiles[i]->contents_scale_key());
+      EXPECT_GE(scaled_content_rect.x(), occluding_layer_position.x());
+      occluded_tile_count++;
     }
   }
+
+  EXPECT_EQ(scale, tiling->contents_scale_key());
+  EXPECT_EQ(occluded_tile_count, expected_occluded_count);
 }
 
 TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForScale0_3) {
@@ -4253,11 +4238,6 @@ TEST_F(OcclusionTrackingPictureLayerImplTest, DifferentOcclusionOnTrees) {
 
       // All tiles are unoccluded, because the pending tree has no occlusion.
       EXPECT_FALSE(prioritized_tiles[tile].is_occluded());
-
-      if (tiling->resolution() == LOW_RESOLUTION) {
-        EXPECT_FALSE(active_layer()->GetPendingOrActiveTwinTiling(tiling));
-        continue;
-      }
 
       Tile* twin_tile =
           active_layer()->GetPendingOrActiveTwinTiling(tiling)->TileAt(
