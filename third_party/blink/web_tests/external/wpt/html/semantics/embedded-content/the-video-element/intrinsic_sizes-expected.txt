@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] default height is half the width
+  assert_equals: expected "200px" but got "150px"
+[FAIL] default width is twice the height
+  assert_equals: expected "200px" but got "300px"
+Harness: the test ran to completion.
+

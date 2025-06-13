@@ -34,8 +34,10 @@ namespace blink {
 
 LayoutVideo::LayoutVideo(HTMLVideoElement* video)
     : LayoutMedia(video),
-      natural_dimensions_(PhysicalNaturalSizingInfo::MakeFixed(DefaultSize())) {
-}
+      natural_dimensions_(
+          RuntimeEnabledFeatures::VideoAspectRatioNaturalDimensionEnabled()
+              ? PhysicalNaturalSizingInfo::None()
+              : PhysicalNaturalSizingInfo::MakeFixed(DefaultSize())) {}
 
 LayoutVideo::~LayoutVideo() = default;
 
@@ -103,6 +105,10 @@ PhysicalNaturalSizingInfo LayoutVideo::GetNaturalDimensions() const {
         }
       }
       break;
+  }
+
+  if (RuntimeEnabledFeatures::VideoAspectRatioNaturalDimensionEnabled()) {
+    return PhysicalNaturalSizingInfo::None();
   }
 
   // Natural dimensions are missing.

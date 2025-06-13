@@ -5199,6 +5199,10 @@
       status: "stable",
     },
     {
+      name: "VideoAspectRatioNaturalDimension",
+      status: "stable",
+    },
+    {
       // Whether a video element should automatically play fullscreen unless
       // 'playsinline' is set.
       name: "VideoAutoFullscreen",
