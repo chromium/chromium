@@ -214,20 +214,34 @@ base::TimeDelta ExternalConstantsOverrider::MinimumEventLoggingCooldown()
   return base::Seconds(minimum_event_logging_cooldown_seconds->GetInt());
 }
 
-std::optional<std::string>
+std::optional<EventLoggingPermissionProvider>
 ExternalConstantsOverrider::GetEventLoggingPermissionProvider() const {
   if (!override_values_.contains(
-          kDevOverrideKeyEventLoggingPermissionProvider)) {
+          kDevOverrideKeyEventLoggingPermissionProviderAppId)) {
     return next_provider_->GetEventLoggingPermissionProvider();
   }
 
-  const base::Value* event_logging_permission_provider =
-      override_values_.Find(kDevOverrideKeyEventLoggingPermissionProvider);
-  CHECK(event_logging_permission_provider->is_string())
+  EventLoggingPermissionProvider provider;
+
+  const base::Value* app_id =
+      override_values_.Find(kDevOverrideKeyEventLoggingPermissionProviderAppId);
+  CHECK(app_id->is_string())
       << "Unexpected type of override["
-      << kDevOverrideKeyEventLoggingPermissionProvider << "]: "
-      << base::Value::GetTypeName(event_logging_permission_provider->type());
-  return event_logging_permission_provider->GetString();
+      << kDevOverrideKeyEventLoggingPermissionProviderAppId
+      << "]: " << base::Value::GetTypeName(app_id->type());
+  provider.app_id = app_id->GetString();
+
+#if BUILDFLAG(IS_MAC)
+  const base::Value* directory_name = override_values_.Find(
+      kDevOverrideKeyEventLoggingPermissionProviderDirectoryName);
+  CHECK(directory_name->is_string())
+      << "Unexpected type of override["
+      << kDevOverrideKeyEventLoggingPermissionProviderDirectoryName
+      << "]: " << base::Value::GetTypeName(directory_name->type());
+  provider.directory_name = directory_name->GetString();
+#endif
+
+  return provider;
 }
 
 base::Value::Dict ExternalConstantsOverrider::DictPolicies() const {

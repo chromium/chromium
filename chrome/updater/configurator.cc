@@ -87,6 +87,7 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
       event_logger_(
           RemoteEventLoggingAllowed(
               scope,
+              persisted_data_->GetAppIds(),
               external_constants->GetEventLoggingPermissionProvider())
               ? UpdaterEventLogger::Create(
                     std::make_unique<RemoteLoggingDelegate>(

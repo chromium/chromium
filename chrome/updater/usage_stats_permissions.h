@@ -27,6 +27,8 @@ class FilePath;
 
 namespace updater {
 
+struct EventLoggingPermissionProvider;
+
 // Returns true if any app besides Omaha 4 or CECA is allowed to send usage
 // stats. The function looks at apps installed on the system to check if they
 // have usage stats enabled. This information is stored in the registry on
@@ -46,21 +48,27 @@ bool AnyAppEnablesUsageStats(UpdaterScope scope);
 //    `event_logging_permission_provider`}.
 bool RemoteEventLoggingAllowed(
     UpdaterScope scope,
-    std::optional<std::string> event_logging_permission_provider);
+    const std::vector<std::string>& installed_app_ids,
+    std::optional<EventLoggingPermissionProvider>
+        event_logging_permission_provider);
 
 #if BUILDFLAG(IS_MAC)
 bool AnyAppEnablesUsageStats(
-    const std::vector<base::FilePath>& install_directories);
+    const std::vector<base::FilePath>& app_support_directories);
 bool RemoteEventLoggingAllowed(
-    const std::vector<base::FilePath>& install_directories,
-    std::optional<std::string> event_logging_permission_provider);
+    const std::vector<std::string>& installed_app_ids,
+    const std::vector<base::FilePath>& app_support_directories,
+    std::optional<EventLoggingPermissionProvider>
+        event_logging_permission_provider);
 #elif BUILDFLAG(IS_WIN)
 bool AnyAppEnablesUsageStats(HKEY hive,
                              const std::vector<std::wstring>& key_paths);
 bool RemoteEventLoggingAllowed(
     HKEY hive,
     const std::vector<std::wstring>& key_paths,
-    std::optional<std::string> event_logging_permission_provider);
+    const std::vector<std::string>& installed_app_ids,
+    std::optional<EventLoggingPermissionProvider>
+        event_logging_permission_provider);
 #endif
 
 }  // namespace updater

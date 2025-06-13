@@ -18,9 +18,11 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/util.h"
@@ -31,14 +33,12 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/util/mac_util.h"
 #elif BUILDFLAG(IS_WIN)
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
-#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #endif
@@ -47,35 +47,32 @@ namespace updater {
 
 class UsageStatsPermissionsTest : public testing::Test {
  protected:
-  std::string fake_permission_provider_ = "UsageStatsTestPermissionProvider";
+  EventLoggingPermissionProvider fake_permission_provider_ = {
+      .app_id = "UsageStatsTestPermissionProvider",
+#if BUILDFLAG(IS_MAC)
+      .directory_name = "UsageStatsTestPermissionProvider",
+#endif
+  };
+
 #if BUILDFLAG(IS_MAC)
   base::ScopedTempDir fake_user_directory_;
   base::ScopedTempDir fake_system_directory_;
 
-  void SetUpdaterUsageStats(bool enabled, UpdaterScope scope) {
-    SetAppUsageStats(PRODUCT_FULLNAME_STRING, enabled, scope);
-  }
-
-  void SetCECAUsageStats(bool enabled, UpdaterScope scope) {
-    std::optional<base::FilePath> ceca_path =
-        enterprise_companion::GetInstallDirectory();
-    ASSERT_TRUE(ceca_path);
-    SetAppUsageStats(ceca_path->BaseName().value(), enabled, scope);
-  }
-
   void SetAppUsageStats(const std::string& app_id,
                         bool enabled,
                         UpdaterScope scope) {
-    base::FilePath install_dir = IsSystemInstall(scope)
-                                     ? fake_system_directory_.GetPath()
-                                     : fake_user_directory_.GetPath();
-    base::FilePath app_dir = install_dir.Append(app_id);
+    base::FilePath app_support_dir = IsSystemInstall(scope)
+                                         ? fake_system_directory_.GetPath()
+                                         : fake_user_directory_.GetPath();
+    base::FilePath app_dir =
+        app_support_dir.Append(COMPANY_SHORTNAME_STRING).Append(app_id);
 
     ASSERT_TRUE(base::CreateDirectory(app_dir));
     std::unique_ptr<crashpad::CrashReportDatabase> database =
         crashpad::CrashReportDatabase::Initialize(app_dir.Append("Crashpad"));
     ASSERT_TRUE(database &&
                 database->GetSettings()->SetUploadsEnabled(enabled));
+    installed_app_ids_.push_back(app_id);
   }
 
   void SetUp() override {
@@ -84,23 +81,17 @@ class UsageStatsPermissionsTest : public testing::Test {
   }
 
   bool AnyAppEnablesUsageStats() {
-    return ::updater::AnyAppEnablesUsageStats(InstallDirectories());
+    return ::updater::AnyAppEnablesUsageStats(ApplicationSupportDirectories());
   }
 
   bool RemoteEventLoggingAllowed() {
-    return ::updater::RemoteEventLoggingAllowed(InstallDirectories(),
+    return ::updater::RemoteEventLoggingAllowed(installed_app_ids_,
+                                                ApplicationSupportDirectories(),
                                                 fake_permission_provider_);
   }
 
 #elif BUILDFLAG(IS_WIN)
 
-  void SetUpdaterUsageStats(bool enabled, UpdaterScope scope) {
-    SetAppUsageStats(kUpdaterAppId, enabled, scope);
-  }
-
-  void SetCECAUsageStats(bool enabled, UpdaterScope scope) {
-    SetAppUsageStats(enterprise_companion::kCompanionAppId, enabled, scope);
-  }
   void SetAppUsageStats(const std::string& app_id,
                         bool enabled,
                         UpdaterScope scope) {
@@ -112,6 +103,7 @@ class UsageStatsPermissionsTest : public testing::Test {
         key.CreateKey(base::SysUTF8ToWide(app_id).c_str(), Wow6432(KEY_WRITE)),
         ERROR_SUCCESS);
     ASSERT_EQ(key.WriteValue(L"usagestats", enabled ? 1 : 0), ERROR_SUCCESS);
+    installed_app_ids_.push_back(app_id);
   }
 
   void SetUp() override {
@@ -138,20 +130,33 @@ class UsageStatsPermissionsTest : public testing::Test {
 
   bool RemoteEventLoggingAllowed() {
     return ::updater::RemoteEventLoggingAllowed(hive_, InstallRegistryPaths(),
+                                                installed_app_ids_,
                                                 fake_permission_provider_);
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void SetUpdaterUsageStats(bool enabled, UpdaterScope scope) {
+    SetAppUsageStats(kUpdaterAppId, enabled, scope);
+  }
+
+  void SetCECAUsageStats(bool enabled, UpdaterScope scope) {
+    SetAppUsageStats(enterprise_companion::kCompanionAppId, enabled, scope);
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
   UpdaterScope scope_ = GetUpdaterScopeForTesting();
 
  private:
 #if BUILDFLAG(IS_MAC)
-  std::vector<base::FilePath> InstallDirectories() {
-    std::vector<base::FilePath> install_directories(
+  std::vector<base::FilePath> ApplicationSupportDirectories() {
+    std::vector<base::FilePath> application_support_directories(
         {fake_user_directory_.GetPath()});
     if (IsSystemInstall(scope_)) {
-      install_directories.push_back(fake_system_directory_.GetPath());
+      application_support_directories.push_back(
+          fake_system_directory_.GetPath());
     }
-    return install_directories;
+    return application_support_directories;
   }
 #elif BUILDFLAG(IS_WIN)
 
@@ -168,12 +173,15 @@ class UsageStatsPermissionsTest : public testing::Test {
   std::wstring system_key_path_ =
       base::StrCat({UPDATER_KEY, L"UsageStatsProviderTestSystemkey\\"});
 #endif
+
+  std::vector<std::string> installed_app_ids_;
 };
 
 #if BUILDFLAG(IS_LINUX)
 TEST_F(UsageStatsPermissionsTest, LinuxAlwaysFalse) {
   ASSERT_FALSE(AnyAppEnablesUsageStats(scope_));
-  ASSERT_FALSE(RemoteEventLoggingAllowed(scope_, fake_permission_provider_));
+  ASSERT_FALSE(
+      RemoteEventLoggingAllowed(scope_, {}, fake_permission_provider_));
 }
 #else
 
@@ -212,7 +220,7 @@ TEST_F(UsageStatsPermissionsTest, SystemInstallLooksAtUser) {
 }
 
 TEST_F(UsageStatsPermissionsTest, PermissionProviderAllowsRemoteLogging) {
-  SetAppUsageStats(fake_permission_provider_, true, scope_);
+  SetAppUsageStats(fake_permission_provider_.app_id, true, scope_);
   ASSERT_TRUE(RemoteEventLoggingAllowed());
 }
 
@@ -220,14 +228,14 @@ TEST_F(UsageStatsPermissionsTest,
        PermissionProviderAllowsRemoteLoggingWithCECAAndUpdater) {
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
-  SetAppUsageStats(fake_permission_provider_, true, scope_);
+  SetAppUsageStats(fake_permission_provider_.app_id, true, scope_);
   ASSERT_TRUE(RemoteEventLoggingAllowed());
 }
 
 TEST_F(UsageStatsPermissionsTest, UsageStatsProviderChecksPermissionProvider) {
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
-  SetAppUsageStats(fake_permission_provider_, false, scope_);
+  SetAppUsageStats(fake_permission_provider_.app_id, false, scope_);
   ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
 
@@ -235,7 +243,7 @@ TEST_F(UsageStatsPermissionsTest,
        PermissionProviderDisallowsRemoteLoggingWithOtherAppDisabled) {
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
-  SetAppUsageStats(fake_permission_provider_, true, scope_);
+  SetAppUsageStats(fake_permission_provider_.app_id, true, scope_);
   SetAppUsageStats("unsupported_app", false, scope_);
   ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
@@ -244,7 +252,7 @@ TEST_F(UsageStatsPermissionsTest,
        PermissionProviderDisallowsRemoteLoggingWithOtherAppEnabled) {
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
-  SetAppUsageStats(fake_permission_provider_, true, scope_);
+  SetAppUsageStats(fake_permission_provider_.app_id, true, scope_);
   SetAppUsageStats("unsupported_app", true, scope_);
   ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
@@ -256,8 +264,9 @@ TEST_F(UsageStatsPermissionsTest,
   }
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
-  SetAppUsageStats(fake_permission_provider_, true, UpdaterScope::kUser);
-  SetAppUsageStats(fake_permission_provider_, false, UpdaterScope::kSystem);
+  SetAppUsageStats(fake_permission_provider_.app_id, true, UpdaterScope::kUser);
+  SetAppUsageStats(fake_permission_provider_.app_id, false,
+                   UpdaterScope::kSystem);
   ASSERT_TRUE(RemoteEventLoggingAllowed());
 }
 

@@ -14,7 +14,9 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/process/process_iterator.h"
 #include "chrome/enterprise_companion/installer_paths.h"
+#include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -43,10 +45,10 @@ bool AppAllowsUsageStats(const base::FilePath& app_directory) {
 }
 
 std::vector<base::FilePath> GetAppDirectories(
-    const std::vector<base::FilePath>& install_directories) {
+    const std::vector<base::FilePath>& app_support_directories) {
   std::vector<base::FilePath> all_apps;
-  for (const base::FilePath& install_dir : install_directories) {
-    base::FileEnumerator(install_dir,
+  for (const base::FilePath& app_support_directory : app_support_directories) {
+    base::FileEnumerator(app_support_directory.Append(COMPANY_SHORTNAME_STRING),
                          /*recursive=*/false,
                          base::FileEnumerator::FileType::DIRECTORIES)
         .ForEach([&all_apps](const base::FilePath& app) {
@@ -59,10 +61,10 @@ std::vector<base::FilePath> GetAppDirectories(
 }  // namespace
 
 // Returns true if any app directory under the associated
-// `install_directories` has usage stats enabled.
+// `app_support_directories` has usage stats enabled.
 bool AnyAppEnablesUsageStats(
-    const std::vector<base::FilePath>& install_directories) {
-  return std::ranges::any_of(GetAppDirectories(install_directories),
+    const std::vector<base::FilePath>& app_support_directories) {
+  return std::ranges::any_of(GetAppDirectories(app_support_directories),
                              [](const base::FilePath& app_dir) {
                                return app_dir.BaseName().value() !=
                                           PRODUCT_FULLNAME_STRING &&
@@ -71,31 +73,39 @@ bool AnyAppEnablesUsageStats(
 }
 
 bool RemoteEventLoggingAllowed(
-    const std::vector<base::FilePath>& install_directories,
-    std::optional<std::string> event_logging_permission_provider) {
+    const std::vector<std::string>& installed_app_ids,
+    const std::vector<base::FilePath>& app_support_directories,
+    std::optional<EventLoggingPermissionProvider>
+        event_logging_permission_provider) {
   if (!event_logging_permission_provider) {
+    VLOG(2) << "Event logging disabled by absence of permission provider";
     return false;
   }
 
-  if (std::ranges::any_of(
-          GetAppDirectories(install_directories),
-          [&](const base::FilePath& app_dir) {
-            std::string name = app_dir.BaseName().value();
-            std::optional<base::FilePath> enterprise_companion_app_path =
-                enterprise_companion::GetInstallDirectory();
-            return name != PRODUCT_FULLNAME_STRING &&
-                   name != event_logging_permission_provider &&
-                   (!enterprise_companion_app_path ||
-                    name != enterprise_companion_app_path->BaseName().value());
-          })) {
-    return false;
-  }
-
-  return std::ranges::any_of(
-      install_directories, [&](const base::FilePath& install_dir) {
-        return AppAllowsUsageStats(
-            install_dir.Append(*event_logging_permission_provider));
+  bool manages_additional_apps =
+      std::ranges::any_of(installed_app_ids, [&](const std::string& app_id) {
+        return !IsUpdaterOrCompanionApp(app_id) &&
+               !base::EqualsCaseInsensitiveASCII(
+                   app_id, event_logging_permission_provider->app_id);
       });
+
+  if (manages_additional_apps) {
+    VLOG(2) << "Event logging disabled by presence of other apps";
+    return false;
+  }
+
+  bool allowed = std::ranges::any_of(
+      app_support_directories,
+      [&](const base::FilePath& app_support_directory) {
+        return AppAllowsUsageStats(
+            app_support_directory.Append(COMPANY_SHORTNAME_STRING)
+                .Append(event_logging_permission_provider->directory_name));
+      });
+
+  VLOG_IF(2, !allowed) << "Event logging disabled; app "
+                       << event_logging_permission_provider->app_id
+                       << " does not enable usage stats";
+  return allowed;
 }
 
 bool AnyAppEnablesUsageStats(UpdaterScope scope) {
@@ -105,9 +115,11 @@ bool AnyAppEnablesUsageStats(UpdaterScope scope) {
 
 bool RemoteEventLoggingAllowed(
     UpdaterScope scope,
-    std::optional<std::string> event_logging_permission_provider) {
+    const std::vector<std::string>& installed_app_ids,
+    std::optional<EventLoggingPermissionProvider>
+        event_logging_permission_provider) {
   return RemoteEventLoggingAllowed(
-      GetApplicationSupportDirectoriesForUsers(scope),
+      installed_app_ids, GetApplicationSupportDirectoriesForUsers(scope),
       std::move(event_logging_permission_provider));
 }
 

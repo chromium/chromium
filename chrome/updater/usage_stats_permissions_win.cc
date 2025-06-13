@@ -89,20 +89,33 @@ bool AnyAppEnablesUsageStats(HKEY hive,
 bool RemoteEventLoggingAllowed(
     HKEY hive,
     const std::vector<std::wstring>& key_paths,
-    std::optional<std::string> event_logging_permission_provider) {
+    const std::vector<std::string>& installed_app_ids,
+    std::optional<EventLoggingPermissionProvider>
+        event_logging_permission_provider) {
   if (!event_logging_permission_provider) {
+    VLOG(2) << "Event logging disabled by absence of permission provider";
     return false;
   }
 
-  bool manages_additional_apps = std::ranges::any_of(
-      GetInstalledAppIds(hive, key_paths), [&](const std::string& app_id) {
+  bool manages_additional_apps =
+      std::ranges::any_of(installed_app_ids, [&](const std::string& app_id) {
         return !IsUpdaterOrCompanionApp(app_id) &&
-               app_id != event_logging_permission_provider;
+               !base::EqualsCaseInsensitiveASCII(
+                   app_id, event_logging_permission_provider->app_id);
       });
 
-  return !manages_additional_apps &&
-         AppAllowsUsageStats(hive, key_paths,
-                             *event_logging_permission_provider);
+  if (manages_additional_apps) {
+    VLOG(2) << "Event logging disabled by presence of other apps";
+    return false;
+  }
+
+  bool allowed = AppAllowsUsageStats(hive, key_paths,
+                                     event_logging_permission_provider->app_id);
+
+  VLOG_IF(2, !allowed) << "Event logging disabled; app "
+                       << event_logging_permission_provider->app_id
+                       << " does not enable usage stats";
+  return allowed;
 }
 
 bool AnyAppEnablesUsageStats(UpdaterScope scope) {
@@ -112,10 +125,12 @@ bool AnyAppEnablesUsageStats(UpdaterScope scope) {
 
 bool RemoteEventLoggingAllowed(
     UpdaterScope scope,
-    std::optional<std::string> event_logging_permission_provider) {
+    const std::vector<std::string>& installed_app_ids,
+    std::optional<EventLoggingPermissionProvider>
+        event_logging_permission_provider) {
   return RemoteEventLoggingAllowed(
       UpdaterScopeToHKeyRoot(scope), GetClientStatePathsForScope(scope),
-      std::move(event_logging_permission_provider));
+      installed_app_ids, std::move(event_logging_permission_provider));
 }
 
 }  // namespace updater

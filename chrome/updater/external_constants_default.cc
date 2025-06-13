@@ -70,12 +70,16 @@ class DefaultExternalConstants : public ExternalConstants {
     return kMinimumEventLoggingCooldown;
   }
 
-  std::optional<std::string> GetEventLoggingPermissionProvider()
-      const override {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_MAC)
-    return BROWSER_NAME_STRING;
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
-    return BROWSER_APP_ID;
+  std::optional<EventLoggingPermissionProvider>
+  GetEventLoggingPermissionProvider() const override {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+    return EventLoggingPermissionProvider{
+        .app_id = BROWSER_APPID,
+#if BUILDFLAG(IS_MAC)
+        .directory_name = BROWSER_NAME_STRING,
+#endif
+    };
 #else
     return std::nullopt;
 #endif

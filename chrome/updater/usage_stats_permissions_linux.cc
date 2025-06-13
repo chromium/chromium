@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/updater_scope.h"
 
@@ -21,7 +22,9 @@ bool AnyAppEnablesUsageStats(UpdaterScope scope) {
   return false;
 }
 
-bool RemoteEventLoggingAllowed(UpdaterScope, std::optional<std::string>) {
+bool RemoteEventLoggingAllowed(UpdaterScope,
+                               const std::vector<std::string>&,
+                               std::optional<EventLoggingPermissionProvider>) {
   return false;
 }
 

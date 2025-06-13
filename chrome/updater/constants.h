@@ -262,8 +262,13 @@ inline constexpr char kDevOverrideKeyCrxVerifierFormat[] =
     "crx_verifier_format";
 inline constexpr char kDevOverrideKeyMinumumEventLoggingCooldownSeconds[] =
     "minimum_event_logging_cooldown_seconds";
-inline constexpr char kDevOverrideKeyEventLoggingPermissionProvider[] =
-    "event_logging_permission_provider";
+inline constexpr char kDevOverrideKeyEventLoggingPermissionProviderAppId[] =
+    "event_logging_permission_provider_app_id";
+#if BUILDFLAG(IS_MAC)
+inline constexpr char
+    kDevOverrideKeyEventLoggingPermissionProviderDirectoryName[] =
+        "event_logging_permission_provider_directory_name";
+#endif
 inline constexpr char kDevOverrideKeyDictPolicies[] = "dict_policies";
 
 // TODO(crbug.com/389965546): remove this once the checked-in old updater builds
