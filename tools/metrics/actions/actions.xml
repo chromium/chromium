@@ -39469,12 +39469,31 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_BottomSheet_IdentityChooser_AddAccount">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user taps on AddAccount in the identity chooser dialog.
+    Recorded for iOS only.
+  </description>
+</action>
+
 <action name="Signin_BottomSheet_IdentityChooser_Closed">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
-    Recorded when the identity chooser dialog from the bottom sheet is closed by
-    the user. Recorded for iOS only.
+    Recorded when the identity chooser dialog from the bottom sheet is closed.
+    This might be caused by an explicit user action or any other event that
+    closes the UI. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_IdentityChooser_ClosedByUser">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user closed the identity chooser dialog from the bottom
+    sheet with the back button or voice-over Z move. Recorded for iOS only.
   </description>
 </action>
 
@@ -39484,6 +39503,24 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the identity chooser dialog from the bottom sheet is opened by
     the user. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_IdentityChooser_Selected">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user selects an identity in the identity chooser dialog.
+    Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_IdentityChooser_ShowManagementHelpPage">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user taps on the &quot;management help&quot; link in the
+    footer of the identity chooser dialog. Recorded for iOS only.
   </description>
 </action>
 

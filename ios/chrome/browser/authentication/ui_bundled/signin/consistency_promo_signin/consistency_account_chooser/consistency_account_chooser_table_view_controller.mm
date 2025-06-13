@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
@@ -77,12 +78,16 @@ CGFloat kSectionFooterHeight = 8.;
       TableViewIdentityItem* identityItem =
           base::apple::ObjCCastStrict<TableViewIdentityItem>(item);
       DCHECK(identityItem);
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_BottomSheet_IdentityChooser_Selected"));
       [self.actionDelegate
           consistencyAccountChooserTableViewController:self
                            didSelectIdentityWithGaiaID:identityItem.gaiaID];
       break;
     }
     case AddAccountItemType:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_BottomSheet_IdentityChooser_AddAccount"));
       [self.actionDelegate
           consistencyAccountChooserTableViewControllerDidTapOnAddAccount:self];
       break;
@@ -178,6 +183,8 @@ CGFloat kSectionFooterHeight = 8.;
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   DCHECK(URL.gurl == GURL(kChromeUIManagementURL));
   DCHECK(self.actionDelegate);
+  base::RecordAction(base::UserMetricsAction(
+      "Signin_BottomSheet_IdentityChooser_ShowManagementHelpPage"));
   [self.actionDelegate showManagementHelpPage];
 }
 

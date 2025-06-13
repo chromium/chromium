@@ -522,6 +522,8 @@
   if (self.navigationController.viewControllers.count == 1 &&
       self.accountChooserCoordinator) {
     // AccountChooserCoordinator has been removed by "Back" button.
+    base::RecordAction(base::UserMetricsAction(
+        "Signin_BottomSheet_IdentityChooser_ClosedByUser"));
     [self stopAccountChooserCoordinator];
   }
 }
