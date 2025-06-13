@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card;
+package org.chromium.chrome.browser.sync.ui.batch_upload_card;
 
 import android.app.Activity;
 import android.view.View;
@@ -20,13 +20,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 @NullMarked
-public class BookmarkBatchUploadCardCoordinator {
-    private final BookmarkBatchUploadCardMediator mMediator;
+public class BatchUploadCardCoordinator {
+    private final BatchUploadCardMediator mMediator;
     private final PropertyModel mModel;
 
     private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
-    public BookmarkBatchUploadCardCoordinator(
+    public BatchUploadCardCoordinator(
             Activity activity,
             LifecycleOwner lifecycleOwner,
             ModalDialogManager modalDialogManager,
@@ -35,12 +35,12 @@ public class BookmarkBatchUploadCardCoordinator {
             Runnable batchUploadCardChangeAction) {
 
         mModel =
-                new PropertyModel.Builder(BookmarkBatchUploadCardProperties.ALL_KEYS)
+                new PropertyModel.Builder(BatchUploadCardProperties.ALL_KEYS)
                         .with(
-                                BookmarkBatchUploadCardProperties.BUTTON_TEXT,
-                                R.string.bookmarks_left_behind_bookmarks_button)
+                                BatchUploadCardProperties.BUTTON_TEXT,
+                                R.string.batch_upload_card_save_button)
                         .with(
-                                BookmarkBatchUploadCardProperties.ICON,
+                                BatchUploadCardProperties.ICON,
                                 UiUtils.getTintedDrawable(
                                         activity,
                                         R.drawable.ic_cloud_upload_24dp,
@@ -48,7 +48,7 @@ public class BookmarkBatchUploadCardCoordinator {
                         .build();
 
         mMediator =
-                new BookmarkBatchUploadCardMediator(
+                new BatchUploadCardMediator(
                         activity,
                         lifecycleOwner,
                         modalDialogManager,
@@ -68,8 +68,7 @@ public class BookmarkBatchUploadCardCoordinator {
             mPropertyModelChangeProcessor = null;
         }
         mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, view, BookmarkBatchUploadCardBinder::bind);
+                PropertyModelChangeProcessor.create(mModel, view, BatchUploadCardBinder::bind);
     }
 
     public void immediatelyHideBatchUploadCardAndUpdateItsVisibility() {

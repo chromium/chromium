@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card;
+package org.chromium.chrome.browser.sync.ui.batch_upload_card;
 
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
-class BookmarkBatchUploadCardBinder {
+class BatchUploadCardBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
      *
@@ -24,17 +24,16 @@ class BookmarkBatchUploadCardBinder {
      * @param propertyKey The {@link PropertyKey} which changed.
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (BookmarkBatchUploadCardProperties.DESCRIPTION_TEXT == propertyKey) {
+        if (BatchUploadCardProperties.DESCRIPTION_TEXT == propertyKey) {
             TextView text = (TextView) view.findViewById(R.id.signin_settings_card_description);
-            text.setText(model.get(BookmarkBatchUploadCardProperties.DESCRIPTION_TEXT));
-        } else if (BookmarkBatchUploadCardProperties.BUTTON_TEXT == propertyKey) {
+            text.setText(model.get(BatchUploadCardProperties.DESCRIPTION_TEXT));
+        } else if (BatchUploadCardProperties.BUTTON_TEXT == propertyKey) {
             Button button = (Button) view.findViewById(R.id.signin_settings_card_button);
-            button.setText(model.get(BookmarkBatchUploadCardProperties.BUTTON_TEXT));
-            button.setOnClickListener(
-                    model.get(BookmarkBatchUploadCardProperties.ON_CLICK_LISTENER));
-        } else if (BookmarkBatchUploadCardProperties.ICON == propertyKey) {
+            button.setText(model.get(BatchUploadCardProperties.BUTTON_TEXT));
+            button.setOnClickListener(model.get(BatchUploadCardProperties.ON_CLICK_LISTENER));
+        } else if (BatchUploadCardProperties.ICON == propertyKey) {
             ImageView image = (ImageView) view.findViewById(R.id.signin_settings_card_icon);
-            image.setImageDrawable(model.get(BookmarkBatchUploadCardProperties.ICON));
+            image.setImageDrawable(model.get(BatchUploadCardProperties.ICON));
         }
     }
 }

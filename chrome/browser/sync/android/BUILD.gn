@@ -24,10 +24,10 @@ android_library("java") {
 android_library("ui_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/sync/ui/BatchUploadDialogCoordinator.java",
-    "java/src/org/chromium/chrome/browser/sync/ui/bookmark_batch_upload_card/BookmarkBatchUploadCardBinder.java",
-    "java/src/org/chromium/chrome/browser/sync/ui/bookmark_batch_upload_card/BookmarkBatchUploadCardCoordinator.java",
-    "java/src/org/chromium/chrome/browser/sync/ui/bookmark_batch_upload_card/BookmarkBatchUploadCardMediator.java",
-    "java/src/org/chromium/chrome/browser/sync/ui/bookmark_batch_upload_card/BookmarkBatchUploadCardProperties.java",
+    "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardBinder.java",
+    "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardCoordinator.java",
+    "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardMediator.java",
+    "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardProperties.java",
   ]
   deps = [
     "//base:callback_java",
@@ -52,7 +52,7 @@ android_library("ui_java") {
 robolectric_library("junit") {
   testonly = true
 
-  sources = [ "junit/src/org/chromium/chrome/browser/sync/ui/bookmark_batch_upload_card/BookmarkBatchUploadCardMediatorTest.java" ]
+  sources = [ "junit/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardMediatorTest.java" ]
 
   deps = [
     ":ui_java",

@@ -1719,7 +1719,7 @@ public class BookmarkManagerMediatorTest {
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
         mMediator
-                .getBookmarkBatchUploadCardCoordinator()
+                .getBatchUploadCardCoordinator()
                 .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
 
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
@@ -1792,7 +1792,7 @@ public class BookmarkManagerMediatorTest {
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
         mMediator
-                .getBookmarkBatchUploadCardCoordinator()
+                .getBatchUploadCardCoordinator()
                 .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
 
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
@@ -1867,7 +1867,7 @@ public class BookmarkManagerMediatorTest {
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
         mMediator
-                .getBookmarkBatchUploadCardCoordinator()
+                .getBatchUploadCardCoordinator()
                 .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
 
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);

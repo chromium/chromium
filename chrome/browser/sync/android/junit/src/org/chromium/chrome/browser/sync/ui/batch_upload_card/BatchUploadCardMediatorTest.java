@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card;
+package org.chromium.chrome.browser.sync.ui.batch_upload_card;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,10 +43,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.HashMap;
 import java.util.Set;
 
-/** Unit tests for {@link BookmarkBatchUploadCardMediator}. */
+/** Unit tests for {@link BatchUploadCardMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
-public class BookmarkBatchUploadCardMediatorTest {
+public class BatchUploadCardMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -63,7 +63,7 @@ public class BookmarkBatchUploadCardMediatorTest {
     @Mock private IdentityManager mIdentityManager;
 
     private Activity mActivity;
-    private BookmarkBatchUploadCardMediator mMediator;
+    private BatchUploadCardMediator mMediator;
 
     @Before
     public void setUp() {
@@ -103,7 +103,7 @@ public class BookmarkBatchUploadCardMediatorTest {
                 .onActivity(
                         (activity) -> {
                             mMediator =
-                                    new BookmarkBatchUploadCardMediator(
+                                    new BatchUploadCardMediator(
                                             activity,
                                             (LifecycleOwner) activity,
                                             mModalDialogManager,
@@ -143,7 +143,7 @@ public class BookmarkBatchUploadCardMediatorTest {
                 .onActivity(
                         (activity) -> {
                             mMediator =
-                                    new BookmarkBatchUploadCardMediator(
+                                    new BatchUploadCardMediator(
                                             activity,
                                             (LifecycleOwner) activity,
                                             mModalDialogManager,
@@ -183,7 +183,7 @@ public class BookmarkBatchUploadCardMediatorTest {
                 .onActivity(
                         (activity) -> {
                             mMediator =
-                                    new BookmarkBatchUploadCardMediator(
+                                    new BatchUploadCardMediator(
                                             activity,
                                             (LifecycleOwner) activity,
                                             mModalDialogManager,

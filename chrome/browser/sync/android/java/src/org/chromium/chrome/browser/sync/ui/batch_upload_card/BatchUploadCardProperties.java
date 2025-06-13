@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card;
+package org.chromium.chrome.browser.sync.ui.batch_upload_card;
 
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
@@ -14,7 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 @NullMarked
-class BookmarkBatchUploadCardProperties {
+class BatchUploadCardProperties {
     static final PropertyModel.WritableObjectPropertyKey<String> DESCRIPTION_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>("description_text");
     static final PropertyModel.ReadableIntPropertyKey BUTTON_TEXT =

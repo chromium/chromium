@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card.BookmarkBatchUploadCardCoordinator;
+import org.chromium.chrome.browser.sync.ui.batch_upload_card.BatchUploadCardCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -157,8 +157,8 @@ class BookmarkManagerMediator
                                 // Update the batch upload card (in case of refresh() is not called)
                                 // to reflect the right number of the
                                 // local bookmarks.
-                                if (mBookmarkBatchUploadCardCoordinator != null) {
-                                    mBookmarkBatchUploadCardCoordinator
+                                if (mBatchUploadCardCoordinator != null) {
+                                    mBatchUploadCardCoordinator
                                             .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
                                 }
                             }
@@ -384,7 +384,7 @@ class BookmarkManagerMediator
     private final BookmarkManagerOpener mBookmarkManagerOpener;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
 
-    @Nullable private BookmarkBatchUploadCardCoordinator mBookmarkBatchUploadCardCoordinator;
+    @Nullable private BatchUploadCardCoordinator mBatchUploadCardCoordinator;
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
     private String mInitialUrl;
@@ -449,8 +449,8 @@ class BookmarkManagerMediator
         mSnackbarManager = snackbarManager;
         mCanShowSigninPromo = canShowSigninPromo;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            mBookmarkBatchUploadCardCoordinator =
-                    new BookmarkBatchUploadCardCoordinator(
+            mBatchUploadCardCoordinator =
+                    new BatchUploadCardCoordinator(
                             activity,
                             lifecycleOwner,
                             modalDialogManager,
@@ -1114,10 +1114,10 @@ class BookmarkManagerMediator
     }
 
     private boolean shouldShowBatchUploadCard() {
-        if (mBookmarkBatchUploadCardCoordinator == null) {
+        if (mBatchUploadCardCoordinator == null) {
             return false;
         }
-        return mBookmarkBatchUploadCardCoordinator.shouldShowBatchUploadCard();
+        return mBatchUploadCardCoordinator.shouldShowBatchUploadCard();
     }
 
     /**
@@ -1279,8 +1279,8 @@ class BookmarkManagerMediator
                 new PropertyModel.Builder(BookmarkManagerProperties.ALL_KEYS)
                         .with(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry)
                         .with(
-                                BookmarkManagerProperties.BOOKMARK_BATCH_UPLOAD_CARD_COORDINATOR,
-                                mBookmarkBatchUploadCardCoordinator);
+                                BookmarkManagerProperties.BATCH_UPLOAD_CARD_COORDINATOR,
+                                mBatchUploadCardCoordinator);
         return new ListItem(bookmarkListEntry.getViewType(), builder.build());
     }
 
@@ -1358,8 +1358,8 @@ class BookmarkManagerMediator
     }
 
     @VisibleForTesting
-    BookmarkBatchUploadCardCoordinator getBookmarkBatchUploadCardCoordinator() {
-        return mBookmarkBatchUploadCardCoordinator;
+    BatchUploadCardCoordinator getBatchUploadCardCoordinator() {
+        return mBatchUploadCardCoordinator;
     }
 
     @VisibleForTesting

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card;
+package org.chromium.chrome.browser.sync.ui.batch_upload_card;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 @NullMarked
-class BookmarkBatchUploadCardMediator
+class BatchUploadCardMediator
         implements SyncService.SyncStateChangedListener, BatchUploadDialogCoordinator.Listener {
     private final LifecycleObserver mLifeCycleObserver =
             new DefaultLifecycleObserver() {
@@ -78,7 +78,7 @@ class BookmarkBatchUploadCardMediator
      * @param snackbarManager {@link SnackbarManager} used to display snackbars.
      * @param batchUploadCardChangeAction {@link Runnable} that is used to update the card.
      */
-    public BookmarkBatchUploadCardMediator(
+    public BatchUploadCardMediator(
             Activity activity,
             LifecycleOwner lifecycleOwner,
             ModalDialogManager modalDialogManager,
@@ -232,7 +232,7 @@ class BookmarkBatchUploadCardMediator
 
         assumeNonNull(mLocalDataDescriptionsMap);
         mModel.set(
-                BookmarkBatchUploadCardProperties.ON_CLICK_LISTENER,
+                BatchUploadCardProperties.ON_CLICK_LISTENER,
                 v -> {
                     BatchUploadDialogCoordinator.show(
                             mContext, mLocalDataDescriptionsMap, mDialogManager, this);
@@ -249,7 +249,7 @@ class BookmarkBatchUploadCardMediator
 
         if (localItemsCountExcludingBookmarks == 0) {
             mModel.set(
-                    BookmarkBatchUploadCardProperties.DESCRIPTION_TEXT,
+                    BatchUploadCardProperties.DESCRIPTION_TEXT,
                     mContext.getResources()
                             .getQuantityString(
                                     R.plurals.bookmarks_left_behind_bookmark,
@@ -258,7 +258,7 @@ class BookmarkBatchUploadCardMediator
                                     accountInfo.getEmail()));
         } else if (localBookmarksCount == 0) {
             mModel.set(
-                    BookmarkBatchUploadCardProperties.DESCRIPTION_TEXT,
+                    BatchUploadCardProperties.DESCRIPTION_TEXT,
                     mContext.getResources()
                             .getQuantityString(
                                     R.plurals.bookmarks_left_behind_other,
@@ -267,7 +267,7 @@ class BookmarkBatchUploadCardMediator
                                     accountInfo.getEmail()));
         } else {
             mModel.set(
-                    BookmarkBatchUploadCardProperties.DESCRIPTION_TEXT,
+                    BatchUploadCardProperties.DESCRIPTION_TEXT,
                     mContext.getResources()
                             .getQuantityString(
                                     R.plurals.bookmarks_left_behind_bookmark_and_other,
