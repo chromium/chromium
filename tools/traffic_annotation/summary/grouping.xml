@@ -108,7 +108,6 @@ after discussions on the right group.
       <annotation id="remoting_directory_delete_host"/>
       <annotation id="remoting_directory_get_host_list"/>
       <annotation id="remoting_directory_register_host"/>
-      <annotation id="remoting_telemetry_log_writer"/>
       <annotation id="heartbeat_sender"/>
       <annotation id="remoting_register_support_host_request"/>
       <annotation id="remoting_ice_config_request"/>
