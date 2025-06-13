@@ -1407,8 +1407,10 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   }
 
   CrFullscreenState fullScreenState = CrFullscreenState::kNotInFullScreen;
-  fullScreenState =
-      CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
+  if (@available(iOS 16.0, *)) {
+    fullScreenState =
+        CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
+  }
   CRWWebViewContentView* webViewContentView =
       [[CRWWebViewContentView alloc] initWithWebView:self.webView
                                           scrollView:self.webScrollView
@@ -1584,14 +1586,16 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 - (void)fullscreenStateDidChange {
-  CrFullscreenState fullScreenState =
-      CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
-  [_containerView updateWebViewContentViewFullscreenState:fullScreenState];
-  // Update state for `fullscreenModeOn` so that we can expose the current
-  // status of fullscreen mode through different interfaces.
-  _webPageInFullscreenMode =
-      fullScreenState == CrFullscreenState::kInFullscreen;
-  base::UmaHistogramEnumeration(kFullScreenStateHistogram, fullScreenState);
+  if (@available(iOS 16.0, *)) {
+    CrFullscreenState fullScreenState =
+        CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
+    [_containerView updateWebViewContentViewFullscreenState:fullScreenState];
+    // Update state for `fullscreenModeOn` so that we can expose the current
+    // status of fullscreen mode through different interfaces.
+    _webPageInFullscreenMode =
+        fullScreenState == CrFullscreenState::kInFullscreen;
+    base::UmaHistogramEnumeration(kFullScreenStateHistogram, fullScreenState);
+  }
 }
 
 #pragma mark - CRWWebViewHandlerDelegate

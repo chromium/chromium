@@ -162,8 +162,10 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   // Chrome uses Google-provided Safe Browsing.
   [[configuration_ preferences] setFraudulentWebsiteWarningEnabled:NO];
 
-  if (GetWebClient()->EnableFullscreenAPI()) {
-    [[configuration_ preferences] setElementFullscreenEnabled:YES];
+  if (@available(iOS 16.0, *)) {
+    if (GetWebClient()->EnableFullscreenAPI()) {
+      [[configuration_ preferences] setElementFullscreenEnabled:YES];
+    }
   }
 
   [configuration_ setAllowsInlineMediaPlayback:YES];

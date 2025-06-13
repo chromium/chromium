@@ -826,12 +826,14 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
   // Using native FiP through is only available for 16.0, otherwise fallback
   // to iGA JS FiP.
-  [alertController
-      addAction:[UIAlertAction actionWithTitle:@"Start Find In Page"
-                                         style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction* action) {
-                                         [weakSelf startFindInPageSession];
-                                       }]];
+  if (@available(iOS 16.0, *)) {
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Start Find In Page"
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [weakSelf startFindInPageSession];
+                                         }]];
+  }
 
   [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -1080,8 +1082,10 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 - (void)startFindInPageSession {
   // Using native FiP through is only available for 16.0, otherwise fallback
   // to iGA JS FiP.
-  if ([_webView.findInPageController canFindInPage]) {
-    [_webView.findInPageController startFindInPage];
+  if (@available(iOS 16.0, *)) {
+    if ([_webView.findInPageController canFindInPage]) {
+      [_webView.findInPageController startFindInPage];
+    }
   }
 }
 
