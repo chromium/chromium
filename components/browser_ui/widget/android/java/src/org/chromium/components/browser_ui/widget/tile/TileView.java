@@ -70,19 +70,20 @@ public class TileView extends FrameLayout {
      * @param icon The icon to display on the tile.
      * @param titleLines The number of text lines to use for the tile title.
      */
-    public void initialize(String title, boolean showOfflineBadge, Drawable icon, int titleLines) {
+    public void initialize(
+            String title, boolean showOfflineBadge, @Nullable Drawable icon, int titleLines) {
         setOfflineBadgeVisibility(showOfflineBadge);
         setIconDrawable(icon);
         setTitle(title, titleLines);
     }
 
     /** Renders the icon or clears it from the view if the icon is null. */
-    public void setIconDrawable(Drawable icon) {
+    public void setIconDrawable(@Nullable Drawable icon) {
         mIconView.setImageDrawable(icon);
     }
 
     /** Applies or clears icon tint. */
-    public void setIconTint(ColorStateList color) {
+    public void setIconTint(@Nullable ColorStateList color) {
         ImageViewCompat.setImageTintList(mIconView, color);
     }
 

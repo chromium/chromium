@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.suggestions.mostvisited;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.url.GURL;
@@ -15,6 +15,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** Methods to provide most recent urls, titles and thumbnails. */
+@NullMarked
 public interface MostVisitedSites extends CustomLinkOperations {
     /** An interface for handling events in {@link MostVisitedSites}. */
     interface Observer {
@@ -49,8 +50,7 @@ public interface MostVisitedSites extends CustomLinkOperations {
          * @return The raw URL of the currently set home page.
          */
         @CalledByNative("HomepageClient")
-        @Nullable
-        String getHomepageUrl();
+        @Nullable String getHomepageUrl();
     }
 
     /** This instance must not be used after calling destroy(). */

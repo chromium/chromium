@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Utility class for {@link Tile}s related queries or operations. */
+@NullMarked
 public class TileUtils {
     private static final Set<String> CUSTOM_TILE_SCHEMES =
             new HashSet<>(
