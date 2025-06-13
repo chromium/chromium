@@ -215,9 +215,14 @@ void ReadAnythingService::RemoveTtsDownloadExtension() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingService::InstallComponent(const base::FilePath& new_dir) {
-  const base::FilePath::CharType* manifest =
-      features::IsWasmTtsComponentUpdaterV3Enabled() ? kManifestV3FileName
-                                                     : kManifestFileName;
+  const base::FilePath::CharType* manifest;
+  if (features::IsWasmTtsComponentUpdaterV3Enabled()) {
+    VLOG(1) << "Installing TTS component using V3 engine";
+    manifest = kManifestV3FileName;
+  } else {
+    VLOG(1) << "Installing TTS component using V2 engine";
+    manifest = kManifestFileName;
+  }
   EmbeddedA11yExtensionLoader::GetInstance()->Init();
   EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
       extension_misc::kComponentUpdaterTTSEngineExtensionId, new_dir, manifest,
