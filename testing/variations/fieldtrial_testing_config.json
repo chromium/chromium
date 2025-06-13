@@ -24394,6 +24394,21 @@
             ]
         }
     ],
+    "TriggerPasswordResyncWhenUndecryptablePasswordsDetected": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TriggerPasswordResyncWhenUndecryptablePasswordsDetected"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [
