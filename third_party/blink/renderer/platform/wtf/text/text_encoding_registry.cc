@@ -175,8 +175,8 @@ static void BuildBaseTextCodecMaps() {
 }
 
 static void ExtendTextCodecMaps() {
-  TextCodecReplacement::RegisterEncodingNames(AddToTextEncodingNameMap);
-  TextCodecReplacement::RegisterCodecs(AddToTextCodecMap);
+  blink::TextCodecReplacement::RegisterEncodingNames(AddToTextEncodingNameMap);
+  blink::TextCodecReplacement::RegisterCodecs(AddToTextCodecMap);
 
   TextCodecCJK::RegisterEncodingNames(AddToTextEncodingNameMap);
   TextCodecCJK::RegisterCodecs(AddToTextCodecMap);

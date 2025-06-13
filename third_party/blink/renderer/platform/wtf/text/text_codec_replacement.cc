@@ -8,13 +8,13 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 TextCodecReplacement::TextCodecReplacement()
     : replacement_error_returned_(false) {}
 
 void TextCodecReplacement::RegisterEncodingNames(
-    EncodingNameRegistrar registrar) {
+    WTF::EncodingNameRegistrar registrar) {
   // Taken from the alias table at·https://encoding.spec.whatwg.org/
   registrar("replacement", "replacement");
   registrar("csiso2022kr", "replacement");
@@ -25,17 +25,17 @@ void TextCodecReplacement::RegisterEncodingNames(
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderReplacement(
-    const TextEncoding&,
+    const WTF::TextEncoding&,
     const void*) {
   return std::make_unique<TextCodecReplacement>();
 }
 
-void TextCodecReplacement::RegisterCodecs(TextCodecRegistrar registrar) {
+void TextCodecReplacement::RegisterCodecs(WTF::TextCodecRegistrar registrar) {
   registrar("replacement", NewStreamingTextDecoderReplacement, nullptr);
 }
 
 String TextCodecReplacement::Decode(base::span<const uint8_t> data,
-                                    FlushBehavior,
+                                    WTF::FlushBehavior,
                                     bool,
                                     bool& saw_error) {
   // https://encoding.spec.whatwg.org/#replacement-decoder
@@ -57,4 +57,4 @@ String TextCodecReplacement::Decode(base::span<const uint8_t> data,
   return String();
 }
 
-}  // namespace WTF
+}  // namespace blink
