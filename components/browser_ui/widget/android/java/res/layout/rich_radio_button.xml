@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:gravity="center_vertical"
+    android:background="@drawable/rich_radio_button_background">
+
+    <FrameLayout
+        android:id="@+id/rich_radio_button_icon_container"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/rich_radio_button_background"
+        android:gravity="center"
+        android:clipToOutline="true">
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/rich_radio_button_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+                android:visibility="gone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/rich_radio_button_text_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/rich_radio_button_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <TextView
+            android:id="@+id/rich_radio_button_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+
+    <RadioButton
+        android:id="@+id/rich_radio_button_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:layout_marginStart="16dp"
+        android:button="@null"
+        android:drawableEnd="@drawable/rich_radio_button_selector"
+        android:drawableTint="?attr/colorPrimary" />
+
+</LinearLayout>
