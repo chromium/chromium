@@ -81,16 +81,3 @@
 
 # TODO(crbug.com/40800718): Enable once the xdg desktop portal backed implementation is in place.
 -EyeDropperViewAuraInteractiveTest.*
-
-# TODO(crbug.com/334413759) The following tests fail only on weston (and not
-# mutter) with OzoneBubblesUsePlatformWidgets enabled.
--InteractiveBrowserTestHoverUiTest.MoveMouseHoverMultipleViews
--InteractiveBrowserTestHoverUiTest.MoveMouseHoversView
--MediaDialogViewBrowserTest.ClickingOnItemGoesBackToTab
--MediaDialogViewBrowserTest.LiveCaption
--MediaDialogViewBrowserTest.LiveCaptionProgressUpdate
--MediaDialogViewBrowserTest.LiveCaptionShowLanguage
--MediaDialogViewBrowserTest.LiveTranslate
--MediaDialogViewBrowserTest.ShowsMetadataAndControlsMedia
--MediaDialogViewBrowserTest.ShowsMetadataAndControlsMediaInRTL
--MediaDialogViewBrowserTest.TargetLanguageDropdown

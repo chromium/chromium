@@ -108,7 +108,8 @@ bool AreF11AndF12ShortcutsEnabled() {
 #if BUILDFLAG(IS_OZONE)
 BASE_FEATURE(kOzoneBubblesUsePlatformWidgets,
              "OzoneBubblesUsePlatformWidgets",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT
+);
 
 // Controls whether support for Wayland's linux-drm-syncobj is enabled.
 BASE_FEATURE(kWaylandLinuxDrmSyncobj,
