@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 天前}other{# 天前}}</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1243314992276662751">上傳</translation>
+<translation id="1253734725326687145">觸控目標已移至右上方。輕觸這裡。</translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Windows 鍵</translation>
 <translation id="1291104554099683393">請嘗試將要分享的文字分成多個片段。</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="24452542372838207">展開通知</translation>
 <translation id="2445449901874883781">使用高密度模式</translation>
+<translation id="2448407890032181691">觸控目標已移至右下方。輕觸這裡。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2497284189126895209">所有檔案</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Tab 鍵</translation>
 <translation id="5613020302032141669">向左鍵</translation>
 <translation id="5633029987065897167">空白</translation>
+<translation id="5651438382973553530">觸控目標已移至左下方。輕觸這裡。</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 分鐘}other{# 分鐘}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{上次使用時間：今天}=1{上次使用時間：1 天前}other{上次使用時間：# 天前}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 天 }other{# 天 }}</translation>

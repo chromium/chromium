@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
 <translation id="3602260545951981695">"વધારેલું સંરક્ષણ" પસંદ કરો</translation>
 <translation id="3608436266458100337">રીડર મોડ</translation>
+<translation id="3610041351087301930">રીડર છુપાવો</translation>
 <translation id="3622175633937495219">શોધ ઇતિહાસ (<ph name="COUNT" /> મળ્યાં)</translation>
 <translation id="3625008969091706597">તમે પાછળ જવા માટે, કિનારીને સ્વાઇપ કરી શકો છો.</translation>
 <translation id="362709345066740529">અહીં તમારા કાર્ડ, ફીડ અને બીજું ઘણું કસ્ટમાઇઝ કરો</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">તમારા બુકમાર્ક, પાસવર્ડ, ઇતિહાસ અને બીજા સેટિંગને તમારા બધા ડિવાઇસ પર મેળવવા માટે તમારા Google એકાઉન્ટ સાથે સાઇન ઇન કરો.</translation>
 <translation id="4985921635659180565">એકવાર ફાઇલ ડિલીટ થવા માટે શેડ્યૂલ થાય તે પછી, તેને રદ કરી શકાતી નથી.</translation>
 <translation id="498624032394115435">લિંક ધરાવતી કોઈપણ વ્યક્તિ બધા ટૅબમાં ફેરફારો કરી શકે છે.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" />ને સાચવવા માટેનું લોકેશન પસંદ કરો</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="4992255726304765516">ટૅબના ગ્રૂપનો રંગ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">તમને સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="543338862236136125">પાસવર્ડમાં ફેરફાર કરો</translation>
 <translation id="5433691172869980887">વપરાશકર્તાનામ કૉપિ કર્યું</translation>
+<translation id="5437480232219631455">તમે અહીં Gemini ખોલી શકો છો</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયા</translation>
 <translation id="5443636120437209490">ડિફૉલ્ટ તરીકે બહેતર બ્રાઉઝિંગ</translation>
 <translation id="5444892875087332195">બુકમાર્ક</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}one{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}other{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}}</translation>
 <translation id="7729458878441927652">તમારા અન્ય ડિવાઇસમાંના ટૅબ જોવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો.</translation>
 <translation id="7730020510075123961">ના, ડેટા મર્જ કરો</translation>
-<translation id="7730973429297233609">જેનો ઉપયોગ કરીને તમે <ph name="FILENAME" /> - <ph name="FILESIZE" />ને સાચવવા માગો છો, તે એકાઉન્ટ પસંદ કરો</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. માત્ર આ જ ડિવાઇસ પર.</translation>
 <translation id="7744192722284567281">ડેટા ઉલ્લંઘનમાં મળ્યો</translation>
 <translation id="7749790401023484470">તમે કોઈ ટેક્સ્ટ પસંદ કરેલી નથી.</translation>
@@ -1834,7 +1834,6 @@
 <translation id="8428045167754449968">શહેર/નગર</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428634594422941299">સમજાઈ ગયું</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />)ને સાચવવા માટેનું લોકેશન પસંદ કરો</translation>
 <translation id="8434837876193928924">ટૅબના ગ્રૂપની વિગતો</translation>
 <translation id="8438566539970814960">શોધ અને બ્રાઉઝિંગ વધુ સારું બનાવો</translation>
 <translation id="8439758443371991593">'વાંચન સૂચિમાં ઉમેરો' છુપાવો</translation>

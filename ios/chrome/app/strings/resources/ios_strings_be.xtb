@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="3602260545951981695">Выберыце функцыю "Палепшаная абарона"</translation>
 <translation id="3608436266458100337">Рэжым чытання</translation>
+<translation id="3610041351087301930">Схаваць рэжым чытання</translation>
 <translation id="3622175633937495219">Гісторыя пошуку (знойдзена супадзенняў: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Каб перайсці назад, правядзіце пальцам па краі экрана.</translation>
 <translation id="362709345066740529">Тут можна наладзіць карткі, стужку і іншае</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">Каб закладкі, паролі, гісторыя і іншыя налады былі даступнымі на ўсіх вашых прыладах, увайдзіце ва Уліковы запіс Google</translation>
 <translation id="4985921635659180565">Запланаванае выдаленне файла нельга адмяніць.</translation>
 <translation id="498624032394115435">Любы карыстальнік, які мае спасылку, можа рэдагаваць усе ўкладкі.</translation>
-<translation id="4989065233040279145">Выберыце, куды захаваць файл "<ph name="FILENAME" />"</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, пад кіраваннем вашай арганізацыі.</translation>
 <translation id="4992255726304765516">Колер групы ўкладак <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">Будзе выкананы выхад з уліковага запісу</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
 <translation id="5433691172869980887">Імя карыстальніка скапіравана</translation>
+<translation id="5437480232219631455">Тут можна адкрыць Gemini</translation>
 <translation id="5439618055789623719">Вы ўвайшлі як <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Лепшы стандартны браўзер</translation>
 <translation id="5444892875087332195">Закладкі</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{Даныя захаваны ў вашым Уліковым запісе Google ({email})}one{Даныя захаваны ў вашым Уліковым запісе Google ({email})}few{Даныя захаваны ў вашым Уліковым запісе Google ({email})}many{Даныя захаваны ў вашым Уліковым запісе Google ({email})}other{Даныя захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="7729458878441927652">Каб бачыць укладкі з іншых прылад, сінхранізуйце ўкладкі і гісторыю.</translation>
 <translation id="7730020510075123961">Не, аб’яднаць даныя</translation>
-<translation id="7730973429297233609">Выберыце ўліковы запіс, у якім трэба захаваць файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Толькі на гэтай прыладзе.</translation>
 <translation id="7744192722284567281">Раскрыты пры ўцечцы даных</translation>
 <translation id="7749790401023484470">Вы не выбралі тэкст</translation>
@@ -1834,7 +1834,6 @@
 <translation id="8428045167754449968">Горад або населены пункт</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8428634594422941299">Зразумела</translation>
-<translation id="8430694217306051839">Выберыце, куды захаваць файл "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Падрабязныя звесткі пра групу ўкладак</translation>
 <translation id="8438566539970814960">Палепшыць пошук і прагляд</translation>
 <translation id="8439758443371991593">Схаваць пункт "Дадаць у спіс на прагляд"</translation>

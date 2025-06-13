@@ -1564,6 +1564,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3641116835972736297">Futebol americano</translation>
 <translation id="3642196846309122856">Tente baixar os arquivos de novo</translation>
 <translation id="3642638418806704195">Aplicativo:</translation>
+<translation id="3644768007456662469">Ícone do item de pagamentos</translation>
 <translation id="3646643500201740985">Medir a performance de um anúncio</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL precisa conter entre um e dois URLs.</translation>
 <translation id="3647400963805615193">Botão "Dispensar dica do Chrome", pressione Enter para dispensar, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4530347922939905757">Mensagem de texto</translation>
 <translation id="4531477351494678589">Número do cartão virtual:</translation>
 <translation id="4535523368173457420">Esses mecanismos de pesquisa são os mais usados na sua região. Eles estão listados em ordem aleatória.</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Criado há 1 ano}one{Criado há {NUM_YEARS} ano}other{Criado há {NUM_YEARS} anos}}</translation>
 <translation id="4541810033354695636">realidade aumentada</translation>
 <translation id="4542971377163063093">Bandeja 6</translation>
 <translation id="4543072026714825470">Para agilizar o pagamento na próxima vez, salve o cartão e o endereço de faturamento na sua Conta do Google.</translation>
 <translation id="454441086898495030">Adicionar a <ph name="SET" />?</translation>
 <translation id="4546730006268514143">O tempo de transferência expirou</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Criado há 1 dia}one{Criado há {NUM_DAYS} dia}other{Criado há {NUM_DAYS} dias}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Você está usando o bloqueio de tela para preencher senhas</translation>
 <translation id="4557573143631562971">Seguro residencial</translation>
@@ -2898,6 +2901,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5938153366081463283">Adicionar cartão virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Essas informações vêm de sites de avaliações independentes, como Trustpilot, ScamAdviser, Google e outros. Os resumos são criados com IA.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Criado há 1 minuto}one{Criado há {NUM_MINS} minuto}other{Criado há {NUM_MINS} minutos}}</translation>
 <translation id="5944297261866530437">Tecido (alto brilho)</translation>
 <translation id="5950901984834744590">Lâminas e barbeadores</translation>
 <translation id="5951495562196540101">Não é possível fazer a inscrição com a conta pessoal (pacote de licença disponível).</translation>
@@ -3955,7 +3959,7 @@ Mais detalhes:
 <translation id="769424100851389104">Iniciar atualização agora</translation>
 <translation id="7697837508203274589">Eventos esportivos ao vivo</translation>
 <translation id="7698864304447945242">Atualizar o Google Play Services para RA?</translation>
-<translation id="7701040980221191251">Não há</translation>
+<translation id="7701040980221191251">Nenhum</translation>
 <translation id="7701486038694690341">Música country</translation>
 <translation id="7701544340847569275">Atualização concluída com erros</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Ir para <ph name="SITE" /> (não seguro)<ph name="END_LINK" /></translation>
@@ -4059,6 +4063,7 @@ Mais detalhes:
 <translation id="7894280532028510793">Se o endereço estiver correto, <ph name="BEGIN_LINK" />tente executar o Diagnóstico de Rede<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope de 18 cm x 23 cm</translation>
 <translation id="7905064834449738336">Quando você usa uma senha, o Chromium avisa se ela foi publicada on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem mesmo o Google.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Criado há 1 hora}one{Criado há {NUM_HOURS} hora}other{Criado há {NUM_HOURS} horas}}</translation>
 <translation id="7908648876066812348">Ativando o cartão virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para acessar a página de confirmação de segurança do Chrome nas configurações</translation>
 <translation id="791107458486222637">Botão "Refazer" pressionado</translation>
@@ -4193,6 +4198,7 @@ Mais detalhes:
 <translation id="8134058435519644366">Recrutamento e contratação</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
 <translation id="8137456439814903304">Energia e serviços públicos</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Criado há 1 mês}one{Criado há {NUM_MONTHS} mês}other{Criado há {NUM_MONTHS} meses}}</translation>
 <translation id="8148608574971654810">Versão do PDF:</translation>
 <translation id="8149426793427495338">Seu computador entrou em modo de suspensão.</translation>
 <translation id="8150722005171944719">O arquivo em <ph name="URL" /> não está legível. Ele pode ter sido removido ou movido, ou as permissões do arquivo podem estar impedindo o acesso.</translation>

@@ -1561,6 +1561,7 @@
 <translation id="3641116835972736297">अमेरिकी फुटबल</translation>
 <translation id="3642196846309122856">आफ्ना फाइलहरू फेरि डाउनलोड गरी हेर्नुहोस्</translation>
 <translation id="3642638418806704195">एप:</translation>
+<translation id="3644768007456662469">भुक्तानीसम्बन्धी आइटम जनाउने आइकन</translation>
 <translation id="3646643500201740985">विज्ञापनको पर्फर्मेन्स कत्तिको राम्रो छ भन्ने कुरा मापन गर्ने तरिका</translation>
 <translation id="3647286794400715637">प्रत्येक URL स्ट्रिङ प्रविष्टिमा १ देखि २ वटा URL हुनु पर्छ।</translation>
 <translation id="3647400963805615193">Chrome सम्बन्धी सुझाव हटाउने बटन, हटाउन इन्टर की थिच्नुहोस्, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2098,11 +2099,13 @@
 <translation id="4530347922939905757">टेक्स्ट म्यासेज</translation>
 <translation id="4531477351494678589">भर्चुअल कार्ड नम्बर:</translation>
 <translation id="4535523368173457420">यी सर्च इन्जिनहरू तपाईंको क्षेत्रमा लोकप्रिय छन् र अनियमित क्रममा देखाइएका छन्</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{१ वर्षअघि बनाइएको}other{{NUM_YEARS} वर्षअघि बनाइएको}}</translation>
 <translation id="4541810033354695636">अग्मेन्टेड रियालिटी</translation>
 <translation id="4542971377163063093">ट्रे ६</translation>
 <translation id="4543072026714825470">अर्को पटक अझ छिटो भुक्तानी गर्न आफ्नो Google खातामा आफ्नो कार्ड र बिलिङ ठेगाना सेभ गर्नुहोस्</translation>
 <translation id="454441086898495030"><ph name="SET" /> मा हाल्ने हो?</translation>
 <translation id="4546730006268514143">ट्रान्स्फर गर्ने समय सकिएको छ</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{१ दिनअघि बनाइएको}other{{NUM_DAYS} दिनअघि बनाइएको}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">तपाईं पासवर्डहरू हाल्नका निम्ति स्क्रिन लक प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="4557573143631562971">घरको बीमा</translation>
@@ -2896,6 +2899,7 @@
 <translation id="5938153366081463283">भर्चुअल कार्ड लिंक गर्नुहोस्</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">यो जानकारी स्वतन्त्र रूपमा रिभ्यू पोस्ट गर्न सकिने Trustpilot, ScamAdviser, Google लगायतका वेबसाइटहरूबाट लिइएको हो। सारांशहरू AI प्रयोग गरी सिर्जना गरिन्छन्।</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{१ मिनेटअघि बनाइएको}other{{NUM_MINS} मिनेटअघि बनाइएको}}</translation>
 <translation id="5944297261866530437">फेब्रिक (हाई-ग्लस)</translation>
 <translation id="5950901984834744590">दाह्री काट्ने तथा रौँ खौरने रेजर</translation>
 <translation id="5951495562196540101">उपभोक्ताको खातामार्फत दर्ता गर्न सकिँदैन (प्याकेजसहितको इजाजतपत्र उपलब्ध छ)।</translation>
@@ -4056,6 +4060,7 @@
 <translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका डाइगोन्स्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
 <translation id="7905064834449738336">तपाईंले अनलाइनमा लिक भइसकेको कुनै पासवर्ड प्रयोग गर्नुभयो भने Chromium ले तपाईंलाई उक्त कुराका बारेमा चेतावनी दिन्छ। यसो गर्ने क्रममा Google लगायत अरू कसैले पनि तपाईंका पासवर्ड र युजरनेम हेर्न नसकून् भन्नाका लागि तिनलाई इन्क्रिप्ट गरिन्छ।</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{१ घण्टाअघि बनाइएको}other{{NUM_HOURS} घण्टाअघि बनाइएको}}</translation>
 <translation id="7908648876066812348">भर्चुअल कार्ड अन गरिँदै छ</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, सेटिङमा रहेको Chrome को सुरक्षा जाँच पेजमा जान ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="791107458486222637">परिणाम रिडू गरिँदै छ</translation>
@@ -4190,6 +4195,7 @@
 <translation id="8134058435519644366">भर्ती तथा नियक्ति गर्ने सेवा</translation>
 <translation id="8135546115396015134">लेफ्ट की</translation>
 <translation id="8137456439814903304">ऊर्जा तथा युटिलिटीहरू</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{१ महिनाअघि बनाइएको}other{{NUM_MONTHS} महिनाअघि बनाइएको}}</translation>
 <translation id="8148608574971654810">PDF को संस्करण:</translation>
 <translation id="8149426793427495338">तपाईंको कम्प्युटर शयन अवस्थामा गयो।</translation>
 <translation id="8150722005171944719"><ph name="URL" /> मा भएको फाइल पठनीय छैन। यो हटाइएको, सारिएको हुनसक्छ, वा फाइल अनुमतिले पहुँचलाई रोकेको हुन सक्छ।</translation>

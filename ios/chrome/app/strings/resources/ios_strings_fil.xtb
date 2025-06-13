@@ -623,6 +623,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3596414637720633074">I-block ang third-party na cookies sa Incognito</translation>
 <translation id="3602260545951981695">Piliin ang "Pinaigting na Proteksyon"</translation>
 <translation id="3608436266458100337">Reader mode</translation>
+<translation id="3610041351087301930">I-hide ang Reader</translation>
 <translation id="3622175633937495219">History ng Paghahanap (<ph name="COUNT" /> ang nakita)</translation>
 <translation id="3625008969091706597">Puwede mong i-swipe ang gilid na bahagi para bumalik.</translation>
 <translation id="362709345066740529">I-customize dito ang iyong mga card, feed, at higit pa</translation>
@@ -964,7 +965,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4979397965658815378">Mag-sign in gamit ang Google Account mo para makuha ang iyong mga bookmark, password, history at iba pang mga setting sa lahat ng device mo</translation>
 <translation id="4985921635659180565">Kapag naiskedyul nang i-delete ang isang file, hindi na ito makakansela.</translation>
 <translation id="498624032394115435">Mae-edit ng sinumang may link ang lahat ng tab.</translation>
-<translation id="4989065233040279145">Piliin kung saan ise-save ang <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="4992255726304765516">Kulay <ph name="COLOR" /> na grupo ng tab</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
@@ -1064,6 +1064,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5431252637281434233">Masa-sign out ka</translation>
 <translation id="543338862236136125">I-edit ang password</translation>
 <translation id="5433691172869980887">Nakopya ang username</translation>
+<translation id="5437480232219631455">Puwede mong buksan ang Gemini dito</translation>
 <translation id="5439618055789623719">Naka-sign in bilang <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Mas mahusay na pag-browse bilang default</translation>
 <translation id="5444892875087332195">Mga Bookmark</translation>
@@ -1650,7 +1651,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7724085059277147439">{count,plural, =1{Na-save na ang item sa iyong Google Account, {email}}one{Na-save na ang mga item sa iyong Google Account, {email}}other{Na-save na ang mga item sa iyong Google Account, {email}}}</translation>
 <translation id="7729458878441927652">Para makita ang mga tab mula sa iba mong device, i-sync ang iyong mga tab at history.</translation>
 <translation id="7730020510075123961">Hindi, i-merge ang data</translation>
-<translation id="7730973429297233609">Piliin ang account na gusto mong gamitin para i-save ang <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Sa device lang na ito.</translation>
 <translation id="7744192722284567281">Nakita sa paglabag sa data</translation>
 <translation id="7749790401023484470">Wala kang piniling anumang text.</translation>
@@ -1834,7 +1834,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8428045167754449968">Lungsod / Bayan</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8428634594422941299">OK</translation>
-<translation id="8430694217306051839">Piliin kung saan ise-save ang <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Mga detalye ng grupo ng tab</translation>
 <translation id="8438566539970814960">Mas pahusayin ang mga paghahanap at pag-browse</translation>
 <translation id="8439758443371991593">I-hide ang Idagdag sa Listahan ng Babasahin</translation>

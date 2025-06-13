@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{१ दिनअघि}other{# दिनअघि}}</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1243314992276662751">अपलोड गर्नुहोस्</translation>
+<translation id="1253734725326687145">टच गरिने स्थान सारेर सिरानको दायाँतिर लगिएको छ। यहाँ ट्याप गर्नुहोस्।</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">पाठलाई विभाजन गरी साना खण्ड बनाएर आदान प्रदान गरी हेर्नुहोस्।</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="24452542372838207">सूचना विस्तृत गर्नुहोस्‌</translation>
 <translation id="2445449901874883781">उच्च घनत्व भएको डिस्प्ले प्रयोग गर्नुहोस्</translation>
+<translation id="2448407890032181691">टच गरिने स्थान सारेर पुछारको दायाँतिर लगिएको छ। यहाँ ट्याप गर्नुहोस्।</translation>
 <translation id="2482878487686419369">नोटिफिकेसनहरू</translation>
 <translation id="2497284189126895209">सबै फाइलहरू</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">ट्याब</translation>
 <translation id="5613020302032141669">बायाँ तीर</translation>
 <translation id="5633029987065897167">खाली छ</translation>
+<translation id="5651438382973553530">टच गरिने स्थान सारेर पुछारको बायाँतिर लगिएको छ। यहाँ ट्याप गर्नुहोस्।</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{ १ मिनेट}other{ # मिनेट}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{आज सक्रिय रहेको}=1{१ दिनअघि सक्रिय रहेको}other{# दिनअघि सक्रिय रहेको}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{ १ दिन र }other{ # दिन र }}</translation>

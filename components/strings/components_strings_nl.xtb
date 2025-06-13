@@ -937,6 +937,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
 <translation id="254947805923345898">Beleidswaarde is ongeldig.</translation>
 <translation id="2549836668759467704">Bouwadvies en aanbesteding</translation>
+<translation id="2549919488151689436">Onder andere <ph name="TOPIC_1" /> en <ph name="TOPIC_2" /></translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> heeft een ongeldige reactie verzonden.</translation>
 <translation id="2551608178605132291">Adres: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -2095,11 +2096,13 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4530347922939905757">Sms</translation>
 <translation id="4531477351494678589">Virtueel kaartnummer:</translation>
 <translation id="4535523368173457420">Deze zoekmachines zijn populair in je regio en worden in willekeurige volgorde getoond</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 jaar geleden gemaakt}other{{NUM_YEARS} jaar geleden gemaakt}}</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542971377163063093">Lade 6</translation>
 <translation id="4543072026714825470">Sla je kaart en factuuradres op in je Google-account, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="454441086898495030">Toevoegen aan <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Time-out bij overzetten</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 dag geleden gemaakt}other{{NUM_DAYS} dagen geleden gemaakt}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Je gebruikt je schermvergrendeling om wachtwoorden in te vullen</translation>
 <translation id="4557573143631562971">Woningverzekeringen</translation>
@@ -2893,6 +2896,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5938153366081463283">Virtuele kaart toevoegen</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Deze informatie komt van onafhankelijke reviewwebsites zoals Trustpilot, ScamAdviser en Google. Samenvattingen worden gemaakt met AI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 minuut geleden gemaakt}other{{NUM_MINS} minuten geleden gemaakt}}</translation>
 <translation id="5944297261866530437">Stof (hoogglans)</translation>
 <translation id="5950901984834744590">Scheermessen en scheerapparaten</translation>
 <translation id="5951495562196540101">Kan consumentenaccount niet inschrijven (verpakte licentie beschikbaar).</translation>
@@ -4053,6 +4057,7 @@ Aanvullende informatie:
 <translation id="7894280532028510793">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelop 7 x 9 inch</translation>
 <translation id="7905064834449738336">Als je een wachtwoord gebruikt, waarschuwt Chromium je als het online is gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (ook niet Google) kunnen worden gelezen.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 uur geleden gemaakt}other{{NUM_HOURS} uur geleden gemaakt}}</translation>
 <translation id="7908648876066812348">Virtuele kaart aanzetten</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om naar de pagina voor de Chrome-veiligheidscheck in de instellingen te gaan</translation>
 <translation id="791107458486222637">Resultaat opnieuw uitvoeren</translation>
@@ -4187,6 +4192,7 @@ Aanvullende informatie:
 <translation id="8134058435519644366">Werving en selectie</translation>
 <translation id="8135546115396015134">linkertoets</translation>
 <translation id="8137456439814903304">Nutsbedrijven</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 maand geleden gemaakt}other{{NUM_MONTHS} maanden geleden gemaakt}}</translation>
 <translation id="8148608574971654810">Pdf-versie:</translation>
 <translation id="8149426793427495338">De slaapstand van je computer is geactiveerd.</translation>
 <translation id="8150722005171944719">Het bestand op <ph name="URL" /> is onleesbaar. Het bestand is mogelijk verwijderd of verplaatst of de bestandsrechten zorgen ervoor dat het bestand niet kan worden geopend.</translation>
@@ -4806,6 +4812,7 @@ Aanvullende informatie:
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
 <translation id="9222403027701923763">Basisonderwijs en voortgezet onderwijs</translation>
+<translation id="9222463428840654067">Kaartnummer is ongeldig</translation>
 <translation id="922849469395748170">Klantenkaarten</translation>
 <translation id="93020190163435405">Stages</translation>
 <translation id="931598121743515856">Aankoopbedrag moet hoger zijn dan <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

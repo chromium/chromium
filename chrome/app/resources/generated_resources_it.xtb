@@ -5982,7 +5982,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5186381005592669696">Personalizza la lingua di visualizzazione per le app supportate</translation>
 <translation id="5186788525428341874">Puoi usare questa passkey per accedere più velocemente su tutti i tuoi dispositivi. Verrà salvata nel Gestore delle password di Google per <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Installa pagina come app…</translation>
-<translation id="5187671830619031922">Aggiungi scheda alla visualizzazione divisa</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Elemento condiviso da <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Utilizza la posizione. Consenti alle app, ai siti web e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del tuo dispositivo. La precisione della posizione fornisce una posizione più precisa per app e servizi. A questo scopo, Google tratta periodicamente informazioni relative a sensori dei dispositivi e segnali wireless provenienti dal tuo dispositivo per raccogliere le posizioni dei segnali wireless mediante crowdsourcing. Queste vengono usate senza identificarti per migliorare la precisione della posizione e i servizi basati sulla posizione geografica, nonché per migliorare, fornire e mantenere i servizi di Google basati sugli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti. <ph name="BEGIN_LINK1" />Scopri di più sull'utilizzo della posizione<ph name="END_LINK1" /></translation>
@@ -11094,7 +11093,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8827125715368568315">Autorizzazioni bloccate: <ph name="PERMISSION" /> e altre <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Blocca estensione</translation>
 <translation id="8828933418460119530">Nome DNS</translation>
-<translation id="8829979393064090868">Aggiungi scheda alla visualizzazione divisa</translation>
 <translation id="8830479210602243906">Aumenta la produttività</translation>
 <translation id="883062543841130884">Sostituzioni</translation>
 <translation id="8830779999439981481">Riavvio in corso per applicare gli aggiornamenti</translation>

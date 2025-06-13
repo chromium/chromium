@@ -5985,7 +5985,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5186381005592669696">Personaliza o idioma de visualización das aplicacións compatibles</translation>
 <translation id="5186788525428341874">Podes usar esta clave de acceso para iniciar sesión máis rápido en todos os dispositivos. Gardarase no xestor de contrasinais de Google para <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalar páxina como aplicación...</translation>
-<translation id="5187671830619031922">Engadir pestana á vista dividida</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Compartiuno <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Usa a localización. Permite que os servizos, sitios web e aplicacións para Android e ChromeOS con permiso de localización utilicen a do teu dispositivo. A opción Precisión da localización proporciónalles unha localización máis exacta aos servizos e aplicacións para Android. Con este fin, Google procesa periodicamente a información captada polos sinais sen fíos e os sensores do teu dispositivo para obter con participación colectiva a localización deses sinais. Estes datos utilízanse sen identificarte para mellorar a precisión da localización e os servizos baseados nela, así como para perfeccionar, proporcionar e manter os servizos de Google en función dos intereses lexítimos de Google e de terceiros coa finalidade de satisfacer as necesidades dos usuarios. <ph name="BEGIN_LINK1" />Máis información sobre o uso da localización<ph name="END_LINK1" /></translation>
@@ -9006,6 +9005,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7387951778417998929">Para usar un motor de busca diferente do predeterminado, escribe o seu atallo na barra de enderezos, seguido do atallo de teclado que prefiras. Aquí tamén podes cambiar o teu motor de busca predeterminado.</translation>
 <translation id="7388615499319468910">Os sitios e os anunciantes poden comprender o rendemento dos anuncios. Esta opción de configuración está desactivada.</translation>
 <translation id="738903649531469042">Engadir pestana á lista de lectura</translation>
+<translation id="7389615853658756494">Cambiar no sitio</translation>
 <translation id="7392118418926456391">Erro na análise antivirus</translation>
 <translation id="7392915005464253525">R&amp;eabrir a ventá pechada</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Copiouse 1 elemento}other{Copiáronse {COUNT} elementos}}</translation>
@@ -9135,6 +9135,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7474043404939621342">Personalizar barra de ferramentas</translation>
 <translation id="747459581954555080">Restablecer todo</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Requírese unha devolución de inmediato}other{Devolve o <ph name="DEVICE_TYPE" /> no prazo de {NUM_DAYS} días}}</translation>
+<translation id="747557463733380256">Máis información sobre como se xestiona o teu navegador</translation>
 <translation id="7475671414023905704">URL de contrasinal perdido de Netscape</translation>
 <translation id="7475742997309661417">Os principais usuarios de ChromeVox, o lector de pantalla de ChromeOS, son as persoas cegas ou con visión reducida, que o utilizan para ler, cun sintetizador ou cunha liña braille, o texto que se mostra en pantalla. Para activar este lector, mantén premidas as dúas teclas de volume durante cinco segundos. Unha vez activado, ofreceráseche unha guía rápida.</translation>
 <translation id="7476454130948140105">O nivel de batería é demasiado baixo para realizar a actualización (<ph name="BATTERY_PERCENT" /> %)</translation>
@@ -10283,6 +10284,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8265018477030547118">Almacenaríase só neste dispositivo</translation>
 <translation id="826511437356419340">Entraches no modo de vista xeral da ventá. Pasa o dedo para navegar ou preme o tabulador no teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{A ventá do modo de incógnito non se abrirá tras o reinicio}other{As {COUNT} ventás do modo de incógnito non se volverán abrir tras o reinicio}}</translation>
+<translation id="8266430295499893285">Debes verificar a túa identidade antes de poderes acceder aos teus contrasinais</translation>
 <translation id="8266947622852630193">Todos os métodos de introdución de texto</translation>
 <translation id="8267539814046467575">Engadir impresora</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Trátase de información xeral acerca deste dispositivo e do seu uso, como o nivel de batería, a actividade da aplicación e do sistema, e os erros. Os datos utilizaranse coa finalidade de mellorar Android e algunha información adicional tamén axudará ás aplicacións de Google e aos socios, como os programadores de Android, a mellorar as súas aplicacións e os produtos.<ph name="END_PARAGRAPH1" />
@@ -11092,7 +11094,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8827125715368568315">Bloqueáronse os seguintes permisos: <ph name="PERMISSION" /> e <ph name="COUNT" /> máis</translation>
 <translation id="8827289157496676362">Fixar a extensión</translation>
 <translation id="8828933418460119530">Nome de DNS</translation>
-<translation id="8829979393064090868">Engadir pestana á vista dividida</translation>
 <translation id="8830479210602243906">Potenciar produtividade</translation>
 <translation id="883062543841130884">Substitucións</translation>
 <translation id="8830779999439981481">Reiniciando para aplicar as actualizacións</translation>

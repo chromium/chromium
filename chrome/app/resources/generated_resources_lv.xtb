@@ -5983,7 +5983,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5186381005592669696">Attēlojuma valodas pielāgošana atbalstītajām lietotnēm</translation>
 <translation id="5186788525428341874">Varat izmantot šo piekļuves atslēgu, lai ātrāk pierakstītos visās savās ierīcēs. Tā tiks saglabāta konta <ph name="ACCOUNT_NAME" /> Google paroļu pārvaldniekā.</translation>
 <translation id="5187641678926990264">&amp;Instalēt lapu kā lietotni…</translation>
-<translation id="5187671830619031922">Pievienot cilni dalītajam skatam</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Kopīgoja <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Atrašanās vietas datu izmantošana. Ļauj ChromeOS un Android lietotnēm, vietnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot jūsu ierīces atrašanās vietas datus. Iestatījums “Atrašanās vietas precizitāte” Android lietotnēm un pakalpojumiem nodrošina precīzāku atrašanās vietu informāciju. Šim nolūkam Google periodiski apstrādā informāciju par ierīces sensoriem un no jūsu ierīces saņemtos bezvadu signālus, lai ar kolektīvo pakalpojumu palīdzību noteiktu bezvadu signālu atrašanās vietas. Neidentificējot jūs, šie dati tiek izmantoti, lai uzlabotu atrašanās vietu precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī uzlabotu, nodrošinātu un uzturētu Google pakalpojumus saskaņā ar Google un trešo pušu likumīgām interesēm sniegt lietotāja vajadzībām atbilstošus pakalpojumus. <ph name="BEGIN_LINK1" />Uzziniet vairāk par atrašanās vietas izmantošanu.<ph name="END_LINK1" /></translation>
@@ -9008,6 +9007,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7387951778417998929">Lai izmantotu meklētājprogrammu, kas nav noklusējuma meklētājprogramma, ievadiet tās saīsni adreses joslā un nospiediet izvēlēto īsinājumtaustiņu Šeit varat arī nomainīt noklusējuma meklētājprogrammu.</translation>
 <translation id="7388615499319468910">Vietnes un reklāmdevēji var izprast reklāmu veiktspēju. Šis iestatījums ir izslēgts.</translation>
 <translation id="738903649531469042">Pievienot cilni lasīšanas sarakstam</translation>
+<translation id="7389615853658756494">Mainīt to vietnē</translation>
 <translation id="7392118418926456391">Vīrusu skenēšana neizdevās.</translation>
 <translation id="7392915005464253525">A&amp;tkārtoti atvērt aizvērto logu</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Nokopēts viens vienums}zero{Nokopēti {COUNT} vienumi}one{Nokopēts {COUNT} vienums}other{Nokopēti {COUNT} vienumi}}</translation>
@@ -9137,6 +9137,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7474043404939621342">Pielāgot rīkjoslu</translation>
 <translation id="747459581954555080">Atjaunot visu</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Jāatdod nekavējoties}zero{<ph name="DEVICE_TYPE" /> ierīce ir jāatdod {NUM_DAYS} dienu laikā}one{<ph name="DEVICE_TYPE" /> ierīce ir jāatdod {NUM_DAYS} dienas laikā}other{<ph name="DEVICE_TYPE" /> ierīce ir jāatdod {NUM_DAYS} dienu laikā}}</translation>
+<translation id="747557463733380256">Uzzināt par pārlūka pārvaldību</translation>
 <translation id="7475671414023905704">Netscape pazaudētās paroles URL</translation>
 <translation id="7475742997309661417">ChromeOS ekrāna lasītāju ChromeVox galvenokārt izmanto neredzīgi vai vājredzīgi lietotāji, lai ekrānā redzamo tekstu atskaņotu ar runas sintezatoru vai lasītu Braila displejā. Lai ieslēgtu ChromeVox, nospiediet un piecas sekundes turiet nospiestas abas skaļuma pogas. Kad ChromeVox būs aktivizēts, tiks parādīts īss ceļvedis.</translation>
 <translation id="7476454130948140105">Nevar veikt atjaunināšanu, jo akumulatora uzlādes līmenis ir pārāk zems (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10285,6 +10286,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8265018477030547118">Tikai šajā ierīcē</translation>
 <translation id="826511437356419340">Tika atvērts logu kopsavilkuma režīms. Velciet, lai pārvietotos, vai nospiediet tabulēšanas taustiņu, ja izmantojat tastatūru.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Jūsu inkognito režīma logs netiks atvērts pēc atkārtotas palaišanas.}zero{Jūsu {COUNT} inkognito režīma logi netiks atkārtoti atvērti pēc atkārtotas palaišanas.}one{Jūsu {COUNT} inkognito režīma logs netiks atkārtoti atvērts pēc atkārtotas palaišanas.}other{Jūsu {COUNT} inkognito režīma logi netiks atkārtoti atvērti pēc atkārtotas palaišanas.}}</translation>
+<translation id="8266430295499893285">Lai jūs varētu piekļūt savām parolēm, jums ir jāverificē sava identitāte.</translation>
 <translation id="8266947622852630193">Visas ievades metodes</translation>
 <translation id="8267539814046467575">Printera pievienošana</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Šī ir vispārīga informācija par šo ierīci un tās lietošanu (piemēram, par akumulatora uzlādes līmeni, sistēmas un lietotņu darbībām un kļūdām). Dati tiks izmantoti, lai uzlabotu Android darbību. Daļa vāktās informācijas arī palīdzēs Google lietotnēm un partneriem, piemēram, Android izstrādātājiem, uzlabot lietotnes un produktus.<ph name="END_PARAGRAPH1" />
@@ -11096,7 +11098,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8827125715368568315">Bloķēts: <ph name="PERMISSION" /> un vēl <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Piespraust paplašinājumu</translation>
 <translation id="8828933418460119530">DNS nosaukums</translation>
-<translation id="8829979393064090868">Pievienot cilni dalītajam skatam</translation>
 <translation id="8830479210602243906">Palieliniet produktivitāti</translation>
 <translation id="883062543841130884">Aizstājēji</translation>
 <translation id="8830779999439981481">Notiek restartēšana, lai lietotu atjauninājumus</translation>

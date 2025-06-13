@@ -1564,6 +1564,7 @@
 <translation id="3641116835972736297">미식 축구</translation>
 <translation id="3642196846309122856">파일을 다시 다운로드해 보세요.</translation>
 <translation id="3642638418806704195">애플리케이션:</translation>
+<translation id="3644768007456662469">결제 항목 아이콘</translation>
 <translation id="3646643500201740985">광고 실적 측정</translation>
 <translation id="3647286794400715637">모든 URL 문자열 항목에는 1~2개의 URL이 포함되어야 합니다.</translation>
 <translation id="3647400963805615193">Chrome 도움말 닫기 버튼, Enter 키를 눌러 닫기, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">가상 카드 번호:</translation>
 <translation id="4535523368173457420">거주 지역에서 인기 있는 검색엔진이 임의의 순서로 표시됩니다.</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1년 전 생성됨}other{{NUM_YEARS}년 전 생성됨}}</translation>
 <translation id="4541810033354695636">증강 현실</translation>
 <translation id="4542971377163063093">트레이 6</translation>
 <translation id="4543072026714825470">다음번에 더 빠르게 결제할 수 있도록 Google 계정에 카드 및 청구서 수신 주소를 저장하세요.</translation>
 <translation id="454441086898495030"><ph name="SET" />에 추가하시겠습니까?</translation>
 <translation id="4546730006268514143">전송 시간 초과</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1일 전 생성됨}other{{NUM_DAYS}일 전 생성됨}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">비밀번호 입력 시 화면 잠금 사용 중</translation>
 <translation id="4557573143631562971">주택 보험</translation>
@@ -2898,6 +2901,7 @@
 <translation id="5938153366081463283">가상 카드 추가</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">이 정보는 Trustpilot, ScamAdviser, Google 등의 독립적인 리뷰 웹사이트에서 제공합니다. 요약은 AI를 사용해 생성됩니다.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1분 전 생성됨}other{{NUM_MINS}분 전 생성됨}}</translation>
 <translation id="5944297261866530437">패브릭(고광택)</translation>
 <translation id="5950901984834744590">면도기</translation>
 <translation id="5951495562196540101">일반 계정으로 등록할 수 없습니다(패키지 라이선스 사용 가능).</translation>
@@ -4058,6 +4062,7 @@
 <translation id="7894280532028510793">철자가 올바르다면 <ph name="BEGIN_LINK" />네트워크 진단을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="7901831439558593470">봉투 7 x 9 in</translation>
 <translation id="7905064834449738336">비밀번호를 사용하면 온라인에 비밀번호가 게시된 경우 Chromium에서 경고를 표시합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1시간 전 생성됨}other{{NUM_HOURS}시간 전 생성됨}}</translation>
 <translation id="7908648876066812348">가상 카드 사용 설정 중</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 설정의 Chrome 안전 확인 페이지로 이동</translation>
 <translation id="791107458486222637">결과 재실행</translation>
@@ -4192,6 +4197,7 @@
 <translation id="8134058435519644366">신규모집 및 채용</translation>
 <translation id="8135546115396015134">왼쪽 키</translation>
 <translation id="8137456439814903304">에너지 및 공공사업</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1개월 전 생성됨}other{{NUM_MONTHS}개월 전 생성됨}}</translation>
 <translation id="8148608574971654810">PDF 버전:</translation>
 <translation id="8149426793427495338">컴퓨터가 절전 모드 상태입니다.</translation>
 <translation id="8150722005171944719"><ph name="URL" />의 파일을 읽을 수 없습니다. 삭제 또는 이동되었거나 파일 사용 권한이 액세스를 차단할 수도 있습니다.</translation>

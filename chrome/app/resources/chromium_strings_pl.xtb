@@ -339,6 +339,7 @@
 <translation id="5775198138441669627">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="SETTINGS_LINK" /> dane Chromium na swoim koncie</translation>
 <translation id="5800158606660203929">Dostosuj i kontroluj Chromium. Ustaw Chromium jako przeglądarkę domyślną.</translation>
 <translation id="5809516625706423866">Nie można połączyć się z internetem. Kod HTTP 401 (Brak autoryzacji). Sprawdź konfigurację proxy.</translation>
+<translation id="5817952762723416573">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chromium, ale będzie ona trochę mniej odporna na ataki. To ustawienie jest wyłączone.</translation>
 <translation id="5821520528363214608">Zaktualizuj Chromium, aby móc zapisywać dane z niego na koncie Google i ich używać</translation>
 <translation id="5824893331272123205">Nie udało się załadować tego panelu. Spróbuj ponownie</translation>
 <translation id="5862307444128926510">Chromium – witamy!</translation>
@@ -428,6 +429,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6729124504294600478">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chromium w Aktywności w internecie i aplikacjach oraz w połączonych usługach Google</translation>
 <translation id="6734291798041940871">Chromium jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="674245979920622322">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="COUNT" />.</translation>
+<translation id="6751374565094704799">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chromium, ale będzie ona trochę mniej odporna na ataki. To ustawienie jest włączone.</translation>
 <translation id="67706546131546258">Chromium zaleca przeskanowanie tego pliku, bo może on być niebezpieczny.</translation>
 <translation id="6779406956731413166">Opracowanie systemu operacyjnego Chromium było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Tłumacz</translation>

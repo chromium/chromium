@@ -5985,7 +5985,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5186381005592669696">Personnalisez la langue d'affichage pour les applications prises en charge</translation>
 <translation id="5186788525428341874">Vous pouvez utiliser cette clé d'accès pour vous connecter plus rapidement sur l'ensemble de vos appareils. Elle sera enregistrée dans le gestionnaire de mots de passe Google du compte <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Installer la page en tant qu'application…</translation>
-<translation id="5187671830619031922">Ajouter l'onglet à l'affichage partagé</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Partagé par <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Utiliser la position. Autorisez les applis, les sites Web et les services ChromeOS et Android disposant d'une autorisation de localisation à utiliser la position de votre appareil. La précision de la localisation fournit une position plus précise pour les applis et les services Android. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par votre appareil afin de recueillir de façon participative des données sur la position des signaux sans fil. Ces données sont utilisées sans vous identifier pour améliorer la précision de la localisation et les services basés sur l'emplacement. Elles le sont aussi pour améliorer, pour fournir et pour maintenir les services de Google en fonction des intérêts légitimes de Google et de tiers envers la satisfaction des besoins des utilisateurs. <ph name="BEGIN_LINK1" />En savoir plus sur l'utilisation de la position<ph name="END_LINK1" /></translation>
@@ -9010,6 +9009,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7387951778417998929">Pour utiliser un moteur de recherche autre que celui par défaut, entrez son raccourci dans la barre d'adresse suivi de votre raccourci-clavier favori. Vous pouvez aussi modifier votre moteur de recherche par défaut ici.</translation>
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent mieux comprendre la performance des annonces. Ce paramètre est désactivé.</translation>
 <translation id="738903649531469042">Ajouter l'onglet à la liste de lecture</translation>
+<translation id="7389615853658756494">Le modifier sur le site</translation>
 <translation id="7392118418926456391">Échec de l'analyse antivirus</translation>
 <translation id="7392915005464253525">&amp;Rouvrir la fenêtre fermée</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 élément copié}one{{COUNT} élément copié}other{{COUNT} éléments copiés}}</translation>
@@ -9139,6 +9139,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7474043404939621342">Personnaliser votre barre d'outils</translation>
 <translation id="747459581954555080">Tout restaurer</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Retour immédiat exigé}one{Retournez l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour}other{Retournez l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours}}</translation>
+<translation id="747557463733380256">En savoir plus sur la gestion de votre navigateur</translation>
 <translation id="7475671414023905704">URL de mot de passe perdu Netscape</translation>
 <translation id="7475742997309661417">Le lecteur d'écran sur ChromeOS, ChromeVox, est principalement utilisé par les personnes aveugles ou ayant une basse vision pour lire le texte affiché à l'écran avec un synthétiseur vocal ou un afficheur braille. Maintenez les deux touches de volume enfoncées pendant cinq secondes pour activer ChromeVox. Lorsque ChromeVox est activé, une présentation rapide s'affiche.</translation>
 <translation id="7476454130948140105">Pile trop faible pour la mise à jour (<ph name="BATTERY_PERCENT" /> %)</translation>
@@ -10287,6 +10288,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8265018477030547118">Uniquement sur cet appareil</translation>
 <translation id="826511437356419340">Vous avez activé le mode de vue d'ensemble des fenêtres. Balayez l'écran pour naviguer, ou appuyez sur la touche Tabulation si vous utilisez un clavier.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Votre fenêtre de navigation privée ne se rouvrira pas après le redémarrage}one{Votre fenêtre de navigation privée ({COUNT}) ne se rouvrira pas après le redémarrage}other{Vos {COUNT} fenêtres de navigation privée ne se rouvriront pas après le redémarrage}}</translation>
+<translation id="8266430295499893285">Vous devez confirmer votre identité avant de pouvoir accéder à vos mots de passe</translation>
 <translation id="8266947622852630193">Toutes les méthodes d'entrée</translation>
 <translation id="8267539814046467575">Ajouter une imprimante</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Il s'agit de données générales concernant votre appareil et l'usage que vous en faites (comme le niveau de la pile, l'activité système, l'activité des applications et les erreurs) qui seront utilisées pour améliorer Android. De plus, certaines données collectées contribueront également à améliorer les applications de Google et aideront nos partenaires, comme les concepteurs d'Android, à améliorer leurs applications et leurs produits.<ph name="END_PARAGRAPH1" />
@@ -11096,7 +11098,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8827125715368568315">Autorisations bloquées : <ph name="PERMISSION" /> et <ph name="COUNT" /> autres</translation>
 <translation id="8827289157496676362">Épingler l'extension</translation>
 <translation id="8828933418460119530">Nom DNS</translation>
-<translation id="8829979393064090868">Ajouter l'onglet à l'affichage partagé</translation>
 <translation id="8830479210602243906">Augmenter votre productivité</translation>
 <translation id="883062543841130884">Substitutions</translation>
 <translation id="8830779999439981481">L'appareil redémarre afin d'installer les mises à jour</translation>

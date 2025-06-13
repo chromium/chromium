@@ -5996,7 +5996,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5186381005592669696">Sesuaikan bahasa tampilan untuk aplikasi yang didukung</translation>
 <translation id="5186788525428341874">Anda dapat menggunakan kunci sandi ini untuk login lebih cepat di seluruh perangkat Anda. Sandi akan disimpan ke Pengelola Sandi Google untuk <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instal Halaman sebagai Aplikasi...</translation>
-<translation id="5187671830619031922">Tambahkan Tab ke Tampilan Terpisah</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Dibagikan oleh <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Gunakan lokasi. Izinkan aplikasi, situs, dan layanan Android serta ChromeOS yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat Anda. Akurasi Lokasi memberikan lokasi yang lebih akurat untuk aplikasi dan layanan Android. Agar dapat melakukannya, Google secara berkala memproses informasi tentang sensor perangkat dan sinyal nirkabel dari perangkat Anda untuk melakukan crowdsource lokasi sinyal nirkabel. Informasi ini digunakan tanpa mengidentifikasi Anda untuk meningkatkan akurasi lokasi serta layanan yang berbasis lokasi, serta untuk meningkatkan, menyediakan, dan mengelola layanan Google berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna. <ph name="BEGIN_LINK1" />Pelajari lebih lanjut cara menggunakan lokasi<ph name="END_LINK1" /></translation>
@@ -9021,6 +9020,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7387951778417998929">Untuk menggunakan mesin telusur selain mesin telusur default, ketik pintasannya di kolom URL, lalu tekan pintasan keyboard yang diinginkan. Anda juga dapat mengubah mesin telusur default di sini.</translation>
 <translation id="7388615499319468910">Situs dan pengiklan dapat memahami performa iklan. Setelan ini nonaktif.</translation>
 <translation id="738903649531469042">Tambahkan Tab ke Daftar Bacaan</translation>
+<translation id="7389615853658756494">Ubah di situs</translation>
 <translation id="7392118418926456391">Pemindaian virus gagal</translation>
 <translation id="7392915005464253525">Buka kembali jendela yang tertutup</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 item disalin}other{{COUNT} item disalin}}</translation>
@@ -9149,6 +9149,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7474043404939621342">Menyesuaikan toolbar</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Harap kembalikan segera}other{Kembalikan <ph name="DEVICE_TYPE" /> dalam {NUM_DAYS} hari}}</translation>
+<translation id="747557463733380256">Pelajari cara browser Anda dikelola</translation>
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
 <translation id="7475742997309661417">Pembaca layar di ChromeOS, ChromeVox, terutama digunakan oleh orang yang tunanetra atau mengalami gangguan penglihatan untuk membaca teks yang ditampilkan di layar dengan penyintesis ucapan atau penampil braille. Tekan kedua tombol volume selama lima detik untuk mengaktifkan ChromeVox. Saat ChromeVox diaktifkan, Anda akan melalui tur singkat.</translation>
 <translation id="7476454130948140105">Baterai terlalu lemah untuk mengupdate (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10298,6 +10299,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8265018477030547118">Hanya di perangkat ini</translation>
 <translation id="826511437356419340">Masuk ke mode ringkasan jendela. Geser untuk membuka, atau tekan tab jika menggunakan keyboard.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Jendela Samaran Anda tidak akan dibuka setelah diluncurkan kembali}other{{COUNT} jendela Samaran Anda tidak akan dibuka lagi setelah diluncurkan kembali}}</translation>
+<translation id="8266430295499893285">Anda harus memverifikasi diri Anda sebelum dapat mengakses sandi</translation>
 <translation id="8266947622852630193">Semua metode input</translation>
 <translation id="8267539814046467575">Tambahkan printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Data ini berisi informasi umum tentang perangkat ini dan penggunaannya (seperti tingkat daya baterai, aktivitas sistem dan aplikasi, serta error). Data ini akan digunakan untuk meningkatkan performa Android. Beberapa informasi gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android, membuat aplikasi dan produk mereka menjadi lebih baik.<ph name="END_PARAGRAPH1" />
@@ -11107,7 +11109,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8827125715368568315">Memblokir <ph name="PERMISSION" /> dan <ph name="COUNT" /> lainnya</translation>
 <translation id="8827289157496676362">Pasang pin ekstensi</translation>
 <translation id="8828933418460119530">Nama DNS</translation>
-<translation id="8829979393064090868">Tambahkan tab ke tampilan terpisah</translation>
 <translation id="8830479210602243906">Meningkatkan produktivitas</translation>
 <translation id="883062543841130884">Substitusi</translation>
 <translation id="8830779999439981481">Memulai ulang untuk menerapkan update</translation>

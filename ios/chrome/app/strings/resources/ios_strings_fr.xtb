@@ -623,6 +623,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3596414637720633074">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="3602260545951981695">Sélectionnez "Protection renforcée"</translation>
 <translation id="3608436266458100337">Mode Lecteur</translation>
+<translation id="3610041351087301930">Masquer le lecteur</translation>
 <translation id="3622175633937495219">Rechercher dans l'historique (nombre de résultats : <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Vous pouvez balayer l'écran à partir du bord pour revenir en arrière.</translation>
 <translation id="362709345066740529">Personnalisez ici vos cartes, votre flux et plus</translation>
@@ -964,7 +965,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser favoris, mots de passe, historique et autres paramètres sur tous vos appareils.</translation>
 <translation id="4985921635659180565">Une fois que la suppression d'un fichier a été programmée, elle ne peut plus être annulée.</translation>
 <translation id="498624032394115435">Toutes les personnes disposant du lien peuvent modifier tous les onglets.</translation>
-<translation id="4989065233040279145">Choisissez où enregistrer <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="4992255726304765516">Couleur du groupe d'onglets <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
@@ -1064,6 +1064,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5431252637281434233">Vous allez être déconnecté</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
+<translation id="5437480232219631455">Vous pouvez ouvrir Gemini ici</translation>
 <translation id="5439618055789623719">Connecté en tant que <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Une meilleure navigation par défaut</translation>
 <translation id="5444892875087332195">Favoris</translation>
@@ -1650,7 +1651,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7724085059277147439">{count,plural, =1{Élément enregistré dans votre compte Google, {email}}one{Élément enregistré dans votre compte Google, {email}}other{Éléments enregistrés dans votre compte Google, {email}}}</translation>
 <translation id="7729458878441927652">Pour voir les onglets de vos autres appareils, synchronisez vos onglets et l'historique.</translation>
 <translation id="7730020510075123961">Non, fusionner les données</translation>
-<translation id="7730973429297233609">Sélectionnez le compte que vous souhaitez utiliser pour enregistrer <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Uniquement sur cet appareil.</translation>
 <translation id="7744192722284567281">Détecté lors d'une violation des données</translation>
 <translation id="7749790401023484470">Vous n'avez pas sélectionné de texte.</translation>
@@ -1834,7 +1834,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8428045167754449968">Ville</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8428634594422941299">OK</translation>
-<translation id="8430694217306051839">Choisissez où enregistrer <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Détails du groupe d'onglets</translation>
 <translation id="8438566539970814960">Améliorer les recherches et la navigation</translation>
 <translation id="8439758443371991593">Masquer "Ajouter à la liste de lecture"</translation>

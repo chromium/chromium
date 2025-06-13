@@ -5984,7 +5984,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5186381005592669696">Prilagodite jezik prikaza za podržane aplikacije</translation>
 <translation id="5186788525428341874">Pomoću tog pristupnog ključa možete se brže prijavljivati na svim svojim uređajima. Spremit će se u Google upravitelj zaporki za <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instaliraj stranicu kao aplikaciju...</translation>
-<translation id="5187671830619031922">Dodaj karticu u podijeljeni prikaz</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Dijeli <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Upotreba lokacije. Dopustite ChromeOS i Android aplikacijama, web-lokacijama i uslugama s dopuštenjem za lokaciju da upotrebljavaju lokaciju vašeg uređaja. Postavka Preciznost lokacije pruža precizniju lokaciju za Android aplikacije i usluge. Da bi se to postiglo, Google povremeno obrađuje podatke o senzorima uređaja i bežične signale s vašeg uređaja da bi masovno prikupio lokacije bežičnih signala. Ti se podaci upotrebljavaju, bez otkrivanja vašeg identiteta, u svrhu poboljšanja preciznosti lokacije i usluga temeljenih na lokaciji te općeg poboljšanja, pružanja i održavanja Googleovih usluga na temelju legitimnih interesa Googlea i trećih strana kako bi se zadovoljile potrebe korisnika. <ph name="BEGIN_LINK1" />Saznajte više o upotrebi lokacije<ph name="END_LINK1" /></translation>
@@ -11101,7 +11100,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8827125715368568315">Blokirano je sljedeće: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Prikvači proširenje</translation>
 <translation id="8828933418460119530">Naziv DNS-a</translation>
-<translation id="8829979393064090868">Dodaj karticu u podijeljeni prikaz</translation>
 <translation id="8830479210602243906">Poboljšajte produktivnost</translation>
 <translation id="883062543841130884">Zamjene</translation>
 <translation id="8830779999439981481">Ponovno pokretanje radi primjene ažuriranja</translation>

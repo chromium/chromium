@@ -965,7 +965,6 @@
 <translation id="4979397965658815378">ลงชื่อเข้าใช้บัญชี Google เพื่อรับบุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และการตั้งค่าอื่นๆ บนอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="4985921635659180565">เมื่อตั้งเวลาลบไฟล์แล้ว จะยกเลิกไม่ได้</translation>
 <translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
-<translation id="4989065233040279145">เลือกตำแหน่งที่จะบันทึก <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> จัดการโดยองค์กร</translation>
 <translation id="4992255726304765516">สีของกลุ่มแท็บ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
@@ -1652,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{บันทึกรายการไว้ในบัญชี Google {email} แล้ว}other{บันทึกรายการไว้ในบัญชี Google {email} แล้ว}}</translation>
 <translation id="7729458878441927652">หากต้องการดูแท็บจากอุปกรณ์อื่นๆ ให้ซิงค์แท็บและประวัติการเข้าชม</translation>
 <translation id="7730020510075123961">ไม่ ผสานรวมข้อมูล</translation>
-<translation id="7730973429297233609">เลือกบัญชีที่ต้องการใช้เพื่อบันทึก <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" /> เฉพาะในอุปกรณ์นี้</translation>
 <translation id="7744192722284567281">พบในการละเมิดข้อมูล</translation>
 <translation id="7749790401023484470">คุณไม่ได้เลือกข้อความใดๆ</translation>
@@ -1836,7 +1834,6 @@
 <translation id="8428045167754449968">อำเภอ</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8428634594422941299">รับทราบ</translation>
-<translation id="8430694217306051839">เลือกตำแหน่งที่จะบันทึก <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">รายละเอียดกลุ่มแท็บ</translation>
 <translation id="8438566539970814960">ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น</translation>
 <translation id="8439758443371991593">ซ่อน "เพิ่มไปยังเรื่องรออ่าน"</translation>

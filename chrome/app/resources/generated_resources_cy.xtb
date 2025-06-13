@@ -5999,7 +5999,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5186381005592669696">Addasu iaith arddangos ar gyfer apiau a gefnogir</translation>
 <translation id="5186788525428341874">Gallwch ddefnyddio'r cod pas hwn i fewngofnodi'n gyflymach ar draws eich dyfeisiau. Bydd yn cael ei gadw i'r Rheolwr Cyfrineiriau Google ar gyfer <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Gosod Tudalen fel Ap...</translation>
-<translation id="5187671830619031922">Ychwanegu Tab i'r Wedd Hollt</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Wedi'i rhannu gan <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Defnyddio lleoliad. Caniatáu i apiau, gwefannau a gwasanaethau Android a ChromeOS sydd â chaniatâd lleoliad ddefnyddio lleoliad eich dyfais. Mae Cywirdeb Lleoliad yn darparu lleoliad mwy cywir ar gyfer apiau a gwasanaethau Android. I wneud hyn, mae Google yn prosesu gwybodaeth o bryd i'w gilydd am synwyryddion dyfais a signalau diwifr o'ch dyfais er mwyn canfod lleoliadau signal diwifr drwy gyfrannu torfol. Defnyddir y rhain heb eich adnabod i wella cywirdeb lleoliad a gwasanaethau seiliedig ar leoliad ac i wella, darparu, a chynnal gwasanaethau Google yn seiliedig ar fuddiannau cyfreithlon Google a thrydydd parti i wasanaethu anghenion defnyddwyr. <ph name="BEGIN_LINK1" />Dysgu rhagor am ddefnyddio lleoliad<ph name="END_LINK1" /></translation>
@@ -9032,6 +9031,7 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7387951778417998929">I ddefnyddio peiriant chwilio sy'n wahanol i'r peiriant diofyn, teipiwch ei lwybr byr yn y bar cyfeiriad ac yna eich llwybr byr a ffefrir. Gallwch hefyd newid eich peiriant chwilio diofyn yma.</translation>
 <translation id="7388615499319468910">Gall gwefannau a hysbysebwyr ddeall sut mae hysbysebion yn perfformio. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="738903649531469042">Ychwanegu Tab at y Rhestr Ddarllen</translation>
+<translation id="7389615853658756494">Ei newid ar y wefan</translation>
 <translation id="7392118418926456391">Wedi methu â sganio am feirysau</translation>
 <translation id="7392915005464253525">Ailagor ffenestr a gaewyd</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Copïwyd 1 eitem}zero{Copïwyd {COUNT} eitem}two{Copïwyd {COUNT} eitem}few{Copïwyd {COUNT} eitem}many{Copïwyd {COUNT} eitem}other{Copïwyd {COUNT} eitem}}</translation>
@@ -9161,6 +9161,7 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7474043404939621342">Addasu eich bar offer</translation>
 <translation id="747459581954555080">Adfer popeth</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Mae angen dychwelyd ar unwaith}zero{Dychwelwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}two{Dychwelwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} ddiwrnod}few{Dychwelwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}many{Dychwelwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}other{Dychwelwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}}</translation>
+<translation id="747557463733380256">Dysgu am sut mae eich porwr yn cael ei reoli</translation>
 <translation id="7475671414023905704">URL Cyfrinair sydd wedi'i Golli Netscape</translation>
 <translation id="7475742997309661417">Mae'r darllenydd sgrîn ar ChromeOS, ChromeVox, yn cael ei ddefnyddio'n bennaf gan bobl â dallineb neu olwg gwan i ddarllen testun sy'n cael ei arddangos ar y sgrîn gyda syntheseisydd lleferydd neu ddangosydd braille. Pwyswch a daliwch y ddwy fysell lefel sain am bum eiliad i droi ChromeVox ymlaen. Pan fydd ChromeVox wedi'i weithredu, byddwch yn mynd trwy daith gyflym.</translation>
 <translation id="7476454130948140105">Mae'r batri yn rhy isel i ddiweddaru (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10309,6 +10310,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8265018477030547118">Ar y ddyfais hon yn unig</translation>
 <translation id="826511437356419340">Dechreuwyd y modd trosolwg ffenestr. Sweipiwch i lywio, neu pwyswch Tab os ydych yn defnyddio bysellfwrdd.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Ni fydd eich ffenestr Anhysbys yn agor ar ôl i chi ail-lansio}zero{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}two{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}few{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}many{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}other{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}}</translation>
+<translation id="8266430295499893285">Mae angen i chi ddilysu mai chi sydd yno cyn y gallwch gael mynediad at eich cyfrineiriau</translation>
 <translation id="8266947622852630193">Pob dull mewnbynnu</translation>
 <translation id="8267539814046467575">Ychwanegu argraffydd</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Dyma wybodaeth gyffredinol am y ddyfais hon a sut mae'n cael ei defnyddio (megis lefel batri, gweithgarwch system ac apiau, a gwallau). Defnyddir y data i wella Android, a bydd rhywfaint o wybodaeth gyfun hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android, i wella eu hapiau a'u cynhyrchion.<ph name="END_PARAGRAPH1" />
@@ -11122,7 +11124,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="8827125715368568315">Rhwystrwyd <ph name="PERMISSION" /> a <ph name="COUNT" /> arall</translation>
 <translation id="8827289157496676362">Pinio estyniad</translation>
 <translation id="8828933418460119530">Enw DNS</translation>
-<translation id="8829979393064090868">Ychwanegu tab i'r wedd hollt</translation>
 <translation id="8830479210602243906">Hybu cynhyrchiant</translation>
 <translation id="883062543841130884">Amnewidiadau</translation>
 <translation id="8830779999439981481">Wrthi'n ailgychwyn i gymhwyso diweddariadau</translation>

@@ -937,6 +937,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
 <translation id="254947805923345898">A házirend értéke nem érvényes.</translation>
 <translation id="2549836668759467704">Építészeti tanácsadás és szerződéskötés</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> és továbbiak</translation>
 <translation id="255002559098805027">A(z) <ph name="HOST_NAME" /> érvénytelen választ küldött.</translation>
 <translation id="2551608178605132291">Cím: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">„Hagaki” méret</translation>
@@ -4817,6 +4818,7 @@ További részletek:
 <translation id="9219103736887031265">Képek</translation>
 <translation id="922152298093051471">A Chrome személyre szabása</translation>
 <translation id="9222403027701923763">Általános iskolai és középiskolai oktatás</translation>
+<translation id="9222463428840654067">A kártyaszám érvénytelen</translation>
 <translation id="922849469395748170">Hűségkártyák</translation>
 <translation id="93020190163435405">Szakmai gyakorlat</translation>
 <translation id="931598121743515856">A vásárlásnak legalább <ph name="CHECKOUT_AMOUNT_MINIMUM" /> összegűnek kell lennie</translation>

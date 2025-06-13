@@ -1563,6 +1563,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3641116835972736297">Amerikāņu futbols</translation>
 <translation id="3642196846309122856">Mēģiniet vēlreiz lejupielādēt savus failus.</translation>
 <translation id="3642638418806704195">Lietojumprogramma:</translation>
+<translation id="3644768007456662469">Maksājuma vienuma ikona</translation>
 <translation id="3646643500201740985">Reklāmas veiktspējas novērtēšana</translation>
 <translation id="3647286794400715637">Katrā URL virknes ierakstā ir jābūt 1–2 vietrāžiem URL.</translation>
 <translation id="3647400963805615193">Chrome padoma noraidīšanas poga; nospiediet taustiņu Enter, lai noraidītu; <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2098,11 +2099,13 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4530347922939905757">Īsziņa</translation>
 <translation id="4531477351494678589">Virtuālās kartes numurs:</translation>
 <translation id="4535523368173457420">Šīs meklētājprogrammas ir populāras jūsu reģionā un tiek rādītas nejaušā secībā.</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Izveidota pirms 1 gada}zero{Izveidota pirms {NUM_YEARS} gadiem}one{Izveidota pirms {NUM_YEARS} gada}other{Izveidota pirms {NUM_YEARS} gadiem}}</translation>
 <translation id="4541810033354695636">papildinātā realitāte</translation>
 <translation id="4542971377163063093">6. paplāte</translation>
 <translation id="4543072026714825470">Lai nākamreiz veiktu maksājumu ātrāk, glabājiet kartes datus un norēķinu adresi savā Google kontā.</translation>
 <translation id="454441086898495030">Vai pievienot tabulai “<ph name="SET" />”?</translation>
 <translation id="4546730006268514143">Pārsūtīšanai iestājās noildze</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Izveidota pirms 1 dienas}zero{Izveidota pirms {NUM_DAYS} dienām}one{Izveidota pirms {NUM_DAYS} dienas}other{Izveidota pirms {NUM_DAYS} dienām}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Jūs izmantojat ekrāna bloķēšanu paroļu aizpildei</translation>
 <translation id="4557573143631562971">Mājokļa apdrošināšana</translation>
@@ -2896,6 +2899,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5938153366081463283">Pievienojiet virtuālu karti</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Šī informācija ir iegūta no neatkarīgām atsauksmju vietnēm, piemēram, Trustpilot, ScamAdviser, Google u. c. Apkopojumi ir izveidoti, izmantojot MI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Izveidota pirms 1 minūtes}zero{Izveidota pirms {NUM_MINS} minūtēm}one{Izveidota pirms {NUM_MINS} minūtes}other{Izveidota pirms {NUM_MINS} minūtēm}}</translation>
 <translation id="5944297261866530437">Audums (augsti glancēts)</translation>
 <translation id="5950901984834744590">Skuvekļi</translation>
 <translation id="5951495562196540101">Neizdevās reģistrēt, izmantojot patērētāja kontu (pieejama komplektā iekļauta licence).</translation>
@@ -4057,6 +4061,7 @@ Papildu informācija:
 <translation id="7894280532028510793">Ja nav pareizrakstības kļūdu, <ph name="BEGIN_LINK" />mēģiniet palaist tīkla diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Aploksne (7 x 9 collas)</translation>
 <translation id="7905064834449738336">Pārlūkā Chromium tiek parādīts brīdinājums, ja izmantojat paroli, kas ir publicēta tiešsaistē. Šo pārbaužu laikā paroles un lietotājvārdi ir šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Izveidota pirms 1 stundas}zero{Izveidota pirms {NUM_HOURS} stundām}one{Izveidota pirms {NUM_HOURS} stundas}other{Izveidota pirms {NUM_HOURS} stundām}}</translation>
 <translation id="7908648876066812348">Notiek virtuālās kartes aktivizēšana</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai iestatījumos pārietu uz Chrome drošības pārbaudes lapu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="791107458486222637">Rezultāta atsaukšanas atcelšana</translation>
@@ -4191,6 +4196,7 @@ Papildu informācija:
 <translation id="8134058435519644366">Pieņemšana darbā un personāla komplektēšana</translation>
 <translation id="8135546115396015134">kreisais taustiņš</translation>
 <translation id="8137456439814903304">Enerģija un komunālie pakalpojumi</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Izveidota pirms 1 mēneša}zero{Izveidota pirms {NUM_MONTHS} mēnešiem}one{Izveidota pirms {NUM_MONTHS} mēneša}other{Izveidota pirms {NUM_MONTHS} mēnešiem}}</translation>
 <translation id="8148608574971654810">PDF versija:</translation>
 <translation id="8149426793427495338">Dators tika pārslēgts miega režīmā.</translation>
 <translation id="8150722005171944719">Vietnē <ph name="URL" /> esošo failu nevar nolasīt. Iespējams, tas ir noņemts vai pārvietots vai piekļuvei nepieciešamas atļaujas.</translation>

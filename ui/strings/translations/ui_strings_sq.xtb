@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 ditë më parë}other{# ditë më parë}}</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1243314992276662751">Ngarko</translation>
+<translation id="1253734725326687145">Objektivi i prekjes u lëviz në krye djathtas. Trokit këtu</translation>
 <translation id="1266864766717917324">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Provo ta ndash tekstin në copëza më të vogla.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="24452542372838207">Zgjero njoftimin</translation>
 <translation id="2445449901874883781">Përdor dendësi të lartë</translation>
+<translation id="2448407890032181691">Objektivi i prekjes u lëviz në fund djathtas. Trokit këtu</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2497284189126895209">Të gjithë skedarët</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Skeda</translation>
 <translation id="5613020302032141669">Shigjeta majtas</translation>
 <translation id="5633029987065897167">Bosh</translation>
+<translation id="5651438382973553530">Objektivi i prekjes u lëviz në fund majtas. Trokit këtu</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktive sot}=1{Aktive 1 ditë më parë}other{Aktive # ditë më parë}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ditë e }other{# ditë e }}</translation>

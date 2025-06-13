@@ -5996,7 +5996,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5186381005592669696">Qoka ulimi lokubonisa kuma-app asekelwayo</translation>
 <translation id="5186788525428341874">Ungasebenzisa lo khiye wokungena ukuze ungene ngemvume ngokushesha kuwo wonke amadivayisi wakho. Izolondolozwa Kumphathi Wephasiwedi Ye-Google ye-<ph name="ACCOUNT_NAME" /></translation>
 <translation id="5187641678926990264">&amp;Faka Ikhasi njenge-App...</translation>
-<translation id="5187671830619031922">Engeza Ithebhu Ekubukeni Okuhlukanisiwe</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Kwabiwe ngu-<ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Sebenzisa indawo. Vumela iChromeOS nama-app e-Android, amawebhusayithi, namasevisi anemvume yendawo ukuba asebenzise indawo yedivayisi yakho. Ukuhlonzwa Kwendawo Ngqo kunikeza indawo enembe kakhulu kuma-app namasevisi e-Android. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile icubungula ulwazi olusedivayisini yakho olumayelana nezinzwa zedivayisi namasiginali angenantambo ukuze kutholwe izindawo ezinesiginali engenantambo ngeningi. Lokhu kusetshenziswa ngaphandle kokukudalula ukuze kuthuthukiswe ukuhlonzwa kwendawo ngqo kanye namasevisi afaneleka ngokwendawo ukuze kuthuthukiswe, kuhlinzekwe, futhi kulondolozwe amasevisi eGoogle ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi. <ph name="BEGIN_LINK1" />Funda kabanzi ngokusebenzisa indawo<ph name="END_LINK1" /></translation>
@@ -9023,6 +9022,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7387951778417998929">Ukuze usebenzise injini yokusesha ngaphandle kokuzenzakalelayo, thayipha isinqamuleli sayo kubha yekheli kulandelwa isinqamuleli sekhibhodi sakho esincanyelwayo. Futhi ungashintsha injini yakho yosesho ezenzakalelayo lapha.</translation>
 <translation id="7388615499319468910">Amasayithi nabakhangisi bangaqonda ukuthi izikhangiso zisebenza kanjani. Le sethingi ivaliwe.</translation>
 <translation id="738903649531469042">Engeza Ithebhu Kuhlu Lokufunda</translation>
+<translation id="7389615853658756494">Yishintshe esayithini</translation>
 <translation id="7392118418926456391">Ukuskena kwegciwane kuhlulekile</translation>
 <translation id="7392915005464253525">Phinda uvule iwindi elivaliwe</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{into e-1 ekopishiwe}one{izinto ezingu-{COUNT} ezikopishiwe}other{izinto ezingu-{COUNT} ezikopishiwe}}</translation>
@@ -9152,6 +9152,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7474043404939621342">Yenza ngokwezifiso ibha yakho yamathuluzi</translation>
 <translation id="747459581954555080">Buyisela konke</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Ukubuyisela okusheshayo kuyadingeka}one{Buyisela i-<ph name="DEVICE_TYPE" /> phakathi nezinsuku ezingu-{NUM_DAYS}}other{Buyisela i-<ph name="DEVICE_TYPE" /> phakathi nezinsuku ezingu-{NUM_DAYS}}}</translation>
+<translation id="747557463733380256">Funda kabanzi mayelana nendlela ibhrawuza yakho elawulwa ngayo</translation>
 <translation id="7475671414023905704">I-Netscape ilahlekelwe yi-URL yephasiwedi</translation>
 <translation id="7475742997309661417">Isifundi sesikrini ku-ChromeOS, ChromeVox, sisetshenziswa ngokuyinhloko abayizimpumputhe kanye nabangaboni kahle ukuze bafunde umbhalo ovezwe esikrinini besizwa yizwi lomshini noma isibonisi se-braille. Cindezela futhi ubambe bobabili okhiye bevolumu imizuzwana emihlanu ukuze uvule i-ChromeVox. Uma i-ChromeVox yenziwe yasebenza, uzoyihambela ngokushesha.</translation>
 <translation id="7476454130948140105">Ibhethri liphansi kakhulu ukuthi lingabuyekezwa (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10299,6 +10300,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8265018477030547118">Kule divayisi kuphela</translation>
 <translation id="826511437356419340">Ingene kumodi yokubuka konke yewindi. Swayipha ukuzulazula, noma cindezela ithebhu uma usebenzisa ikhibhodi.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Iwindi lakho le-Incognito ngeke livule ngemva kokuthi uqalise kabusha}one{Amawindi wakho we-Incognito angu-{COUNT} ngeke avule ngemva kokuthi uqalise kabusha}other{Amawindi wakho we-Incognito angu-{COUNT} ngeke avule ngemva kokuthi uqalise kabusha}}</translation>
+<translation id="8266430295499893285">Udinga ukuqinisekisa ukuthi nguwe ngaphambi kokuthi ufinyelele amaphasiwedi akho</translation>
 <translation id="8266947622852630193">Zonke izindlela zokufaka</translation>
 <translation id="8267539814046467575">Engeza iphrinta</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Lolu ulwazi oluvamile mayelana nale divayisi nokuthi isetshenziswa kanjani (njengeleveli yebhethri, umsebenzi wesistimu nohlelo lokusebenza, namaphutha). Idatha izosetshenziswa ukuthuthukisa i-Android, nolunye ulwazi oluhlanganisiwe nalo luzosiza izinhlelo zousebenza ze-Google nozakwethu, njengonjiniyela be-Android, ukwenza izinhlelo zabo zokusebenza nemikhiqizo kubengcono.<ph name="END_PARAGRAPH1" />
@@ -11109,7 +11111,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="8827125715368568315">Kuvinjwe i-<ph name="PERMISSION" /> nokungu-<ph name="COUNT" /> ngaphezulu</translation>
 <translation id="8827289157496676362">Isandiso sephinikhodi</translation>
 <translation id="8828933418460119530">Igama le-DNS</translation>
-<translation id="8829979393064090868">Engeza ithebhu ekubukeni okuhlukanisiwe</translation>
 <translation id="8830479210602243906">Khulisa ukukhiqiza</translation>
 <translation id="883062543841130884">Ukushintshaniswa</translation>
 <translation id="8830779999439981481">Iqala kabusha ukuze isebenzise izibuyekezo</translation>

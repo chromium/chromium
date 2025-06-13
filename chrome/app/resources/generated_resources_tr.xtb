@@ -5979,7 +5979,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5186381005592669696">Desteklenen uygulamalar için görüntüleme dilini özelleştir</translation>
 <translation id="5186788525428341874">Cihazlarınızda daha hızlı oturum açmak için bu geçiş anahtarını kullanabilirsiniz. <ph name="ACCOUNT_NAME" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="5187641678926990264">&amp;Sayfayı Uygulama Olarak Yükle...</translation>
-<translation id="5187671830619031922">Bölünmüş Görünüme Sekme Ekle</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> tarafından paylaşıldı</translation>
 <translation id="5188648870018555788">Konumu kullan. Konum izinleri olan ChromeOS ile Android uygulamaları, web siteleri ve hizmetlerinin cihazınızın konumunu kullanmasına izin verin. Konum Doğruluğu, Android uygulamaları ve hizmetleri için daha doğru konum bilgisi sunar. Google bunu yapmak için bu cihazdan kitle kaynaklı kablosuz sinyal konumlarına gönderilen kablosuz sinyaller ve cihaz sensörleri hakkındaki bilgileri düzenli aralıklarla işler. Bu bilgiler, konum doğruluğunu artırmanın ve konuma dayalı hizmetleri geliştirmenin yanı sıra Google'ın ve üçüncü tarafların meşru menfaatleri doğrultusunda kullanıcı ihtiyaçlarını karşılamak üzere Google'ın hizmetlerinin sağlanması, sürdürülmesi ve geliştirilmesi için kimliğinizi tanımlamadan kullanılır. <ph name="BEGIN_LINK1" />Konum bilgisini kullanma hakkında daha fazla bilgi edinin<ph name="END_LINK1" /></translation>
@@ -9004,6 +9003,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7387951778417998929">Varsayılan dışında bir arama motoru kullanmak için kısayolunu adres çubuğuna yazdıktan sonra tercih ettiğiniz klavye kısayoluna basın. Varsayılan arama motorunuzu da buradan değiştirebilirsiniz.</translation>
 <translation id="7388615499319468910">Siteler ve reklamverenler, reklamların nasıl performans gösterdiğini anlayabilir. Bu ayar kapalı.</translation>
 <translation id="738903649531469042">Sekmeyi Okuma Listesine Ekle</translation>
+<translation id="7389615853658756494">Sitede değiştir</translation>
 <translation id="7392118418926456391">Virüs taraması başarısız oldu</translation>
 <translation id="7392915005464253525">Kapatılan p&amp;encereyi yeniden aç</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 öğe kopyalandı}other{{COUNT} öğe kopyalandı}}</translation>
@@ -9132,6 +9132,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7474043404939621342">Araç çubuğunuzu özelleştirin</translation>
 <translation id="747459581954555080">Tümünü geri yükle</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Hemen iade edilmesi gerekiyor}other{<ph name="DEVICE_TYPE" /> cihazı {NUM_DAYS} gün içinde iade edin}}</translation>
+<translation id="747557463733380256">Tarayıcınızın nasıl yönetildiği hakkında bilgi</translation>
 <translation id="7475671414023905704">Netscape Kayıp Şifre URL'si</translation>
 <translation id="7475742997309661417">ChromeOS'teki ekran okuyucu olan ChromeVox, özellikle görme engelli ve az gören kişiler tarafından konuşma sentezleyici ya da Braille ekranla birlikte ekranda gösterilen metni okumak için kullanılır. ChromeVox'u açmak için ses seviyesi tuşlarının ikisini birden beş saniye boyunca basılı tutun. ChromeVox etkinleştirildiğinde hızlı bir tura çıkarsınız.</translation>
 <translation id="7476454130948140105">Pil gücü güncelleme için yeterli değil (%<ph name="BATTERY_PERCENT" />)</translation>
@@ -10281,6 +10282,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8265018477030547118">Yalnızca bu cihazda</translation>
 <translation id="826511437356419340">Pencere genel bakış moduna girildi. Gezinmek için kaydırın veya klavye kullanıyorsanız sekme tuşuna basın.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Yeniden başlatırsanız gizli pencereniz açılmaz}other{Yeniden başlatırsanız {COUNT} gizli pencereniz tekrar açılmaz}}</translation>
+<translation id="8266430295499893285">Şifrelerinize erişmeden önce kimliğinizi doğrulamanız gerekir</translation>
 <translation id="8266947622852630193">Tüm giriş yöntemleri</translation>
 <translation id="8267539814046467575">Yazıcı ekle</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Buradaki bilgiler (pil seviyesi, sistem ve uygulama etkinliği ve hatalar gibi) cihazla ve kullanımıyla ilgili genel bilgilerdir. Bu veriler Android'i iyileştirmek için kullanılır. Toplu hale getirilen bazı bilgiler, Google uygulamalarının ve Android geliştiricileri gibi iş ortaklarına ait uygulama ve ürünlerin iyileştirilmesine de yardımcı olur.<ph name="END_PARAGRAPH1" />
@@ -11090,7 +11092,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="8827125715368568315">Engellendi: <ph name="PERMISSION" /> ve <ph name="COUNT" /> daha</translation>
 <translation id="8827289157496676362">Uzantıyı sabitle</translation>
 <translation id="8828933418460119530">DNS Adı</translation>
-<translation id="8829979393064090868">Bölünmüş görünüme sekme ekle</translation>
 <translation id="8830479210602243906">Üretkenliği artırın</translation>
 <translation id="883062543841130884">Değişiklikler</translation>
 <translation id="8830779999439981481">Güncellemelerin uygulanması için yeniden başlatılıyor</translation>

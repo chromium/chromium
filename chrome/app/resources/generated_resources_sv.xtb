@@ -5996,7 +5996,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5186381005592669696">Anpassa visningsspråk för appar som stöds</translation>
 <translation id="5186788525428341874">Du kan logga in snabbare på dina enheter med den här nyckeln. Den sparas med Google Lösenordshantering för <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Installera sidan som en app …</translation>
-<translation id="5187671830619031922">Lägg till fliken i delad vy</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Delas av <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Använd plats. Tillåt att de appar, webbplatser och tjänster för ChromeOS och Android som har platsbehörighet använder enhetens plats. Platsangivelsens exakthet tillhandahåller en mer exakt plats för Android-appar och Android-tjänster. För att göra detta hanterar Google med jämna mellanrum information om enhetssensorer och trådlösa signaler från din enhet i samband med massinsamling av platser för trådlösa signaler. Dessa används utan att identifiera dig för att förbättra platsangivelsens exakthet och platsbaserade tjänster och för att förbättra, tillhandahålla och underhålla Googles tjänster baserat på Googles och tredje parters berättigade intressen för att tillgodose användarnas behov. <ph name="BEGIN_LINK1" />Läs mer om hur du använder plats<ph name="END_LINK1" /></translation>
@@ -9021,6 +9020,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7387951778417998929">Om du vill använda en annan sökmotor än standardinställningen skriver du genvägen i adressfältet följt av önskat kortkommando. Du kan även ändra standardsökmotorn här.</translation>
 <translation id="7388615499319468910">Webbplatser och annonsörer kan mäta annonsernas resultat. Inställningen är inaktiverad.</translation>
 <translation id="738903649531469042">Lägg till fliken i läslistan</translation>
+<translation id="7389615853658756494">Ändra det på webbplatsen</translation>
 <translation id="7392118418926456391">Virussökningen misslyckades</translation>
 <translation id="7392915005464253525">Ö&amp;ppna ett stängt fönster igen</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 objekt har kopierats}other{{COUNT} objekt har kopierats}}</translation>
@@ -9150,6 +9150,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7474043404939621342">Anpassa ditt verktygsfält</translation>
 <translation id="747459581954555080">Återställ alla</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Måste returneras omedelbart}other{Returnera <ph name="DEVICE_TYPE" /> inom {NUM_DAYS} dagar}}</translation>
+<translation id="747557463733380256">Läs mer om hur webbläsaren hanteras</translation>
 <translation id="7475671414023905704">Netscapes webbadress för förlorat lösenord</translation>
 <translation id="7475742997309661417">Skärmläsaren på ChromeOS, ChromeVox, används främst av personer som är blinda eller har nedsatt syn för att läsa text som visas på skärmen med hjälp av talsyntes eller en punktskriftsskärm. Aktivera ChromeVox genom att hålla båda volymknapparna nedtryckta i fem sekunder. När ChromeVox har aktiverats får du ta en snabbtitt.</translation>
 <translation id="7476454130948140105">Batterinivån är för låg för uppdateringen (<ph name="BATTERY_PERCENT" /> %)</translation>
@@ -10299,6 +10300,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8265018477030547118">Bara på den här enheten</translation>
 <translation id="826511437356419340">Fönsteröversiktsläget har startats. Navigera genom att svepa, eller tryck på tabb om du använder ett tangentbord.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Du har ett inkognitofönster öppet. Det öppnas inte på nytt när programmet startas om}other{Du har {COUNT} inkognitofönster öppna. De öppnas inte på nytt när programmet startas om}}</translation>
+<translation id="8266430295499893285">Du måste verifiera din identitet innan du kan komma åt dina lösenord</translation>
 <translation id="8266947622852630193">Alla inmatningsmetoder</translation>
 <translation id="8267539814046467575">Lägg till skrivare</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Detta är allmän information om enheten och hur den används (till exempel batterinivå, system- och appaktivitet samt fel). Med hjälp av dessa uppgifter kan vi förbättra Android. Vissa sammanställda uppgifter kan även hjälpa Googles appar och partner, till exempel Android-utvecklare, att förbättra sina appar och produkter.<ph name="END_PARAGRAPH1" />
@@ -11108,7 +11110,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8827125715368568315">Behörighet till <ph name="PERMISSION" /> och <ph name="COUNT" /> har blockerats</translation>
 <translation id="8827289157496676362">Fäst tillägg</translation>
 <translation id="8828933418460119530">DNS-namn</translation>
-<translation id="8829979393064090868">Lägg till fliken i delad vy</translation>
 <translation id="8830479210602243906">Öka produktiviteten</translation>
 <translation id="883062543841130884">Ersättningar</translation>
 <translation id="8830779999439981481">Starta om för att tillämpa uppdateringarna</translation>

@@ -1564,6 +1564,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3641116835972736297">Fútbol americano</translation>
 <translation id="3642196846309122856">Proba a descargar os ficheiros de novo</translation>
 <translation id="3642638418806704195">Aplicación:</translation>
+<translation id="3644768007456662469">Icona de elemento de pagamentos</translation>
 <translation id="3646643500201740985">Medir o rendemento dun anuncio</translation>
 <translation id="3647286794400715637">Todas as cadeas de URL deben conter entre 1 e 2 URL.</translation>
 <translation id="3647400963805615193">Botón para pechar o consello de Chrome; preme Introducir para pechalo, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4530347922939905757">Mensaxe de texto</translation>
 <translation id="4531477351494678589">Número de tarxeta virtual:</translation>
 <translation id="4535523368173457420">Estes buscadores son populares na túa zona e móstranse en orde aleatoria</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Creouse hai 1 ano}other{Creouse hai {NUM_YEARS} anos}}</translation>
 <translation id="4541810033354695636">realidade aumentada</translation>
 <translation id="4542971377163063093">Bandexa 6</translation>
 <translation id="4543072026714825470">Para pagar máis rápido a próxima vez, garda a tarxeta e o enderezo de facturación na túa Conta de Google</translation>
 <translation id="454441086898495030">Engadir a <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Esgotouse o tempo de espera para a transferencia</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Creouse hai 1 día}other{Creouse hai {NUM_DAYS} días}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Estás usando o bloqueo de pantalla para completar contrasinais</translation>
 <translation id="4557573143631562971">Seguros do fogar</translation>
@@ -2898,6 +2901,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5938153366081463283">Engadir tarxeta virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Esta información procede de sitios web de recensións independentes como Trustpilot, ScamAdviser e Google, entre outros. Os resumos créanse con IA.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Creouse hai 1 minuto}other{Creouse hai {NUM_MINS} minutos}}</translation>
 <translation id="5944297261866530437">Tecido (alto brillo)</translation>
 <translation id="5950901984834744590">Coitelas e máquinas de afeitar</translation>
 <translation id="5951495562196540101">Non se pode realizar a inscrición coa conta de uso particular (licenza en paquete dispoñible).</translation>
@@ -4058,6 +4062,7 @@ Detalles adicionais:
 <translation id="7894280532028510793">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar o diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Sobre 7 x 9 polgadas</translation>
 <translation id="7905064834449738336">Cando usas un contrasinal, Chromium avísate se se publicou en liña. Ao facelo, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Creouse hai 1 hora}other{Creouse hai {NUM_HOURS} horas}}</translation>
 <translation id="7908648876066812348">Activando tarxeta virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Tabulador e, a continuación, Introducir para ir á páxina de comprobación de seguranza de Chrome na configuración</translation>
 <translation id="791107458486222637">Refacendo resultado</translation>
@@ -4192,6 +4197,7 @@ Detalles adicionais:
 <translation id="8134058435519644366">Contratación e persoal</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
 <translation id="8137456439814903304">Enerxía, empresas e servizos públicos</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creouse hai 1 mes}other{Creouse hai {NUM_MONTHS} meses}}</translation>
 <translation id="8148608574971654810">Versión do PDF:</translation>
 <translation id="8149426793427495338">O teu ordenador entrou no modo de suspensión.</translation>
 <translation id="8150722005171944719">Non se pode ler o ficheiro que se encontra en <ph name="URL" />. É posible que se eliminase, movese ou que os permisos do ficheiro estean impedindo o acceso.</translation>

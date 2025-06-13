@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="3602260545951981695">Изберете „Подобрена защита“.</translation>
 <translation id="3608436266458100337">Режим за четене</translation>
+<translation id="3610041351087301930">Скриване на четеца</translation>
 <translation id="3622175633937495219">История на търсенията (намерени: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Можете да прекарате пръст по края, за да се върнете назад.</translation>
 <translation id="362709345066740529">Персонализирайте картите, емисията и др. оттук</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">Влезте с профила си в Google, за да получите своите отметки, пароли, история и други настройки на всичките си устройства</translation>
 <translation id="4985921635659180565">След като изтриването на даден файл бъде насрочено, то не може да бъде отменено.</translation>
 <translation id="498624032394115435">Всеки, който разполага с връзката, може да редактира всички раздели.</translation>
-<translation id="4989065233040279145">Изберете къде да се запази <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />). Управлява се от организацията ви.</translation>
 <translation id="4992255726304765516">Цветът на групата раздели е <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">Ще излезете от профила си</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
 <translation id="5433691172869980887">Потребителското име е копирано</translation>
+<translation id="5437480232219631455">Можете да отворите Gemini тук</translation>
 <translation id="5439618055789623719">Влязохте като <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">По-добро сърфиране по подразбиране</translation>
 <translation id="5444892875087332195">Отметки</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{Елементът е запазен в профила ви в Google {email}}other{Елементите са запазени в профила ви в Google {email}}}</translation>
 <translation id="7729458878441927652">За да виждате разделите от другите си устройства, синхронизирайте разделите и историята си.</translation>
 <translation id="7730020510075123961">Не, обединяване на данните</translation>
-<translation id="7730973429297233609">Изберете профила, който искате да използвате, за да запазите <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на това устройство.</translation>
 <translation id="7744192722284567281">Разкрита при нарушение на сигурността на данните</translation>
 <translation id="7749790401023484470">Не сте избрали текст.</translation>
@@ -1834,7 +1834,6 @@
 <translation id="8428045167754449968">Град/селище</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">Разбрах</translation>
-<translation id="8430694217306051839">Изберете къде да се запази <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Подробности за групата раздели</translation>
 <translation id="8438566539970814960">Подобряване на търсенията и сърфирането</translation>
 <translation id="8439758443371991593">Скриване на „Добавяне към списъка за четене“</translation>

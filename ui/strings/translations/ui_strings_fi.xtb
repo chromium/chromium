@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 päivä sitten}other{# päivää sitten}}</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1243314992276662751">Lähetä</translation>
+<translation id="1253734725326687145">Kosketusalue siirretty oikeaan yläkulmaan. Napauta tästä.</translation>
 <translation id="1266864766717917324">Jakaminen epäonnistui: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Kokeile jakaa teksti pienempinä pätkinä.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Näytä salasana</translation>
 <translation id="24452542372838207">Laajenna ilmoitus</translation>
 <translation id="2445449901874883781">Korkea tiheys</translation>
+<translation id="2448407890032181691">Kosketusalue siirretty oikeaan alakulmaan. Napauta tästä.</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2497284189126895209">Kaikki tiedostot</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Sarkain</translation>
 <translation id="5613020302032141669">Nuoli vas.</translation>
 <translation id="5633029987065897167">Tyhjä</translation>
+<translation id="5651438382973553530">Kosketusalue siirretty vasempaan alakulmaan. Napauta tästä.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktiivinen tänään}=1{Aktiivinen 1 päivä sitten}other{Aktiivinen # päivää sitten}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 päivä ja }other{# päivää ja }}</translation>

@@ -1564,6 +1564,7 @@
 <translation id="3641116835972736297">અમેરિકન ફૂટબૉલ</translation>
 <translation id="3642196846309122856">તમારી ફાઇલોને ફરીથી ડાઉનલોડ કરવાનો પ્રયાસ કરો</translation>
 <translation id="3642638418806704195">ઍપ્લિકેશન:</translation>
+<translation id="3644768007456662469">ચુકવણીઓ સંબંધિત આઇટમનું આઇકન</translation>
 <translation id="3646643500201740985">કોઈ જાહેરાતના પર્ફોર્મન્સની માપણી</translation>
 <translation id="3647286794400715637">પ્રત્યે URLની સ્ટ્રિંગ ઍન્ટ્રીમાં 1થી 2ની વચ્ચે URLs શામેલ હોવી આવશ્યક છે.</translation>
 <translation id="3647400963805615193">Chromeની ટિપનું બટન છોડી દો, છોડી દેવા માટે Enter દબાવો, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@
 <translation id="4530347922939905757">ટેક્સ્ટ મેસેજ</translation>
 <translation id="4531477351494678589">વર્ચ્યુઅલ કાર્ડ નંબર:</translation>
 <translation id="4535523368173457420">આ શોધ એન્જિન તમારા પ્રદેશમાં લોકપ્રિય છે અને તેમને કોઈપણ ક્રમમાં બતાવવામાં આવ્યા છે</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 વર્ષ પહેલાં બનાવ્યું}one{{NUM_YEARS} વર્ષ પહેલાં બનાવ્યું}other{{NUM_YEARS} વર્ષ પહેલાં બનાવ્યું}}</translation>
 <translation id="4541810033354695636">ઑગ્મેન્ટેડ રિયાલિટી</translation>
 <translation id="4542971377163063093">ટ્રે 6</translation>
 <translation id="4543072026714825470">આગલી વખતે વધુ ઝડપથી ચુકવણી કરવા માટે, તમારા કાર્ડ અને બિલિંગ સરનામાને તમારા Google એકાઉન્ટમાં સાચવો</translation>
 <translation id="454441086898495030"><ph name="SET" />માં ઉમેરીએ?</translation>
 <translation id="4546730006268514143">ટ્રાન્સફર કરવાનો સમય સમાપ્ત થયો</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 દિવસ પહેલાં બનાવ્યું}one{{NUM_DAYS} દિવસ પહેલાં બનાવ્યું}other{{NUM_DAYS} દિવસ પહેલાં બનાવ્યું}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">તમે પાસવર્ડ ભરવા માટે તમારા સ્ક્રીન લૉકનો ઉપયોગ કરી રહ્યાં છો</translation>
 <translation id="4557573143631562971">ઘરનો વીમો</translation>
@@ -2898,6 +2901,7 @@
 <translation id="5938153366081463283">વર્ચ્યુઅલ કાર્ડ ઉમેરો</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">આ માહિતી Trustpilot, ScamAdviser, Google અને વધુ જેવી રિવ્યૂ માટેની સ્વતંત્ર વેબસાઇટ પરથી આવે છે. સારાંશો AI વડે બનાવવામાં આવે છે.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 મિનિટ પહેલાં બનાવ્યું}one{{NUM_MINS} મિનિટ પહેલાં બનાવ્યું}other{{NUM_MINS} મિનિટ પહેલાં બનાવ્યું}}</translation>
 <translation id="5944297261866530437">કાપડ (હાઇ-ગ્લોસ)</translation>
 <translation id="5950901984834744590">રેઝર અને શેવર</translation>
 <translation id="5951495562196540101">ઉપભોક્તા એકાઉન્ટ સાથે નોંધણી કરાવી શકાતી નથી (પૅકેજમાં લાઇસન્સ ઉપલબ્ધ છે).</translation>
@@ -4059,6 +4063,7 @@
 <translation id="7894280532028510793">જો જોડણી સાચી હોય, તો <ph name="BEGIN_LINK" />નેટવર્ક નિદાન ચલાવવાનો પ્રયાસ કરી જુઓ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">એન્વલપ 7 x 9 ઇંચ</translation>
 <translation id="7905064834449738336">તમે પાસવર્ડનો ઉપયોગ કરો છો, ત્યારે જો તે ઑનલાઇન પબ્લિશ કરવામાં આવ્યો હોય તો Chromium તમને ચેતવણી આપે છે. આમ કરતી વખતે તમારા પાસવર્ડ અને વપરાશકર્તા નામ એન્ક્રિપ્ટેડ હોય છે, જેથી Google સહિત, કોઈપણ તેને વાંચી શકતું નથી.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 કલાક પહેલાં બનાવ્યું}one{{NUM_HOURS} કલાક પહેલાં બનાવ્યું}other{{NUM_HOURS} કલાક પહેલાં બનાવ્યું}}</translation>
 <translation id="7908648876066812348">વર્ચ્યુઅલ કાર્ડ ચાલુ કરી રહ્યાં છીએ</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, સેટિંગમાં Chromeની 'સલામતી માટે તપાસ' પેજ પર જવા માટે Tab અને પછી Enter કી દબાવો</translation>
 <translation id="791107458486222637">પરિણામ ફરીથી કરી રહ્યાં છીએ</translation>
@@ -4193,6 +4198,7 @@
 <translation id="8134058435519644366">ભરતી અને કર્મચારીની નિયુક્તિ</translation>
 <translation id="8135546115396015134">ડાબી કી</translation>
 <translation id="8137456439814903304">ઊર્જા અને યુટિલિટી</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 મહિના પહેલાં બનાવ્યું}one{{NUM_MONTHS} મહિના પહેલાં બનાવ્યું}other{{NUM_MONTHS} મહિના પહેલાં બનાવ્યું}}</translation>
 <translation id="8148608574971654810">PDF વર્ઝન:</translation>
 <translation id="8149426793427495338">તમારું કમ્પ્યુટર નિષ્ક્રિય થઈ ગયું હતું.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> પરની ફાઇલ વાંચનયોગ્ય નથી. તે દૂર કરવામાં, ખસેડવામાં આવી હોઈ શકે છે અથવા ફાઇલ પરવાનગીઓ ઍક્સેસ કરવાથી અટકાવતી હોઈ શકે છે.</translation>

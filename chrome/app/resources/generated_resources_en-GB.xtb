@@ -5996,7 +5996,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5186381005592669696">Customise display language for supported apps</translation>
 <translation id="5186788525428341874">You can use this passkey to sign in faster across your devices. It will be saved to Google Password Manager for <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Install page as app…</translation>
-<translation id="5187671830619031922">Add tab to split view</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Shared by <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs. <ph name="BEGIN_LINK1" />Learn more about using location<ph name="END_LINK1" /></translation>
@@ -9021,6 +9020,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7387951778417998929">To use a search engine other than the default, type its shortcut in the address bar followed by your preferred keyboard shortcut. You can also change your default search engine here.</translation>
 <translation id="7388615499319468910">Sites and advertisers can understand how ads perform. This setting is off.</translation>
 <translation id="738903649531469042">Add tab to reading list</translation>
+<translation id="7389615853658756494">Change it on the site</translation>
 <translation id="7392118418926456391">Virus scan failed</translation>
 <translation id="7392915005464253525">R&amp;eopen closed window</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 item copied}other{{COUNT} items copied}}</translation>
@@ -9150,6 +9150,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7474043404939621342">Customise your toolbar</translation>
 <translation id="747459581954555080">Restore all</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Immediate return required}other{Return <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days}}</translation>
+<translation id="747557463733380256">Learn about how your browser is managed</translation>
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
 <translation id="7475742997309661417">The screen reader on ChromeOS, ChromeVox, is primarily used by people with blindness or low vision to read text displayed on the screen with a speech synthesiser or braille display. Press and hold both volume keys for five seconds to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.</translation>
 <translation id="7476454130948140105">Battery too low for update (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10299,6 +10300,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8265018477030547118">Only on this device</translation>
 <translation id="826511437356419340">Entered window overview mode. Swipe to navigate, or press tab if using a keyboard.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Your incognito window won't open after you relaunch}other{Your {COUNT} incognito windows won't reopen after you relaunch}}</translation>
+<translation id="8266430295499893285">You need to verify that it's you before you can access your passwords</translation>
 <translation id="8266947622852630193">All input methods</translation>
 <translation id="8267539814046467575">Add printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />This is general information about this device and how it's used (such as battery level, system and app activity and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, make their apps and products better.<ph name="END_PARAGRAPH1" />
@@ -11108,7 +11110,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8827125715368568315">Blocked <ph name="PERMISSION" /> and <ph name="COUNT" /> more</translation>
 <translation id="8827289157496676362">Pin extension</translation>
 <translation id="8828933418460119530">DNS Name</translation>
-<translation id="8829979393064090868">Add tab to split view</translation>
 <translation id="8830479210602243906">Boost productivity</translation>
 <translation id="883062543841130884">Substitutions</translation>
 <translation id="8830779999439981481">Restarting to apply updates</translation>

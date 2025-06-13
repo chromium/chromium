@@ -5984,7 +5984,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5186381005592669696">Prispôsobenie jazyka zobrazenia podporovaných aplikácií</translation>
 <translation id="5186788525428341874">Týmto prístupovým kľúčom sa môžete prihlasovať vo svojich zariadeniach rýchlejšie. Uloží sa do Správcu hesiel Google pre <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Inštalovať stránku ako aplikáciu…</translation>
-<translation id="5187671830619031922">Pridať kartu do rozdeleného zobrazenia</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Zdieľané používateľom <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Používať polohu Povoľte aplikáciám, webom a službám pre ChromeOS a Android s povoleným prístupom k polohe používať polohu vášho zariadenia. Presnosť určovania polohy poskytuje aplikáciám aj službám pre Android presnejšiu polohu. Google na tento účel pravidelne spracúva informácie o senzoroch zariadení a bezdrôtových signáloch z vášho zariadenia, aby zaistil crowdsourcing polôh bezdrôtového signálu. Používajú sa bez toho, aby umožňovali zistenie vašej totožnosti, na účely zlepšenia presnosti určovania polohy a služieb podmienených polohou, ale aj zlepšenia, poskytovania a udržiavania služieb Googlu na základe oprávnených záujmov Googlu a tretích strán pri uspokojovaní potrieb používateľov. <ph name="BEGIN_LINK1" />Ďalšie informácie o používaní polohy<ph name="END_LINK1" /></translation>
@@ -9012,6 +9011,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7387951778417998929">Ak chcete použiť iný ako predvolený vyhľadávač, napíšte do panela s adresou jeho skratku a potom stlačte preferovanú klávesovú skratku. Môžete tu aj zmeniť svoj predvolený vyhľadávač.</translation>
 <translation id="7388615499319468910">Weby a inzerenti môžu porozumieť výkonnosti reklám. Toto nastavenie je vypnuté.</translation>
 <translation id="738903649531469042">Pridať kartu do čitateľského zoznamu</translation>
+<translation id="7389615853658756494">Zmeniť na webe</translation>
 <translation id="7392118418926456391">Antivírusová kontrola zlyhala</translation>
 <translation id="7392915005464253525">Znovu o&amp;tvoriť zatvorené okno</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Bola skopírovaná 1 položka}few{Boli skopírované {COUNT} položky}many{{COUNT} items copied}other{Bolo skopírovaných {COUNT} položiek}}</translation>
@@ -9140,6 +9140,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7474043404939621342">Prispôsobiť panel s nástrojmi</translation>
 <translation id="747459581954555080">Obnoviť všetko</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Vyžaduje sa okamžité vrátenie}few{Vráťte <ph name="DEVICE_TYPE" /> do {NUM_DAYS} dní}many{Vráťte <ph name="DEVICE_TYPE" /> do {NUM_DAYS} dňa}other{Vráťte <ph name="DEVICE_TYPE" /> do {NUM_DAYS} dní}}</translation>
+<translation id="747557463733380256">Informácie o tom, ako je prehliadač spravovaný</translation>
 <translation id="7475671414023905704">Netscape – webová adresa pre zabudnuté heslo</translation>
 <translation id="7475742997309661417">Čítačku obrazovky ChromeVox v systéme ChromeOS používajú predovšetkým nevidiaci a slabozrakí. Umožňuje im čítať text na obrazovke pomocou rečového syntetizéra alebo Braillovho displeja. Zapnete ju pridržaním oboch tlačidiel hlasitosti na päť sekúnd. Po aktivácii vás prevedie krátkou prehliadkou.</translation>
 <translation id="7476454130948140105">Batéria je príliš slabá na aktualizáciu (<ph name="BATTERY_PERCENT" /> %)</translation>
@@ -10289,6 +10290,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8265018477030547118">Iba v tomto zariadení</translation>
 <translation id="826511437356419340">Vstúpili ste do režimu prehľadu okien. Prechádzajte potiahnutím alebo ak používate klávesnicu, stlačte kláves Tab.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Po opätovnom spustení sa okno inkognito neotvorí}few{Po opätovnom spustení sa {COUNT} okná inkognito neotvoria}many{Your {COUNT} Incognito windows won't reopen after you relaunch}other{Po opätovnom spustení sa {COUNT} okien inkognito neotvorí}}</translation>
+<translation id="8266430295499893285">Ak chcete získať prístup k svojim heslám, musíte overiť svoju totožnosť</translation>
 <translation id="8266947622852630193">Všetky metódy vstupu</translation>
 <translation id="8267539814046467575">Pridať tlačiareň</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Ide o všeobecné informácie o vašom zariadení a o tom, ako ho používate (napríklad stav batérie, aktivita systému, aktivita v aplikáciách a chyby). Tieto údaje sa použijú na zlepšenie Androidu a niektoré súhrnné informácie tiež pomôžu aplikáciám Google a partnerom, ako sú vývojári systému Android, zlepšovať svoje aplikácie a produkty.<ph name="END_PARAGRAPH1" />
@@ -11100,7 +11102,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8827125715368568315">Je blokované povolenie <ph name="PERMISSION" /> a ďalšie (<ph name="COUNT" />)</translation>
 <translation id="8827289157496676362">Pripnúť rozšírenie</translation>
 <translation id="8828933418460119530">Názov DNS</translation>
-<translation id="8829979393064090868">Pridať kartu do rozdeleného zobrazenia</translation>
 <translation id="8830479210602243906">Zvýšiť produktivitu</translation>
 <translation id="883062543841130884">Substitúcie</translation>
 <translation id="8830779999439981481">Reštartuje sa a inštalujú sa aktualizácie</translation>

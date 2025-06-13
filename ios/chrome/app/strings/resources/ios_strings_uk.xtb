@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">Блокувати сторонні файли cookie в анонімному режимі</translation>
 <translation id="3602260545951981695">Виберіть "Покращений захист"</translation>
 <translation id="3608436266458100337">Режим читання</translation>
+<translation id="3610041351087301930">Сховати режим читання</translation>
 <translation id="3622175633937495219">Історія пошуку (знайдено: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Щоб повернутися, проведіть пальцем за край.</translation>
 <translation id="362709345066740529">Тут можна налаштувати картки, стрічку тощо</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">Увійдіть в обліковий запис Google, щоб мати доступ до закладок, паролів, історії й інших налаштувань на всіх своїх пристроях</translation>
 <translation id="4985921635659180565">Якщо запланувати видалення файлу, цю дію не можна буде скасувати.</translation>
 <translation id="498624032394115435">Кожен, хто має посилання, може редагувати всі вкладки.</translation>
-<translation id="4989065233040279145">Виберіть, де зберегти <ph name="FILENAME" /></translation>
 <translation id="499122600724363620">Обліковим записом користувача <ph name="NAME" /> (<ph name="EMAIL" />) керує ваша організація.</translation>
 <translation id="4992255726304765516">Колір групи вкладок: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">Ви вийдете з облікового запису</translation>
 <translation id="543338862236136125">Змінити пароль</translation>
 <translation id="5433691172869980887">Ім’я користувача скопійовано</translation>
+<translation id="5437480232219631455">Тут можна відкрити Gemini</translation>
 <translation id="5439618055789623719">Ви ввійшли в обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Зручніший вебперегляд за умовчанням</translation>
 <translation id="5444892875087332195">Закладки</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{Об’єкт збережено у вашому обліковому записі Google ({email})}one{Об’єкти збережено у вашому обліковому записі Google ({email})}few{Об’єкти збережено у вашому обліковому записі Google ({email})}many{Об’єкти збережено у вашому обліковому записі Google ({email})}other{Об’єкти збережено у вашому обліковому записі Google ({email})}}</translation>
 <translation id="7729458878441927652">Увімкніть синхронізацію вкладок і історії, щоб переглядати вкладки з інших ваших пристроїв.</translation>
 <translation id="7730020510075123961">Ні, об’єднати дані</translation>
-<translation id="7730973429297233609">Виберіть обліковий запис, у якому ви хочете зберегти файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Лише на цьому пристрої.</translation>
 <translation id="7744192722284567281">Знайдено в порушеннях безпеки даних</translation>
 <translation id="7749790401023484470">Ви не вибрали текст.</translation>
@@ -1834,7 +1834,6 @@
 <translation id="8428045167754449968">Місто</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8428634594422941299">Зрозуміло</translation>
-<translation id="8430694217306051839">Виберіть, де зберегти <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Відомості про групу вкладок</translation>
 <translation id="8438566539970814960">Покращувати пошук і вебперегляд</translation>
 <translation id="8439758443371991593">Сховати опцію "Додати в список читання"</translation>

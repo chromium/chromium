@@ -61,6 +61,7 @@
 <translation id="178701303897325119">Ez a bővítmény már nem támogatott. A Chrome az eltávolítását javasolja.</translation>
 <translation id="1812689907177901597">A beállítás kikapcsolásával anélkül jelentkezhet be a Google-webhelyekre (pl. Gmail), hogy a Chrome-ba is bejelentkezne</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{A Chrome a böngészőt lassító lap szüneteltetését javasolja}other{A Chrome a böngészőt lassító lapok szüneteltetését javasolja}}</translation>
+<translation id="1832046143430087831">A Chrome V8 motorjával felgyorsítja a webhelyeket, de kissé kevésbé ellenállóvá teszi a Chrome-ot a támadásokkal szemben. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="1838374766361614909">Keresett kifejezés törlése</translation>
 <translation id="1860536484129686729">A Chrome-nak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához ennél a webhelynél</translation>
 <translation id="1873233029667955273">Nem a Google Chrome az alapértelmezett böngésző</translation>
@@ -443,6 +444,7 @@
 <translation id="6718739135284199302">A Chrome felgyorsítása</translation>
 <translation id="6735387454586646204">ChromeOS Flex rendszer</translation>
 <translation id="6750954913813541382">A nyelvtani hibák javítása érdekében a Chrome elküldi a böngészőben begépelt összes szöveget a Google-nak</translation>
+<translation id="6760235774835597023">A Chrome V8 motorjával felgyorsítja a webhelyeket, de kissé kevésbé ellenállóvá teszi a Chrome-ot a támadásokkal szemben. Ez a beállítás be van kapcsolva.</translation>
 <translation id="677276454032249905">Biztosan kilép a Chrome-ból?</translation>
 <translation id="6794858689789885890">Mindig törölje a webhelyadatokat az eszközről a Chrome bezárásakor</translation>
 <translation id="6831043979455480757">Fordítás</translation>

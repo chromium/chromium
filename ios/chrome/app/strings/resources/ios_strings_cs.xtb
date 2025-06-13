@@ -623,6 +623,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3596414637720633074">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="3602260545951981695">Vyberte Vylepšená ochrana</translation>
 <translation id="3608436266458100337">Režim čtečky</translation>
+<translation id="3610041351087301930">Skrýt čtenáře</translation>
 <translation id="3622175633937495219">Historie vyhledávání (nalezeno: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Přejetím přes okraj se můžete vrátit zpět.</translation>
 <translation id="362709345066740529">Tady si můžete přizpůsobit své karty, feed a další věci</translation>
@@ -964,7 +965,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4979397965658815378">Přihlaste se pomocí účtu Google a získejte záložky, hesla, historii a další nastavení do všech svých zařízení.</translation>
 <translation id="4985921635659180565">Naplánované smazání souboru nelze později zrušit.</translation>
 <translation id="498624032394115435">Kdokoli s odkazem může upravovat všechny karty.</translation>
-<translation id="4989065233040279145">Vyberte, kam soubor <ph name="FILENAME" /> chcete uložit</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, spravováno vaší organizací.</translation>
 <translation id="4992255726304765516">Barva skupiny karet: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>
@@ -1064,6 +1064,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5431252637281434233">Budete odhlášeni</translation>
 <translation id="543338862236136125">Upravit heslo</translation>
 <translation id="5433691172869980887">Uživatelské jméno bylo zkopírováno</translation>
+<translation id="5437480232219631455">Gemini můžete otevřít tady</translation>
 <translation id="5439618055789623719">Jste přihlášeni jako <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Lepší procházení ve výchozím nastavení</translation>
 <translation id="5444892875087332195">Záložky</translation>
@@ -1650,7 +1651,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7724085059277147439">{count,plural, =1{Položka byla uložena do vašeho účtu Google ({email})}few{Položky byly uloženy do vašeho účtu Google ({email})}many{Položky byly uloženy do vašeho účtu Google ({email})}other{Položky byly uloženy do vašeho účtu Google ({email})}}</translation>
 <translation id="7729458878441927652">Pokud chcete zobrazit karty ze svých ostatních zařízení, synchronizujte karty a historii.</translation>
 <translation id="7730020510075123961">Ne, sloučit data</translation>
-<translation id="7730973429297233609">Vyberte účet, který chcete použít k uložení souboru <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Pouze na tomto zařízení</translation>
 <translation id="7744192722284567281">Nalezeno v porušení zabezpečení údajů</translation>
 <translation id="7749790401023484470">Nevybrali jste žádný text.</translation>
@@ -1834,7 +1834,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8428045167754449968">Město nebo obec</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8428634594422941299">Rozumím</translation>
-<translation id="8430694217306051839">Vyberte, zda soubor <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) chcete uložit</translation>
 <translation id="8434837876193928924">Podrobnosti o skupině karet</translation>
 <translation id="8438566539970814960">Vylepšit vyhledávání a procházení</translation>
 <translation id="8439758443371991593">Skrýt možnost Přidat do seznamu četby</translation>

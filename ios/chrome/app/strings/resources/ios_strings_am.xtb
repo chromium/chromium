@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">ማንነትን በማያሳውቅ ሁነታ ሦስተኛ ወገን ኩኪዎች ያግዱ</translation>
 <translation id="3602260545951981695">«የላቀ ጥበቃ» የሚለውን ይምረጡ</translation>
 <translation id="3608436266458100337">የአንባቢ ሁነታ</translation>
+<translation id="3610041351087301930">አንባቢን ደብቅ</translation>
 <translation id="3622175633937495219">የፍለጋ ታሪክ (<ph name="COUNT" /> ይገኛሉ)</translation>
 <translation id="3625008969091706597">ወደ ኋላ ለመሄድ ጠርዙን ማንሸራተት ይችላሉ።</translation>
 <translation id="362709345066740529">እዚህ የእርስዎን ካርዶች፣ ምግብ እና ሌሎችንም ያብጁ</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">የእርስዎን ዕልባቶች፣ የይለፍ ቃላት፣ ታሪክ እና ሌሎች ቅንብሮችን በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በGoogle መለያዎ ይግቡ</translation>
 <translation id="4985921635659180565">አንዴ ፋይል እንዲሰረዝ መርሐግብር ከተያዘለት በኋላ ሊቀር አይችልም።</translation>
 <translation id="498624032394115435">አገናኙ ያለው ማንኛውም ሰው ሁሉንም ትሮች ማርትዕ ይችላል።</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" />ን የት እንደሚያስቀምጡ ይምረጡ</translation>
 <translation id="499122600724363620"><ph name="NAME" />፣ <ph name="EMAIL" />፣ በድርጅትዎ የሚተዳደር።</translation>
 <translation id="4992255726304765516">የትር ቡድን ቀለም <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">የይለፍ ቃል ቅዳ</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">እርስዎ ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="543338862236136125">የይለፍ ቃል አርትዕ</translation>
 <translation id="5433691172869980887">የተጠቃሚ ስም ተቀድቷል</translation>
+<translation id="5437480232219631455">Gemini እዚህ መክፈት ይችላሉ</translation>
 <translation id="5439618055789623719">እንደ <ph name="USER_EMAIL" /> ሆነው በመለያ ገብተዋል</translation>
 <translation id="5443636120437209490">በነባሪ የተሻለ አሰሳ</translation>
 <translation id="5444892875087332195">ዕልባቶች</translation>
@@ -1650,7 +1651,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7724085059277147439">{count,plural, =1{በእርስዎ Google መለያ፣ {email} ውስጥ የተቀመጠ ንጥል}one{በእርስዎ Google መለያ፣ {email} ውስጥ የተቀመጠ ንጥል}other{በእርስዎ Google መለያ፣ {email} ውስጥ የተቀመጡ ንጥሎች}}</translation>
 <translation id="7729458878441927652">ከሌሎች መሣሪያዎችዎ ላይ ትሮችን ለማየት ትሮችዎን እና ታሪክዎን ያስምሩ።</translation>
 <translation id="7730020510075123961">አይ፣ ውሂብን አዋህድ</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> ለማስቀመጥ ሊጠቀሙበት የሚፈልጉትን መለያ ይምረጡ</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />። በዚህ መሣሪያ ላይ ብቻ።</translation>
 <translation id="7744192722284567281">በውሂብ ጥሰት ላይ ተገኝቷል</translation>
 <translation id="7749790401023484470">ምንም ጽሁፍ አልመረጡም።</translation>
@@ -1834,7 +1834,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8428045167754449968">ከተማ / መለስተኛ ከተማ</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8428634594422941299">ገባኝ</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) የት እንደሚያስቀምጡ ይምረጡ</translation>
 <translation id="8434837876193928924">የትር ቡድን ዝርዝሮች</translation>
 <translation id="8438566539970814960">ፍለጋዎችን እና አሰሳን የተሻለ አድርግ</translation>
 <translation id="8439758443371991593">ወደ የንባብ ዝርዝር አክልን ደብቅ</translation>

@@ -4781,6 +4781,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4305402730127028764">Salin ke <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Tukar</translation>
 <translation id="4306119971288449206">Apl mesti disampaikan dengan jenis kandungan "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306489587293957491">Masukkan</translation>
 <translation id="4306810703452026910">Chrome akan berhenti membenderakan pemberitahuan daripada laman ini sebagai spam</translation>
 <translation id="4307992518367153382">Asas</translation>
 <translation id="4309165024397827958">Benarkan apl Android dan perkhidmatan dengan kebenaran lokasi menggunakan lokasi peranti anda. Google boleh mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi.</translation>
@@ -4838,6 +4839,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4350230709416545141">Sentiasa sekat <ph name="HOST" /> daripada mengakses lokasi anda</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Akses apl "<ph name="APP_NAME" />" untuk mengurus apl yang dipasang dan distrim</translation>
+<translation id="4352913519324947509">Kata laluan anda tidak ditukar tetapi anda masih boleh mengakses laman dengan kata laluan semasa anda</translation>
 <translation id="4354073718307267720">Tanya apabila tapak mahu membuat peta 3D bagi persekitaran anda atau menjejaki kedudukan kamera</translation>
 <translation id="4354344420232759511">Tapak yang anda lawati akan dipaparkan di sini</translation>
 <translation id="435527878592612277">Pilih foto anda</translation>
@@ -5996,7 +5998,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5186381005592669696">Sesuaikan bahasa paparan untuk apl yang disokong</translation>
 <translation id="5186788525428341874">Anda boleh menggunakan kunci laluan ini untuk log masuk dengan lebih pantas merentas peranti anda. Kata laluan ini akan disimpan pada Google Password Manager untuk <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Pasang Halaman sebagai Apl...</translation>
-<translation id="5187671830619031922">Tambahkan Tab pada Paparan Pisah</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Dikongsi oleh <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Gunakan lokasi. Benarkan apl, laman web dan perkhidmatan ChromeOS serta Android dengan kebenaran lokasi untuk menggunakan lokasi peranti anda. Ketepatan Lokasi menyediakan lokasi yang lebih tepat untuk apl dan perkhidmatan Android. Untuk berbuat demikian, Google memproses maklumat tentang penderia peranti dan isyarat wayarles secara berkala daripada peranti anda untuk mengumpulkan lokasi isyarat wayarles. Maklumat ini digunakan tanpa mengenal pasti identiti anda untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi serta untuk meningkatkan, menyediakan dan mengekalkan perkhidmatan Google berdasarkan kepentingan sah Google dan pihak ketiga bagi memenuhi keperluan pengguna. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang menggunakan lokasi<ph name="END_LINK1" /></translation>
@@ -8326,6 +8327,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="686831807558000905">Jangan log masuk</translation>
 <translation id="686839242150793617">Dibenarkan untuk memasukkan gambar dalam gambar secara automatik</translation>
 <translation id="6868934826811377550">Lihat Butiran</translation>
+<translation id="6870470066213933201">Urus pengoptimuman &amp; keselamatan JavaScript</translation>
 <translation id="6871644448911473373">Pengulas OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Bahasa...</translation>
 <translation id="6873571253135628430">Tukar kebenaran laman</translation>
@@ -11112,7 +11114,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8827125715368568315"><ph name="PERMISSION" /> dan <ph name="COUNT" /> lagi disekat</translation>
 <translation id="8827289157496676362">Sematkan sambungan</translation>
 <translation id="8828933418460119530">Nama DNS</translation>
-<translation id="8829979393064090868">Tambahkan tab pada paparan pisah</translation>
 <translation id="8830479210602243906">Tingkatkan produktiviti</translation>
 <translation id="883062543841130884">Penggantian</translation>
 <translation id="8830779999439981481">Mulakan semula untuk menggunakan kemas kini</translation>

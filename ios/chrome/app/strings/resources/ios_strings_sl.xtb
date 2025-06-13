@@ -623,6 +623,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3596414637720633074">Blokiranje piškotkov tretjih oseb v anonimnem načinu</translation>
 <translation id="3602260545951981695">Izberite »Izboljšana zaščita«</translation>
 <translation id="3608436266458100337">Reader mode</translation>
+<translation id="3610041351087301930">Skrij bralnik</translation>
 <translation id="3622175633937495219">Zgodovina iskanja (najdeno: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Za premik nazaj lahko povlečete po robu.</translation>
 <translation id="362709345066740529">Tukaj lahko prilagodite kartice, vir in drugo</translation>
@@ -964,7 +965,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4979397965658815378">Prijavite se z Google Računom, da boste zaznamke, gesla, zgodovino in druge nastavitve imeli na voljo v vseh napravah.</translation>
 <translation id="4985921635659180565">Ko je datoteka načrtovana za izbris, tega ni mogoče preklicati.</translation>
 <translation id="498624032394115435">Vsi s povezavo lahko urejajo vse zavihke.</translation>
-<translation id="4989065233040279145">Izberite lokacijo za shranjevanje <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, upravlja vaša organizacija.</translation>
 <translation id="4992255726304765516">Barva skupine zavihkov je <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiranje gesla</translation>
@@ -1064,6 +1064,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5431252637281434233">Odjavljeni boste</translation>
 <translation id="543338862236136125">Uredi geslo</translation>
 <translation id="5433691172869980887">Uporabniško ime kopirano</translation>
+<translation id="5437480232219631455">Tukaj lahko odprete Geminija</translation>
 <translation id="5439618055789623719">Prijavljeni ste kot <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Privzeto boljše brskanje</translation>
 <translation id="5444892875087332195">Zaznamki</translation>
@@ -1650,7 +1651,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7724085059277147439">{count,plural, =1{Element je shranjen v računu Google, {email}}one{Elementi so shranjeni v računu Google, {email}}two{Elementi so shranjeni v računu Google, {email}}few{Elementi so shranjeni v računu Google, {email}}other{Elementi so shranjeni v računu Google, {email}}}</translation>
 <translation id="7729458878441927652">Če si želite ogledati zavihke iz drugih naprav, sinhronizirajte zavihke in zgodovino.</translation>
 <translation id="7730020510075123961">Ne, združi podatke</translation>
-<translation id="7730973429297233609">Izberite račun, ki ga želite uporabiti, da shranite <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo v tej napravi.</translation>
 <translation id="7744192722284567281">Najdeno pri podatkovni kršitvi</translation>
 <translation id="7749790401023484470">Niste izbrali besedila.</translation>
@@ -1834,7 +1834,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8428045167754449968">Mesto</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8428634594422941299">Razumem</translation>
-<translation id="8430694217306051839">Izberite lokacijo za shranjevanje datoteke <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Podrobnosti o skupini zavihkov</translation>
 <translation id="8438566539970814960">Izboljšanje iskanja in brskanja</translation>
 <translation id="8439758443371991593">Skrij Dodaj na bralni seznam</translation>

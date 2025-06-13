@@ -965,7 +965,6 @@
 <translation id="4979397965658815378">എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ, ചരിത്രം, മറ്റ് ക്രമീകരണം എന്നിവ ലഭിക്കാൻ Google Account ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4985921635659180565">ഒരു ഫയൽ ഇല്ലാതാക്കാൻ ഷെഡ്യൂൾ ചെയ്‌തുകഴിഞ്ഞാൽ, അത് റദ്ദാക്കാനാകില്ല.</translation>
 <translation id="498624032394115435">ലിങ്കുള്ള ആർക്ക് വേണമെങ്കിലും എല്ലാ ടാബുകളും എഡിറ്റ് ചെയ്യാം.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്.</translation>
 <translation id="4992255726304765516">ടാബ് ഗ്രൂപ്പ് നിറം <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
@@ -1652,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{{email} എന്ന Google Account-ൽ ഇനം സംരക്ഷിച്ചു}other{{email} എന്ന Google Account-ൽ ഇനങ്ങൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="7729458878441927652">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ കാണാൻ, ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കുക.</translation>
 <translation id="7730020510075123961">വേണ്ട, ഡാറ്റ ലയിപ്പിക്കുക</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> സംരക്ഷിക്കാൻ നിങ്ങൾ ഉപയോഗിക്കാൻ ആഗ്രഹിക്കുന്ന അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ഈ ഉപകരണത്തിൽ മാത്രം.</translation>
 <translation id="7744192722284567281">ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തി</translation>
 <translation id="7749790401023484470">നിങ്ങൾ ടെക്സ്റ്റൊന്നും തിരഞ്ഞെടുത്തിട്ടില്ല.</translation>
@@ -1836,7 +1834,6 @@
 <translation id="8428045167754449968">നഗരം / പട്ടണം</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8428634594422941299">മനസ്സിലായി</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8434837876193928924">ടാബ് ഗ്രൂപ്പ് വിശദാംശങ്ങൾ</translation>
 <translation id="8438566539970814960">തിരയലുകളും ബ്രൗസിംഗും മികച്ചതാക്കുക</translation>
 <translation id="8439758443371991593">'വായിക്കാനുള്ളവയുടെ ലിസ്റ്റിലേക്ക് ചേർക്കുക' മറയ്ക്കുക</translation>

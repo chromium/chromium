@@ -965,7 +965,6 @@
 <translation id="4979397965658815378">登入 Google 帳戶後，您即可在任何裝置上存取自己的書籤、密碼、記錄和其他設定</translation>
 <translation id="4985921635659180565">檔案預定刪除後，便無法取消操作。</translation>
 <translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
-<translation id="4989065233040279145">選擇「<ph name="FILENAME" />」的儲存位置</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，該帳戶由你的機構管理。</translation>
 <translation id="4992255726304765516">分頁群組顏色係<ph name="COLOR" /></translation>
 <translation id="5005498671520578047">複製密碼</translation>
@@ -1652,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{這個項目已儲存到 Google 帳戶 ({email})}other{這些項目已儲存到 Google 帳戶 ({email})}}</translation>
 <translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步處理分頁和記錄。</translation>
 <translation id="7730020510075123961">否，請合併資料</translation>
-<translation id="7730973429297233609">選取要用來儲存 <ph name="FILENAME" /> (<ph name="FILESIZE" />) 的帳戶</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。只係喺呢部裝置上面。</translation>
 <translation id="7744192722284567281">發生資料外洩事件</translation>
 <translation id="7749790401023484470">未選取任何文字。</translation>
@@ -1836,7 +1834,6 @@
 <translation id="8428045167754449968">城市/鄉鎮</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">知道了</translation>
-<translation id="8430694217306051839">選擇「<ph name="FILENAME" />」(<ph name="FILE_SIZE" />) 的儲存位置</translation>
 <translation id="8434837876193928924">分頁群組詳情</translation>
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>

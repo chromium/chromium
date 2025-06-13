@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{il y a 1 jour}one{il y a # jour}other{il y a # jours}}</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1243314992276662751">Importer</translation>
+<translation id="1253734725326687145">Cible tactile déplacée en haut à droite. Appuyez ici.</translation>
 <translation id="1266864766717917324">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Windows</translation>
 <translation id="1291104554099683393">Essayez de le partager en plusieurs fois.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="24452542372838207">Développer la notification</translation>
 <translation id="2445449901874883781">Utiliser une densité élevée</translation>
+<translation id="2448407890032181691">Cible tactile déplacée en bas à droite. Appuyez ici.</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2497284189126895209">Tous les fichiers</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Tabulation</translation>
 <translation id="5613020302032141669">Gauche</translation>
 <translation id="5633029987065897167">Vide</translation>
+<translation id="5651438382973553530">Cible tactile déplacée en bas à gauche. Appuyez ici.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Actif aujourd'hui}=1{Actif il y a 1 jour}one{Actif il y a # jour}other{Actif il y a # jours}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 jour et  }one{# jour et  }other{# jours et  }}</translation>

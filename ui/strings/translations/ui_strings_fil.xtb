@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 Araw ang Nakalipas}one{# Araw ang Nakalipas}other{# na Araw ang Nakalipas}}</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1243314992276662751">I-upload</translation>
+<translation id="1253734725326687145">Inilipat ang pipindutin sa kanang bahagi sa itaas. Mag-tap dito.</translation>
 <translation id="1266864766717917324">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Subukang ibahagi ang text sa mas maliliit na bahagi.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Ipakita ang password</translation>
 <translation id="24452542372838207">Palawakin ang notification</translation>
 <translation id="2445449901874883781">Gumamit ng mataas na density</translation>
+<translation id="2448407890032181691">Inilipat ang pipindutin sa kanang bahagi sa ibaba. Mag-tap dito.</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2497284189126895209">Lahat ng Mga File</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">KAliwang  Arrow</translation>
 <translation id="5633029987065897167">Walang laman</translation>
+<translation id="5651438382973553530">Inilipat ang pipindutin sa kaliwang bahagi sa ibaba. Mag-tap dito.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 minuto}one{# minuto}other{# na minuto}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktibo ngayong araw}=1{Aktibo 1 araw ang nakalipas}one{Aktibo # araw ang nakalipas}other{Aktibo # na araw ang nakalipas}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 araw at }one{# araw at }other{# na araw at }}</translation>

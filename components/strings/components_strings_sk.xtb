@@ -1560,6 +1560,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3641116835972736297">Americký futbal</translation>
 <translation id="3642196846309122856">Skúste súbory znova stiahnuť</translation>
 <translation id="3642638418806704195">Aplikácia:</translation>
+<translation id="3644768007456662469">Ikona platobnej položky</translation>
 <translation id="3646643500201740985">Meranie výkonnosti reklamy</translation>
 <translation id="3647286794400715637">Každý záznam reťazca webovej adresy musí obsahovať jednu až dve webové adresy.</translation>
 <translation id="3647400963805615193">Tlačidlo Zavrieť tip pre Chrome, zavrite stlačením klávesa Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2096,11 +2097,13 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4530347922939905757">Textová správa</translation>
 <translation id="4531477351494678589">Číslo virtuálnej karty:</translation>
 <translation id="4535523368173457420">Tieto vyhľadávače sú vo vašej oblasti populárne a zobrazujú sa v náhodnom poradí</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Vytvorená pred 1 rokom}few{Vytvorená pred {NUM_YEARS} rokmi}many{Vytvorená pred {NUM_YEARS} roka}other{Vytvorená pred {NUM_YEARS} rokmi}}</translation>
 <translation id="4541810033354695636">rozšírená realita</translation>
 <translation id="4542971377163063093">Priehradka č. 6</translation>
 <translation id="4543072026714825470">Ak chcete nabudúce zaplatiť rýchlejšie, uložte si kartu a fakturačnú adresu do účtu Google</translation>
 <translation id="454441086898495030">Chcete pridať do skupiny <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Vypršal čas prenosu</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Vytvorené pred 1 dňom}few{Vytvorená pred {NUM_DAYS} dňami}many{Vytvorená pred {NUM_DAYS} dňa}other{Vytvorená pred {NUM_DAYS} dňami}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Pri vypĺňaní hesiel používate zámku obrazovky</translation>
 <translation id="4557573143631562971">Poistenie domácností</translation>
@@ -2894,6 +2897,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5938153366081463283">Pridajte si virtuálnu kartu</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Tieto informácie pochádzajú z nezávislých webov s recenziami, ako sú Trustpilot, ScamAdviser, Google a ďalšie. Zhrnutia sú vytvorené pomocou umelej inteligencie.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Vytvorená pred 1 minútou}few{Vytvorená pred {NUM_MINS} minútami}many{Vytvorená pred {NUM_MINS} minúty}other{Vytvorená pred {NUM_MINS} minútami}}</translation>
 <translation id="5944297261866530437">Látka (vysoký lesk)</translation>
 <translation id="5950901984834744590">Holiace strojčeky</translation>
 <translation id="5951495562196540101">Nemôžete sa zaregistrovať spotrebiteľským účtom (k dispozícii je licencia v balíčku).</translation>
@@ -4054,6 +4058,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7894280532028510793">Ak je pravopis správny, <ph name="BEGIN_LINK" />skúste spustiť nástroj Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Obálka 177,8 mm × 228,6 mm</translation>
 <translation id="7905064834449738336">Keď používate heslo, Chromium vás upozorní, ak bude zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Vytvorená pred 1 hodinou}few{Vytvorená pred {NUM_HOURS} hodinami}many{Vytvorená pred {NUM_HOURS} hodiny}other{Vytvorená pred {NUM_HOURS} hodinami}}</translation>
 <translation id="7908648876066812348">Zapína sa virtuálna karta</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, stlačením klávesov Tab a potom Enter prejdite na stránku kontroly bezpečnosti Chromu v nastaveniach</translation>
 <translation id="791107458486222637">Zopakovanie výsledku</translation>
@@ -4188,6 +4193,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8134058435519644366">Nábor a personalistika</translation>
 <translation id="8135546115396015134">ľavý kláves</translation>
 <translation id="8137456439814903304">Energia a služby</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vytvorená pred 1 mesiacom}few{Vytvorená pred {NUM_MONTHS} mesiacmi}many{Vytvorená pred {NUM_MONTHS} mesiaca}other{Vytvorená pred {NUM_MONTHS} mesiacmi}}</translation>
 <translation id="8148608574971654810">Verzia PDF:</translation>
 <translation id="8149426793427495338">Váš počítač prešiel do režimu spánku.</translation>
 <translation id="8150722005171944719">Súbor na adrese <ph name="URL" /> nie je možné prečítať. Je možné, že bol odstránený, presunutý alebo môžu v prístupe brániť povolenia súboru.</translation>

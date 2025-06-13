@@ -5982,7 +5982,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5186381005592669696">Mos ilovalar uchun interfeys tili sozlamalari</translation>
 <translation id="5186788525428341874">Bu kirish kaliti yordamida qurilmalaringizda hisobga tezroq kirishingiz mumkin. U Google Parollar menejeri xotirasida <ph name="ACCOUNT_NAME" /> hisobiga saqlanadi.</translation>
 <translation id="5187641678926990264">Sahifani &amp;ilova shaklida oʻrnatish...</translation>
-<translation id="5187671830619031922">Varaqni ajratilgan rejimga kiritish</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> ulashgan</translation>
 <translation id="5188648870018555788">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ChromeOS, Android ilovalari, veb-saytlar va xizmatlarga bu qurilma joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuvni aniqlash xizmati Android ilova va xizmatlarga yanada aniq joylashuv axborotini taqdim etadi. Buning uchun Google vaqti-vaqti bilan simsiz signallar joylashuvlarining umumiy omborini jamlash orqali qurilma sensorlari hamda simsiz aloqa haqidagi maʼlumotlardan foydalanadi. Anonim maʼlumotlar foydalanuvchining joylashuv axboroti bilan ishlaydigan xizmatlarda joylashuv aniqligini oshirish maqsadida jamlanadi. Bunday maʼlumotlar foydalanuvchilar ehtiyojini qondirish maqsadida Google va tashqi tomonlarga xizmatlarni qonun doirasida yaxshilash, taqdim etish hamda dastaklashga yordam beradi. <ph name="BEGIN_LINK1" />Joylashuv axboroti ishlatilishi haqida batafsil<ph name="END_LINK1" /></translation>
@@ -11094,7 +11093,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="8827125715368568315">Bloklandi: <ph name="PERMISSION" /> va yana <ph name="COUNT" /> ta</translation>
 <translation id="8827289157496676362">Kengaytmani mahkamlash</translation>
 <translation id="8828933418460119530">DNS nomi</translation>
-<translation id="8829979393064090868">Varaqni ajratilgan rejimga kiritish</translation>
 <translation id="8830479210602243906">Unumdorlikni oshirish</translation>
 <translation id="883062543841130884">Almashtiruvlar</translation>
 <translation id="8830779999439981481">Yangilanishlarni qoʻllash uchun qayta ishga tushirilmoqda</translation>

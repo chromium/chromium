@@ -965,7 +965,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4979397965658815378">Accedi con il tuo Account Google per avere preferiti, password, cronologia e altre impostazioni su tutti i tuoi dispositivi</translation>
 <translation id="4985921635659180565">Una volta programmata l'eliminazione di un file, non è possibile annullarla.</translation>
 <translation id="498624032394115435">Chiunque abbia il link può modificare tutte le schede.</translation>
-<translation id="4989065233040279145">Scegli dove salvare <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gestito dalla tua organizzazione.</translation>
 <translation id="4992255726304765516">Colore del gruppo di schede: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copia password</translation>
@@ -1652,7 +1651,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7724085059277147439">{count,plural, =1{Elemento salvato nel tuo Account Google, {email}}other{Elementi salvati nel tuo Account Google, {email}}}</translation>
 <translation id="7729458878441927652">Per vedere le schede degli altri tuoi dispositivi, sincronizza le schede e la cronologia.</translation>
 <translation id="7730020510075123961">No, unisci i dati</translation>
-<translation id="7730973429297233609">Seleziona l'account che vuoi utilizzare per salvare <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Solo su questo dispositivo.</translation>
 <translation id="7744192722284567281">Rilevata in una violazione dei dati</translation>
 <translation id="7749790401023484470">Non hai selezionato alcun testo.</translation>
@@ -1836,7 +1834,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8428045167754449968">Città/località</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428634594422941299">Ok</translation>
-<translation id="8430694217306051839">Scegli dove salvare <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Dettagli gruppo di schede</translation>
 <translation id="8438566539970814960">Migliora le ricerche e le attività di navigazione</translation>
 <translation id="8439758443371991593">Nascondi Aggiungi all'elenco di lettura</translation>

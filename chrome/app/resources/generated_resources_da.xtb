@@ -5998,7 +5998,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5186381005592669696">Tilpas visningssproget for understøttede apps</translation>
 <translation id="5186788525428341874">Du kan bruge denne adgangsnøgle til at logge hurtigere ind på dine enheder. Den gemmes i Googles Adgangskodeadministrator for <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Installer siden som en app…</translation>
-<translation id="5187671830619031922">Føj fane til opdelt visning</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Delt af <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Brug lokation. Tillad, at ChromeOS- og Android-apps, -websites og -tjenester med lokationstilladelse kan bruge din enheds lokation. Lokationsnøjagtighed giver Android-apps og -tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra din enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere dig med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov. <ph name="BEGIN_LINK1" />Få flere oplysninger om lokationstilladelse<ph name="END_LINK1" /></translation>
@@ -9025,6 +9024,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7387951778417998929">Hvis du vil bruge en søgemaskine, der ikke er din standardsøgemaskine, skal du angive genvejen til den i adresselinjen efterfulgt af din foretrukne tastaturgenvej. Du kan også ændre din standardsøgemaskine her.</translation>
 <translation id="7388615499319468910">Websites og annoncører kan få indblik i, hvordan annoncer klarer sig. Denne indstilling er deaktiveret.</translation>
 <translation id="738903649531469042">Føj fane til Læseliste</translation>
+<translation id="7389615853658756494">Skift det på websitet</translation>
 <translation id="7392118418926456391">Virusscanningen mislykkedes</translation>
 <translation id="7392915005464253525">G&amp;enåbn lukkede faner</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 element blev kopieret}one{{COUNT} element blev kopieret}other{{COUNT} elementer blev kopieret}}</translation>
@@ -9154,6 +9154,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7474043404939621342">Tilpas din værktøjslinje</translation>
 <translation id="747459581954555080">Gendan alle</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Kræver omgående returnering}one{Returner <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag}other{Returner <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage}}</translation>
+<translation id="747557463733380256">Få flere oplysninger om, hvordan din browser administreres</translation>
 <translation id="7475671414023905704">Netscape-webadresse til mistet adgangskode</translation>
 <translation id="7475742997309661417">Skærmlæseren i ChromeOS, dvs. ChromeVox, bruges primært af personer, som er blinde eller har stærkt nedsat syn, til at læse tekst, der vises på skærmen, med en talesynthesizer eller brailleskærm. Hold begge lydstyrkeknapper nede i fem sekunder for at aktivere ChromeVox. Når ChromeVox er aktiveret, får du en hurtig gennemgang af skærmlæseren.</translation>
 <translation id="7476454130948140105">Batteriniveauet er for lavt til at opdatere (<ph name="BATTERY_PERCENT" /> %)</translation>
@@ -10302,6 +10303,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8265018477030547118">Kun på denne enhed</translation>
 <translation id="826511437356419340">Tilstanden for vinduesoversigt blev åbnet. Stryg for at navigere, eller tryk på Tab-tasten, hvis du bruger et tastatur.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Dit inkognitovindue åbnes ikke igen, når du har genstartet}one{Du har {COUNT} åbent inkognitovindue. Dette åbnes ikke igen, når du har genstartet}other{Du har {COUNT} åbne inkognitovinduer. Disse åbnes ikke igen, når du har genstartet}}</translation>
+<translation id="8266430295499893285">Du skal verificere din identitet, før du kan få adgang til dine adgangskoder</translation>
 <translation id="8266947622852630193">Alle indtastningsmetoder</translation>
 <translation id="8267539814046467575">Tilføj printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Dette er generelle oplysninger om din enhed og brugen af den (f.eks. batteriniveau, system- og appaktivitet og fejl). Dataene bruges til at forbedre Android, og visse samlede oplysninger kan også hjælpe Google-apps og -partnere som f.eks. Android-udviklere med at forbedre deres apps og produkter.<ph name="END_PARAGRAPH1" />
@@ -11113,7 +11115,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8827125715368568315">Adgangen til <ph name="PERMISSION" /> og <ph name="COUNT" /> yderligere blev blokeret</translation>
 <translation id="8827289157496676362">Fastgør udvidelse</translation>
 <translation id="8828933418460119530">DNS-navn</translation>
-<translation id="8829979393064090868">Føj fane til opdelt visning</translation>
 <translation id="8830479210602243906">Øg produktiviteten</translation>
 <translation id="883062543841130884">Erstatninger</translation>
 <translation id="8830779999439981481">Genstarter for at anvende opdateringer</translation>

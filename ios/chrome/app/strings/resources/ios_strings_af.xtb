@@ -964,7 +964,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4979397965658815378">Meld met jou Google-rekening aan om jou boekmerke, wagwoorde, geskiedenis en ander instellings op al jou toestelle te kry</translation>
 <translation id="4985921635659180565">Nadat ’n lêer geskeduleer is om uitgevee te word, kan dit nie gekanselleer word nie.</translation>
 <translation id="498624032394115435">Enigiemand met die skakel kan alle oortjies wysig.</translation>
-<translation id="4989065233040279145">Kies waar om <ph name="FILENAME" /> te stoor</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, bestuur deur jou organisasie.</translation>
 <translation id="4992255726304765516">Kleur van oortjiegroep is <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopieer wagwoord</translation>
@@ -1650,7 +1649,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7724085059277147439">{count,plural, =1{Item in jou Google-rekening, {email}, gestoor}other{Items in jou Google-rekening, {email}, gestoor}}</translation>
 <translation id="7729458878441927652">Sinkroniseer jou oortjies en geskiedenis om oortjies van jou ander toestelle af te sien.</translation>
 <translation id="7730020510075123961">Nee, voeg data saam</translation>
-<translation id="7730973429297233609">Kies die rekening wat jy wil gebruik om <ph name="FILENAME" /> - <ph name="FILESIZE" /> te stoor</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Net op hierdie toestel.</translation>
 <translation id="7744192722284567281">Bevind dat dit data skend</translation>
 <translation id="7749790401023484470">Jy het nie enige teks geselekteer nie.</translation>
@@ -1834,7 +1832,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8428045167754449968">Stad / dorp</translation>
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8428634594422941299">Het dit</translation>
-<translation id="8430694217306051839">Kies waar om <ph name="FILENAME" /> te stoor (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Besonderhede van oortjiegroep</translation>
 <translation id="8438566539970814960">Maak soektogte en blaai-ervaring beter</translation>
 <translation id="8439758443371991593">Versteek Voeg by leeslys</translation>

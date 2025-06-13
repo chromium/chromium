@@ -623,6 +623,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3596414637720633074">Blokiranje kolačića trećih strana u anonimnom načinu</translation>
 <translation id="3602260545951981695">Odaberite Poboljšana zaštita</translation>
 <translation id="3608436266458100337">Način čitača</translation>
+<translation id="3610041351087301930">Sakrij čitač</translation>
 <translation id="3622175633937495219">Pretražite povijest (pronađeno: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Možete prijeći prstom po rubu da biste se vratili.</translation>
 <translation id="362709345066740529">Ovdje prilagodite svoje kartice, feed i drugo</translation>
@@ -964,7 +965,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4979397965658815378">Prijavite se Google računom da biste imali pristup svojim oznakama, zaporkama, povijesti i ostalim postavkama na svim svojim uređajima</translation>
 <translation id="4985921635659180565">Nakon što se datoteka zakaže za brisanje, to se ne može otkazati.</translation>
 <translation id="498624032394115435">Svatko s vezom može uređivati sve kartice.</translation>
-<translation id="4989065233040279145">Odaberite mjesto spremanja datoteke <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, pod upravljanjem vaše organizacije.</translation>
 <translation id="4992255726304765516">Boja grupe kartica <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiranje zaporke</translation>
@@ -1064,6 +1064,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5431252637281434233">Odjavit ćete se</translation>
 <translation id="543338862236136125">Uredite zaporku</translation>
 <translation id="5433691172869980887">Korisničko je ime kopirano</translation>
+<translation id="5437480232219631455">Ovdje možete otvoriti Gemini</translation>
 <translation id="5439618055789623719">Prijavljeni ste kao <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Bolje pregledavanje prema zadanim postavkama</translation>
 <translation id="5444892875087332195">Oznake</translation>
@@ -1650,7 +1651,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7724085059277147439">{count,plural, =1{Stavka je spremljena na vaš Google račun, {email}}one{Stavke su spremljene na vaš Google račun, {email}}few{Stavke su spremljene na vaš Google račun, {email}}other{Stavke su spremljene na vaš Google račun, {email}}}</translation>
 <translation id="7729458878441927652">Kako biste vidjeli kartice s drugih uređaja, sinkronizirajte kartice i povijest.</translation>
 <translation id="7730020510075123961">Ne, spoji podatke</translation>
-<translation id="7730973429297233609">Odaberite račun koji želite upotrijebiti za spremanje datoteke <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo na ovom uređaju.</translation>
 <translation id="7744192722284567281">Pronađeno u povredi podataka</translation>
 <translation id="7749790401023484470">Niste odabrali nikakav tekst.</translation>
@@ -1834,7 +1834,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8428045167754449968">Grad/mjesto</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8428634594422941299">Shvaćam</translation>
-<translation id="8430694217306051839">Odaberite mjesto spremanja datoteke <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Pojedinosti o grupi kartica</translation>
 <translation id="8438566539970814960">Poboljšaj pretraživanje i pregledavanje</translation>
 <translation id="8439758443371991593">Sakrij stavku Dodaj na popis za čitanje</translation>

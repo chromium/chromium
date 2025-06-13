@@ -5987,7 +5987,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5186381005592669696">Toetatud rakenduste kuvakeele kohandamine</translation>
 <translation id="5186788525428341874">Selle pääsuvõtme abil saate eri seadmetes kiiremini sisse logida. See salvestatakse konto <ph name="ACCOUNT_NAME" /> Google’i paroolihaldurisse.</translation>
 <translation id="5187641678926990264">&amp;Installi leht rakendusena...</translation>
-<translation id="5187671830619031922">Lisa vaheleht poolitatud vaatesse</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Jagas <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Asukoha kasutamine. Lubage asukohale juurdepääsu loaga ChromeOS-i ja Androidi rakendustel, veebisaitidel ning teenustel teie seadme asukohta kasutada. Asukohatäpsus pakub Androidi rakenduste ja teenuste jaoks täpsemat asukohta. Selleks töötleb Google regulaarselt teavet seadme andurite ja teie seadme juhtmeta signaalide kohta, et juhtmeta signaalide asukohti ühiselt tuvastada. Neid kasutatakse teie isikut tuvastamata asukohatäpsuse ja asukohapõhiste teenuste parandamiseks ning Google’i teenuste täiustamiseks, pakkumiseks ja haldamiseks, lähtudes Google’i ning kolmandate osapoolte õigustatud huvidest, et kasutajate vajadusi rahuldada. <ph name="BEGIN_LINK1" />Lisateave asukoha kasutamise kohta<ph name="END_LINK1" /></translation>
@@ -9012,6 +9011,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7387951778417998929">Kui soovite kasutada muud otsingumootorit peale vaikeotsingumootori, sisestage selle otsetee aadressiribale ja seejärel vajutage valitud klaviatuuriotseteed. Samuti saate siin oma vaikeotsingumootorit muuta.</translation>
 <translation id="7388615499319468910">Saidid ja reklaamijad saavad hankida teavet reklaamide toimivuse kohta. See seade on välja lülitatud.</translation>
 <translation id="738903649531469042">Vahelehe lisamine lugemisloendisse</translation>
+<translation id="7389615853658756494">Muuda seda saidil</translation>
 <translation id="7392118418926456391">Viiruste skannimine ebaõnnestus</translation>
 <translation id="7392915005464253525">A&amp;va suletud aken uuesti</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 üksus kopeeriti}other{{COUNT} üksust kopeeriti}}</translation>
@@ -9141,6 +9141,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7474043404939621342">Kohanda tööriistariba</translation>
 <translation id="747459581954555080">Taasta kõik</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Nõutav on kohene tagastamine}other{Tagastage seade (<ph name="DEVICE_TYPE" />) {NUM_DAYS} päeva jooksul}}</translation>
+<translation id="747557463733380256">Lugege teavet brauseri haldamise kohta</translation>
 <translation id="7475671414023905704">Netscape'i kaotatud parooli URL</translation>
 <translation id="7475742997309661417">ChromeOS-i ekraanilugejat ChromeVox kasutavad peamiselt pimedad või vaegnägemisega inimesed, et lugeda ekraanil kuvatavat teksti kõnesünteesi või Braille’i ekraani abil. ChromeVoxi sisselülitamiseks vajutage 5 sekundit pikalt mõlemat helitugevuse klahvi. Kui ChromeVox aktiveeritakse, tehakse teile kiire tutvustus.</translation>
 <translation id="7476454130948140105">Aku on värskendamiseks liiga tühi (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10290,6 +10291,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8265018477030547118">Ainult selles seadmes</translation>
 <translation id="826511437356419340">Akna ülevaate režiim on aktiveeritud. Pühkige navigeerimiseks või vajutage tabulaatorit, kui kasutate klaviatuuri.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Teie inkognito akent ei avata pärast uuesti käivitamist}other{Teie {COUNT} inkognito akent ei avata pärast uuesti käivitamist}}</translation>
+<translation id="8266430295499893285">Enne paroolidele juurdepääsu peate kinnitame, et see olete teie</translation>
 <translation id="8266947622852630193">Kõik sisestusmeetodid</translation>
 <translation id="8267539814046467575">Printeri lisamine</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />See on üldteave seadme ja selle kasutamise kohta (nt aku tase, süsteemi ja rakenduste tegevus ning vead). Neid andmeid kasutatakse Androidi täiustamiseks ning teatud koondteave aitab ka Google'i rakendusi ja partnerite, näiteks Androidi arendajate, tooteid ja teenuseid täiustada.<ph name="END_PARAGRAPH1" />
@@ -11099,7 +11101,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8827125715368568315">Blokeeritud on <ph name="PERMISSION" /> ja veel <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Kinnita laiendus</translation>
 <translation id="8828933418460119530">DNS-nimi</translation>
-<translation id="8829979393064090868">Lisa vaheleht poolitatud vaatesse</translation>
 <translation id="8830479210602243906">Suurendage produktiivsust</translation>
 <translation id="883062543841130884">Asendused</translation>
 <translation id="8830779999439981481">Taaskäivitatakse värskenduste rakendamiseks</translation>

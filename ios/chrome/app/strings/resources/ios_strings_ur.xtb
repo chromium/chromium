@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">پوشیدگی میں فریق ثالث کوکیز کو بلاک کریں</translation>
 <translation id="3602260545951981695">"بہتر کردہ حفاظت" منتخب کریں</translation>
 <translation id="3608436266458100337">ریڈر وض‏ع</translation>
+<translation id="3610041351087301930">ریڈر موڈ چھپائیں</translation>
 <translation id="3622175633937495219">تلاش کی سرگزشت (<ph name="COUNT" /> ملے)</translation>
 <translation id="3625008969091706597">آپ پیچھے جانے کے لیے کنارے کو سوائپ کر سکتے ہیں۔</translation>
 <translation id="362709345066740529">یہاں اپنے کارڈز، فیڈ اور مزید کو حسب ضرورت بنائیں</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">‏اپنے سبھی آلات پر اپنے بُک مارکس، پاس ورڈز، سرگزشت اور دیگر ترتیبات حاصل کرنے کیلئے اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="4985921635659180565">اگر کوئی فائل حذف کرنے کے لیے شیڈول کر دی جاتی ہے تو اسے منسوخ نہیں کیا جا سکتا۔</translation>
 <translation id="498624032394115435">لنک کا حامل کوئی بھی شخص تمام ٹیبز میں ترمیم کر سکتا ہے۔</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> محفوظ کرنے کی جگہ کا انتخاب کریں</translation>
 <translation id="499122600724363620"><ph name="NAME" />، <ph name="EMAIL" />، آپ کی تنظیم کے زیر انتظام ہے۔</translation>
 <translation id="4992255726304765516">ٹیب گروپ کا رنگ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">آپ سائن آؤٹ ہو جائیں گے</translation>
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5433691172869980887">صارف نام کاپی ہو گیا</translation>
+<translation id="5437480232219631455">‏آپ یہاں Gemini کھول سکتے ہیں</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> کے بطور سائن ان ہیں</translation>
 <translation id="5443636120437209490">بطور ڈیفالٹ بہتر براؤزنگ</translation>
 <translation id="5444892875087332195">بُک مارکس</translation>
@@ -1650,7 +1651,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7724085059277147439">{count,plural, =1{‏آپ کے Google اکاؤنٹ میں محفوظ کردہ آئٹم، {email}}other{‏آپ کے Google اکاؤنٹ میں محفوظ کردہ آئٹمز، {email}}}</translation>
 <translation id="7729458878441927652">اپنے دیگر آلات سے ٹیبز کو دیکھنے کے لیے، اپنے ٹیبز اور سرگزشت کو مطابقت پذیر بنائیں۔</translation>
 <translation id="7730020510075123961">نہیں، ڈیٹا ضم کریں</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> کو محفوظ کرنے کے لیے آپ جس اکاؤنٹ کا استعمال کرنا چاہتے ہیں اسے منتخب کریں</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />۔ صرف اس آلہ پر۔</translation>
 <translation id="7744192722284567281">ڈیٹا کی خلاف ورزی میں ملا</translation>
 <translation id="7749790401023484470">آپ نے کوئی ٹیکسٹ منتخب نہیں کیا۔</translation>
@@ -1834,7 +1834,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8428045167754449968">شہر / قصبہ</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8428634594422941299">سمجھ آ گئی</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) محفوظ کرنے کی جگہ کا انتخاب کریں</translation>
 <translation id="8434837876193928924">ٹیب گروپ کی تفصیلات</translation>
 <translation id="8438566539970814960">تلاشوں اور براؤزنگ کو بہتر بنائیں</translation>
 <translation id="8439758443371991593">'پڑھنے کی فہرست میں شامل کریں' کو چھپائیں</translation>

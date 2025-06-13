@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{Pred 1 dňom}few{Pred # dňami}many{Pred # dňa}other{Pred # dňami}}</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1243314992276662751">Nahrať</translation>
+<translation id="1253734725326687145">Miesto dotyku bolo presunuté vpravo hore. Klepnite tu.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> sa nepodarilo zdieľať</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Skúste text zdieľať po menších častiach.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Zobraziť heslo</translation>
 <translation id="24452542372838207">Rozbaliť upozornenie</translation>
 <translation id="2445449901874883781">Použiť vysokú hustotu</translation>
+<translation id="2448407890032181691">Miesto dotyku bolo presunuté vpravo dole. Klepnite tu.</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
 <translation id="2497284189126895209">Všetky súbory</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Šípka doľava</translation>
 <translation id="5633029987065897167">Prázdne</translation>
+<translation id="5651438382973553530">Miesto dotyku bolo presunuté vľavo dole Klepnite tu.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}few{# min}many{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktívne dnes}=1{Aktívne včera}few{Aktívne pred # dňami}many{Aktívne pred # dňa}other{Aktívne pred # dňami}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 deň a }few{# dni a }many{# dňa a }other{# dní a }}</translation>

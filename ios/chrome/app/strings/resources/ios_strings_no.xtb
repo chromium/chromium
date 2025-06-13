@@ -965,7 +965,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4979397965658815378">Logg på med Google-kontoen din for å få bokmerkene, passordene, loggoppføringene og de andre innstillingene dine på alle enhetene du bruker</translation>
 <translation id="4985921635659180565">Når en fil er planlagt slettet, kan ikke dette avbrytes.</translation>
 <translation id="498624032394115435">Alle som har linken, kan redigere alle faner.</translation>
-<translation id="4989065233040279145">Velg hvor du vil lagre <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, administreres av organisasjonen din.</translation>
 <translation id="4992255726304765516">Farge på fanegruppe: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiér passordet</translation>
@@ -1652,7 +1651,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7724085059277147439">{count,plural, =1{Elementet er lagret i Google-kontoen din, {email}}other{Elementene er lagret i Google-kontoen din, {email}}}</translation>
 <translation id="7729458878441927652">For å se faner fra de andre enhetene dine, synkroniser fanene dine og loggen din.</translation>
 <translation id="7730020510075123961">Nei, slå sammen data</translation>
-<translation id="7730973429297233609">Velg kontoen du vil bruke til å lagre <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Bare på denne enheten.</translation>
 <translation id="7744192722284567281">Funnet i databrudd</translation>
 <translation id="7749790401023484470">Du har ikke merket noe tekst.</translation>
@@ -1836,7 +1834,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8428045167754449968">By/tettsted</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8428634594422941299">Greit</translation>
-<translation id="8430694217306051839">Velg hvor du vil lagre <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Detaljer om fanegruppen</translation>
 <translation id="8438566539970814960">Gjør søking og surfing bedre</translation>
 <translation id="8439758443371991593">Skjul Legg til på leselisten</translation>

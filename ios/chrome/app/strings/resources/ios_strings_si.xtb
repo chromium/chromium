@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">අප්‍රසිද්ධය තුළ තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
 <translation id="3602260545951981695">"වැඩිදියුණු කළ ආරක්ෂාව" තෝරන්න</translation>
 <translation id="3608436266458100337">කියවීමේ ආකාරය</translation>
+<translation id="3610041351087301930">කියවනය සඟවන්න</translation>
 <translation id="3622175633937495219">සෙවීම් ඉතිහාසය (<ph name="COUNT" />ක් හමු විය)</translation>
 <translation id="3625008969091706597">ඔබට ආපසු යාමට දාරය ස්වයිප් කළ හැක.</translation>
 <translation id="362709345066740529">ඔබේ කාඩ්පත්, සංග්‍රහය සහ තවත් දේ මෙහි අභිරුචිකරණය කරන්න</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">ඔබගේ සියලුම උපාංග මත පිටුසන්, මුරපද, ඉතිහාසය හා අනෙකුත් සැකසීම් ලබා ගැනීමට ඔබගේ Google ගිණුම සමඟ පුරනය වන්න</translation>
 <translation id="4985921635659180565">ගොනුවක් මකා දැමීමට කාලසටහන්ගත කළ පසු, එය අවලංගු කළ නොහැක.</translation>
 <translation id="498624032394115435">සබැඳිය සහිත ඕනෑම අයෙකුට සියලු පටිති සංස්කරණය කළ හැක.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> සුරකින ස්ථානය තෝරා ගන්න</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, ඔබේ සංවිධානය විසින් කළමනාකරණය කරනු ලැබේ.</translation>
 <translation id="4992255726304765516">පටිති සමූහ වර්ණය <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">මුරපදය පිටපත් කරන්න</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">ඔබ වරනය වනු ඇත</translation>
 <translation id="543338862236136125">මුරපදය සංස්කරණ කරන්න</translation>
 <translation id="5433691172869980887">පරිශීලක නම පිටපත් කරන ලදී</translation>
+<translation id="5437480232219631455">ඔබට මෙහි Gemini විවෘත කළ හැක</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> ලෙස පුරන ලදි</translation>
 <translation id="5443636120437209490">පෙරනිමියෙන් වඩා හොඳ බ්‍රවුස් කිරීම</translation>
 <translation id="5444892875087332195">පිටුසන්</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{ඔබේ Google ගිණුමේ, {email} අයිතමය සුරැකිණි}one{ඔබේ Google ගිණුමේ, {email} අයිතම සුරැකිණි}other{ඔබේ Google ගිණුමේ, {email} අයිතම සුරැකිණි}}</translation>
 <translation id="7729458878441927652">ඔබේ අනෙකුත් උපාංගවලින් පටිති බැලීම සඳහා, ඔබේ පටිති සහ ඉතිහාසය සමමුහුර්ත කරන්න.</translation>
 <translation id="7730020510075123961">නැහැ, දත්ත ඒකාබද්ධ කරන්න</translation>
-<translation id="7730973429297233609">ඔබට <ph name="FILENAME" /> - <ph name="FILESIZE" /> සුරැකීමට භාවිතා කිරීමට අවශ්‍ය ගිණුම තෝරන්න</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. මෙම උපාංගය මත පමණි.</translation>
 <translation id="7744192722284567281">දත්ත කඩ කිරීම තුළ හමු විය</translation>
 <translation id="7749790401023484470">ඔබ කිසිදු පෙළක් තෝරා නැත.</translation>
@@ -1834,7 +1834,6 @@
 <translation id="8428045167754449968">නගරය / පුරවරය</translation>
 <translation id="8428213095426709021">සැකසුම්</translation>
 <translation id="8428634594422941299">තේරුණා</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) සුරකින ස්ථානය තෝරා ගන්න</translation>
 <translation id="8434837876193928924">පටිති සමූහ විස්තර</translation>
 <translation id="8438566539970814960">සෙවීම් සහ ගවේෂණය වඩා හොඳ කරන්න</translation>
 <translation id="8439758443371991593">කියවීම් ලැයිස්තුවට එක් කිරීම සඟවන්න</translation>

@@ -623,6 +623,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3596414637720633074">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="3602260545951981695">Valitse "Parannettu suojaus"</translation>
 <translation id="3608436266458100337">Lukijatila</translation>
+<translation id="3610041351087301930">Piilota lukijatila</translation>
 <translation id="3622175633937495219">Hae historiasta (<ph name="COUNT" /> löytyi)</translation>
 <translation id="3625008969091706597">Voit siirtyä taaksepäin pyyhkäisemällä sivun reunaa.</translation>
 <translation id="362709345066740529">Muokkaa kortteja, fiidiä ja muita ominaisuuksia täällä</translation>
@@ -964,7 +965,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4979397965658815378">Kirjaudu Google-tilillesi, niin voit käyttää kirjanmerkkejäsi, salasanojasi, historiaasi ja muuta Chrome-sisältöäsi kaikilla laitteillasi.</translation>
 <translation id="4985921635659180565">Kun tiedoston poistaminen on ajoitettu, sitä ei voi perua.</translation>
 <translation id="498624032394115435">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä.</translation>
-<translation id="4989065233040279145">Valitse tallennuspaikka tiedostolle: <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, organisaatiosi hallinnoima.</translation>
 <translation id="4992255726304765516">Välilehtiryhmän väri on <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
@@ -1064,6 +1064,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5431252637281434233">Sinut kirjataan ulos</translation>
 <translation id="543338862236136125">Muokkaa salasanaa</translation>
 <translation id="5433691172869980887">Käyttäjänimi kopioitu</translation>
+<translation id="5437480232219631455">Voit avata Geminin täältä</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> on kirjautunut sisään</translation>
 <translation id="5443636120437209490">Parempi selailu oletuksena</translation>
 <translation id="5444892875087332195">Kirjanmerkit</translation>
@@ -1650,7 +1651,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7724085059277147439">{count,plural, =1{Kohde tallennettu Google-tilillesi, {email}}other{Kohteet tallennettu Google-tilillesi, {email}}}</translation>
 <translation id="7729458878441927652">Voit nähdä muiden laitteiden välilehdet synkronoimalla välilehdet ja historian.</translation>
 <translation id="7730020510075123961">Ei, yhdistä data</translation>
-<translation id="7730973429297233609">Valitse tili, jolle <ph name="FILENAME" /> tallennetaan – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Vain tällä laitteella.</translation>
 <translation id="7744192722284567281">Kuului tietosuojaloukkaukseen</translation>
 <translation id="7749790401023484470">Et valinnut tekstiä.</translation>
@@ -1834,7 +1834,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8428045167754449968">Kaupunki</translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8428634594422941299">Selvä</translation>
-<translation id="8430694217306051839">Valitse tallennuspaikka tiedostolle: <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Välilehtiryhmän tiedot</translation>
 <translation id="8438566539970814960">Paranna hakuja ja selausta</translation>
 <translation id="8439758443371991593">Piilota "Lisää lukulistalle"</translation>

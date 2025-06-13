@@ -1561,6 +1561,7 @@
 <translation id="3641116835972736297">আমেৰিকান ফুটবল</translation>
 <translation id="3642196846309122856">আপোনাৰ ফাইলসমূহ পুনৰ ডাউনল’ড কৰি চাওক</translation>
 <translation id="3642638418806704195">এপ্লিকেশ্বন:</translation>
+<translation id="3644768007456662469">পৰিশোধ সম্পৰ্কীয় চিহ্ন</translation>
 <translation id="3646643500201740985">কোনো বিজ্ঞাপনে কিমান ভাল পাৰদৰ্শিতা দেখুৱাইছে তাৰ জোখ-মাখ কৰা</translation>
 <translation id="3647286794400715637">প্ৰতিটো URLৰ ষ্ট্ৰিঙৰ প্ৰৱিষ্টিত ১ৰ পৰা ২টাৰ ভিতৰত URL থাকিবই লাগিব।</translation>
 <translation id="3647400963805615193">Chromeৰ পৰামৰ্শ অগ্ৰাহ্য কৰাৰ বুটাম, অগ্ৰাহ্য কৰিবলৈ এণ্টাৰ টিপক, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2096,11 +2097,13 @@
 <translation id="4530347922939905757">পাঠ বাৰ্তা</translation>
 <translation id="4531477351494678589">ভাৰ্চুৱেল কাৰ্ডৰ নম্বৰ:</translation>
 <translation id="4535523368173457420">এই সন্ধান ইঞ্জিনসমূহ আপোনাৰ অঞ্চলত জনপ্ৰিয় আৰু এইসমূহক যাদৃচ্ছিক ক্ৰমত দেখুওৱা হৈছে</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{১ বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}one{{NUM_YEARS} বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}other{{NUM_YEARS} বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="4541810033354695636">পৰিৱৰ্ধিত বাস্তৱিকতা</translation>
 <translation id="4542971377163063093">ট্ৰে’ ৬</translation>
 <translation id="4543072026714825470">পৰৱৰ্তী সময়ত দ্ৰুতভাৱে পৰিশোধ কৰিবলৈ, আপোনাৰ Google একাউণ্টত নিজৰ কাৰ্ড, নাম আৰু বিলিঙৰ ঠিকনা ছেভ কৰক।</translation>
 <translation id="454441086898495030"><ph name="SET" />ত যোগ দিবনে?</translation>
 <translation id="4546730006268514143">স্থানান্তৰণ কৰাৰ সময় উকলিছে</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{১ দিন পূৰ্বে সৃষ্টি কৰা হৈছে}one{{NUM_DAYS} দিন পূৰ্বে সৃষ্টি কৰা হৈছে}other{{NUM_DAYS} দিন পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">পাছৱৰ্ড পূৰ কৰাৰ বাবে আপুনি আপোনাৰ স্ক্ৰীন লক ব্যৱহাৰ কৰি আছে</translation>
 <translation id="4557573143631562971">গৃহ বীমা</translation>
@@ -2894,6 +2897,7 @@
 <translation id="5938153366081463283">ভাৰ্চুৱেল কাৰ্ডখন যোগ দিয়ক</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">এই তথ্য Trustpilot, ScamAdviser, Google আৰু বহুতোৰ দৰে স্বতন্ত্ৰ পৰ্যালোচনাৰ ৱেবছাইটৰ পৰা লোৱা। সাৰাংশ AIৰ জৰিয়তে সৃষ্টি কৰা হৈছে।</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{১ মিনিট পূৰ্বে সৃষ্টি কৰা হৈছে}one{{NUM_MINS} মিনিট পূৰ্বে সৃষ্টি কৰা হৈছে}other{{NUM_MINS} মিনিট পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="5944297261866530437">ফেব্ৰিক (হাই-গ্লছ)</translation>
 <translation id="5950901984834744590">ৰেজৰ আৰু শ্বেভাৰ</translation>
 <translation id="5951495562196540101">উপভোক্তাৰ একাউণ্টৰ সৈতে পঞ্জীয়ন কৰিব নোৱাৰি (পেকেজ অনুজ্ঞাপত্ৰ উপলব্ধ)।</translation>
@@ -4053,6 +4057,7 @@
 <translation id="7894280532028510793">যদি বানান ঠিকে আছে, <ph name="BEGIN_LINK" />নেটৱৰ্ক ডায়গন’ষ্টিক্স চলাই চাওক<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">এনভেল’প ৭ x ৯ ইঞ্চি</translation>
 <translation id="7905064834449738336">যেতিয়া আপুনি এটা পাছৱৰ্ড ব্যৱহাৰ কৰে, তেতিয়া সেইটো অনলাইনত প্ৰকাশ কৰা হৈছে নেকি সেই বিষয়ে Chromiumএ আপোনাক সকীয়নি দিয়ে। এনে কৰোঁতে আপোনাৰ পাছৱৰ্ডসমূহ আৰু ব্যৱহাৰকাৰীৰ নামসমূহ এনক্ৰিপ্ট কৰা হয়, গতিকে সেইবোৰ Googleকে ধৰি অন্য কোনেও পঢ়িব নোৱাৰে।</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{১ ঘণ্টা পূৰ্বে সৃষ্টি কৰা হৈছে}one{{NUM_HOURS} ঘণ্টা পূৰ্বে সৃষ্টি কৰা হৈছে}other{{NUM_HOURS} ঘণ্টা পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="7908648876066812348">ভাৰ্ছুৱেল কাৰ্ড অন কৰা হৈছে</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ছেটিঙত Chromeৰ সুৰক্ষা পৰীক্ষা পৃষ্ঠালৈ যাবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="791107458486222637">ফলাফল পুনৰ নিৰ্ধাৰণ কৰি থকা হৈছে</translation>
@@ -4187,6 +4192,7 @@
 <translation id="8134058435519644366">নিযুক্তি আৰু কৰ্মচাৰীৰ ভৰ্তিকৰণ</translation>
 <translation id="8135546115396015134">বাওঁফালৰ কী</translation>
 <translation id="8137456439814903304">শক্তি আৰু উপযোগিতা</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{১ মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}one{{NUM_MONTHS} মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}other{{NUM_MONTHS} মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="8148608574971654810">PDFৰ সংস্কৰণ:</translation>
 <translation id="8149426793427495338">আপোনাৰ কম্পিউটাৰটো সুপ্ত অৱস্থালৈ গৈছিল।</translation>
 <translation id="8150722005171944719"><ph name="URL" />ৰ ফাইলটো পঢ়িব পৰা অৱস্থাত নাই।  এই ফাইলটো হয়তো আঁতৰোৱা হৈছে, ইয়াৰ পৰা লৈ যোৱা হৈছে বা ফাইলৰ অনুমতিয়ে এক্সেছ প্ৰদান কৰা নাই।</translation>

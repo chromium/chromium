@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">保存したパスワードまたはパスキーを使用しますか？</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
 <translation id="592182999816790476"><ph name="WEBSITE" /> に <ph name="USERNAME" /> のパスワードを保存しました</translation>
+<translation id="593924516471361340"><ph name="WEBSITE" /> の <ph name="USERNAME" /> で問題が発生した場合の一時的な再設定パスワードを保存しました</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> のパスキーです。画面ロックを使用してください</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
 <translation id="7286867818472074330">パスキーを選択</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />（<ph name="ITEM_POSITION" /> / <ph name="ITEMS_TOTAL" />）</translation>
 <translation id="7738288782501322815"><ph name="SITE_NAME" /> のパスワードを受信しました</translation>
+<translation id="8202660122967066153"><ph name="USERNAME" /> で問題が発生した場合の一時的な再設定パスワード</translation>
 <translation id="8363484128299778310">問題発生時用の一時的な再設定パスワード</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> さんが <ph name="SITE_NAME" /> のパスワードをあなたと共有しました</translation>
 <translation id="8891372124884726271">認証情報のリストは閉じています。</translation>

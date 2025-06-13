@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 օր առաջ}one{# օր առաջ}other{# օր առաջ}}</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1243314992276662751">Վերբեռնել</translation>
+<translation id="1253734725326687145">Հպման թիրախը տեղափոխվեց վերևի աջ անկյուն։ Հպեք այստեղ։</translation>
 <translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Փորձեք ուղարկել տեքստը մաս-մաս։</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
 <translation id="24452542372838207">Ընդարձակել</translation>
 <translation id="2445449901874883781">Ցույց տալ ավելի շատ պատուհաններ</translation>
+<translation id="2448407890032181691">Հպման թիրախը տեղափոխվեց ներքևի աջ անկյուն։ Հպեք այստեղ։</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2497284189126895209">Բոլոր ֆայլերը</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Ներդիր</translation>
 <translation id="5613020302032141669">Ձախ սլաք</translation>
 <translation id="5633029987065897167">Դատարկ</translation>
+<translation id="5651438382973553530">Հպման թիրախը տեղափոխվեց ներքևի ձախ անկյուն։ Հպեք այստեղ։</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 րոպե}one{# րոպե}other{# րոպե}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Այսօր ակտիվ է եղել}=1{Ակտիվ է եղել 1 օր առաջ}one{Ակտիվ է եղել # օր առաջ}other{Ակտիվ է եղել # օր առաջ}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 օր }one{# օր }other{# օր }}</translation>

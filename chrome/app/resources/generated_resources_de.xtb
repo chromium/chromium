@@ -5977,7 +5977,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5186381005592669696">Anzeigesprache für unterstützte Apps anpassen</translation>
 <translation id="5186788525428341874">Du kannst diesen Passkey verwenden, um dich auf deinen Geräten schneller anzumelden. Er wird im Google Passwortmanager für <ph name="ACCOUNT_NAME" /> gespeichert.</translation>
 <translation id="5187641678926990264">Seite als App &amp;installieren…</translation>
-<translation id="5187671830619031922">Tab zur geteilten Ansicht hinzufügen</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Geteilt von <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Standort verwenden. ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Android-Apps und ‑Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von deinem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf der Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer zu optimieren, bereitzustellen und zu verwalten. <ph name="BEGIN_LINK1" />Weitere Informationen zur Standortnutzung<ph name="END_LINK1" /></translation>
@@ -8998,6 +8997,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7387951778417998929">Du kannst eine andere Suchmaschine als deine Standardsuchmaschine verwenden, indem du das zugehörige Kürzel in die Adressleiste eingibst und dann das von dir bevorzugte Tastenkürzel drückst. Außerdem kannst du hier deine Standardsuchmaschine ändern.</translation>
 <translation id="7388615499319468910">Websites und Werbetreibende können die Leistung ihrer Werbung analysieren. Diese Einstellung ist deaktiviert.</translation>
 <translation id="738903649531469042">Tab zur Leseliste hinzufügen</translation>
+<translation id="7389615853658756494">Auf der Website ändern</translation>
 <translation id="7392118418926456391">Fehler beim Virenscan</translation>
 <translation id="7392915005464253525">Geschlossenes Fenster wieder öffn&amp;en</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 Element kopiert}other{{COUNT} Elemente kopiert}}</translation>
@@ -9127,6 +9127,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7474043404939621342">Symbolleiste personalisieren</translation>
 <translation id="747459581954555080">Alle wiederherstellen</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Sofortige Rückgabe erforderlich}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_DAYS} Tagen zurückgeben}}</translation>
+<translation id="747557463733380256">Informationen zur Verwaltung deines Browsers</translation>
 <translation id="7475671414023905704">Netscape-URL für vergessene Passwörter</translation>
 <translation id="7475742997309661417">Der Screenreader unter ChromeOS, ChromeVox, wird vor allem von Menschen mit Sehbehinderung oder eingeschränktem Sehvermögen verwendet, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Halte beide Lautstärketasten fünf Sekunden gedrückt, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
 <translation id="7476454130948140105">Der Akku ist für ein Update zu schwach (<ph name="BATTERY_PERCENT" /> %)</translation>
@@ -10276,6 +10277,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8265018477030547118">Nur auf diesem Gerät</translation>
 <translation id="826511437356419340">Du befindest dich jetzt im Modus "Fensterübersicht". Um zwischen Fenstern zu wechseln, kannst du wischen oder auf der Tastatur die Tabulatortaste drücken.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Dein Inkognitofenster wird nach dem Neustart nicht wieder geöffnet}other{Deine {COUNT} Inkognitofenster werden nach dem Neustart nicht wieder geöffnet}}</translation>
+<translation id="8266430295499893285">Du musst deine Identität bestätigen, bevor du auf deine Passwörter zugreifen kannst</translation>
 <translation id="8266947622852630193">Alle Eingabemethoden</translation>
 <translation id="8267539814046467575">Drucker hinzufügen</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Dies sind allgemeine Informationen zu diesem Gerät und dessen Nutzung, zum Beispiel zum Ladestatus des Akkus, zu System- und App-Aktivitäten und zu Fehlern. Die Daten werden zur Verbesserung von Android verwendet. Einige Informationen, die in zusammengefasster Form weitergegeben werden, helfen auch Apps und Partnern von Google, wie Android-Entwicklern, dabei, ihre Apps und Produkte zu verbessern.<ph name="END_PARAGRAPH1" />
@@ -11085,7 +11087,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8827125715368568315"><ph name="PERMISSION" /> und <ph name="COUNT" /> weitere blockiert</translation>
 <translation id="8827289157496676362">Erweiterung anpinnen</translation>
 <translation id="8828933418460119530">DNS-Name</translation>
-<translation id="8829979393064090868">Tab zur geteilten Ansicht hinzufügen</translation>
 <translation id="8830479210602243906">Effizienter arbeiten</translation>
 <translation id="883062543841130884">Ersetzungen</translation>
 <translation id="8830779999439981481">Neustart läuft, um Updates anzuwenden</translation>

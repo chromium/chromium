@@ -5971,7 +5971,6 @@
 <translation id="5186381005592669696">自定义受支持应用的显示语言</translation>
 <translation id="5186788525428341874">您可以使用此通行密钥在各个设备上更快地登录。系统会将它保存到 <ph name="ACCOUNT_NAME" /> 的 Google 密码管理工具中。</translation>
 <translation id="5187641678926990264">将网页作为应用安装(&amp;I)…</translation>
-<translation id="5187671830619031922">向拆分视图中添加标签页</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">由<ph name="USER_NAME" />共享</translation>
 <translation id="5188648870018555788">使用位置信息：允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。<ph name="BEGIN_LINK1" />详细了解如何使用位置信息<ph name="END_LINK1" /></translation>
@@ -8992,6 +8991,7 @@
 <translation id="7387951778417998929">若要使用非默认的搜索引擎，请先在地址栏中输入相应的快捷字词，然后按您的首选键盘快捷键。您还可在此处更改默认搜索引擎。</translation>
 <translation id="7388615499319468910">网站和广告主可以了解广告效果。此设置已关闭。</translation>
 <translation id="738903649531469042">向阅读清单中添加标签页</translation>
+<translation id="7389615853658756494">在网站上更改</translation>
 <translation id="7392118418926456391">病毒扫描失败</translation>
 <translation id="7392915005464253525">重新打开关闭的窗口(&amp;E)</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已复制 1 个条目}other{已复制 {COUNT} 个条目}}</translation>
@@ -9121,6 +9121,7 @@
 <translation id="7474043404939621342">自定义工具栏</translation>
 <translation id="747459581954555080">全部恢复</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{必须立即退还此设备}other{请在 {NUM_DAYS} 天内退还 <ph name="DEVICE_TYPE" />}}</translation>
+<translation id="747557463733380256">了解您的浏览器的管理方式</translation>
 <translation id="7475671414023905704">Netscape 忘了密码网址</translation>
 <translation id="7475742997309661417">ChromeOS 中的屏幕阅读器 (ChromeVox) 主要供盲人或低视力用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。同时按住两个音量键 5 秒钟即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
 <translation id="7476454130948140105">电量太低 (<ph name="BATTERY_PERCENT" />%)，无法更新</translation>
@@ -10270,6 +10271,7 @@
 <translation id="8265018477030547118">仅在该设备上</translation>
 <translation id="826511437356419340">已进入窗口概览模式。您可以滑动手指或（若使用键盘）按 Tab 键进行浏览。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{当您重新启动后，您先前打开的那个无痕式窗口不会自动打开}other{当您重新启动后，您先前打开的那 {COUNT} 个无痕式窗口不会自动打开}}</translation>
+<translation id="8266430295499893285">您需要验证身份，然后才能访问您的密码</translation>
 <translation id="8266947622852630193">所有输入法</translation>
 <translation id="8267539814046467575">添加打印机</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />这是关于此设备及其使用情况（例如电池电量、系统与应用活动以及错误）的一般信息。我们会使用这些数据来改善 Android；部分汇总信息也会有助于改善 Google 应用，并会协助我们的合作伙伴（例如 Android 开发者）改善其应用和产品。<ph name="END_PARAGRAPH1" />
@@ -11079,7 +11081,6 @@
 <translation id="8827125715368568315">禁用了“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="8827289157496676362">固定扩展程序</translation>
 <translation id="8828933418460119530">DNS 名称</translation>
-<translation id="8829979393064090868">向拆分视图中添加标签页</translation>
 <translation id="8830479210602243906">提高工作效率</translation>
 <translation id="883062543841130884">替换</translation>
 <translation id="8830779999439981481">正在重启以应用更新</translation>

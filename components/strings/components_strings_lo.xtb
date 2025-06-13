@@ -1564,6 +1564,7 @@
 <translation id="3641116835972736297">ອາເມລິກັນຟຸດບອນ</translation>
 <translation id="3642196846309122856">ລອງດາວໂຫຼດໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
 <translation id="3642638418806704195">ແອັບພລິເຄຊັນ:</translation>
+<translation id="3644768007456662469">ໄອຄອນລາຍການທີ່ກ່ຽວຂ້ອງກັບການຈ່າຍເງິນ</translation>
 <translation id="3646643500201740985">ການວັດແທກປະສິດທິພາບຂອງໂຄສະນາ</translation>
 <translation id="3647286794400715637">ສະຕຣິງ URL ແຕ່ລະອັນຕ້ອງມີ URL ຈຳນວນ 1 ຫາ 2 ອັນ.</translation>
 <translation id="3647400963805615193">ປຸ່ມປິດເຄັດລັບ Chrome, ກົດ Enter ເພື່ອປິດ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@
 <translation id="4530347922939905757">ຂໍ້ຄວາມ SMS</translation>
 <translation id="4531477351494678589">ໝາຍເລກບັດສະເໝືອນ:</translation>
 <translation id="4535523368173457420">ໂປຣແກຣມຊອກຫາເຫຼົ່ານີ້ໄດ້ຮັບຄວາມນິຍົມໃນພາກພື້ນຂອງທ່ານ ແລະ ສະແດງແບບສຸ່ມລຳດັບ</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{ສ້າງເມື່ອ 1 ປີກ່ອນ}other{ສ້າງເມື່ອ {NUM_YEARS} ປີກ່ອນ}}</translation>
 <translation id="4541810033354695636">ອາກິວເມັນ ຣີອາລິຕີ</translation>
 <translation id="4542971377163063093">ຖາດ 6</translation>
 <translation id="4543072026714825470">ເພື່ອຈ່າຍໄວຂຶ້ນໃນເທື່ອຕໍ່ໄປ, ໃຫ້ບັນທຶກບັດ ແລະ ທີ່ຢູ່ໃບບິນຂອງທ່ານໄວ້ໃນບັນຊີ Google.</translation>
 <translation id="454441086898495030">ເພີ່ມໃສ່ໃນ <ph name="SET" /> ບໍ?</translation>
 <translation id="4546730006268514143">ການໂອນຍ້າຍໝົດເວລາແລ້ວ</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{ສ້າງເມື່ອ 1 ມື້ກ່ອນ}other{ສ້າງເມື່ອ {NUM_DAYS} ມື້ກ່ອນ}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">ທ່ານກຳລັງໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເພື່ອໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="4557573143631562971">ປະກັນໄພເຮືອນ</translation>
@@ -2898,6 +2901,7 @@
 <translation id="5938153366081463283">ເພີ່ມບັດສະເໝືອນ</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">ຂໍ້ມູນນີ້ມາຈາກເວັບໄຊຕິຊົມທີ່ເປັນເອກະລາດເຊັ່ນ: Trustpilot, ScamAdviser, Google ແລະ ອື່ນໆອີກ. ບົດສະຫຼຸບແມ່ນສ້າງດ້ວຍ AI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{ສ້າງເມື່ອ 1 ນາທີກ່ອນ}other{ສ້າງເມື່ອ {NUM_MINS} ນາທີກ່ອນ}}</translation>
 <translation id="5944297261866530437">ຜ້າ (ມັນວາວຫຼາຍ)</translation>
 <translation id="5950901984834744590">ມີດແຖ ແລະ ເຄື່ອງໂກນໜວດ</translation>
 <translation id="5951495562196540101">ບໍ່ສາມາດລົງທະບຽນດ້ວຍບັນຊີຜູ້ຊົມໃຊ້ໄດ້ (ມີໃບອະນຸຍາດແບບແພັກເກດ).</translation>
@@ -4058,6 +4062,7 @@
 <translation id="7894280532028510793">ຖ້າການສະກົດຄຳຖືກຕ້ອງ, <ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 ນິ້ວ</translation>
 <translation id="7905064834449738336">ເມື່ອທ່ານໃຊ້ລະຫັດຜ່ານ, Chromium ຈະເຕືອນທ່ານຫາກມີການເຜີຍແຜ່ລະຫັດຜ່ານທາງອອນລາຍ. ໃນເວລາກວດສອບ, ລະຫັດຜ່ານ ແລະ ຊື່ຜູ້ໃຊ້ຂອງທ່ານຈະຖືກເຂົ້າລະຫັດໄວ້, ເພື່ອບໍ່ໃຫ້ໃຜກໍຕາມສາມາດອ່ານຂໍ້ມູນດັ່ງກ່າວໄດ້, ຮວມທັງ Google ນຳ.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{ສ້າງເມື່ອ 1 ຊົ່ວໂມງກ່ອນ}other{ສ້າງເມື່ອ {NUM_HOURS} ຊົ່ວໂມງກ່ອນ}}</translation>
 <translation id="7908648876066812348">ກຳລັງເປີດໃຊ້ບັດສະເໝືອນ</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອເຂົ້າໄປໜ້າການກວດສອບຄວາມປອດໄພຂອງ Chrome ໃນການຕັ້ງຄ່າ</translation>
 <translation id="791107458486222637">ກຳລັງເຮັດຊ້ຳຜົນໄດ້ຮັບ</translation>
@@ -4192,6 +4197,7 @@
 <translation id="8134058435519644366">ການຈັດຫາ ແລະ ຮັບພະນັກງານ</translation>
 <translation id="8135546115396015134">ປຸ່ມຊ້າຍ</translation>
 <translation id="8137456439814903304">ພະລັງງານ ແລະ ສາທາລະນຸປະໂພກ</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ 1 ເດືອນກ່ອນ}other{ສ້າງເມື່ອ {NUM_MONTHS} ເດືອນກ່ອນ}}</translation>
 <translation id="8148608574971654810">ເວີຊັນ PDF:</translation>
 <translation id="8149426793427495338">ຄອມພິວເຕີຂອງທ່ານໄດ້ເຂົ້າສູ່ໂໝດນອນຫຼັບແລ້ວ.</translation>
 <translation id="8150722005171944719">ໄຟລ໌ຢູ່ທີ່ <ph name="URL" /> ບໍ່ສາມາດອ່ານໄດ້. ມັນອາດຈະຖືກເອົາອອກໄປ, ຍ້າຍໜີ,​ຫຼື ການອະນຸຍາດໄຟລ໌ອາດຈະກໍາລັງ​ປ້ອງ​ກັນການການເຂົ້າຫາ.</translation>

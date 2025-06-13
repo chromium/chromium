@@ -5982,7 +5982,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5186381005592669696">Personalizează limba de afișare pentru aplicațiile compatibile</translation>
 <translation id="5186788525428341874">Poți folosi această cheie de acces ca să te conectezi mai rapid pe toate dispozitivele tale. Ea se va salva în Managerul de parole Google pentru <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalează pagina ca aplicație...</translation>
-<translation id="5187671830619031922">Adaugă o filă la afișarea împărțită</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Distribuită de <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Folosește locația. Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii și semnalele wireless de la dispozitivul tău, pentru a obține locația semnalelor wireless prin crowdsourcing. Acestea se folosesc fără a te identifica, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor. <ph name="BEGIN_LINK1" />Află mai multe despre folosirea locației<ph name="END_LINK1" /></translation>
@@ -9008,6 +9007,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7387951778417998929">Pentru a folosi alt motor de căutare decât cel prestabilit, introdu comanda rapidă respectivă în bara de adrese, urmată de comanda rapidă de la tastatură preferată. Poți să schimbi motorul de căutare prestabilit și de aici.</translation>
 <translation id="7388615499319468910">Site-urile și advertiserii pot să afle despre performanța anunțurilor. Setarea este dezactivată.</translation>
 <translation id="738903649531469042">Adaugă fila în lista de lectură</translation>
+<translation id="7389615853658756494">Modifică pe site</translation>
 <translation id="7392118418926456391">Scanarea antivirus nu a reușit</translation>
 <translation id="7392915005464253525">R&amp;edeschide fereastra închisă</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Un element copiat}few{{COUNT} elemente copiate}other{{COUNT} de elemente copiate}}</translation>
@@ -9137,6 +9137,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7474043404939621342">Personalizează bara de instrumente</translation>
 <translation id="747459581954555080">Restabilește-le pe toate</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Este necesară returnarea imediată}few{Returnează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} zile}other{Returnează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} de zile}}</translation>
+<translation id="747557463733380256">Află mai multe despre gestionarea browserului</translation>
 <translation id="7475671414023905704">Adresă URL pentru parolă pierdută Netscape</translation>
 <translation id="7475742997309661417">Cititorul de ecran din ChromeOS, ChromeVox, este folosit în principal de persoane oarbe sau cu vedere slabă pentru a citi textul afișat pe ecran cu un sintetizator vocal sau un afișaj Braille. Apasă lung ambele butoane de volum timp de cinci secunde pentru a activa ChromeVox. Când ChromeVox este activat, vei face un tur rapid.</translation>
 <translation id="7476454130948140105">Bateria este prea descărcată pentru actualizare (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10286,6 +10287,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8265018477030547118">Numai pe acest dispozitiv</translation>
 <translation id="826511437356419340">S-a trecut în modul de prezentare a ferestrei. Glisează pentru a naviga sau apasă tasta Tab dacă folosești tastatura.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Fereastra incognito nu se va deschide după relansare}few{{COUNT} ferestre incognito nu se vor deschide după relansare}other{{COUNT} de ferestre incognito nu se vor deschide după relansare}}</translation>
+<translation id="8266430295499893285">Trebuie să-ți confirmi identitatea înainte de a-ți accesa parolele</translation>
 <translation id="8266947622852630193">Toate metodele de introducere a textului</translation>
 <translation id="8267539814046467575">Adaugă o imprimantă</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Acestea sunt informații generale despre dispozitiv și despre cum îl folosești (cum ar fi nivelul bateriei, cât de des folosești aplicațiile, activitatea sistemului și erorile). Datele vor fi folosite pentru îmbunătățirea Android și unele informații agregate vor ajuta aplicațiile Google și partenerii, cum ar fi dezvoltatorii Android, să își îmbunătățească aplicațiile și produsele.<ph name="END_PARAGRAPH1" />
@@ -11096,7 +11098,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8827125715368568315">Permisiuni blocate: <ph name="PERMISSION" /> și încă <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Fixează extensia</translation>
 <translation id="8828933418460119530">Nume DNS</translation>
-<translation id="8829979393064090868">Adaugă o filă la afișarea împărțită</translation>
 <translation id="8830479210602243906">Sporește productivitatea</translation>
 <translation id="883062543841130884">Înlocuiri</translation>
 <translation id="8830779999439981481">Se repornește pentru aplicarea actualizărilor</translation>

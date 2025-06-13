@@ -5978,7 +5978,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5186381005592669696">Personalizo gjuhën e ekranit për aplikacionet e mbështetura</translation>
 <translation id="5186788525428341874">Mund ta përdorësh këtë çelës kalimi për t'u identifikuar më shpejt në pajisjet e tua. Ai do të ruhet te "Menaxheri i fjalëkalimeve i Google" për <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalo faqen si aplikacion...</translation>
-<translation id="5187671830619031922">Shto skedën në pamjen e ndarë</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Ndarë nga <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Përdor vendndodhjen. Lejo që aplikacionet, uebsajtet dhe shërbimet e ChromeOS dhe Android që kanë lejen për vendndodhjen të përdorin vendndodhjen e pajisjes sate. "Saktësia e vendndodhjes" ofron vendndodhje më të saktë për shërbimet dhe aplikacionet për Android. Për ta bërë këtë, Google përpunon në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless nga pajisja jote për të mbledhur vendndodhjet e sinjaleve wireless. Këto përdoren pa të të identifikuar ty për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur shërbimet e Google bazuar në interesat legjitimë të Google dhe të palëve të treta për t'u shërbyer nevojave të përdoruesve. <ph name="BEGIN_LINK1" />Mëso më shumë rreth përdorimit të vendndodhjes<ph name="END_LINK1" /></translation>
@@ -9001,6 +9000,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7387951778417998929">Për të përdorur një motor kërkimi të ndryshëm nga ai i parazgjedhur, shkruaj shkurtoren e tij në shiritin e adresave, të ndjekur nga shkurtorja jote e preferuar e tastierës. Mund ta ndryshosh po ashtu motorin tënd të parazgjedhur të kërkimit këtu.</translation>
 <translation id="7388615499319468910">Sajtet dhe reklamuesit mund të kuptojnë se si funksionojnë reklamat. Ky cilësim është joaktiv.</translation>
 <translation id="738903649531469042">Shtoje skedën te lista e leximit</translation>
+<translation id="7389615853658756494">Ndryshoje në sajt</translation>
 <translation id="7392118418926456391">Skanimi për viruse dështoi</translation>
 <translation id="7392915005464253525">H&amp;ape sërish dritaren e mbyllur</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{U kopjua 1 artikull}other{U kopjuan {COUNT} artikuj}}</translation>
@@ -9130,6 +9130,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7474043404939621342">Personalizo shiritin e veglave</translation>
 <translation id="747459581954555080">Restauroji të gjitha</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Kërkohet kthimi i menjëhershëm}other{Ktheje pajisjen <ph name="DEVICE_TYPE" /> brenda {NUM_DAYS} ditësh}}</translation>
+<translation id="747557463733380256">Mëso se si menaxhohet shfletuesi yt</translation>
 <translation id="7475671414023905704">URL-ja e Netscape për humbjen e fjalëkalimit</translation>
 <translation id="7475742997309661417">Lexuesi i ekranit në ChromeOS, ChromeVox, përdoret kryesisht nga personat e verbër ose me shikim të dobët për të lexuar tekstin e shfaqur në ekran me një sintetizues të ligjërimit ose me një ekran breil. Shtyp dhe mbaj shtypur të dyja tastet e volumit për pesë sekonda për të aktivizuar ChromeVox. Kur të aktivizohet ChromeVox, do të kryesh një udhëzues të shpejtë.</translation>
 <translation id="7476454130948140105">Niveli i baterisë është shumë i ulët për përditësimin (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10277,6 +10278,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8265018477030547118">Vetëm në këtë pajisje</translation>
 <translation id="826511437356419340">Hyre në modalitetin e përmbledhjes së dritares. Rrëshqit shpejt për të naviguar ose shtyp Tab nëse po përdor një tastierë.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Dritarja jote "e fshehtë" nuk do të hapet pasi ta nisësh sërish}other{{COUNT} dritaret e tua "të fshehta" nuk do të rihapen pasi ta nisësh sërish.}}</translation>
+<translation id="8266430295499893285">Duhet të verifikosh që je ti para se të qasesh në fjalëkalim</translation>
 <translation id="8266947622852630193">Të gjitha metodat e hyrjes</translation>
 <translation id="8267539814046467575">Shto printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Ky është informacion i përgjithshëm për këtë pajisje dhe se si e përdor (si p.sh. niveli i baterisë, aktiviteti i sistemit dhe i aplikacioneve dhe gabimet). Të dhënat do të përdoren për të përmirësuar Android, ndërsa disa informacione të grumbulluara do të ndihmojnë gjithashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android, për të përmirësuar aplikacionet dhe produktet e tyre.<ph name="END_PARAGRAPH1" />
@@ -11086,7 +11088,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8827125715368568315">Të bllokuara: <ph name="PERMISSION" /> dhe <ph name="COUNT" /> të tjera</translation>
 <translation id="8827289157496676362">Gozhdo shtesën</translation>
 <translation id="8828933418460119530">Emri i DNS-së</translation>
-<translation id="8829979393064090868">Shto skedën në pamjen e ndarë</translation>
 <translation id="8830479210602243906">Rrit produktivitetin</translation>
 <translation id="883062543841130884">Zëvendësimet</translation>
 <translation id="8830779999439981481">Po riniset për të zbatuar përditësimet</translation>

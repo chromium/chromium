@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 Diwrnod yn Ôl}zero{# Diwrnod yn Ôl}two{# Ddiwrnod yn Ôl}few{# Diwrnod yn Ôl}many{# Diwrnod yn Ôl}other{# Diwrnod yn Ôl}}</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1243314992276662751">Uwchlwytho</translation>
+<translation id="1253734725326687145">Symudwyd y targed cyffwrdd i'r dde uchaf. Tapiwch yma.</translation>
 <translation id="1266864766717917324">Ni ellid rhannu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Ennill</translation>
 <translation id="1291104554099683393">Rhowch gynnig ar rannu'r testun mewn darnau llai.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
 <translation id="24452542372838207">Ehangu'r hysbysiad</translation>
 <translation id="2445449901874883781">Defnyddio dwysedd uchel</translation>
+<translation id="2448407890032181691">Symudwyd y targed cyffwrdd i'r gwaelod ar y dde. Tapiwch yma.</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2497284189126895209">Pob Ffeil</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Saeth Chwith</translation>
 <translation id="5633029987065897167">Gwag</translation>
+<translation id="5651438382973553530">Symudwyd y targed cyffwrdd i'r gwaelod ar y chwith. Tapiwch yma.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 fun}zero{# mun}two{# fun}few{# mun}many{# mun}other{# mun}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Yma heddiw}=1{Yma 1 diwrnod yn ôl}two{Yma # ddiwrnod yn ôl}few{Yma # diwrnod yn ôl}many{Yma # diwrnod yn ôl}other{Yma # diwrnod yn ôl}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 diwrnod a }zero{# diwrnod a }two{# ddiwrnod a }few{# diwrnod a }many{# diwrnod a }other{# diwrnod a }}</translation>

@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 วันที่ผ่านมา}other{# วันที่ผ่านมา}}</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1243314992276662751">อัปโหลด</translation>
+<translation id="1253734725326687145">ย้ายเป้าหมายการสัมผัสไปที่ด้านขวาบนแล้ว แตะที่นี่</translation>
 <translation id="1266864766717917324">แชร์<ph name="CONTENT_TYPE" />ไม่ได้</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">ลองแชร์ข้อความทีละส่วนแทน</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="24452542372838207">ขยายการแจ้งเตือน</translation>
 <translation id="2445449901874883781">ใช้ความหนาแน่นสูง</translation>
+<translation id="2448407890032181691">ย้ายเป้าหมายการสัมผัสไปที่ด้านขวาล่างแล้ว แตะที่นี่</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2497284189126895209">ไฟล์ทั้งหมด</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">ลูกศรซ้าย</translation>
 <translation id="5633029987065897167">ว่าง</translation>
+<translation id="5651438382973553530">ย้ายเป้าหมายการสัมผัสไปที่ด้านซ้ายล่างแล้ว แตะที่นี่</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 นาที}other{# นาที}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ใช้งานวันนี้}=1{ใช้งานเมื่อ 1 วันที่ผ่านมา}other{ใช้งานเมื่อ # วันที่ผ่านมา}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 วันกับอีก }other{# วันกับอีก }}</translation>

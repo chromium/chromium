@@ -965,7 +965,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4979397965658815378">Log masuk dengan Google Account anda untuk mendapatkan penanda halaman, kata laluan, sejarah dan tetapan anda yang lain pada semua peranti anda</translation>
 <translation id="4985921635659180565">Setelah fail dijadualkan untuk dipadamkan, tindakan tersebut tidak boleh dibatalkan.</translation>
 <translation id="498624032394115435">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab.</translation>
-<translation id="4989065233040279145">Pilih lokasi untuk menyimpan <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, diurus oleh organisasi anda.</translation>
 <translation id="4992255726304765516">Kumpulan tab berwarna <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Salin kata laluan</translation>
@@ -1652,7 +1651,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7724085059277147439">{count,plural, =1{Item yang disimpan dalam Google Account anda, {email}}other{Item yang disimpan dalam Google Account anda, {email}}}</translation>
 <translation id="7729458878441927652">Untuk melihat tab daripada peranti anda yang lain, segerakkan tab dan sejarah anda.</translation>
 <translation id="7730020510075123961">Tidak, gabungkan data</translation>
-<translation id="7730973429297233609">Pilih akaun yang mahu digunakan untuk menyimpan <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Hanya pada peranti ini.</translation>
 <translation id="7744192722284567281">Ditemukan dalam pelanggaran data</translation>
 <translation id="7749790401023484470">Anda tidak memilih apa-apa teks.</translation>
@@ -1836,7 +1834,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8428045167754449968">Bandar / Pekan</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8428634594422941299">OK</translation>
-<translation id="8430694217306051839">Pilih lokasi untuk menyimpan <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Butiran kumpulan tab</translation>
 <translation id="8438566539970814960">Mempertingkatkan carian dan penyemakan imbas</translation>
 <translation id="8439758443371991593">Sembunyikan Tambahkan pada Senarai Bacaan</translation>

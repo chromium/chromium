@@ -1570,6 +1570,7 @@
 <translation id="3641116835972736297">Ամերիկյան ֆուտբոլ</translation>
 <translation id="3642196846309122856">Փորձեք նորից ներբեռնել ֆայլերը</translation>
 <translation id="3642638418806704195">Ծրագիրը՝</translation>
+<translation id="3644768007456662469">Payments-ի տարրի պատկերակ</translation>
 <translation id="3646643500201740985">Գովազդի արդյունավետության գնահատում</translation>
 <translation id="3647286794400715637">URL-ների տողի յուրաքանչյուր գրառում պետք է պարունակի 1-ից 2 URL։</translation>
 <translation id="3647400963805615193">«Փակել Chrome-ի խորհուրդը» կոճակ․ սեղմեք Enter՝ փակելու համար, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2106,11 +2107,13 @@
 <translation id="4530347922939905757">Տեքստային հաղորդագրություն</translation>
 <translation id="4531477351494678589">Վիրտուալ քարտի համարը՝</translation>
 <translation id="4535523368173457420">Այս որոնողական համակարգերը տարածված են ձեր տարածաշրջանում և ցուցադրվում են պատահական հերթականությամբ</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Ստեղծվել է 1 տարի առաջ}one{Ստեղծվել է {NUM_YEARS} տարի առաջ}other{Ստեղծվել է {NUM_YEARS} տարի առաջ}}</translation>
 <translation id="4541810033354695636">լրացված իրականություն</translation>
 <translation id="4542971377163063093">Դարակ 6</translation>
 <translation id="4543072026714825470">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտն ու վճարային հասցեն Google հաշվում</translation>
 <translation id="454441086898495030">Ավելացնե՞լ «<ph name="SET" />» աղյուսակում</translation>
 <translation id="4546730006268514143">Փոխանցման ժամանակը սպառվել է</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Ստեղծվել է 1 օր առաջ}one{Ստեղծվել է {NUM_DAYS} օր առաջ}other{Ստեղծվել է {NUM_DAYS} օր առաջ}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Դուք օգտագործում եք էկրանի կողպումը գաղտնաբառերի լրացման համար</translation>
 <translation id="4557573143631562971">Անշարժ գույքի ապահովագրություն</translation>
@@ -2907,6 +2910,7 @@
 <translation id="5938153366081463283">Ավելացրեք վիրտուալ քարտ</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Այս տեղեկությունները վերցվում են անկախ կայքերից, որոնք կարծիքներ են պարունակում, օրինակ՝ Trustpilot-ից, ScamAdviser-ից և Google-ից։ Ամփոփագրերը ստեղծվում են ԱԲ-ի միջոցով։</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Ստեղծվել է 1 րոպե առաջ}one{Ստեղծվել է {NUM_MINS} րոպե առաջ}other{Ստեղծվել է {NUM_MINS} րոպե առաջ}}</translation>
 <translation id="5944297261866530437">Գործվածք (գերփայլուն)</translation>
 <translation id="5950901984834744590">Ածելիներ և սափրիչներ</translation>
 <translation id="5951495562196540101">Հնարավոր չէ գրանցվել սովորական հաշվով (հասանելի է փաթեթով արտոնագիր)։</translation>
@@ -4067,6 +4071,7 @@
 <translation id="7894280532028510793">Եթե տառասխալ չկա, <ph name="BEGIN_LINK" />գործարկեք ցանցի դիագնոստիկան<ph name="END_LINK" />։</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 դյմ</translation>
 <translation id="7905064834449738336">Երբ գաղտնաբառ եք օգտագործում, Chromium-ը զգուշացնում է ձեզ, եթե այն հրապարակվել է համացանցում։ Այդ ժամանակ ձեր գաղտնաբառերը և օգտանունները գաղտնագրվում են, այնպես որ ոչ ոք, այդ թվում՝ Google-ը, չի կարող կարդալ դրանք։</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Ստեղծվել է 1 ժամ առաջ}one{Ստեղծվել է {NUM_HOURS} ժամ առաջ}other{Ստեղծվել է {NUM_HOURS} ժամ առաջ}}</translation>
 <translation id="7908648876066812348">Վիրտուալ քարտը միացվում է</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Կարգավորումներում Chrome-ի անվտանգության ստուգման էջ անցնելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="791107458486222637">Արդյունքը վերարկվում է</translation>
@@ -4201,6 +4206,7 @@
 <translation id="8134058435519644366">Անձնակազմի հավաքագրում և ընտրություն</translation>
 <translation id="8135546115396015134">ձախ ստեղն</translation>
 <translation id="8137456439814903304">Էներգիա մատակարարող և կոմունալ ծառայություն</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ստեղծվել է 1 ամիս առաջ}one{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}other{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}}</translation>
 <translation id="8148608574971654810">PDF-ի տարբեակը՝</translation>
 <translation id="8149426793427495338">Ձեր համակարգիչը մտել է քնի ռեժիմ:</translation>
 <translation id="8150722005171944719"><ph name="URL" />-ում գտնվող ֆայլը ընթեռնելի չէ: Հնարավոր է, այն հեռացվել է, տեղափոխվել կամ ֆայլի թույլտվությունները կանխում են մուտքը:</translation>

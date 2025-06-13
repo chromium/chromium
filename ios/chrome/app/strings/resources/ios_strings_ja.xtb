@@ -965,7 +965,6 @@
 <translation id="4979397965658815378">Google アカウントでログインすると、どのデバイスからでも同じブックマーク、パスワード、履歴などの設定を利用できるようになります。</translation>
 <translation id="4985921635659180565">ファイルの削除をスケジュール設定すると、後からキャンセルできません。</translation>
 <translation id="498624032394115435">リンクを知っているユーザーは誰でも、すべてのタブを編集できます。</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> の保存先を選択</translation>
 <translation id="499122600724363620"><ph name="NAME" />（<ph name="EMAIL" />）、組織によって管理されています。</translation>
 <translation id="4992255726304765516">タブグループの色 <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
@@ -1652,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{Google アカウント（{email}）にアイテムを保存しました}other{Google アカウント（{email}）にアイテムを保存しました}}</translation>
 <translation id="7729458878441927652">他のデバイスのタブを表示するには、タブと履歴を同期します。</translation>
 <translation id="7730020510075123961">いいえ、データを結合します</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" />（<ph name="FILESIZE" />）の保存に使用するアカウントを選択してください</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />、このデバイスのみ。</translation>
 <translation id="7744192722284567281">データ侵害で漏洩</translation>
 <translation id="7749790401023484470">テキストが選択されていません。</translation>
@@ -1836,7 +1834,6 @@
 <translation id="8428045167754449968">市区町村</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">OK</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" />（<ph name="FILE_SIZE" />）の保存先を選択</translation>
 <translation id="8434837876193928924">タブグループの詳細</translation>
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
 <translation id="8439758443371991593">[リーディング リストに追加] を非表示</translation>

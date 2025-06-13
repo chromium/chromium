@@ -623,6 +623,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3596414637720633074">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="3602260545951981695">Escolha "Proteção reforçada"</translation>
 <translation id="3608436266458100337">Modo leitor</translation>
+<translation id="3610041351087301930">Ocultar leitor</translation>
 <translation id="3622175633937495219">Pesquisar no histórico (<ph name="COUNT" /> encontrados)</translation>
 <translation id="3625008969091706597">Deslize a borda da tela para voltar.</translation>
 <translation id="362709345066740529">Personalize os cards, o feed e muito mais</translation>
@@ -964,7 +965,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4979397965658815378">Faça login com sua Conta do Google para ter seus favoritos, senhas, histórico e outras configurações em todos os seus dispositivos</translation>
 <translation id="4985921635659180565">Não é possível cancelar a exclusão programada de um arquivo.</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todas as guias.</translation>
-<translation id="4989065233040279145">Escolha um local para salvar <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gerenciado pela sua organização.</translation>
 <translation id="4992255726304765516">Cor do grupo de guias <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copiar senha</translation>
@@ -1064,6 +1064,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5431252637281434233">Sua conta será desconectada</translation>
 <translation id="543338862236136125">Editar senha</translation>
 <translation id="5433691172869980887">Nome de usuário copiado</translation>
+<translation id="5437480232219631455">Você pode abrir o Gemini aqui</translation>
 <translation id="5439618055789623719">Conta conectada: <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Melhor navegação por padrão</translation>
 <translation id="5444892875087332195">Favoritos</translation>
@@ -1642,7 +1643,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7695953765525234038">Barra de pesquisa</translation>
 <translation id="7696316012653762532">Opções para traduzir a página</translation>
 <translation id="7700527812567437847">Pesquisar na tela com o Google Lens</translation>
-<translation id="7701040980221191251">Não há</translation>
+<translation id="7701040980221191251">Nenhum</translation>
 <translation id="7708994397325774423">Acesse todas as suas senhas</translation>
 <translation id="7711440461521638739">Você não está reutilizando senhas</translation>
 <translation id="7712361583414030698">Mostrando a versão off-line</translation>
@@ -1650,7 +1651,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7724085059277147439">{count,plural, =1{Item salvo na sua Conta do Google {email}}one{Item salvo na sua Conta do Google {email}}other{Itens salvos na sua Conta do Google {email}}}</translation>
 <translation id="7729458878441927652">Para conferir as guias dos seus outros dispositivos, sincronize-as com o histórico.</translation>
 <translation id="7730020510075123961">Não, juntar dados</translation>
-<translation id="7730973429297233609">Selecione a conta que você quer usar para salvar o arquivo <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Somente neste dispositivo.</translation>
 <translation id="7744192722284567281">Encontrada em uma violação de dados</translation>
 <translation id="7749790401023484470">Você não selecionou nenhum texto.</translation>
@@ -1834,7 +1834,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8428045167754449968">Cidade</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8428634594422941299">Entendi</translation>
-<translation id="8430694217306051839">Escolha um local para salvar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Detalhes do grupo de guias</translation>
 <translation id="8438566539970814960">Melhorar as pesquisas e a navegação</translation>
 <translation id="8439758443371991593">Ocultar "Adicionar à Lista de leitura"</translation>

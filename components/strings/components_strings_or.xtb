@@ -1561,6 +1561,7 @@
 <translation id="3641116835972736297">ଆମେରିକାନ ଫୁଟବଲ</translation>
 <translation id="3642196846309122856">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି ଡାଉନଲୋଡ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="3642638418806704195">ଆପ୍ଲିକେସନ୍:</translation>
+<translation id="3644768007456662469">ପେମେଣ୍ଟ ଆଇଟମ ଆଇକନ</translation>
 <translation id="3646643500201740985">କୌଣସି ବିଜ୍ଞାପନ କେତେ ଭଲ ପରଫର୍ମ କରେ ତାହା ମାପିବା</translation>
 <translation id="3647286794400715637">ପ୍ରତ୍ୟେକ URL ଷ୍ଟ୍ରିଙ୍ଗ ଏଣ୍ଟ୍ରି 1ରୁ 2 URL ମଧ୍ୟରେ ରହିବା ଉଚିତ।</translation>
 <translation id="3647400963805615193">Chromeର ଟିପକୁ ଖାରଜ କରିବା ବଟନ, ଖାରଜ କରିବାକୁ ଏଣ୍ଟର ଦବାନ୍ତୁ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2097,11 +2098,13 @@
 <translation id="4530347922939905757">ଟେକ୍ସଟ ମେସେଜ</translation>
 <translation id="4531477351494678589">ଭର୍ଚୁଆଲ କାର୍ଡ ନମ୍ବର:</translation>
 <translation id="4535523368173457420">ଏହି ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ଲୋକପ୍ରିୟ ଅଟେ ଏବଂ ସେଗୁଡ଼ିକୁ ରେଣ୍ଡମ କ୍ରମରେ ଦେଖାଯାଇଛି</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 ବର୍ଷ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{{NUM_YEARS} ବର୍ଷ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="4541810033354695636">ଅଗମେଣ୍ଟେଡ୍ ରିଆଲିଟୀ</translation>
 <translation id="4542971377163063093">ଟ୍ରେ 6</translation>
 <translation id="4543072026714825470">ପରବର୍ତ୍ତୀ ଥର ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଊଣ୍ଟରେ ଆପଣଙ୍କର କାର୍ଡ ଏବଂ ବିଲିଂ ଠିକଣା ସେଭ କରନ୍ତୁ</translation>
 <translation id="454441086898495030"><ph name="SET" />ରେ ଯୋଗ କରିବେ?</translation>
 <translation id="4546730006268514143">ଟ୍ରାନ୍ସଫର କରିବା ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 ଦିନ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{{NUM_DAYS} ଦିନ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକ ପୂରଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
 <translation id="4557573143631562971">ହୋମ ବୀମା</translation>
@@ -2895,6 +2898,7 @@
 <translation id="5938153366081463283">ଭର୍ଚୁଆଲ କାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5938793338444039872">ଟ୍ରୟ</translation>
 <translation id="5938866385061293322">ଏହି ସୂଚନା Trustpilot, ScamAdviser, Google ଏବଂ ଅନ୍ୟ ସ୍ୱତନ୍ତ୍ର ସମୀକ୍ଷା ୱେବସାଇଟରୁ ଆସିଛି। ସାରାଂଶଗୁଡ଼ିକ AI ସାହାଯ୍ୟରେ ତିଆରି କରାଯାଇଥାଏ।</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 ମିନିଟ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{{NUM_MINS} ମିନିଟ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="5944297261866530437">ଫେବ୍ରିକ (ହାଇ-ଗ୍ଲସ)</translation>
 <translation id="5950901984834744590">ରେଜର ଏବଂ ସେଭରଗୁଡ଼ିକ</translation>
 <translation id="5951495562196540101">ଉପଭୋକ୍ତାଙ୍କ ଆକାଉଣ୍ଟ (ପ୍ୟାକେଜ୍‌ ହୋ‍ଇଥିବା ଲାଇସେନ୍ସ ଉପଲବ୍ଧ ଅଛି ) ନାମାଙ୍କନ କରାଯାଇପାରିବ ନାହିଁ।</translation>
@@ -4054,6 +4058,7 @@
 <translation id="7894280532028510793">ଯଦି ବନାନ ସଠିକ୍ ଅଛି, ତେବେ <ph name="BEGIN_LINK" />ନେଟୱାର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଚଲାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">ଏନଭେଲପ 7 x 9 in</translation>
 <translation id="7905064834449738336">ଆପଣ ଏକ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିବା ସମୟରେ, ଯଦି ଏହାକୁ ଅନଲାଇନରେ ପବ୍ଲିସ କରାଯାଇଛି ତେବେ Chromium ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ। ଏହା କରିବା ସମୟରେ, ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ୟୁଜରନେମଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥାଏ, ତେଣୁ Google ସମେତ କୌଣସି ବ୍ୟକ୍ତି ସେଗୁଡ଼ିକୁ ପଢ଼ିପାରିବେ ନାହିଁ।</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{{NUM_HOURS} ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="7908648876066812348">ଭର୍ଚୁଆଲ କାର୍ଡ ଚାଲୁ କରାଯାଉଛି</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ସେଟିଂସରେ Chrome ସୁରକ୍ଷା ଯାଞ୍ଚ ପୃଷ୍ଠାକୁ ଯିବା ପାଇଁ Tab ତା'ପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="791107458486222637">ଫଳାଫଳ ରିଡୁ କରାଯାଉଛି</translation>
@@ -4188,6 +4193,7 @@
 <translation id="8134058435519644366">ନିଯୁକ୍ତି ଓ କର୍ମଚାରୀ</translation>
 <translation id="8135546115396015134">ବାମ କୀ</translation>
 <translation id="8137456439814903304">ଏନର୍ଜି ଏବଂ ୟୁଟିଲିଟିଗୁଡ଼ିକ</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{{NUM_MONTHS} ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="8148608574971654810">PDF ସଂସ୍କରଣ:</translation>
 <translation id="8149426793427495338">ଆପଣଙ୍କର କମ୍ପୁଟର୍‌ ନିଷ୍କ୍ରିୟ ହୋ‍ଇଯାଇଛି।</translation>
 <translation id="8150722005171944719"><ph name="URL" />ରେ ଫାଇଲ୍‍ଟି ପଠନଯୋଗ୍ୟ ନୁହେଁ।  ହୁଏତ ଏହା କାଢ଼ି ଦିଆଯାଇଛି, ଘୁଞ୍ଚାଯାଇଛି କିମ୍ବା ଫାଇଲ୍ ଅନୁମତିର ଆକ୍ସେସ୍‍କୁ ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି।</translation>

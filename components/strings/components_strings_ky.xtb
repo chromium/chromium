@@ -1563,6 +1563,7 @@
 <translation id="3641116835972736297">Америка футболу</translation>
 <translation id="3642196846309122856">Файлдарыңызды жүктөп алууга кайра аракет кылып көрүңүз</translation>
 <translation id="3642638418806704195">Колдонмо:</translation>
+<translation id="3644768007456662469">Төлөмдөргө байланыштуу объекттин сүрөтчөсү</translation>
 <translation id="3646643500201740985">Жарнамалардын майнаптуулугун талдоо</translation>
 <translation id="3647286794400715637">Ар бир URL сабында 1–2 URL дареги болушу керек.</translation>
 <translation id="3647400963805615193">Chrome кеңешин жабуу баскычы, жабуу үчүн Enter баскычын басыңыз, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2099,11 +2100,13 @@
 <translation id="4530347922939905757">SMS билдирүү</translation>
 <translation id="4531477351494678589">Виртуалдык картанын номери:</translation>
 <translation id="4535523368173457420">Бул издөө каражаттары сиз жашаган аймакта көп колдонулат. Алар башаламан иретте көрсөтүлдү</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 жыл мурун түзүлдү}other{{NUM_YEARS} жыл мурун түзүлдү}}</translation>
 <translation id="4541810033354695636">кошумчаланган чындык</translation>
 <translation id="4542971377163063093">6-түпкүч</translation>
 <translation id="4543072026714825470">Кийинки жолу тезирээк төлөө үчүн картаңыз менен эсептешүү дарегин Google аккаунтуңузга сактап коюңуз</translation>
 <translation id="454441086898495030"><ph name="SET" /> топтомуна кошулсунбу?</translation>
 <translation id="4546730006268514143">Өткөрүү убакыты аяктады</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 күн мурун түзүлдү}other{{NUM_DAYS} күн мурун түзүлдү}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Сырсөздөрдү толтуруу үчүн экрандын кулпусун колдонуп жатасыз</translation>
 <translation id="4557573143631562971">Үйдү камсыздандыруу</translation>
@@ -2897,6 +2900,7 @@
 <translation id="5938153366081463283">Виртуалдык картаны кошуу</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Бул маалымат Trustpilot, ScamAdviser, Google жана башка көз карандысыз баалоочу сайттардан алынды. Корутундулар ЖИ менен түзүлдү.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 мүнөт мурун түзүлдү}other{{NUM_MINS} мүнөт мурун түзүлдү}}</translation>
 <translation id="5944297261866530437">Кездеме (өтө жылтырак)</translation>
 <translation id="5950901984834744590">Устаралар</translation>
 <translation id="5951495562196540101">Аккаунт түзмөктүн уруксаттамасына дал келбегендиктен аны менен катталууга болбойт.</translation>
@@ -4057,6 +4061,7 @@
 <translation id="7894280532028510793">Эгер туура жазылса, <ph name="BEGIN_LINK" />Тармактагы мүчүлүштүктөрдү аныктоону<ph name="END_LINK" /> иштетип көрүңүз.</translation>
 <translation id="7901831439558593470">Конверт 7 x 9 дюйм</translation>
 <translation id="7905064834449738336">Колдонулган сырсөздү кимдир бирөө билип алган болсо, Chromium ал тууралуу эскертет. Мындай учурда сырсөздөрүңүз менен колдонуучу аттарыңыз шифрленет. Аларды эч ким, анын ичинде Google да окуй албайт.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 саат мурун түзүлдү}other{{NUM_HOURS} саат мурун түзүлдү}}</translation>
 <translation id="7908648876066812348">Виртуалдык карта күйгүзүлүүдө</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Жөндөөлөрдөгү Chrome коопсуздук текшерүү барагына өтүү үчүн Tab, анан Enter баскычын басыңыз</translation>
 <translation id="791107458486222637">Кайталоо</translation>
@@ -4191,6 +4196,7 @@
 <translation id="8134058435519644366">Жумушка алуу жана кадрлар менен камсыз кылуу</translation>
 <translation id="8135546115396015134">сол баскычты</translation>
 <translation id="8137456439814903304">Энергетика жана коммуналдык кызматтар</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ай мурун түзүлдү}other{{NUM_MONTHS} ай мурун түзүлдү}}</translation>
 <translation id="8148608574971654810">PDF версиясы:</translation>
 <translation id="8149426793427495338">Компьютериңиз уктап калды.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> дарегиндеги файл окулбайт. Ал чыгарылып салынган, жылдырылган же файл уруксаттарынан улам аны окуу мүмкүн эмес.</translation>

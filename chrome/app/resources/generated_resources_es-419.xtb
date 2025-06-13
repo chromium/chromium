@@ -5980,7 +5980,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5186381005592669696">Personaliza el idioma de visualización de las apps compatibles</translation>
 <translation id="5186788525428341874">Puedes usar esta llave de acceso para acceder más rápido en tus dispositivos. Se guardará en el Administrador de contraseñas de Google de <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalar página como app…</translation>
-<translation id="5187671830619031922">Agregar pestaña a la vista dividida</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Compartido por <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Usar la ubicación. Permite que las apps, los sitios web y los servicios de ChromeOS y Android que tengan permiso de ubicación usen la ubicación de tu dispositivo. La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios de Android. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificarte para mejorar la precisión de la ubicación y los servicios basados en ella, además de mejorar, proporcionar y mantener los servicios de Google en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios. <ph name="BEGIN_LINK1" />Más información sobre el uso de la ubicación<ph name="END_LINK1" /></translation>
@@ -11095,7 +11094,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8827125715368568315">Permisos bloqueados: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
 <translation id="8827289157496676362">Fijar extensión</translation>
 <translation id="8828933418460119530">Nombre de DNS</translation>
-<translation id="8829979393064090868">Agregar pestaña a la vista dividida</translation>
 <translation id="8830479210602243906">Aumentar la productividad</translation>
 <translation id="883062543841130884">Sustituciones</translation>
 <translation id="8830779999439981481">Reiniciando para aplicar actualizaciones</translation>

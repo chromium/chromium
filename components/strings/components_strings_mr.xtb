@@ -1563,6 +1563,7 @@
 <translation id="3641116835972736297">अमेरिकन फुटबॉल</translation>
 <translation id="3642196846309122856">तुमच्या फाइल पुन्हा डाउनलोड करण्याचा प्रयत्न करा</translation>
 <translation id="3642638418806704195">ॲप्लिकेशन:</translation>
+<translation id="3644768007456662469">पेमेंट आयटम आयकन</translation>
 <translation id="3646643500201740985">जाहिरात किती चांगल्या पद्धतीने परफॉर्म करते हे मोजणे</translation>
 <translation id="3647286794400715637">प्रत्येक URLs स्ट्रिंग एंट्रीमध्ये एक ते दोन URLs असणे आवश्यक आहे.</translation>
 <translation id="3647400963805615193">Chrome टीप डिसमिस करण्यासाठी बटण, डिसमिस करण्यासाठी एंटर प्रेस करा, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2099,11 +2100,13 @@
 <translation id="4530347922939905757">एसएमएस</translation>
 <translation id="4531477351494678589">व्हर्च्युअल कार्ड नंबर:</translation>
 <translation id="4535523368173457420">ही शोध इंजीन तुमच्या प्रदेशात लोकप्रिय आहेत आणि रँडम क्रमाने दाखवली आहेत</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{१ वर्षापूर्वी तयार केला आहे}other{{NUM_YEARS} वर्षांपूर्वी तयार केला आहे}}</translation>
 <translation id="4541810033354695636">ऑगमेंटेड रीअ‍ॅलिटी</translation>
 <translation id="4542971377163063093">ट्रे ६</translation>
 <translation id="4543072026714825470">पुढील वेळेस आणखी जलद पेमेंट करण्यासाठी, तुमच्या Google खाते मध्ये तुमचे कार्ड आणि बिलिंग पत्ता स्टोअर करा</translation>
 <translation id="454441086898495030"><ph name="SET" /> मध्ये जोडायचे आहे का?</translation>
 <translation id="4546730006268514143">ट्रान्सफर करणे टाइम आउट झाले</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{१ दिवसापूर्वी तयार केला आहे}other{{NUM_DAYS} दिवसांपूर्वी तयार केला आहे}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">पासवर्ड भरण्यासाठी तुम्ही तुमचे स्क्रीन लॉक वापरत आहात</translation>
 <translation id="4557573143631562971">गृह विमा</translation>
@@ -2897,6 +2900,7 @@
 <translation id="5938153366081463283">व्हर्च्युअल कार्ड जोडा</translation>
 <translation id="5938793338444039872">ट्रॉय</translation>
 <translation id="5938866385061293322">ही माहिती Trustpilot, ScamAdviser, Google आणि यांसारख्या आणखी बऱ्याच स्वतंत्र परीक्षण वेबसाइटवरून येते. सारांश हे AI वापरून तयार केले जातात.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{१ मिनिटापूर्वी तयार केला आहे}other{{NUM_MINS} मिनिटांपूर्वी तयार केला आहे}}</translation>
 <translation id="5944297261866530437">पेपर (हाय-ग्लॉस)</translation>
 <translation id="5950901984834744590">रेझर आणि शेव्हर</translation>
 <translation id="5951495562196540101">उपभोक्ता खात्याने नोंदणी करू शकत नाही (पॅकेज केलेला परवाना उपलब्ध).</translation>
@@ -4059,6 +4063,7 @@
 <translation id="7894280532028510793">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />नेटवर्क निदान रन करून पहा<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">एन्व्हलप ७ x ९ इंच</translation>
 <translation id="7905064834449738336">तुम्ही पासवर्ड वापरता, तेव्हा तो ऑनलाइन प्रकाशित झाला असल्यास Chromium तुम्हाला चेतावणी देते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे या गोष्टी एंक्रिप्ट केल्या जातात, जेणेकरून Google च्या समावेशासह इतर कोणीही त्या वाचू शकणार नाही.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{१ तासापूर्वी तयार केला आहे}other{{NUM_HOURS} तासांपूर्वी तयार केला आहे}}</translation>
 <translation id="7908648876066812348">व्हर्च्युअल कार्ड सुरू करत आहे</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, सेटिंग्जमध्ये Chrome सुरक्षितता तपासणी पेजवर जाण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="791107458486222637">परिणाम पुन्हा जनरेट करत आहे</translation>
@@ -4193,6 +4198,7 @@
 <translation id="8134058435519644366">भरती आणि कर्मचारी नेमणूक</translation>
 <translation id="8135546115396015134">लेफ्ट की</translation>
 <translation id="8137456439814903304">ऊर्जा आणि सुविधा पुरवठादार</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{१ महिन्यापूर्वी तयार केला आहे}other{{NUM_MONTHS} महिन्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="8148608574971654810">पीडीएफ आवृत्ती:</translation>
 <translation id="8149426793427495338">तुमचा कॉंप्युटर निष्क्रीय झाला.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> येथील फाइल वाचनीय नाही. ती काढून टाकलेली, हलविलेली असू शकते किंवा फाइल परवानग्या ॲक्सेस प्रतिबंधित करत असू शकतात.</translation>

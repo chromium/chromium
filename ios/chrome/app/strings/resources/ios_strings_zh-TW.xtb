@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3602260545951981695">選擇「強化防護」</translation>
 <translation id="3608436266458100337">閱讀器模式</translation>
+<translation id="3610041351087301930">隱藏閱讀器模式</translation>
 <translation id="3622175633937495219">搜尋歷史記錄 (找到 <ph name="COUNT" /> 項結果)</translation>
 <translation id="3625008969091706597">只要在邊緣滑動即可返回上一個畫面。</translation>
 <translation id="362709345066740529">在這裡自訂資訊卡、動態消息等</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">只要登入 Google 帳戶，即可在你的所有裝置上使用自己的書籤、密碼、歷史記錄和其他設定。</translation>
 <translation id="4985921635659180565">檔案排定刪除時間後就無法取消。</translation>
 <translation id="498624032394115435">知道連結的使用者都可以編輯所有分頁。</translation>
-<translation id="4989065233040279145">選擇「<ph name="FILENAME" />」的儲存位置</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，該帳戶由貴機構管理。</translation>
 <translation id="4992255726304765516">分頁群組顏色：<ph name="COLOR" /></translation>
 <translation id="5005498671520578047">複製密碼</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">系統會將你登出</translation>
 <translation id="543338862236136125">修改密碼</translation>
 <translation id="5433691172869980887">已複製使用者名稱</translation>
+<translation id="5437480232219631455">這裡可以開啟 Gemini</translation>
 <translation id="5439618055789623719">目前的登入身分是 <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">設為預設瀏覽器，上網體驗再進化</translation>
 <translation id="5444892875087332195">書籤</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{這個項目已儲存到 Google 帳戶 ({email})}other{這些項目已儲存到 Google 帳戶 ({email})}}</translation>
 <translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步處理分頁和歷史記錄。</translation>
 <translation id="7730020510075123961">否，合併資料</translation>
-<translation id="7730973429297233609">選取要用來儲存 <ph name="FILENAME" /> (<ph name="FILESIZE" />) 的帳戶</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。僅在這部裝置上。</translation>
 <translation id="7744192722284567281">發生資料侵害事件</translation>
 <translation id="7749790401023484470">未選取任何文字。</translation>
@@ -1834,7 +1834,6 @@
 <translation id="8428045167754449968">鄉/鎮/市/區</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">我知道了</translation>
-<translation id="8430694217306051839">選擇「<ph name="FILENAME" />」(<ph name="FILE_SIZE" />) 的儲存位置</translation>
 <translation id="8434837876193928924">分頁群組詳細資料</translation>
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>

@@ -623,6 +623,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3596414637720633074">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="3602260545951981695">Escolle Protección mellorada</translation>
 <translation id="3608436266458100337">Modo de lector</translation>
+<translation id="3610041351087301930">Ocultar lector</translation>
 <translation id="3622175633937495219">Historial de busca (coincidencias atopadas: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Podes pasar o dedo polo bordo para retroceder.</translation>
 <translation id="362709345066740529">Personaliza as tarxetas, o feed e moito máis aquí</translation>
@@ -964,7 +965,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4979397965658815378">Inicia sesión na túa conta de Google para ter os marcadores, os contrasinais, o historial e o resto das opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="4985921635659180565">Unha vez programada, a eliminación dun ficheiro non se pode cancelar.</translation>
 <translation id="498624032394115435">Calquera persoa que teña a ligazón poderá editar todas as pestanas.</translation>
-<translation id="4989065233040279145">Escolle onde gardar <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />), perfil xestionado pola túa organización.</translation>
 <translation id="4992255726304765516">Tocar a cor do grupo <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
@@ -1064,6 +1064,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5431252637281434233">Pecharase a túa sesión</translation>
 <translation id="543338862236136125">Editar contrasinal</translation>
 <translation id="5433691172869980887">Copiouse o nome de usuario</translation>
+<translation id="5437480232219631455">Podes abrir Gemini aquí</translation>
 <translation id="5439618055789623719">Tes a sesión iniciada como <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Mellor navegación de forma predeterminada</translation>
 <translation id="5444892875087332195">Marcadores</translation>
@@ -1650,7 +1651,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7724085059277147439">{count,plural, =1{O elemento gardouse na túa Conta de Google, {email}}other{Os elementos gardáronse na túa Conta de Google, {email}}}</translation>
 <translation id="7729458878441927652">Para ver as pestanas doutros dispositivos, sincroniza as pestanas e o historial.</translation>
 <translation id="7730020510075123961">Non, combinar datos</translation>
-<translation id="7730973429297233609">Selecciona a conta que queres usar para gardar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
 <translation id="7744192722284567281">O contrasinal viuse implicado nunha violación da seguranza dos datos</translation>
 <translation id="7749790401023484470">Non seleccionaches ningún texto.</translation>
@@ -1834,7 +1834,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8428045167754449968">Cidade/localidade</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">De acordo</translation>
-<translation id="8430694217306051839">Escolle onde gardar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Detalles do grupo de pestanas</translation>
 <translation id="8438566539970814960">Mellorar as buscas e a navegación</translation>
 <translation id="8439758443371991593">Ocultar Engadir á lista de lectura</translation>

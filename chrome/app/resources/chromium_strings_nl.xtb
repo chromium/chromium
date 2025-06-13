@@ -343,6 +343,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="5775198138441669627">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, moet je de Chromium-gegevens in je account <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Pas Chromium aan en beheer de instellingen. Stel Chromium in als je standaardbrowser.</translation>
 <translation id="5809516625706423866">Kan geen verbinding maken met internet. HTTP 401 Niet geautoriseerd. Check je proxyconfiguratie.</translation>
+<translation id="5817952762723416573">Versnelt sites met de V8-engine van Chromium, maar maakt Chromium iets minder goed bestand tegen aanvallen. Deze instelling staat uit.</translation>
 <translation id="5821520528363214608">Update Chromium om Chromium-gegevens te gebruiken en op te slaan in je Google-account</translation>
 <translation id="5824893331272123205">Kan dit deelvenster niet laden. Probeer het opnieuw.</translation>
 <translation id="5862307444128926510">Welkom bij Chromium</translation>
@@ -432,6 +433,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6729124504294600478">Als je personalisatie en andere functies wilt krijgen, neem je Chromium op in Web- en app-activiteit en gekoppelde Google-services</translation>
 <translation id="6734291798041940871">Chromium is al geïnstalleerd voor alle gebruikers op je computer.</translation>
 <translation id="674245979920622322">Je bent hier niet recent geweest. Chromium heeft <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="COUNT" /> verwijderd</translation>
+<translation id="6751374565094704799">Versnelt sites met de V8-engine van Chromium, maar maakt Chromium iets minder goed bestand tegen aanvallen. Deze instelling staat aan.</translation>
 <translation id="67706546131546258">Chromium raadt aan dit bestand te scannen omdat het misschien gevaarlijk is.</translation>
 <translation id="6779406956731413166">Chromium OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Vertalen</translation>

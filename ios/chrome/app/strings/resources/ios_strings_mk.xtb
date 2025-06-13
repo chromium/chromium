@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">Блокирај колачиња од трети страни во „Инкогнито“</translation>
 <translation id="3602260545951981695">Изберете „Подобрена заштита“</translation>
 <translation id="3608436266458100337">Режим на читач</translation>
+<translation id="3610041351087301930">Скриј Reader Mode</translation>
 <translation id="3622175633937495219">Историја на пребарување (најдено: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Може да го повлечете работ за да се вратите назад.</translation>
 <translation id="362709345066740529">Приспособете ги картичките, активноста и друго овде</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">Најавете се со сметката на Google за да ги добиете обележувачите, лозинките, историјата и другите поставки на сите ваши уреди.</translation>
 <translation id="4985921635659180565">Штом некоја датотека ќе се закаже за бришење, тоа не може да се откаже.</translation>
 <translation id="498624032394115435">Секој што го има линкот може да ги изменува сите картички.</translation>
-<translation id="4989065233040279145">Изберете каде да се зачувува <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, управувана од вашата организација.</translation>
 <translation id="4992255726304765516">Боја на групата картички: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">Ќе се одјавите</translation>
 <translation id="543338862236136125">Измени ја лозинката</translation>
 <translation id="5433691172869980887">Корисничкото име е копирано</translation>
+<translation id="5437480232219631455">Може да го отворите Gemini тука</translation>
 <translation id="5439618055789623719">Најавени сте како <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Стандардно подобро прелистување</translation>
 <translation id="5444892875087332195">Обележувачи</translation>
@@ -1650,7 +1651,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7724085059277147439">{count,plural, =1{Ставката е зачувана во вашата сметка на Google, {email}}one{Ставките се зачувани во вашата сметка на Google, {email}}other{Ставките се зачувани во вашата сметка на Google, {email}}}</translation>
 <translation id="7729458878441927652">За да ги гледате картичките од другите ваши уреди, синхронизирајте ги вашите картички и историја.</translation>
 <translation id="7730020510075123961">Не, спој ги податоците</translation>
-<translation id="7730973429297233609">Изберете ја сметката што сакате да се користи за зачувување на <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на уредов.</translation>
 <translation id="7744192722284567281">Откриена при упад во податоци</translation>
 <translation id="7749790401023484470">Не избравте текст.</translation>
@@ -1834,7 +1834,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8428045167754449968">Град</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8428634594422941299">Сфатив</translation>
-<translation id="8430694217306051839">Изберете каде да се зачувува <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Детали за групата картички</translation>
 <translation id="8438566539970814960">Подобрете ги пребарувањата и прелистувањето</translation>
 <translation id="8439758443371991593">Скриј „Додај во список за читање“</translation>

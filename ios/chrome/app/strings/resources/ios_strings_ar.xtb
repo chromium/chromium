@@ -964,7 +964,6 @@
 <translation id="4979397965658815378">‏سجّل الدخول إلى حسابك على Google للحصول على الإشارات المرجعية وكلمات المرور والسجلّ والإعدادات الأخرى واستخدامها على جميع أجهزتك.</translation>
 <translation id="4985921635659180565">بعد تحديد موعد لحذف ملف، لا يمكن إلغاء ذلك.</translation>
 <translation id="498624032394115435">يمكن لأي مستخدم لديه الرابط تعديل جميع علامات التبويب.</translation>
-<translation id="4989065233040279145">اختَر مكانًا لحفظ "<ph name="FILENAME" />".</translation>
 <translation id="499122600724363620">تدير مؤسستك حساب "<ph name="NAME" />" (<ph name="EMAIL" />).</translation>
 <translation id="4992255726304765516">لون مجموعة علامات التبويب: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
@@ -1648,7 +1647,6 @@
 <translation id="7724085059277147439">{count,plural, =1{‏تم حفظ العنصر في حسابك على Google،‏ {email}.}zero{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}two{‏تم حفظ العنصرين في حسابك على Google،‏ {email}.}few{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}many{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}other{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}}</translation>
 <translation id="7729458878441927652">يجب مزامنة علامات التبويب والسجلّ للاطّلاع عليها من أجهزتك الأخرى.</translation>
 <translation id="7730020510075123961">لا. أريد دمج البيانات</translation>
-<translation id="7730973429297233609">حدِّد الحساب الذي تريد استخدامه لحفظ <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771">حفظ الإشارة المرجعية باسم "<ph name="BOOKMRK_NAME" />" على هذا الجهاز فقط</translation>
 <translation id="7744192722284567281">تم العثور عليها في عملية اختراق البيانات.</translation>
 <translation id="7749790401023484470">لم يتم تحديد أي نص.</translation>
@@ -1833,7 +1831,6 @@
 <translation id="8428045167754449968">المدينة/البلدة</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428634594422941299">حسنًا</translation>
-<translation id="8430694217306051839">يُرجى اختيار مكان لحفظ "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">تفاصيل مجموعة علامات التبويب</translation>
 <translation id="8438566539970814960">تحسين عمليات البحث والتصفُّح</translation>
 <translation id="8439758443371991593">إخفاء خيار "الإضافة إلى قائمة القراءة"</translation>

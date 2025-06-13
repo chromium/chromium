@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="3602260545951981695">בוחרים באפשרות 'הגנה משופרת'</translation>
 <translation id="3608436266458100337">מצב קורא</translation>
+<translation id="3610041351087301930">הסתרת "קורא"</translation>
 <translation id="3622175633937495219">חיפוש בהיסטוריה (התקבלו <ph name="COUNT" /> תוצאות)</translation>
 <translation id="3625008969091706597">אפשר להחליק את הקצה כדי לעבור אחורה.</translation>
 <translation id="362709345066740529">כאן אפשר להתאים אישית את הכרטיסים, הפיד ועוד</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">‏יש להיכנס באמצעות חשבון Google כדי לקבל גישה אל הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות בכל המכשירים שלך.</translation>
 <translation id="4985921635659180565">אחרי שקובעים מועד מחיקה לקובץ, אי אפשר לבטל את המחיקה.</translation>
 <translation id="498624032394115435">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות.</translation>
-<translation id="4989065233040279145">בחירת מיקום לשמירת הקובץ <ph name="FILENAME" /></translation>
 <translation id="499122600724363620">‫<ph name="NAME" />, <ph name="EMAIL" />, חשבון שמנוהל על-ידי הארגון שלך.</translation>
 <translation id="4992255726304765516">הצבע של קבוצת הכרטיסיות <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">המערכת תוציא אותך מהחשבון</translation>
 <translation id="543338862236136125">עריכת סיסמה</translation>
 <translation id="5433691172869980887">שם המשתמש הועתק</translation>
+<translation id="5437480232219631455">‏אפשר לפתוח את Gemini כאן</translation>
 <translation id="5439618055789623719">נכנסת בתור <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">גלישה טובה יותר כברירת מחדל</translation>
 <translation id="5444892875087332195">סימניות</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{‏הפריט נשמר בחשבון Google עם הכתובת {email}}one{‏הפריטים נשמרו בחשבון Google עם הכתובת {email}.}two{‏הפריטים נשמרו בחשבון Google עם הכתובת {email}.}other{‏הפריטים נשמרו בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="7729458878441927652">כדי לראות כרטיסיות מהמכשירים האחרים שלך, צריך לסנכרן את הכרטיסיות ואת ההיסטוריה.</translation>
 <translation id="7730020510075123961">לא, אני רוצה למזג את הנתונים</translation>
-<translation id="7730973429297233609">צריך לבחור את החשבון שבו רוצים להשתמש כדי לשמור את <ph name="FILENAME" /> ‏– <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. רק במכשיר הזה.</translation>
 <translation id="7744192722284567281">נמצאה בפרצה באבטחת מידע</translation>
 <translation id="7749790401023484470">לא בחרת טקסט.</translation>
@@ -1834,7 +1834,6 @@
 <translation id="8428045167754449968">עיר / יישוב</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428634594422941299">הבנתי</translation>
-<translation id="8430694217306051839">בחירת מיקום לשמירת הקובץ <ph name="FILENAME" /> ‏(<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">פרטי קבוצת הכרטיסיות</translation>
 <translation id="8438566539970814960">שיפור החיפושים והגלישה</translation>
 <translation id="8439758443371991593">הסתרה של 'הוספה לרשימת הקריאה'</translation>

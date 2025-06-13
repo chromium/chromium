@@ -5978,7 +5978,6 @@
 <translation id="5186381005592669696">自訂支援應用程式的顯示語言</translation>
 <translation id="5186788525428341874">你可以在所有裝置上使用這個密碼金鑰快速登入。系統會將密碼金鑰儲存到 <ph name="ACCOUNT_NAME" /> 的 Google 密碼管理工具。</translation>
 <translation id="5187641678926990264">將頁面安裝為應用程式(&amp;I)...</translation>
-<translation id="5187671830619031922">將分頁新增到分割檢視畫面</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">共用者：<ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">使用定位服務。允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。<ph name="BEGIN_LINK1" />進一步瞭解定位服務使用情形<ph name="END_LINK1" /></translation>
@@ -8997,6 +8996,7 @@
 <translation id="7387951778417998929">如要使用非系統預設的搜尋引擎，請在網址列中輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。你也可以在這裡變更你的預設搜尋引擎。</translation>
 <translation id="7388615499319468910">網站和廣告主可以瞭解廣告成效。這項設定已關閉。</translation>
 <translation id="738903649531469042">將分頁新增至閱讀清單</translation>
+<translation id="7389615853658756494">在網站上變更</translation>
 <translation id="7392118418926456391">病毒掃描失敗</translation>
 <translation id="7392915005464253525">重新開啟已關閉視窗(&amp;E)</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已複製 1 個項目}other{已複製 {COUNT} 個項目}}</translation>
@@ -9126,6 +9126,7 @@
 <translation id="7474043404939621342">自訂工具列</translation>
 <translation id="747459581954555080">全部還原</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{需要立即退還}other{請在 {NUM_DAYS} 天內退還「<ph name="DEVICE_TYPE" />」}}</translation>
+<translation id="747557463733380256">瞭解如何管理瀏覽器</translation>
 <translation id="7475671414023905704">Netscape 遺失密碼網址</translation>
 <translation id="7475742997309661417">ChromeVox 是 ChromeOS 上的螢幕閱讀器，主要供失明和低視能人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。同時按住音量調高鍵和調低鍵五秒，即可啟用 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="7476454130948140105">電量過低，無法進行更新 (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10275,6 +10276,7 @@
 <translation id="8265018477030547118">僅儲存在這部裝置上</translation>
 <translation id="826511437356419340">已進入視窗總覽模式。滑動畫面或按下鍵盤上的 Tab 鍵即可瀏覽。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{重新啟動後，系統將不會開啟無痕視窗}other{重新啟動後，系統將不會重新開啟 {COUNT} 個無痕視窗}}</translation>
+<translation id="8266430295499893285">你必須先驗證身分，才能存取密碼</translation>
 <translation id="8266947622852630193">所有輸入法</translation>
 <translation id="8267539814046467575">新增印表機</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />這會提供裝置和裝置使用情況的一般資訊 (例如電池電量、系統和應用程式活動，以及錯誤資訊)。這些資料會用於改善 Android 使用體驗，而部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的品質。<ph name="END_PARAGRAPH1" />
@@ -11084,7 +11086,6 @@
 <translation id="8827125715368568315">已封鎖：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
 <translation id="8827289157496676362">固定擴充功能</translation>
 <translation id="8828933418460119530">DNS 名稱</translation>
-<translation id="8829979393064090868">將分頁新增到分割檢視畫面</translation>
 <translation id="8830479210602243906">大幅提升工作效率</translation>
 <translation id="883062543841130884">替代項目</translation>
 <translation id="8830779999439981481">正在重新啟動以套用更新</translation>

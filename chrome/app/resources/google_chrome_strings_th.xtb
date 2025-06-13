@@ -61,6 +61,7 @@
 <translation id="178701303897325119">ระบบไม่รองรับส่วนขยายนี้แล้ว Chrome แนะนำให้คุณนำออกแทน</translation>
 <translation id="1812689907177901597">เมื่อปิดการตั้งค่านี้ คุณจะลงชื่อเข้าใช้เว็บไซต์ของ Google อย่างเช่น Gmail ได้โดยไม่ต้องลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome แนะนำให้หยุดแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}other{Chrome แนะนำให้หยุดแท็บที่ทําให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}}</translation>
+<translation id="1832046143430087831">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้ปิดอยู่</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
 <translation id="1860536484129686729">Chrome ต้องการสิทธิ์เข้าถึงกล้องถ่ายรูปของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="1873233029667955273">Google Chrome ไม่ใช่เบราว์เซอร์เริ่มต้น</translation>
@@ -442,6 +443,7 @@
 <translation id="6718739135284199302">ทำให้ Chrome เร็วขึ้น</translation>
 <translation id="6735387454586646204">ระบบ Chrome OS Flex</translation>
 <translation id="6750954913813541382">Chrome จะส่งข้อความที่คุณพิมพ์ในเบราว์เซอร์ไปยัง Google เพื่อแก้ไขข้อผิดพลาดของการสะกดคำ</translation>
+<translation id="6760235774835597023">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้เปิดอยู่</translation>
 <translation id="677276454032249905">ออกจาก Chrome ใช่ไหม</translation>
 <translation id="6794858689789885890">ลบข้อมูลเว็บไซต์จากอุปกรณ์เสมอเมื่อปิด Chrome</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>

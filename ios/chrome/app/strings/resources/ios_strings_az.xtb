@@ -623,6 +623,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3596414637720633074">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="3602260545951981695">"Təkmil qoruma" seçin</translation>
 <translation id="3608436266458100337">Oxu rejimi</translation>
+<translation id="3610041351087301930">Oxu rejimini gizlədin</translation>
 <translation id="3622175633937495219">Axtarış tarixçəsi (<ph name="COUNT" /> nəticə tapılıb)</translation>
 <translation id="3625008969091706597">Kənarı çəkərək geri qayıda bilərsiniz.</translation>
 <translation id="362709345066740529">Kartları, lenti və s. bölmələri burada fərdiləşdirin</translation>
@@ -964,7 +965,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4979397965658815378">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə etmək üçün Google Hesabınız ilə daxil olun.</translation>
 <translation id="4985921635659180565">Faylın silinməsi planlaşdırıldıqdan sonra onu ləğv etmək mümkün deyil.</translation>
 <translation id="498624032394115435">Keçidi olan hər kəs bütün tablara düzəliş edə bilər.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> faylının yadda saxlanacağı yeri seçin</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, təşkilatınız tərəfindən idarə olunur.</translation>
 <translation id="4992255726304765516">Tab qrupu rəngi <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Parolu kopyalayın</translation>
@@ -1064,6 +1064,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5431252637281434233">Çıxacaqsınız</translation>
 <translation id="543338862236136125">Parolu redaktə edin</translation>
 <translation id="5433691172869980887">İstifadəçi adı kopyalandı</translation>
+<translation id="5437480232219631455">Gemini-ni burada aça bilərsiniz</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> kimi giriş edilib</translation>
 <translation id="5443636120437209490">Defolt olaraq daha yaxşı baxış</translation>
 <translation id="5444892875087332195">Əlfəcinlər</translation>
@@ -1650,7 +1651,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7724085059277147439">{count,plural, =1{Element Google Hesabında ({email}) yadda saxlandı}other{Elementlər Google Hesabında ({email}) yadda saxlandı}}</translation>
 <translation id="7729458878441927652">Digər cihazlardakı tablara baxmaq üçün tab və tarixçəni sinxronlaşdırın.</translation>
 <translation id="7730020510075123961">Xeyr, datanı birləşdirin</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> faylını (<ph name="FILESIZE" />) yadda saxlamaq üçün istifadə ediləcək hesabı seçin</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Yalnız bu cihazda.</translation>
 <translation id="7744192722284567281">Verilənlərin təhlükəsizliyinin pozulması halı aşkarlanıb</translation>
 <translation id="7749790401023484470">Mətn seçməmisiniz.</translation>
@@ -1834,7 +1834,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8428045167754449968">Şəhər / Kənd</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428634594422941299">Anladım</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> faylını (<ph name="FILE_SIZE" />) yadda saxlayacağınız yeri seçin</translation>
 <translation id="8434837876193928924">Tab qrupu təfərrüatları</translation>
 <translation id="8438566539970814960">Axtarış və brauzer fəaliyyətini təkmilləşdirin</translation>
 <translation id="8439758443371991593">"Oxu siyahısına əlavə edin" seçimini gizlədin</translation>

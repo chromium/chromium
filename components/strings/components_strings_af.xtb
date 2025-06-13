@@ -2100,11 +2100,13 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Virtuele kaart se nommer:</translation>
 <translation id="4535523368173457420">Hierdie soekenjins is gewild in jou streek en word in lukrake volgorde gewys</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 jaar gelede geskep}other{{NUM_YEARS} jaar gelede geskep}}</translation>
 <translation id="4541810033354695636">aangevulde realiteit</translation>
 <translation id="4542971377163063093">Laai 6</translation>
 <translation id="4543072026714825470">Stoor jou kaart en faktureringadres in jou Google-rekening om volgende keer vinniger te betaal.</translation>
 <translation id="454441086898495030">Voeg by <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Oordrag het uitgetel</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 dag gelede geskep}other{{NUM_DAYS} dae gelede geskep}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Jy gebruik tans jou skermslot vir die invul van wagwoorde</translation>
 <translation id="4557573143631562971">Huisversekering</translation>
@@ -2898,6 +2900,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5938153366081463283">Voeg virtuele kaart by</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Hierdie inligting is afkomstig van onafhanklike resensiewebwerwe soos Trustpilot, ScamAdviser, Google en meer. Opsommings is met KI geskep</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 minuut gelede geskep}other{{NUM_MINS} minute gelede geskep}}</translation>
 <translation id="5944297261866530437">Tekstiel (glansryk)</translation>
 <translation id="5950901984834744590">Skeermesse en skeertoestelle</translation>
 <translation id="5951495562196540101">Kan nie met 'n verbruikerrekening inskryf nie (verpakte lisensie beskikbaar).</translation>
@@ -4058,6 +4061,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7894280532028510793">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Netwerkdiagnostiek probeer gebruik<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Koevert 7x9 dm.</translation>
 <translation id="7905064834449738336">Wanneer jy ’n wagwoord gebruik, waarsku Chromium jou as dit aanlyn gepubliseer is. Wanneer dit gedoen word, word jou wagwoorde en gebruikername geënkripteer sodat niemand, insluitend Google, hulle kan lees nie.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 uur gelede geskep}other{{NUM_HOURS} uur gelede geskep}}</translation>
 <translation id="7908648876066812348">Aktiveer tans virtuele kaart</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om na Chrome-veiligheidskontrolebladsy in instellings te gaan</translation>
 <translation id="791107458486222637">Resultaat word herdoen</translation>
@@ -4192,6 +4196,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8134058435519644366">Werwing en personeel</translation>
 <translation id="8135546115396015134">linkersleutel</translation>
 <translation id="8137456439814903304">Energie- en munisipale dienste</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 maand gelede geskep}other{{NUM_MONTHS} maande gelede geskep}}</translation>
 <translation id="8148608574971654810">PDF-weergawe:</translation>
 <translation id="8149426793427495338">Jou rekenaar het gaan slaap.</translation>
 <translation id="8150722005171944719">Die lêer by <ph name="URL" /> is nie leesbaar nie. Dit is dalk verwyder, geskuif of lêertoestemmings kan dalk toegang verhinder.</translation>

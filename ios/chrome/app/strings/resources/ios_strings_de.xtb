@@ -623,6 +623,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3596414637720633074">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="3602260545951981695">Wähle „Erweiterter Schutz“ aus</translation>
 <translation id="3608436266458100337">Lesemodus</translation>
+<translation id="3610041351087301930">Reader ausblenden</translation>
 <translation id="3622175633937495219">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
 <translation id="3625008969091706597">Du kannst über den Rand wischen, um zurückzugehen.</translation>
 <translation id="362709345066740529">Hier kannst du deine Karten, deinen Feed und mehr anpassen</translation>
@@ -964,7 +965,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4979397965658815378">Melde dich mit deinem Google-Konto an, um deine Lesezeichen, deine Passwörter, den Verlauf und deine anderen Einstellungen auf allen Geräten abrufen zu können</translation>
 <translation id="4985921635659180565">Wenn das Löschen einer Datei geplant wurde, kann es nicht mehr abgebrochen werden.</translation>
 <translation id="498624032394115435">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten.</translation>
-<translation id="4989065233040279145">Speicherort für <ph name="FILENAME" /> auswählen</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, von deiner Organisation verwaltet.</translation>
 <translation id="4992255726304765516">Farbe der Tabgruppe: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
@@ -1064,6 +1064,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5431252637281434233">Du wirst abgemeldet</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
 <translation id="5433691172869980887">Nutzername kopiert</translation>
+<translation id="5437480232219631455">Hier kannst du Gemini öffnen</translation>
 <translation id="5439618055789623719">Angemeldet als <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Standardmäßig besseres Surfen</translation>
 <translation id="5444892875087332195">Lesezeichen</translation>
@@ -1650,7 +1651,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7724085059277147439">{count,plural, =1{Element im Google-Konto {email} gespeichert}other{Elemente im Google-Konto {email} gespeichert}}</translation>
 <translation id="7729458878441927652">Wenn du Tabs von deinen anderen Geräten sehen möchtest, synchronisiere deine Tabs und den Verlauf.</translation>
 <translation id="7730020510075123961">Nein, Daten zusammenführen</translation>
-<translation id="7730973429297233609">Wähle das Konto aus, mit dem du <ph name="FILENAME" /> – <ph name="FILESIZE" /> speichern möchtest</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Nur auf diesem Gerät.</translation>
 <translation id="7744192722284567281">Bei Datenpanne gefunden</translation>
 <translation id="7749790401023484470">Du hast keinen Text ausgewählt.</translation>
@@ -1834,7 +1834,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8428045167754449968">Stadt/Ort</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8428634594422941299">Ok</translation>
-<translation id="8430694217306051839">Speicherort für <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) auswählen</translation>
 <translation id="8434837876193928924">Details zur Tabgruppe</translation>
 <translation id="8438566539970814960">Suchanfragen und das Surfen verbessern</translation>
 <translation id="8439758443371991593">„Zur Leseliste hinzufügen“ ausblenden</translation>

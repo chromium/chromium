@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{১ দিন পূৰ্বে}one{# দিন পূৰ্বে}other{# দিন পূৰ্বে}}</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1243314992276662751">আপল’ড কৰক</translation>
+<translation id="1253734725326687145">স্পৰ্শৰ লক্ষ্য সোঁফালে ওপৰলৈ নিয়া হৈছে। ইয়াত টিপক।</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> শ্বেয়াৰ কৰিব পৰা নগ’ল</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">পাঠখিনি সৰু সৰুকৈ ভাগ কৰি শ্বেয়াৰ কৰিবলৈ চেষ্টা কৰক।</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="24452542372838207">জাননী বিস্তাৰ কৰক</translation>
 <translation id="2445449901874883781">উচ্চ ঘনত্ব ব্যৱহাৰ কৰক</translation>
+<translation id="2448407890032181691">স্পৰ্শৰ লক্ষ্য সোঁফালে তললৈ নিয়া হৈছে। ইয়াত টিপক।</translation>
 <translation id="2482878487686419369">জাননী</translation>
 <translation id="2497284189126895209">সকলো ফাইল</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">টেব</translation>
 <translation id="5613020302032141669">বাওঁমুৱা কাঁড়</translation>
 <translation id="5633029987065897167">খালী</translation>
+<translation id="5651438382973553530">স্পৰ্শৰ লক্ষ্য বাওঁফালে তললৈ নিয়া হৈছে। ইয়াত টিপক।</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{১ মিনিট}one{# মিনিট}other{# মিনিট}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{আজি সক্ৰিয় হৈছে}=1{১দিনৰ পূৰ্বে সক্ৰিয় আছিল}one{#দিনৰ পূৰ্বে সক্ৰিয় আছিল}other{#দিনৰ পূৰ্বে সক্ৰিয় আছিল}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{১দিন আৰু }one{# দিন আৰু }other{# দিন আৰু }}</translation>

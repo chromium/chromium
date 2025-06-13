@@ -1564,6 +1564,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3641116835972736297">Amerikansk fotboll</translation>
 <translation id="3642196846309122856">Testa att ladda ned filerna igen</translation>
 <translation id="3642638418806704195">Program:</translation>
+<translation id="3644768007456662469">Objektikon för betalningar</translation>
 <translation id="3646643500201740985">Mäta hur bra resultatet är för en annons</translation>
 <translation id="3647286794400715637">Varje webbadressträng måste innehålla en till två webbadresser.</translation>
 <translation id="3647400963805615193">Knapp för att stänga Chrome-tips, tryck på Retur för att stänga, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4530347922939905757">Sms</translation>
 <translation id="4531477351494678589">Virtuellt kortnummer:</translation>
 <translation id="4535523368173457420">Dessa sökmotorer är populära i din region och visas i slumpmässig ordning</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Skapades för 1 år sedan}other{Skapades för {NUM_YEARS} år sedan}}</translation>
 <translation id="4541810033354695636">förstärkt verklighet</translation>
 <translation id="4542971377163063093">Fack 6</translation>
 <translation id="4543072026714825470">Spara kortet och faktureringsadressen i Google-kontot så går det snabbare att betala nästa gång</translation>
 <translation id="454441086898495030">Vill du lägga till i <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Tidsgränsen för överföringen överskreds</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Skapades för 1 dag sedan}other{Skapades för {NUM_DAYS} dagar sedan}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Du använder skärmlåset för att fylla i lösenord</translation>
 <translation id="4557573143631562971">Hemförsäkringar</translation>
@@ -2898,6 +2901,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5938153366081463283">Lägg till ett virtuellt kort</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Informationen kommer från oberoende webbplatser med recensioner som Trustpilot, ScamAdviser och Google. Sammanfattningar skapas med AI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Skapades för 1 minut sedan}other{Skapades för {NUM_MINS} minuter sedan}}</translation>
 <translation id="5944297261866530437">Tyg (högblankt)</translation>
 <translation id="5950901984834744590">Rakhyvlar och rakapparater</translation>
 <translation id="5951495562196540101">Det går inte att registrera enheten med ett konsumentkonto (paketerad licens är tillgänglig).</translation>
@@ -4059,6 +4063,7 @@ Mer information.
 <translation id="7894280532028510793">Om stavningen är rätt <ph name="BEGIN_LINK" />testar du att köra nätverksdiagnostik<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Kuvert, 7 x 9 tum</translation>
 <translation id="7905064834449738336">När du använder ett lösenord visas en varning i Chromium om det har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Skapades för 1 timme sedan}other{Skapades för {NUM_HOURS} timmar sedan}}</translation>
 <translation id="7908648876066812348">Aktiverar virtuella kort</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur för att öppna sidan Säkerhetskontroll i Chrome-inställningarna</translation>
 <translation id="791107458486222637">Gör om resultatet</translation>
@@ -4193,6 +4198,7 @@ Mer information.
 <translation id="8134058435519644366">Rekrytering och bemanning</translation>
 <translation id="8135546115396015134">vänstertangent</translation>
 <translation id="8137456439814903304">Energi och energiproduktion</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Skapades för 1 månad sedan}other{Skapades för {NUM_MONTHS} månader sedan}}</translation>
 <translation id="8148608574971654810">PDF-version:</translation>
 <translation id="8149426793427495338">Datorn gick i viloläge.</translation>
 <translation id="8150722005171944719">Det går inte att läsa filen på <ph name="URL" />. Den kan ha tagits bort eller flyttats, eller så krävs behörighet för att få åtkomst till den.</translation>

@@ -106,6 +106,7 @@ Se esta política for desativada, o recurso de correção automática no teclado
       Se a política não for definida, o diretório padrão do perfil será utilizado.</translation>
 <translation id="1053981429146436598">Um grupo de políticas relacionadas às configurações de solicitação de rede privada.  Consulte https://wicg.github.io/private-network-access/ (link em inglês).</translation>
 <translation id="1059069692400941670">Desativar a importação do mecanismo de pesquisa padrão na primeira execução</translation>
+<translation id="1060020040574767394">Configurações de marca-d'água personalizada</translation>
 <translation id="1062011392452772310">Ativar declaração remota para o dispositivo</translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1063860513136880926">Se a política for ativada, não vai ser permitido fazer capturas de tela com os atalhos do teclado
@@ -507,6 +508,7 @@ a otimização do JavaScript será ativada.</translation>
 <translation id="1379689277107868399">Quando a política for definida como DoNotPrompt ou deixada sem definição, o <ph name="PRODUCT_NAME" /> não vai pedir automaticamente que o usuário faça a autenticação de novo no navegador.
 
 Se definida como PromptInTab, quando a autenticação do usuário expirar, uma nova guia será aberta imediatamente com a página de login do Google. Isso só vai acontecer se você estiver usando a <ph name="CHROME_SYNC_NAME" />.</translation>
+<translation id="1384040387986918863">É a opacidade do preenchimento do texto da marca-d'água, de 0 (transparente) a 100 (opaco).</translation>
 <translation id="1384459581748403878">Referência: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Esta política determina que qualquer URL que corresponda a um ou mais padrões especificados, usando o formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />, nunca seja descartado pelo navegador.
       Isso se aplica à pressão da memória e ao descarte no modo de alta eficiência.
@@ -1869,6 +1871,12 @@ Se a política for definida como desativada ou não for definida, o usuário pod
       Os usuários não poderão mudar ou substituir essa configuração.
 
       Observação: essa política faz com que o cabeçalho X-GoogApps-Allowed-Domains seja anexado a todas as solicitações HTTP e HTTPS de todos os domínios google.com, como descrito em https://support.google.com/a/answer/1668854.</translation>
+<translation id="2287414160388710497">Permite que os administradores personalizem a aparência das marcas-d'água aplicadas pelas regras de Prevenção Contra Perda de Dados (DLP). Isso inclui definir a opacidade do preenchimento e contorno e o tamanho da fonte.
+Se a política ou alguns valores não forem definidos, o Chrome vai usar o comportamento padrão de marca-d'água: opacidade do preenchimento em 4, opacidade do contorno em 6 e tamanho da fonte em 24.
+
+A opacidade do preenchimento é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
+A opacidade do contorno é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
+O tamanho da fonte é especificado em pontos.</translation>
 <translation id="2288506601233091655">Não permitir a exclusão do histórico de trabalhos de impressão</translation>
 <translation id="2289688405312849186">Principal "user@realm" do usuário. O marcador <ph name="LOGIN_ID_PLACEHOLDER" /> é substituído pelo nome de usuário "user". O marcador <ph name="LOGIN_EMAIL_PLACEHOLDER" /> é substituído pelo principal completo "user@realm".</translation>
 <translation id="2290270645214705008">Se esta política for definida como "Desativada", o serviço de host de acesso remoto não poderá ser iniciado nem configurado para aceitar conexões de entrada.  Esta política não afeta situações de suporte remoto.
@@ -2653,6 +2661,7 @@ Esta política só pode ser definida como uma política do usuário em nuvem.</t
 <translation id="288448261660192095">Se a política for definida como "Ativada", a entrada física e os dispositivos de saída dos hosts de acesso remoto serão desativados durante uma conexão remota.
 
       Se a política for definida como "Desativada" ou deixada sem definição, usuários locais e remotos poderão interagir com o host durante o compartilhamento.</translation>
+<translation id="288463102030083286">Configuração de marca-d'água personalizada</translation>
 <translation id="2884765974461416016">Desativar o compartilhamento do Android para apps da Web.</translation>
 <translation id="2886215882246310669">Controla se o <ph name="PRODUCT_OS_NAME" /> permite que novas contas de usuários do Family Link sejam adicionadas ao dispositivo.
       Esta política só será usada junto com <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Ela permite mais contas do Family Link, além das contas definidas na lista de permissões.
@@ -3291,6 +3300,7 @@ Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do Outlook n
 <translation id="3278042410658310805">Desativar a resposta falada na tela de login e permitir que o usuário a ative temporariamente</translation>
 <translation id="328347261792478720">Por padrão, o navegador mostrará recomendações de mídia personalizadas para o usuário. Se esta política for definida como "Desativada", essas recomendações ficarão ocultas para o usuário. Se esta política for definida como "Ativada" ou não for definida, as recomendações de mídia serão mostradas para o usuário.</translation>
 <translation id="3284094172359247914">Controla o uso da API WebUSB</translation>
+<translation id="3285231260918855067">É a opacidade do contorno do texto da marca-d'água, de 0 (transparente) a 100 (opaco).</translation>
 <translation id="3286159327013237833">Ativar o clique automático na tela de login</translation>
 <translation id="3288595667065905535">Liberar canal</translation>
 <translation id="3291940794983537008">Configurações dos recursos da IA generativa do DevTools</translation>
@@ -8617,6 +8627,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6796215185873669533">Definir a versão da string do user agent como a configuração padrão do navegador.</translation>
 <translation id="6800181452282128474">Não consultar servidores Quirks</translation>
+<translation id="6801739506172328815">É o tamanho da fonte do texto da marca-d'água em pontos.</translation>
 <translation id="6802412020718145539">O visualizador de PDF usa a arquitetura OOPIF.</translation>
 <translation id="68031099365512050">Informar o status de áudio</translation>
 <translation id="680356860463873420">Não permitir o uso de um PluginVm</translation>

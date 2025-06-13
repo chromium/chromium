@@ -965,7 +965,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4979397965658815378">Prijavite se pomoću Google naloga da biste imali obeleživače, lozinke, istoriju i druga podešavanja na svim uređajima</translation>
 <translation id="4985921635659180565">Kada se zakaže brisanje fajla, ne može da se otkaže.</translation>
 <translation id="498624032394115435">Svako sa linkom može da menja sve kartice.</translation>
-<translation id="4989065233040279145">Izaberite gde će fajl <ph name="FILENAME" /> biti sačuvan</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, ovim upravlja organizacija.</translation>
 <translation id="4992255726304765516">Boja grupe kartica <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
@@ -1652,7 +1651,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7724085059277147439">{count,plural, =1{Stavka je sačuvana na Google nalogu, {email}}one{Stavke su sačuvane na Google nalogu, {email}}few{Stavke su sačuvane na Google nalogu, {email}}other{Stavke su sačuvane na Google nalogu, {email}}}</translation>
 <translation id="7729458878441927652">Da biste videli kartice sa drugih uređaja, sinhronizujte kartice i istoriju.</translation>
 <translation id="7730020510075123961">Ne, objedini podatke</translation>
-<translation id="7730973429297233609">Izaberite nalog koji želite da koristite da biste sačuvali <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo na ovom uređaju.</translation>
 <translation id="7744192722284567281">Pronađeno u upadu u podatke</translation>
 <translation id="7749790401023484470">Niste izabrali nikakav tekst.</translation>
@@ -1836,7 +1834,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8428045167754449968">Grad/mesto</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8428634594422941299">Važi</translation>
-<translation id="8430694217306051839">Izaberite gde će fajl <ph name="FILENAME" /> biti sačuvan (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Detalji grupe kartica</translation>
 <translation id="8438566539970814960">Poboljšaj pretrage i pregledanje</translation>
 <translation id="8439758443371991593">Sakrij opciju Dodaj na listu za čitanje</translation>

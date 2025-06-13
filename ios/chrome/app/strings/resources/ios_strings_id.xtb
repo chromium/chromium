@@ -623,6 +623,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3596414637720633074">Blokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="3602260545951981695">Pilih "Perlindungan yang Ditingkatkan"</translation>
 <translation id="3608436266458100337">Mode pembaca</translation>
+<translation id="3610041351087301930">Sembunyikan Pembaca</translation>
 <translation id="3622175633937495219">Histori Penelusuran (<ph name="COUNT" /> ditemukan)</translation>
 <translation id="3625008969091706597">Anda dapat menggeser tepi untuk kembali.</translation>
 <translation id="362709345066740529">Sesuaikan kartu, feed, dan lainnya di sini</translation>
@@ -964,7 +965,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4979397965658815378">Login dengan Akun Google untuk mendapatkan bookmark, sandi, histori, dan setelan lainnya di semua perangkat Anda.</translation>
 <translation id="4985921635659180565">Setelah dijadwalkan untuk dihapus, penghapusan file tidak dapat dibatalkan.</translation>
 <translation id="498624032394115435">Siapa saja yang memiliki link ini dapat mengedit semua tab.</translation>
-<translation id="4989065233040279145">Pilih lokasi untuk menyimpan <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, dikelola oleh organisasi Anda.</translation>
 <translation id="4992255726304765516">Warna grup tab <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Salin sandi</translation>
@@ -1064,6 +1064,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5431252637281434233">Anda akan logout</translation>
 <translation id="543338862236136125">Edit sandi</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
+<translation id="5437480232219631455">Anda dapat membuka Gemini di sini</translation>
 <translation id="5439618055789623719">Login sebagai <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Penjelajahan yang lebih baik secara default</translation>
 <translation id="5444892875087332195">Bookmark</translation>
@@ -1650,7 +1651,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7724085059277147439">{count,plural, =1{Item disimpan di Akun Google Anda, {email}}other{Item disimpan di Akun Google Anda, {email}}}</translation>
 <translation id="7729458878441927652">Untuk melihat tab dari perangkat Anda yang lain, sinkronkan tab dan histori.</translation>
 <translation id="7730020510075123961">Tidak, gabungkan data</translation>
-<translation id="7730973429297233609">Pilih akun yang ingin Anda gunakan untuk menyimpan <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Hanya di perangkat ini.</translation>
 <translation id="7744192722284567281">Ditemukan di pelanggaran data</translation>
 <translation id="7749790401023484470">Anda tidak memilih teks apa pun.</translation>
@@ -1834,7 +1834,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8428045167754449968">Kota</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8428634594422941299">Mengerti</translation>
-<translation id="8430694217306051839">Pilih lokasi untuk menyimpan <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Detail grup tab</translation>
 <translation id="8438566539970814960">Jadikan penelusuran dan penjelajahan lebih baik</translation>
 <translation id="8439758443371991593">Sembunyikan Tambahkan ke Daftar Bacaan</translation>

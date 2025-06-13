@@ -937,6 +937,7 @@
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="254947805923345898">ポリシーの値が無効です。</translation>
 <translation id="2549836668759467704">建築コンサルティング、請負</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />、<ph name="TOPIC_2" />、その他</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> から無効な応答が送信されました。</translation>
 <translation id="2551608178605132291">住所: <ph name="ADDRESS" />。</translation>
 <translation id="2552246211866555379">はがき</translation>
@@ -3327,7 +3328,7 @@
 <translation id="6649510485211003056">195x270 mm</translation>
 <translation id="6651270836885078973">管理者:</translation>
 <translation id="6652101503459149953">Windows Hello を使用</translation>
-<translation id="6654224358955673568">フォーマルに</translation>
+<translation id="6654224358955673568">よりフォーマルに</translation>
 <translation id="6654244995031366386">ガラス（テクスチャ）</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659246032834639189">この価格は低額です</translation>
@@ -4820,6 +4821,7 @@
 <translation id="9219103736887031265">画像</translation>
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
 <translation id="9222403027701923763">小、中、高等学校</translation>
+<translation id="9222463428840654067">カード番号が無効です</translation>
 <translation id="922849469395748170">ポイントカード</translation>
 <translation id="93020190163435405">インターンシップ</translation>
 <translation id="931598121743515856"><ph name="CHECKOUT_AMOUNT_MINIMUM" /> を超える購入で使用できます</translation>

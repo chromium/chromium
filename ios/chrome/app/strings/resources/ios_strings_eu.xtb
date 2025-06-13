@@ -964,7 +964,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4979397965658815378">Hasi saioa Google-ko kontuarekin laster-markak, historia, pasahitzak eta bestelako ezarpenak gailu guztietan eskura izateko</translation>
 <translation id="4985921635659180565">Fitxategi bat ezabatzeko programatzen denean, ezin da bertan behera utzi.</translation>
 <translation id="498624032394115435">Esteka duten guztiek fitxa guztiak edita ditzakete.</translation>
-<translation id="4989065233040279145">Aukeratu non gorde nahi duzun <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />), erakundeak kudeatzen du.</translation>
 <translation id="4992255726304765516">Fitxa talderako kolore <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiatu pasahitza</translation>
@@ -1649,7 +1648,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7724085059277147439">{count,plural, =1{Gorde da elementua Google-ko kontuan ({email})}other{Gorde dira elementuak Google-ko kontuan ({email})}}</translation>
 <translation id="7729458878441927652">Beste gailuetako fitxak ikusteko, sinkronizatu fitxak eta historia.</translation>
 <translation id="7730020510075123961">Ez, bateratu datuak</translation>
-<translation id="7730973429297233609">Hautatu <ph name="FILENAME" /> (<ph name="FILESIZE" />) gordetzeko erabili nahi duzun kontua</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Gailu honetan soilik.</translation>
 <translation id="7744192722284567281">Datuen isilpekotasunaren urratze batean aurkitu da</translation>
 <translation id="7749790401023484470">Ez duzu hautatu testurik.</translation>
@@ -1833,7 +1831,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8428045167754449968">Hiria/Udalerria</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8428634594422941299">Ados</translation>
-<translation id="8430694217306051839">Aukeratu non gorde nahi duzun <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Fitxa taldearen xehetasunak</translation>
 <translation id="8438566539970814960">Hobetu bilaketak eta arakatze-jarduerak</translation>
 <translation id="8439758443371991593">Ezkutatu "Gehitu irakurketa-zerrendan"</translation>

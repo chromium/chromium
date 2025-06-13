@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 dag gelede}other{# dae gelede}}</translation>
 <translation id="1181037720776840403">Verwyder</translation>
 <translation id="1243314992276662751">Laai op</translation>
+<translation id="1253734725326687145">Raakteiken is regs bo geskuif. Tik hier.</translation>
 <translation id="1266864766717917324">Kon nie <ph name="CONTENT_TYPE" /> deel nie.</translation>
 <translation id="1269641567813814718">Windows</translation>
 <translation id="1291104554099683393">Probeer die teks in kleiner stukkies deel.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="24452542372838207">Vou kennisgewing uit</translation>
 <translation id="2445449901874883781">Gebruik hoë digtheid</translation>
+<translation id="2448407890032181691">Raakteiken is regs onder geskuif. Tik hier.</translation>
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2497284189126895209">Alle lêers</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Oortjie</translation>
 <translation id="5613020302032141669">Linkerpyltjie</translation>
 <translation id="5633029987065897167">Leeg</translation>
+<translation id="5651438382973553530">Raakteiken is links onder geskuif. Tik hier.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktief vandag}=1{1 dag gelede aktief}other{# dae gelede aktief}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dag en }other{# dae en }}</translation>

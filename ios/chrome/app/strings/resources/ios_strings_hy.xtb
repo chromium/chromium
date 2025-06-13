@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>
 <translation id="3602260545951981695">Ընտրեք «Բարելավված պաշտպանություն»</translation>
 <translation id="3608436266458100337">Ընթերցման ռեժիմ</translation>
+<translation id="3610041351087301930">Թաքցնել ընթերցիչը</translation>
 <translation id="3622175633937495219">Որոնեք պատմության մեջ (<ph name="COUNT" /> համընկնում)</translation>
 <translation id="3625008969091706597">Հետ գնալու համար մատը սահեցրեք էկրանի եզրով։</translation>
 <translation id="362709345066740529">Անհատականացրեք ձեր քարտերը, ֆիդը և ավելին՝ այստեղ</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">Մուտք գործեք ձեր Google հաշվով՝ ձեր էջանիշները, գաղտնաբառերը, պատմությունը և այլ կարգավորումները ձեր բոլոր սարքերում օգտագործելու համար:</translation>
 <translation id="4985921635659180565">Ֆայլի պլանավորված ջնջումը հնարավոր չէ չեղարկել։</translation>
 <translation id="498624032394115435">Ցանկացած ոք, ով ունի այս հղումը, կարող է փոփոխել բոլոր ներդիրները։</translation>
-<translation id="4989065233040279145">Ընտրեք, թե որտեղ պահել <ph name="FILENAME" /> ֆայլը</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, կառավարվում է ձեր կազմակերպության կողմից։</translation>
 <translation id="4992255726304765516">Ներդիրների խմբի գույնը՝ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">Դուք դուրս կգաք հաշվից</translation>
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
 <translation id="5433691172869980887">Օգտանունը պատճենվեց</translation>
+<translation id="5437480232219631455">Դուք կարող եք բացել Gemini-ը այստեղ</translation>
 <translation id="5439618055789623719">Մուտք եք գործել որպես <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Դարձրեք ձեր կանխադրված դիտարկիչը</translation>
 <translation id="5444892875087332195">Էջանիշեր</translation>
@@ -1650,7 +1651,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7724085059277147439">{count,plural, =1{Տարրը պահվեց ձեր Google հաշվում, {email}}one{Տարրը պահվեց ձեր Google հաշվում, {email}}other{Տարրերը պահվեցին ձեր Google հաշվում, {email}}}</translation>
 <translation id="7729458878441927652">Ձեր մյուս սարքերի ներդիրները տեսնելու համար համաժամացրեք ձեր ներդիրներն ու պատմությունը։</translation>
 <translation id="7730020510075123961">Ոչ, միավորել տվյալները</translation>
-<translation id="7730973429297233609">Ընտրեք հաշիվը, որն ուզում եք օգտագործել՝ <ph name="FILENAME" /> ֆայլը (<ph name="FILESIZE" />) պահելու համար</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />։ Միայն այս սարքում։</translation>
 <translation id="7744192722284567281">Հայտնաբերվել է տվյալների արտահոսքում</translation>
 <translation id="7749790401023484470">Դուք չեք ընտրել որևէ տեքստ։</translation>
@@ -1834,7 +1834,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8428045167754449968">Քաղաք</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8428634594422941299">Պարզ է</translation>
-<translation id="8430694217306051839">Ընտրեք, թե որտեղ պահել <ph name="FILENAME" /> ֆայլը (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Ներդիրների խմբի մասին</translation>
 <translation id="8438566539970814960">Լավացնել որոնումն ու էջերի դիտումը</translation>
 <translation id="8439758443371991593">Թաքցնել «Ավելացնել ընթերցանության ցանկում» գործողությունը</translation>

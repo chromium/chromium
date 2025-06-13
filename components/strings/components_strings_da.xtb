@@ -1564,6 +1564,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3641116835972736297">Amerikansk fodbold</translation>
 <translation id="3642196846309122856">Prøv at downloade dine filer igen</translation>
 <translation id="3642638418806704195">Program:</translation>
+<translation id="3644768007456662469">Ikon for betalingselement</translation>
 <translation id="3646643500201740985">Måling af en annonces effektivitet</translation>
 <translation id="3647286794400715637">Hver webadressestreng skal indeholde mellem 1 og 2 webadresser.</translation>
 <translation id="3647400963805615193">Knappen Luk Chrome-tip, tryk på Enter for at lukke, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4530347922939905757">Sms</translation>
 <translation id="4531477351494678589">Virtuelt kortnummer:</translation>
 <translation id="4535523368173457420">Disse søgemaskiner er populære i din region og vises i vilkårlig rækkefølge</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Oprettet for 1 år siden}one{Oprettet for {NUM_YEARS} år siden}other{Oprettet for {NUM_YEARS} år siden}}</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542971377163063093">Bakke 6</translation>
 <translation id="4543072026714825470">Gem dit kort og din faktureringsadresse på din Google-konto for at betale hurtigere næste gang</translation>
 <translation id="454441086898495030">Vil du føje elementet til <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Overførslen fik timeout</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Oprettet for 1 dag siden}one{Oprettet for {NUM_DAYS} dag siden}other{Oprettet for {NUM_DAYS} dage siden}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Du bruger din skærmlås til at udfylde adgangskoder</translation>
 <translation id="4557573143631562971">Indboforsikring</translation>
@@ -2898,6 +2901,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5938153366081463283">Tilføj virtuelt kort</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Disse oplysninger stammer fra uafhængige anmeldelseswebsites som f.eks. Trustpilot, ScamAdviser, Google m.m. Opsummeringer oprettes med AI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Oprettet for 1 minut siden}one{Oprettet for {NUM_MINS} minut siden}other{Oprettet for {NUM_MINS} minutter siden}}</translation>
 <translation id="5944297261866530437">Stof (helblankt)</translation>
 <translation id="5950901984834744590">Skrabere og barbermaskiner</translation>
 <translation id="5951495562196540101">Det er ikke muligt at tilmelde sig med en forbrugerkonto (mulighed for tilknyttet licens ).</translation>
@@ -4059,6 +4063,7 @@ Yderligere oplysninger:
 <translation id="7894280532028510793">Hvis stavningen er korrekt, kan du <ph name="BEGIN_LINK" />prøve at køre Netværksdiagnosticering<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Konvolut 7 x 9 tommer</translation>
 <translation id="7905064834449738336">Når du bruger en adgangskode, advarer Chromium dig, hvis den er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Oprettet for 1 time siden}one{Oprettet for {NUM_HOURS} time siden}other{Oprettet for {NUM_HOURS} timer siden}}</translation>
 <translation id="7908648876066812348">Aktiverer virtuelt kort</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at gå til siden for Chromes sikkerhedstjek i indstillingerne</translation>
 <translation id="791107458486222637">Annullerer fortrydelse af resultat</translation>
@@ -4193,6 +4198,7 @@ Yderligere oplysninger:
 <translation id="8134058435519644366">Rekruttering og personale</translation>
 <translation id="8135546115396015134">venstre tast</translation>
 <translation id="8137456439814903304">Energi og forsyning</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Oprettet for 1 måned siden}one{Oprettet for {NUM_MONTHS} måned siden}other{Oprettet for {NUM_MONTHS} måneder siden}}</translation>
 <translation id="8148608574971654810">PDF-version:</translation>
 <translation id="8149426793427495338">Din computer gik i dvale.</translation>
 <translation id="8150722005171944719">Filen i <ph name="URL" /> kan ikke læses. Den kan være blevet fjernet, flyttet, eller også forhindrer filtilladelser muligvis adgangen.</translation>

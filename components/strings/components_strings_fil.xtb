@@ -1564,6 +1564,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3641116835972736297">American Football</translation>
 <translation id="3642196846309122856">Subukang i-download ulit ang iyong mga file</translation>
 <translation id="3642638418806704195">Application:</translation>
+<translation id="3644768007456662469">Icon na Item ng Mga Pagbabayad</translation>
 <translation id="3646643500201740985">Pagtukoy sa husay ng performance ng ad</translation>
 <translation id="3647286794400715637">Ang bawat entry ng string ng mga url ay dapat na maglaman ng 1 hanggang 2 URL.</translation>
 <translation id="3647400963805615193">Button na I-dismiss ang Tip sa Chrome, pindutin ang Enter para i-dismiss ang <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4530347922939905757">Text message</translation>
 <translation id="4531477351494678589">Numero ng virtual card</translation>
 <translation id="4535523368173457420">Sikat ang mga search engine na ito sa iyong rehiyon at ipapakita ang mga ito sa random na pagkakasunod-sunod</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Ginawa 1 taon ang nakalipas}one{Ginawa {NUM_YEARS} taon ang nakalipas}other{Ginawa {NUM_YEARS} na taon ang nakalipas}}</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542971377163063093">Tray 6</translation>
 <translation id="4543072026714825470">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card at billing address sa Google Account mo</translation>
 <translation id="454441086898495030">Idagdag sa <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Nag-time out ang paglilipat</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Ginawa 1 araw ang nakalipas}one{Ginawa {NUM_DAYS} araw ang nakalipas}other{Ginawa {NUM_DAYS} na araw ang nakalipas}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Ginagamit mo ang iyong lock ng screen para sa paglalagay ng mga password</translation>
 <translation id="4557573143631562971">Insurance sa Bahay</translation>
@@ -2898,6 +2901,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5938153366081463283">Magdagdag ng virtual card</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Ang impormasyong ito ay galing sa mga independent na website ng review tulad ng Trustpilot, ScamAdviser, Google, at higit pa. Binuo ang mga buod gamit ang AI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Ginawa 1 minuto ang nakalipas}one{Ginawa {NUM_MINS} minuto ang nakalipas}other{Ginawa {NUM_MINS} na minuto ang nakalipas}}</translation>
 <translation id="5944297261866530437">Tela (High-Gloss)</translation>
 <translation id="5950901984834744590">Mga Razor at Pang-ahit</translation>
 <translation id="5951495562196540101">Hindi maka-enroll gamit ang account ng consumer (may available na naka-package na lisensya).</translation>
@@ -4059,6 +4063,7 @@ Mga karagdagang detalye:
 <translation id="7894280532028510793">Kung tama ang pagbabaybay, <ph name="BEGIN_LINK" />subukang patakbuhin ang Mga Diagnostic ng Network<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
 <translation id="7905064834449738336">Kapag gumamit ka ng password, babalaan ka ng Chromium kung na-publish na ito online. Kapag ginagawa ito, naka-encrypt ang iyong mga password at username, para hindi mabasa ng sinuman ang mga ito, kabilang ang Google.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Ginawa 1 oras ang nakalipas}one{Ginawa {NUM_HOURS} oras ang nakalipas}other{Ginawa {NUM_HOURS} na oras ang nakalipas}}</translation>
 <translation id="7908648876066812348">Ino-on ang virtual card</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para pumunta sa page ng pag-check sa kaligtasan ng Chrome sa mga setting</translation>
 <translation id="791107458486222637">Nire-redo ang resulta</translation>
@@ -4193,6 +4198,7 @@ Mga karagdagang detalye:
 <translation id="8134058435519644366">Pag-recruit at Pagpapasok ng Tauhan</translation>
 <translation id="8135546115396015134">pakaliwang key</translation>
 <translation id="8137456439814903304">Enerhiya at Mga Utility</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ginawa 1 buwan ang nakalipas}one{Ginawa {NUM_MONTHS} buwan ang nakalipas}other{Ginawa {NUM_MONTHS} na buwan ang nakalipas}}</translation>
 <translation id="8148608574971654810">Bersyon ng PDF:</translation>
 <translation id="8149426793427495338">Nag-sleep ang iyong computer.</translation>
 <translation id="8150722005171944719">Hindi nababasa ang file sa <ph name="URL" />. Maaaring ito ay naalis, nalipat, o maaaring pinipigilan ng mga pagpapahintulot ng file ang access.</translation>

@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{Fyrir 1 degi}one{Fyrir # degi}other{Fyrir # dögum}}</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1243314992276662751">Hlaða inn</translation>
+<translation id="1253734725326687145">Snertimið fært efst til hægri. Ýttu hér.</translation>
 <translation id="1266864766717917324">Ekki tókst að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Prófaðu að deila textanum í smærri hluta.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
 <translation id="24452542372838207">Stækka tilkynningu</translation>
 <translation id="2445449901874883781">Nota mikinn þéttleika</translation>
+<translation id="2448407890032181691">Snertimið fært neðst til hægri. Ýttu hér.</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2497284189126895209">Allar skrár</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Dálkalykill</translation>
 <translation id="5613020302032141669">Ör til vinstri</translation>
 <translation id="5633029987065897167">Autt</translation>
+<translation id="5651438382973553530">Snertimið fært neðst til vinstri. Ýttu hér.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 mín.}one{# mín.}other{# mín.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Virkt í dag}=1{Virkt fyrir 1 degi}one{Virkt fyrir # degi}other{Virkt fyrir # dögum}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dagur og }one{# dagur og }other{# dagar og }}</translation>

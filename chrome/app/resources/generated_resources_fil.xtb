@@ -5997,7 +5997,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5186381005592669696">I-customize ang wika ng display para sa mga sinusuportahang app</translation>
 <translation id="5186788525428341874">Puwede mong gamitin ang passkey na ito para mas mabilis na makapag-sign sa lahat ng iyong device. Mase-save ito sa Google Password Manager para sa <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;I-install ang Page bilang App...</translation>
-<translation id="5187671830619031922">Magdagdag ng Tab sa Split View</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Na-share ni <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Gumamit ng lokasyon. Payagan ang mga app, website, at serbisyo ng ChromeOS at Android na may pahintulot sa lokasyon na gamitin ang lokasyon ng iyong device. Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo ng Android. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa iyong device para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan mo para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa paggamit ng lokasyon<ph name="END_LINK1" /></translation>
@@ -9024,6 +9023,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7387951778417998929">Para gumamit ng search engine na hindi ang default, i-type ang shortcut nito sa address bar kasunod ang iyong gustong keyboard shortcut. Puwede mo ring palitan ang iyong default na search engine dito.</translation>
 <translation id="7388615499319468910">Mauunawaan ng mga site at advertiser ang performance ng mga ad. Naka-off ang setting na ito.</translation>
 <translation id="738903649531469042">Idagdag ang Tab sa Listahan ng Babasahin</translation>
+<translation id="7389615853658756494">Palitan ito sa site</translation>
 <translation id="7392118418926456391">Nabigo ang pag-scan ng virus</translation>
 <translation id="7392915005464253525">M&amp;uling buksan ang nakasarang window</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Nakopya ang 1 item}one{Nakopya ang {COUNT} item}other{Nakopya ang {COUNT} na item}}</translation>
@@ -9153,6 +9153,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7474043404939621342">I-customize ang iyong toolbar</translation>
 <translation id="747459581954555080">Ipanumbalik lahat</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Kinakailangang ibalik kaagad}one{Ibalik ang <ph name="DEVICE_TYPE" /> sa loob ng {NUM_DAYS} araw}other{Ibalik ang <ph name="DEVICE_TYPE" /> sa loob ng {NUM_DAYS} na araw}}</translation>
+<translation id="747557463733380256">Alamin kung paano pinapamahalaan ang iyong browser</translation>
 <translation id="7475671414023905704">URL ng Nawalang Password ng Netscape</translation>
 <translation id="7475742997309661417">Ang screen reader sa ChromeOS na ChromeVox ay pangunahing ginagamit ng mga taong bulag o malabo ang paningin para magbasa ng text na ipinapakita sa screen na may synthesizer ng speech o braille display. Pindutin nang matagal ang parehong volume key sa loob ng limang segundo para i-on ang ChromeVox. Kapag na-activate na ang ChromeVox, may gagawin kang mabilis na tour.</translation>
 <translation id="7476454130948140105">Masyadong kaunti ang baterya (<ph name="BATTERY_PERCENT" />%) para sa pag-update</translation>
@@ -10302,6 +10303,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8265018477030547118">Sa device lang na ito</translation>
 <translation id="826511437356419340">Pumasok sa overview mode ng window. Mag-swipe para mag-navigate, o pindutin ang tab kung gumagamit ng keyboard.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Hindi bubukas ang iyong Incognito window pagkatapos mong maglunsad ulit}one{Hindi bubukas ang iyong {COUNT} Incognito window pagkatapos mong maglunsad ulit}other{Hindi bubukas ang iyong {COUNT} na Incognito window pagkatapos mong maglunsad ulit}}</translation>
+<translation id="8266430295499893285">Kailangan mong i-verify na ikaw ito bago mo ma-access ang iyong mga password</translation>
 <translation id="8266947622852630193">Lahat ng pamamaraan ng pag-input</translation>
 <translation id="8267539814046467575">Magdagdag ng printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Ito ay pangkalahatang impormasyon tungkol sa device na ito at kung paano ito ginagamit (gaya ng antas ng baterya, aktibidad ng system at app, at mga error). Gagamitin ang data para pahusayin ang Android, at makakatulong din ang ilang pinagsama-samang impormasyon sa mga app at partner ng Google, gaya ng mga developer ng Android, na mapahusay ang mga app at produkto ng mga ito.<ph name="END_PARAGRAPH1" />
@@ -11113,7 +11115,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8827125715368568315">Na-block ang <ph name="PERMISSION" /> at <ph name="COUNT" /> pa</translation>
 <translation id="8827289157496676362">I-pin ang extension</translation>
 <translation id="8828933418460119530">Pangalan ng DNS</translation>
-<translation id="8829979393064090868">Magdagdag ng tab sa split view</translation>
 <translation id="8830479210602243906">I-boost ang pagiging produktibo</translation>
 <translation id="883062543841130884">Mga Kahalili</translation>
 <translation id="8830779999439981481">Nire-restart para ilapat ang mga update</translation>

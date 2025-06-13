@@ -5987,7 +5987,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5186381005592669696">Tilpass visningsspråket for støttede apper</translation>
 <translation id="5186788525428341874">Du kan bruke denne passnøkkelen for å logge på raskere på alle enhetene dine. Den lagres i Google Passordlagring for <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Installer siden som en app…</translation>
-<translation id="5187671830619031922">Legg til fanen i delt visning</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Delt av <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Bruk posisjon. Tillat at ChromeOS- og Android-apper, -nettsteder og -tjenester med posisjonstillatelse bruker posisjonen til enheten din. Med Posisjonsnøyaktighet får Android-apper og tjenester mer nøyaktige posisjoner. For å få til dette behandler Google med jevne mellomrom informasjon om enhetssensorer og trådløse signaler fra enheten din for å bidra til crowdsourcing av posisjonene til trådløse signaler. Disse brukes uten å identifisere deg for å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester og for å forbedre, levere og vedlikeholde Googles tjenester basert på Googles og tredjeparters berettigede interesser i å oppfylle brukernes behov. <ph name="BEGIN_LINK1" />Finn ut mer om bruk av posisjon<ph name="END_LINK1" /></translation>
@@ -11100,7 +11099,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8827125715368568315">Blokkerte <ph name="PERMISSION" /> og <ph name="COUNT" /> til</translation>
 <translation id="8827289157496676362">Fest utvidelsen</translation>
 <translation id="8828933418460119530">DNS-navn</translation>
-<translation id="8829979393064090868">Legg til fanen i delt visning</translation>
 <translation id="8830479210602243906">Øk produktiviteten</translation>
 <translation id="883062543841130884">Erstatninger</translation>
 <translation id="8830779999439981481">Starter på nytt for å ta i bruk oppdateringer</translation>

@@ -937,6 +937,7 @@
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="254947805923345898">ค่านโยบายไม่ถูกต้อง</translation>
 <translation id="2549836668759467704">การให้คำปรึกษาและการทำสัญญาก่อสร้าง</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> และอื่นๆ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ส่งการตอบกลับที่ไม่ถูกต้อง</translation>
 <translation id="2551608178605132291">ที่อยู่: <ph name="ADDRESS" /></translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -2100,11 +2101,13 @@
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">หมายเลขบัตรเสมือน:</translation>
 <translation id="4535523368173457420">เครื่องมือค้นหาเหล่านี้ได้รับความนิยมในภูมิภาคของคุณ และแสดงแบบสุ่มลำดับ</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{สร้างเมื่อ 1 ปีที่ผ่านมา}other{สร้างเมื่อ {NUM_YEARS} ปีที่ผ่านมา}}</translation>
 <translation id="4541810033354695636">Augmented Reality</translation>
 <translation id="4542971377163063093">ถาด 6</translation>
 <translation id="4543072026714825470">บันทึกข้อมูลบัตรและที่อยู่สำหรับการเรียกเก็บเงินไว้ในบัญชี Google เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="454441086898495030">เพิ่มไปยัง<ph name="SET" />ไหม</translation>
 <translation id="4546730006268514143">การโอนหมดเวลาแล้ว</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{สร้างเมื่อ 1 วันที่ผ่านมา}other{สร้างเมื่อ {NUM_DAYS} วันที่ผ่านมา}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">คุณกําลังใช้การล็อกหน้าจอเพื่อป้อนรหัสผ่าน</translation>
 <translation id="4557573143631562971">ประกันภัยบ้าน</translation>
@@ -2898,6 +2901,7 @@
 <translation id="5938153366081463283">เพิ่มบัตรเสมือน</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">ข้อมูลนี้มาจากเว็บไซต์รีวิวอิสระ เช่น Trustpilot, ScamAdviser, Google และอื่นๆ ข้อมูลสรุปสร้างขึ้นด้วย AI</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{สร้างเมื่อ 1 นาทีที่ผ่านมา}other{สร้างเมื่อ {NUM_MINS} นาทีที่ผ่านมา}}</translation>
 <translation id="5944297261866530437">ผ้า (เงามาก)</translation>
 <translation id="5950901984834744590">มีดโกนและเครื่องโกน</translation>
 <translation id="5951495562196540101">ลงทะเบียนด้วยบัญชีผู้ใช้ทั่วไปไม่ได้ (มีใบอนุญาตแบบแพ็กเกจ)</translation>
@@ -4059,6 +4063,7 @@
 <translation id="7894280532028510793">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่าย<ph name="END_LINK" /></translation>
 <translation id="7901831439558593470">Envelope 7 x 9 นิ้ว</translation>
 <translation id="7905064834449738336">เมื่อใช้รหัสผ่าน Chromium จะเตือนคุณหากมีการเผยแพร่รหัสผ่านออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{สร้างเมื่อ 1 ชั่วโมงที่ผ่านมา}other{สร้างเมื่อ {NUM_HOURS} ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="7908648876066812348">กำลังเปิดบัตรเสมือน (Virtual Card)</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อไปที่หน้าการตรวจสอบความปลอดภัยของ Chrome ในการตั้งค่า</translation>
 <translation id="791107458486222637">กำลังทำซ้ำผลลัพธ์</translation>
@@ -4193,6 +4198,7 @@
 <translation id="8134058435519644366">การรับสมัครงาน</translation>
 <translation id="8135546115396015134">ปุ่มซ้าย</translation>
 <translation id="8137456439814903304">พลังงานและสาธารณูปโภค</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{สร้างเมื่อ 1 เดือนที่ผ่านมา}other{สร้างเมื่อ {NUM_MONTHS} เดือนที่ผ่านมา}}</translation>
 <translation id="8148608574971654810">เวอร์ชัน PDF:</translation>
 <translation id="8149426793427495338">คอมพิวเตอร์ของคุณเข้าสู่โหมดสลีปแล้ว</translation>
 <translation id="8150722005171944719">ไฟล์ที่ <ph name="URL" /> ไม่สามารถอ่านได้ เนื่องจากอาจถูกลบ ย้ายไปแล้ว หรือการอนุญาตของไฟล์อาจป้องกันการเข้าถึง</translation>
@@ -4813,6 +4819,7 @@
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="922152298093051471">ปรับแต่ง Chrome</translation>
 <translation id="9222403027701923763">โรงเรียนประถมและมัธยม (ป.1 - ม.6)</translation>
+<translation id="9222463428840654067">หมายเลขบัตรไม่ถูกต้อง</translation>
 <translation id="922849469395748170">บัตรสะสมคะแนน</translation>
 <translation id="93020190163435405">การฝึกงาน</translation>
 <translation id="931598121743515856">การซื้อต้องมีมูลค่าสูงกว่า <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

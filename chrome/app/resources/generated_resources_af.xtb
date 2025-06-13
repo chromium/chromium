@@ -5996,7 +5996,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5186381005592669696">Pasmaak vertoontaal vir gesteunde apps</translation>
 <translation id="5186788525428341874">Jy kan hierdie toegangsleutel gebruik om vinniger oor al jou toestelle aan te meld. Dit sal vir <ph name="ACCOUNT_NAME" /> in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="5187641678926990264">&amp;Installeer bladsy as app …</translation>
-<translation id="5187671830619031922">Voeg oortjie by om aansig te verdeel</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Gedeel deur <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Gebruik ligging. Laat ChromeOS en Android-apps, webwerwe en dienste met liggingtoestemming toe om jou toestel se ligging te gebruik. Liggingakkuraatheid verskaf ’n akkurater ligging vir Android-apps en -dienste. Om dit te doen, verwerk Google van tyd tot tyd inligting oor toestelsensors en draadlose seine vanaf jou toestel om draadloseseinliggings met skareverkryging te kry. Dit word gebruik, sonder om jou te identifiseer, om liggingakkuraatheid en ligginggegronde dienste te verbeter en om Google se dienste te verbeter, te verskaf en te handhaaf op grond van Google en derde partye se wettige belange om in gebruikers se behoeftes te voorsien. <ph name="BEGIN_LINK1" />Kry meer inligting oor die gebruik van ligging<ph name="END_LINK1" /></translation>
@@ -9021,6 +9020,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7387951778417998929">Om 'n ander soekenjin as die verstek te gebruik, moet jy sy kortpad by die adresbalk intik gevolg deur jou voorkeurkortpadsleutel. Jy kan ook jou versteksoekenjin hier verander.</translation>
 <translation id="7388615499319468910">Werwe en adverteerders kan verstaan hoe advertensies vaar. Hierdie instelling is af.</translation>
 <translation id="738903649531469042">Voeg oortjie by Leeslys</translation>
+<translation id="7389615853658756494">Verander dit op die werf</translation>
 <translation id="7392118418926456391">Virusskandering het misluk</translation>
 <translation id="7392915005464253525">Maak geslote venster weer oop</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 item is gekopieer}other{{COUNT} items is gekopieer}}</translation>
@@ -9150,6 +9150,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7474043404939621342">Pasmaak jou nutsbalk</translation>
 <translation id="747459581954555080">Stel alles terug</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Onmiddellike terugsending word vereis}other{Stuur <ph name="DEVICE_TYPE" /> binne {NUM_DAYS} dae terug}}</translation>
+<translation id="747557463733380256">Kry meer inligting oor hoe jou blaaier bestuur word</translation>
 <translation id="7475671414023905704">Netscape se verlorewagwoord-URL</translation>
 <translation id="7475742997309661417">Die skermleser op ChromeOS, ChromeVox, word hoofsaaklik deur mense met blindheid of swak sig gebruik om teks wat op die skerm vertoon word met ’n spraaksintetiseerder of brailleskerm te lees. Druk en hou albei volumesleutels vyf sekondes lank om ChromeVox aan te skakel. Jy sal deur ’n vinnige toer gaan wanneer ChromeVox geaktiveer is.</translation>
 <translation id="7476454130948140105">Die battery is te pap om op te dateer (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10298,6 +10299,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8265018477030547118">Net op hierdie toestel</translation>
 <translation id="826511437356419340">Het in vensteroorsigmodus ingegaan. Swiep om te navigeer of druk Tab as jy 'n sleutelbord gebruik.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Jou Incognito-venster sal nie oopmaak nadat jy herbegin het nie}other{Jou {COUNT} Incognito-vensters sal nie oopmaak nadat jy herbegin het nie}}</translation>
+<translation id="8266430295499893285">Jy moet verifieer dat dit jy is voordat jy toegang tot jou wagwoorde kan kry</translation>
 <translation id="8266947622852630193">Alle invoermetodes</translation>
 <translation id="8267539814046467575">Voeg drukker by</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Dit is algemene inligting oor hierdie toestel en hoe dit gebruik word (soos batteryvlak, stelsel- en programaktiwiteit, en foute). Die data sal gebruik word om Android te verbeter, en van die saamgestelde inligting sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help om hul programme en produkte beter te maak.<ph name="END_PARAGRAPH1" />
@@ -11107,7 +11109,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="8827125715368568315">Het <ph name="PERMISSION" /> en nog <ph name="COUNT" /> geblokkeer</translation>
 <translation id="8827289157496676362">Speld uitbreiding vas</translation>
 <translation id="8828933418460119530">DNS-naam</translation>
-<translation id="8829979393064090868">Voeg oortjie by om aansig te verdeel</translation>
 <translation id="8830479210602243906">Gee produktiwiteit ’n hupstoot</translation>
 <translation id="883062543841130884">Plaasvervangers</translation>
 <translation id="8830779999439981481">Herbegin tans om opdaterings toe te pas</translation>

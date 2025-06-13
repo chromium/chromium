@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{ပြီးခဲ့သော ၁ ရက်}other{ပြီးခဲ့သော # ရက်}}</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1243314992276662751">အာပ်လုဒ် လုပ်ရန်</translation>
+<translation id="1253734725326687145">တို့ထိရမည့် နေရာသည် ညာဘက်အပေါ်သို့ ရွေ့သွားပါပြီ။ ဤနေရာကို တို့ပါ။</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍မရပါ။</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">စာသားကို ပိုသေးသော အပိုင်းများအဖြစ် မျှဝေကြည့်ပါ။</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
 <translation id="24452542372838207">အကြောင်းကြားချက်ကို ချဲ့ရန်</translation>
 <translation id="2445449901874883781">သိပ်သည်းဆအမြင့် သုံးရန်</translation>
+<translation id="2448407890032181691">တို့ထိရမည့် နေရာသည် ညာဘက်အောက်ခြေသို့ ရွေ့သွားပါပြီ။ ဤနေရာကို တို့ပါ။</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="2497284189126895209">ဖိုင်များ အားလုံး</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">တဘ်</translation>
 <translation id="5613020302032141669">ဘယ်မြှား</translation>
 <translation id="5633029987065897167">မရှိပါ</translation>
+<translation id="5651438382973553530">တို့ထိရမည့် နေရာသည် ဘယ်ဘက်အောက်ခြေသို့ ရွေ့သွားပါပြီ။ ဤနေရာကို တို့ပါ။</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{၁ မိနစ်}other{# မိနစ်}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ယနေ့ အသုံးပြုထားသည်}=1{ပြီးခဲ့သော ၁ ရက်က အသုံးပြုထားသည်}other{ပြီးခဲ့သော # ရက်က အသုံးပြုထားသည်}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{၁ ရက်နှင့် }other{# ရက်နှင့် }}</translation>

@@ -937,6 +937,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
 <translation id="254947805923345898">Wartość zasady jest nieprawidłowa.</translation>
 <translation id="2549836668759467704">Doradztwo i usługi budowlane</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> i inne</translation>
 <translation id="255002559098805027">Serwer <ph name="HOST_NAME" /> wysłał nieprawidłową odpowiedź.</translation>
 <translation id="2551608178605132291">Adres: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4818,6 +4819,7 @@ Dodatkowe informacje:
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="922152298093051471">Dostosuj Chrome</translation>
 <translation id="9222403027701923763">Nauka w szkołach podstawowych i średnich</translation>
+<translation id="9222463428840654067">Numer karty jest nieprawidłowy</translation>
 <translation id="922849469395748170">Karty lojalnościowe</translation>
 <translation id="93020190163435405">Staże</translation>
 <translation id="931598121743515856">Kwota zakupu musi przekraczać <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

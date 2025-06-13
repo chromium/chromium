@@ -106,6 +106,7 @@ Jika kebijakan ini disetel ke Nonaktif, fitur koreksi otomatis tidak akan diizin
       Jika setelan ini tidak disetel, direktori profil default akan digunakan.</translation>
 <translation id="1053981429146436598">Kumpulan kebijakan yang terkait dengan setelan permintaan jaringan pribadi.  Lihat https://wicg.github.io/private-network-access/.</translation>
 <translation id="1059069692400941670">Nonaktifkan impor mesin telusur default saat browser pertama kali dijalankan</translation>
+<translation id="1060020040574767394">Konfigurasi Setelan Watermark Kustom</translation>
 <translation id="1062011392452772310">Mengaktifkan pengesahan jarak jauh untuk perangkat tersebut</translation>
 <translation id="1062407476771304334">Ganti</translation>
 <translation id="1063860513136880926">Jika kebijakan disetel ke Aktif, screenshot yang diambil dengan pintasan keyboard
@@ -511,6 +512,7 @@ Jika kebijakan ini disetel, pengoptimalan JavaScript akan diaktifkan untuk situs
 <translation id="1379689277107868399">Jika kebijakan ini disetel ke DoNotPrompt atau tidak disetel, <ph name="PRODUCT_NAME" /> tidak akan otomatis meminta pengguna untuk melakukan autentikasi ulang ke browser.
 
 Jika kebijakan ini disetel ke PromptInTab, tab baru dengan halaman login Google akan langsung dibuka ketika masa berlaku autentikasi pengguna berakhir. Hal ini hanya terjadi jika menggunakan <ph name="CHROME_SYNC_NAME" />.</translation>
+<translation id="1384040387986918863">Opasitas isian teks watermark, dari 0 (transparan) hingga 100 (buram).</translation>
 <translation id="1384459581748403878">Referensi: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Kebijakan ini membuat URL apa pun yang cocok dengan satu atau beberapa pola yang ditentukan (menggunakan format filter <ph name="URL_BLOCKLIST_POLICY_NAME" />) tidak akan dihapus oleh browser.
       Kebijakan ini berlaku untuk menghentikan tekanan memori dan mode efisiensi tinggi.
@@ -1873,6 +1875,13 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
       Pengguna tidak dapat mengubah atau mengganti setelan ini.
 
       Catatan: Kebijakan ini menyebabkan header X-GoogApps-Allowed-Domains ditambahkan ke semua permintaan HTTP dan HTTPS di semua domain google.com, seperti yang dijelaskan di https://support.google.com/a/answer/1668854.</translation>
+<translation id="2287414160388710497">Mengizinkan administrator menyesuaikan tampilan watermark yang diterapkan oleh aturan Pencegahan Kebocoran Data (DLP). Kebijakan ini mencakup menyetel opasitas isian/garis tepi, dan menentukan ukuran font.
+Jika kebijakan ini atau beberapa nilainya tidak disetel, Chrome akan menggunakan perilaku watermark default.
+Nilai default: opasitas isian 4, opasitas garis tepi 6, dan ukuran font 24.
+
+'Opasitas Isian' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
+'Opasitas Garis Tepi' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
+'FontSize' ditentukan dalam satuan poin.</translation>
 <translation id="2288506601233091655">Jangan izinkan histori tugas pencetakan dihapus</translation>
 <translation id="2289688405312849186">Akun utama pengguna 'user@realm'. Placeholder <ph name="LOGIN_ID_PLACEHOLDER" /> diganti dengan nama pengguna 'user'. Placeholder <ph name="LOGIN_EMAIL_PLACEHOLDER" /> diganti dengan akun utama penuh 'user@realm'.</translation>
 <translation id="2290270645214705008">Jika kebijakan ini disetel ke Nonaktif, layanan host akses jarak jauh tidak dapat dimulai atau dikonfigurasi untuk menerima koneksi masuk.  Kebijakan ini tidak memengaruhi skenario dukungan jarak jauh.
@@ -2659,6 +2668,7 @@ Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.</translation
 <translation id="288448261660192095">Jika disetel ke Aktif, perangkat input dan output fisik host akses jarak jauh akan dinonaktifkan selama koneksi jarak jauh berlangsung.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna lokal dan jarak jauh akan diizinkan untuk berinteraksi dengan host saat host dibagikan.</translation>
+<translation id="288463102030083286">Konfigurasi Watermark Kustom</translation>
 <translation id="2884765974461416016">Nonaktifkan berbagi Aplikasi Android ke Aplikasi Web.</translation>
 <translation id="2886215882246310669">Mengontrol apakah <ph name="PRODUCT_OS_NAME" /> mengizinkan akun pengguna Family Link baru ditambahkan ke perangkat atau tidak.
       Kebijakan ini hanya berguna jika digunakan bersama <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Ini akan mengizinkan akun Family Link ditambahkan ke akun yang ditentukan dalam daftar yang diizinkan.
@@ -3297,6 +3307,7 @@ Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu Outlook tidak akan
 <translation id="3278042410658310805">Nonaktifkan respons lisan di layar login dan izinkan pengguna mengaktifkannya untuk sementara</translation>
 <translation id="328347261792478720">Secara default, browser akan menampilkan rekomendasi media yang dipersonalisasi kepada pengguna. Jika kebijakan ini disetel ke Nonaktif, rekomendasi ini akan disembunyikan dari pengguna. Jika kebijakan ini disetel ke Aktif atau tidak disetel, rekomendasi media akan ditampilkan kepada pengguna.</translation>
 <translation id="3284094172359247914">Penggunaan kontrol WebUSB API</translation>
+<translation id="3285231260918855067">Opasitas garis tepi teks watermark, dari 0 (transparan) hingga 100 (buram).</translation>
 <translation id="3286159327013237833">Aktifkan klik otomatis di layar login</translation>
 <translation id="3288595667065905535">Saluran rilis</translation>
 <translation id="3291940794983537008">Setelan untuk Fitur AI Generatif DevTools</translation>
@@ -8637,6 +8648,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
 <translation id="6795485990775913659">Hanya izinkan pencetakan tanpa PIN</translation>
 <translation id="6796215185873669533">Mengembalikan setelan browser untuk versi string Agen Pengguna ke defaultnya.</translation>
 <translation id="6800181452282128474">Jangan kueri Server Quirks</translation>
+<translation id="6801739506172328815">Ukuran font teks watermark dalam satuan poin.</translation>
 <translation id="6802412020718145539">Penampil PDF menggunakan arsitektur OOPIF.</translation>
 <translation id="68031099365512050">Laporkan status audio</translation>
 <translation id="680356860463873420">Jangan izinkan pengguna menggunakan PluginVm</translation>

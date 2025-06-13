@@ -937,6 +937,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="254947805923345898">Giá trị của chính sách là không hợp lệ.</translation>
 <translation id="2549836668759467704">Tư vấn và hợp đồng xây dựng</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> và nhiều chủ đề khác</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> đã gửi ý kiến phản hồi không hợp lệ.</translation>
 <translation id="2551608178605132291">Địa chỉ: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1564,6 +1565,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3641116835972736297">Bóng bầu dục Mỹ</translation>
 <translation id="3642196846309122856">Hãy thử tải các tệp xuống lần nữa</translation>
 <translation id="3642638418806704195">Ứng dụng:</translation>
+<translation id="3644768007456662469">Biểu tượng của mục thanh toán</translation>
 <translation id="3646643500201740985">Đo lường hiệu suất quảng cáo</translation>
 <translation id="3647286794400715637">Mỗi mục nhập chuỗi url phải chứa từ 1 đến 2 URL.</translation>
 <translation id="3647400963805615193">Nút Đóng mẹo sử dụng Chrome, nhấn Enter để đóng, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -4819,6 +4821,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>
 <translation id="9222403027701923763">Học tiểu học và trung học (K-12)</translation>
+<translation id="9222463428840654067">Số thẻ không hợp lệ</translation>
 <translation id="922849469395748170">Thẻ khách hàng thân thiết</translation>
 <translation id="93020190163435405">Thực tập</translation>
 <translation id="931598121743515856">Giao dịch mua phải có giá trị trên <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

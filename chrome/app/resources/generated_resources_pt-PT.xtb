@@ -4769,6 +4769,7 @@ Quer pará-lo?</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Mudar</translation>
 <translation id="4306119971288449206">As aplicações têm de ser publicadas com o tipo de conteúdo "<ph name="CONTENT_TYPE" />".</translation>
+<translation id="4306489587293957491">Introduzir</translation>
 <translation id="4306810703452026910">O Chrome vai deixar de sinalizar as notificações deste site como spam</translation>
 <translation id="4307992518367153382">Noções básicas</translation>
 <translation id="4309165024397827958">Permita que os serviços e apps Android com a autorização de acesso à localização utilizem a localização do seu dispositivo. A Google pode recolher periodicamente dados de localização e utilizar estes dados anonimamente para melhorar a precisão da localização e os serviços baseados na localização.</translation>
@@ -4826,6 +4827,7 @@ Quer pará-lo?</translation>
 <translation id="4350230709416545141">Impedir sempre que <ph name="HOST" /> aceda à sua localização</translation>
 <translation id="4350782034419308508">OK Google</translation>
 <translation id="435185728237714178">Aceda à app "<ph name="APP_NAME" />" para gerir as apps instaladas e em stream</translation>
+<translation id="4352913519324947509">A sua palavra-passe não foi alterada, mas ainda deve conseguir aceder ao site com a palavra-passe atual</translation>
 <translation id="4354073718307267720">Perguntar quando um site pretender criar um mapa 3D do ambiente à sua volta ou monitorizar a posição da câmara</translation>
 <translation id="4354344420232759511">Os sites que visitar aparecem aqui</translation>
 <translation id="435527878592612277">Selecionar a sua foto</translation>
@@ -5984,7 +5986,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5186381005592669696">Personalize o idioma de apresentação das apps suportadas</translation>
 <translation id="5186788525428341874">Pode usar esta chave de acesso para iniciar sessão mais rapidamente nos seus dispositivos. Vai ser guardada no Gestor de Palavras-passe da Google de <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalar página como app…</translation>
-<translation id="5187671830619031922">Adicionar separador à vista dividida</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Partilhado por <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Use a localização. Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização do seu dispositivo. A Precisão da localização oferece uma localização mais precisa para serviços e apps Android. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios do dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar o utilizador para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores. <ph name="BEGIN_LINK1" />Saiba mais acerca da utilização da localização<ph name="END_LINK1" /></translation>
@@ -8315,6 +8316,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="686831807558000905">Não iniciar sessão</translation>
 <translation id="686839242150793617">Com permissão para entrar automaticamente no modo ecrã no ecrã</translation>
 <translation id="6868934826811377550">Ver detalhes</translation>
+<translation id="6870470066213933201">Faça a gestão da otimização e da segurança do JavaScript</translation>
 <translation id="6871644448911473373">Serviço de resposta de OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Idiomas…</translation>
 <translation id="6873571253135628430">Altere as autorizações de sites</translation>
@@ -11100,7 +11102,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8827125715368568315">Bloqueou <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Afixar extensão</translation>
 <translation id="8828933418460119530">Nome de DNS</translation>
-<translation id="8829979393064090868">Adicionar separador à vista dividida</translation>
 <translation id="8830479210602243906">Aumentar produtividade</translation>
 <translation id="883062543841130884">Substituições</translation>
 <translation id="8830779999439981481">A reiniciar para aplicar as atualizações…</translation>

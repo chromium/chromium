@@ -1564,6 +1564,7 @@
 <translation id="3641116835972736297">Fotbal american</translation>
 <translation id="3642196846309122856">Încearcă să descarci din nou fișierele</translation>
 <translation id="3642638418806704195">Aplicație:</translation>
+<translation id="3644768007456662469">Pictograma articolului Plăți</translation>
 <translation id="3646643500201740985">Măsurarea performanței unui anunț</translation>
 <translation id="3647286794400715637">Fiecare intrare de șir de adrese URL trebuie să conțină una sau două adrese URL.</translation>
 <translation id="3647400963805615193">Butonul Închide sfatul Chrome, apasă pe Enter pentru a închide, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@
 <translation id="4530347922939905757">Mesaj text</translation>
 <translation id="4531477351494678589">Numărul cardului virtual:</translation>
 <translation id="4535523368173457420">Aceste motoare de căutare sunt populare în regiunea ta și se afișează în ordine aleatorie</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Creat acum un an}few{Creat acum {NUM_YEARS} ani}other{Creat acum {NUM_YEARS} de ani}}</translation>
 <translation id="4541810033354695636">Realitate augmentată</translation>
 <translation id="4542971377163063093">Tava 6</translation>
 <translation id="4543072026714825470">Pentru a plăti mai rapid data viitoare, salvează cardul și adresa de facturare în Contul Google</translation>
 <translation id="454441086898495030">Adaugi în <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Transferul a expirat</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Creat acum o zi}few{Creat acum {NUM_DAYS} zile}other{Creat acum {NUM_DAYS} de zile}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Folosești blocarea ecranului pentru a completa parolele</translation>
 <translation id="4557573143631562971">Asigurarea casei</translation>
@@ -2898,6 +2901,7 @@
 <translation id="5938153366081463283">Adaugă un card virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Aceste informații provin de la site-uri independente de recenzii, cum ar fi Trustpilot, ScamAdviser, Google și altele. Rezumatele sunt create cu AI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Creat acum un minut}few{Creat acum {NUM_MINS} minute}other{Creat acum {NUM_MINS} de minute}}</translation>
 <translation id="5944297261866530437">Material textil (foarte lucios)</translation>
 <translation id="5950901984834744590">Aparate și lame de ras</translation>
 <translation id="5951495562196540101">Nu te poți înscrie cu contul de consumator (este disponibilă o licență din pachet).</translation>
@@ -4059,6 +4063,7 @@ Detalii suplimentare:
 <translation id="7894280532028510793">Dacă scrierea este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea rețelei<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Plic de 7 x 9 inchi</translation>
 <translation id="7905064834449738336">Când folosești o parolă, Chromium te avertizează dacă a fost publicată online. Când face acest lucru, parolele și numele tale de utilizator sunt criptate, astfel încât să nu fie descifrate de nimeni, nici măcar de Google.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Creat acum o oră}few{Creat acum {NUM_HOURS} ore}other{Creat acum {NUM_HOURS} de ore}}</translation>
 <translation id="7908648876066812348">Se activează cardul virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a accesa pagina Verificarea de siguranță din Chrome din setări</translation>
 <translation id="791107458486222637">Repetă</translation>
@@ -4193,6 +4198,7 @@ Detalii suplimentare:
 <translation id="8134058435519644366">Recrutare și personal</translation>
 <translation id="8135546115396015134">tasta săgeată spre stânga</translation>
 <translation id="8137456439814903304">Energie și utilități</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creat acum o lună}few{Creat acum {NUM_MONTHS} luni}other{Creat acum {NUM_MONTHS} de luni}}</translation>
 <translation id="8148608574971654810">Versiune PDF:</translation>
 <translation id="8149426793427495338">Computerul este inactiv.</translation>
 <translation id="8150722005171944719">Fișierul de la <ph name="URL" /> nu poate fi citit.  Este posibil să fi fost eliminat ori mutat sau ca permisiunile pentru fișiere să împiedice accesarea acestuia.</translation>

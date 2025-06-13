@@ -1648,7 +1648,7 @@
 <translation id="2136476978468204130">入力したパスフレーズが正しくありません</translation>
 <translation id="2137128126782078222"><ph name="WEBSITE" /> からの通知を許可しない</translation>
 <translation id="2139919072249842737">設定ボタン</translation>
-<translation id="2140788884185208305">電池の状態</translation>
+<translation id="2140788884185208305">バッテリー ヘルス</translation>
 <translation id="2142328300403846845">別のユーザーとしてリンクを開く</translation>
 <translation id="2142484069755256151">Google パスワード マネージャーの 6 桁のリカバリ PIN を作成（PIN の <ph name="NUM_DIGIT" />/6 桁）してください</translation>
 <translation id="2142582065325732898">最近使った Chrome タブを表示するには、<ph name="LINK1_BEGIN" />Chrome 同期<ph name="LINK1_END" />を有効にします。<ph name="LINK2_BEGIN" />詳細<ph name="LINK2_END" /></translation>
@@ -4758,6 +4758,7 @@
 <translation id="4305402730127028764">「<ph name="DEVICE_NAME" />」にコピー</translation>
 <translation id="4305817255990598646">切り替え</translation>
 <translation id="4306119971288449206">アプリはコンテンツタイプ「<ph name="CONTENT_TYPE" />」で配信される必要があります</translation>
+<translation id="4306489587293957491">入力</translation>
 <translation id="4306810703452026910">今後、このサイトからの通知はスパムとして報告しません</translation>
 <translation id="4307992518367153382">基本設定</translation>
 <translation id="4309165024397827958">位置情報の利用権限が設定されている Android アプリやサービスがご利用のデバイスの位置情報を使用することを許可します。Google は位置情報を定期的に収集し、このデータを匿名の方法で活用して位置情報の精度や位置情報を利用したサービスを改善します。</translation>
@@ -4815,6 +4816,7 @@
 <translation id="4350230709416545141"><ph name="HOST" /> による位置情報へのアクセスを常にブロックする</translation>
 <translation id="4350782034419308508">OK Google</translation>
 <translation id="435185728237714178">インストール（ストリーミング）されるアプリを管理するには「<ph name="APP_NAME" />」アプリに移動してください</translation>
+<translation id="4352913519324947509">パスワードは変更されませんでしたが、現在のパスワードでサイトにアクセスできます</translation>
 <translation id="4354073718307267720">サイトから周囲の 3D マップの作成またはカメラ位置の追跡を求められたときに確認する</translation>
 <translation id="4354344420232759511">アクセスしたサイトがここに表示されます</translation>
 <translation id="435527878592612277">写真を選択</translation>
@@ -5970,7 +5972,6 @@
 <translation id="5186381005592669696">対応アプリの表示言語をカスタマイズする</translation>
 <translation id="5186788525428341874">このパスキーを使用してどのデバイスでもすばやくログインできます。パスキーは <ph name="ACCOUNT_NAME" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="5187641678926990264">ページをアプリとしてインストール(&amp;I)...</translation>
-<translation id="5187671830619031922">タブを分割表示に追加</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />（<ph name="DEVICE" />）</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> さんが共有しました</translation>
 <translation id="5188648870018555788">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、デバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
@@ -8295,6 +8296,7 @@
 <translation id="686831807558000905">ログインしない</translation>
 <translation id="686839242150793617">ピクチャー イン ピクチャーの自動開始を許可するサイト</translation>
 <translation id="6868934826811377550">詳細を表示</translation>
+<translation id="6870470066213933201">JavaScript の最適化とセキュリティを管理する</translation>
 <translation id="6871644448911473373">OCSP レスポンダ: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">言語...</translation>
 <translation id="6873571253135628430">サイトの権限を変更する</translation>
@@ -11079,7 +11081,6 @@
 <translation id="8827125715368568315"><ph name="PERMISSION" />、他 <ph name="COUNT" /> 件をブロックしました</translation>
 <translation id="8827289157496676362">拡張機能を固定します</translation>
 <translation id="8828933418460119530">DNS 名</translation>
-<translation id="8829979393064090868">タブを分割表示に追加</translation>
 <translation id="8830479210602243906">生産性向上</translation>
 <translation id="883062543841130884">置換</translation>
 <translation id="8830779999439981481">更新を適用するため再起動しています</translation>

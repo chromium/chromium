@@ -965,7 +965,6 @@
 <translation id="4979397965658815378">登录 Google 账号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="4985921635659180565">一旦安排删除文件，便无法取消。</translation>
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
-<translation id="4989065233040279145">选择保存 <ph name="FILENAME" /> 的位置</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，由组织管理。</translation>
 <translation id="4992255726304765516">标签页分组颜色为<ph name="COLOR" /></translation>
 <translation id="5005498671520578047">复制密码</translation>
@@ -1652,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{这项内容已保存到您的 Google 账号 {email}}other{这些内容已保存到您的 Google 账号 {email}}}</translation>
 <translation id="7729458878441927652">如需查看您在其他设备中打开的标签页，请同步您的标签页和历史记录。</translation>
 <translation id="7730020510075123961">不，合并数据</translation>
-<translation id="7730973429297233609">选择您要使用哪个账号来保存“<ph name="FILENAME" />”- <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。仅在该设备上。</translation>
 <translation id="7744192722284567281">遭遇了数据泄露</translation>
 <translation id="7749790401023484470">您未选择任何文字。</translation>
@@ -1836,7 +1834,6 @@
 <translation id="8428045167754449968">市/镇</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
-<translation id="8430694217306051839">选择保存 <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) 的位置</translation>
 <translation id="8434837876193928924">标签页分组详情</translation>
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
 <translation id="8439758443371991593">隐藏“添加到阅读清单”</translation>

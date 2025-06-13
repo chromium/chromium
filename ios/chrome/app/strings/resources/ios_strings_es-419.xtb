@@ -965,7 +965,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4979397965658815378">Accede con tu cuenta de Google para obtener tus favoritos, contraseñas, historial y otras opciones de configuración en todos tus dispositivos</translation>
 <translation id="4985921635659180565">Una vez que se programa la eliminación de un archivo, no se puede cancelar.</translation>
 <translation id="498624032394115435">Cualquier persona que tenga el vínculo puede editar todas las pestañas.</translation>
-<translation id="4989065233040279145">Elige dónde guardar <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, administrada por tu organización.</translation>
 <translation id="4992255726304765516">Color <ph name="COLOR" /> del grupo de pestañas</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
@@ -1652,7 +1651,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7724085059277147439">{count,plural, =1{Elemento guardado en tu Cuenta de Google ({email})}other{Elementos guardados en tu Cuenta de Google ({email})}}</translation>
 <translation id="7729458878441927652">Para ver las pestañas de tus otros dispositivos, sincroniza las pestañas y el historial.</translation>
 <translation id="7730020510075123961">No, combinar datos</translation>
-<translation id="7730973429297233609">Selecciona la cuenta que quieres usar para guardar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Solo en este dispositivo.</translation>
 <translation id="7744192722284567281">Se encontró en una violación de la seguridad de los datos</translation>
 <translation id="7749790401023484470">No seleccionaste texto.</translation>
@@ -1836,7 +1834,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8428045167754449968">Ciudad/pueblo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">Entendido</translation>
-<translation id="8430694217306051839">Elige dónde guardar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Detalles del grupo de pestañas</translation>
 <translation id="8438566539970814960">Mejorar las búsquedas y la navegación</translation>
 <translation id="8439758443371991593">Ocultar la opción Agregar a la Lista de lectura</translation>

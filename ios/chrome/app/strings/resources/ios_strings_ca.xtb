@@ -623,6 +623,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3596414637720633074">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="3602260545951981695">Tria Protecció millorada</translation>
 <translation id="3608436266458100337">Mode de lector</translation>
+<translation id="3610041351087301930">Amaga el lector</translation>
 <translation id="3622175633937495219">Historial de cerques (n'hem trobat <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Pots fer lliscar la vora per anar enrere.</translation>
 <translation id="362709345066740529">Personalitza les targetes, el feed i més aquí</translation>
@@ -964,7 +965,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4979397965658815378">Inicia la sessió amb el compte de Google per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
 <translation id="4985921635659180565">Un cop programada, la supressió d'un fitxer no es pot cancel·lar.</translation>
 <translation id="498624032394115435">Tothom que tingui l'enllaç pot editar totes les pestanyes.</translation>
-<translation id="4989065233040279145">Tria on vols desar <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="4992255726304765516">Grup de pestanyes de color <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
@@ -1064,6 +1064,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5431252637281434233">Es tancarà la teva sessió</translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
 <translation id="5433691172869980887">S'ha copiat el nom d'usuari</translation>
+<translation id="5437480232219631455">Aquí pots obrir Gemini</translation>
 <translation id="5439618055789623719">Has iniciat la sessió com a <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Millor navegació per defecte</translation>
 <translation id="5444892875087332195">Adreces d'interès</translation>
@@ -1650,7 +1651,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7724085059277147439">{count,plural, =1{L'element s'ha desat al teu Compte de Google, {email}}other{Els elements s'han desat al teu Compte de Google, {email}}}</translation>
 <translation id="7729458878441927652">Per veure les pestanyes dels altres dispositius, sincronitza les pestanyes i l'historial.</translation>
 <translation id="7730020510075123961">No, combina les dades</translation>
-<translation id="7730973429297233609">Selecciona el compte que vols utilitzar per desar <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Només en aquest dispositiu.</translation>
 <translation id="7744192722284567281">S'ha trobat en una violació de les dades</translation>
 <translation id="7749790401023484470">No has seleccionat cap text.</translation>
@@ -1834,7 +1834,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8428045167754449968">Ciutat/població</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8428634594422941299">D'acord</translation>
-<translation id="8430694217306051839">Tria on vols desar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Detalls del grup de pestanyes</translation>
 <translation id="8438566539970814960">Millora les cerques i la navegació</translation>
 <translation id="8439758443371991593">Amaga l'opció Afegeix a la llista de lectura</translation>

@@ -623,6 +623,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3596414637720633074">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="3602260545951981695">Valige „Täiustatud kaitse“</translation>
 <translation id="3608436266458100337">Lugejarežiim</translation>
+<translation id="3610041351087301930">Peida lugeja</translation>
 <translation id="3622175633937495219">Otsinguajalugu (leiti <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Tagasiliikumiseks saate pühkida serva.</translation>
 <translation id="362709345066740529">Siin saate kohandada omakaarte, voogu ja muud</translation>
@@ -964,7 +965,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4979397965658815378">Logige sisse oma Google'i kontoga, et näha oma järjehoidjaid, paroole, ajalugu ja muid seadeid kõigis oma seadmetes</translation>
 <translation id="4985921635659180565">Kui fail märgitakse kustutamiseks, ei saa seda tagasi võtta.</translation>
 <translation id="498624032394115435">Igaüks, kellel on link, saab muuta kõiki vahelehti.</translation>
-<translation id="4989065233040279145">Valige koht, kuhu <ph name="FILENAME" /> salvestada</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, haldab teie organisatsioon.</translation>
 <translation id="4992255726304765516">Vahelehegrupi värv: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Parooli kopeerimine</translation>
@@ -1064,6 +1064,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5431252637281434233">Teid logitakse välja</translation>
 <translation id="543338862236136125">Muuda parooli</translation>
 <translation id="5433691172869980887">Kasutajanimi on kopeeritud</translation>
+<translation id="5437480232219631455">Saate Gemini siin avada</translation>
 <translation id="5439618055789623719">Sisse logitud kasutajana <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Vaikimisi parem sirvimine</translation>
 <translation id="5444892875087332195">Järjehoidjad</translation>
@@ -1650,7 +1651,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7724085059277147439">{count,plural, =1{Üksus on salvestatud teie Google’i kontole {email}}other{Üksused on salvestatud teie Google’i kontole {email}}}</translation>
 <translation id="7729458878441927652">Teiste seadmete vahelehtede nägemiseks sünkroonige oma vahelehed ja ajalugu.</translation>
 <translation id="7730020510075123961">Ei, liida andmed</translation>
-<translation id="7730973429297233609">Valige konto, mida soovite faili <ph name="FILENAME" /> (<ph name="FILESIZE" />) salvestamiseks kasutada</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Ainult selles seadmes.</translation>
 <translation id="7744192722284567281">Ilmnes andmetega seotud rikkumises</translation>
 <translation id="7749790401023484470">Te ei valinud mingisugust teksti.</translation>
@@ -1834,7 +1834,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8428045167754449968">Linn</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8428634594422941299">Selge</translation>
-<translation id="8430694217306051839">Valige faili <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) salvestamise koht</translation>
 <translation id="8434837876193928924">Vahelehegrupi üksikasjad</translation>
 <translation id="8438566539970814960">Otsingute ja sirvimise paremaks muutmine</translation>
 <translation id="8439758443371991593">Peida valik Lisa lugemisloendisse</translation>

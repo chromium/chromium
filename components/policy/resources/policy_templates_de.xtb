@@ -106,6 +106,7 @@ Ist die Richtlinie deaktiviert, ist keine Autokorrektur bei Nutzung der physisch
       Sollte diese Richtlinie nicht konfiguriert sein, kommt das Standardprofilverzeichnis zum Einsatz.</translation>
 <translation id="1053981429146436598">Eine Gruppe von Richtlinien zu den Einstellungen für Anfragen an private Netzwerke.  Siehe https://wicg.github.io/private-network-access/.</translation>
 <translation id="1059069692400941670">Import der Standardsuchmaschine bei der ersten Ausführung deaktivieren</translation>
+<translation id="1060020040574767394">Benutzerdefinierte Einstellungen des Wasserzeichens konfigurieren</translation>
 <translation id="1062011392452772310">Remote-Bescheinigung (Remote Attestation) für das Gerät aktivieren</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
 <translation id="1063860513136880926">Wenn die Richtlinie aktiviert ist, können keine Screenshots über Tastenkombinationen oder Erweiterungs-APIs aufgenommen werden. Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind Screenshots zulässig.
@@ -493,6 +494,7 @@ Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtli
 <translation id="1379689277107868399">Ist die Richtlinie auf „DoNotPrompt“ gesetzt oder nicht konfiguriert, fordert <ph name="PRODUCT_NAME" /> den Nutzer nicht automatisch auf, sich noch einmal im Browser zu authentifizieren.
 
 Wenn „PromptInTab“ festgelegt ist und die Authentifizierung des Nutzers abläuft, wird sofort ein neuer Tab mit der Google-Anmeldeseite geöffnet. Dies geschieht nur bei Verwendung von <ph name="CHROME_SYNC_NAME" />.</translation>
+<translation id="1384040387986918863">Füllungsdeckkraft des Texts auf dem Wasserzeichen von 0 (durchsichtig) bis 100 (undurchsichtig).</translation>
 <translation id="1384459581748403878">Referenz: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Mit dieser Richtlinie wird jede URL, die mit einem oder mehreren der angegebenen Muster (im <ph name="URL_BLOCKLIST_POLICY_NAME" />-Filterformat) übereinstimmt, nie vom Browser verworfen.
       Dies gilt für das Verwerfen bei hoher Speicherauslastung und bei der Verwendung des Modus für hohe Effizienz.
@@ -1788,6 +1790,13 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Date
       Nutzer können diese Einstellung weder ändern noch überschreiben.
 
       Hinweis: Durch diese Richtlinie wird allen HTTP- und HTTPS-Anfragen, die an google.com-Domains gesendet werden, der Header „X-GoogApps-Allowed-Domains“ angehängt (siehe https://support.google.com/a/answer/1668854).</translation>
+<translation id="2287414160388710497">Ermöglicht Administratoren, das Erscheinungsbild von Wasserzeichen anzupassen, die durch Regeln zum Schutz vor Datenverlust (Data Loss Prevention, DLP) angewendet werden. Dazu gehört auch das Festlegen der Deckkraft für Füllung und Kontur sowie der Schriftgröße.
+Wenn diese Richtlinie oder einige Werte nicht konfiguriert sind, verwendet Chrome die Standardwerte für Wasserzeichen.
+Diese sind: Füllungsdeckkraft bei 4, Konturdeckkraft bei 6 und Schriftgröße bei 24.
+
+Die „Füllungsdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
+Die „Konturdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
+Der Wert für „Schriftgröße“ wird in Punkten angegeben.</translation>
 <translation id="2288506601233091655">Der Verlauf der Druckaufträge darf nicht gelöscht werden</translation>
 <translation id="2289688405312849186">Prinzipalname des Nutzers: „nutzer@realm“. Der Platzhalter „<ph name="LOGIN_ID_PLACEHOLDER" />“ wird durch den Nutzernamen „nutzer“ ersetzt. Der Platzhalter „<ph name="LOGIN_EMAIL_PLACEHOLDER" />“ wird durch den vollständigen Prinzipalnamen des Nutzers „nutzer@realm“ ersetzt.</translation>
 <translation id="2290270645214705008">Wenn diese Richtlinie deaktiviert ist, kann der Host für den Remote-Zugriff keine eingehenden Verbindungen annehmen.  Diese Richtlinien wirkt sich nicht auf die Remote-Unterstützung aus.
@@ -2527,6 +2536,7 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="288448261660192095">Wenn diese Richtlinie aktiviert ist, werden die physischen Ein- und Ausgabegeräte des Hosts für den Remote-Zugriff bei bestehender Remote-Verbindung deaktiviert.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, können lokale und Remote-Nutzer mit dem Host interagieren, sofern dieser freigegeben ist.</translation>
+<translation id="288463102030083286">Konfiguration des benutzerdefinierten Wasserzeichens</translation>
 <translation id="2884765974461416016">Freigabe zwischen Android-Apps und Webanwendungen deaktivieren.</translation>
 <translation id="2886215882246310669">Die Richtlinie legt fest, ob <ph name="PRODUCT_OS_NAME" /> erlaubt, dass neue Family Link-Nutzerkonten zu diesem Gerät hinzugefügt werden können.
       Sie ist nur in Verbindung mit <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> nützlich. Sie erlaubt neben den in der Zulassungsliste festgelegten Konten auch Family Link-Konten.
@@ -3137,6 +3147,7 @@ Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Outl
 <translation id="3278042410658310805">Gesprochenes Feedback auf dem Anmeldebildschirm deaktivieren und dem Nutzer erlauben, es vorübergehend zu aktivieren</translation>
 <translation id="328347261792478720">Der Browser zeigt standardmäßig für den Nutzer personalisierte Empfehlungen zu Medien an. Wenn diese Richtlinie deaktiviert ist, sind diese Empfehlungen für den Nutzer nicht sichtbar. Wenn sie aktiviert oder nicht konfiguriert ist, werden dem Nutzer die Empfehlungen zu Medien angezeigt.</translation>
 <translation id="3284094172359247914">Verwendung der WebUSB API steuern</translation>
+<translation id="3285231260918855067">Konturdeckkraft des Texts auf dem Wasserzeichen von 0 (durchsichtig) bis 100 (undurchsichtig).</translation>
 <translation id="3286159327013237833">„Automatischer Klick“ auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="3288595667065905535">Release-Kanal</translation>
 <translation id="3291940794983537008">Einstellungen für generative KI-Funktionen in den Entwicklertools</translation>
@@ -8248,6 +8259,7 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
 <translation id="6796215185873669533">Standardmäßig Browsereinstellungen für die Hauptversion im User-Agent-String verwenden.</translation>
 <translation id="6800181452282128474">Keine Anfragen an Quirks Server stellen</translation>
+<translation id="6801739506172328815">Schriftgröße des Texts auf dem Wasserzeichen in Punkten.</translation>
 <translation id="6802412020718145539">Der PDF-Viewer verwendet die OOPIF-Architektur.</translation>
 <translation id="68031099365512050">Audiostatus melden</translation>
 <translation id="680356860463873420">Nutzern nicht erlauben, PluginVm zu verwenden</translation>

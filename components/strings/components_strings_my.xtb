@@ -1564,6 +1564,7 @@
 <translation id="3641116835972736297">အမေရိကန်ဘောလုံး</translation>
 <translation id="3642196846309122856">သင့်ဖိုင်များကို ထပ်မံ ဒေါင်းလုဒ်လုပ်ကြည့်ပါ</translation>
 <translation id="3642638418806704195">အပလီကေးရှင်း-</translation>
+<translation id="3644768007456662469">ငွေပေးချေမှုဖိုင် သင်္ကေတ</translation>
 <translation id="3646643500201740985">ကြော်ငြာစွမ်းဆောင်ရည် မည်မျှကောင်းကြောင်း တိုင်းတာခြင်း</translation>
 <translation id="3647286794400715637">URL လိုင်း တစ်ခုစီတွင် URL ၁ ခုမှ ၂ ခုအထိ ပါဝင်ရမည်။</translation>
 <translation id="3647400963805615193">Chrome အကြံပြုချက်ပယ်ရန် ခလုတ်၊ Enter ခလုတ်နှိပ်၍ ပယ်ပါ၊ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2101,11 +2102,13 @@
 <translation id="4530347922939905757">မိုဘိုင်းမက်ဆေ့ဂျ်</translation>
 <translation id="4531477351494678589">ပကတိအသွင် ကတ်နံပါတ်-</translation>
 <translation id="4535523368173457420">ဤရှာဖွေရေး အင်ဂျင်များသည် သင့်ဒေသတွင် လူကြိုက်များပြီး ၎င်းတို့ကို ကျပန်းပြထားပါသည်</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{ပြီးခဲ့သော ၁ နှစ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော {NUM_YEARS} နှစ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="4541810033354695636">လွန်ကဲပကတိအသွင်</translation>
 <translation id="4542971377163063093">ဗန်း ၆</translation>
 <translation id="4543072026714825470">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင်၏ကတ်နှင့် ငွေတောင်းခံလွှာပို့သော လိပ်စာကို သင့် Google Account တွင် သိမ်းထားပါ</translation>
 <translation id="454441086898495030"><ph name="SET" /> တွင် ထည့်မလား။</translation>
 <translation id="4546730006268514143">လွှဲပြောင်းမှု အချိန်ကုန်သွားသည်</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{ပြီးခဲ့သော ၁ ရက်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော {NUM_DAYS} ရက်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">သင်သည် စကားဝှက်ဖြည့်ရန်အတွက် ဖန်သားပြင်လော့ခ်ကို အသုံးပြုနေသည်</translation>
 <translation id="4557573143631562971">အိမ်အာမခံ</translation>
@@ -2899,6 +2902,7 @@
 <translation id="5938153366081463283">ပကတိအသွင်ကတ် ထည့်ရန်</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">ဤအချက်အလက်ကို Trustpilot၊ ScamAdviser၊ Google စသည်တို့ကဲ့သို့သော တစ်သီးပုဂ္ဂလ သုံးသပ်ချက်ဝဘ်ဆိုက်များမှ ရရှိပါသည်။ အနှစ်ချုပ်များကို AI ဖြင့် ပြုလုပ်ထားသည်။</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{ပြီးခဲ့သော ၁ မိနစ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော {NUM_MINS} မိနစ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="5944297261866530437">အထည် (အလွန်တောက်ပြောင်)</translation>
 <translation id="5950901984834744590">သင်တုန်းဓား၊ အမွေးရိတ်စက်</translation>
 <translation id="5951495562196540101">အသုံးပြုသူ အကောင့်ဖြင့် စာရင်းသွင်း၍ မရပါ (ပက်ကေ့ချ်လုပ်ထားသော လိုင်စင်ကို ရနိုင်သည်)။</translation>
@@ -4059,6 +4063,7 @@
 <translation id="7894280532028510793">စာလုံးပေါင်း မှန်ကန်ပါက <ph name="BEGIN_LINK" />ကွန်ရက် အမှားရှာဖွေမှုများပြုလုပ်ရန် ကြိုးစားကြည့်ပါ<ph name="END_LINK" />။</translation>
 <translation id="7901831439558593470">၇ x ၉ လက်မ စာအိတ်</translation>
 <translation id="7905064834449738336">သင်စကားဝှက်သုံးသောအခါ ၎င်းကို အွန်လိုင်းတွင် ထုတ်ဝေထားခြင်း ရှိ၊ မရှိ Chromium က သတိပေးပါသည်။ ဤသို့စစ်ဆေးသည့်အခါ သင်၏စကားဝှက်နှင့် အသုံးပြုသူအမည်များကို အသွင်ဝှက်ထားသောကြောင့် Google အပါအဝင် မည်သူမျှ ၎င်းတို့ကို ဖတ်၍မရပါ။</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{ပြီးခဲ့သော ၁ နာရီက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော {NUM_HOURS} နာရီက ပြုလုပ်ထားသည်}}</translation>
 <translation id="7908648876066812348">ပကတိအသွင်ကတ်ကို ဖွင့်နေသည်</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ ‘တဘ်’ နှိပ်ပြီးနောက် Enter နှိပ်၍ ဆက်တင်များရှိ Chrome လုံခြုံရေး စစ်ဆေးမှု စာမျက်နှာသို့ သွားပါ</translation>
 <translation id="791107458486222637">ရလဒ် ပြန်လုပ်နေသည်</translation>
@@ -4194,6 +4199,7 @@
 <translation id="8134058435519644366">လူသစ်စုဆောင်းမှုနှင့် ဝန်ထမ်းခန့်အပ်မှု</translation>
 <translation id="8135546115396015134">ဘယ်ခလုတ်</translation>
 <translation id="8137456439814903304">စွမ်းအင်၊ လျှပ်စစ်မီး ဝန်ဆောင်မှု</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော ၁ လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော {NUM_MONTHS} လက ပြုလုပ်ထားသည်}}</translation>
 <translation id="8148608574971654810">PDF ဗားရှင်း-</translation>
 <translation id="8149426793427495338">သင့်ကွန်ပျူတာ အိပ်သွားပါသည်။</translation>
 <translation id="8150722005171944719"><ph name="URL" />မှာ ရှိသော ဖိုင်ကို ဖတ်မရပါ။ ၎င်းကို ရွှေ့ပစ်ခဲ့တာ၊ ဖယ်ရှားပစ်ခဲ့တာ ဖြစ်နိုင်သည်၊ သို့မဟုတ် ဖိုင် ခွင်ပြုချက်များက ရယူမှုကို ဟန့်တားနေတာ ဖြစ်နိုင်သည်။</translation>

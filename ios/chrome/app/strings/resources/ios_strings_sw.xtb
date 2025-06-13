@@ -965,7 +965,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4979397965658815378">Ingia katika akaunti kwa kutumia Akaunti yako ya Google ili upate alamisho, manenosiri, historia na mipangilio mingine kwenye vifaa vyako vyote.</translation>
 <translation id="4985921635659180565">Faili ikisharatibiwa kufutwa, haiwezi kuachishwa.</translation>
 <translation id="498624032394115435">Yeyote aliye na kiungo anaweza kubadilisha vichupo vyote.</translation>
-<translation id="4989065233040279145">Chagua utakapohifadhi <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, inadhibitiwa na shirika lako.</translation>
 <translation id="4992255726304765516">Rangi ya <ph name="COLOR" /> ya kikundi cha vichupo</translation>
 <translation id="5005498671520578047">Nakili nenosiri</translation>
@@ -1652,7 +1651,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7724085059277147439">{count,plural, =1{Kipengee kimehifadhiwa kwenye Akaunti yako ya Google, {email}}other{Vipengee vimehifadhiwa kwenye Akaunti yako ya Google, {email}}}</translation>
 <translation id="7729458878441927652">Ili uone vichupo kutoka kwenye vifaa vyako vingine, sawazisha vichupo vyako na historia.</translation>
 <translation id="7730020510075123961">Hapana, unganisha data</translation>
-<translation id="7730973429297233609">Chagua akaunti unayotaka kutumia ili uhifadhi <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Kwenye kifaa hiki pekee.</translation>
 <translation id="7744192722284567281">Limepatikana kwenye tukio la ufichuzi haramu wa data</translation>
 <translation id="7749790401023484470">Hujachagua maandishi yoyote.</translation>
@@ -1836,7 +1834,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8428045167754449968">Jiji / Mji</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8428634594422941299">Nimeelewa</translation>
-<translation id="8430694217306051839">Chagua utakapohifadhi <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Maelezo ya kikundi cha vichupo</translation>
 <translation id="8438566539970814960">Boresha utafutaji na kuvinjari</translation>
 <translation id="8439758443371991593">Ficha Chaguo la Weka kwenye Orodha ya Kusoma</translation>

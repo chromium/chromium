@@ -2100,11 +2100,13 @@
 <translation id="4530347922939905757">短訊</translation>
 <translation id="4531477351494678589">虛擬卡號：</translation>
 <translation id="4535523368173457420">這些是你所在地區最普遍使用的搜尋引擎，以隨機順序顯示</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 年前建立}other{{NUM_YEARS} 年前建立}}</translation>
 <translation id="4541810033354695636">擴張實境</translation>
 <translation id="4542971377163063093">紙匣 6</translation>
 <translation id="4543072026714825470">只要將付款卡和帳單地址儲存至 Google 帳戶中，下次就能更快完成付款程序</translation>
 <translation id="454441086898495030">要加到「<ph name="SET" />」嗎？</translation>
 <translation id="4546730006268514143">傳輸逾時</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 日前建立}other{{NUM_DAYS} 日前建立}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">您正在使用螢幕鎖定功能填入密碼</translation>
 <translation id="4557573143631562971">家居保險</translation>
@@ -2898,6 +2900,7 @@
 <translation id="5938153366081463283">新增虛擬卡</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">資料來自 Trustpilot、ScamAdviser 和 Google 等獨立評論網站。摘要由 AI 生成。</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 分鐘前建立}other{{NUM_MINS} 分鐘前建立}}</translation>
 <translation id="5944297261866530437">布料 (高光面)</translation>
 <translation id="5950901984834744590">剃刀和剃鬚刀</translation>
 <translation id="5951495562196540101">無法使用消費者帳戶註冊 (有可用套裝授權)。</translation>
@@ -4059,6 +4062,7 @@
 <translation id="7894280532028510793">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">7 x 9 吋信封</translation>
 <translation id="7905064834449738336">如果你使用的密碼已在網上發佈，Chromium 就會發出警告。核對時，你的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 小時前建立}other{{NUM_HOURS} 小時前建立}}</translation>
 <translation id="7908648876066812348">打開緊虛擬卡</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以去設定入面嘅 Chrome 安全檢查頁面</translation>
 <translation id="791107458486222637">正在取消復原結果</translation>
@@ -4193,6 +4197,7 @@
 <translation id="8134058435519644366">人才招募和人力配備</translation>
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8137456439814903304">能源和公用事業</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 個月前建立}other{{NUM_MONTHS} 個月前建立}}</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入休眠狀態。</translation>
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已被移除或移動位置，或者檔案權限為禁止存取。</translation>

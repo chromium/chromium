@@ -1562,6 +1562,7 @@
 <translation id="3641116835972736297">美式足球</translation>
 <translation id="3642196846309122856">再次嘗試下載檔案</translation>
 <translation id="3642638418806704195">應用程式：</translation>
+<translation id="3644768007456662469">「付款項目」圖示</translation>
 <translation id="3646643500201740985">評估廣告成效</translation>
 <translation id="3647286794400715637">每個網址字串項目都必須包含 1 到 2 個網址。</translation>
 <translation id="3647400963805615193">關閉 Chrome 提示的按鈕，按下 Enter 鍵即可關閉，<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2098,11 +2099,13 @@
 <translation id="4530347922939905757">簡訊</translation>
 <translation id="4531477351494678589">虛擬卡號：</translation>
 <translation id="4535523368173457420">這些是你所在地區最普遍使用的搜尋引擎，以隨機順序顯示</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 年前建立}other{{NUM_YEARS} 年前建立}}</translation>
 <translation id="4541810033354695636">擴增實境</translation>
 <translation id="4542971377163063093">紙匣 6</translation>
 <translation id="4543072026714825470">只要將卡片與帳單地址儲存到 Google 帳戶中，下次就能更快完成付款程序</translation>
 <translation id="454441086898495030">要新增至「<ph name="SET" />」嗎？</translation>
 <translation id="4546730006268514143">傳輸作業逾時</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 天前建立}other{{NUM_DAYS} 天前建立}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">你正在使用螢幕鎖定功能填入密碼</translation>
 <translation id="4557573143631562971">住宅保險</translation>
@@ -2896,6 +2899,7 @@
 <translation id="5938153366081463283">新增虛擬卡片</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">這些資訊來自 Trustpilot、ScamAdviser、Google 等獨立評論網站，並由 AI 技術生成摘要。</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 分鐘前建立}other{{NUM_MINS} 分鐘前建立}}</translation>
 <translation id="5944297261866530437">織品 (高光面)</translation>
 <translation id="5950901984834744590">剃刀與刮鬍刀</translation>
 <translation id="5951495562196540101">無法透過個人帳戶註冊 (有封裝授權)。</translation>
@@ -4057,6 +4061,7 @@
 <translation id="7894280532028510793">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行網路診斷<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
 <translation id="7905064834449738336">如果你使用的密碼已被他人公布在網路上，Chromium 就會發出警告。在進行這項檢查時，系統會加密你的密碼和使用者名稱，因此任何人 (包括 Google) 都無法讀取。</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 小時前建立}other{{NUM_HOURS} 小時前建立}}</translation>
 <translation id="7908648876066812348">正在啟用虛擬卡片</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，在設定中按下 Tab 鍵再按下 Enter 鍵，即可前往 Chrome 安全檢查頁面</translation>
 <translation id="791107458486222637">重新產生結果</translation>
@@ -4191,6 +4196,7 @@
 <translation id="8134058435519644366">人才招募與人力派遣</translation>
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8137456439814903304">能源與公用事業</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 個月前建立}other{{NUM_MONTHS} 個月前建立}}</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入睡眠模式。</translation>
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已遭移除或移動位置，或者檔案權限為禁止存取。</translation>

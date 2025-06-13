@@ -106,6 +106,7 @@ Als je dit beleid niet toepast, is de functie voor autocorrectie op het fysieke 
       Als je deze instelling niet instelt, wordt de standaard profieldirectory gebruikt.</translation>
 <translation id="1053981429146436598">Een groep beleidsregels voor instellingen voor privénetwerkverzoeken.  Zie https://wicg.github.io/private-network-access/.</translation>
 <translation id="1059069692400941670">Import van standaard zoekmachine bij eerste uitvoering uitzetten</translation>
+<translation id="1060020040574767394">Aangepaste watermerkinstellingen configureren</translation>
 <translation id="1062011392452772310">Externe bevestiging van apparaat aanzetten</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1063860513136880926">Als je het beleid toepast, zijn screenshots die worden gemaakt met sneltoetsen of extensie-API's niet toegestaan. Als je het beleid niet toepast of niet instelt, zijn screenshots toegestaan.
@@ -492,6 +493,7 @@ Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFA
 <translation id="1379689277107868399">Als je dit beleid instelt op DoNotPrompt of niet instelt, vraagt <ph name="PRODUCT_NAME" /> de gebruiker niet automatisch om opnieuw te verifiëren voor de browser.
 
 Als je dit beleid instelt op PromptInTab, wordt na het verlopen van de verificatie van de gebruiker meteen een nieuw tabblad met de inlogpagina van Google geopend. Dit gebeurt alleen als je <ph name="CHROME_SYNC_NAME" /> gebruikt.</translation>
+<translation id="1384040387986918863">Ondoorzichtigheid van opvulling van de watermerktekst, van 0 (transparant) tot 100 (ondoorzichtig).</translation>
 <translation id="1384459581748403878">Referentie: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Dit beleid zorgt ervoor dat elke URL die overeenkomt met een of meer patronen uit het beleid (met de filterindeling <ph name="URL_BLOCKLIST_POLICY_NAME" />), nooit door de browser wordt verwijderd.
       Dit is van toepassing op geheugenbelasting en weggooien in de modus voor hoge efficiëntie.
@@ -1100,6 +1102,15 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
       De lijst wordt in dezelfde volgorde getoond in het gedeelte Talen rangschikken op basis van je voorkeur op chrome://settings/languages. Gebruikers kunnen talen die door het beleid zijn ingesteld niet verwijderen of anders indelen. Ze kunnen wel extra talen toevoegen onder de talen die door het beleid zijn ingesteld. Gebruikers hebben ook de volledige controle over de UI-taal van de browser en instellingen voor vertaling/spellingcontrole, tenzij die door ander beleid worden afgedwongen.
 
       Als je het beleid niet instelt, kunnen gebruikers de hele lijst met voorkeurstalen aanpassen.</translation>
+<translation id="180243155313050440">Dit beleid beheert een aangepast label waarmee een beheerde browser wordt aangegeven. Voor beheerde browsers wordt dit label getoond in een beheerdisclaimer in de voettekst op de pagina Nieuw tabblad. Het aangepaste label wordt niet vertaald.
+
+Als je dit beleid toepast, worden tekenreeksen van meer dan 16 tekens afgekapt met een beletselteken. Gebruik geen uitgebreide namen.
+
+Dit beleid wordt alleen toegepast voor beheerde browsers. Het heeft dus geen effect voor beheerde gebruikers in onbeheerde browsers.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="1803646570632580723">Lijst met vastgezette apps om in het opstartprogramma te tonen</translation>
 <translation id="1808715480127969042">Cookies blokkeren op deze sites</translation>
 <translation id="1810261428246410396">Het gebruik van instant tethering toestaan</translation>
@@ -1787,6 +1798,13 @@ Als je het beleid niet toepast of niet instelt, kunnen gebruikers bestanden over
       Gebruikers kunnen deze instelling niet wijzigen of overschrijven.
 
       Opmerking: Door dit beleid wordt de kop 'X-GoogApps-Allowed-Domains' toegevoegd aan alle HTTP- en HTTPS-verzoeken voor alle google.com-domeinen, zoals beschreven in https://support.google.com/a/answer/1668854.</translation>
+<translation id="2287414160388710497">Hiermee kunnen beheerders het uiterlijk van watermerken aanpassen die worden toegepast door regels voor Gegevensverlies voorkomen (Data Loss Prevention, DLP). Dit omvat het instellen van de ondoorzichtigheid van de opvulling/omtrek en het definiëren van de lettergrootte.
+Als je dit beleid of bepaalde waarden niet instelt, gebruikt Chrome het standaardgedrag voor watermerken.
+De standaardwaarden zijn: ondoorzichtigheid van opvulling op 4, ondoorzichtigheid van omtrek op 6 en lettergrootte op 24.
+
+De ondoorzichtigheid van de opvulling is een percentage van 0 (volledig transparant) tot 100 (volledig ondoorzichtig).
+De ondoorzichtigheid van de omtrek is een percentage van 0 (volledig transparant) tot 100 (volledig ondoorzichtig).
+De lettergrootte wordt aangegeven in punten.</translation>
 <translation id="2288506601233091655">Niet toestaan dat de afdrukgeschiedenis wordt verwijderd</translation>
 <translation id="2289688405312849186">Hoofdaccount van gebruiker: 'user@realm'. De tijdelijke aanduiding <ph name="LOGIN_ID_PLACEHOLDER" /> wordt vervangen door de gebruikersnaam 'user'. De tijdelijke aanduiding <ph name="LOGIN_EMAIL_PLACEHOLDER" /> wordt vervangen door het volledige hoofdaccount 'user@realm'.</translation>
 <translation id="2290270645214705008">Als dit beleid niet is toegepast, kan de hostservice voor externe toegang niet worden gestart of ingesteld om inkomende verbindingen te accepteren.  Dit beleid heeft geen effect op scenario's voor support op afstand.
@@ -2525,6 +2543,7 @@ Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="288448261660192095">Als je dit beleid toepast, worden de fysieke invoer- en uitvoerapparaten van hosts voor externe toegang uitgezet tijdens een externe verbinding.
 
       Als je het beleid niet toepast of niet instelt, kunnen zowel lokale als externe gebruikers met de host communiceren terwijl deze wordt gedeeld.</translation>
+<translation id="288463102030083286">Aangepaste watermerkconfiguratie</translation>
 <translation id="2884765974461416016">Delen van Android-apps naar web-apps uitzetten.</translation>
 <translation id="2886215882246310669">Bepaalt of <ph name="PRODUCT_OS_NAME" /> toestaat dat er nieuwe Family Link-gebruikersaccounts worden toegevoegd aan het apparaat.
       Dit beleid is alleen nuttig in combinatie met <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Met dit beleid worden ook andere Family Link-accounts toegestaan dan de accounts die zijn gedefinieerd in de toelatingslijst.
@@ -3136,6 +3155,7 @@ Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Outlook n
 <translation id="3278042410658310805">Gesproken feedback op het inlogscherm uitzetten en de gebruiker toestaan dit tijdelijk aan te zetten</translation>
 <translation id="328347261792478720">De browser toont standaard media-aanbevelingen die zijn gepersonaliseerd voor de gebruiker. Als je dit beleid niet toepast, ziet de gebruiker deze aanbevelingen niet. Als je dit beleid toepast of niet instelt, ziet de gebruiker de media-aanbevelingen.</translation>
 <translation id="3284094172359247914">Gebruik van de WebUSB API beheren</translation>
+<translation id="3285231260918855067">Ondoorzichtigheid van de omtrek van de watermerktekst, van 0 (transparant) tot 100 (ondoorzichtig).</translation>
 <translation id="3286159327013237833">Automatisch klikken op het inlogscherm aanzetten</translation>
 <translation id="3288595667065905535">Releasekanaal</translation>
 <translation id="3291940794983537008">Instellingen voor generatieve AI-functies van DevTools</translation>
@@ -4467,6 +4487,15 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="4297483555396496700">Gebruikers mogen het releasekanaal van het apparaat alleen wijzigen als je dit beleid hebt ingesteld op True. Als je dit beleid hebt ingesteld op False of niet hebt ingesteld, mogen gebruikers het kanaal niet wijzigen.
 
 Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alleen effect als je <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> hebt ingesteld op False.</translation>
+<translation id="4297774573405304484">Een URL naar een afbeelding die wordt gebruikt als zakelijke badge voor een beheerde browser. De URL moet naar een afbeelding verwijzen.
+
+We raden je aan het favicon (bijvoorbeeld https://www.google.com/favicon.ico) of een icoon van minimaal 48 x 48 pixels te gebruiken.
+
+Dit beleid wordt alleen toegepast voor beheerde browsers. Het heeft dus geen effect voor beheerde gebruikers in onbeheerde browsers.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4301478455179579340">Ondertekening van systeemeigen app bij installatie van progressive web-app</translation>
 <translation id="4303167373847512281">Ontwikkelaarsmodus toestaan</translation>
 <translation id="4307116964468610577">Het beleid verlengt de bruikbare levensduur van de systeembatterijen door ze maar één keer per dag volledig op te laden. De rest van de dag worden de batterijen in een lagere oplaadstatus gehouden, wat beter is voor opslag, ook als het systeem is aangesloten op een voedingsbron.
@@ -8214,6 +8243,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6796215185873669533">Standaard browserinstellingen gebruiken voor tekenreeksversie van User-agent.</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
+<translation id="6801739506172328815">Lettergrootte van de watermerktekst in punten.</translation>
 <translation id="6802412020718145539">De pdf-viewer gebruikt de OOPIF-architectuur.</translation>
 <translation id="68031099365512050">Audiostatus rapporteren</translation>
 <translation id="680356860463873420">Gebruikers niet toestaan een PluginVm te gebruiken</translation>

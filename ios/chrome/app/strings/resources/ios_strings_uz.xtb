@@ -965,7 +965,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4979397965658815378">Xatcho‘plar, tarix, parollar va boshqa sozlamalarni barcha qurilmalaringizda sinxronlash uchun Google hisobingizga kiring.</translation>
 <translation id="4985921635659180565">Faylning oʻchirilishi reja qilinganidan keyin bekor qilinmaydi.</translation>
 <translation id="498624032394115435">Havolaga ega har kim barcha varaqlarni tahrirlashi mumkin.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> uchun saqlash joyini tanlang</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> hisobi tashkilot boshqaruvida.</translation>
 <translation id="4992255726304765516">Varaqlar guruhi rangi: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Parolni nusxalash</translation>
@@ -1652,7 +1651,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7724085059277147439">{count,plural, =1{Obyekt Google hisobingizga ({email}) saqlangan}other{Obyektlar Google hisobingizga ({email}) saqlangan}}</translation>
 <translation id="7729458878441927652">Boshqa qurilmalarda ochilgan sahifalarni koʻrish uchun varaqlar va tarixni sinxronlang.</translation>
 <translation id="7730020510075123961">Yoʻq, birlashtirilmasin</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> (<ph name="FILESIZE" />) faylini saqlash uchun foydalanmoqchi boʻlgan hisobni tanlang</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Faqat shu qurilmada.</translation>
 <translation id="7744192722284567281">Oshkor qilingan axborotlarda bor</translation>
 <translation id="7749790401023484470">Matn tanlang.</translation>
@@ -1836,7 +1834,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8428045167754449968">Shahar / tuman</translation>
 <translation id="8428213095426709021">Sozlamalar</translation>
 <translation id="8428634594422941299">OK</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) uchun saqlash joyini tanlang</translation>
 <translation id="8434837876193928924">Varaqlar guruhi tafsilotlari</translation>
 <translation id="8438566539970814960">Sahifalarni kezish va qidiruvni yaxshilash</translation>
 <translation id="8439758443371991593">Saqlangan sahifalarga kiritishni berkitish</translation>

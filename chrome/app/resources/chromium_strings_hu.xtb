@@ -342,6 +342,7 @@
 <translation id="5775198138441669627">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="SETTINGS_LINK" /> törölje a fiókjában lévő Chromium-adatokat.</translation>
 <translation id="5800158606660203929">Személyre szabhatja a Chromium működését. Beállíthatja a Chromiumot alapértelmezettként.</translation>
 <translation id="5809516625706423866">Nem lehet csatlakozni az internethez. „HTTP 401 Unauthorized” hiba. Ellenőrizze a proxybeállításokat.</translation>
+<translation id="5817952762723416573">A Chromium V8 motorjával felgyorsítja a webhelyeket, de kissé kevésbé ellenállóvá teszi a Chromiumot a támadásokkal szemben. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="5821520528363214608">Ha Chromium-adatokat szeretne használni és tárolni Google-fiókjában, frissítse a Chromiumot</translation>
 <translation id="5824893331272123205">Nem sikerült betölteni ezt a panelt. Próbálja újra.</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
@@ -429,6 +430,7 @@
 <translation id="6729124504294600478">A személyre szabás és az egyéb funkciók használatához vegye fel a Chromiumot az Internetes és alkalmazástevékenységek közé, valamint az összekapcsolt Google-szolgáltatásokba</translation>
 <translation id="6734291798041940871">A Chromium már telepítve van az összes felhasználó számára a számítógépen.</translation>
 <translation id="674245979920622322">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="COUNT" />.</translation>
+<translation id="6751374565094704799">A Chromium V8 motorjával felgyorsítja a webhelyeket, de kissé kevésbé ellenállóvá teszi a Chromiumot a támadásokkal szemben. Ez a beállítás be van kapcsolva.</translation>
 <translation id="67706546131546258">A Chromium a fájl ellenőrzését javasolja, mert veszélyes lehet.</translation>
 <translation id="6779406956731413166">A ChromiumOS létrejöttéhez további <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak.</translation>
 <translation id="6831043979455480757">Fordítás</translation>

@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{pred 1 dnevom}one{pred # dnevom}two{pred # dnevoma}few{pred # dnevi}other{pred # dnevi}}</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1243314992276662751">Prenesi</translation>
+<translation id="1253734725326687145">Ciljno območje dotika je premaknjeno v zgornji desni kot. Dotaknite se tukaj.</translation>
 <translation id="1266864766717917324">Ni bilo mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Poskusite deliti besedilo v manjših kosih.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="24452542372838207">Razširi obvestilo</translation>
 <translation id="2445449901874883781">Uporabi veliko gostoto</translation>
+<translation id="2448407890032181691">Ciljno območje dotika je premaknjeno v spodnji desni kot. Dotaknite se tukaj.</translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2497284189126895209">Vse datoteke</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -140,6 +142,7 @@
 <translation id="5606865426897221650">Tabulatorka</translation>
 <translation id="5613020302032141669">Puščica levo</translation>
 <translation id="5633029987065897167">Prazno</translation>
+<translation id="5651438382973553530">Ciljno območje dotika je premaknjeno v spodnji levi kot. Dotaknite se tukaj.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# min}two{# min}few{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktivna danes}=1{Aktivna pred 1 dnevom}one{Aktivna pred # dnevom}two{Aktivna pred # dnevoma}few{Aktivna pred # dnevi}other{Aktivna pred # dnevi}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dan in }one{# dan in }two{# dneva in }few{# dni in }other{# dni in }}</translation>

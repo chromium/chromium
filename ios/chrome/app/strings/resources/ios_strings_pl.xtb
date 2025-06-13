@@ -965,7 +965,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4979397965658815378">Zaloguj się na konto Google, by korzystać z zakładek, haseł, historii i innych ustawień na wszystkich urządzeniach</translation>
 <translation id="4985921635659180565">Zaplanowanego usunięcia pliku nie można anulować.</translation>
 <translation id="498624032394115435">Każda osoba, która ma link, może edytować wszystkie karty.</translation>
-<translation id="4989065233040279145">Wybierz, gdzie zapisać plik <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, konto zarządzane przez Twoją organizację.</translation>
 <translation id="4992255726304765516">Kolor grupy kart: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Skopiuj hasło</translation>
@@ -1652,7 +1651,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7724085059277147439">{count,plural, =1{Element został zapisany na Twoim koncie Google {email}}few{Elementy zostały zapisane na Twoim koncie Google {email}}many{Elementy zostały zapisane na Twoim koncie Google {email}}other{Elementy zostały zapisane na Twoim koncie Google {email}}}</translation>
 <translation id="7729458878441927652">Aby zobaczyć karty z innych urządzeń, zsynchronizuj karty i historię.</translation>
 <translation id="7730020510075123961">Nie, scal dane</translation>
-<translation id="7730973429297233609">Wybierz konto, którego chcesz użyć do zapisania pliku <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Tylko na tym urządzeniu.</translation>
 <translation id="7744192722284567281">Doszło do naruszenia bezpieczeństwa danych</translation>
 <translation id="7749790401023484470">Nie wybrano żadnego tekstu.</translation>
@@ -1836,7 +1834,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8428045167754449968">Miejscowość</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8428634594422941299">OK</translation>
-<translation id="8430694217306051839">Wybierz, gdzie zapisać plik <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Szczegóły grupy kart</translation>
 <translation id="8438566539970814960">Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="8439758443371991593">Ukryj opcję Dodaj do listy Do przeczytania</translation>

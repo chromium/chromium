@@ -5981,7 +5981,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5186381005592669696">Personnalisez la langue d'affichage pour les applis compatibles</translation>
 <translation id="5186788525428341874">Vous pouvez utiliser cette clé d'accès pour vous connecter plus rapidement sur tous vos appareils. Elle sera enregistrée dans le Gestionnaire de mots de passe de Google pour <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Installer la page en tant qu'appli...</translation>
-<translation id="5187671830619031922">Ajouter l'onglet à la vue fractionnée</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Partagé par <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Utiliser la localisation. Permettez aux applis, sites et services ChromeOS et Android autorisés à accéder à la position d'utiliser celle de votre appareil. La précision de la localisation permet aux applis et services Android d'obtenir une localisation plus précise. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par votre appareil afin d'obtenir la localisation des signaux sans fil à l'aide du crowdsourcing. Ces informations sont utilisées sans vous identifier pour améliorer la précision de la localisation et les services basés sur la localisation, ainsi que pour améliorer, fournir et gérer les services de Google en fonction des intérêts légitimes de Google et de tiers, afin de répondre aux besoins des utilisateurs. <ph name="BEGIN_LINK1" />En savoir plus sur l'utilisation de la localisation<ph name="END_LINK1" /></translation>
@@ -9008,6 +9007,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7387951778417998929">Pour utiliser un autre moteur de recherche que celui défini par défaut, saisissez son raccourci dans la barre d'adresse suivi du raccourci clavier de votre choix. Vous pouvez aussi modifier votre moteur de recherche par défaut ici.</translation>
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent analyser les performances des annonces. Ce paramètre est désactivé.</translation>
 <translation id="738903649531469042">Ajouter l'onglet à la liste de lecture</translation>
+<translation id="7389615853658756494">Modifier sur le site</translation>
 <translation id="7392118418926456391">Échec de l'analyse antivirus.</translation>
 <translation id="7392915005464253525">&amp;Rouvrir la fenêtre fermée</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 élément copié}one{{COUNT} élément copié}other{{COUNT} éléments copiés}}</translation>
@@ -9137,6 +9137,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7474043404939621342">Personnaliser votre barre d'outils</translation>
 <translation id="747459581954555080">Tout restaurer</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Retour immédiat requis}one{Retourner le <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jour}other{Retourner le <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jours}}</translation>
+<translation id="747557463733380256">Découvrir comment votre navigateur est géré</translation>
 <translation id="7475671414023905704">URL de mot de passe perdu Netscape</translation>
 <translation id="7475742997309661417">ChromeVox, le lecteur d'écran sur ChromeOS, est principalement utilisé par des personnes aveugles ou malvoyantes pour lire du texte à l'écran avec un synthétiseur vocal ou une plage braille. Appuyez sur les deux boutons de volume pendant cinq secondes pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
 <translation id="7476454130948140105">Batterie trop faible pour la mise à jour (<ph name="BATTERY_PERCENT" /> %)</translation>
@@ -10286,6 +10287,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8265018477030547118">Uniquement sur cet appareil</translation>
 <translation id="826511437356419340">Mode de présentation de la fenêtre activé. Balayez l'écran pour naviguer, ou appuyez sur Tabulation si vous utilisez un clavier.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Votre fenêtre de navigation privée ne se rouvrira pas après le redémarrage}one{Vous avez {COUNT} fenêtre de navigation privée ouverte. Elle ne se rouvrira pas après le redémarrage}other{Les {COUNT} fenêtres de navigation privée ne se rouvriront pas après le redémarrage}}</translation>
+<translation id="8266430295499893285">Vous devez valider votre identité avant d'accéder à vos mots de passe</translation>
 <translation id="8266947622852630193">Tous les modes de saisie</translation>
 <translation id="8267539814046467575">Ajouter une imprimante</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Ces informations d'ordre général concernent cet appareil et l'usage qui en est fait (comme le niveau de batterie, les erreurs, et l'activité du système et des applications). Elles serviront à améliorer Android, et certaines informations agrégées aideront également nos développeurs d'applications et nos partenaires, tels que les développeurs Android, à améliorer leurs applications et leurs produits.<ph name="END_PARAGRAPH1" />
@@ -11096,7 +11098,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8827125715368568315">Autorisations bloquées : <ph name="PERMISSION" /> (et <ph name="COUNT" /> de plus)</translation>
 <translation id="8827289157496676362">Épingler l'extension</translation>
 <translation id="8828933418460119530">Nom DNS</translation>
-<translation id="8829979393064090868">Ajouter l'onglet à la vue fractionnée</translation>
 <translation id="8830479210602243906">Booster la productivité</translation>
 <translation id="883062543841130884">Substitutions</translation>
 <translation id="8830779999439981481">Redémarrage pour appliquer les mises à jour…</translation>

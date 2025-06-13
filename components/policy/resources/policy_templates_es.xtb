@@ -106,6 +106,7 @@ Si se inhabilita esta política, no se permitirá la función de autocorrección
       Si no se establece esta política, se utilizará el directorio de perfil predeterminado.</translation>
 <translation id="1053981429146436598">Un grupo de políticas relacionadas con los ajustes de solicitudes de redes privadas.  Consulta https://wicg.github.io/private-network-access/.</translation>
 <translation id="1059069692400941670">Inhabilitar la importación del buscador predeterminado en la primera ejecución</translation>
+<translation id="1060020040574767394">Configurar los ajustes de marca de agua personalizada</translation>
 <translation id="1062011392452772310">Habilitar confirmación remota para el dispositivo</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1063860513136880926">Si se habilita esta política, no se permitirá hacer capturas de pantalla mediante combinaciones de teclas ni APIs de extensión. Si se inhabilita esta política o no se establece, se permitirán las capturas de pantalla.
@@ -493,6 +494,7 @@ Si no se establece esta política para un sitio, se le aplicará la política de
 <translation id="1379689277107868399">Si a esta política se le asigna el valor "DoNotPrompt" o no se define, <ph name="PRODUCT_NAME" /> no solicitará automáticamente al usuario que se vuelva a autenticar en el navegador.
 
 Si se le asigna el valor "PromptInTab", cuando la autenticación del usuario caduque, se abrirá inmediatamente una nueva pestaña con la página de inicio de sesión de Google. Esto solo ocurre si se usa <ph name="CHROME_SYNC_NAME" />.</translation>
+<translation id="1384040387986918863">Opacidad del relleno del texto de la marca de agua, de 0 (transparente) a 100 (opaco).</translation>
 <translation id="1384459581748403878">Referencia: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Esta política impide que el navegador descarte cualquier URL que coincida con uno o varios de los patrones que se especifiquen (usando el formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />).
       Esto se aplica al descarte de la presión de memoria y del modo Alta eficiencia.
@@ -1789,6 +1791,13 @@ Si se inhabilita esta política o no se establece, los usuarios podrán transfer
       Los usuarios no podrán modificar ni anular este ajuste.
 
       Nota: Esta política provoca que el encabezado X-GoogApps-Allowed-Domains se añada a todas las solicitudes HTTP y HTTPS en todos los dominios de google.com, como se describe en https://support.google.com/a/answer/1668854.</translation>
+<translation id="2287414160388710497">Permite a los administradores personalizar el aspecto de las marcas de agua aplicadas por las reglas de Prevención de la pérdida de datos (DLP). Esto incluye establecer la opacidad del relleno o del contorno y el tamaño de la fuente.
+Si no se define esta política o algunos valores, Chrome usará su comportamiento predeterminado para las marcas de agua.
+Los valores predeterminados son: opacidad del relleno 4, opacidad del contorno 6 y tamaño de la fuente 24.
+
+La opacidad del relleno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
+La opacidad del contorno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
+El tamaño de la fuente se especifica en puntos.</translation>
 <translation id="2288506601233091655">No permitir que se elimine el historial de trabajos de impresión</translation>
 <translation id="2289688405312849186">Cuenta principal del usuario: "usuario@dominio". El marcador de posición <ph name="LOGIN_ID_PLACEHOLDER" /> se reemplazará por el nombre de usuario "usuario". El marcador de posición <ph name="LOGIN_EMAIL_PLACEHOLDER" /> se reemplazará por la cuenta principal completa "usuario@dominio".</translation>
 <translation id="2290270645214705008">Si se inhabilita esta política, el servicio de host de acceso remoto no se podrá iniciar ni configurar para que acepte conexiones entrantes.  Esta política no afecta a las situaciones de asistencia remota.
@@ -2530,6 +2539,7 @@ Esta política solo se puede establecer como política de usuarios basada en la 
 <translation id="288448261660192095">Si se habilita esta política, los dispositivos físicos de entrada y salida del host de acceso remoto se inhabilitarán durante la conexión remota.
 
       Si se inhabilita esta política o no se le asigna ningún valor, los usuarios locales y los remotos podrán interactuar con el host cuando este se encuentre en modo compartido.</translation>
+<translation id="288463102030083286">Configuración de marca de agua personalizada</translation>
 <translation id="2884765974461416016">Inhabilitar la opción de compartir de Android a aplicación web.</translation>
 <translation id="2886215882246310669">Controla si <ph name="PRODUCT_OS_NAME" /> permite añadir nuevas cuentas de usuario de Family Link en el dispositivo.
       Esta política solo es útil si se combina con <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Permite añadir cuentas de Family Link, así como las cuentas que se definan en la lista de permitidas.
@@ -3142,6 +3152,7 @@ Si se inhabilita <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Ou
 <translation id="3278042410658310805">Inhabilitar los mensajes de voz en la pantalla de inicio de sesión y permitir que el usuario los habilite temporalmente</translation>
 <translation id="328347261792478720">De forma predeterminada, el navegador mostrará recomendaciones de contenido multimedia personalizadas al usuario. Si se inhabilita esta política, no se mostrarán estas recomendaciones al usuario. Si se habilita esta política o no se establece, se mostrarán recomendaciones de contenido multimedia al usuario.</translation>
 <translation id="3284094172359247914">Controlar el uso de la API WebUSB</translation>
+<translation id="3285231260918855067">Opacidad del contorno del texto de la marca de agua, de 0 (transparente) a 100 (opaco).</translation>
 <translation id="3286159327013237833">Habilitar el clic automático en la pantalla de inicio de sesión</translation>
 <translation id="3288595667065905535">Canal de lanzamiento</translation>
 <translation id="3291940794983537008">Configuración de las funciones de IA generativa de DevTools</translation>
@@ -8304,6 +8315,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 <translation id="6795485990775913659">Permitir imprimir solo sin PIN</translation>
 <translation id="6796215185873669533">Asigna el valor predeterminado de la configuración del navegador a la versión de la cadena user-agent.</translation>
 <translation id="6800181452282128474">No realizar consultas a Quirks Servers</translation>
+<translation id="6801739506172328815">Tamaño de la fuente del texto de la marca de agua en puntos.</translation>
 <translation id="6802412020718145539">El visor de PDFs usa la arquitectura OOPIF.</translation>
 <translation id="68031099365512050">Informar sobre el estado del audio</translation>
 <translation id="680356860463873420">No permitir que los usuarios utilicen un PluginVm</translation>

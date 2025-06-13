@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="3602260545951981695">Мыктылап коргоону тандаңыз</translation>
 <translation id="3608436266458100337">Окугуч режими</translation>
+<translation id="3610041351087301930">Окурман режимин жашыруу</translation>
 <translation id="3622175633937495219">Издөө таржымалы (<ph name="COUNT" /> табылды)</translation>
 <translation id="3625008969091706597">Артка кайтуу үчүн кырын сүрүп коюңуз.</translation>
 <translation id="362709345066740529">Карталарды, түрмөктү жана башкаларды бул жерде ыңгайлаштырыңыз</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">Бардык түзмөктөрүңүздөн кыстармалар, сырсөздөр, таржымал жана башка параметрлериңизди алуу үчүн аккаунтка кириңиз</translation>
 <translation id="4985921635659180565">Файлды өчүрүү пландаштырылгандан кийин, аны жокко чыгарууга болбойт.</translation>
 <translation id="498624032394115435">Шилтемеси бар колдонуучулардын баары бардык өтмөктөрдү түзөтө алышат.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> файлы кайда сакталарын тандаңыз</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> аккаунтун уюмуңуз тескейт.</translation>
 <translation id="4992255726304765516">Өтмөктөр тобунун түсү: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Сырсөздү көчүрүү</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">Аккаунтуңуздан чыгасыз</translation>
 <translation id="543338862236136125">Сырсөздү түзөтүү</translation>
 <translation id="5433691172869980887">Колдонуучунун аты көчүрүлдү</translation>
+<translation id="5437480232219631455">Бул жерде Gemini'ды ача аласыз</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> катары кирдиңиз</translation>
 <translation id="5443636120437209490">Демейки шартта серептөө ыңгайлуу</translation>
 <translation id="5444892875087332195">Кыстармалар</translation>
@@ -1650,7 +1651,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7724085059277147439">{count,plural, =1{Объект Google аккаунтуңузга ({email}) сакталды}other{Объекттер Google аккаунтуңузга ({email}) сакталды}}</translation>
 <translation id="7729458878441927652">Башка түзмөктөрүңүздөгү өтмөктөрдү көрүү үчүн өтмөктөрүңүздү жана таржымалды шайкештириңиз.</translation>
 <translation id="7730020510075123961">Жок, маалыматтарды бириктирүү</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> (<ph name="FILESIZE" />) сактала турган аккаунтту тандаңыз</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Ушул түзмөктө гана.</translation>
 <translation id="7744192722284567281">Сырсөз уурдалды</translation>
 <translation id="7749790401023484470">Текст тандаңыз.</translation>
@@ -1834,7 +1834,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8428045167754449968">Шаар/Шаарча</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8428634594422941299">Түшүнүктүү</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) файлы кайда сакталарын тандаңыз</translation>
 <translation id="8434837876193928924">Өтмөк тобунун чоо-жайы</translation>
 <translation id="8438566539970814960">Издөө жана серептөө аракеттериңизди жакшыртыңыз</translation>
 <translation id="8439758443371991593">"Окуу тизмесине кошуу" дегенди жашыруу</translation>

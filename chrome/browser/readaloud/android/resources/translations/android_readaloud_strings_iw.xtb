@@ -4,7 +4,7 @@
 <translation id="1173075331199604451">תפריט ההפעלה הקולית</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1246424317317450637">מודגש</translation>
-<translation id="1357114957607379632">‏המערכת יוצרת סקירה קולית באמצעות AI…</translation>
+<translation id="1357114957607379632">המערכת יוצרת סקירה קולית…</translation>
 <translation id="1483137792530497944">נהר</translation>
 <translation id="1586836055630070874">רגוע</translation>
 <translation id="1639239467298939599">בטעינה</translation>
@@ -19,7 +19,7 @@
 <translation id="2611765907167846862">שלֵו</translation>
 <translation id="3023502830214299618">לצערנו, ההקראה לא זמינה בדף הזה כרגע. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="3493899379487634969">מה השתבש?</translation>
-<translation id="3730775656877876887">‏המערכת יוצרת סקירה קולית באמצעות AI</translation>
+<translation id="3730775656877876887">המערכת יוצרת סקירה קולית</translation>
 <translation id="3778044272390020426">תפריט אפשרויות למשוב שלילי</translation>
 <translation id="3807208219231826020">בחירת מיקום בהפעלה</translation>
 <translation id="385051799172605136">חזרה</translation>
@@ -31,12 +31,13 @@
 <translation id="4525525184005340968">דייל</translation>
 <translation id="4710974520964166851">נינוח</translation>
 <translation id="4773921449011281499">חסר דאגה</translation>
+<translation id="4867493576811701175">כפתור "אהבתי", צריך לבחור בו כדי לשלוח משוב שאהבת את התכונה הזו</translation>
 <translation id="4872475766448853257">הרצה של <ph name="NUMBER_OF_SECONDS" /> שניות אחורה</translation>
 <translation id="4967513477347430212">קואסט</translation>
 <translation id="5026371835667036198">צלול</translation>
 <translation id="5234971936051226002">הנגן 'האזנה לדף הזה' ממוזער.</translation>
 <translation id="5251803541071282808">ענן</translation>
-<translation id="5528503854289436485">‏השמעת סקירה קולית באמצעות AI</translation>
+<translation id="5528503854289436485">השמעת סקירה קולית</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="565342223183747919">אפשר ללחוץ כדי לשנות את מצב ההפעלה</translation>
 <translation id="5694491020339060116">תפריט מהירות ההפעלה</translation>
@@ -61,6 +62,7 @@
 <translation id="8136852699834914183">ההפעלה לא זמינה בדף הזה.</translation>
 <translation id="8198036737896977997">אייר</translation>
 <translation id="8264989794233974275">הגברה או הפחתה של המהירות פי <ph name="PLAYBACK_SPEED" />.</translation>
+<translation id="837054959055425654">כפתור "לא אהבתי"', צריך לבחור בו כדי לפתוח טופס למשוב מפורט על בעיה בתכונה הזו</translation>
 <translation id="8407011429883244666">סגירת הנגן.</translation>
 <translation id="8462210863277153423">‏כתובת ה-URL שלך תישלח עם המשוב כדי לשפר את האיכות והמחקר.</translation>
 <translation id="8481839122437406573">רגוע</translation>

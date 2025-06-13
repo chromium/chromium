@@ -5999,7 +5999,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5186381005592669696">Tinkinkite palaikomų programų pateikties kalbą</translation>
 <translation id="5186788525428341874">Galite naudoti šį prieigos raktą, kad sparčiau prisijungtumėte skirtinguose įrenginiuose. Jis bus išsaugotas „Google“ slaptažodžių tvarkyklėje kaip priskirtas el. pašto adresui <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Įdiegti puslapį kaip programą...</translation>
-<translation id="5187671830619031922">Pridėti skirtuką prie išskaidyto rodinio</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Bendrina <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Naudoti vietovės informaciją. Leiskite „ChromeOS“ ir „Android“ programoms, svetainėms bei paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti jūsų įrenginio vietovės informaciją. Vietovės nustatymo tikslumo funkcija „Android“ programoms ir paslaugoms teikia tikslesnę vietovės informaciją. Kad galėtų tai daryti, „Google“ periodiškai apdoroja informaciją apie įrenginio jutiklius ir belaidžius signalus iš jūsų įrenginio, kad galėtų kaupti belaidžio signalo vietovių informaciją. Šie duomenys naudojami neidentifikuojant jūsų, kad būtų galima gerinti vietovės nustatymo tikslumą ir paslaugas pagal vietovę bei tobulinti, teikti ir prižiūrėti „Google“ paslaugas, pagrįstas „Google“ ir trečiųjų šalių teisėtu interesu tenkinti naudotojų poreikius. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie vietovės informacijos naudojimą<ph name="END_LINK1" /></translation>
@@ -9031,6 +9030,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7387951778417998929">Jei norite naudoti kitą nei numatytąjį paieškos variklį, įveskite jo šaukinį adreso juostoje ir paspauskite norimą spartųjį klavišą. Taip pat čia galite pakeisti numatytąjį paieškos variklį.</translation>
 <translation id="7388615499319468910">Svetainės ir reklamuotojai gali geriau suprasti skelbimų našumą. Šis nustatymas išjungtas.</translation>
 <translation id="738903649531469042">Pridėti skirtuką prie skaitymo sąrašo</translation>
+<translation id="7389615853658756494">Pakeisti tai svetainėje</translation>
 <translation id="7392118418926456391">Nepavyko žvalgyti, ar yra virusų</translation>
 <translation id="7392915005464253525">I&amp;š naujo atidaryti uždarytą langą</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Nukopijuotas 1 elementas}one{Nukopijuotas {COUNT} elementas}few{Nukopijuoti {COUNT} elementai}many{Nukopijuota {COUNT} elemento}other{Nukopijuota {COUNT} elementų}}</translation>
@@ -9160,6 +9160,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7474043404939621342">Tinkinti įrankių juostą</translation>
 <translation id="747459581954555080">Atkurti viską</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Būtina grąžinti nedelsiant}one{Grąžinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dieną}few{Grąžinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienas}many{Grąžinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienos}other{Grąžinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienų}}</translation>
+<translation id="747557463733380256">Sužinokite apie tai, kaip tvarkoma naršyklė</translation>
 <translation id="7475671414023905704">„Netscape“ prarasto slaptažodžio URL</translation>
 <translation id="7475742997309661417">Ekrano skaitytuvą sistemoje „ChromeOS“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys, kad galėtų skaityti ekrane rodomą tekstą naudodami kalbos sintezatorių arba Brailio rašmenų ekraną. Jei norite įjungti „ChromeVox“, paspauskite ir penkias sekundes palaikykite abu garsumo klavišus. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
 <translation id="7476454130948140105">Akumuliatorius per daug išsikrovęs, kad būtų galima atnaujinti (<ph name="BATTERY_PERCENT" /> proc.)</translation>
@@ -10309,6 +10310,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8265018477030547118">Tik šiame įrenginyje</translation>
 <translation id="826511437356419340">Įjungtas langų apžvalgos režimas. Norėdami naršyti perbraukite arba paspauskite tabuliavimo klavišą, jei naudojate klaviatūrą.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Paleidus iš naujo inkognito langas nebus rodomas}one{Paleidus iš naujo {COUNT} inkognito langas nebus rodomas}few{Paleidus iš naujo {COUNT} inkognito langai nebus rodomi}many{Paleidus iš naujo {COUNT} inkognito lango nebus rodoma}other{Paleidus iš naujo {COUNT} inkognito langų nebus rodoma}}</translation>
+<translation id="8266430295499893285">Kad galėtumėte pasiekti slaptažodžius, turite patvirtinti savo tapatybę</translation>
 <translation id="8266947622852630193">Visi įvesties metodai</translation>
 <translation id="8267539814046467575">Pridėti spausdintuvą</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Tai yra bendroji informacija apie šį įrenginį ir jo naudojimą (pvz., akumuliatoriaus įkrovos lygis, sistemos ir programų veikla ir klaidos). Duomenys bus naudojami „Android“ sistemai tobulinti. Be to, tam tikra sukaupta informacija bus naudinga „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams, tobulinant programas ir produktus.<ph name="END_PARAGRAPH1" />
@@ -11121,7 +11123,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="8827125715368568315">Užblokuota: <ph name="PERMISSION" /> ir dar <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Prisegti plėtinį</translation>
 <translation id="8828933418460119530">DNS pavadinimas</translation>
-<translation id="8829979393064090868">Pridėti skirtuką prie išskaidyto rodinio</translation>
 <translation id="8830479210602243906">Padidinti produktyvumą</translation>
 <translation id="883062543841130884">Pakaitalai</translation>
 <translation id="8830779999439981481">Paleidžiama iš naujo, kad būtų pritaikyti naujiniai</translation>

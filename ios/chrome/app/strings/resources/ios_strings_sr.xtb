@@ -965,7 +965,6 @@
 <translation id="4979397965658815378">Пријавите се помоћу Google налога да бисте имали обележиваче, лозинке, историју и друга подешавања на свим уређајима</translation>
 <translation id="4985921635659180565">Када се закаже брисање фајла, не може да се откаже.</translation>
 <translation id="498624032394115435">Свако са линком може да мења све картице.</translation>
-<translation id="4989065233040279145">Изаберите где ће фајл <ph name="FILENAME" /> бити сачуван</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, овим управља организација.</translation>
 <translation id="4992255726304765516">Боја групе картица <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копирање лозинке</translation>
@@ -1652,7 +1651,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7724085059277147439">{count,plural, =1{Ставка је сачувана на Google налогу, {email}}one{Ставке су сачуване на Google налогу, {email}}few{Ставке су сачуване на Google налогу, {email}}other{Ставке су сачуване на Google налогу, {email}}}</translation>
 <translation id="7729458878441927652">Да бисте видели картице са других уређаја, синхронизујте картице и историју.</translation>
 <translation id="7730020510075123961">Не, обједини податке</translation>
-<translation id="7730973429297233609">Изаберите налог који желите да користите да бисте сачували <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на овом уређају.</translation>
 <translation id="7744192722284567281">Пронађено у упаду у податке</translation>
 <translation id="7749790401023484470">Нисте изабрали никакав текст.</translation>
@@ -1836,7 +1834,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8428045167754449968">Град/место</translation>
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8428634594422941299">Важи</translation>
-<translation id="8430694217306051839">Изаберите где ће фајл <ph name="FILENAME" /> бити сачуван (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Детаљи групе картица</translation>
 <translation id="8438566539970814960">Побољшај претраге и прегледање</translation>
 <translation id="8439758443371991593">Сакриј опцију Додај на листу за читање</translation>

@@ -5979,7 +5979,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5186381005592669696">Personalitza l'idioma de visualització de les aplicacions compatibles</translation>
 <translation id="5186788525428341874">Pots utilitzar aquesta clau d'accés per iniciar la sessió més ràpidament en tots els teus dispositius. Es desarà al gestor de contrasenyes de Google per a <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">Instal·la la pàgina com a aplicació...</translation>
-<translation id="5187671830619031922">Afegeix la pestanya a la visualització dividida</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Compartit per <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Utilitza la ubicació. Permet que les aplicacions, els llocs web i els serveis de ChromeOS i d'Android que tinguin permís d'accés a la ubicació utilitzin la ubicació del dispositiu. La precisió de la ubicació proporciona una ubicació més precisa a les aplicacions i als serveis d'Android. Per fer-ho, Google tracta periòdicament la informació sobre els sensors i els senyals sense fil del teu dispositiu a fi d'obtenir col·lectivament les ubicacions dels senyals sense fil. Aquestes dades s'utilitzen sense identificar-te per millorar la precisió de la ubicació i els serveis basats en la ubicació. També s'utilitzen per millorar, proporcionar i mantenir els serveis de Google segons els interessos legítims de Google i de tercers a fi de satisfer les necessitats dels usuaris. <ph name="BEGIN_LINK1" />Més informació sobre com s'utilitza la ubicació<ph name="END_LINK1" /></translation>
@@ -9002,6 +9001,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7387951778417998929">Per utilitzar un motor de cerca diferent del predeterminat, escriu la drecera corresponent a la barra d'adreces, seguida de la tecla de drecera que prefereixis. També pots canviar el motor de cerca predeterminat aquí.</translation>
 <translation id="7388615499319468910">Els llocs web i els anunciants poden entendre el rendiment dels anuncis. Aquesta opció de configuració està desactivada.</translation>
 <translation id="738903649531469042">Afegeix una pestanya a la llista de lectura</translation>
+<translation id="7389615853658756494">Canvia-la al lloc web</translation>
 <translation id="7392118418926456391">Hi ha hagut un error en l'anàlisi antivirus</translation>
 <translation id="7392915005464253525">T&amp;orna a obrir la finestra tancada</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{S'ha copiat 1 element}other{S'han copiat {COUNT} elements}}</translation>
@@ -9131,6 +9131,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7474043404939621342">Personalitza la barra d'eines</translation>
 <translation id="747459581954555080">Restaura'ls tots</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Cal que tornis el dispositiu immediatament}other{Torna el dispositiu <ph name="DEVICE_TYPE" /> en un termini de {NUM_DAYS} dies}}</translation>
+<translation id="747557463733380256">Informació sobre com es gestiona el navegador</translation>
 <translation id="7475671414023905704">URL de contrasenya perduda de Netscape</translation>
 <translation id="7475742997309661417">El lector de pantalla de ChromeOS, ChromeVox, l'utilitzen principalment persones invidents o amb poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Mantén premudes les dues tecles de volum durant cinc segons per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
 <translation id="7476454130948140105">No hi ha prou bateria per fer l'actualització (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10280,6 +10281,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8265018477030547118">Només en aquest dispositiu</translation>
 <translation id="826511437356419340">S'ha entrat al mode de visió general de la finestra. Llisca per navegar o prem el tabulador si utilitzes un teclat.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{La finestra d'incògnit no es tornarà a obrir després de reiniciar}other{{COUNT} finestres d'incògnit no es tornaran a obrir després de reiniciar}}</translation>
+<translation id="8266430295499893285">Has de verificar la teva identitat per poder accedir a les contrasenyes</translation>
 <translation id="8266947622852630193">Tots els mètodes d'introducció de text</translation>
 <translation id="8267539814046467575">Afegeix una impressora</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Es tracta d'informació general sobre aquest dispositiu i sobre com es fa servir, com ara els errors, el nivell de bateria i l'activitat al sistema i en aplicacions. Les dades s'utilitzaran per millorar Android i part de la informació agregada també ajudarà les aplicacions i els partners de Google, com ara desenvolupadors d'Android, a millorar les seves aplicacions i els seus productes.<ph name="END_PARAGRAPH1" />
@@ -11090,7 +11092,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8827125715368568315">Permisos bloquejats: <ph name="PERMISSION" /> i <ph name="COUNT" /> més</translation>
 <translation id="8827289157496676362">Fixa l'extensió</translation>
 <translation id="8828933418460119530">Nom DNS</translation>
-<translation id="8829979393064090868">Afegeix la pestanya a la visualització dividida</translation>
 <translation id="8830479210602243906">Augmenta la productivitat</translation>
 <translation id="883062543841130884">Substitucions</translation>
 <translation id="8830779999439981481">S'està reiniciant per aplicar les actualitzacions</translation>

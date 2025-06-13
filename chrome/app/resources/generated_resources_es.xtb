@@ -5982,7 +5982,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5186381005592669696">Personaliza el idioma de visualización de las aplicaciones compatibles</translation>
 <translation id="5186788525428341874">Puedes usar esta llave de acceso para iniciar sesión más rápido en todos tus dispositivos. Se guardará en el Gestor de contraseñas de Google de <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalar página como aplicación...</translation>
-<translation id="5187671830619031922">Añadir pestaña a la vista dividida</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Compartido por <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Usa la ubicación. Permite que las aplicaciones, los sitios web y los servicios de ChromeOS y Android que tengan el permiso de ubicación usen la ubicación de tu dispositivo. La precisión de la ubicación proporciona una ubicación más precisa para las aplicaciones y los servicios de Android. Para ello, Google procesa periódicamente la información de los sensores y señales inalámbricas de tu dispositivo para recoger las ubicaciones de las señales inalámbricas. Estos datos se usan sin identificarte para mejorar la precisión de la ubicación y los servicios basados en ella, así como para mejorar, proporcionar y mantener los servicios de Google en función de sus propios intereses legítimos y los de terceros con el fin de satisfacer las necesidades de los usuarios. <ph name="BEGIN_LINK1" />Más información sobre cómo usar la ubicación<ph name="END_LINK1" /></translation>
@@ -9006,6 +9005,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7387951778417998929">Para usar un buscador distinto del predeterminado, escribe su acceso directo en la barra de direcciones seguido de tu atajo de teclado preferido. También puedes cambiar tu buscador predeterminado aquí.</translation>
 <translation id="7388615499319468910">Los sitios y los anunciantes pueden comprender el rendimiento de los anuncios. Esta opción está desactivada.</translation>
 <translation id="738903649531469042">Añadir pestaña a lista de lectura</translation>
+<translation id="7389615853658756494">Cambiarlo en el sitio</translation>
 <translation id="7392118418926456391">Error en el análisis antivirus</translation>
 <translation id="7392915005464253525">Volv&amp;er a abrir ventana cerrada</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 elemento copiado}other{{COUNT} elementos copiados}}</translation>
@@ -9135,6 +9135,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7474043404939621342">Personalizar la barra de herramientas</translation>
 <translation id="747459581954555080">Restaurar todo</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Devolución inmediata necesaria}other{Devuelve el <ph name="DEVICE_TYPE" /> en el plazo de {NUM_DAYS} días}}</translation>
+<translation id="747557463733380256">Más información sobre cómo se gestiona tu navegador</translation>
 <translation id="7475671414023905704">URL de contraseñas perdidas de Netscape</translation>
 <translation id="7475742997309661417">ChromeVox, el lector de pantalla de ChromeOS, lo usan principalmente las personas invidentes o con baja visión para leer el texto que se muestra en la pantalla con un sintetizador de voz o una pantalla braille. Mantén pulsadas las dos teclas de volumen durante cinco segundos para activar ChromeVox. Cuando ChromeVox esté activado, podrás realizar una visita guiada rápida.</translation>
 <translation id="7476454130948140105">No tienes suficiente batería para instalar la actualización (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10284,6 +10285,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8265018477030547118">Solo en este dispositivo</translation>
 <translation id="826511437356419340">Se ha cambiado al modo de vista general de ventanas. Desliza el dedo para desplazarte o pulsa el tabulador si estás utilizando un teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{1 ventana de Incógnito no se abrirá después de reiniciar}other{{COUNT} ventanas de Incógnito no se volverán a abrir después de reiniciar}}</translation>
+<translation id="8266430295499893285">Debes verificar que eres tú para poder acceder a tus contraseñas</translation>
 <translation id="8266947622852630193">Todos los métodos de introducción de texto</translation>
 <translation id="8267539814046467575">Añadir impresora</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Estos datos incluyen información general sobre tu dispositivo y sobre cómo lo usas (como el nivel de batería, la actividad de las aplicaciones y del sistema, y los errores). Sirven para mejorar Android, y parte de los datos agregados también ayudan a las aplicaciones y partners de Google, como los desarrolladores de Android, a mejorar sus productos y aplicaciones.<ph name="END_PARAGRAPH1" />
@@ -11093,7 +11095,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8827125715368568315">Con bloqueo: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
 <translation id="8827289157496676362">Fijar extensión</translation>
 <translation id="8828933418460119530">Nombre de DNS</translation>
-<translation id="8829979393064090868">Añadir pestaña a la vista dividida</translation>
 <translation id="8830479210602243906">Mejorar productividad</translation>
 <translation id="883062543841130884">Sustituciones</translation>
 <translation id="8830779999439981481">Reiniciando para aplicar actualizaciones</translation>

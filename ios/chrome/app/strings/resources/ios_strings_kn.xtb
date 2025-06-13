@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="3602260545951981695">"ವರ್ಧಿತ ಸುರಕ್ಷತೆ" ಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3608436266458100337">ರೀಡರ್ ಮೋಡ್</translation>
+<translation id="3610041351087301930">ರೀಡರ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3622175633937495219">ಹುಡುಕಾಟದ ಇತಿಹಾಸ (<ph name="COUNT" /> ಕಂಡುಬಂದಿದೆ)</translation>
 <translation id="3625008969091706597">ಹಿಂತಿರುಗಲು ನೀವು ಅಂಚನ್ನು ಸ್ವೈಪ್ ಮಾಡಬಹುದು.</translation>
 <translation id="362709345066740529">ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳು, ಫೀಡ್ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಇಲ್ಲಿ ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಇತಿಹಾಸ ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಪಡೆಯಲು ನಿಮ್ಮ Google ಖಾತೆ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4985921635659180565">ಫೈಲ್ ಅನ್ನು ಅಳಿಸಲು ನಿಗದಿಪಡಿಸಿದ ನಂತರ, ಅದನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="498624032394115435">ಲಿಂಕ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> ಅನ್ನು ಎಲ್ಲಿ ಸೇವ್ ಮಾಡಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4992255726304765516"><ph name="COLOR" /> ಟ್ಯಾಬ್ ಗುಂಪಿನ ಬಣ್ಣ</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ಕಾಪಿ ಮಾಡಿ</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="543338862236136125">ಪಾಸ್‌ವರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5433691172869980887">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
+<translation id="5437480232219631455">ನೀವು ಇಲ್ಲಿ Gemini ಅನ್ನು ತೆರೆಯಬಹುದು</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> ಎಂದು ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="5443636120437209490">ಡೀಫಾಲ್ಟ್ ಆಗಿ ಬ್ರೌಸಿಂಗ್ ಮಾಡುವುದು ಉತ್ತಮ</translation>
 <translation id="5444892875087332195">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{ನಿಮ್ಮ {email} Google ಖಾತೆಯಲ್ಲಿ ಐಟಂ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}one{ನಿಮ್ಮ {email} Google ಖಾತೆಯಲ್ಲಿ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}other{ನಿಮ್ಮ {email} Google ಖಾತೆಯಲ್ಲಿ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7729458878441927652">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಲು, ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ.</translation>
 <translation id="7730020510075123961">ಇಲ್ಲ, ಡೇಟಾವನ್ನು ವಿಲೀನಗೊಳಿಸಿ</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> ಸೇವ್ ಮಾಡಲು ನೀವು ಬಳಸಲು ಬಯಸುವ ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ.</translation>
 <translation id="7744192722284567281">ಡೇಟಾ ಉಲ್ಲಂಘಿಸಿದವುಗಳ ಪಟ್ಟಿಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="7749790401023484470">ನೀವು ಯಾವುದೇ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆ ಮಾಡಿಲ್ಲ.</translation>
@@ -1834,7 +1834,6 @@
 <translation id="8428045167754449968">ನಗರ / ಪಟ್ಟಣ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8428634594422941299">ಅರ್ಥವಾಯಿತು</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) ಅನ್ನು ಎಲ್ಲಿ ಸೇವ್ ಮಾಡಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8434837876193928924">ಟ್ಯಾಬ್ ಗುಂಪಿನ ವಿವರಗಳು</translation>
 <translation id="8438566539970814960">ಹುಡುಕಾಟಗಳನ್ನು ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಉತ್ತಮಗೊಳಿಸುವಂತೆ ಮಾಡಿ</translation>
 <translation id="8439758443371991593">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>

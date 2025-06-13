@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 день тому}one{# день тому}few{# дні тому}many{# днів тому}other{# дня тому}}</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1243314992276662751">Завантажити</translation>
+<translation id="1253734725326687145">Область дотику переміщено у верхній правий кут. Натисніть тут.</translation>
 <translation id="1266864766717917324">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Спробуйте надіслати його меншими частинами.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="24452542372838207">Розгорнути сповіщення</translation>
 <translation id="2445449901874883781">Використовувати високу щільність</translation>
+<translation id="2448407890032181691">Область дотику переміщено в нижній правий кут. Натисніть тут.</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2497284189126895209">Усі файли</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Курсор ліворуч</translation>
 <translation id="5633029987065897167">Пусто</translation>
+<translation id="5651438382973553530">Область дотику переміщено в нижній лівий кут. Натисніть тут.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}many{# хв}other{# хв}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Остання активність: сьогодні}=1{Остання активність: 1 день тому}one{Остання активність: # день тому}few{Остання активність: # дні тому}many{Остання активність: # днів тому}other{Остання активність: # дня тому}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 день і }one{# день і }few{# дні та }many{# днів і }other{# дня та }}</translation>

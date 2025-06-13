@@ -341,6 +341,7 @@
 <translation id="5775198138441669627">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="SETTINGS_LINK" />ข้อมูล Chromium ในบัญชี</translation>
 <translation id="5800158606660203929">ปรับแต่งและควบคุม Chromium ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="5809516625706423866">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ HTTP 401 Unauthorized โปรดตรวจสอบการกำหนดค่าพร็อกซีของคุณ</translation>
+<translation id="5817952762723416573">เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chromium แต่ทำให้ Chromium ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้ปิดอยู่</translation>
 <translation id="5821520528363214608">โปรดอัปเดต Chromium เพื่อใช้และบันทึกข้อมูล Chromium ลงในบัญชี Google</translation>
 <translation id="5824893331272123205">โหลดแผงนี้ไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="5862307444128926510">ยินดีต้อนรับสู่ Chromium</translation>
@@ -430,6 +431,7 @@
 <translation id="6729124504294600478">รวม Chromium ไว้ในกิจกรรมบนเว็บและแอป ตลอดจนบริการของ Google ที่ลิงก์ไว้เพื่อรับการปรับเปลี่ยนในแบบของคุณและฟีเจอร์อื่นๆ</translation>
 <translation id="6734291798041940871">มีการติดตั้ง Chromium สำหรับผู้ใช้ทุกคนบนคอมพิวเตอร์ของคุณแล้ว</translation>
 <translation id="674245979920622322">คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ Chromium นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="COUNT" /> รายการออกแล้ว</translation>
+<translation id="6751374565094704799">เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chromium แต่ทำให้ Chromium ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้เปิดอยู่</translation>
 <translation id="67706546131546258">Chromium แนะนำให้สแกนไฟล์นี้เนื่องจากอาจเป็นอันตราย</translation>
 <translation id="6779406956731413166">Chromium OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>

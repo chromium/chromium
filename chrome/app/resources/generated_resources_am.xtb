@@ -5990,7 +5990,6 @@
 <translation id="5186381005592669696">ለሚደገፉ መተግበሪያዎች የማሳያ ቋንቋ ያብጁ</translation>
 <translation id="5186788525428341874">በመሣሪያዎችዎ ላይ በፍጥነት ለመግባት ይህን የይለፍ ቁልፍ መጠቀም ይችላሉ። ለ<ph name="ACCOUNT_NAME" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል።</translation>
 <translation id="5187641678926990264">ገጽን እንደ መተግበሪያ &amp;ጫን...</translation>
-<translation id="5187671830619031922">ትርን ወደ የተከፋፈለ ዕይታ ማከል</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">በ<ph name="USER_NAME" /> የተጋራ</translation>
 <translation id="5188648870018555788">አካባቢን ይጠቀሙ። የአካባቢ ፈቃድ ያላቸው የChromeOS እና የAndroid መተግበሪያዎች፣ ድር ጣቢያዎች እና አገልግሎቶች የእርስዎን የመሣሪያ አካባቢ እንዲጠቀሙ ይፍቀዱ። የአካባቢ ትክክለኛነት ለAndroid መተግበሪያዎች እና አገልግሎቶች ይበልጥ ትክክለኛ አካባቢን ያቀርባል። ይህን ለማድረግ Google የገመድ-አልባ ምልክት አካባቢዎችን ከብዙ ሰዎች ምንጭ ለማውጣጣት በየጊዜው የመሣሪያ ዳሳሾች እና የገመድ-አልባ ምልክቶች መረጃን ከመሣሪያዎ ያሰናዳል። እነዚህ እርስዎን ሳይለዩ ጥቅም ላይ የሚውሉት የአካባቢ ትክክለኛነትን እና አካባቢን መሠረት ያደረጉ አገልግሎቶችን ለማሻሻል እና የተጠቃሚዎችን ፍላጎቶች ለማገልገል በGoogle እና በሦስተኛ ወገኖች ሕጋዊ ፍላጎቶች ላይ በመመሥረት የGoogle አገልግሎቶችን ለማሻሻል፣ ለማቅረብ እና ለማቆየት ነው። <ph name="BEGIN_LINK1" />አካባቢን ስለመጠቀም የበለጠ ይወቁ<ph name="END_LINK1" /></translation>
@@ -9017,6 +9016,7 @@
 <translation id="7387951778417998929">ከነባሪው በተለየ የፍለጋ ፕሮግራም ለመጠቀም የእርስዎን ተመራጭ የቁልፍ ሰሌዳ አቋራጭን በማስከተል በአድራሻ አሞሌው ውስጥ አቋራጩን ይተይቡ። እንዲሁም ነባሪ የፍለጋ ፕሮግራምዎን እዚህ መለወጥ ይችላሉ።</translation>
 <translation id="7388615499319468910">ጣቢያዎች እና አስተዋዋቂዎች የማስታወቂያዎች አፈጻጸም እንዴት እንደሆነ መረዳት ይችላሉ። ይህ ቅንብር ጠፍቷል።</translation>
 <translation id="738903649531469042">ትርን ወደ የንባብ ዝርዝር ያክሉ</translation>
+<translation id="7389615853658756494">ጣቢያው ላይ ይለውጡት</translation>
 <translation id="7392118418926456391">የቫይረስ ቅኝት አልተሳካም</translation>
 <translation id="7392915005464253525">የተ&amp;ዘጋውን መስኮት ዳግም ክፈት</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 ንጥል ተቀድቷል}one{{COUNT} ንጥሎች ተቀድተዋል}other{{COUNT} ንጥሎች ተቀድተዋል}}</translation>
@@ -9146,6 +9146,7 @@
 <translation id="7474043404939621342">የመሣሪያ አሞሌዎን አብጅ</translation>
 <translation id="747459581954555080">ሁሉንም ወደነበረበት መልስ</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{ወዲያውኑ መመለስ ያስፈልጋል}one{<ph name="DEVICE_TYPE" />ን በ{NUM_DAYS} ቀኖች ውስጥ ይመልሱ}other{<ph name="DEVICE_TYPE" />ን በ{NUM_DAYS} ቀኖች ውስጥ ይመልሱ}}</translation>
+<translation id="747557463733380256">አሳሽዎ እንዴት እንደሚተዳደር ይወቁ</translation>
 <translation id="7475671414023905704">የNetscape የጠፋ የይለፍ ቃል URL</translation>
 <translation id="7475742997309661417">በChromeOS፣ ChromeVox ላይ ያለው ማያ ገፅ አንባቢ በቀዳሚነት ማያ ገፁ ላይ የሚታይ ጽሁፍ ለማንበብ ዓይነ ስውር በሆኑ ወይም ዝቅተኛ-ዕይታ ባላቸው ሰዎች በንግግር አዋሃጅ ወይም በብሬይል ማሳያ ጥቅም ላይ ይውላል። ChromeVox ለማብራት ሁለቱንም የድምፅ መጠን ቁልፎች ለአምስት ሰከንዶች ተጭነው ይያዙ። ChromeVox ገቢር ሲሆን ፈጣን ጉብኝት ያደርጋሉ።</translation>
 <translation id="7476454130948140105">ባትሪ ለዝማኔ በጣም ዝቅተኛ ነው (<ph name="BATTERY_PERCENT" />)</translation>
@@ -10300,6 +10301,7 @@ nil</translation>
 <translation id="8265018477030547118">በዚህ መሣሪያ ላይ ብቻ</translation>
 <translation id="826511437356419340">የአጠቃላይ ዕይታ ሁኔታ መስኮት ገብቷል። ለመዳሰስ በጣት ይጥረጉ፣ ወይም ቁልፍ ሰሌዳ የሚጠቀሙ ከሆነ tab ይጫኑ።</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{ዳግም ካስጀመሩ በኋላ የእርስዎ ማንነት የማያሳውቅ መስኮት አይከፈትም።}one{ዳግም ካስጀመሩ በኋላ የእርስዎ {COUNT} ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}other{ዳግም ካስጀመሩ በኋላ የእርስዎ {COUNT} ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}}</translation>
+<translation id="8266430295499893285">የይለፍ ቃሎችዎን መድረስ ከመቻልዎ በፊት እርስዎ መሆንዎን ማረጋገጥ አለብዎት</translation>
 <translation id="8266947622852630193">ሁሉም የግብዓት ዘዴዎች</translation>
 <translation id="8267539814046467575">አታሚ ያክሉ</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />ይህ ስለዚህ መሣሪያ እና እንዴት ሥራ ላይ እንደሚውል (እንደ የባትሪ ደረጃ፣ የሥርዓት እና የመተግበሪያ እንቅስቃሴ እና ስህተቶች ያሉ) አጠቃላይ መረጃ ነው። ውሂቡ Androidን ለማሻሻል ጥቅም ላይ ይውላል፣ እና አንዳንድ የተዋሃደ መረጃ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮች መተግበሪያዎቻቸውን እና ምርቶቻቸውን እንዲያሻሽሉ ያግዟቸዋል።<ph name="END_PARAGRAPH1" />
@@ -11110,7 +11112,6 @@ nil</translation>
 <translation id="8827125715368568315">የታገዱ <ph name="PERMISSION" /> እና <ph name="COUNT" /> ተጨማሪ</translation>
 <translation id="8827289157496676362">ቅጥያን አያይዝ</translation>
 <translation id="8828933418460119530">የDNS ስም</translation>
-<translation id="8829979393064090868">ትርን ወደ የተከፋፈለ ዕይታ ማከል</translation>
 <translation id="8830479210602243906">ምርታማነትን ይጨምሩ</translation>
 <translation id="883062543841130884">ምትኮች</translation>
 <translation id="8830779999439981481">ዝማኔዎችን ለመተግበር ዳግም በማስነሳት ላይ</translation>

@@ -1565,6 +1565,7 @@
 <translation id="3641116835972736297">Америк хөлбөмбөг</translation>
 <translation id="3642196846309122856">Файлуудаа дахин татаж үзнэ үү</translation>
 <translation id="3642638418806704195">Аппликэйшн:</translation>
+<translation id="3644768007456662469">Төлбөрийн зүйлийн дүрс тэмдэг</translation>
 <translation id="3646643500201740985">Зар хэр сайн гүйцэтгэлтэй байгааг хэмжих</translation>
 <translation id="3647286794400715637">URL-н мөрийн оролт бүр 1-ээс 2-ын хооронд URL агуулсан байх ёстой.</translation>
 <translation id="3647400963805615193">Chrome-н зөвлөгөөг хаах товчлуур, хаахын тулд Enter дарна уу, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2101,11 +2102,13 @@
 <translation id="4530347922939905757">Мессеж</translation>
 <translation id="4531477351494678589">Виртуал картын дугаар:</translation>
 <translation id="4535523368173457420">Эдгээр хайлтын систем нь танай бүс нутагт эрэлттэй бөгөөд эдгээрийг санамсаргүй дарааллаар харуулсан</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 жилийн өмнө үүсгэсэн}other{{NUM_YEARS} жилийн өмнө үүсгэсэн}}</translation>
 <translation id="4541810033354695636">өргөтгөсөн бодит орчин</translation>
 <translation id="4542971377163063093">Гарах цаасны тавиур 6</translation>
 <translation id="4543072026714825470">Дараагийн удаа илүү хурдан төлөхийн тулд карт болон төлбөр тооцооны хаягаа Google Бүртгэлдээ хадгална уу</translation>
 <translation id="454441086898495030"><ph name="SET" />-д нэмэх үү?</translation>
 <translation id="4546730006268514143">Шилжүүлэх үйлдэл завсарласан</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 хоногийн өмнө үүсгэсэн}other{{NUM_DAYS} хоногийн өмнө үүсгэсэн}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Та нууц үг бөглөхөд дэлгэцийн түгжээгээ ашиглаж байна</translation>
 <translation id="4557573143631562971">Орон сууцны даатгал</translation>
@@ -2899,6 +2902,7 @@
 <translation id="5938153366081463283">Виртуал карт нэмнэ үү</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Энэ мэдээлэл Trustpilot, ScamAdviser, Google болон шүүмжийн бусад бие даасан вебсайтаас ирсэн. Хураангуйг ХОУ-аар үүсгэдэг.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 минутын өмнө үүсгэсэн}other{{NUM_MINS} минутын өмнө үүсгэсэн}}</translation>
 <translation id="5944297261866530437">Даавуу (маш гялгар)</translation>
 <translation id="5950901984834744590">Сахлын хутга, сахлын машинууд</translation>
 <translation id="5951495562196540101">Хэрэглэгчийн бүртгэлээр бүртгүүлэх боломжгүй (багцалсан лиценз боломжтой).</translation>
@@ -4058,6 +4062,7 @@
 <translation id="7894280532028510793">Хэрэв алдаагүй, зөв бичсэн бол <ph name="BEGIN_LINK" />Сүлжээний оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Дугтуй 7 x 9 инч</translation>
 <translation id="7905064834449738336">Таныг нууц үг ашиглах үед үүнийг онлайнд нийтэлсэн тохиолдолд Chromium танд сануулна. Үүнийг хийх үед таны нууц үг болон хэрэглэгчийн нэрийг шифрлэх бөгөөд ингэснээр Google-г оруулаад хэн ч тэдгээрийг унших боломжгүй.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 цагийн өмнө үүсгэсэн}other{{NUM_HOURS} цагийн өмнө үүсгэсэн}}</translation>
 <translation id="7908648876066812348">Виртуал картыг асааж байна</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, тохиргооны Chrome-н аюулгүй байдлын шалгалтын хуудас руу очихын тулд Tab, дараа нь Enter-г дарна уу</translation>
 <translation id="791107458486222637">Үр дүнг дахин гаргаж байна</translation>
@@ -4192,6 +4197,7 @@
 <translation id="8134058435519644366">Ажилд авах болон боловсон хүчин</translation>
 <translation id="8135546115396015134">зүүн суман товч</translation>
 <translation id="8137456439814903304">Эрчим хүч, эрчим хүч нийлүүлэгчид</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 сарын өмнө үүсгэсэн}other{{NUM_MONTHS} сарын өмнө үүсгэсэн}}</translation>
 <translation id="8148608574971654810">PDF хувилбар:</translation>
 <translation id="8149426793427495338">Таны компьютер идэвхгүй болсон байна.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> дахь файлыг унших боломжгүй байна. Энэ файл нь устгагдсан, шилжигдсэн, эсвэл хандалтыг хазгаарласан байж болно.</translation>

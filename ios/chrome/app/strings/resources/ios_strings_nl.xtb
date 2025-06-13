@@ -965,7 +965,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4979397965658815378">Log in met je Google-account om je bookmarks, wachtwoorden, geschiedenis en andere instellingen op al je apparaten te gebruiken</translation>
 <translation id="4985921635659180565">Zodra een bestand is gepland voor verwijdering, kan dit niet worden geannuleerd.</translation>
 <translation id="498624032394115435">Iedereen met de link kan alle tabbladen bewerken.</translation>
-<translation id="4989065233040279145">Kies een opslaglocatie voor <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, beheerd door je organisatie.</translation>
 <translation id="4992255726304765516">Kleur van tabbladgroep <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
@@ -1652,7 +1651,6 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7724085059277147439">{count,plural, =1{Item opgeslagen in je Google-account, {email}}other{Items opgeslagen in je Google-account, {email}}}</translation>
 <translation id="7729458878441927652">Synchroniseer je tabbladen en geschiedenis om tabbladen van je andere apparaten te zien.</translation>
 <translation id="7730020510075123961">Nee, gegevens samenvoegen</translation>
-<translation id="7730973429297233609">Selecteer het account dat je wilt gebruiken om <ph name="FILENAME" /> - <ph name="FILESIZE" /> op te slaan</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Alleen op dit apparaat.</translation>
 <translation id="7744192722284567281">Gevonden in een gegevenslek</translation>
 <translation id="7749790401023484470">Je hebt geen tekst geselecteerd.</translation>
@@ -1836,7 +1834,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8428045167754449968">Stad/plaats</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8428634594422941299">OK</translation>
-<translation id="8430694217306051839">Kies een opslaglocatie voor <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Tabbladgroepgegevens</translation>
 <translation id="8438566539970814960">Zoekopdrachten en browsefunctionaliteit verbeteren</translation>
 <translation id="8439758443371991593">Toevoegen aan leeslijst verbergen</translation>

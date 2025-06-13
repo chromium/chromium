@@ -623,6 +623,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3596414637720633074">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
 <translation id="3602260545951981695">Veldu „Aukin vörn“</translation>
 <translation id="3608436266458100337">Lestrarstilling</translation>
+<translation id="3610041351087301930">Fela lesara</translation>
 <translation id="3622175633937495219">Leitarferill (<ph name="COUNT" /> fannst/fundust)</translation>
 <translation id="3625008969091706597">Þú getur strokið brúnina til að fara til baka.</translation>
 <translation id="362709345066740529">Hér geturðu sérsniðið spjöldin þín, strauminn og fleira</translation>
@@ -964,7 +965,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4979397965658815378">Skráðu þig inn með Google reikningnum þínum til að fá bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín</translation>
 <translation id="4985921635659180565">Ekki er hægt að afturkalla áætlaða eyðingu skráar.</translation>
 <translation id="498624032394115435">Allir með tengilinn geta breytt öllum flipum.</translation>
-<translation id="4989065233040279145">Veldu hvar þú vilt vista <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> (stjórnað af fyrirtækinu þínu).</translation>
 <translation id="4992255726304765516">Litur flipahóps <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
@@ -1064,6 +1064,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5431252637281434233">Þú verður skráð(ur) út</translation>
 <translation id="543338862236136125">Breyta aðgangsorði</translation>
 <translation id="5433691172869980887">Notandanafn afritað</translation>
+<translation id="5437480232219631455">Þú getur opnað Gemini hér</translation>
 <translation id="5439618055789623719">Skráð(ur) inn sem <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Sjálfgefin betri skoðun</translation>
 <translation id="5444892875087332195">Bókamerki</translation>
@@ -1650,7 +1651,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7724085059277147439">{count,plural, =1{Atriði vistað á Google-reikningnum þínum, {email}}one{Atriði vistuð á Google-reikningnum þínum, {email}}other{Atriði vistuð á Google-reikningnum þínum, {email}}}</translation>
 <translation id="7729458878441927652">Samstilltu flipana þína og ferilinn til að sjá flipa úr hinum tækjunum þínum.</translation>
 <translation id="7730020510075123961">Nei, sameina gögn</translation>
-<translation id="7730973429297233609">Veldu reikninginn sem þú vilt nota til að vista <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Aðeins í þessu tæki.</translation>
 <translation id="7744192722284567281">Fannst í öryggisbroti</translation>
 <translation id="7749790401023484470">Þú valdir engan texta.</translation>
@@ -1834,7 +1834,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8428045167754449968">Borg/bær</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8428634594422941299">Ég skil</translation>
-<translation id="8430694217306051839">Veldu hvar þú vilt vista <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Upplýsingar um flipahóp</translation>
 <translation id="8438566539970814960">Bæta leit og vafra</translation>
 <translation id="8439758443371991593">Fela „Bæta við leslista“</translation>

@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 દિવસ પહેલાં}one{# દિવસ પહેલાં}other{# દિવસ પહેલાં}}</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1243314992276662751">અપલોડ કરો</translation>
+<translation id="1253734725326687145">ટચ માટેનું લક્ષ્ય સૌથી ઉપર જમણી બાજુએ ખસેડવામાં આવ્યું. અહીં ટૅપ કરો.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> શેર કરી શકાયો નથી</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">ટેક્સ્ટને નાના-નાના ટૂકડામાં શેર કરી જુઓ.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
 <translation id="24452542372838207">નોટિફિકેશન વિસ્તૃત કરો</translation>
 <translation id="2445449901874883781">વધારે ઘનતાનો ઉપયોગ કરો</translation>
+<translation id="2448407890032181691">ટચ માટેનું લક્ષ્ય સૌથી નીચે જમણી બાજુએ ખસેડવામાં આવ્યું. અહીં ટૅપ કરો.</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
 <translation id="2497284189126895209">બધી ફાઇલો</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">ટૅબ</translation>
 <translation id="5613020302032141669">ડાબો એરો</translation>
 <translation id="5633029987065897167">ખાલી</translation>
+<translation id="5651438382973553530">ટચ માટેનું લક્ષ્ય સૌથી નીચે ડાબી બાજુએ ખસેડવામાં આવ્યું. અહીં ટૅપ કરો.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 મિનિટ}one{# મિનિટ}other{# મિનિટ}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{આજે સક્રિય છે}=1{1 દિવસ પહેલાં સક્રિય હતું}one{# દિવસ પહેલાં સક્રિય હતું}other{# દિવસ પહેલાં સક્રિય હતું}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 દિવસ અને }one{# દિવસ અને }other{# દિવસ અને }}</translation>

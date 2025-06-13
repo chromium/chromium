@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>
 <translation id="3602260545951981695">"वर्धित संरक्षण" निवडा</translation>
 <translation id="3608436266458100337">वाचक मोड</translation>
+<translation id="3610041351087301930">रीडर लपवा</translation>
 <translation id="3622175633937495219">शोध इतिहास (<ph name="COUNT" /> आढळले)</translation>
 <translation id="3625008969091706597">तुम्ही मागे जाण्यासाठी कडेवर स्‍वाइप करू शकता.</translation>
 <translation id="362709345066740529">इथे तुमची कार्ड, फीड आणि आणखी बरेच काही कस्टमाइझ करा</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, पासवर्ड, इतिहास आणि अन्य सेटिंग्ज प्राप्त करण्यासाठी आपल्या Google खात्यासह साइन इन करा</translation>
 <translation id="4985921635659180565">फाइल हटवली जाण्यासाठी शेड्यूल केल्यानंतर, ती रद्द केली जाऊ शकत नाही.</translation>
 <translation id="498624032394115435">लिंक असलेली कोणतीही व्यक्ती सर्व टॅब संपादित करू शकते.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> कुठे सेव्ह करायची आहे हे निवडा</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, तुमच्या संस्थेने व्यवस्थापित केला आहे.</translation>
 <translation id="4992255726304765516">टॅब गटाचा रंग <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">तुम्हाला साइन आउट केले जाईल</translation>
 <translation id="543338862236136125">पासवर्ड संपादित करा</translation>
 <translation id="5433691172869980887">वापरकर्ता नाव कॉपी केले</translation>
+<translation id="5437480232219631455">तुम्ही इथे Gemini उघडू शकता</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> म्हणून साइन इन केले आहे</translation>
 <translation id="5443636120437209490">बाय डीफॉल्ट आणखी चांगले ब्राउझिंग</translation>
 <translation id="5444892875087332195">बुकमार्क</translation>
@@ -1651,7 +1652,6 @@
 <translation id="7724085059277147439">{count,plural, =1{तुमच्या {email} या Google खाते मध्ये आयटम सेव्ह केला आहे}other{तुमच्या {email} या Google खाते मध्ये आयटम सेव्ह केले आहेत}}</translation>
 <translation id="7729458878441927652">तुमच्या इतर डिव्हाइसवरील टॅब पाहण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा.</translation>
 <translation id="7730020510075123961">नाही, डेटा मर्ज करा</translation>
-<translation id="7730973429297233609">तुम्हाला <ph name="FILENAME" /> - <ph name="FILESIZE" /> सेव्ह करण्यासाठी वापरायचे असलेले खाते निवडा</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. फक्त या डिव्हाइसवर.</translation>
 <translation id="7744192722284567281">डेटा भंग करत असल्याचे आढळले</translation>
 <translation id="7749790401023484470">तुम्ही कोणताही मजकूर निवडला नाही.</translation>
@@ -1835,7 +1835,6 @@
 <translation id="8428045167754449968">शहर / नगर</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8428634594422941299">समजले</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) कुठे सेव्ह करायची आहे हे निवडा</translation>
 <translation id="8434837876193928924">टॅब गटाचे तपशील</translation>
 <translation id="8438566539970814960">शोध आणि ब्राउझ करणे चांगले करा</translation>
 <translation id="8439758443371991593">वाचन सूची मध्ये जोडा हे लपवा</translation>

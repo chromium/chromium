@@ -965,7 +965,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4979397965658815378">Inicie sessão com a sua Conta Google para aceder aos marcadores, às palavras-passe, ao histórico e a outras definições em todos os dispositivos</translation>
 <translation id="4985921635659180565">Quando é agendada a eliminação de um ficheiro, não é possível cancelá-la.</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todos os separadores.</translation>
-<translation id="4989065233040279145">Escolha onde quer guardar <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gerida pela sua organização.</translation>
 <translation id="4992255726304765516">Cor do grupo de separadores: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
@@ -1652,7 +1651,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7724085059277147439">{count,plural, =1{Item guardado na sua Conta Google, {email}}other{Itens guardados na sua Conta Google, {email}}}</translation>
 <translation id="7729458878441927652">Para ver os separadores dos seus outros dispositivos, sincronize os separadores e o histórico.</translation>
 <translation id="7730020510075123961">Não, unir dados</translation>
-<translation id="7730973429297233609">Selecione a conta que quer usar para guardar <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
 <translation id="7744192722284567281">Encontrada numa violação de dados</translation>
 <translation id="7749790401023484470">Não selecionou texto.</translation>
@@ -1836,7 +1834,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8428045167754449968">Cidade/Localidade</translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8428634594422941299">OK</translation>
-<translation id="8430694217306051839">Escolha onde quer guardar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Detalhes do grupo de separadores</translation>
 <translation id="8438566539970814960">Melhorar as pesquisas e a navegação</translation>
 <translation id="8439758443371991593">Ocultar Adicionar à Lista de leitura</translation>

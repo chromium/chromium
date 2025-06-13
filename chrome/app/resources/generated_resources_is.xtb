@@ -5997,7 +5997,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5186381005592669696">Sérsníða birtingartungumál fyrir studd forrit</translation>
 <translation id="5186788525428341874">Þú getur notað þennan aðgangslykil til að skrá þig á fljótlegri hátt í öllum tækjunum þínum. Hann verður vistaður í Google-aðgangsorðastjórnun fyrir <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Setja upp síðu sem forrit ...</translation>
-<translation id="5187671830619031922">Bæta við flipa til að skipta skjá</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> deildi þessu</translation>
 <translation id="5188648870018555788">Nota staðsetningu. Leyfðu forritum, vefsvæðum og þjónustum ChromeOS og Android sem eru með staðsetningarheimild að nota staðsetningu tækisins. Staðsetningarnákvæmni veitir forritum og þjónustu frá Android aðgang að nákvæmari staðsetningum. Til að gera þetta vinnur Google af og til úr upplýsingum um skynjara tækisins og þráðlaus merki úr tækinu þínu fyrir hópvistun á staðsetningum þráðlausra merkja. Upplýsingarnar eru notaðar án þess að auðkenna þig til að bæta staðsetningarnákvæmni og staðsetningarbundnar þjónustur og til að bæta, veita og viðhalda þjónustum Google byggt á lögmætum hagsmunum Google og þriðju aðila er varða þarfir notenda. <ph name="BEGIN_LINK1" />Nánar um notkun staðsetningar<ph name="END_LINK1" /></translation>
@@ -9023,6 +9022,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7387951778417998929">Til að nota aðra leitarvél en þá sem er sjálfgefin skaltu slá inn flýtileið hennar í veffangastikuna og ýta því næst á valinn flýtilykil. Þú getur einnig skipt um sjálfgefna leitarvél hér.</translation>
 <translation id="7388615499319468910">Vefsvæði og auglýsendur geta greint árangur auglýsinga. Slökkt er á þessari stillingu.</translation>
 <translation id="738903649531469042">Bæta flipa við leslista</translation>
+<translation id="7389615853658756494">Breyta því á vefsvæðinu</translation>
 <translation id="7392118418926456391">Vírusleit mistókst</translation>
 <translation id="7392915005464253525">Opna lokaðan glugga aftur</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 atriði afritað}one{{COUNT} atriði afritað}other{{COUNT} atriði afrituð}}</translation>
@@ -9152,6 +9152,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7474043404939621342">Sérsníddu tækjastikuna</translation>
 <translation id="747459581954555080">Endurheimta allt</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Tafarlausra skila krafist}one{Skilaðu <ph name="DEVICE_TYPE" /> tækinu innan {NUM_DAYS} dags}other{Skilaðu <ph name="DEVICE_TYPE" /> tækinu innan {NUM_DAYS} daga}}</translation>
+<translation id="747557463733380256">Kynntu þér hvernig vafranum þínum er stjórnað</translation>
 <translation id="7475671414023905704">Slóð á týnt aðgangsorð Netscape</translation>
 <translation id="7475742997309661417">Skjálesarinn í ChromeOS, ChromeVox, er aðallega notaður af fólki sem er blint eða með lélega sjón til að lesa texta sem birtur er á skjánum með talgervli eða blindraletri. Haltu báðum hljóðstyrkstökkunum inni í fimm sekúndur til að kveikja á ChromeVox. Þegar kveikt hefur verið á ChromeVox er þér boðið upp á stutta kynningu.</translation>
 <translation id="7476454130948140105">Of lítil hleðsla á rafhlöðu til að uppfæra (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -10300,6 +10301,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8265018477030547118">Aðeins í þessu tæki</translation>
 <translation id="826511437356419340">Gluggayfirlitsstilling opnuð. Strjúktu til að fletta eða ýttu á dálkalykilinn ef þú notar lyklaborð.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Huliðsgluggi opnast ekki eftir endurræsingu}one{{COUNT} huliðsgluggi opnast ekki eftir endurræsingu}other{{COUNT} huliðsgluggar opnast ekki eftir endurræsingu}}</translation>
+<translation id="8266430295499893285">Þú þarft að staðfesta auðkenni þitt til að fá aðgengi að aðgangsorðunum þínum</translation>
 <translation id="8266947622852630193">Allar innsláttaraðferðir</translation>
 <translation id="8267539814046467575">Bæta prentara við</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Þetta eru almennar upplýsingar um tækið þitt og notkun þína á því (til dæmis stöðu rafhlöðunnar, virkni kerfis og forrita og villur). Gögnin verða notuð til að betrumbæta Android-stýrikerfið og sumar uppsafnaðar upplýsingar geta gagnast samstarfsaðilum okkar, svo sem þróunaraðilum fyrir Android, við að bæta forrit og vörur.<ph name="END_PARAGRAPH1" />
@@ -11110,7 +11112,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8827125715368568315">Lokaði á <ph name="PERMISSION" /> og <ph name="COUNT" /> í viðbót</translation>
 <translation id="8827289157496676362">Festa viðbót</translation>
 <translation id="8828933418460119530">DNS-heiti</translation>
-<translation id="8829979393064090868">Bæta við flipa til að skipta skjá</translation>
 <translation id="8830479210602243906">Auktu afköst</translation>
 <translation id="883062543841130884">Staðgenglar</translation>
 <translation id="8830779999439981481">Endurræsir til að virkja uppfærslur</translation>

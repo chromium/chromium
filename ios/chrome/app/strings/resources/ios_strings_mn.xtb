@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="3602260545951981695">"Сайжруулсан хамгаалалт"-ыг сонгоно уу</translation>
 <translation id="3608436266458100337">Уншигчийн горим</translation>
+<translation id="3610041351087301930">Уншигч горимыг нуух</translation>
 <translation id="3622175633937495219">Хайлтын түүх (<ph name="COUNT" /> олдсон)</translation>
 <translation id="3625008969091706597">Та буцахын тулд ирмэгээс шудрах боломжтой.</translation>
 <translation id="362709345066740529">Карт, хангамж болон бусад зүйлээ энд өөрчилнө үү</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">Хавчуурга, нууц үг, түүх болон бусад тохиргоог бүх төхөөрөмждөө авахын тулд Google Бүртгэлээрээ нэвтэрнэ үү</translation>
 <translation id="4985921635659180565">Файлыг устгах хуваарь гаргасны дараа цуцлах боломжгүй.</translation>
 <translation id="498624032394115435">Холбоостой дурын хүн бүх табыг засах боломжтой.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" />-г хаана хадгалахыг сонгоно уу</translation>
 <translation id="499122600724363620">Танай байгууллагаас тохиргоо хийсэн <ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="4992255726304765516">Табын бүлгийн <ph name="COLOR" /> өнгө</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">Таныг гаргана</translation>
 <translation id="543338862236136125">Нууц үг засах</translation>
 <translation id="5433691172869980887">Хэрэглэгчийн нэрийг хуулсан</translation>
+<translation id="5437480232219631455">Та эндээс Gemini-г нээж болно</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" />-р нэвтэрсэн</translation>
 <translation id="5443636120437209490">Өгөгдмөлөөр илүү сайн үзээрэй</translation>
 <translation id="5444892875087332195">Хавчуурга</translation>
@@ -1650,7 +1651,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7724085059277147439">{count,plural, =1{Таны {email} Google Бүртгэлд зүйлийг хадгалсан}other{Таны {email} Google Бүртгэлд зүйлсийг хадгалсан}}</translation>
 <translation id="7729458878441927652">Бусад төхөөрөмжийнхөө табуудыг харахын тулд табууд болон түүхээ синк хийнэ үү.</translation>
 <translation id="7730020510075123961">Үгүй, өгөгдлийг нэгтгэнэ үү</translation>
-<translation id="7730973429297233609">Та <ph name="FILENAME" /> - <ph name="FILESIZE" />-г хадгалахыг хүсэж буй бүртгэлээ сонгоно уу</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Зөвхөн энэ төхөөрөмжид.</translation>
 <translation id="7744192722284567281">Өгөгдлийн зөрчилд олдсон</translation>
 <translation id="7749790401023484470">Та ямар ч текст сонгоогүй.</translation>
@@ -1834,7 +1834,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8428045167754449968">Хот / Тосгон</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8428634594422941299">Ойлголоо</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" />-г (<ph name="FILE_SIZE" />) хаана хадгалахыг сонгоно уу</translation>
 <translation id="8434837876193928924">Табын бүлгийн дэлгэрэнгүй мэдээлэл</translation>
 <translation id="8438566539970814960">Хайлт болон хөтлөх явцыг сайжруулаарай</translation>
 <translation id="8439758443371991593">Унших жагсаалтад нэмэхийг нуух</translation>

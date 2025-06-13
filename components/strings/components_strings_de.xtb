@@ -1562,6 +1562,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3641116835972736297">American Football</translation>
 <translation id="3642196846309122856">Versuche noch einmal, deine Dateien herunterzuladen</translation>
 <translation id="3642638418806704195">Anwendung:</translation>
+<translation id="3644768007456662469">Symbol für Zahlungselement</translation>
 <translation id="3646643500201740985">Leistung einer Werbeanzeige messen</translation>
 <translation id="3647286794400715637">Jeder URL-Stringeintrag muss eine oder zwei URLs enthalten.</translation>
 <translation id="3647400963805615193">Schaltfläche „Chrome-Tipp schließen“ – Drück die Eingabetaste zum Schließen, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2098,11 +2099,13 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Virtuelle Kartennummer:</translation>
 <translation id="4535523368173457420">Diese Suchmaschinen sind in deiner Region beliebt und werden in zufälliger Reihenfolge angezeigt</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Vor 1 Jahr erstellt}other{Vor {NUM_YEARS} Jahren erstellt}}</translation>
 <translation id="4541810033354695636">Augmented Reality</translation>
 <translation id="4542971377163063093">Fach 6</translation>
 <translation id="4543072026714825470">Du kannst nächstes Mal schneller bezahlen, wenn du deine Karte und deine Rechnungsadresse in deinem Google-Konto speicherst</translation>
 <translation id="454441086898495030">Zu „<ph name="SET" />“ hinzufügen?</translation>
 <translation id="4546730006268514143">Zeitüberschreitung bei Übertragung</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Vor 1 Tag erstellt}other{Vor {NUM_DAYS} Tagen erstellt}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Du verwendest die Displaysperre zum Ausfüllen von Passwörtern</translation>
 <translation id="4557573143631562971">Hausversicherungen</translation>
@@ -2896,6 +2899,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5938153366081463283">Virtuelle Karte hinzufügen</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Diese Informationen stammen von unabhängigen Rezensionswebsites wie Trustpilot, ScamAdviser und Google. Zusammenfassungen werden mithilfe von KI erstellt.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Vor 1 Minute erstellt}other{Vor {NUM_MINS} Minuten erstellt}}</translation>
 <translation id="5944297261866530437">Stoff (hochglanz)</translation>
 <translation id="5950901984834744590">Rasierer</translation>
 <translation id="5951495562196540101">Registrierung mit Kundenkonto nicht möglich (Paketlizenz verfügbar).</translation>
@@ -4057,6 +4061,7 @@ Weitere Details:
 <translation id="7894280532028510793">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />kannst du die Netzwerkdiagnose durchführen<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Umschlag 7 × 9 Zoll</translation>
 <translation id="7905064834449738336">Wenn du ein Passwort verwendest, wirst du von Chromium gewarnt, falls es online veröffentlicht wurde. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Vor 1 Stunde erstellt}other{Vor {NUM_HOURS} Stunden erstellt}}</translation>
 <translation id="7908648876066812348">Virtuelle Karte wird aktiviert</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – Drück die Tabulatortaste und dann die Eingabetaste, um in den Einstellungen die Seite „Sicherheitscheck“ für Chrome aufzurufen</translation>
 <translation id="791107458486222637">Aktion wird wiederholt</translation>
@@ -4191,6 +4196,7 @@ Weitere Details:
 <translation id="8134058435519644366">Personalbeschaffung</translation>
 <translation id="8135546115396015134">die linke Taste</translation>
 <translation id="8137456439814903304">Energie und Energieversorger</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vor 1 Monat erstellt}other{Vor {NUM_MONTHS} Monaten erstellt}}</translation>
 <translation id="8148608574971654810">PDF-Version:</translation>
 <translation id="8149426793427495338">Dein Computer ist im Ruhemodus.</translation>
 <translation id="8150722005171944719">Die Datei unter <ph name="URL" /> kann nicht gelesen werden. Sie wurde möglicherweise entfernt oder verschoben oder die Dateiberechtigungen verhindern den Zugriff.</translation>

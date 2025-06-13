@@ -1564,6 +1564,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3641116835972736297">Pêl-droed Americanaidd</translation>
 <translation id="3642196846309122856">Rhowch gynnig ar lawrlwytho'ch ffeiliau eto</translation>
 <translation id="3642638418806704195">Rhaglen:</translation>
+<translation id="3644768007456662469">Eicon Eitem Taliadau</translation>
 <translation id="3646643500201740985">Mesur pa mor dda y mae hysbyseb yn perfformio</translation>
 <translation id="3647286794400715637">Rhaid i bob cofnod llinyn cyfeiriadau URL gynnwys rhwng 1 a 2 gyfeiriad URL.</translation>
 <translation id="3647400963805615193">Botwm Diystyru Awgrym Chrome, pwyswch Enter i ddiystyru, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4530347922939905757">Neges destun</translation>
 <translation id="4531477351494678589">Rhif cerdyn rhithwir:</translation>
 <translation id="4535523368173457420">Mae'r peiriannau chwilio hyn yn boblogaidd yn eich rhanbarth ac fe'u dangosir ar hap</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Crëwyd 1 flwyddyn yn ôl}zero{Crëwyd {NUM_YEARS} blynedd yn ôl}two{Crëwyd {NUM_YEARS} flynedd yn ôl}few{Crëwyd {NUM_YEARS} blynedd yn ôl}many{Crëwyd {NUM_YEARS} blynedd yn ôl}other{Crëwyd {NUM_YEARS} mlynedd yn ôl}}</translation>
 <translation id="4541810033354695636">realiti estynedig</translation>
 <translation id="4542971377163063093">Hambwrdd 6</translation>
 <translation id="4543072026714825470">I dalu'n gyflymach y tro nesaf, cadwch eich cerdyn a'ch cyfeiriad bilio yn eich Cyfrif Google.</translation>
 <translation id="454441086898495030">Ychwanegu at <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Mae trosglwyddo wedi cymryd gormod o amser</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Crëwyd 1 diwrnod yn ôl}zero{Crëwyd {NUM_DAYS} diwrnod yn ôl}two{Crëwyd {NUM_DAYS} ddiwrnod yn ôl}few{Crëwyd {NUM_DAYS} diwrnod yn ôl}many{Crëwyd {NUM_DAYS} diwrnod yn ôl}other{Crëwyd {NUM_DAYS} diwrnod yn ôl}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Rydych chi'n defnyddio'ch clo sgrin ar gyfer llenwi cyfrineiriau</translation>
 <translation id="4557573143631562971">Yswiriant Cartref</translation>
@@ -2898,6 +2901,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5938153366081463283">Ychwanegu cerdyn rhithwir</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Daw'r wybodaeth hon o wefannau adolygu annibynnol megis Trustpilot, ScamAdviser, Google a rhagor. Mae crynodebau yn cael eu creu gydag AI.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Crëwyd 1 funud yn ôl}zero{Crëwyd {NUM_MINS} munud yn ôl}two{Crëwyd {NUM_MINS} funud yn ôl}few{Crëwyd {NUM_MINS} munud yn ôl}many{Crëwyd {NUM_MINS} munud yn ôl}other{Crëwyd {NUM_MINS} munud yn ôl}}</translation>
 <translation id="5944297261866530437">Ffabrig (Sglein Uchel)</translation>
 <translation id="5950901984834744590">Raserau ac Eillio</translation>
 <translation id="5951495562196540101">Methu â chofrestru gyda chyfrif defnyddiwr (mae trwydded sydd wedi'i becynnu ar gael).</translation>
@@ -4058,6 +4062,7 @@ Manylion ychwanegol:
 <translation id="7894280532028510793">Os yw'r sillafu'n gywir, <ph name="BEGIN_LINK" />rhowch gynnig ar redeg Diagnosteg Rhwydwaith<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Amlen 7 x 9 o fodfeddi</translation>
 <translation id="7905064834449738336">Pan fyddwch yn defnyddio cyfrinair, mae Chromium yn eich rhybuddio os yw wedi'i gyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddiwr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Crëwyd 1 awr yn ôl}zero{Crëwyd {NUM_HOURS} awr yn ôl}two{Crëwyd {NUM_HOURS} awr yn ôl}few{Crëwyd {NUM_HOURS} awr yn ôl}many{Crëwyd {NUM_HOURS} awr yn ôl}other{Crëwyd {NUM_HOURS} awr yn ôl}}</translation>
 <translation id="7908648876066812348">Wrthi'n troi cerdyn rhithwir ymlaen</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i fynd i dudalen gwirio diogelwch Chrome yn y gosodiadau</translation>
 <translation id="791107458486222637">Wrthi'n ailwneud y canlyniad</translation>
@@ -4192,6 +4197,7 @@ Manylion ychwanegol:
 <translation id="8134058435519644366">Recriwtio a Staffio</translation>
 <translation id="8135546115396015134">bysell chwith</translation>
 <translation id="8137456439814903304">Ynni a Chyfleustodau</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Crëwyd 1 mis yn ôl}zero{Crëwyd {NUM_MONTHS} mis yn ôl}two{Crëwyd {NUM_MONTHS} fis yn ôl}few{Crëwyd {NUM_MONTHS} mis yn ôl}many{Crëwyd {NUM_MONTHS} mis yn ôl}other{Crëwyd {NUM_MONTHS} mis yn ôl}}</translation>
 <translation id="8148608574971654810">Fersiwn y PDF:</translation>
 <translation id="8149426793427495338">Aeth eich cyfrifiadur i gysgu.</translation>
 <translation id="8150722005171944719">Nid oes modd darllen y ffeil yn <ph name="URL" />.  Mae'n bosib ei bod wedi cael ei thynnu, ei symud neu gallai caniatadau ffeil rwystro mynediad iddi.</translation>

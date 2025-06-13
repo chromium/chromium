@@ -623,6 +623,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
 <translation id="3602260545951981695">Choose 'Enhanced protection'</translation>
 <translation id="3608436266458100337">Reader mode</translation>
+<translation id="3610041351087301930">Hide reader</translation>
 <translation id="3622175633937495219">Search history (<ph name="COUNT" /> found)</translation>
 <translation id="3625008969091706597">You can swipe the edge to go back.</translation>
 <translation id="362709345066740529">Customise your cards, feed and more here</translation>
@@ -964,7 +965,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4979397965658815378">Sign in with your Google Account to get your bookmarks, passwords, history and other settings on all your devices</translation>
 <translation id="4985921635659180565">Once a file is scheduled to be deleted, it can't be cancelled.</translation>
 <translation id="498624032394115435">Anyone with the link can edit all tabs.</translation>
-<translation id="4989065233040279145">Choose where to save <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, managed by your organisation.</translation>
 <translation id="4992255726304765516">Tab group colour <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copy password</translation>
@@ -1064,6 +1064,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5431252637281434233">You'll be signed out</translation>
 <translation id="543338862236136125">Edit password</translation>
 <translation id="5433691172869980887">Username copied</translation>
+<translation id="5437480232219631455">You can open Gemini here</translation>
 <translation id="5439618055789623719">Signed in as <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Better browsing by default</translation>
 <translation id="5444892875087332195">Bookmarks</translation>
@@ -1650,7 +1651,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7724085059277147439">{count,plural, =1{Item saved in your Google Account, {email}}other{Items saved in your Google Account, {email}}}</translation>
 <translation id="7729458878441927652">To see tabs from your other devices, sync your tabs and history.</translation>
 <translation id="7730020510075123961">No, merge data</translation>
-<translation id="7730973429297233609">Select the account that you want to use to save <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Only on this device.</translation>
 <translation id="7744192722284567281">Found in data breach</translation>
 <translation id="7749790401023484470">You have not selected any text.</translation>
@@ -1834,7 +1834,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8428045167754449968">City/Town</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8428634594422941299">Got it</translation>
-<translation id="8430694217306051839">Choose where to save <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Tab group details</translation>
 <translation id="8438566539970814960">Make searches and browsing better</translation>
 <translation id="8439758443371991593">Hide Add to reading list</translation>

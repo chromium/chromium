@@ -4750,6 +4750,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4305402730127028764">Skopiuj na: <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Przełącz</translation>
 <translation id="4306119971288449206">Aplikacje muszą być udostępniane z parametrem content-type „<ph name="CONTENT_TYPE" />”</translation>
+<translation id="4306489587293957491">Wpisz</translation>
 <translation id="4306810703452026910">Chrome przestanie oznaczać powiadomienia z tej witryny jako spam</translation>
 <translation id="4307992518367153382">Podstawowe</translation>
 <translation id="4309165024397827958">Pozwól na używanie lokalizacji Twojego urządzenia przez aplikacje i usługi Androida, które mają dostęp do lokalizacji. Możemy okresowo gromadzić dane i używać ich anonimowo, aby zwiększyć dokładność lokalizacji oraz usprawnić działanie usług opartych na lokalizacji.</translation>
@@ -4807,6 +4808,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4350230709416545141">Nigdy nie zezwalaj stronie <ph name="HOST" /> na dostęp do Twojej lokalizacji</translation>
 <translation id="4350782034419308508">OK Google</translation>
 <translation id="435185728237714178">Otwórz aplikację „<ph name="APP_NAME" />”, aby zarządzać aplikacjami zainstalowanymi i przesyłanymi strumieniowo.</translation>
+<translation id="4352913519324947509">Twoje hasło nie zostało zaktualizowane, ale nadal powinien być możliwy dostęp do witryny za pomocą obecnego hasła</translation>
 <translation id="4354073718307267720">Pytaj, gdy strona chce tworzyć mapę 3D otoczenia lub śledzić pozycję kamery</translation>
 <translation id="4354344420232759511">Tutaj pojawią się odwiedzone przez Ciebie strony</translation>
 <translation id="435527878592612277">Wybierz swoje zdjęcie</translation>
@@ -5964,7 +5966,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5186381005592669696">Dostosowywanie języka wyświetlania obsługiwanych aplikacji</translation>
 <translation id="5186788525428341874">Możesz używać tego klucza dostępu, aby szybciej logować się na różnych urządzeniach. Menedżer haseł Google zapisze je na koncie <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Zainstaluj stronę jako aplikację…</translation>
-<translation id="5187671830619031922">Dodaj kartę do widoku dzielonego</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Udostępnia <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Używaj lokalizacji. Zezwól aplikacjom na ChromeOS i Androida oraz witrynom i usługom, które mają dostęp do lokalizacji, na używanie lokalizacji tego urządzenia. Ustawienie Dokładność lokalizacji zapewnia dokładniejszą lokalizację aplikacjom i usługom na Androida. W tym celu Google okresowo przetwarza dane z czujników urządzenia i sygnały bezprzewodowe z Twojego urządzenia do ustalania lokalizacji sygnałów bezprzewodowych na zasadzie crowdsourcingu. Dane są wykorzystywane – bez identyfikowania Cię – do poprawiania dokładności lokalizacji i usług wykorzystujących lokalizację, a także do udoskonalania, świadczenia i utrzymywania usług Google w oparciu o uzasadniony interes Google i innych firm w spełnianiu potrzeb użytkowników. <ph name="BEGIN_LINK1" />Więcej informacji o używaniu lokalizacji<ph name="END_LINK1" /></translation>
@@ -8294,6 +8295,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="686831807558000905">Nie loguj się</translation>
 <translation id="686839242150793617">Z zezwoleniem na automatyczne włączanie obrazu w obrazie</translation>
 <translation id="6868934826811377550">Zobacz szczegóły</translation>
+<translation id="6870470066213933201">Zarządzanie optymalizacją i zabezpieczeniami JavaScriptu</translation>
 <translation id="6871644448911473373">Obiekt odpowiadający protokołu OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Języki…</translation>
 <translation id="6873571253135628430">Zmień uprawnienia do witryny</translation>
@@ -11076,7 +11078,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8827125715368568315">Zablokowano uprawnienia: <ph name="PERMISSION" /> i jeszcze <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Przypnij rozszerzenie</translation>
 <translation id="8828933418460119530">Nazwa DNS</translation>
-<translation id="8829979393064090868">Dodaj kartę do widoku dzielonego</translation>
 <translation id="8830479210602243906">Zwiększ produktywność</translation>
 <translation id="883062543841130884">Zamienniki</translation>
 <translation id="8830779999439981481">Uruchamiam ponownie, by zastosować aktualizacje</translation>

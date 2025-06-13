@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="3602260545951981695">"మెరుగైన రక్షణ"ను ఎంచుకోండి</translation>
 <translation id="3608436266458100337">రీడర్ మోడ్</translation>
+<translation id="3610041351087301930">రీడర్‌ను దాచండి</translation>
 <translation id="3622175633937495219">సెర్చ్ హిస్టరీ (<ph name="COUNT" /> కనుగొనబడింది)</translation>
 <translation id="3625008969091706597">మీరు వెనుకకు వెళ్లడానికి అంచును స్వైప్ చేయవచ్చు.</translation>
 <translation id="362709345066740529">మీ కార్డ్‌లు, ఫీడ్, అలాగే మరిన్నింటిని ఇక్కడ అనుకూలంగా మార్చండి</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, హిస్టరీ మరియు ఇతర సెట్టింగ్‌లను మీ అన్ని పరికరాలలో పొందడానికి మీ Google ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="4985921635659180565">ఒక ఫైల్‌ను తొలగించడానికి షెడ్యూల్ చేసిన తర్వాత, దానిని రద్దు చేయడం సాధ్యం కాదు.</translation>
 <translation id="498624032394115435">లింక్ ఉన్న వారు ఎవరైనా అన్ని ట్యాబ్‌లను ఎడిట్ చేయగలరు.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" />ను ఎక్కడ సేవ్ చేయాలో ఎంచుకోండి</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="4992255726304765516">ట్యాబ్ గ్రూప్ రంగు <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">మీరు సైన్ అవుట్ అవుతారు</translation>
 <translation id="543338862236136125">పాస్‌వర్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5433691172869980887">వినియోగదారు పేరు కాపీ చేయబడింది</translation>
+<translation id="5437480232219631455">మీరు ఇక్కడ Geminiను తెరవవచ్చు</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" />‌గా సైన్ ఇన్ చేశారు</translation>
 <translation id="5443636120437209490">ఆటోమేటిక్‌గా మెరుగైన బ్రౌజింగ్ అందించబడుతుంది</translation>
 <translation id="5444892875087332195">బుక్‌మార్క్‌లు</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{మీ Google ఖాతా, {email}‌లో ఐటెమ్ సేవ్ చేయబడింది}other{మీ Google ఖాతా, {email}‌లో ఐటెమ్‌లు సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="7729458878441927652">మీ ఇతర పరికరాల నుండి ట్యాబ్‌లను చూడటానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి.</translation>
 <translation id="7730020510075123961">లేదు, డేటాను విలీనం చేయండి</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" />ని సేవ్ చేయడానికి మీరు ఉపయోగించాలనుకుంటున్న ఖాతాను ఎంచుకోండి</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ఈ పరికరంలో మాత్రమే ఉంది.</translation>
 <translation id="7744192722284567281">డేటా ఉల్లంఘనలో కనుగొనబడింది</translation>
 <translation id="7749790401023484470">మీరు ఏ టెక్స్ట్‌నూ ఎంచుకోలేదు.</translation>
@@ -1834,7 +1834,6 @@
 <translation id="8428045167754449968">నగరం / పట్టణం</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8428634594422941299">అర్థమైంది</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />)ను ఎక్కడ సేవ్ చేయాలో ఎంచుకోండి</translation>
 <translation id="8434837876193928924">ట్యాబ్ గ్రూప్ వివరాలు</translation>
 <translation id="8438566539970814960">సెర్చ్‌లను, బ్రౌజింగ్‌ను మెరుగుపరచండి</translation>
 <translation id="8439758443371991593">'చదవాల్సిన లిస్ట్‌కు జోడించండి'ని దాచండి</translation>

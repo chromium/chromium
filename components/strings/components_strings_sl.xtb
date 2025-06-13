@@ -1564,6 +1564,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3641116835972736297">Ameriški nogomet</translation>
 <translation id="3642196846309122856">Poskusite znova prenesti datoteke</translation>
 <translation id="3642638418806704195">Program:</translation>
+<translation id="3644768007456662469">Ikona elementa za plačilo</translation>
 <translation id="3646643500201740985">Merjenje uspešnosti oglasa</translation>
 <translation id="3647286794400715637">Vsak vnos z nizom URL-jev mora vsebovati od 1 do 2 URL-ja.</translation>
 <translation id="3647400963805615193">Gumb za opustitev nasveta za Chrome, pritisnite Enter, če želite opustiti, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2100,11 +2101,13 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4530347922939905757">Sporočilo SMS</translation>
 <translation id="4531477351494678589">Številka navidezne kartice:</translation>
 <translation id="4535523368173457420">Ti iskalniki so priljubljeni na vašem območju in so prikazani v naključnem vrstnem redu</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Ustvarjeno pred 1 letom}one{Ustvarjeno pred {NUM_YEARS} letom}two{Ustvarjeno pred {NUM_YEARS} letoma}few{Ustvarjeno pred {NUM_YEARS} leti}other{Ustvarjeno pred {NUM_YEARS} leti}}</translation>
 <translation id="4541810033354695636">razširjena resničnost</translation>
 <translation id="4542971377163063093">Pladenj 6</translation>
 <translation id="4543072026714825470">Če želite naslednjič hitreje plačati, shranite kartico in naslov za izstavitev računa v računu Google</translation>
 <translation id="454441086898495030">Želite dodati v »<ph name="SET" />«?</translation>
 <translation id="4546730006268514143">Časovna omejitev za prenos je potekla</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Ustvarjeno pred 1 dnevom}one{Ustvarjeno pred {NUM_DAYS} dnevom}two{Ustvarjeno pred {NUM_DAYS} dnevoma}few{Ustvarjeno pred {NUM_DAYS} dnevi}other{Ustvarjeno pred {NUM_DAYS} dnevi}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Zaklepanje zaslona uporabljate za izpolnjevanje gesel</translation>
 <translation id="4557573143631562971">Zavarovanje nepremičnin</translation>
@@ -2898,6 +2901,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5938153366081463283">Dodaj navidezno kartico</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Te informacije izvirajo iz neodvisnih spletnih mest z mnenji, kot so Trustpilot, ScamAdviser, Google in druga. Povzetki so ustvarjeni z umetno inteligenco.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Ustvarjeno pred 1 minuto}one{Ustvarjeno pred {NUM_MINS} minuto}two{Ustvarjeno pred {NUM_MINS} minutama}few{Ustvarjeno pred {NUM_MINS} minutami}other{Ustvarjeno pred {NUM_MINS} minutami}}</translation>
 <translation id="5944297261866530437">Fabric (High-Gloss)</translation>
 <translation id="5950901984834744590">Britvice in brivniki</translation>
 <translation id="5951495562196540101">S potrošniškim računom se ni mogoče včlaniti (na voljo je pridružena licenca).</translation>
@@ -4059,6 +4063,7 @@ Dodatne podrobnosti:
 <translation id="7894280532028510793">Če je črkovanje pravilno, <ph name="BEGIN_LINK" />poskušajte zagnati orodje za omrežno diagnostiko<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Kuverta 7 x 9 palcev</translation>
 <translation id="7905064834449738336">Ko uporabite geslo, vas Chromium opozori, če je bilo objavljeno v spletu. Pri tem so vaša gesla in uporabniška imena šifrirana, da jih ne more prebrati nihče, vključno z Googlom.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Ustvarjeno pred 1 uro}one{Ustvarjeno pred {NUM_HOURS} uro}two{Ustvarjeno pred {NUM_HOURS} urama}few{Ustvarjeno pred {NUM_HOURS} urami}other{Ustvarjeno pred {NUM_HOURS} urami}}</translation>
 <translation id="7908648876066812348">Vklapljanje navidezne kartice</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite v nastavitvah odpreti stran za varnostno preverjanje v Chromu</translation>
 <translation id="791107458486222637">Uveljavitev rezultata</translation>
@@ -4193,6 +4198,7 @@ Dodatne podrobnosti:
 <translation id="8134058435519644366">Zaposlovanje in kadrovanje</translation>
 <translation id="8135546115396015134">tipka levo</translation>
 <translation id="8137456439814903304">Energetika in komunalne službe</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ustvarjeno pred 1 mesecem}one{Ustvarjeno pred {NUM_MONTHS} mesecem}two{Ustvarjeno pred {NUM_MONTHS} mesecema}few{Ustvarjeno pred {NUM_MONTHS} meseci}other{Ustvarjeno pred {NUM_MONTHS} meseci}}</translation>
 <translation id="8148608574971654810">Različica dokumenta PDF:</translation>
 <translation id="8149426793427495338">Računalnik je preklopil v stanje pripravljenosti.</translation>
 <translation id="8150722005171944719">Datoteke na <ph name="URL" /> ni mogoče prebrati. Morda je odstranjena, premaknjena ali pa dostop preprečujejo dovoljenja za datoteke.</translation>

@@ -623,6 +623,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3596414637720633074">Bloker tredjepartscookies i inkognito</translation>
 <translation id="3602260545951981695">Vælg "Forbedret beskyttelse"</translation>
 <translation id="3608436266458100337">Læser-tilstand</translation>
+<translation id="3610041351087301930">Skjul Læser</translation>
 <translation id="3622175633937495219">Søgehistorik (<ph name="COUNT" /> blev fundet)</translation>
 <translation id="3625008969091706597">Du kan stryge i kanten for at gå tilbage.</translation>
 <translation id="362709345066740529">Tilpas dine kort, dit feed m.m. her</translation>
@@ -964,7 +965,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4979397965658815378">Log ind med din Google-konto for at få adgang til dine bogmærker, dine adgangskoder, din historik og andre indstillinger på alle dine enheder.</translation>
 <translation id="4985921635659180565">Når en fil er planlagt til at blive slettet, kan den ikke annulleres.</translation>
 <translation id="498624032394115435">Alle med linket kan redigere alle faner.</translation>
-<translation id="4989065233040279145">Vælg, hvor du vil gemme <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, som administreres af din organisation.</translation>
 <translation id="4992255726304765516">Fanegruppens farve <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
@@ -1064,6 +1064,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5431252637281434233">Du logges ud</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
 <translation id="5433691172869980887">Brugernavnet er kopieret</translation>
+<translation id="5437480232219631455">Du kan åbne Gemini her</translation>
 <translation id="5439618055789623719">Logget ind som <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Bedre browsing som standard</translation>
 <translation id="5444892875087332195">Bogmærker</translation>
@@ -1650,7 +1651,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7724085059277147439">{count,plural, =1{Elementet er gemt på din Google-konto, {email}}one{Elementet er gemt på din Google-konto, {email}}other{Elementerne er gemt på din Google-konto, {email}}}</translation>
 <translation id="7729458878441927652">Hvis du vil se faner fra dine andre enheder, skal du synkronisere dine faner og din historik.</translation>
 <translation id="7730020510075123961">Nej. Flet data</translation>
-<translation id="7730973429297233609">Vælg den konto, du vil bruge til at gemme <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Kun på denne enhed.</translation>
 <translation id="7744192722284567281">Blev fundet i et brud på datasikkerheden</translation>
 <translation id="7749790401023484470">Du har ikke valgt en tekst.</translation>
@@ -1834,7 +1834,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8428045167754449968">By</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8428634594422941299">OK</translation>
-<translation id="8430694217306051839">Vælg, hvor du vil gemme <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Oplysninger om fanegruppen</translation>
 <translation id="8438566539970814960">Gør søgninger og browsing endnu bedre</translation>
 <translation id="8439758443371991593">Skjul Føj til læseliste</translation>

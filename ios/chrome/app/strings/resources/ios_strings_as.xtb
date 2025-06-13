@@ -623,6 +623,7 @@
 <translation id="3596414637720633074">ইনক'গনিট'ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="3602260545951981695">"বৰ্ধিত সুৰক্ষা" বাছনি কৰক</translation>
 <translation id="3608436266458100337">ৰীডাৰ ম’ড</translation>
+<translation id="3610041351087301930">ৰীডাৰ লুকুৱাওক</translation>
 <translation id="3622175633937495219">সন্ধানৰ ইতিহাস (<ph name="COUNT" /> টা পোৱা গৈছে)</translation>
 <translation id="3625008969091706597">পাছলৈ যাবলৈ আপুনি কাষৰ পৰা ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="362709345066740529">ইয়াত আপোনাৰ কাৰ্ড, ফীড আৰু আন বহুতো বস্তু কাষ্টমাইজ কৰক</translation>
@@ -964,7 +965,6 @@
 <translation id="4979397965658815378">আপোনাৰ সকলো ডিভাইচত বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহ পাবৰ বাবে Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক।</translation>
 <translation id="4985921635659180565">কোনো ফাইল মচাৰ সময়সূচী নিৰ্ধাৰণ কৰাৰ পাছত, সেইটো বাতিল কৰিব নোৱাৰি।</translation>
 <translation id="498624032394115435">এই লিংকটো থকা যিকোনো লোকে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে।</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> ক’ত ছেভ কৰিব লাগে বাছনি কৰক</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে।</translation>
 <translation id="4992255726304765516">টেবৰ গোটৰ ৰং <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">পাছৱর্ডটোৰ প্ৰতিলিপি কৰক</translation>
@@ -1064,6 +1064,7 @@
 <translation id="5431252637281434233">আপোনাক ছাইন আউট কৰোৱা হ’ব</translation>
 <translation id="543338862236136125">পাছৱৰ্ড সম্পাদনা কৰক</translation>
 <translation id="5433691172869980887">ব্যৱহাৰকাৰীৰ নাম প্ৰতিলিপি কৰা হ’ল</translation>
+<translation id="5437480232219631455">আপুনি ইয়াত Gemini খুলিব পাৰে</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰা হৈছে</translation>
 <translation id="5443636120437209490">ডিফ’ল্ট হিচাপে উন্নত ব্ৰাউজিং</translation>
 <translation id="5444892875087332195">বুকমার্ক</translation>
@@ -1650,7 +1651,6 @@
 <translation id="7724085059277147439">{count,plural, =1{বস্তুটো আপোনাৰ Google একাউণ্ট, {email}ত ছেভ কৰা হৈছে}one{বস্তুকেইটা আপোনাৰ Google একাউণ্ট, {email}ত ছেভ কৰা হৈছে}other{বস্তুকেইটা আপোনাৰ Google একাউণ্ট, {email}ত ছেভ কৰা হৈছে}}</translation>
 <translation id="7729458878441927652">আপোনাৰ অন্য ডিভাইচৰ পৰা টেবসমূহ চাবলৈ, আপোনাৰ টেব আৰু ইতিহাস ছিংক কৰক।</translation>
 <translation id="7730020510075123961">নাই, ডেটা একত্ৰিত কৰক</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> ছেভ কৰিবলৈ আপুনি ব্যৱহাৰ কৰিব বিচৰা একাউণ্টটো বাছনি কৰক</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। কেৱল এই ডিভাইচটোত।</translation>
 <translation id="7744192722284567281">ডেটা উলংঘন হোৱা দেখা গৈছিল</translation>
 <translation id="7749790401023484470">আপুনি কোনো পাঠ বাছনি কৰা নাই।</translation>
@@ -1840,7 +1840,6 @@
 <translation id="8428045167754449968">নগৰ / চহৰ</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8428634594422941299">বুজি পালোঁ</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) ক’ত ছেভ কৰিব লাগে বাছনি কৰক</translation>
 <translation id="8434837876193928924">টেবৰ গোটৰ সবিশেষ</translation>
 <translation id="8438566539970814960">সন্ধান আৰু ব্ৰাউজিং উন্নত কৰক</translation>
 <translation id="8439758443371991593">পঢ়াৰ সূচীত যোগ দিয়াৰ সুবিধাটো লুকুৱাওক</translation>

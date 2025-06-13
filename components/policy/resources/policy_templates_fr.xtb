@@ -106,6 +106,7 @@ Si elle est désactivée, la fonctionnalité de correction automatique est désa
       Si ce paramètre n'est pas configuré, le répertoire de profil par défaut est utilisé.</translation>
 <translation id="1053981429146436598">Groupe de règles liées aux paramètres des requêtes à un réseau privé.  Consultez https://wicg.github.io/private-network-access/.</translation>
 <translation id="1059069692400941670">Désactiver l'importation du moteur de recherche par défaut à la première exécution</translation>
+<translation id="1060020040574767394">Configurer les paramètres de filigrane personnalisés</translation>
 <translation id="1062011392452772310">Activer l'attestation à distance pour l'appareil</translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1063860513136880926">Si cette règle est activée, les utilisateurs ne peuvent pas faire de captures d'écran avec des raccourcis clavier ni avec des API d'extension. Si elle est désactivée ou qu'elle n'est pas configurée, les captures d'écran sont autorisées.
@@ -493,6 +494,7 @@ Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DE
 <translation id="1379689277107868399">Si la règle est définie sur "DoNotPrompt" ou n'est pas configurée, <ph name="PRODUCT_NAME" /> n'invite pas automatiquement l'utilisateur à s'authentifier de nouveau auprès du navigateur.
 
 Si elle est définie sur "PromptInTab", lorsque l'authentification de l'utilisateur expire, un nouvel onglet avec la page de connexion Google s'ouvre immédiatement. Cela ne se produit que si la <ph name="CHROME_SYNC_NAME" /> est utilisée.</translation>
+<translation id="1384040387986918863">Opacité du remplissage du texte du filigrane, de 0 (transparent) à 100 (opaque).</translation>
 <translation id="1384459581748403878">Référence : <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Cette règle détermine que toute URL correspondant à un ou plusieurs des formats qu'elle spécifie (avec le format de filtre <ph name="URL_BLOCKLIST_POLICY_NAME" />) ne sera jamais supprimée par le navigateur.
       Cela s'applique à la suppression de la pression sur la mémoire et du mode Haute efficacité.
@@ -1788,6 +1790,13 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
       Les utilisateurs ne peuvent ni modifier, ni ignorer ce paramètre.
 
       Remarque : Cette règle entraîne l'ajout de l'en-tête "X-GoogApps-Allowed-Domains" à toutes les requêtes HTTP et HTTPS sur tous les domaines google.com (comme indiqué sur https://support.google.com/a/answer/1668854).</translation>
+<translation id="2287414160388710497">Permet aux administrateurs de personnaliser l'apparence des filigranes appliqués par les règles de Protection contre la perte de données. Cela inclut la définition de l'opacité du remplissage/du contour et de la taille de la police.
+Si cette règle ou certaines valeurs ne sont pas définies, Chrome utilisera son comportement par défaut pour les filigranes.
+Les valeurs par défaut sont les suivantes : opacité du remplissage à 4, opacité du contour à 6 et taille de police à 24.
+
+L'opacité du remplissage est un pourcentage compris entre 0 (totalement transparent) et 100 (totalement opaque).
+L'opacité du contour est un pourcentage compris entre 0 (totalement transparent) et 100 (totalement opaque).
+La taille de police est indiquée en points.</translation>
 <translation id="2288506601233091655">Ne pas autoriser la suppression de l'historique des tâches d'impression</translation>
 <translation id="2289688405312849186">Compte principal de l'utilisateur "user@realm". L'espace réservé <ph name="LOGIN_ID_PLACEHOLDER" /> est remplacé par le nom d'utilisateur "user". L'espace réservé <ph name="LOGIN_EMAIL_PLACEHOLDER" /> est remplacé par le compte principal complet "user@realm".</translation>
 <translation id="2290270645214705008">Si cette règle est désactivée, le service hôte d'accès à distance ne peut pas être démarré ni configuré pour accepter les connexions entrantes.  Cette règle ne concerne pas les cas d'assistance à distance.
@@ -2527,6 +2536,7 @@ Cette règle ne peut être configurée que comme règle relative aux utilisateur
 <translation id="288448261660192095">Si cette règle est activée, les appareils d'entrée et de sortie physiques des hôtes d'accès à distance sont désactivés pendant une connexion à distance.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, l'utilisateur local et l'utilisateur à distance peuvent interagir avec l'hôte tant que ce celui-ci est partagé.</translation>
+<translation id="288463102030083286">Configuration de filigrane personnalisée</translation>
 <translation id="2884765974461416016">Désactiver le partage des applis Android vers les applis Web.</translation>
 <translation id="2886215882246310669">Permet de spécifier si <ph name="PRODUCT_OS_NAME" /> autorise ou non l'ajout de nouveaux comptes utilisateur Family Link sur l'appareil.
       Cette règle n'est utile que si elle combinée avec la règle <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Elle autorise les comptes Family Link en plus de ceux figurant dans la liste d'autorisation.
@@ -3139,6 +3149,7 @@ Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte Outlook ne s'affiche 
 <translation id="3278042410658310805">Désactiver la lecture vocale sur l'écran de connexion et permettre à l'utilisateur à l'activer temporairement</translation>
 <translation id="328347261792478720">Par défaut, le navigateur propose à l'utilisateur des recommandations personnalisées de contenus multimédias. Si cette règle est désactivée, l'utilisateur ne bénéficie pas de ces recommandations. Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut voir ces recommandations.</translation>
 <translation id="3284094172359247914">Contrôler l'utilisation de l'API WebUSB</translation>
+<translation id="3285231260918855067">Opacité du contour du texte du filigrane, de 0 (transparent) à 100 (opaque).</translation>
 <translation id="3286159327013237833">Activer les clics automatiques sur l'écran de connexion</translation>
 <translation id="3288595667065905535">Version disponible</translation>
 <translation id="3291940794983537008">Paramètres des fonctionnalités d'IA générative des outils de développement</translation>
@@ -8262,6 +8273,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="6795485990775913659">Autoriser l'impression sans code uniquement</translation>
 <translation id="6796215185873669533">Appliquez les paramètres par défaut du navigateur pour la version de la chaîne user-agent.</translation>
 <translation id="6800181452282128474">Ne pas envoyer de requêtes aux serveurs Quirks</translation>
+<translation id="6801739506172328815">Taille de police du texte en filigrane en points.</translation>
 <translation id="6802412020718145539">La visionneuse de PDF utilise l'architecture iFrame hors processus.</translation>
 <translation id="68031099365512050">Signaler l'état audio</translation>
 <translation id="680356860463873420">Ne pas autoriser les utilisateurs à employer Plugin VM</translation>
