@@ -60,7 +60,6 @@ source_set("unittests") {
     "//base:base",
     "//base/test:test_support",
     "//components/optimization_guide/core",
-    "//components/optimization_guide/core:model_executor",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/permissions:test_support",

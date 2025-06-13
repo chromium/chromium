@@ -173,7 +173,6 @@ source_set("unit_tests") {
     "//base:base",
     "//base/test:test_support",
     "//components/optimization_guide/core",
-    "//components/optimization_guide/core:model_executor",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/safe_browsing:buildflags",

@@ -10,6 +10,8 @@ source_set("passage_embeddings") {
     "passage_embeddings_service.cc",
     "passage_embeddings_service.h",
   ]
+  public_deps = [ "//mojo/public/cpp/bindings" ]
+  deps = [ "//services/passage_embeddings/public/mojom" ]
 
   if (build_with_tflite_lib) {
     sources += [
@@ -20,12 +22,6 @@ source_set("passage_embeddings") {
       "passage_embeddings_op_resolver.cc",
       "passage_embeddings_op_resolver.h",
     ]
-  }
-
-  public_deps = [ "//mojo/public/cpp/bindings" ]
-  deps = [ "//services/passage_embeddings/public/mojom" ]
-
-  if (build_with_tflite_lib) {
     public_deps += [
       "//third_party/sentencepiece:sentencepiece",
       "//third_party/sentencepiece:sentencepiece_proto",
@@ -34,14 +30,10 @@ source_set("passage_embeddings") {
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
     ]
-
-    deps += [ "//services/on_device_model:ml_internal_buildflags" ]
-  }
-
-  if (build_with_tflite_lib) {
     deps += [
       "//components/optimization_guide:machine_learning_tflite_buildflags",
-      "//components/optimization_guide/core:machine_learning",
+      "//components/optimization_guide/core/inference:op_resolver",
+      "//services/on_device_model:ml_internal_buildflags",
     ]
   }
 
@@ -52,7 +44,6 @@ source_set("passage_embeddings") {
 
 source_set("tests") {
   testonly = true
-
   sources = [ "passage_embeddings_service_unittest.cc" ]
   deps = [
     ":passage_embeddings",

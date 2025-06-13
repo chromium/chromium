@@ -56,7 +56,6 @@ static_library("core") {
     "//components/omnibox/common",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
-    "//components/optimization_guide/core:model_executor",
     "//components/search",
     "//components/search_engines",
     "//services/metrics/public/cpp:metrics_cpp",

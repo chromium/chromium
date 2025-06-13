@@ -33,15 +33,6 @@ static_library("browser") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
   ]
-  if (build_with_tflite_lib) {
-    public_deps += [
-      "//components/optimization_guide/core:machine_learning",
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
-    ]
-  }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 

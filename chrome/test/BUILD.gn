@@ -1420,7 +1420,7 @@ source_set("platform_browser_tests") {
     "//components/metrics:test_support",
     "//components/metrics_services_manager",
     "//components/network_session_configurator/common",
-    "//components/optimization_guide/core:model_executor",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/policy:generated",
     "//components/policy:policy_code_generate",

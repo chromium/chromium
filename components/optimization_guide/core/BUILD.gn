@@ -7,10 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
-import("//build/buildflag_header.gni")
 import("//components/optimization_guide/features.gni")
-import("//third_party/mediapipe/features.gni")
-import("//third_party/tflite/features.gni")
 
 # bloomfilter is isolated because of the allowlisted murmurhash3 dep.
 source_set("bloomfilter") {
@@ -50,96 +47,10 @@ static_library("filters") {
   visibility = [ ":*" ]
 }
 
-static_library("model_executor") {
-  sources = [
-    "inference/execution_status.cc",
-    "inference/execution_status.h",
-    "inference/model_executor.h",
-    "inference/model_handler.h",
-  ]
-  if (build_with_tflite_lib) {
-    sources += [
-      "inference/base_model_executor.h",
-      "inference/base_model_executor_helpers.h",
-      "inference/bert_model_executor.cc",
-      "inference/bert_model_executor.h",
-      "inference/bert_model_handler.cc",
-      "inference/bert_model_handler.h",
-      "inference/model_execution_timeout_watchdog.cc",
-      "inference/model_execution_timeout_watchdog.h",
-      "inference/model_validator.cc",
-      "inference/model_validator.h",
-      "inference/signature_model_executor.h",
-      "inference/tflite_model_executor.h",
-    ]
-  }
-
-  if (build_with_mediapipe_lib) {
-    assert(build_with_tflite_lib)
-
-    sources += [
-      "inference/mediapipe_text_model_executor.cc",
-      "inference/mediapipe_text_model_executor.h",
-    ]
-  }
-
-  public_deps = [
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//third_party/re2",
-  ]
-
-  deps = [
-    ":core_util",
-    ":features",
-    ":prediction",
-    "//base",
-    "//net",
-    "//url",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  if (build_with_tflite_lib) {
-    public_deps += [
-      "//components/optimization_guide/core:machine_learning",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
-    ]
-    deps += [ ":machine_learning" ]
-  }
-
-  if (build_with_mediapipe_lib) {
-    assert(build_with_tflite_lib)
-
-    public_deps += [ "//third_party/mediapipe" ]
-  }
-}
-
 mojom("interfaces") {
   sources = [ "optimization_guide_common.mojom" ]
   webui_module_path = "/"
   public_deps = [ "//mojo/public/mojom/base" ]
-}
-
-if (build_with_tflite_lib) {
-  static_library("machine_learning") {
-    sources = [
-      "tflite_op_resolver.cc",
-      "tflite_op_resolver.h",
-    ]
-    deps = [
-      ":features",
-      "//components/optimization_guide:machine_learning_tflite_buildflags",
-      "//third_party/tflite",
-      "//third_party/tflite:buildflags",
-      "//third_party/tflite:tflite_public_headers",
-    ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  }
 }
 
 component("features") {
@@ -271,7 +182,7 @@ source_set("core_util") {
     "//ui/accessibility:ax_enums_mojo",
     "//url",
   ]
-  visibility = [ ":*" ]
+  visibility = [ "./*" ]
 }
 
 source_set("model_execution") {
@@ -385,7 +296,6 @@ source_set("model_execution") {
     ]
     deps += [
       ":core_util",
-      ":model_executor",
       ":on_device_model_execution_proto_generator",
       ":prediction",
       "//components/component_updater",
@@ -417,7 +327,6 @@ static_library("core") {
     ":filters",
     ":hints",
     ":model_execution",
-    ":model_executor",
     ":prediction",
     "//components/autofill/core/common",
     "//components/leveldb_proto",
@@ -428,12 +337,9 @@ static_library("core") {
   ]
   if (build_with_tflite_lib) {
     public_deps += [
-      "//components/optimization_guide/core:machine_learning",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
+      "//components/optimization_guide/core/inference",
+
+      # TODO: crbug.com/421262905 - Don't provide compression_utils
       "//third_party/zlib/google:compression_utils",
     ]
   }
@@ -550,27 +456,7 @@ static_library("delivery_test_support") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
-}
-
-static_library("inference_test_support") {
-  testonly = true
-  sources = [
-    "inference/test_model_executor.cc",
-    "inference/test_model_executor.h",
-    "inference/test_model_handler.h",
-  ]
-  deps = [
-    ":model_executor",
-    "//base",
-  ]
-  if (build_with_tflite_lib) {
-    sources += [
-      "inference/test_tflite_model_executor.cc",
-      "inference/test_tflite_model_executor.h",
-      "inference/test_tflite_model_handler.h",
-    ]
-    deps += [ "//third_party/abseil-cpp:absl" ]
-  }
+  visibility = [ "./*" ]
 }
 
 static_library("model_execution_test_support") {
@@ -631,9 +517,12 @@ group("test_support") {
     ":delivery_test_support",
     ":filters_test_support",
     ":hints_test_support",
-    ":inference_test_support",
     ":model_execution_test_support",
   ]
+  if (build_with_tflite_lib) {
+    public_deps +=
+        [ "//components/optimization_guide/core/inference:test_support" ]
+  }
 }
 
 if (is_ios) {
@@ -745,43 +634,6 @@ source_set("delivery_unit_tests") {
   ]
 }
 
-source_set("inference_unit_tests") {
-  testonly = true
-  sources = [ "inference/model_handler_unittest.cc" ]
-  deps = [
-    ":delivery_test_support",
-    ":inference_test_support",
-    ":model_executor",
-    "//base",
-    "//base/test:test_support",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//testing/gtest",
-  ]
-  if (build_with_tflite_lib) {
-    sources += [
-      "inference/bert_model_executor_unittest.cc",
-      "inference/model_validator_unittest.cc",
-      "inference/tflite_model_executor_unittest.cc",
-    ]
-    deps += [
-      ":core_util",
-      ":features",
-      ":prediction",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
-    ]
-  }
-  if (build_with_mediapipe_lib) {
-    assert(build_with_tflite_lib)
-
-    sources += [ "mediapipe_text_model_executor_unittest.cc" ]
-    deps += [ "//third_party/mediapipe" ]
-  }
-}
-
 source_set("model_execution_unit_tests") {
   testonly = true
   sources = [
@@ -865,14 +717,12 @@ source_set("unit_tests") {
     "optimization_guide_switches_unittest.cc",
     "optimization_guide_util_unittest.cc",
   ]
-
   deps = [
     ":core",
     ":delivery_unit_tests",
     ":features",
     ":filters_unit_tests",
     ":hints_unit_tests",
-    ":inference_unit_tests",
     ":model_execution_unit_tests",
     "//base",
     "//base/test:test_support",
@@ -884,6 +734,9 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (build_with_tflite_lib) {
+    deps += [ "//components/optimization_guide/core/inference:unit_tests" ]
+  }
 }
 
 bundle_data("unit_tests_bundle_data") {
