@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -282,8 +283,10 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
   if (params_->disable_input) {
     scoped_ignore_input_events_ =
         tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
-    tab_interface_->GetBrowserWindowInterface()->SetWebContentsBlocked(
-        tab_interface_->GetContents(), /*blocked=*/true);
+    tab_interface_->GetBrowserWindowInterface()
+        ->capabilities()
+        ->SetWebContentsBlocked(tab_interface_->GetContents(),
+                                /*blocked=*/true);
   }
   tab_dialog_widget_observer_ =
       std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
@@ -326,8 +329,9 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
   browser_window_widget_observer_.reset();
-  tab_interface_->GetBrowserWindowInterface()->SetWebContentsBlocked(
-      tab_interface_->GetContents(), /*blocked=*/false);
+  tab_interface_->GetBrowserWindowInterface()
+      ->capabilities()
+      ->SetWebContentsBlocked(tab_interface_->GetContents(), /*blocked=*/false);
 }
 
 void TabDialogManager::DidFinishNavigation(

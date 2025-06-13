@@ -41,3 +41,9 @@ bool DesktopBrowserWindowCapabilities::IsVisibleOnScreen() const {
 bool DesktopBrowserWindowCapabilities::IsAttemptingToCloseBrowser() const {
   return delegate_->IsAttemptingToCloseBrowser();
 }
+
+void DesktopBrowserWindowCapabilities::SetWebContentsBlocked(
+    content::WebContents* web_contents,
+    bool blocked) {
+  return delegate_->SetWebContentsBlocked(web_contents, blocked);
+}

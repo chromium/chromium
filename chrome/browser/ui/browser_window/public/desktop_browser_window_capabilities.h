@@ -13,6 +13,10 @@ class BrowserWindow;
 class DesktopBrowserWindowCapabilitiesDelegate;
 class UnownedUserDataHost;
 
+namespace content {
+class WebContents;
+}
+
 // A collection of capabilities related to desktop browser windows. Most
 // functionality should go on this class, rather than being exposed on
 // BrowserWindowInterface.
@@ -36,6 +40,16 @@ class DesktopBrowserWindowCapabilities {
 
   // See Browser::IsAttemptingToCloseBrowser() for more details.
   bool IsAttemptingToCloseBrowser() const;
+
+  // Changes the blocked state of |web_contents|. WebContentses are considered
+  // blocked while displaying a web contents modal dialog. During that time
+  // renderer host will ignore any UI interaction within WebContents outside of
+  // the currently displaying dialog.
+  // Note that this is a duplicate of the same method in
+  // WebContentsModalDialogManagerDelegate. This is because there are two ways
+  // to open tab-modal dialogs, either via TabDialogManager or via
+  // //components/web_modal. See crbug.com/377820808.
+  void SetWebContentsBlocked(content::WebContents* web_contents, bool blocked);
 
  private:
   // The associated delegate. Must outlive this class.
