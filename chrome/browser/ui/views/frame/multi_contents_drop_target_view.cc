@@ -48,6 +48,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsDropTargetView,
 MultiContentsDropTargetView::MultiContentsDropTargetView(
     DropDelegate& drop_delegate)
     : views::AnimationDelegateViews(this), drop_delegate_(drop_delegate) {
+  SetVisible(false);
   SetProperty(views::kElementIdentifierKey, kMultiContentsDropTargetElementId);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -110,11 +111,13 @@ void MultiContentsDropTargetView::AnimationEnded(
   InvalidateLayout();
 }
 
-void MultiContentsDropTargetView::Show() {
+void MultiContentsDropTargetView::Show(DropSide side) {
+  side_ = side;
   UpdateVisibility(true);
 }
 
 void MultiContentsDropTargetView::Hide() {
+  side_.reset();
   UpdateVisibility(false);
 }
 
@@ -184,10 +187,12 @@ void MultiContentsDropTargetView::DoDrop(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+  CHECK(side_.has_value());
+  DropSide side = side_.value();
   Hide();
   auto urls = event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
   CHECK(urls.has_value());
-  drop_delegate_->HandleLinkDrop(urls.value());
+  drop_delegate_->HandleLinkDrop(side, urls.value());
 }
 
 BEGIN_METADATA(MultiContentsDropTargetView)

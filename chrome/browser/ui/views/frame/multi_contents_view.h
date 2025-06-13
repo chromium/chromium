@@ -18,11 +18,11 @@
 
 class BrowserView;
 class ContentsWebView;
+class MultiContentsDropTargetView;
 class MultiContentsResizeArea;
 class MultiContentsViewDelegate;
 class MultiContentsViewDropTargetController;
 class MultiContentsViewMiniToolbar;
-class MultiContentsDropTargetView;
 
 namespace content {
 class WebContents;
@@ -167,7 +167,7 @@ class MultiContentsView : public views::View,
   // each other.
   raw_ptr<MultiContentsResizeArea> resize_area_ = nullptr;
 
-  // The view that is shown for entering split view. E.g., this is shown when
+  // The views that are shown for entering split view. E.g., this is shown when
   // the user drags a link to the edge of the contents view.
   raw_ptr<MultiContentsDropTargetView> drop_target_view_ = nullptr;
 
@@ -178,7 +178,6 @@ class MultiContentsView : public views::View,
 
   // The index in contents_views_ of the active contents view.
   int active_index_ = 0;
-
 
   // Current ratio of |contents_views_|'s first ContentsContainerView's width /
   // overall contents view width.

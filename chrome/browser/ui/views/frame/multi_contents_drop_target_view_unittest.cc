@@ -24,7 +24,7 @@ class MockDropDelegate : public MultiContentsDropTargetView::DropDelegate {
  public:
   MOCK_METHOD(void,
               HandleLinkDrop,
-              (const std::vector<GURL>& urls),
+              (MultiContentsDropTargetView::DropSide, const std::vector<GURL>&),
               (override));
 };
 
@@ -49,7 +49,7 @@ TEST_F(DropTargetViewTest, ViewIsOpened) {
 
   EXPECT_TRUE(view->animation_for_testing().GetCurrentValue() == 0);
 
-  view->Show();
+  view->Show(MultiContentsDropTargetView::DropSide::START);
 
   EXPECT_TRUE(view->GetVisible());
   EXPECT_TRUE(view->icon_view_for_testing()->GetVisible());
@@ -57,7 +57,7 @@ TEST_F(DropTargetViewTest, ViewIsOpened) {
 
 TEST_F(DropTargetViewTest, ViewIsClosed) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show();
+  view->Show(MultiContentsDropTargetView::DropSide::START);
 
   EXPECT_TRUE(view->animation_for_testing().GetCurrentValue() == 1);
 
@@ -77,7 +77,7 @@ TEST_F(DropTargetViewTest, ViewIsClosedAfterDelay) {
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
 
-  view->Show();
+  view->Show(MultiContentsDropTargetView::DropSide::START);
 
   animation.SetStartTime(now);
   animation.Step(now + base::Seconds(15));
@@ -102,7 +102,7 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   auto scoped_mode = animation.SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
-  view->Show();
+  view->Show(MultiContentsDropTargetView::DropSide::START);
 
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
@@ -116,7 +116,7 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   EXPECT_TRUE(view->animation_for_testing().GetCurrentValue() < 1);
   EXPECT_TRUE(view->GetVisible());
 
-  view->Show();
+  view->Show(MultiContentsDropTargetView::DropSide::START);
 
   animation.Step(now + base::Seconds(kDelayedAnimationDuration + 1));
 
@@ -158,7 +158,7 @@ TEST_F(DropTargetViewTest, OnDragUpdated) {
 
 TEST_F(DropTargetViewTest, OnDragExitedClosesView) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show();
+  view->Show(MultiContentsDropTargetView::DropSide::START);
   ASSERT_TRUE(view->GetVisible());
 
   view->OnDragExited();
@@ -170,7 +170,7 @@ TEST_F(DropTargetViewTest, OnDragExitedClosesView) {
 
 TEST_F(DropTargetViewTest, OnDragDoneClosesView) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show();
+  view->Show(MultiContentsDropTargetView::DropSide::START);
   ASSERT_TRUE(view->GetVisible());
 
   view->OnDragDone();
@@ -182,7 +182,7 @@ TEST_F(DropTargetViewTest, OnDragDoneClosesView) {
 
 TEST_F(DropTargetViewTest, DropCallbackPerformsDropAndCloses) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show();
+  view->Show(MultiContentsDropTargetView::DropSide::START);
   ASSERT_TRUE(view->GetVisible());
 
   const GURL url("https://chromium.org");
@@ -193,7 +193,9 @@ TEST_F(DropTargetViewTest, DropCallbackPerformsDropAndCloses) {
                                   ui::DragDropTypes::DRAG_LINK);
 
   // Expect the delegate to be called with the correct URL.
-  EXPECT_CALL(drop_delegate(), HandleLinkDrop(testing::ElementsAre(url)));
+  EXPECT_CALL(drop_delegate(),
+              HandleLinkDrop(MultiContentsDropTargetView::DropSide::START,
+                             testing::ElementsAre(url)));
 
   // Retrieve and run the drop callback.
   views::View::DropCallback callback = view->GetDropCallback(event);

@@ -34,7 +34,8 @@ class MultiContentsViewDelegateImpl : public MultiContentsViewDelegate {
   void WebContentsFocused(content::WebContents* contents) override;
   void ResizeWebContents(double ratio) override;
   void ReverseWebContents() override;
-  void HandleLinkDrop(const std::vector<GURL>& urls) override;
+  void HandleLinkDrop(MultiContentsDropTargetView::DropSide side,
+                      const std::vector<GURL>& urls) override;
 
  private:
   const raw_ref<TabStripModel> tab_strip_model_;

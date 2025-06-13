@@ -62,7 +62,6 @@ MultiContentsView::MultiContentsView(
 
   drop_target_view_ =
       AddChildView(std::make_unique<MultiContentsDropTargetView>(*delegate_));
-  drop_target_view_->SetVisible(false);
   drop_target_controller_ =
       std::make_unique<MultiContentsViewDropTargetController>(
           *drop_target_view_);
@@ -70,9 +69,9 @@ MultiContentsView::MultiContentsView(
 
 MultiContentsView::~MultiContentsView() {
   drop_target_controller_.reset();
-  auto* drop_target_view = drop_target_view_.get();
   drop_target_view_ = nullptr;
-  RemoveChildViewT(drop_target_view);
+  resize_area_ = nullptr;
+  RemoveAllChildViews();
 }
 
 ContentsWebView* MultiContentsView::GetActiveContentsView() {
@@ -234,9 +233,8 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
                                      contents_container_views_[1]->GetVisible(),
                                      end_rect);
 
-  // TODO(crbug.com/394369035): The used drop target view is a placeholder, and
-  // therefore will never be visible. The actual drop target view will be
-  // added later.
+  // TODO(crbug.com/394369035): Implement visual layout of the drop target
+  // views.
   layouts.child_layouts.emplace_back(drop_target_view_.get(), false,
                                      gfx::Rect(0, 0, 0, 0));
 

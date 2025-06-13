@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 
 MultiContentsViewDelegateImpl::MultiContentsViewDelegateImpl(
     TabStripModel& tab_strip_model)
@@ -38,18 +39,23 @@ void MultiContentsViewDelegateImpl::ResizeWebContents(double start_ratio) {
 }
 
 void MultiContentsViewDelegateImpl::HandleLinkDrop(
+    MultiContentsDropTargetView::DropSide side,
     const std::vector<GURL>& urls) {
   CHECK(!urls.empty());
   CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
 
-  const int new_tab_idx = tab_strip_model_->active_index() + 1;
+  // Insert the tab before or after the active tab, according to the drop side.
+  const int new_tab_idx =
+      tab_strip_model_->active_index() +
+      (side == MultiContentsDropTargetView::DropSide::START ? 0 : 1);
+
+  // TODO(crbug.com/406792273): Support entrypoint for vertical splits.
+  const split_tabs::SplitTabVisualData split_data(
+      split_tabs::SplitTabLayout::kVertical);
 
   // We currently only support creating a split with one link; i.e., the first
   // link in the provided list.
   tab_strip_model_->delegate()->AddTabAt(urls.front(), new_tab_idx, false);
 
-  // TODO(crbug.com/406792273): Support entrypoint for vertical splits.
-  tab_strip_model_->AddToNewSplit(
-      {new_tab_idx},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical));
+  tab_strip_model_->AddToNewSplit({new_tab_idx}, split_data);
 }

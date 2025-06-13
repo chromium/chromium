@@ -25,12 +25,19 @@ class MultiContentsDropTargetView : public views::View,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsDropTargetElementId);
 
+  // Represents which edge of the contents area the drop target is on.
+  enum class DropSide {
+    START = 0,
+    END = 1,
+  };
+
   class DropDelegate {
    public:
     virtual ~DropDelegate() = default;
 
     // Handles links that are dropped on the view.
-    virtual void HandleLinkDrop(const std::vector<GURL>& urls) = 0;
+    virtual void HandleLinkDrop(DropSide side,
+                                const std::vector<GURL>& urls) = 0;
   };
 
   explicit MultiContentsDropTargetView(DropDelegate& drop_delegate);
@@ -41,7 +48,7 @@ class MultiContentsDropTargetView : public views::View,
 
   double GetAnimationValue() const;
 
-  void Show();
+  void Show(DropSide side);
   void Hide();
 
   bool IsClosing() const;
@@ -61,6 +68,8 @@ class MultiContentsDropTargetView : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
+  std::optional<DropSide> side() const { return side_; }
+
   raw_ptr<views::ImageView> icon_view_for_testing() { return icon_view_; }
   gfx::SlideAnimation& animation_for_testing() { return animation_; }
 
@@ -72,6 +81,9 @@ class MultiContentsDropTargetView : public views::View,
   void DoDrop(const ui::DropTargetEvent& event,
               ui::mojom::DragOperation& output_drag_op,
               std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
+
+  // The side that this view is showing on.
+  std::optional<DropSide> side_ = std::nullopt;
 
   const raw_ref<DropDelegate> drop_delegate_;
 
