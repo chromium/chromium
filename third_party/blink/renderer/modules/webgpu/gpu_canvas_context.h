@@ -70,6 +70,9 @@ class GPUCanvasContext : public ScriptWrappable,
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer) final;
+  scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
+      SourceDrawingBuffer source_buffer,
+      FlushReason reason) override;
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool* frame_pool,
       SourceDrawingBuffer src_buffer,

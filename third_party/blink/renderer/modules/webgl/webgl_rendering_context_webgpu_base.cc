@@ -3537,6 +3537,16 @@ WebGLRenderingContextWebGPUBase::PaintRenderingResultsToCanvas(
   return nullptr;
 }
 
+scoped_refptr<StaticBitmapImage>
+WebGLRenderingContextWebGPUBase::PaintRenderingResultsToSnapshot(
+    SourceDrawingBuffer source_buffer,
+    FlushReason reason) {
+  CanvasResourceProvider* provider =
+      PaintRenderingResultsToCanvas(source_buffer);
+
+  return provider ? provider->Snapshot(reason) : nullptr;
+}
+
 bool WebGLRenderingContextWebGPUBase::CopyRenderingResultsToVideoFrame(
     WebGraphicsContext3DVideoFramePool*,
     SourceDrawingBuffer,

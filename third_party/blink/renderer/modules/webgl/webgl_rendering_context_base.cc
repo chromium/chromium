@@ -1880,6 +1880,16 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   return PaintRenderingResultsToCanvasInternal(source_buffer, dont_care);
 }
 
+scoped_refptr<StaticBitmapImage>
+WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
+    SourceDrawingBuffer source_buffer,
+    FlushReason reason) {
+  CanvasResourceProvider* provider =
+      PaintRenderingResultsToCanvas(source_buffer);
+
+  return provider ? provider->Snapshot(reason) : nullptr;
+}
+
 scoped_refptr<CanvasResource>
 WebGLRenderingContextBase::PaintRenderingResultsToResource(
     bool was_dirty,

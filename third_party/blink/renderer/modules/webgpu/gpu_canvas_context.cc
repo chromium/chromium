@@ -244,6 +244,16 @@ CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
   return resource_provider;
 }
 
+scoped_refptr<StaticBitmapImage>
+GPUCanvasContext::PaintRenderingResultsToSnapshot(
+    SourceDrawingBuffer source_buffer,
+    FlushReason reason) {
+  CanvasResourceProvider* provider =
+      PaintRenderingResultsToCanvas(source_buffer);
+
+  return provider ? provider->Snapshot(reason) : nullptr;
+}
+
 bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
     WebGraphicsContext3DVideoFramePool* frame_pool,
     SourceDrawingBuffer src_buffer,

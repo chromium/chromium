@@ -226,6 +226,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void Reset() override;
   CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer) final;
+  scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
+      SourceDrawingBuffer source_buffer,
+      FlushReason reason) final;
 
   void SetTryRestoreContextIntervalForTesting(base::TimeDelta delay) {
     try_restore_context_interval_ = delay;

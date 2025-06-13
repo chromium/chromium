@@ -207,13 +207,10 @@ class CORE_EXPORT CanvasRenderingContext
   void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
 
   // Returns a StaticBitmapImage containing the current content, or nullptr if
-  // it was not possible to obtain that content. For historical reasons, some
-  // clients need to know whether in the case of failure the
-  // CanvasResourceProvider being used internally was present; such clients can
-  // pass in `had_canvas_resource_provider`.
-  scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
+  // it was not possible to obtain that content.
+  virtual scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
-      FlushReason reason);
+      FlushReason reason) = 0;
 
   // WebGL-specific methods
   virtual void ClearMarkedCanvasDirty() {}

@@ -183,16 +183,6 @@ void CanvasRenderingContext::DidDraw(
   Thread::Current()->AddTaskObserver(this);
 }
 
-scoped_refptr<StaticBitmapImage>
-CanvasRenderingContext::PaintRenderingResultsToSnapshot(
-    SourceDrawingBuffer source_buffer,
-    FlushReason reason) {
-  CanvasResourceProvider* provider =
-      PaintRenderingResultsToCanvas(source_buffer);
-
-  return provider ? provider->Snapshot(reason) : nullptr;
-}
-
 void CanvasRenderingContext::DidProcessTask(
     const base::PendingTask& /* pending_task */) {
   RenderTaskEnded();

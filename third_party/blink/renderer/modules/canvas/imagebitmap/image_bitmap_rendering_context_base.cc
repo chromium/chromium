@@ -55,6 +55,16 @@ ImageBitmapRenderingContextBase::PaintRenderingResultsToCanvas(
   return Host()->ResourceProvider();
 }
 
+scoped_refptr<StaticBitmapImage>
+ImageBitmapRenderingContextBase::PaintRenderingResultsToSnapshot(
+    SourceDrawingBuffer source_buffer,
+    FlushReason reason) {
+  CanvasResourceProvider* provider =
+      PaintRenderingResultsToCanvas(source_buffer);
+
+  return provider ? provider->Snapshot(reason) : nullptr;
+}
+
 void ImageBitmapRenderingContextBase::Dispose() {
   Stop();
   CanvasRenderingContext::Dispose();

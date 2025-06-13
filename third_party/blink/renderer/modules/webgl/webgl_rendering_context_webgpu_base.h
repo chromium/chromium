@@ -1279,6 +1279,9 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void PageVisibilityChanged() override;
   CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer) override;
+  scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
+      SourceDrawingBuffer source_buffer,
+      FlushReason reason) override;
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool*,
       SourceDrawingBuffer,
