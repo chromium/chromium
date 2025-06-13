@@ -5858,11 +5858,9 @@ CompositorFrame BuildCompositorFrameWithResources(
             {SinglePlaneFormat::kBGRA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
              gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
              "SurfaceAggregatorWithResourcesTest"});
-    auto sync_token = shared_image_interface->GenVerifiedSyncToken();
-    auto resource = TransferableResource::MakeSoftwareSharedImage(
-        shared_image, sync_token, gfx::Size(1, 1),
-        SinglePlaneFormat::kBGRA_8888,
-        TransferableResource::ResourceSource::kTileRasterTask);
+    auto resource = TransferableResource::Make(
+        shared_image, TransferableResource::ResourceSource::kTileRasterTask,
+        shared_image->creation_sync_token());
 
     resource.id = resource_id;
     if (!valid) {

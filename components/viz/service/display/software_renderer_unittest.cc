@@ -105,10 +105,9 @@ class SoftwareRendererTest : public VizPixelTest {
     source.readPixels(info, mapping->GetMemoryForPlane(0).data(),
                       info.minRowBytes(), 0, 0);
 
-    auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
-        shared_image, shared_image_interface->GenVerifiedSyncToken(), size,
-        SinglePlaneFormat::kBGRA_8888,
-        TransferableResource::ResourceSource::kTileRasterTask);
+    auto transferable_resource = TransferableResource::Make(
+        shared_image, TransferableResource::ResourceSource::kTileRasterTask,
+        shared_image->creation_sync_token());
     auto release_callback =
         base::BindOnce(&DeleteSharedImage, std::move(shared_image));
 

@@ -98,10 +98,9 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
 
     std::fill(span.begin(), span.end(), value);
 
-    auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
-        shared_image, shared_image_interface->GenVerifiedSyncToken(), size,
-        SinglePlaneFormat::kBGRA_8888,
-        TransferableResource::ResourceSource::kTileRasterTask);
+    auto transferable_resource = TransferableResource::Make(
+        shared_image, TransferableResource::ResourceSource::kTileRasterTask,
+        shared_image_interface->GenVerifiedSyncToken());
 
     auto callback = base::BindOnce(&MockReleaseCallback::Released,
                                    base::Unretained(&release_callback),

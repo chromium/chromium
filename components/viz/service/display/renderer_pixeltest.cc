@@ -100,22 +100,6 @@ base::span<const uint8_t> MakePixelSpan(const SkBitmap& bitmap) {
                     bitmap.computeByteSize());
 }
 
-void AllocateAndRegisterSharedBitmapMemory(
-    scoped_refptr<RasterContextProvider> context_provider,
-    const gfx::Size& size,
-    scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    gpu::SyncToken& sync_token) {
-  DCHECK(context_provider);
-  gpu::SharedImageInterface* shared_image_interface =
-      context_provider->SharedImageInterface();
-  shared_image = shared_image_interface->CreateSharedImageForSoftwareCompositor(
-      {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-       gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTestSharedBitmap"});
-
-  sync_token = shared_image_interface->GenVerifiedSyncToken();
-  CHECK(shared_image);
-}
-
 void DeleteSharedImage(scoped_refptr<gpu::ClientSharedImage> shared_image,
                        const gpu::SyncToken& sync_token,
                        bool is_lost) {
@@ -301,25 +285,28 @@ void CreateTestTwoColoredTextureDrawQuad(
   const GrSurfaceOrigin origin = flipped_texture_quad
                                      ? kBottomLeft_GrSurfaceOrigin
                                      : kTopLeft_GrSurfaceOrigin;
+  const SkAlphaType alpha_type =
+      premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
 
   ResourceId resource;
   if (gpu_resource) {
     resource = CreateGpuResource(
         child_context_provider, child_resource_provider, rect.size(),
-        SinglePlaneFormat::kBGRA_8888,
-        premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
-        gfx::ColorSpace(), MakePixelSpan(pixels), origin);
+        SinglePlaneFormat::kBGRA_8888, alpha_type, gfx::ColorSpace(),
+        MakePixelSpan(pixels), origin);
   } else {
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
-    gpu::SyncToken sync_token;
-    AllocateAndRegisterSharedBitmapMemory(child_context_provider, rect.size(),
-                                          shared_image, sync_token);
+    auto shared_image =
+        child_context_provider->SharedImageInterface()
+            ->CreateSharedImageForSoftwareCompositor(
+                {SinglePlaneFormat::kBGRA_8888, rect.size(), gfx::ColorSpace(),
+                 origin, alpha_type, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+                 "PixelTest"});
+
     auto mapping = shared_image->Map();
 
-    auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
-        shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
-        TransferableResource::ResourceSource::kTileRasterTask);
-    transferable_resource.origin = origin;
+    auto transferable_resource = TransferableResource::Make(
+        shared_image, TransferableResource::ResourceSource::kTileRasterTask,
+        shared_image->creation_sync_token());
     auto release_callback =
         base::BindOnce(&DeleteSharedImage, std::move(shared_image));
 
@@ -372,23 +359,26 @@ void CreateTestTextureDrawQuad(
   size_t num_pixels = static_cast<size_t>(rect.width()) * rect.height();
   std::vector<uint32_t> pixels(num_pixels, pixel_color);
 
+  const SkAlphaType alpha_type =
+      premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
   ResourceId resource;
   if (gpu_resource) {
-    resource = CreateGpuResource(
-        child_context_provider, child_resource_provider, rect.size(),
-        SinglePlaneFormat::kRGBA_8888,
-        premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
-        gfx::ColorSpace(), MakePixelSpan(pixels));
+    resource =
+        CreateGpuResource(child_context_provider, child_resource_provider,
+                          rect.size(), SinglePlaneFormat::kRGBA_8888,
+                          alpha_type, gfx::ColorSpace(), MakePixelSpan(pixels));
   } else {
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
-    gpu::SyncToken sync_token;
-    AllocateAndRegisterSharedBitmapMemory(child_context_provider, rect.size(),
-                                          shared_image, sync_token);
+    auto shared_image =
+        child_context_provider->SharedImageInterface()
+            ->CreateSharedImageForSoftwareCompositor(
+                {SinglePlaneFormat::kBGRA_8888, rect.size(), gfx::ColorSpace(),
+                 kTopLeft_GrSurfaceOrigin, alpha_type,
+                 gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTest"});
     auto mapping = shared_image->Map();
 
-    auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
-        shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
-        TransferableResource::ResourceSource::kTileRasterTask);
+    auto transferable_resource = TransferableResource::Make(
+        shared_image, TransferableResource::ResourceSource::kTileRasterTask,
+        shared_image->creation_sync_token());
     auto release_callback =
         base::BindOnce(&DeleteSharedImage, std::move(shared_image));
 

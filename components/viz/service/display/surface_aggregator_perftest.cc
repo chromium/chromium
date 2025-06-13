@@ -119,11 +119,9 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
                 {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
                  gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
                  "SurfaceAggregatorPerfTest"});
-        auto sync_token = shared_image_interface->GenVerifiedSyncToken();
-        TransferableResource resource =
-            TransferableResource::MakeSoftwareSharedImage(
-                shared_image, sync_token, size, SinglePlaneFormat::kBGRA_8888,
-                TransferableResource::ResourceSource::kTileRasterTask);
+        TransferableResource resource = TransferableResource::Make(
+            shared_image, TransferableResource::ResourceSource::kTileRasterTask,
+            shared_image->creation_sync_token());
 
         resource.id = ResourceId(j);
         frame_builder.AddTransferableResource(resource);
@@ -245,13 +243,11 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
                     {SinglePlaneFormat::kBGRA_8888, quad->rect.size(),
                      gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
                      "SurfaceAggregatorPerfTest"});
-            auto sync_token = shared_image_interface->GenVerifiedSyncToken();
 
-            created_resources[resource_id] =
-                TransferableResource::MakeSoftwareSharedImage(
-                    shared_image, sync_token, quad->rect.size(),
-                    SinglePlaneFormat::kBGRA_8888,
-                    TransferableResource::ResourceSource::kTileRasterTask);
+            created_resources[resource_id] = TransferableResource::Make(
+                shared_image,
+                TransferableResource::ResourceSource::kTileRasterTask,
+                shared_image->creation_sync_token());
 
             created_resources[resource_id].id = resource_id;
           }

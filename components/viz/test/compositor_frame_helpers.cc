@@ -601,16 +601,15 @@ void PopulateTransferableResources(CompositorFrame& frame) {
       if (quad->resource_id != kInvalidResourceId) {
         // Adds a TransferableResource the first time seeing a ResourceId.
         if (resources_added.insert(quad->resource_id).second) {
-          auto shared_image = gpu::ClientSharedImage::CreateForTesting(
-              SinglePlaneFormat::kBGRA_8888, GL_TEXTURE_2D);
+          auto shared_image =
+              gpu::ClientSharedImage::CreateSoftwareForTesting();
           gpu::SyncToken sync_token;
           sync_token.Set(gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1),
                          1);
-          frame.resource_list.push_back(
-              TransferableResource::MakeSoftwareSharedImage(
-                  shared_image, sync_token, quad->rect.size(),
-                  SinglePlaneFormat::kBGRA_8888,
-                  TransferableResource::ResourceSource::kTileRasterTask));
+          frame.resource_list.push_back(TransferableResource::Make(
+              shared_image,
+              TransferableResource::ResourceSource::kTileRasterTask,
+              sync_token));
           frame.resource_list.back().id = quad->resource_id;
         }
       }
