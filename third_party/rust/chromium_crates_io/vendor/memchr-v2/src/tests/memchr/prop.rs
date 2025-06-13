@@ -1,9 +1,11 @@
+/// Defines a host of quickcheck tests for the given memchr searcher.
 #[cfg(miri)]
 #[macro_export]
 macro_rules! define_memchr_quickcheck {
     ($($tt:tt)*) => {};
 }
 
+/// Defines a host of quickcheck tests for the given memchr searcher.
 #[cfg(not(miri))]
 #[macro_export]
 macro_rules! define_memchr_quickcheck {

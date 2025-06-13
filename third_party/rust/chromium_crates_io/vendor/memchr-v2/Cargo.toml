@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.61"
 name = "memchr"
-version = "2.7.4"
+version = "2.7.5"
 authors = [
     "Andrew Gallant <jamslam@gmail.com>",
     "bluss",
@@ -26,6 +26,7 @@ exclude = [
     "/scripts",
     "/tmp",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -50,24 +51,19 @@ repository = "https://github.com/BurntSushi/memchr"
 [package.metadata.docs.rs]
 rustdoc-args = ["--generate-link-to-definition"]
 
-[profile.bench]
-debug = 2
-
-[profile.release]
-debug = 2
-
-[profile.test]
-opt-level = 3
-debug = 2
+[features]
+alloc = []
+default = ["std"]
+libc = []
+logging = ["dep:log"]
+rustc-dep-of-std = ["core"]
+std = ["alloc"]
+use_std = ["std"]
 
 [lib]
 name = "memchr"
 path = "src/lib.rs"
 bench = false
-
-[dependencies.compiler_builtins]
-version = "0.1.2"
-optional = true
 
 [dependencies.core]
 version = "1.0.0"
@@ -82,14 +78,12 @@ optional = true
 version = "1.0.3"
 default-features = false
 
-[features]
-alloc = []
-default = ["std"]
-libc = []
-logging = ["dep:log"]
-rustc-dep-of-std = [
-    "core",
-    "compiler_builtins",
-]
-std = ["alloc"]
-use_std = ["std"]
+[profile.bench]
+debug = 2
+
+[profile.release]
+debug = 2
+
+[profile.test]
+opt-level = 3
+debug = 2

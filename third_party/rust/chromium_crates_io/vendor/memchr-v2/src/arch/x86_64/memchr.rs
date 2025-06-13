@@ -46,8 +46,8 @@ the CPU supports.
 ///
 /// # Safety
 ///
-/// Primarily callers must that `$fnty` is a correct function pointer type and
-/// not something else.
+/// Primarily callers must ensure that `$fnty` is a correct function pointer
+/// type and not something else.
 ///
 /// Callers must also ensure that `$memchrty::$memchrfind` corresponds to a
 /// routine that returns a valid function pointer when a match is found. That

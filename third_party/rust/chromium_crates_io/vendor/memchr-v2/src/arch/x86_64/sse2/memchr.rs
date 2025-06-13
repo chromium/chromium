@@ -10,7 +10,7 @@ The `One` searcher also provides a [`One::count`] routine for efficiently
 counting the number of times a single byte occurs in a haystack. This is
 useful, for example, for counting the number of lines in a haystack. This
 routine exists because it is usually faster, especially with a high match
-count, then using [`One::find`] repeatedly. ([`OneIter`] specializes its
+count, than using [`One::find`] repeatedly. ([`OneIter`] specializes its
 `Iterator::count` implementation to use this routine.)
 
 Only one, two and three bytes are supported because three bytes is about

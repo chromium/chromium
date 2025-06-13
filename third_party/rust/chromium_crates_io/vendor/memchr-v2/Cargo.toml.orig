@@ -1,6 +1,6 @@
 [package]
 name = "memchr"
-version = "2.7.4"  #:version
+version = "2.7.5"  #:version
 authors = ["Andrew Gallant <jamslam@gmail.com>", "bluss"]
 description = """
 Provides extremely fast (uses SIMD on x86_64, aarch64 and wasm32) routines for
@@ -52,7 +52,7 @@ libc = []
 
 # Internal feature, only used when building as part of libstd, not part of the
 # stable interface of this crate.
-rustc-dep-of-std = ['core', 'compiler_builtins']
+rustc-dep-of-std = ['core']
 
 [dependencies]
 # Only used when the `logging` feature is enabled (disabled by default).
@@ -60,7 +60,6 @@ log = { version = "0.4.20", optional = true }
 # Internal feature, only used when building as part of libstd, not part of the
 # stable interface of this crate.
 core = { version = '1.0.0', optional = true, package = 'rustc-std-workspace-core' }
-compiler_builtins = { version = '0.1.2', optional = true }
 
 [dev-dependencies]
 quickcheck = { version = "1.0.3", default-features = false }

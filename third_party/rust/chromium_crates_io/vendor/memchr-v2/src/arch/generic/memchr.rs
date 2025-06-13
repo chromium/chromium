@@ -12,7 +12,7 @@ Generic crate-internal routines for the `memchr` family of functions.
 //
 // While the routine below is fairly long and perhaps intimidating, the basic
 // idea is actually very simple and can be expressed straight-forwardly in
-// pseudo code. The psuedo code below is written for 128 bit vectors, but the
+// pseudo code. The pseudo code below is written for 128 bit vectors, but the
 // actual code below works for anything that implements the Vector trait.
 //
 //     needle = (n1 << 15) | (n1 << 14) | ... | (n1 << 1) | n1
