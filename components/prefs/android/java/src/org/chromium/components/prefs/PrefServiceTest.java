@@ -137,6 +137,15 @@ public class PrefServiceTest {
     }
 
     @Test
+    public void testIsRecommended() {
+        boolean expected = true;
+
+        doReturn(expected).when(mNativeMock).isRecommendedPreference(NATIVE_HANDLE, PREF);
+
+        assertEquals(expected, mPrefService.isRecommendedPreference(PREF));
+    }
+
+    @Test
     public void testIsDefaultValuePreference() {
         for (boolean expected : new boolean[] {false, true}) {
             doReturn(expected).when(mNativeMock).isDefaultValuePreference(NATIVE_HANDLE, PREF);

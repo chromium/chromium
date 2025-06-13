@@ -144,6 +144,14 @@ jboolean PrefServiceAndroid::IsManagedPreference(
       base::android::ConvertJavaStringToUTF8(env, j_preference));
 }
 
+jboolean PrefServiceAndroid::IsRecommendedPreference(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_preference) {
+  const PrefService::Preference* pref = pref_service_->FindPreference(
+      base::android::ConvertJavaStringToUTF8(env, j_preference));
+  return pref && pref->IsRecommended();
+}
+
 jboolean PrefServiceAndroid::IsDefaultValuePreference(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_preference) {

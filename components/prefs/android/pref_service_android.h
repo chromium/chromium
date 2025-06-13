@@ -60,6 +60,9 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
   jboolean IsManagedPreference(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_preference);
+  jboolean IsRecommendedPreference(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& j_preference);
   jboolean IsDefaultValuePreference(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_preference);

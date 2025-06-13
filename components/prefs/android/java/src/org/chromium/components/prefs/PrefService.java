@@ -139,6 +139,14 @@ public class PrefService {
     }
 
     /**
+     * @param preference The name of the preference.
+     * @return Whether the specified preference's current value is the admin recommended value.
+     */
+    public boolean isRecommendedPreference(String preference) {
+        return PrefServiceJni.get().isRecommendedPreference(mNativePrefServiceAndroid, preference);
+    }
+
+    /**
      * @param preference The name of the preference
      * @return Whether the specified preference is currently using its default value and has not
      *     been set by any higher-priority source (even with the same value).
@@ -174,6 +182,8 @@ public class PrefService {
         void setString(long nativePrefServiceAndroid, String preference, String value);
 
         boolean isManagedPreference(long nativePrefServiceAndroid, String preference);
+
+        boolean isRecommendedPreference(long nativePrefServiceAndroid, String preference);
 
         boolean isDefaultValuePreference(long nativePrefServiceAndroid, String preference);
     }
