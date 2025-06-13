@@ -36,6 +36,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Build(sdk_equals = Build.VERSION_CODES.BAKLAVA, message = "crbug.com/424223725")
 public class OmniboxPTTest {
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =
@@ -70,7 +71,6 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.BAKLAVA, message = "crbug.com/424223725")
     public void testOpenTypeDelete_fromNtp() {
         WebPageStation blankPage = mCtaTestRule.start();
         RegularNewTabPageStation ntp = blankPage.openNewTabFast();
