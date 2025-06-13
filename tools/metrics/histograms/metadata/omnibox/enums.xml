@@ -159,6 +159,19 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Shortcut text prefix"/>
 </enum>
 
+<!-- LINT.IfChange(PaywallSignal) -->
+
+<enum name="PaywallSignal">
+  <summary>
+    Indicates the paywall signal for a given page, if available.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Signal present"/>
+  <int value="2" label="Signal not present"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/lens_suggest_inputs_utils.h:PaywallSignal) -->
+
 <enum name="ReconciliationType">
   <int value="0" label="No Reconciliation"/>
   <int value="1" label="By prepopulate_id"/>

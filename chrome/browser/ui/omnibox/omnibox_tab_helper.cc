@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "content/public/browser/render_frame_host.h"
@@ -49,6 +50,19 @@ void LogNavigationToPopupUma(std::string_view event_name,
                     ".", kByPageContextHistogramPrefix, ".", page_context}),
       time_to_log, base::Milliseconds(0), base::Seconds(60), 60);
 }
+
+PaywallSignal ToPaywallSignal(std::optional<bool> paywall_signal) {
+  if (paywall_signal.has_value()) {
+    // If `paywall_signal` is available and true, it means the page is paywalled
+    // and contextual suggestions should not be shown.
+    return paywall_signal.value() ? PaywallSignal::kSignalPresent
+                                  : PaywallSignal::kSignalNotPresent;
+  }
+  // Finally, if no signal was extracted from the page, then the signal is
+  // unavailable due to missing page content.
+  return PaywallSignal::kUnknown;
+}
+
 }  // namespace
 
 OmniboxTabHelper::~OmniboxTabHelper() = default;
@@ -100,6 +114,7 @@ void OmniboxTabHelper::OnPopupVisibilityChanged(
   }
 
   if (popup_is_open) {
+    MaybeLogPaywallSignal();
     MaybeLogNavigationToPopupShownTimings(page_classification);
   }
 }
@@ -177,4 +192,16 @@ void OmniboxTabHelper::MaybeLogNavigationToPopupShownTimings(
     LogNavigationToPopupUma(kDomContentLoadedHistogramSuffix, page_context,
                             dom_content_loaded_time_->Elapsed());
   }
+}
+
+void OmniboxTabHelper::MaybeLogPaywallSignal() {
+  // If the page content service is not observing, then the paywall signal is
+  // unavailable to be fetched.
+  if (!page_content_service_observation_.IsObserving()) {
+    return;
+  }
+
+  const auto paywall_signal = ToPaywallSignal(page_has_apc_paywall_signal_);
+  base::UmaHistogramEnumeration("Omnibox.OnPopupOpen.PaywallSignal",
+                                paywall_signal);
 }
