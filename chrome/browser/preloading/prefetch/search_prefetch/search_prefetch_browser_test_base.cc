@@ -67,7 +67,6 @@ SearchPrefetchBaseBrowserTest::~SearchPrefetchBaseBrowserTest() = default;
 
 void SearchPrefetchBaseBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
-  SearchPrefetchRequest::SetIsTest();
   host_resolver()->AddRule(kSearchDomain, "127.0.0.1");
   host_resolver()->AddRule(kSuggestDomain, "127.0.0.1");
 

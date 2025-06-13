@@ -11,8 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_is_test.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -127,29 +125,7 @@ void MaybeRecordTraceFromSearchPrefetchRequestStartToNavigationIntercepted(
       trace_id, base::TimeTicks::Now());
 }
 
-// TODO(crbug.com/413557424): remove this block.
-bool is_test = false;
-// Restrict per-client to report one check failure.
-bool has_reported = false;
-bool CheckPrefetchParameterExistence(const GURL& url) {
-  std::string_view query_piece = url.query_piece();
-  url::Component query(0, url.query_piece().length());
-  url::Component key, value;
-  while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {
-    if (query_piece.substr(key.begin, key.len) == "pf" && !value.is_empty()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 }  // namespace
-
-// static
-void SearchPrefetchRequest::SetIsTest() {
-  CHECK_IS_TEST();
-  is_test = true;
-}
 
 SearchPrefetchRequest::SearchPrefetchRequest(
     const GURL& canonical_search_url,
@@ -340,14 +316,6 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   }
 
   prefetch_url_ = resource_request->url;
-
-  // It is quite common that a test does not specify the parameter.
-  if (!has_reported &&
-      !CheckPrefetchParameterExistence(resource_request->url) && !is_test) {
-    has_reported = true;
-    base::debug::DumpWithoutCrashing();
-  }
-
   SetSearchPrefetchStatus(SearchPrefetchStatus::kCanBeServed);
   streaming_url_loader_ =
       base::MakeRefCounted<StreamingSearchPrefetchURLLoader>(
