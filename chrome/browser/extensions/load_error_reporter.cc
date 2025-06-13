@@ -72,7 +72,24 @@ void LoadErrorReporter::ReportError(const std::u16string& message,
   LOG(WARNING) << "Extension error: " << message;
 
   if (enable_noisy_errors_ && be_noisy) {
-    chrome::ShowWarningMessageBoxAsync(
+    // This dialog is synchronous to prevent a race condition during startup.
+    //
+    // In the asynchronous case, the sequence of events is:
+    // 1. A startup task to load an extension fails, and an asynchronous call
+    //    is made to show this parentless dialog.
+    // 2. The dialog's widget initializes, registering an accessibility observer
+    //    with `AXPlatform`. The async call then returns immediately, marking
+    //    the startup task as complete.
+    // 3. Because the startup task is finished and no windows are open, the
+    //    browser process begins its shutdown sequence.
+    // 4. During shutdown, `AXPlatform` is destroyed before the dialog is. Its
+    //    destructor's `CHECK` for no remaining observers fails because the
+    //    dialog's observer is still registered, causing a crash.
+    //
+    // By using a synchronous dialog, we block the startup task from completing
+    // until the user dismisses the alert, ensuring steps 3 and 4 cannot
+    // happen until after the dialog and its observers are gone.
+    chrome::ShowWarningMessageBoxSync(
         gfx::NativeWindow(),
         l10n_util::GetStringUTF16(IDS_EXTENSIONS_LOAD_ERROR_ALERT_HEADING),
         message);

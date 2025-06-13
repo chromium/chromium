@@ -88,6 +88,15 @@ chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
           },
           &run_loop, &result));
   run_loop.Run();
+
+  // After the dialog is closed, the Widget's destruction may post final
+  // cleanup tasks (e.g., to the compositor). Wait until these tasks are
+  // fully executed.
+  base::RunLoop flush_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, flush_loop.QuitClosure());
+  flush_loop.Run();
+
   return result;
 }
 
