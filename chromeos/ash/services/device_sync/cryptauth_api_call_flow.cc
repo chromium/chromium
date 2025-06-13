@@ -104,8 +104,7 @@ std::string CryptAuthApiCallFlow::CreateApiCallBodyContentType() {
 // based on whether or not the body is empty. It is possible to send a POST
 // request with an empty body because a proto with default parameters is
 // encoded as an empty string.
-std::string CryptAuthApiCallFlow::GetRequestTypeForBody(
-    const std::string& body) {
+std::string CryptAuthApiCallFlow::GetRequestTypeForBody(std::string_view body) {
   if (serialized_request_) {
     DCHECK(!request_as_query_parameters_);
     return kPost;
@@ -117,8 +116,8 @@ std::string CryptAuthApiCallFlow::GetRequestTypeForBody(
 
 void CryptAuthApiCallFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  if (!body) {
+    std::optional<std::string> body) {
+  if (!body.has_value()) {
     std::move(error_callback_).Run(NetworkRequestError::kResponseMalformed);
     return;
   }
@@ -128,7 +127,7 @@ void CryptAuthApiCallFlow::ProcessApiCallSuccess(
 void CryptAuthApiCallFlow::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   std::optional<NetworkRequestError> error;
   std::string error_message;
   if (net_error == net::OK) {
@@ -142,8 +141,9 @@ void CryptAuthApiCallFlow::ProcessApiCallFailure(
 
   PA_LOG(ERROR) << "API call failed, error code: "
                 << (error ? *error : NetworkRequestError::kUnknown);
-  if (body)
+  if (body.has_value()) {
     PA_LOG(VERBOSE) << "API failure response body:\n" << *body;
+  }
 
   std::move(error_callback_).Run(*error);
 }

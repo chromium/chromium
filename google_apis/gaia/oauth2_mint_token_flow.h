@@ -185,10 +185,10 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
       const std::string& access_token) override;
 
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+                             std::optional<std::string> body) override;
   void ProcessApiCallFailure(int net_error,
                              const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+                             std::optional<std::string> body) override;
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
 

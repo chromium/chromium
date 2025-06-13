@@ -57,11 +57,11 @@ class MockApiCallFlow : public OAuth2ApiCallFlow {
   MOCK_METHOD0(CreateApiCallHeaders, net::HttpRequestHeaders());
   MOCK_METHOD2(ProcessApiCallSuccess,
                void(const network::mojom::URLResponseHead* head,
-                    std::unique_ptr<std::string> body));
+                    std::optional<std::string> body));
   MOCK_METHOD3(ProcessApiCallFailure,
                void(int net_error,
                     const network::mojom::URLResponseHead* head,
-                    std::unique_ptr<std::string> body));
+                    std::optional<std::string> body));
   MOCK_METHOD1(ProcessNewAccessToken, void(const std::string& access_token));
   MOCK_METHOD1(ProcessMintAccessTokenFailure,
                void(const GoogleServiceAuthError& error));

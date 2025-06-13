@@ -121,15 +121,15 @@ std::string NearbyApiCallFlowImpl::CreateApiCallBodyContentType() {
 // Note: Unlike OAuth2ApiCallFlow, we do *not* determine the request type
 // based on whether or not the body is empty.
 std::string NearbyApiCallFlowImpl::GetRequestTypeForBody(
-    const std::string& body) {
+    std::string_view body) {
   DCHECK(!request_http_method_.empty());
   return request_http_method_;
 }
 
 void NearbyApiCallFlowImpl::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  if (!body) {
+    std::optional<std::string> body) {
+  if (!body.has_value()) {
     std::move(error_callback_).Run(NearbyHttpError::kResponseMalformed);
     return;
   }
@@ -139,7 +139,7 @@ void NearbyApiCallFlowImpl::ProcessApiCallSuccess(
 void NearbyApiCallFlowImpl::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   std::optional<NearbyHttpError> error;
   std::string error_message;
   if (net_error == net::OK) {

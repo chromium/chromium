@@ -72,8 +72,7 @@ void FakeDeviceMetadataHttpFetcher::ExecuteGetRequest(
   num_gets_++;
 
   if (has_network_error_) {
-    std::move(callback).Run(std::make_unique<std::string>(kInvalidResponse),
-                            nullptr);
+    std::move(callback).Run(kInvalidResponse, nullptr);
     return;
   }
 
@@ -82,14 +81,14 @@ void FakeDeviceMetadataHttpFetcher::ExecuteGetRequest(
     std::string decoded;
     base::Base64Decode(kValidResponseEncoded, &decoded);
     std::move(callback).Run(
-        std::make_unique<std::string>(decoded),
+        std::move(decoded),
         std::make_unique<FastPairHttpResult>(net::Error::OK, nullptr));
     return;
   }
   LOG(ERROR) << "executing invalid url cb " << url.spec()
              << " != " << kValidUrl;
   std::move(callback).Run(
-      nullptr,
+      std::nullopt,
       std::make_unique<FastPairHttpResult>(
           net::OK,
           network::CreateURLResponseHead(net::HttpStatusCode::HTTP_OK).get()));

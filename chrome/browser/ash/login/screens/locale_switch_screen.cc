@@ -67,15 +67,15 @@ class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
 
   std::string CreateApiCallBody() override { return std::string(""); }
 
-  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override {
-    std::string response_body;
-    if (body) {
-      response_body = std::move(*body);
+  void ProcessApiCallSuccess(
+      const network::mojom::URLResponseHead* head,
+      std::optional<std::string> response_body) override {
+    if (!response_body.has_value()) {
+      response_body.emplace();
     }
 
     std::optional<base::Value::Dict> value =
-        base::JSONReader::ReadDict(response_body);
+        base::JSONReader::ReadDict(*response_body);
     if (!value) {
       LOG(ERROR) << __func__ << " Bad response format";
       std::move(failure_callback_).Run();
@@ -107,7 +107,7 @@ class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
   // false. |head| or |body| might be null.
   void ProcessApiCallFailure(int net_error,
                              const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override {
+                             std::optional<std::string> body) override {
     LOG(ERROR) << __func__
                << " Failed to get preferred user locale, net_error = "
                << net_error;

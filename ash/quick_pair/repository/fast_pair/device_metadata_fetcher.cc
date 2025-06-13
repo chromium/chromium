@@ -91,7 +91,7 @@ void DeviceMetadataFetcher::LookupHexDeviceId(
 
 void DeviceMetadataFetcher::OnFetchComplete(
     GetObservedDeviceCallback callback,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
   CD_LOG(VERBOSE, Feature::FP)
       << __func__ << ": HTTP result: "
@@ -105,7 +105,7 @@ void DeviceMetadataFetcher::OnFetchComplete(
 
   RecordDeviceMetadataFetchResult(*http_result);
 
-  if (!response_body) {
+  if (!response_body.has_value()) {
     CD_LOG(WARNING, Feature::FP) << "No response.";
     // Only suggest retrying when the actual request failed, otherwise there is
     // no matching metadata for the given model_id.

@@ -48,7 +48,7 @@ std::string OAuth2ApiCallFlow::CreateAuthorizationHeaderValue(
   return base::StrCat({"Bearer ", access_token});
 }
 
-void OAuth2ApiCallFlow::EndApiCall(std::unique_ptr<std::string> body) {
+void OAuth2ApiCallFlow::EndApiCall(std::optional<std::string> body) {
   CHECK_EQ(API_CALL_STARTED, state_);
   std::unique_ptr<network::SimpleURLLoader> source = std::move(url_loader_);
 
@@ -69,7 +69,7 @@ std::string OAuth2ApiCallFlow::CreateApiCallBodyContentType() {
   return "application/x-www-form-urlencoded";
 }
 
-std::string OAuth2ApiCallFlow::GetRequestTypeForBody(const std::string& body) {
+std::string OAuth2ApiCallFlow::GetRequestTypeForBody(std::string_view body) {
   return body.empty() ? "GET" : "POST";
 }
 
@@ -77,7 +77,7 @@ bool OAuth2ApiCallFlow::IsExpectedSuccessCode(int code) const {
   return code == net::HTTP_OK || code == net::HTTP_NO_CONTENT;
 }
 
-void OAuth2ApiCallFlow::OnURLLoadComplete(std::unique_ptr<std::string> body) {
+void OAuth2ApiCallFlow::OnURLLoadComplete(std::optional<std::string> body) {
   CHECK_EQ(API_CALL_STARTED, state_);
   EndApiCall(std::move(body));
 }

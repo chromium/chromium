@@ -83,7 +83,7 @@ void OAuthHttpFetcher::OnAccessTokenFetched(
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": Failed to retrieve access token. "
         << error.ToString();
-    std::move(callback_).Run(nullptr, nullptr);
+    std::move(callback_).Run(std::nullopt, nullptr);
     return;
   }
 
@@ -92,7 +92,7 @@ void OAuthHttpFetcher::OnAccessTokenFetched(
   if (!url_loader_factory) {
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": URLLoaderFactory is not available.";
-    std::move(callback_).Run(nullptr, nullptr);
+    std::move(callback_).Run(std::nullopt, nullptr);
     return;
   }
 
@@ -128,7 +128,7 @@ std::string OAuthHttpFetcher::CreateApiCallBodyContentType() {
   }
 }
 
-std::string OAuthHttpFetcher::GetRequestTypeForBody(const std::string& body) {
+std::string OAuthHttpFetcher::GetRequestTypeForBody(std::string_view body) {
   switch (request_type_) {
     case RequestType::GET:
       return "GET";
@@ -143,7 +143,7 @@ std::string OAuthHttpFetcher::GetRequestTypeForBody(const std::string& body) {
 
 void OAuthHttpFetcher::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   CD_LOG(INFO, Feature::FP) << __func__;
 
   std::move(callback_).Run(
@@ -155,12 +155,12 @@ void OAuthHttpFetcher::ProcessApiCallSuccess(
 void OAuthHttpFetcher::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   CD_LOG(WARNING, Feature::FP) << __func__ << ": net_err=" << net_error;
 
-  std::move(callback_).Run(
-      nullptr, std::make_unique<FastPairHttpResult>(/*net_error=*/net_error,
-                                                    /*head=*/head));
+  std::move(callback_).Run(std::nullopt, std::make_unique<FastPairHttpResult>(
+                                             /*net_error=*/net_error,
+                                             /*head=*/head));
 }
 
 net::PartialNetworkTrafficAnnotationTag

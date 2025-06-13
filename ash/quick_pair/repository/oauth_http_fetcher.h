@@ -52,13 +52,13 @@ class OAuthHttpFetcher : public HttpFetcher, public OAuth2ApiCallFlow {
   std::string CreateApiCallBody() override;
   std::string CreateApiCallBodyContentType() override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+                             std::optional<std::string> body) override;
   void ProcessApiCallFailure(int net_error,
                              const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+                             std::optional<std::string> body) override;
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
-  std::string GetRequestTypeForBody(const std::string& body) override;
+  std::string GetRequestTypeForBody(std::string_view body) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(OAuthHttpFetcherTest,

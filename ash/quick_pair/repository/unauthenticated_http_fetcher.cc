@@ -53,7 +53,7 @@ void UnauthenticatedHttpFetcher::ExecuteGetRequest(
   if (!url_loader_factory) {
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": No SharedURLLoaderFactory is available.";
-    std::move(callback).Run(nullptr, nullptr);
+    std::move(callback).Run(std::nullopt, nullptr);
     return;
   }
 
@@ -69,7 +69,7 @@ void UnauthenticatedHttpFetcher::ExecuteGetRequest(
 void UnauthenticatedHttpFetcher::OnComplete(
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
     FetchCompleteCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::unique_ptr<FastPairHttpResult> http_result =
       std::make_unique<FastPairHttpResult>(
           /*net_error=*/simple_loader->NetError(),
@@ -88,7 +88,7 @@ void UnauthenticatedHttpFetcher::OnComplete(
       << " failed: " << http_result->ToString();
 
   // TODO(jonmann): Implement retries with back-off.
-  std::move(callback).Run(nullptr, std::move(http_result));
+  std::move(callback).Run(std::nullopt, std::move(http_result));
 }
 
 }  // namespace quick_pair

@@ -92,7 +92,7 @@ void FootprintsFetcherImpl::GetUserDevices(UserReadDevicesCallback callback) {
 void FootprintsFetcherImpl::OnGetComplete(
     UserReadDevicesCallback callback,
     std::unique_ptr<HttpFetcher> http_fetcher,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
   CD_LOG(VERBOSE, Feature::FP)
       << __func__ << ": HTTP result: "
@@ -101,7 +101,7 @@ void FootprintsFetcherImpl::OnGetComplete(
   if (http_result)
     RecordFootprintsFetcherGetResult(*http_result);
 
-  if (!response_body) {
+  if (!response_body.has_value()) {
     CD_LOG(WARNING, Feature::FP) << __func__ << ": No response.";
     std::move(callback).Run(std::nullopt);
     return;
@@ -144,7 +144,7 @@ void FootprintsFetcherImpl::AddUserFastPairInfo(
 void FootprintsFetcherImpl::OnPostComplete(
     AddDeviceCallback callback,
     std::unique_ptr<HttpFetcher> http_fetcher,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
   CD_LOG(VERBOSE, Feature::FP)
       << __func__ << ": HTTP result: "
@@ -153,7 +153,7 @@ void FootprintsFetcherImpl::OnPostComplete(
   if (http_result)
     RecordFootprintsFetcherPostResult(*http_result);
 
-  if (!response_body) {
+  if (!response_body.has_value()) {
     CD_LOG(WARNING, Feature::FP) << __func__ << ": No response.";
     std::move(callback).Run(/*success=*/false);
     return;
@@ -180,7 +180,7 @@ void FootprintsFetcherImpl::DeleteUserDevice(const std::string& hex_account_key,
 void FootprintsFetcherImpl::OnDeleteComplete(
     DeleteDeviceCallback callback,
     std::unique_ptr<HttpFetcher> http_fetcher,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
   CD_LOG(VERBOSE, Feature::FP)
       << __func__ << ": HTTP result: "
@@ -189,7 +189,7 @@ void FootprintsFetcherImpl::OnDeleteComplete(
   if (http_result)
     RecordFootprintsFetcherDeleteResult(*http_result);
 
-  if (!response_body) {
+  if (!response_body.has_value()) {
     CD_LOG(WARNING, Feature::FP) << __func__ << ": No response.";
     std::move(callback).Run(/*success=*/false);
     return;

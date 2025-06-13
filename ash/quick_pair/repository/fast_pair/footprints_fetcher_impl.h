@@ -36,17 +36,17 @@ class FootprintsFetcherImpl : public FootprintsFetcher {
  private:
   void OnGetComplete(UserReadDevicesCallback callback,
                      std::unique_ptr<HttpFetcher> http_fetcher,
-                     std::unique_ptr<std::string> response_body,
+                     std::optional<std::string> response_body,
                      std::unique_ptr<FastPairHttpResult> http_result);
 
   void OnPostComplete(AddDeviceCallback callback,
                       std::unique_ptr<HttpFetcher> http_fetcher,
-                      std::unique_ptr<std::string> response_body,
+                      std::optional<std::string> response_body,
                       std::unique_ptr<FastPairHttpResult> http_result);
 
   void OnDeleteComplete(DeleteDeviceCallback callback,
                         std::unique_ptr<HttpFetcher> http_fetcher,
-                        std::unique_ptr<std::string> response_body,
+                        std::optional<std::string> response_body,
                         std::unique_ptr<FastPairHttpResult> http_result);
 
   base::WeakPtrFactory<FootprintsFetcherImpl> weak_ptr_factory_{this};

@@ -107,9 +107,8 @@ TEST_F(DeviceMetadataFetcherTest, ValidResponse) {
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
         std::string decoded;
         base::Base64Decode(kValidResponseEncoded, &decoded);
-        std::move(callback).Run(
-            std::make_unique<std::string>(decoded),
-            std::make_unique<FastPairHttpResult>(net::Error::OK, nullptr));
+        std::move(callback).Run(decoded, std::make_unique<FastPairHttpResult>(
+                                             net::Error::OK, nullptr));
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
@@ -144,8 +143,7 @@ TEST_F(DeviceMetadataFetcherTest, InvalidResponse) {
         ASSERT_EQ(0u,
                   url.spec().find(
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
-        std::move(callback).Run(std::make_unique<std::string>(kInvalidResponse),
-                                nullptr);
+        std::move(callback).Run(kInvalidResponse, nullptr);
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
@@ -165,8 +163,7 @@ TEST_F(DeviceMetadataFetcherTest, EmptyResponse) {
         ASSERT_EQ(0u,
                   url.spec().find(
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
-        std::move(callback).Run(std::make_unique<std::string>(kEmptyResponse),
-                                nullptr);
+        std::move(callback).Run(kEmptyResponse, nullptr);
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
@@ -186,7 +183,7 @@ TEST_F(DeviceMetadataFetcherTest, NoResponse) {
         ASSERT_EQ(0u,
                   url.spec().find(
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
-        std::move(callback).Run(nullptr, nullptr);
+        std::move(callback).Run(std::nullopt, nullptr);
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
@@ -216,8 +213,7 @@ TEST_F(DeviceMetadataFetcherTest, RecordNetError) {
                 /*head=*/network::CreateURLResponseHead(
                     net::HttpStatusCode::HTTP_NOT_FOUND)
                     .get());
-        std::move(callback).Run(std::make_unique<std::string>(kInvalidResponse),
-                                std::move(http_result));
+        std::move(callback).Run(kInvalidResponse, std::move(http_result));
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
@@ -251,8 +247,7 @@ TEST_F(DeviceMetadataFetcherTest, RecordHttpError) {
                 /*head=*/network::CreateURLResponseHead(
                     net::HttpStatusCode::HTTP_NOT_FOUND)
                     .get());
-        std::move(callback).Run(std::make_unique<std::string>(kInvalidResponse),
-                                std::move(http_result));
+        std::move(callback).Run(kInvalidResponse, std::move(http_result));
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;

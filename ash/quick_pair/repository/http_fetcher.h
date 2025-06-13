@@ -15,7 +15,7 @@ namespace ash {
 namespace quick_pair {
 
 using FetchCompleteCallback =
-    base::OnceCallback<void(std::unique_ptr<std::string>,
+    base::OnceCallback<void(std::optional<std::string>,
                             std::unique_ptr<FastPairHttpResult>)>;
 
 // Makes HTTP GET requests and returns the response.

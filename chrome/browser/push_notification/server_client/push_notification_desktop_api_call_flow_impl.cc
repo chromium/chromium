@@ -112,15 +112,15 @@ PushNotificationDesktopApiCallFlowImpl::CreateApiCallBodyContentType() {
 // Note: Unlike OAuth2ApiCallFlow, we do *not* determine the request type
 // based on whether or not the body is empty.
 std::string PushNotificationDesktopApiCallFlowImpl::GetRequestTypeForBody(
-    const std::string& body) {
+    std::string_view body) {
   CHECK(!request_http_method_.empty());
   return request_http_method_;
 }
 
 void PushNotificationDesktopApiCallFlowImpl::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  if (!body) {
+    std::optional<std::string> body) {
+  if (!body.has_value()) {
     CHECK(error_callback_);
     std::move(error_callback_)
         .Run(PushNotificationApiCallFlowError::kResponseMalformed);
@@ -133,7 +133,7 @@ void PushNotificationDesktopApiCallFlowImpl::ProcessApiCallSuccess(
 void PushNotificationDesktopApiCallFlowImpl::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   std::optional<PushNotificationApiCallFlowError> error;
   std::string error_message;
   if (net_error == net::OK) {
@@ -148,7 +148,7 @@ void PushNotificationDesktopApiCallFlowImpl::ProcessApiCallFailure(
 
   LOG(ERROR) << "API call failed, error code: "
              << net::ErrorToString(net_error);
-  if (body) {
+  if (body.has_value()) {
     VLOG(1) << "API failure response body: " << *body;
   }
 
