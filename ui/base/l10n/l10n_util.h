@@ -124,7 +124,7 @@ void GetParentLocales(const std::string& current_locale,
 // accepted, but 'z', 'German', 'en-$1', or 'abcd-1234' should not.
 // Case-insensitive. Based on BCP 47, see:
 //   http://unicode.org/reports/tr35/#Unicode_Language_and_Locale_Identifiers
-COMPONENT_EXPORT(UI_BASE) bool IsValidLocaleSyntax(const std::string& locale);
+COMPONENT_EXPORT(UI_BASE) bool IsValidLocaleSyntax(std::string_view locale);
 
 //
 // Mac Note: See l10n_util_mac.h for some NSString versions and other support.

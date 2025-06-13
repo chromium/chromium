@@ -737,7 +737,7 @@ void GetParentLocales(const std::string& current_locale,
   }
 }
 
-bool IsValidLocaleSyntax(const std::string& locale) {
+bool IsValidLocaleSyntax(std::string_view locale) {
   // Check that the length is plausible.
   if (locale.size() < 2 || locale.size() >= ULOC_FULLNAME_CAPACITY)
     return false;
@@ -748,9 +748,9 @@ bool IsValidLocaleSyntax(const std::string& locale) {
   // equals sign in a plausible place. Normalize the prefix so that hyphens
   // are changed to underscores.
   std::string prefix = NormalizeLocale(locale);
-  size_t split_point = locale.find("@");
+  const size_t split_point = locale.find("@");
   if (split_point != std::string::npos) {
-    std::string keywords = locale.substr(split_point + 1);
+    const std::string_view keywords = locale.substr(split_point + 1);
     prefix = locale.substr(0, split_point);
 
     size_t equals_loc = keywords.find("=");
