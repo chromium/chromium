@@ -17,8 +17,9 @@ import("//ui/webui/resources/tools/minify_js.gni")
 
 group("build") {
   deps = [
-    ":chromevox_phonetic_dictionaries_js",
     ":copied_files",
+    ":minify_js_background",
+    ":minify_js_panel",
     "//third_party/chromevox:chromevox_third_party_resources",
     "//third_party/liblouis",
   ]
@@ -122,6 +123,8 @@ ts_modules = [
   "background/panel/panel_node_menu_background.ts",
   "background/prefs.ts",
   "background/primary_tts.ts",
+  "background/third_party/tamachiyomi/ja_phonetic_data.ts",
+  "background/third_party/tamachiyomi/ja_phonetic_map.ts",
   "background/tts_background.ts",
   "background/tts_interface.ts",
   "chromevox_loader.ts",
@@ -166,8 +169,6 @@ ts_modules = [
   "panel/panel_menu.ts",
   "panel/panel_menu_item.ts",
   "panel/panel_mode.ts",
-  "third_party/tamachiyomi/ja_phonetic_data.ts",
-  "third_party/tamachiyomi/ja_phonetic_map.ts",
 ]
 
 # ES6 modules.
@@ -228,6 +229,64 @@ generate_message_formatting_data("i18n_data") {
   output_dir = "$chromevox_out_dir"
 }
 
+# Bundles the background sources into a single file.
+bundle_js("bundle_js_background") {
+  visibility = [ ":minify_js_background" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir/background", root_build_dir)
+  js_module_in_files = [ "es6_loader.js" ]
+  external_paths =
+      [ "/common/*|" + rebase_path("$common_tsc_dir/*", root_build_dir) ]
+  out_folder = "$target_gen_dir/bundle/background"
+
+  deps = [
+    ":chromevox_phonetic_dictionaries_js",
+    ":minify_js_messageformat",
+    ":ts_build",
+    "../../common:copied_files",
+    "../../common:ts_build",
+  ]
+}
+
+# Minifies the bundled background script to optimize memory footprint.
+# The minified file gets written directly to $chromevox_out_dir/background.
+minify_js("minify_js_background") {
+  visibility = [ ":build" ]
+
+  deps = [ ":bundle_js_background" ]
+  in_folder = "$target_gen_dir/bundle/background"
+  in_files = [ "es6_loader.rollup.js" ]
+  out_folder = "$chromevox_out_dir/background"
+}
+
+# Bundles the panel sources into a single file.
+bundle_js("bundle_js_panel") {
+  visibility = [ ":minify_js_panel" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir/panel", root_build_dir)
+  js_module_in_files = [ "panel.js" ]
+  out_folder = "$target_gen_dir/bundle/panel"
+
+  deps = [
+    ":ts_build",
+    "../../common:copied_files",
+    "../../common:ts_build",
+  ]
+}
+
+# Minifies the bundled panel script to optimize memory footprint.
+# The minified file gets written directly to $chromevox_out_dir/panel.
+minify_js("minify_js_panel") {
+  visibility = [ ":build" ]
+
+  deps = [ ":bundle_js_panel" ]
+  in_folder = "$target_gen_dir/bundle/panel"
+  in_files = [ "panel.rollup.js" ]
+  out_folder = "$chromevox_out_dir/panel"
+}
+
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
 run_jsbundler("copied_files") {
@@ -241,14 +300,12 @@ run_jsbundler("copied_files") {
   ]
 
   clear_dest_dirs = [
-    "background",
     "common",
     "earcons",
     "images",
     "injected",
     "learn_mode",
     "log_page",
-    "panel",
     "tutorial",
   ]
 
@@ -278,7 +335,16 @@ run_jsbundler("copied_files") {
     "tutorial/practice_areas/jump_commands.html",
     "tutorial/practice_areas/selects.html",
   ]
-  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+
+  # Include JavaScript source files, but omit those for the background and
+  # panel, since we bundle, minify, and write those separately (see
+  # minfy_js_background and minify_js_panel).
+  sources += filter_exclude(
+          filter_include(get_target_outputs(":ts_build"), [ "*.js" ]),
+          [
+            "*/panel/*",
+            "*/background/*",
+          ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir", root_build_dir) + ":",
@@ -476,7 +542,10 @@ bundle_js("bundle_js_messageformat") {
 }
 
 minify_js("minify_js_messageformat") {
-  visibility = [ ":copied_files" ]
+  visibility = [
+    ":bundle_js_background",
+    ":copied_files",
+  ]
 
   deps = [ ":bundle_js_messageformat" ]
   in_folder = "$target_gen_dir/messageformat"

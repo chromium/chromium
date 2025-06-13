@@ -11,7 +11,7 @@ ChromeVoxMV2PhoneticDataTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    JaPhoneticData.init(JA_TEST_MAP);
+    JaPhoneticData.phoneticMap_ = JA_TEST_MAP;
   }
 };
 

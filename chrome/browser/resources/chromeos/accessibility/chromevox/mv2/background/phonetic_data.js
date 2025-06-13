@@ -6,10 +6,10 @@
  * @fileoverview Provides phonetic disambiguation functionality across multiple
  * languages for ChromeVox.
  */
+import {PhoneticDictionaries} from '/chromevox/mv2/phonetic_dictionaries.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {PhoneticDictionaries} from '../phonetic_dictionaries.js';
-import {JaPhoneticData} from '../third_party/tamachiyomi/ja_phonetic_data.js';
+import {JaPhoneticData} from './third_party/tamachiyomi/ja_phonetic_data.js';
 
 export class PhoneticData {
   /**

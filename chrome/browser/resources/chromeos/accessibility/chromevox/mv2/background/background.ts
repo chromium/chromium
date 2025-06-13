@@ -18,8 +18,6 @@ import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {PermissionChecker} from '../common/permission_checker.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
-import {JaPhoneticData} from '../third_party/tamachiyomi/ja_phonetic_data.js';
-import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
 import type {AbstractEarcons} from './abstract_earcons.js';
 import {AutoScrollHandler} from './auto_scroll_handler.js';
@@ -51,6 +49,7 @@ import {LogStore} from './logging/log_store.js';
 import {LogUrlWatcher} from './logging/log_url_watcher.js';
 import {PanelBackground} from './panel/panel_background.js';
 import {ChromeVoxPrefs} from './prefs.js';
+import {JaPhoneticData} from './third_party/tamachiyomi/ja_phonetic_data.js';
 import {TtsBackground} from './tts_background.js';
 
 /**
@@ -116,7 +115,7 @@ export class Background extends ChromeVoxState {
     FindHandler.init();
     GestureCommandHandler.init();
     InjectedScriptLoader.injectContentScriptForGoogleDocs();
-    JaPhoneticData.init(JaPhoneticMap.MAP);
+    JaPhoneticData.init();
     LiveRegions.init();
     LocaleOutputHelper.init();
     LogUrlWatcher.init();

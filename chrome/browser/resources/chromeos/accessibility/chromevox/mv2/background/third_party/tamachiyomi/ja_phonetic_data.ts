@@ -5,9 +5,11 @@
  * @fileoverview Provides Japanese phonetic disambiguation data for ChromeVox.
  */
 
+import {JaPhoneticMap} from './ja_phonetic_map.js';
+
 interface PrefixInfo {
   delimiter: boolean;
-  prefix: string | null;
+  prefix: string|null;
 }
 
 export class JaPhoneticData {
@@ -15,8 +17,8 @@ export class JaPhoneticData {
   private static phoneticMap_: Map<string, string>;
 
   /** Initialize phoneticMap_ by |map|. */
-  static init(map: Map<string, string>): void {
-    this.phoneticMap_ = map;
+  static init(): void {
+    this.phoneticMap_ = JaPhoneticMap.MAP;
   }
 
   /** Returns a phonetic reading for |char|. */
@@ -62,7 +64,9 @@ export class JaPhoneticData {
     return result.join(' ');
   }
 
-  static getCharacterSet(character: string, lastCharacterSet: JaPhoneticData.CharacterSet): JaPhoneticData.CharacterSet {
+  static getCharacterSet(
+      character: string, lastCharacterSet: JaPhoneticData.CharacterSet):
+      JaPhoneticData.CharacterSet {
     // See https://www.unicode.org/charts/PDF/U3040.pdf
     if (character >= 'ぁ' && character <= 'ゖ') {
       if (JaPhoneticData.isSmallLetter(character)) {
@@ -150,7 +154,8 @@ export class JaPhoneticData {
     return JaPhoneticData.DEFAULT_PREFIX.get(characterSet)!;
   }
 
-  static getPrefixForCharacter(characterSet: JaPhoneticData.CharacterSet): string | null {
+  static getPrefixForCharacter(characterSet: JaPhoneticData.CharacterSet):
+      string|null {
     // Removing an annoucement of capital because users can distinguish
     // uppercase and lowercase by capiatalStrategy options.
     switch (characterSet) {
@@ -175,7 +180,9 @@ export class JaPhoneticData {
    * the type of characters has changed.
    * prefix: a string that represents the character set. Null if unncessary.
    */
-  static getPrefixInfo(lastCharacterSet: JaPhoneticData.CharacterSet, currentCharacterSet: JaPhoneticData.CharacterSet): PrefixInfo {
+  static getPrefixInfo(
+      lastCharacterSet: JaPhoneticData.CharacterSet,
+      currentCharacterSet: JaPhoneticData.CharacterSet): PrefixInfo {
     // Don't add prefixes for the same character set except for the sets always
     // read phonetically.
     if (lastCharacterSet === currentCharacterSet) {
@@ -304,7 +311,8 @@ export class JaPhoneticData {
    * @param {JaPhoneticData.CharacterSet} characterSet
    * @return {boolean}
    */
-  static alwaysReadPhonetically(characterSet: JaPhoneticData.CharacterSet): boolean {
+  static alwaysReadPhonetically(characterSet: JaPhoneticData.CharacterSet):
+      boolean {
     switch (characterSet) {
       case JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL:
       case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
@@ -320,23 +328,23 @@ export class JaPhoneticData {
 export namespace JaPhoneticData {
   export enum CharacterSet {
     NONE = 0,
-    HIRAGANA,                             // 'あ'
-    KATAKANA,                             // 'ア'
-    HIRAGANA_SMALL_LETTER,                // 'ぁ'
-    KATAKANA_SMALL_LETTER,                // 'ァ'
-    HALF_WIDTH_KATAKANA,                  // 'ｱ'
-    HALF_WIDTH_KATAKANA_SMALL_LETTER,     // 'ｧ'
-    HALF_WIDTH_ALPHABET_UPPER,            // 'A'
-    HALF_WIDTH_ALPHABET_LOWER,            // 'a'
-    HALF_WIDTH_NUMERIC,                   // '1'
-    HALF_WIDTH_SYMBOL,                    // '@'
-    FULL_WIDTH_ALPHABET_UPPER,            // 'Ａ'
-    FULL_WIDTH_ALPHABET_LOWER,            // 'ａ'
-    FULL_WIDTH_NUMERIC,                   // '１'
-    FULL_WIDTH_SYMBOL,                    // '＠'
-    FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER,   // 'Α'
-    FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER,   // 'α'
-    OTHER,                                // Kanji and unsupported symbols
+    HIRAGANA,                            // 'あ'
+    KATAKANA,                            // 'ア'
+    HIRAGANA_SMALL_LETTER,               // 'ぁ'
+    KATAKANA_SMALL_LETTER,               // 'ァ'
+    HALF_WIDTH_KATAKANA,                 // 'ｱ'
+    HALF_WIDTH_KATAKANA_SMALL_LETTER,    // 'ｧ'
+    HALF_WIDTH_ALPHABET_UPPER,           // 'A'
+    HALF_WIDTH_ALPHABET_LOWER,           // 'a'
+    HALF_WIDTH_NUMERIC,                  // '1'
+    HALF_WIDTH_SYMBOL,                   // '@'
+    FULL_WIDTH_ALPHABET_UPPER,           // 'Ａ'
+    FULL_WIDTH_ALPHABET_LOWER,           // 'ａ'
+    FULL_WIDTH_NUMERIC,                  // '１'
+    FULL_WIDTH_SYMBOL,                   // '＠'
+    FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER,  // 'Α'
+    FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER,  // 'α'
+    OTHER,                               // Kanji and unsupported symbols
   }
 
   export const DEFAULT_PREFIX: Map<CharacterSet, string> = new Map([

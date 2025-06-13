@@ -170,6 +170,9 @@ ts_modules = [
   "panel/panel_menu.ts",
   "panel/panel_menu_item.ts",
   "panel/panel_mode.ts",
+
+  # TODO(crbug.com/388867840): Move ja_phonetic_*.ts to the background
+  # directory (follow same structure as mv2).
   "third_party/tamachiyomi/ja_phonetic_data.ts",
   "third_party/tamachiyomi/ja_phonetic_map.ts",
 ]
@@ -235,6 +238,8 @@ generate_message_formatting_data("i18n_data") {
 
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
+# TODO(crbug.com/388867840): Use bundle_js and minify_js for the background and
+# panel scripts, similar to what is done for mv2.
 run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = chromevox_out_dir
