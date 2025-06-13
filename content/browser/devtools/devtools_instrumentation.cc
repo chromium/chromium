@@ -981,7 +981,8 @@ void ReportBlockedByResponseIssue(
           .SetDetails(issueDetails.Build())
           .Build();
 
-  ReportBrowserInitiatedIssue(ftn->current_frame_host(), inspector_issue.get());
+  ReportBrowserInitiatedIssue(ftn->current_frame_host(),
+                              std::move(inspector_issue));
 }
 
 }  // namespace
@@ -2102,12 +2103,12 @@ void ReportCookieIssue(
     issue->SetIssueId(devtools_issue_id.value());
   }
 
-  ReportBrowserInitiatedIssue(render_frame_host_impl, issue.get());
+  ReportBrowserInitiatedIssue(render_frame_host_impl, std::move(issue));
 }
 
 namespace {
 
-void AddIssueToIssueStorage(
+const protocol::Audits::InspectorIssue& AddIssueToIssueStorage(
     RenderFrameHost* rfh,
     std::unique_ptr<protocol::Audits::InspectorIssue> issue) {
   // We only utilize a central storage on the page. Each issue is still
@@ -2116,7 +2117,7 @@ void AddIssueToIssueStorage(
       DevToolsIssueStorage::GetOrCreateForPage(
           rfh->GetOutermostMainFrame()->GetPage());
 
-  issue_storage->AddInspectorIssue(rfh, std::move(issue));
+  return issue_storage->AddInspectorIssue(rfh, std::move(issue));
 }
 
 }  // namespace
@@ -2167,15 +2168,16 @@ BuildUserReidentificationIssue(
 
 }  // namespace
 
-void ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
-                                 protocol::Audits::InspectorIssue* issue) {
+void ReportBrowserInitiatedIssue(
+    RenderFrameHostImpl* frame,
+    std::unique_ptr<protocol::Audits::InspectorIssue> issue) {
   FrameTreeNode* ftn = frame->frame_tree_node();
   if (!ftn) {
     return;
   }
 
-  AddIssueToIssueStorage(frame, issue->Clone());
-  DispatchToAgents(ftn, &protocol::AuditsHandler::OnIssueAdded, issue);
+  const auto& issue_ptr = AddIssueToIssueStorage(frame, std::move(issue));
+  DispatchToAgents(ftn, &protocol::AuditsHandler::OnIssueAdded, issue_ptr);
 }
 
 void BuildAndReportBrowserInitiatedIssue(
@@ -2218,7 +2220,7 @@ void BuildAndReportBrowserInitiatedIssue(
   } else {
     NOTREACHED() << "Unsupported type of browser-initiated issue";
   }
-  ReportBrowserInitiatedIssue(frame, issue.get());
+  ReportBrowserInitiatedIssue(frame, std::move(issue));
 }
 
 void OnWebTransportHandshakeFailed(

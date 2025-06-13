@@ -173,7 +173,7 @@ void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
                    .SetDetails(std::move(details))
                    .Build();
   devtools_instrumentation::ReportBrowserInitiatedIssue(
-      ftn->current_frame_host(), issue.get());
+      ftn->current_frame_host(), std::move(issue));
 }
 
 void NetworkServiceDevToolsObserver::OnCorsPreflightRequest(
@@ -261,7 +261,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
                    .SetDetails(std::move(details))
                    .SetIssueId(cors_error_status.issue_id.ToString())
                    .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, std::move(issue));
 }
 
 void NetworkServiceDevToolsObserver::OnOrbError(
@@ -291,7 +291,7 @@ void NetworkServiceDevToolsObserver::OnOrbError(
           .SetCode(protocol::Audits::InspectorIssueCodeEnum::GenericIssue)
           .SetDetails(std::move(details))
           .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, std::move(issue));
 }
 
 void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadata(
@@ -494,7 +494,7 @@ void NetworkServiceDevToolsObserver::OnSharedDictionaryError(
               protocol::Audits::InspectorIssueCodeEnum::SharedDictionaryIssue)
           .SetDetails(std::move(details))
           .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, std::move(issue));
 }
 
 void NetworkServiceDevToolsObserver::OnSRIMessageSignatureIssue(
@@ -531,8 +531,8 @@ void NetworkServiceDevToolsObserver::OnSRIMessageSignatureIssue(
                          SRIMessageSignatureIssue)
             .SetDetails(std::move(details))
             .Build();
-    devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi,
-                                                          devtools_issue.get());
+    devtools_instrumentation::ReportBrowserInitiatedIssue(
+        rfhi, std::move(devtools_issue));
   }
 }
 

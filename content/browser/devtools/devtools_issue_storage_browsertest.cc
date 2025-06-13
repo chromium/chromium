@@ -64,8 +64,8 @@ void ReportDummyIssue(RenderFrameHostImpl* rfh) {
           .SetCode(protocol::Audits::InspectorIssueCodeEnum::CookieIssue)
           .SetDetails(issueDetails.Build())
           .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(rfh,
-                                                        inspector_issue.get());
+  devtools_instrumentation::ReportBrowserInitiatedIssue(
+      rfh, std::move(inspector_issue));
 }
 
 }  // namespace

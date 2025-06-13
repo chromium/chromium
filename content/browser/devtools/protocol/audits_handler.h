@@ -38,7 +38,7 @@ class AuditsHandler final : public DevToolsDomainHandler,
   DispatchResponse Disable() override;
   DispatchResponse Enable() override;
 
-  void OnIssueAdded(const protocol::Audits::InspectorIssue* issue);
+  void OnIssueAdded(const protocol::Audits::InspectorIssue& issue);
 
  private:
   std::unique_ptr<Audits::Frontend> frontend_;

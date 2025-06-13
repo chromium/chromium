@@ -35,7 +35,7 @@ DevToolsIssueStorage::~DevToolsIssueStorage() {
   issues_.clear();
 }
 
-void DevToolsIssueStorage::AddInspectorIssue(
+const protocol::Audits::InspectorIssue& DevToolsIssueStorage::AddInspectorIssue(
     RenderFrameHost* rfh,
     std::unique_ptr<protocol::Audits::InspectorIssue> issue) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -46,6 +46,7 @@ void DevToolsIssueStorage::AddInspectorIssue(
   }
   total_added_issues_++;
   issues_.emplace_back(rfh->GetGlobalId(), std::move(issue));
+  return *issues_.back().second.get();
 }
 
 std::vector<const protocol::Audits::InspectorIssue*>

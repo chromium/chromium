@@ -50,7 +50,7 @@ void SendStoredIssuesForFrameToAgent(RenderFrameHostImpl* rfh,
     return;
   auto issues = issue_storage->FindIssuesForAgentOf(rfh);
   for (auto* const issue : issues) {
-    handler->OnIssueAdded(issue);
+    handler->OnIssueAdded(*issue);
   }
 }
 
@@ -70,9 +70,9 @@ DispatchResponse AuditsHandler::Enable() {
 }
 
 void AuditsHandler::OnIssueAdded(
-    const protocol::Audits::InspectorIssue* issue) {
+    const protocol::Audits::InspectorIssue& issue) {
   if (enabled_) {
-    frontend_->IssueAdded(issue->Clone());
+    frontend_->IssueAdded(issue.Clone());
   }
 }
 

@@ -395,9 +395,9 @@ void ReportCookieIssue(
 //
 // DevTools must be attached, otherwise issues reported through
 // |ReportBrowserInitiatedIssue| are lost.
-void CONTENT_EXPORT
-ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
-                            protocol::Audits::InspectorIssue* issue);
+void CONTENT_EXPORT ReportBrowserInitiatedIssue(
+    RenderFrameHostImpl* frame,
+    std::unique_ptr<protocol::Audits::InspectorIssue> issue);
 
 // Produces an inspector issue and sends it to the client with
 // |ReportBrowserInitiatedIssue|.
