@@ -845,8 +845,8 @@ void WebGLRenderingContextBase::commit() {
   // Note: we commit only if (a) the paint operation succeeded and (b) it
   // actually updated the returned resource provider.
   bool resource_provider_was_updated = false;
-  auto* resource_provider = PaintRenderingResultsToCanvasInternal(
-      kBackBuffer, resource_provider_was_updated);
+  auto* resource_provider = PaintRenderingResultsToCanvas(
+      kBackBuffer, &resource_provider_was_updated);
   if (resource_provider && resource_provider_was_updated) {
     Host()->Commit(resource_provider->ProduceCanvasResource(FlushReason::kNone),
                    SkIRect::MakeWH(width, height));
@@ -1698,8 +1698,8 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   // Note: we push a frame only if (a) the paint operation succeeded and (b) it
   // actually updated the resource provider.
   bool resource_provider_was_updated = false;
-  auto* resource_provider = PaintRenderingResultsToCanvasInternal(
-      kBackBuffer, resource_provider_was_updated);
+  auto* resource_provider = PaintRenderingResultsToCanvas(
+      kBackBuffer, &resource_provider_was_updated);
   if (resource_provider && resource_provider_was_updated) {
     const int width = GetDrawingBuffer()->Size().width();
     const int height = GetDrawingBuffer()->Size().height();
@@ -1873,13 +1873,6 @@ void WebGLRenderingContextBase::PageVisibilityChanged() {
     GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
 }
 
-CanvasResourceProvider*
-WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
-    SourceDrawingBuffer source_buffer) {
-  bool dont_care = false;
-  return PaintRenderingResultsToCanvasInternal(source_buffer, dont_care);
-}
-
 scoped_refptr<StaticBitmapImage>
 WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
@@ -1908,12 +1901,14 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 }
 
 CanvasResourceProvider*
-WebGLRenderingContextBase::PaintRenderingResultsToCanvasInternal(
+WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer,
-    bool& resource_provider_was_updated) {
+    bool* resource_provider_was_updated /*=nullptr*/) {
   TRACE_EVENT0("blink",
                "WebGLRenderingContextBase::PaintRenderingResultsToCanvas");
-  resource_provider_was_updated = false;
+  if (resource_provider_was_updated != nullptr) {
+    *resource_provider_was_updated = false;
+  }
 
   if (isContextLost() || !GetDrawingBuffer()) {
     return Host()->GetResourceProviderForWebGL();
@@ -1953,7 +1948,9 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvasInternal(
     resource_provider->ImportResource(
         GetDrawingBuffer()->ExportLowLatencyCanvasResource(
             resource_provider->CreateWeakPtr()));
-    resource_provider_was_updated = true;
+    if (resource_provider_was_updated != nullptr) {
+      *resource_provider_was_updated = true;
+    }
     return resource_provider;
   }
 
@@ -1968,8 +1965,11 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvasInternal(
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
     return resource_provider;
 
-  resource_provider_was_updated = CopyRenderingResultsFromDrawingBuffer(
+  bool copy_succeeded = CopyRenderingResultsFromDrawingBuffer(
       Host()->GetResourceProviderForWebGL(), source_buffer);
+  if (resource_provider_was_updated != nullptr) {
+    *resource_provider_was_updated = copy_succeeded;
+  }
   return resource_provider;
 }
 
