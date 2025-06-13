@@ -860,6 +860,11 @@ void SerializeLayer(LayerImpl& layer,
               std::move(solid_color_scrollbar_layer_extra));
       break;
     }
+    case mojom::LayerType::kSolidColor: {
+      // This is intentionally empty, as there are no extra properties
+      // to serialize for SolidColorLayerImpls.
+      break;
+    }
     case mojom::LayerType::kSurface: {
       auto surface_layer_extra = viz::mojom::SurfaceLayerExtra::New();
       SerializeSurfaceLayerExtra(static_cast<SurfaceLayerImpl&>(layer),

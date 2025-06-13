@@ -1807,6 +1807,8 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
         return "NinePatchThumbScrollbarLayerImpl";
       case cc::mojom::LayerType::kPaintedScrollbar:
         return "PaintedScrollbarLayerImpl";
+      case cc::mojom::LayerType::kSolidColor:
+        return "SolidColorLayerImpl";
       case cc::mojom::LayerType::kSolidColorScrollbar:
         return "SolidColorScrollbarLayerImpl";
       case cc::mojom::LayerType::kSurface:
@@ -2112,6 +2114,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, CreateLayersOfAllTypes) {
       cc::mojom::LayerType::kNinePatchThumbScrollbar,
       cc::mojom::LayerType::kPaintedScrollbar,
       cc::mojom::LayerType::kTileDisplay,
+      cc::mojom::LayerType::kSolidColor,
       cc::mojom::LayerType::kSolidColorScrollbar,
       cc::mojom::LayerType::kSurface,
       cc::mojom::LayerType::kTexture,

@@ -143,6 +143,10 @@ base::expected<void, std::string> CreateLayer(
       layer = cc::SurfaceLayerImpl::Create(&tree, id, base::NullCallback());
       break;
 
+    case cc::mojom::LayerType::kSolidColor:
+      layer = cc::SolidColorLayerImpl::Create(&tree, id);
+      break;
+
     case cc::mojom::LayerType::kTexture:
       layer = cc::TextureLayerImpl::Create(&tree, id);
       break;
