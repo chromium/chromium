@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/locale/locale_change_guard.h"
 
 #include <stddef.h>
 #include <string.h>
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -231,18 +227,14 @@ TEST(LocaleChangeGuardTest, ShowNotificationLocaleChanged) {
 
 TEST(LocaleChangeGuardTest, ShowNotificationLocaleChangedList) {
   for (std::string_view locale : l10n_util::GetAcceptLanguageListForTesting()) {
-    const std::string language = std::string(locale, 0, locale.find('-'));
+    const std::string_view language = locale.substr(0, locale.find('-'));
 
     const bool notification_allowed =
         kShowNotificationLanguages.contains(language);
 
-    const char* const* skipped_begin =
-        LocaleChangeGuard::GetSkipShowNotificationLanguagesForTesting();
-    const char* const* skipped_end =
-        skipped_begin +
-        LocaleChangeGuard::GetSkipShowNotificationLanguagesSizeForTesting();
-    const bool notification_skipped =
-        (std::find(skipped_begin, skipped_end, language) != skipped_end);
+    const bool notification_skipped = base::Contains(
+        LocaleChangeGuard::GetSkipShowNotificationLanguagesForTesting(),
+        language);
 
     EXPECT_TRUE(notification_allowed ^ notification_skipped)
         << "Language '" << language << "' (from locale '" << locale

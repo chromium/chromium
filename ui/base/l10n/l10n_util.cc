@@ -398,15 +398,14 @@ base::LazyInstance<std::vector<std::string>, AvailableLocalesTraits>
 
 namespace l10n_util {
 
-std::string GetLanguage(std::string_view locale) {
-  return std::string(locale, 0, locale.find('-'));
+std::string_view GetLanguage(std::string_view locale) {
+  return locale.substr(0, locale.find('-'));
 }
 
-std::string GetCountry(std::string_view locale) {
+std::string_view GetCountry(std::string_view locale) {
   size_t hyphen_pos = locale.find('-');
-  return (hyphen_pos == std::string::npos)
-             ? std::string()
-             : std::string(locale).substr(hyphen_pos + 1);
+  return (hyphen_pos == std::string::npos) ? std::string_view()
+                                           : locale.substr(hyphen_pos + 1);
 }
 
 // TODO(jshin): revamp this function completely to use a more systematic
@@ -992,7 +991,7 @@ bool IsUserFacingUILocale(const std::string& locale) {
     return true;
   }
 
-  const std::string& language = l10n_util::GetLanguage(locale);
+  const std::string_view language = l10n_util::GetLanguage(locale);
 
   // Chinese locales (other than the ones that have strings on disk) should not
   // be shown.

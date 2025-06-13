@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
@@ -23,7 +24,7 @@ namespace {
 
 std::optional<content::TtsControllerDelegate::PreferredVoiceId>
 PreferredVoiceIdFromString(const base::Value::Dict& pref,
-                           const std::string& pref_key) {
+                           std::string_view pref_key) {
   const std::string* voice_id =
       pref.FindStringByDottedPath(l10n_util::GetLanguage(pref_key));
   if (!voice_id || voice_id->empty())
@@ -43,7 +44,7 @@ PreferredVoiceIdFromString(const base::Value::Dict& pref,
   }
 
   return std::optional<content::TtsControllerDelegate::PreferredVoiceId>(
-      {name, id});
+      {std::move(name), std::move(id)});
 }
 
 }  // namespace

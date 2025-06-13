@@ -360,7 +360,7 @@ void IntentGenerator::LanguageDetectorCallback(
       l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale());
   auto detected_language = detected_locale.has_value()
                                ? l10n_util::GetLanguage(detected_locale.value())
-                               : std::string();
+                               : std::string_view();
 
   // Generate translation intent if the detected language is different to the
   // system language and is not one of the preferred languages.

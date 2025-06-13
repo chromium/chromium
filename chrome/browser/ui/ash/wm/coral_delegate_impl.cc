@@ -322,7 +322,8 @@ bool CoralDelegateImpl::GetGenAILocationAvailability() {
 }
 
 std::string CoralDelegateImpl::GetSystemLanguage() {
-  return l10n_util::GetLanguage(application_locale_storage_->Get());
+  return std::string(
+      l10n_util::GetLanguage(application_locale_storage_->Get()));
 }
 
 void CoralDelegateImpl::OnIdentityManagerShutdown(

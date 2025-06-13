@@ -69,9 +69,8 @@ std::optional<GURL> BuildInstallerDownloadUrl(bool is_metrics_enabled) {
                                          /*start_offset=*/0, "STATS",
                                          is_metrics_enabled ? "1" : "0");
 
-  std::string app_locale =
-      g_browser_process->GetFeatures()->application_locale_storage()->Get();
-  std::string language_code = l10n_util::GetLanguage(app_locale);
+  std::string_view language_code = l10n_util::GetLanguage(
+      g_browser_process->GetFeatures()->application_locale_storage()->Get());
   CHECK(!language_code.empty());
 
   base::ReplaceFirstSubstringAfterOffset(

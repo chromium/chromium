@@ -211,8 +211,8 @@ GURL GetDetailsUrlForQuery(const std::string& query) {
   auto query_text = base::EscapeUrlEncodedData(*remainder, /*use_plus=*/true);
   auto device_language =
       l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale());
-  auto translate_url = base::StringPrintf(
-      kGoogleTranslateUrlTemplate, device_language.c_str(), query_text.c_str());
+  auto translate_url = base::StringPrintf(kGoogleTranslateUrlTemplate,
+                                          device_language, query_text);
   return GURL(translate_url);
 }
 

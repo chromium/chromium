@@ -9,8 +9,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/locale_update_controller.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
@@ -39,8 +41,8 @@ class LocaleChangeGuard final : public session_manager::SessionManagerObserver,
   ~LocaleChangeGuard() override;
 
   // Called just before changing locale.
-  void PrepareChangingLocale(
-      const std::string& from_locale, const std::string& to_locale);
+  void PrepareChangingLocale(std::string_view from_locale,
+                             std::string_view to_locale);
 
   // Called after login.
   void OnLogin();
@@ -69,15 +71,15 @@ class LocaleChangeGuard final : public session_manager::SessionManagerObserver,
 
   // Whether the user has to be shown a locale update notification when the user
   // preferred locale changes from |from_locale| to |to_locale|.
-  bool RequiresUserConfirmation(const std::string& from_locale,
-                                const std::string& to_locale) const;
+  bool RequiresUserConfirmation(std::string_view from_locale,
+                                std::string_view to_locale) const;
 
   // Returns true if we should notify user about automatic locale change.
-  static bool ShouldShowLocaleChangeNotification(const std::string& from_locale,
-                                                 const std::string& to_locale);
+  static bool ShouldShowLocaleChangeNotification(std::string_view from_locale,
+                                                 std::string_view to_locale);
 
-  static const char* const* GetSkipShowNotificationLanguagesForTesting();
-  static size_t GetSkipShowNotificationLanguagesSizeForTesting();
+  static base::span<const std::string_view>
+  GetSkipShowNotificationLanguagesForTesting();
 
   // Set if the system locale has changed on the user login. If this is true,
   // the `LocaleChangeGuard` will notify `LocaleUpdateController` that the

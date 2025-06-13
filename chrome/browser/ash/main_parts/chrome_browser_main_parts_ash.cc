@@ -1070,8 +1070,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // CoralController depends on machine_learning::ServiceConnection, so needs to
   // be initialized after it.
   if (features::IsCoralFeatureEnabled()) {
-    Shell::Get()->coral_controller()->Initialize(
-        l10n_util::GetLanguage(g_browser_process->GetApplicationLocale()));
+    Shell::Get()->coral_controller()->Initialize(std::string(
+        l10n_util::GetLanguage(g_browser_process->GetApplicationLocale())));
   }
 
   // Needs to be initialized after crosapi_manager_.

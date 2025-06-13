@@ -150,7 +150,7 @@ base::Value::List GetLanguageList(
        it != language_index.end(); ++it) {
     const std::string& language_id = it->first;
 
-    const std::string lang = l10n_util::GetLanguage(language_id);
+    const std::string_view lang = l10n_util::GetLanguage(language_id);
 
     // Ignore non-specific codes.
     if (lang.empty() || lang == language_id) {

@@ -25,11 +25,11 @@
 
 namespace l10n_util {
 
-// Takes normalized locale as |locale|. Returns language part (before '-').
-COMPONENT_EXPORT(UI_BASE) std::string GetLanguage(std::string_view locale);
+// Takes normalized locale as `locale`. Returns language part (before '-').
+COMPONENT_EXPORT(UI_BASE) std::string_view GetLanguage(std::string_view locale);
 
-// Takes normalized locale as |locale|. Returns country part (after '-').
-COMPONENT_EXPORT(UI_BASE) std::string GetCountry(std::string_view locale);
+// Takes normalized locale as `locale`. Returns country part (after '-').
+COMPONENT_EXPORT(UI_BASE) std::string_view GetCountry(std::string_view locale);
 
 // This method translates a generic locale name to one of the locally defined
 // ones. This method returns true if it succeeds.
