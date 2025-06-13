@@ -60,6 +60,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -87,6 +88,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -1636,10 +1638,17 @@ public class LocationBarMediatorTest {
         when(mTabModelSelectorSupplier.hasValue()).thenReturn(true);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
         when(mTab.isIncognito()).thenReturn(false);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "NewTabPage.Module.Click",
+                                BrowserUiUtils.ModuleTypeOnStartAndNtp.COMPOSEPLATE_BUTTON)
+                        .build();
         mMediator.composeplateButtonClicked(null);
 
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals(url.getSpec(), mLoadUrlParamsCaptor.getValue().getUrl());
+        histogramWatcher.assertExpected();
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {

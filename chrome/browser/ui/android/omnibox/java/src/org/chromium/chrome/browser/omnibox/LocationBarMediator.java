@@ -44,6 +44,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -755,6 +756,7 @@ class LocationBarMediator
         if (url == null) return;
 
         tab.loadUrl(new LoadUrlParams(url));
+        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
     }
 
     /** package */
