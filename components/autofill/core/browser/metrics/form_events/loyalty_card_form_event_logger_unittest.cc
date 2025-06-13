@@ -18,6 +18,7 @@ namespace autofill::autofill_metrics {
 
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 using UkmFormEventType = ukm::builders::Autofill_FormEvent;
+using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using test::CreateTestFormField;
 using ::testing::IsEmpty;
 
@@ -308,6 +309,10 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
               {UkmAutofillKeyMetricsType::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+
+  EXPECT_THAT(
+      test_ukm_recorder().GetEntriesByName(UkmSuggestionFilledType::kEntryName),
+      IsEmpty());
 }
 
 // Validate Autofill.KeyMetrics.* in case the user does not accept a suggestion.
@@ -355,6 +360,10 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
               {UkmAutofillKeyMetricsType::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+
+  EXPECT_THAT(
+      test_ukm_recorder().GetEntriesByName(UkmSuggestionFilledType::kEntryName),
+      IsEmpty());
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has filled a suggestion.
@@ -402,6 +411,15 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, UserAcceptsSuggestion) {
               {UkmAutofillKeyMetricsType::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+
+  VerifyUkm(
+      &test_ukm_recorder(), form_, UkmSuggestionFilledType::kEntryName,
+      {{{UkmSuggestionFilledType::kIsForCreditCardName, false},
+        {UkmSuggestionFilledType::kFormSignatureName,
+         Collapse(CalculateFormSignature(form_)).value()},
+        {UkmSuggestionFilledType::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form_.fields()[1])).value()},
+        {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
 
   // Verify that the FORM_EVENT_LOCAL_SUGGESTION_FILLED and
   // FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE events are logged by the logger,
@@ -487,6 +505,15 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
               {UkmAutofillKeyMetricsType::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+
+  VerifyUkm(
+      &test_ukm_recorder(), form_, UkmSuggestionFilledType::kEntryName,
+      {{{UkmSuggestionFilledType::kIsForCreditCardName, false},
+        {UkmSuggestionFilledType::kFormSignatureName,
+         Collapse(CalculateFormSignature(form_)).value()},
+        {UkmSuggestionFilledType::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form_.fields()[1])).value()},
+        {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user fixes the filled data but
@@ -525,6 +552,15 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   EXPECT_THAT(test_ukm_recorder().GetEntriesByName(
                   UkmAutofillKeyMetricsType::kEntryName),
               IsEmpty());
+
+  VerifyUkm(
+      &test_ukm_recorder(), form_, UkmSuggestionFilledType::kEntryName,
+      {{{UkmSuggestionFilledType::kIsForCreditCardName, false},
+        {UkmSuggestionFilledType::kFormSignatureName,
+         Collapse(CalculateFormSignature(form_)).value()},
+        {UkmSuggestionFilledType::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form_.fields()[1])).value()},
+        {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
 }
 
 }  // namespace autofill::autofill_metrics

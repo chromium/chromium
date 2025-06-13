@@ -6,6 +6,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 
@@ -26,6 +27,8 @@ void LoyaltyCardFormEventLogger::UpdateLoyaltyCardsAvailabilityForReadiness(
 void LoyaltyCardFormEventLogger::OnDidFillSuggestion(
     const FormStructure& form,
     const AutofillField& field) {
+  client().GetFormInteractionsUkmLogger().LogDidFillSuggestion(
+      driver().GetPageUkmSourceId(), form, field);
   Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
   if (!has_logged_form_filling_suggestion_filled_) {
     has_logged_form_filling_suggestion_filled_ = true;
