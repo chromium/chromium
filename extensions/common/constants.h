@@ -292,11 +292,17 @@ inline constexpr char kMimeHandlerPrivateTestExtensionId[] =
 // The extension id of the Files Manager application.
 inline constexpr char kFilesManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
 
+// The extension id of the Files Manager SWA.
+inline constexpr char kFilesManagerSWAId[] = "fkiggjmkendpmbegkagpmagjepfkpmeb";
+
 // The extension id of the Calculator application.
 inline constexpr char kCalculatorAppId[] = "joodangkbfjnajiiifokapkpmhfnpleo";
 
 // The extension id of the demo Calendar application.
 inline constexpr char kCalendarDemoAppId[] = "fpgfohogebplgnamlafljlcidjedbdeb";
+
+// The extension id of the Camera application.
+inline constexpr char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 
 // The extension id of the GMail application.
 inline constexpr char kGmailAppId[] = "pjkljhegncpnkpknbcohdijeoejaedia";
@@ -349,13 +355,23 @@ inline constexpr char kClipchampAppId[] = "pfepfhbcedkbjdkanpimmmdjfgoddhkg";
 // The extension id of the GeForce NOW PWA.
 inline constexpr char kGeForceNowAppId[] = "egmafekfmcnknbdlbfbhafbllplmjlhn";
 
-// The extension id of the Zoom PWA.
-inline constexpr char kZoomAppId[] = "jldpdkiafafcejhceeincjmlkmibemgj";
+// The extension id of the Zoom PWA. We used to have
+// jldpdkiafafcejhceeincjmlkmibemgj for Zoom with its old url https://zoom.us/.
+// However, nowadays, it always redirect to https://www.zoom.com/ so its
+// extension id becomes ddamjdmghnhnicfnliimfobemngigiom.
+inline constexpr char kZoomAppId[] = "ddamjdmghnhnicfnliimfobemngigiom";
 
 // The extension id of the Sumo PWA.
-inline constexpr char kSumoAppId[] = "mfknjekfflbfdchhohffdpkokgfbfmdc";
+inline constexpr char kSumoAppId[] = "genadphlobhbpdnafiphnppelkagmghm";
 
-// The extension id of the Sumo PWA.
+// The extension id of Gemini App if installed manually.
+inline constexpr char kGeminiAppId[] = "caidcmannjgahlnbpmidmiecjcoiiigg";
+
+// The extension id of Gemini App if added by policy.
+inline constexpr char kGeminiAppByPolicyId[] =
+    "gdfaincndogidkdcdkhapmbffkckdkhn";
+
+// The extension id of the Adobe Spark PWA.
 inline constexpr char kAdobeSparkAppId[] = "magefboookdoiehjohjmbjmkepngibhm";
 
 // The extension id of the Google Docs application.
@@ -441,6 +457,9 @@ inline constexpr char kNewAttractLoopAppId[] =
 // The extension id of 2022 Demo Mode screensaver app.
 inline constexpr char kNewHighlightsAppId[] =
     "enchmnkoajljphdmahljlebfmpkkbnkj";
+
+// The extension id of 2024 Demo Mode App.
+inline constexpr char kDemoModeSWA[] = "bmpphkbpdoljalglilnffmikoggpdolg";
 
 // Returns true if this app is one of Demo Mode Chrome Apps, including
 // attract loop and highlights apps.

@@ -41,13 +41,21 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="DemoModeAppName">
+  <variant name="BeFunky"/>
   <variant name="Browser"/>
+  <variant name="DemoModeApp"/>
+  <variant name="FilesManager"/>
+  <variant name="Gemini"/>
+  <variant name="GoogleDocs"/>
   <variant name="GooglePhoto"/>
   <variant name="Minecraft"/>
   <variant name="OtherArcApp"/>
   <variant name="PlayStore"/>
+  <variant name="Spotify"/>
   <variant name="StardewValley"/>
+  <variant name="Sumo"/>
   <variant name="YouTubePwa"/>
+  <variant name="Zoom"/>
 </variants>
 
 <variants name="GroupFreshnessType">

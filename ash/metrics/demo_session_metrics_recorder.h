@@ -85,9 +85,10 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kSumo = 40,
     kAdobeSpark = 41,
     kMinecraft = 42,
+    kGemini = 43,
     // Add future entries above this comment, in sync with enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kMinecraft,
+    kMaxValue = kGemini,
   };
 
   enum class ExitSessionFrom {
