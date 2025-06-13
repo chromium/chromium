@@ -3218,7 +3218,6 @@ pub(crate) mod printing {
             Expr::Group(e) => e.to_tokens(tokens),
             #[cfg(feature = "full")]
             Expr::If(e) => e.to_tokens(tokens),
-            #[cfg(feature = "full")]
             Expr::Index(e) => print_expr_index(e, tokens, fixup),
             #[cfg(feature = "full")]
             Expr::Infer(e) => e.to_tokens(tokens),
@@ -3247,7 +3246,6 @@ pub(crate) mod printing {
             Expr::Try(e) => print_expr_try(e, tokens, fixup),
             #[cfg(feature = "full")]
             Expr::TryBlock(e) => e.to_tokens(tokens),
-            #[cfg(feature = "full")]
             Expr::Tuple(e) => e.to_tokens(tokens),
             Expr::Unary(e) => print_expr_unary(e, tokens, fixup),
             #[cfg(feature = "full")]

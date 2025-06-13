@@ -6,12 +6,11 @@ extern crate rustc_session;
 extern crate rustc_span;
 
 use rustc_ast::ast;
-use rustc_ast::ptr::P;
 use rustc_session::parse::ParseSess;
 use rustc_span::FileName;
 use std::panic;
 
-pub fn librustc_expr(input: &str) -> Option<P<ast::Expr>> {
+pub fn librustc_expr(input: &str) -> Option<Box<ast::Expr>> {
     match panic::catch_unwind(|| {
         let locale_resources = rustc_driver::DEFAULT_LOCALE_RESOURCES.to_vec();
         let sess = ParseSess::new(locale_resources);

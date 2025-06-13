@@ -572,14 +572,14 @@ pub(crate) mod parsing {
             let dyn_span = dyn_token.span;
             let star_token: Option<Token![*]> = input.parse()?;
             let bounds = TypeTraitObject::parse_bounds(dyn_span, input, allow_plus)?;
-            return Ok(if star_token.is_some() {
+            Ok(if star_token.is_some() {
                 Type::Verbatim(verbatim::between(&begin, input))
             } else {
                 Type::TraitObject(TypeTraitObject {
                     dyn_token: Some(dyn_token),
                     bounds,
                 })
-            });
+            })
         } else if lookahead.peek(token::Bracket) {
             let content;
             let bracket_token = bracketed!(content in input);

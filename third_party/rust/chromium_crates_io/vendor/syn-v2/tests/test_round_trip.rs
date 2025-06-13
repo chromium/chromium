@@ -11,6 +11,7 @@
     clippy::needless_lifetimes,
     clippy::uninlined_format_args
 )]
+#![allow(mismatched_lifetime_syntaxes)]
 
 extern crate rustc_ast;
 extern crate rustc_ast_pretty;

@@ -38,7 +38,7 @@ ast_enum! {
 }
 
 ast_struct! {
-    /// A local `let` binding: `let x: u64 = s.parse()?`.
+    /// A local `let` binding: `let x: u64 = s.parse()?;`.
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
     pub struct Local {
         pub attrs: Vec<Attribute>,

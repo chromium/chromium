@@ -169,7 +169,6 @@ use rustc_ast::ast::WherePredicate;
 use rustc_ast::ast::WherePredicateKind;
 use rustc_ast::ast::WhereRegionPredicate;
 use rustc_ast::ast::YieldKind;
-use rustc_ast::ptr::P;
 use rustc_ast::token::{self, CommentKind, Delimiter, IdentIsRaw, Lit, Token, TokenKind};
 use rustc_ast::tokenstream::{
     AttrTokenStream, AttrTokenTree, AttrsTarget, DelimSpacing, DelimSpan, LazyAttrTokenStream,
@@ -190,12 +189,6 @@ pub trait SpanlessEq {
 }
 
 impl<T: ?Sized + SpanlessEq> SpanlessEq for Box<T> {
-    fn eq(&self, other: &Self) -> bool {
-        SpanlessEq::eq(&**self, &**other)
-    }
-}
-
-impl<T: ?Sized + SpanlessEq> SpanlessEq for P<T> {
     fn eq(&self, other: &Self) -> bool {
         SpanlessEq::eq(&**self, &**other)
     }
@@ -623,7 +616,7 @@ spanless_eq_enum!(StructRest; Base(0) Rest(0) None);
 spanless_eq_enum!(Term; Ty(0) Const(0));
 spanless_eq_enum!(TokenTree; Token(0 1) Delimited(0 1 2 3));
 spanless_eq_enum!(TraitObjectSyntax; Dyn DynStar None);
-spanless_eq_enum!(TyPatKind; Range(0 1 2) Err(0));
+spanless_eq_enum!(TyPatKind; Range(0 1 2) Or(0) Err(0));
 spanless_eq_enum!(UintTy; Usize U8 U16 U32 U64 U128);
 spanless_eq_enum!(UnOp; Deref Not Neg);
 spanless_eq_enum!(UnsafeBinderCastKind; Wrap Unwrap);
