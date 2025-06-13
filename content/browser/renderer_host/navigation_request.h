@@ -420,7 +420,7 @@ class CONTENT_EXPORT NavigationRequest
   SiteInstanceImpl* GetSourceSiteInstance() override;
   bool IsInMainFrame() const override;
   bool IsInPrimaryMainFrame() const override;
-  bool IsInOutermostMainFrame() override;
+  bool IsInOutermostMainFrame() const override;
   bool IsInPrerenderedMainFrame() const override;
   bool IsPrerenderedPageActivation() const override;
   bool IsInFencedFrameTree() const override;

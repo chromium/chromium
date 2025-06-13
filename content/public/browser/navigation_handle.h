@@ -143,7 +143,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // frame and for a prerendered main frame, but false for a <fencedframe>. See
   // documentation for `RenderFrameHost::GetParentOrOuterDocument()` for more
   // details.
-  virtual bool IsInOutermostMainFrame() = 0;
+  virtual bool IsInOutermostMainFrame() const = 0;
 
   // Prerender2:
   // Whether the navigation is taking place in the main frame of the
