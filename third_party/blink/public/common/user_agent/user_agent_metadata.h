@@ -23,7 +23,7 @@ inline constexpr char kTabletFormFactor[] = "Tablet";
 inline constexpr char kXRFormFactor[] = "XR";
 inline constexpr char kEInkFormFactor[] = "EInk";
 inline constexpr char kWatchFormFactor[] = "Watch";
-// LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/client_hints/AwUserAgentMetadata.java,/third_party/blink/public/devtools_protocol/browser_protocol.pdl)
+// LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/client_hints/AwUserAgentMetadata.java,/third_party/blink/common/user_agent/user_agent_metadata.cc)
 
 struct BLINK_COMMON_EXPORT UserAgentBrandVersion {
   UserAgentBrandVersion() = default;
@@ -62,6 +62,8 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
       const std::optional<std::string>& encoded);
   static std::optional<std::string> Marshal(
       const std::optional<UserAgentMetadata>& ua_metadata);
+  static bool IsValidFormFactor(std::string_view form_factor);
+
   UserAgentBrandList brand_version_list;
   UserAgentBrandList brand_full_version_list;
 

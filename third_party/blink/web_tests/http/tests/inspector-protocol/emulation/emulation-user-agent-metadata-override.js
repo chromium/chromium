@@ -65,6 +65,30 @@
   await printHeader('sec-ch-ua-wow64');
   await printHeader('sec-ch-ua-form-factors');
 
+  // Invalid form factors.
+  testRunner.log('');
+  testRunner.log('Testing with override invalid form factors');
+
+  const invalidOverride = await dp.Emulation.setUserAgentOverride({
+    userAgent: 'Ferrum Typewriter',
+    userAgentMetadata: {
+      brands: [{brand: 'Ferrum', version: '42.0'},
+        {brand: 'Iron', version: '3'}],
+      fullVersionList: [{brand: 'Ferrum', version: '42.0.3.14159'},
+              {brand: 'Iron', version: '3.1.4.159'}],
+      fullVersion: '42.0.3.14159',
+      platform: 'Typewriter',
+      platformVersion: '1950',
+      architecture: 'Electromechanical',
+      model: 'QWERTY',
+      mobile: true,
+      bitness: '64',
+      wow64: false,
+      formFactors: ['Desktop', 'Invalid']
+    }
+  });
+  testRunner.log(invalidOverride.error.message);
+
   // Verifying that the low-entropy UA-CH are returned in getHighEntropyValues() by default
   testRunner.log('');
   testRunner.log('Testing with specifying getHighEntropyValues');

@@ -4467,17 +4467,6 @@ domain Emulation
       pause
       pauseIfNetworkFetchesPending
 
-  # Used to specify User Agent form-factor values. See https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
-  experimental type UserAgentFormFactor extends string
-    enum
-      Desktop
-      Automotive
-      Mobile
-      Tablet
-      XR
-      EInk
-      Watch
-
   # Used to specify User Agent Client Hints to emulate. See https://wicg.github.io/ua-client-hints
   experimental type UserAgentBrandVersion extends object
     properties
@@ -4500,7 +4489,9 @@ domain Emulation
       boolean mobile
       optional string bitness
       optional boolean wow64
-      optional array of UserAgentFormFactor formFactors
+      # Used to specify User Agent form-factor values.
+      # See https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
+      optional array of string formFactors
 
   # Used to specify sensor types to emulate.
   # See https://w3c.github.io/sensors/#automation for more information.

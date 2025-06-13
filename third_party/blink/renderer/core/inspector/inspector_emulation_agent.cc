@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_render_theme.h"
@@ -776,6 +777,16 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
       return protocol::Response::InvalidParams(
           "Can't specify UserAgentMetadata but no UA string");
     }
+    if (ua_metadata_override->hasFormFactors()) {
+      for (const auto& form_factor :
+           *(ua_metadata_override->getFormFactors(nullptr))) {
+        if (!blink::UserAgentMetadata::IsValidFormFactor(form_factor.Ascii())) {
+          return protocol::Response::InvalidParams(
+              "Can't specify UserAgentMetadata with invalid form factors.");
+        }
+      }
+    }
+
     protocol::Emulation::UserAgentMetadata& ua_metadata = *ua_metadata_override;
     ua_metadata_override_.emplace();
     if (ua_metadata.hasBrands()) {

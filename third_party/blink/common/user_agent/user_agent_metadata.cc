@@ -16,6 +16,15 @@ namespace blink {
 
 namespace {
 constexpr uint32_t kVersion = 3u;
+
+// List of valid form factors.
+// See https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
+constexpr std::string_view kValidFormFactors[] = {
+    blink::kDesktopFormFactor, blink::kAutomotiveFormFactor,
+    blink::kMobileFormFactor,  blink::kTabletFormFactor,
+    blink::kXRFormFactor,      blink::kEInkFormFactor,
+    blink::kWatchFormFactor};
+
 }  // namespace
 
 UserAgentBrandVersion::UserAgentBrandVersion(const std::string& ua_brand,
@@ -169,6 +178,11 @@ std::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
     out.form_factors.push_back(std::move(form_factors));
   }
   return std::make_optional(std::move(out));
+}
+
+// static
+bool UserAgentMetadata::IsValidFormFactor(std::string_view form_factor) {
+  return base::Contains(kValidFormFactors, form_factor);
 }
 
 bool UserAgentBrandVersion::operator==(const UserAgentBrandVersion& a) const {

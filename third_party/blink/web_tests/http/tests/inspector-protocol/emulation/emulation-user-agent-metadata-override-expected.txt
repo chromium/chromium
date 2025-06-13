@@ -65,6 +65,9 @@ sec-ch-ua-model: "QWERTY"
 sec-ch-ua-wow64: ?0
 sec-ch-ua-form-factors: "Desktop", "XR"
 
+Testing with override invalid form factors
+Can't specify UserAgentMetadata with invalid form factors.
+
 Testing with specifying getHighEntropyValues
 {
     architecture : Electromechanical
