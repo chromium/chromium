@@ -134,6 +134,14 @@ class ControlledFrameElement extends WebViewElement {
     return WebViewInternal.removeContentScripts(
         internal.viewInstanceId, names, callback);
   }
+
+  canGoBack() {
+    return $Promise.resolve(super.canGoBack());
+  }
+
+  canGoForward() {
+    return $Promise.resolve(super.canGoForward());
+  }
 }
 
 // Forward remaining ControlledFrameElement.foo* method calls to

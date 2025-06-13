@@ -22,13 +22,19 @@ async function createControlledFrame(url, partition='') {
 
 // Navigates `controlledframe` to `url`.
 function navigateControlledFrame(controlledframe, url, expectFailure=false) {
+  const promise = createNavigationPromise(controlledframe, expectFailure);
+  controlledframe.setAttribute('src', url);
+  return promise;
+}
+
+// Returns a promise that resolves when the next navigation completes.
+function createNavigationPromise(controlledframe, expectFailure=false) {
   return new Promise((resolve, reject) => {
     if (expectFailure) {
       [reject, resolve] = [resolve, reject];
     }
     controlledframe.addEventListener('loadstop', resolve);
     controlledframe.addEventListener('loadabort', reject);
-    controlledframe.setAttribute('src', url);
   });
 }
 
