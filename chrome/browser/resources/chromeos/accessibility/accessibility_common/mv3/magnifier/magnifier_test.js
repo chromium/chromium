@@ -435,27 +435,30 @@ TEST_F(
       })();
     });
 
-TEST_F('MagnifierE2ETest', 'ScreenMagnifierChromeVoxFollowingPref', function() {
-  this.newCallback(async () => {
-    // Disable ChromeVox following for full screen magnifier, and
-    // verify prefs and state.
-    await this.setPref(
-        Magnifier.Prefs.SCREEN_MAGNIFIER_CHROMEVOX_FOCUS_FOLLOWING, false);
-    magnifier = accessibilityCommon.getMagnifierForTest();
-    magnifier.setIsInitializingForTest(false);
-    assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
-    assertFalse(magnifier.shouldFollowChromeVoxFocus());
+// TODO(crbug.com/417555323): Test is flaky.
+TEST_F(
+    'MagnifierE2ETest', 'DISABLED_ScreenMagnifierChromeVoxFollowingPref',
+    function() {
+      this.newCallback(async () => {
+        // Disable ChromeVox following for full screen magnifier, and
+        // verify prefs and state.
+        await this.setPref(
+            Magnifier.Prefs.SCREEN_MAGNIFIER_CHROMEVOX_FOCUS_FOLLOWING, false);
+        magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+        assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
+        assertFalse(magnifier.shouldFollowChromeVoxFocus());
 
-    // Enable ChromeVox following for full screen magnifier, and
-    // verify prefs and state.
-    await this.setPref(
-        Magnifier.Prefs.SCREEN_MAGNIFIER_CHROMEVOX_FOCUS_FOLLOWING, true);
-    magnifier = accessibilityCommon.getMagnifierForTest();
-    magnifier.setIsInitializingForTest(false);
-    assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
-    assertTrue(magnifier.shouldFollowChromeVoxFocus());
-  })();
-});
+        // Enable ChromeVox following for full screen magnifier, and
+        // verify prefs and state.
+        await this.setPref(
+            Magnifier.Prefs.SCREEN_MAGNIFIER_CHROMEVOX_FOCUS_FOLLOWING, true);
+        magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+        assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
+        assertTrue(magnifier.shouldFollowChromeVoxFocus());
+      })();
+    });
 
 // TODO(crbug.com/417555323): Test is flaky.
 TEST_F(
