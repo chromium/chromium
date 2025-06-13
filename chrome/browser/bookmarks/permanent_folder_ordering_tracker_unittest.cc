@@ -6,6 +6,7 @@
 
 #include <cstddef>
 
+#include "base/strings/utf_ostream_operators.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "components/bookmarks/browser/bookmark_model.h"

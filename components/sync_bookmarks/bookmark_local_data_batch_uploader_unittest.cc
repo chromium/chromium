@@ -8,6 +8,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/strings/utf_ostream_operators.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/bookmarks/browser/bookmark_model.h"

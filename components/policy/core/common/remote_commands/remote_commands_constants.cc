@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <ostream>
+
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/invalidation/invalidation_constants.h"
