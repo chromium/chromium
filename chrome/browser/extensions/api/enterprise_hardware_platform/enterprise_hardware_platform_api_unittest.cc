@@ -12,8 +12,11 @@
 #include "chrome/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
