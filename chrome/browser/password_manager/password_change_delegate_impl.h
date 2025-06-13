@@ -71,7 +71,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
   State GetCurrentState() const override;
   void Stop() override;
-  void Restart() override;
   void OpenPasswordChangeTab() override;
   void OnPasswordFormSubmission(content::WebContents* web_contents) override;
   void OnOtpFieldDetected(content::WebContents* web_contents) override;

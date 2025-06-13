@@ -1946,7 +1946,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyNotAcceptedBubble) {
       password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
 }
 
-TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
+TEST_F(ManagePasswordsUIControllerTest, PasswordChangeFinishedSuccessfully) {
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile(),
       base::BindLambdaForTesting([](content::BrowserContext* context)
@@ -1967,10 +1967,13 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
 
   // Emulate password change flow has started.
   PasswordChangeDelegateMock mock_delegate;
+  EXPECT_CALL(mock_delegate, GetCurrentState)
+      .WillOnce(
+          Return(PasswordChangeDelegate::State::kWaitingForChangePasswordForm));
   EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
       .WillOnce(Return(&mock_delegate));
 
-  ASSERT_EQ(password_manager::ui::PASSWORD_CHANGE_STATE,
+  ASSERT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
 
   // Password change flow has finished successfully. The state should change to

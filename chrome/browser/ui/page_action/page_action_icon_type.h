@@ -46,7 +46,7 @@ enum class PageActionIconType {
   kDiscounts = 30,
   kOptimizationGuide = 31,
   kCollaborationMessaging = 32,
-  kChangePassword = 33,
+  // DEPRECATED: kChangePassword = 33,
   kLensOverlayHomework = 34,
   kMaxValue = kLensOverlayHomework,
 };
@@ -83,7 +83,6 @@ static_assert(static_cast<int>(PageActionIconType::kDiscounts) == 30);
 static_assert(static_cast<int>(PageActionIconType::kOptimizationGuide) == 31);
 static_assert(static_cast<int>(PageActionIconType::kCollaborationMessaging) ==
               32);
-static_assert(static_cast<int>(PageActionIconType::kChangePassword) == 33);
 static_assert(static_cast<int>(PageActionIconType::kLensOverlayHomework) == 34);
 
 // Returns a bool indicating whether the given page action type has been

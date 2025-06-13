@@ -297,7 +297,7 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Discounts"/>
   <int value="31" label="Optimization Guide"/>
   <int value="32" label="Collaboration Messaging"/>
-  <int value="33" label="Change Password"/>
+  <int value="33" label="(Deprecated) Change Password"/>
   <int value="34" label="Lens Overlay Homework"/>
 </enum>
 

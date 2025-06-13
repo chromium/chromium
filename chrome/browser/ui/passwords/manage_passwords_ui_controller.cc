@@ -469,6 +469,7 @@ void ManagePasswordsUIController::OnCredentialLeak(
 
     password_change_service->OfferPasswordChangeUi(
         details.origin, details.username, details.password, web_contents());
+    UpdateBubbleAndIconVisibility();
     return;
   }
 
@@ -721,7 +722,10 @@ ManagePasswordsUIController::GetPasswordFeatureManager() {
 }
 
 password_manager::ui::State ManagePasswordsUIController::GetState() const {
-  if (IsPasswordChangeOngoing()) {
+  PasswordChangeDelegate* delegate = GetPasswordChangeDelegate();
+  if (delegate &&
+      delegate->GetCurrentState() ==
+          PasswordChangeDelegate::State::kPasswordSuccessfullyChanged) {
     return password_manager::ui::State::PASSWORD_CHANGE_STATE;
   }
   return passwords_data_.state();
@@ -1183,7 +1187,6 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     browser->window()->UpdatePageActionIcon(
         PageActionIconType::kManagePasswords);
   }
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kChangePassword);
 }
 
 AccountChooserPrompt* ManagePasswordsUIController::CreateAccountChooser(

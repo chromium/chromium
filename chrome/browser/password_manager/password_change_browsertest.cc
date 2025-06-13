@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
-#include "chrome/browser/ui/passwords/bubble_controllers/password_change/password_change_info_bubble_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -669,45 +668,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       SignInCheckBubbleIsHiddenWhenStateIsUpdated) {
-  SetPrivacyNoticeAcceptedPref();
-  const GURL main_url = WebContents()->GetLastCommittedURL();
-  const GURL change_password_url =
-      embedded_test_server()->GetURL("/password/update_form_empty_fields.html");
-
-  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-      .WillOnce(testing::Return(change_password_url));
-
-  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
-  // Verify the delegate is created and it's currently waiting for change
-  // password form.
-  auto* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
-  ASSERT_TRUE(delegate);
-
-  PasswordBubbleViewBase::ShowBubble(
-      WebContents(), LocationBarBubbleDelegateView::USER_GESTURE);
-  auto* bubble_controller = static_cast<PasswordChangeInfoBubbleController*>(
-      PasswordBubbleViewBase::manage_password_bubble()->GetController());
-  ASSERT_EQ(
-      bubble_controller->GetTitle(),
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_TITLE));
-  ASSERT_EQ(url_formatter::FormatUrlForSecurityDisplay(change_password_url),
-            bubble_controller->GetDisplayOrigin());
-
-  // Wait until the state is changed from `kWaitingForChangePasswordForm` to any
-  // other state. The bubble should disappear then.
-  ASSERT_TRUE(base::test::RunUntil([delegate]() {
-    return delegate->GetCurrentState() !=
-           PasswordChangeDelegate::State::kWaitingForChangePasswordForm;
-  }));
-  PasswordBubbleViewBase* bubble =
-      PasswordBubbleViewBase::manage_password_bubble();
-  ASSERT_FALSE(bubble);
-}
-
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
   SetPrivacyNoticeAcceptedPref();
 
@@ -730,7 +690,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
   EXPECT_EQ(2, tab_strip->count());
   EXPECT_EQ(1, tab_strip->active_index());
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        PrivacyNoticeDialogDisplayed) {
@@ -739,7 +698,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  BubbleObserver prompt_observer(WebContents());
   StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
 
   PasswordChangeDelegate* delegate =
@@ -750,31 +708,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                   ->ui_controller()
                   ->dialog_widget()
                   ->IsVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       SuccessfulDialogDisplayedAutomatically) {
-  SetPrivacyNoticeAcceptedPref();
-  const GURL main_url = WebContents()->GetLastCommittedURL();
-  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-      .WillOnce(testing::Return(embedded_test_server()->GetURL(
-          "/password/update_form_empty_fields.html")));
-
-  BubbleObserver prompt_observer(WebContents());
-  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
-
-  MockPasswordChangeOutcome(
-      PasswordChangeOutcome::
-          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
-
-  PasswordChangeDelegate* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
-  EXPECT_TRUE(base::test::RunUntil([delegate]() {
-    return delegate->GetCurrentState() ==
-           PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
-  }));
-  // Now bubble should automatically appear.
-  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, FailureDialogDisplayed) {
@@ -819,79 +752,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, LeakCheckDialogDisplayed) {
                   ->ui_controller()
                   ->dialog_widget()
                   ->IsVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       BubbleIsNotDisplayedWhenSwitchedToDifferentTab) {
-  SetPrivacyNoticeAcceptedPref();
-  const GURL main_url = WebContents()->GetLastCommittedURL();
-  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-      .WillOnce(testing::Return(embedded_test_server()->GetURL(
-          "/password/update_form_empty_fields.html")));
-
-  // Open new tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/password/done.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
-
-  BubbleObserver prompt_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  // Start password change in the old tab
-  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
-  MockPasswordChangeOutcome(
-      PasswordChangeOutcome::
-          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
-
-  PasswordChangeDelegate* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
-  auto* web_contents =
-      static_cast<PasswordChangeDelegateImpl*>(delegate)->executor();
-  PasswordsNavigationObserver password_change_page_observer(web_contents);
-  EXPECT_TRUE(password_change_page_observer.Wait());
-
-  EXPECT_TRUE(base::test::RunUntil([delegate]() {
-    return delegate->GetCurrentState() ==
-           PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
-  }));
-  // Even after password change is finished no bubble is shown.
-  EXPECT_FALSE(prompt_observer.IsBubbleDisplayedAutomatically());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PasswordChangeBrowserTest,
-    SuccessfulDialogDisplayedAutomaticallyEvenAfterTheCheckIsFinished) {
-  SetPrivacyNoticeAcceptedPref();
-  const GURL main_url = WebContents()->GetLastCommittedURL();
-  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-      .WillOnce(testing::Return(embedded_test_server()->GetURL(
-          "/password/update_form_empty_fields.html")));
-  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
-
-  // Add and activate a new tab to verify the success dialog will be displayed
-  // automatically when focusing the old tab again.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/password/done.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
-
-  MockPasswordChangeOutcome(
-      PasswordChangeOutcome::
-          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
-
-  PasswordChangeDelegate* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
-  EXPECT_TRUE(base::test::RunUntil([delegate]() {
-    return delegate->GetCurrentState() ==
-           PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
-  }));
-
-  // Verify that activating the original tab shows a bubble automatically.
-  BubbleObserver prompt_observer(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {

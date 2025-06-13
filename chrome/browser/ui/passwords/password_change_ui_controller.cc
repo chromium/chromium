@@ -135,13 +135,8 @@ PasswordChangeUIController::~PasswordChangeUIController() {
 
 void PasswordChangeUIController::UpdateState(
     PasswordChangeDelegate::State state) {
-  if (state_ == state) {
-    return;
-  }
-
-  state_ = state;
   std::variant<ToastOptions, std::unique_ptr<ui::DialogModel>> configuration =
-      GetDialogOrToastConfiguration(state_);
+      GetDialogOrToastConfiguration(state);
 
   if (std::holds_alternative<ToastOptions>(configuration)) {
     if (toast_view_) {

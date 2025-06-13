@@ -79,15 +79,6 @@ void NotifyPasswordChangeFinishedSuccessfully(
   }
 }
 
-void DisplayChangePasswordBubbleAutomatically(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  if (auto* manage_controller =
-          ManagePasswordsUIController::FromWebContents(web_contents)) {
-    manage_controller->ShowChangePasswordBubble();
-  }
-}
-
 std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
     content::WebContents* web_contents) {
   if (!web_contents) {
@@ -252,13 +243,6 @@ void PasswordChangeDelegateImpl::Stop() {
                     this);
 }
 
-void PasswordChangeDelegateImpl::Restart() {
-  CHECK_EQ(State::kChangePasswordFormNotFound, current_state_);
-  CHECK(!submission_verifier_);
-
-  StartPasswordChange();
-}
-
 void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
     content::WebContents* web_contents) {
   if (submission_verifier_) {
@@ -333,25 +317,8 @@ void PasswordChangeDelegateImpl::UpdateState(
     return;
   }
   current_state_ = new_state;
-  observers_.Notify(&PasswordChangeDelegate::Observer::OnStateChanged,
-                    new_state);
+  observers_.Notify(&Observer::OnStateChanged, new_state);
   ui_controller_->UpdateState(new_state);
-
-  switch (current_state_) {
-    case State::kWaitingForChangePasswordForm:
-    case State::kChangingPassword:
-    case State::kOfferingPasswordChange:
-    case State::kPasswordChangeFailed:
-    case State::kChangePasswordFormNotFound:
-    case State::kOtpDetected:
-    case State::kWaitingForAgreement:
-    case State::kCanceled:
-      return;
-    case State::kPasswordSuccessfullyChanged:
-      NotifyPasswordChangeFinishedSuccessfully(originator_);
-      DisplayChangePasswordBubbleAutomatically(originator_);
-      break;
-  }
 
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogNumber(
@@ -369,12 +336,14 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
     // Password change was successful. Save new password with an original
     // username.
     submission_verifier_->SavePassword(username_);
+    NotifyPasswordChangeFinishedSuccessfully(originator_);
     UpdateState(State::kPasswordSuccessfullyChanged);
   }
   // TODO(crbug.com/407503334): Upload final log on destructor.
   logs_uploader_->UploadFinalLog();
   submission_verifier_.reset();
 }
+
 bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
   const OptimizationGuideKeyedService* const opt_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);

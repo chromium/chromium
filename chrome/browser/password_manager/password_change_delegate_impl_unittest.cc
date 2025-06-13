@@ -159,25 +159,6 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
       PasswordChangeDelegate::State::kChangePasswordFormNotFound, 1);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, RestartPasswordChange) {
-  SetOptimizationFeatureEnabled(/*enabled=*/true);
-  delegate()->StartPasswordChangeFlow();
-
-  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
-            delegate()->GetCurrentState());
-
-  static_cast<PasswordChangeDelegateImpl*>(delegate())
-      ->form_finder()
-      ->RespondWithFormNotFound();
-
-  EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
-            delegate()->GetCurrentState());
-
-  delegate()->Restart();
-  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
-            delegate()->GetCurrentState());
-}
-
 TEST_F(PasswordChangeDelegateImplTest, MetricsReportedFlowOffered) {
   base::HistogramTester histogram_tester;
   ResetDelegate();
