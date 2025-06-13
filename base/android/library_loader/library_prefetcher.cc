@@ -35,14 +35,13 @@ namespace android {
 
 namespace {
 
+#if !BUILDFLAG(ORDERFILE_INSTRUMENTATION)
 // The binary is aligned to a minimum 16K page size on AArch64 Android, else 4K.
 #if defined(ARCH_CPU_ARM64)
 constexpr size_t kPageSize = 16384;
 #else
 constexpr size_t kPageSize = 4096;
 #endif
-
-#if !BUILDFLAG(ORDERFILE_INSTRUMENTATION)
 // Reads a byte per page between |start| and |end| to force it into the page
 // cache.
 // Heap allocations, syscalls and library functions are not allowed in this
