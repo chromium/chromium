@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './searchbox_compose_button.js';
 import './searchbox_dropdown.js';
 import './searchbox_icon.js';
 import './searchbox_thumbnail.js';
@@ -37,6 +38,13 @@ interface InputUpdate {
   text?: string;
   inline?: string;
   moveCursorToEnd?: boolean;
+}
+
+interface ComposeClickEventDetail {
+  button: number;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  shiftKey: boolean;
 }
 
 export interface SearchboxElement {
@@ -148,13 +156,6 @@ export class SearchboxElement extends SearchboxElementBase {
 
       composeButtonEnabled: {
         type: Boolean,
-      },
-
-      composeIcon: {
-        type: String,
-        value: () =>
-            '//resources/cr_components/searchbox/icons/search_spark.svg',
-        reflectToAttribute: true,
       },
 
       //========================================================================
@@ -303,7 +304,6 @@ export class SearchboxElement extends SearchboxElementBase {
   declare searchboxSteadyStateShadow: boolean;
   declare composeboxEnabled: boolean;
   declare composeButtonEnabled: boolean;
-  declare composeIcon: string;
   declare showThumbnail: boolean;
   declare private inputAriaLive_: string;
   declare private isLensSearchbox_: boolean;
@@ -834,7 +834,7 @@ export class SearchboxElement extends SearchboxElementBase {
     this.dispatchEvent(new Event('open-lens-search'));
   }
 
-  private onComposeButtonClick_(e: MouseEvent) {
+  private onComposeButtonClick_(e: CustomEvent<ComposeClickEventDetail>) {
     if (!this.composeboxEnabled) {
       // Construct navigation url.
       const searchParams = new URLSearchParams();
@@ -854,10 +854,9 @@ export class SearchboxElement extends SearchboxElementBase {
           !this.isInputEmpty());
 
       // Handle mouse events.
-      e.preventDefault();
-      if (e.ctrlKey || e.metaKey) {
+      if (e.detail.ctrlKey || e.detail.metaKey) {
         window.open(href, '_blank');
-      } else if (e.shiftKey) {
+      } else if (e.detail.shiftKey) {
         window.open(href, '_blank', 'noopener');
       } else {
         window.open(href, '_self');
