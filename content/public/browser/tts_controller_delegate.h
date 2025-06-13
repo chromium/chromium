@@ -21,7 +21,7 @@ class CONTENT_EXPORT TtsControllerDelegate {
  public:
   // Used in picking the best Voice for an Utterance.
   struct CONTENT_EXPORT PreferredVoiceId {
-    PreferredVoiceId(const std::string& name, const std::string& id);
+    PreferredVoiceId(std::string name, std::string id);
     PreferredVoiceId();
     ~PreferredVoiceId();
 

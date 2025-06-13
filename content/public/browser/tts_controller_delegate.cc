@@ -4,12 +4,14 @@
 
 #include "content/public/browser/tts_controller_delegate.h"
 
+#include <string>
+#include <utility>
+
 namespace content {
 
-TtsControllerDelegate::PreferredVoiceId::PreferredVoiceId(
-    const std::string& name,
-    const std::string& id)
-    : name(name), id(id) {}
+TtsControllerDelegate::PreferredVoiceId::PreferredVoiceId(std::string name,
+                                                          std::string id)
+    : name(std::move(name)), id(std::move(id)) {}
 
 TtsControllerDelegate::PreferredVoiceId::PreferredVoiceId() = default;
 
