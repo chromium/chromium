@@ -56,9 +56,6 @@ constexpr int kDefaultRichCardWidth = 360;
 constexpr int kMinimumRichCardHeight = 120;
 constexpr int kMaximumRichCardHeight = 464;
 
-// View dimensions.
-constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 16, 20);
-
 // Buttons view.
 constexpr int kSettingsButtonSizeDip = 20;
 

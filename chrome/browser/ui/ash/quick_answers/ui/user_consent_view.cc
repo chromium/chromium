@@ -62,12 +62,10 @@ namespace {
 // Main view (or common) specs.
 constexpr int kLineHeightDip = 20;
 constexpr int kContentSpacingDip = 8;
-constexpr auto kMainViewInsets = gfx::Insets::TLBR(16, 12, 16, 16);
 constexpr auto kContentInsets = gfx::Insets::TLBR(0, 12, 0, 0);
 constexpr auto kContentInsetsRefresh = gfx::Insets::TLBR(0, 16, 0, 0);
 
 // Icon.
-constexpr int kGoogleIconSizeDip = 16;
 constexpr int kIntentIconSizeDip = 20;
 constexpr int kIconBackgroundCornerRadiusDip = 12;
 constexpr gfx::Insets kIntentIconInsets = gfx::Insets(8);

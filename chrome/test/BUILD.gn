@@ -8681,6 +8681,7 @@ test("unit_tests") {
       "../browser/ui/ash/quick_answers/quick_answers_controller_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_state_ash_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_ui_controller_unittest.cc",
+      "../browser/ui/ash/quick_answers/ui/magic_boost_user_consent_view_unittest.cc",
       "../browser/ui/ash/quick_answers/ui/quick_answers_view_unittest.cc",
       "../browser/ui/ash/quick_answers/ui/user_consent_view_unittest.cc",
       "../browser/ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",

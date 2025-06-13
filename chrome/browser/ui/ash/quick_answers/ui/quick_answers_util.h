@@ -25,6 +25,14 @@ inline constexpr int kSubContentViewIndent = 12;
 inline constexpr int kSubContentTextWidth =
     kContentTextWidth - kSubContentViewIndent;
 
+inline constexpr int kButtonsViewMarginDip = 4;
+
+// Google icon.
+inline constexpr int kGoogleIconSizeDip = 16;
+
+// Other icons
+inline constexpr int kIconSizeDip = 16;
+
 // Spacing constants.
 inline constexpr int kContentSingleSpacing = 8;
 inline constexpr int kContentDoubleSpacing = 16;
@@ -37,6 +45,7 @@ inline constexpr int kRichAnswersIconSizeDip = 16;
 inline constexpr int kRichAnswersIconBorderDip = 4;
 inline constexpr gfx::Insets kSubContentViewInsets =
     gfx::Insets::TLBR(0, kSubContentViewIndent, 0, 0);
+inline constexpr gfx::Insets kMainViewInsets = gfx::Insets::TLBR(12, 8, 12, 16);
 
 // Font constants.
 inline constexpr char kGoogleSansFont[] = "Google Sans";
@@ -114,6 +123,12 @@ GURL GetDetailsUrlForQuery(const std::string& query);
 void GenerateTTSAudio(content::BrowserContext* browser_context,
                       const std::string& text,
                       const std::string& locale);
+
+const gfx::Insets GetMainViewInsets(Design design);
+
+const gfx::Insets GetButtonsViewInsets(Design design);
+
+int GetButtonsViewOcclusion(Design design);
 
 }  // namespace quick_answers
 

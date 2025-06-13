@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/loading_view.h"
+#include "chrome/browser/ui/ash/quick_answers/ui/magic_boost_header.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_stage_button.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_text_label.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_util.h"
@@ -99,34 +100,17 @@ using views::Button;
 using views::Label;
 using views::View;
 
-constexpr auto kMainViewInsets = gfx::Insets::TLBR(12, 8, 12, 16);
 constexpr auto kContentViewInsets = gfx::Insets::TLBR(0, 8, 0, 0);
-
-// Google icon.
-constexpr int kIconSizeDip = 16;
 
 // Spacing between lines in the main view.
 constexpr int kLineSpacingDip = 4;
 constexpr int kDefaultLineHeightDip = 20;
 
 // Buttons view.
-constexpr int kButtonsViewMarginDip = 4;
 constexpr int kButtonsSpacingDip = 4;
 constexpr int kDogfoodButtonSizeDip = 20;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr int kSettingsButtonBorderDip = 3;
-
-const gfx::Insets GetMainViewInsets(Design design) {
-  switch (design) {
-    case Design::kCurrent:
-      return kMainViewInsets;
-    case Design::kRefresh:
-    case Design::kMagicBoost:
-      return gfx::Insets::TLBR(12, 16, 16, 16);
-  }
-
-  NOTREACHED() << "Invalid design enum value provided";
-}
 
 const gfx::Insets GetIconInsets(Design design) {
   switch (design) {
@@ -136,20 +120,6 @@ const gfx::Insets GetIconInsets(Design design) {
     case Design::kRefresh:
     case Design::kMagicBoost:
       return gfx::Insets::TLBR(2, 0, 0, 0);
-  }
-
-  NOTREACHED() << "Invalid design enum value provided";
-}
-
-const gfx::Insets GetButtonsViewInsets(Design design) {
-  switch (design) {
-    case Design::kCurrent:
-      return gfx::Insets(kButtonsViewMarginDip);
-    case Design::kRefresh:
-    case Design::kMagicBoost:
-      // Buttons view is rendered as a layer on top of main view. For `kRefresh`
-      // and `kMagicBoost`, they share the same insets.
-      return GetMainViewInsets(design);
   }
 
   NOTREACHED() << "Invalid design enum value provided";
@@ -175,8 +145,9 @@ const gfx::VectorIcon& GetVectorIcon(std::optional<Intent> intent) {
 ui::ImageModel GetIcon(Design design, std::optional<Intent> intent) {
   switch (design) {
     case Design::kCurrent:
-      return ui::ImageModel::FromVectorIcon(
-          vector_icons::kGoogleColorIcon, gfx::kPlaceholderColor, kIconSizeDip);
+      return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleColorIcon,
+                                            gfx::kPlaceholderColor,
+                                            kGoogleIconSizeDip);
     case Design::kRefresh:
       return ui::ImageModel::FromVectorIcon(
           GetVectorIcon(intent), ui::kColorSysOnSurface, kIconSizeDip);
@@ -263,17 +234,6 @@ std::u16string GetIntentName(std::optional<Intent> intent) {
   NOTREACHED() << "Invalid intent enum value specified";
 }
 
-// TODO(b/340629098): A temporary solution until buttons view is merged into
-// headers. See another comment for buttons view in
-// `QuickAnswersView::QuickAnswersView` about details.
-int GetButtonsViewOcclusion(Design design) {
-  gfx::Insets insets_icon_button =
-      views::LayoutProvider::Get()->GetInsetsMetric(
-          views::InsetsMetric::INSETS_ICON_BUTTON);
-  return insets_icon_button.left() + kIconSizeDip + insets_icon_button.right() +
-         GetButtonsViewInsets(design).right();
-}
-
 views::Builder<views::Label> GetRefreshUiHeader() {
   int line_height = ash::TypographyProvider::Get()->ResolveLineHeight(
       ash::TypographyToken::kCrosAnnotation1);
@@ -298,41 +258,6 @@ views::Builder<views::Label> GetRefreshUiHeader() {
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
-}
-
-views::Builder<views::BoxLayoutView> GetMagicBoostHeader() {
-  int line_height = ash::TypographyProvider::Get()->ResolveLineHeight(
-      ash::TypographyToken::kCrosAnnotation1);
-  int vertical_padding = std::max(0, (20 - line_height) / 2);
-
-  return views::Builder<views::BoxLayoutView>()
-      .SetProperty(
-          views::kMarginsKey,
-          gfx::Insets::TLBR(
-              0, 0,
-              views::LayoutProvider::Get()->GetDistanceMetric(
-                  views::DistanceMetric::DISTANCE_RELATED_CONTROL_VERTICAL),
-              GetButtonsViewOcclusion(Design::kMagicBoost)))
-      .SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kPreferred))
-      .SetBetweenChildSpacing(views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL))
-      .AddChild(
-          views::Builder<views::Label>()
-              .SetText(l10n_util::GetStringUTF16(IDS_ASH_MAHI_MENU_TITLE))
-              .SetLineHeight(line_height)
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(vertical_padding, 0))
-              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-              .SetFontList(ash::TypographyProvider::Get()
-                               ->ResolveTypographyToken(
-                                   ash::TypographyToken::kCrosAnnotation1)
-                               .DeriveWithWeight(gfx::Font::Weight::MEDIUM)))
-      .AddChild(views::Builder<chromeos::ExperimentBadge>());
 }
 
 std::string GetResultA11yDescription(ResultView* result_view,
