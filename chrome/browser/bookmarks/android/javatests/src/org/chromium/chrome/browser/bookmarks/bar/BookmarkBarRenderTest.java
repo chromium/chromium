@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -73,7 +72,6 @@ public class BookmarkBarRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
-    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private Tab mCurrentTab;
     @Mock private BookmarkOpener mBookmarkOpener;
@@ -104,7 +102,6 @@ public class BookmarkBarRenderTest {
                     mCoordinator =
                             new BookmarkBarCoordinator(
                                     activity,
-                                    mActivityLifecycleDispatcher,
                                     mBrowserControlsManager,
                                     /* heightChangeCallback= */ (h) -> {},
                                     /* profileSupplier= */ new ObservableSupplierImpl<>(),

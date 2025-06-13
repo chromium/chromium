@@ -1755,7 +1755,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarCoordinator =
                     new BookmarkBarCoordinator(
                             mActivity,
-                            mActivityLifecycleDispatcher,
                             mBrowserControlsManager,
                             /* heightChangeCallback= */ (height) -> updateTopControlsHeight(),
                             mProfileSupplier,
@@ -1764,6 +1763,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mBookmarkOpener,
                             mBookmarkManagerOpenerSupplier,
                             mTopControlsStacker);
+            if (mBookmarkBarVisibilityProvider != null) {
+                mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarCoordinator);
+            }
         }
 
         if (mToolbarManager != null) {
@@ -1777,6 +1779,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mBookmarkBarCoordinator != null) {
             view = mBookmarkBarCoordinator.getView();
+            if (mBookmarkBarVisibilityProvider != null) {
+                mBookmarkBarVisibilityProvider.removeObserver(mBookmarkBarCoordinator);
+            }
             mBookmarkBarCoordinator.destroy();
             mBookmarkBarCoordinator = null;
         }

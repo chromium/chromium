@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,7 +34,15 @@ public class BookmarkBarVisibilityProvider {
          *
          * @param visibility The new (now current) visibility of the Bookmark Bar.
          */
-        void onVisibilityChanged(boolean visibility);
+        default void onVisibilityChanged(boolean visibility) {}
+
+        /**
+         * Called when the max width of a bookmark in the Bookmark Bar changes based on the
+         * configuration of the device.
+         *
+         * @param maxWidth The new (now current) max width of a bookmark in the Bookmark Bar.
+         */
+        default void onMaxWidthChanged(int maxWidth) {}
     }
 
     private final Activity mActivity;
@@ -59,12 +69,11 @@ public class BookmarkBarVisibilityProvider {
 
         mObservers = new ObserverList<>();
 
-        mConfigurationChangedListener = (unused) -> updateVisibility();
+        mConfigurationChangedListener = this::processConfigurationChange;
         mActivityLifecycleDispatcher.register(mConfigurationChangedListener);
 
         mSettingProvider =
-                new BookmarkBarSettingProvider(
-                        mProfileSupplier, /* callback= */ (unused) -> updateVisibility());
+                new BookmarkBarSettingProvider(mProfileSupplier, this::processSettingChange);
     }
 
     /**
@@ -93,10 +102,21 @@ public class BookmarkBarVisibilityProvider {
         mObservers.clear();
     }
 
-    private void updateVisibility() {
+    private void processSettingChange(Boolean isSettingEnabled) {
         boolean visibility = BookmarkBarUtils.isFeatureVisible(mActivity, mProfileSupplier.get());
         for (BookmarkBarVisibilityObserver observer : mObservers) {
             observer.onVisibilityChanged(visibility);
         }
+    }
+
+    private void processConfigurationChange(Configuration configuration) {
+        int maxWidth =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width);
+        for (BookmarkBarVisibilityObserver observer : mObservers) {
+            observer.onMaxWidthChanged(maxWidth);
+        }
+
+        // Configuration changes can also result in visibility changes (e.g. window size change).
+        processSettingChange(BookmarkBarUtils.isSettingEnabled(mProfileSupplier.get()));
     }
 }

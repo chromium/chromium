@@ -24,12 +24,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.R;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -39,9 +39,10 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Coordinator for the bookmark bar which provides users with bookmark access from top chrome. */
 @NullMarked
-public class BookmarkBarCoordinator implements TopControlLayer {
+public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisibilityObserver {
 
     private final SimpleRecyclerViewAdapter mItemsAdapter;
+    private final BookmarkBarItemsLayoutManager mBookmarkBarItemsLayoutManager;
     private final BookmarkBarMediator mMediator;
     private final BookmarkBar mView;
     private final TopControlsStacker mTopControlsStacker;
@@ -50,7 +51,6 @@ public class BookmarkBarCoordinator implements TopControlLayer {
      * Constructs the bookmark bar coordinator.
      *
      * @param activity The activity which is hosting the bookmark bar.
-     * @param activityLifecycleDispatcher The lifecycle dispatcher for the host activity.
      * @param browserControlsStateProvider The state provider for browser controls.
      * @param heightChangeCallback A callback to notify of bookmark bar height change events.
      * @param profileSupplier The supplier for the currently active profile.
@@ -62,7 +62,6 @@ public class BookmarkBarCoordinator implements TopControlLayer {
      */
     public BookmarkBarCoordinator(
             Activity activity,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
             BrowserControlsStateProvider browserControlsStateProvider,
             Callback<Integer> heightChangeCallback,
             ObservableSupplier<Profile> profileSupplier,
@@ -90,8 +89,10 @@ public class BookmarkBarCoordinator implements TopControlLayer {
                 BookmarkBarButtonViewBinder::bind);
         final RecyclerView itemsContainer = mView.findViewById(R.id.bookmark_bar_items_container);
         itemsContainer.setAdapter(mItemsAdapter);
-        final var itemsLayoutManager = new BookmarkBarItemsLayoutManager(activity);
-        itemsContainer.setLayoutManager(itemsLayoutManager);
+        mBookmarkBarItemsLayoutManager = new BookmarkBarItemsLayoutManager(activity);
+        mBookmarkBarItemsLayoutManager.setItemMaxWidth(
+                activity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width));
+        itemsContainer.setLayoutManager(mBookmarkBarItemsLayoutManager);
 
         // NOTE: Scrolling isn't supported and items rarely change so item view caching is disabled.
         itemsContainer.getRecycledViewPool().setMaxRecycledViews(BookmarkBarUtils.ViewType.ITEM, 0);
@@ -102,13 +103,11 @@ public class BookmarkBarCoordinator implements TopControlLayer {
         mMediator =
                 new BookmarkBarMediator(
                         activity,
-                        activityLifecycleDispatcher,
                         allBookmarksButtonModel,
                         browserControlsStateProvider,
                         heightChangeCallback,
                         itemsModel,
-                        itemsLayoutManager.getItemsOverflowSupplier(),
-                        itemsLayoutManager::setItemMaxWidth,
+                        mBookmarkBarItemsLayoutManager.getItemsOverflowSupplier(),
                         model,
                         profileSupplier,
                         currentTab,
@@ -185,5 +184,12 @@ public class BookmarkBarCoordinator implements TopControlLayer {
         return mView != null && mView.getVisibility() == VISIBLE
                 ? TopControlVisibility.VISIBLE
                 : TopControlVisibility.HIDDEN;
+    }
+
+    // BookmarkBarVisibilityObserver implementation:
+
+    @Override
+    public void onMaxWidthChanged(int maxWidth) {
+        mBookmarkBarItemsLayoutManager.setItemMaxWidth(maxWidth);
     }
 }
