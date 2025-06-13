@@ -165,9 +165,10 @@ void TouchEventAckQueue::MarkAcked(
     // If the touch-event was sent directly to the view without going through
     // RenderWidgetHostInputEventRouter, as is the case with AndroidWebView,
     // then we must ack it directly.
-    if (target_view)
+    if (target_view && target_view->GetRootView()) {
       target_view->GetRootView()->ProcessAckedTouchEvent(touch_event,
                                                          ack_result);
+    }
     return;
   }
 

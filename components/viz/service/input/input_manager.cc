@@ -412,7 +412,6 @@ RenderInputRouterSupportBase* InputManager::GetParentRenderInputRouterSupport(
   if (it != frame_sink_metadata_map_.end()) {
     return it->second.rir_support.get();
   }
-  DUMP_WILL_BE_NOTREACHED();
   return nullptr;
 }
 
@@ -433,8 +432,6 @@ RenderInputRouterSupportBase* InputManager::GetRootRenderInputRouterSupport(
   if (it != frame_sink_metadata_map_.end()) {
     return it->second.rir_support.get();
   }
-
-  DUMP_WILL_BE_NOTREACHED();
   return nullptr;
 }
 
