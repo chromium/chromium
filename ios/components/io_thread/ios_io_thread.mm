@@ -11,6 +11,7 @@
 
 #import "base/check_op.h"
 #import "base/command_line.h"
+#import "base/containers/flat_set.h"
 #import "base/environment.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
@@ -73,7 +74,11 @@ namespace io_thread {
 
 namespace {
 
-const char kSupportedAuthSchemes[] = "basic,digest,ntlm";
+constexpr auto kSupportedAuthSchemes = std::to_array<std::string_view>({
+    net::kBasicAuthScheme,
+    net::kDigestAuthScheme,
+    net::kNtlmAuthScheme,
+});
 
 }  // namespace
 
@@ -266,13 +271,11 @@ void IOSIOThread::CleanUp() {
 }
 
 void IOSIOThread::CreateDefaultAuthPreferences() {
-  std::vector<std::string> supported_schemes =
-      base::SplitString(kSupportedAuthSchemes, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
   globals_->http_auth_preferences =
       std::make_unique<net::HttpAuthPreferences>();
-  globals_->http_auth_preferences->set_allowed_schemes(std::set<std::string>(
-      supported_schemes.begin(), supported_schemes.end()));
+  globals_->http_auth_preferences->set_allowed_schemes(
+      base::flat_set<std::string>(kSupportedAuthSchemes.begin(),
+                                  kSupportedAuthSchemes.end()));
 }
 
 void IOSIOThread::ClearHostCache() {

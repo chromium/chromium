@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/dcheck_is_on.h"
@@ -2599,9 +2600,10 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
       http_auth_dynamic_network_service_params->allow_gssapi_library_load);
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   if (http_auth_dynamic_network_service_params->allowed_schemes.has_value()) {
-    http_auth_merged_preferences_.set_allowed_schemes(std::set<std::string>(
-        http_auth_dynamic_network_service_params->allowed_schemes->begin(),
-        http_auth_dynamic_network_service_params->allowed_schemes->end()));
+    http_auth_merged_preferences_.set_allowed_schemes(
+        base::flat_set<std::string>(
+            http_auth_dynamic_network_service_params->allowed_schemes->begin(),
+            http_auth_dynamic_network_service_params->allowed_schemes->end()));
   } else {
     http_auth_merged_preferences_.set_allowed_schemes(std::nullopt);
   }

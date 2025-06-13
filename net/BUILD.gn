@@ -607,7 +607,6 @@ component("net") {
     "http/http_auth_multi_round_parse.h",
     "http/http_auth_preferences.cc",
     "http/http_auth_preferences.h",
-    "http/http_auth_scheme.cc",
     "http/http_auth_scheme.h",
     "http/http_basic_state.cc",
     "http/http_basic_state.h",

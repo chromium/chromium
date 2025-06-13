@@ -112,6 +112,8 @@
 #include "net/device_bound_sessions/session_service.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
+namespace net {
+
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -129,11 +131,11 @@ void RecordTpcdHeaderStatus(TpcdHeaderStatus status) {
 }
 
 base::Value::Dict FirstPartySetMetadataNetLogParams(
-    const net::FirstPartySetMetadata& first_party_set_metadata,
+    const FirstPartySetMetadata& first_party_set_metadata,
     const int64_t* const fps_cache_filter) {
   base::Value::Dict dict;
   auto entry_or_empty =
-      [](const std::optional<net::FirstPartySetEntry>& entry) -> std::string {
+      [](const std::optional<FirstPartySetEntry>& entry) -> std::string {
     return entry.has_value() ? entry->GetDebugString() : "none";
   };
 
@@ -151,13 +153,13 @@ base::Value::Dict CookieInclusionStatusNetLogParams(
     const std::string& cookie_name,
     const std::string& cookie_domain,
     const std::string& cookie_path,
-    const std::optional<net::CookiePartitionKey>& partition_key,
-    const net::CookieInclusionStatus& status,
-    net::NetLogCaptureMode capture_mode) {
+    const std::optional<CookiePartitionKey>& partition_key,
+    const CookieInclusionStatus& status,
+    NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   dict.Set("operation", operation);
   dict.Set("status", status.GetDebugString());
-  if (net::NetLogCaptureIncludesSensitive(capture_mode)) {
+  if (NetLogCaptureIncludesSensitive(capture_mode)) {
     if (!cookie_name.empty())
       dict.Set("name", cookie_name);
     if (!cookie_domain.empty())
@@ -170,9 +172,9 @@ base::Value::Dict CookieInclusionStatusNetLogParams(
   // does not have the ability to influence the key's value.
   std::string partition_key_str;
   if (partition_key.has_value()) {
-    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+    base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
-        serialized = net::CookiePartitionKey::Serialize(partition_key);
+        serialized = CookiePartitionKey::Serialize(partition_key);
     partition_key_str = serialized.has_value()
                             ? serialized.value().GetDebugString()
                             : serialized.error();
@@ -187,7 +189,7 @@ base::Value::Dict CookieInclusionStatusNetLogParams(
 // which is expected to be ordered with the leaf cert first and the root cert
 // last. This complements the per-verification histogram
 // Net.Certificate.TrustAnchor.Verify
-void LogTrustAnchor(const net::HashValueVector& spki_hashes) {
+void LogTrustAnchor(const HashValueVector& spki_hashes) {
   // Don't record metrics if there are no hashes; this is true if the HTTP
   // load did not come from an active network connection, such as the disk
   // cache or a synthesized response.
@@ -196,28 +198,28 @@ void LogTrustAnchor(const net::HashValueVector& spki_hashes) {
 
   int32_t id = 0;
   for (const auto& hash : spki_hashes) {
-    id = net::GetNetTrustAnchorHistogramIdForSPKI(hash);
+    id = GetNetTrustAnchorHistogramIdForSPKI(hash);
     if (id != 0)
       break;
   }
   base::UmaHistogramSparse("Net.Certificate.TrustAnchor.Request", id);
 }
 
-net::CookieOptions CreateCookieOptions(
-    net::CookieOptions::SameSiteCookieContext same_site_context) {
-  net::CookieOptions options;
+CookieOptions CreateCookieOptions(
+    CookieOptions::SameSiteCookieContext same_site_context) {
+  CookieOptions options;
   options.set_return_excluded_cookies();
   options.set_include_httponly();
   options.set_same_site_cookie_context(same_site_context);
   return options;
 }
 
-bool IsTLS13OverTCP(const net::HttpResponseInfo& response_info) {
+bool IsTLS13OverTCP(const HttpResponseInfo& response_info) {
   // Although IETF QUIC also uses TLS 1.3, our QUIC connections report
   // SSL_CONNECTION_VERSION_QUIC.
-  return net::SSLConnectionStatusToVersion(
+  return SSLConnectionStatusToVersion(
              response_info.ssl_info.connection_status) ==
-         net::SSL_CONNECTION_VERSION_TLS1_3;
+         SSL_CONNECTION_VERSION_TLS1_3;
 }
 
 GURL UpgradeSchemeToCryptographic(const GURL& insecure_url) {
@@ -247,19 +249,19 @@ enum class ContentEncodingType {
   kMaxValue = kZstd,
 };
 
-ContentEncodingType ToContentEncodingType(net::SourceStreamType type) {
+ContentEncodingType ToContentEncodingType(SourceStreamType type) {
   switch (type) {
-    case net::SourceStreamType::kBrotli:
+    case SourceStreamType::kBrotli:
       return ContentEncodingType::kBrotli;
-    case net::SourceStreamType::kDeflate:
+    case SourceStreamType::kDeflate:
       return ContentEncodingType::kDeflate;
-    case net::SourceStreamType::kGzip:
+    case SourceStreamType::kGzip:
       return ContentEncodingType::kGZip;
-    case net::SourceStreamType::kZstd:
+    case SourceStreamType::kZstd:
       return ContentEncodingType::kZstd;
-    case net::SourceStreamType::kUnknown:
+    case SourceStreamType::kUnknown:
       return ContentEncodingType::kUnknown;
-    case net::SourceStreamType::kNone:
+    case SourceStreamType::kNone:
       return ContentEncodingType::kUnknown;
   }
 }
@@ -299,34 +301,33 @@ enum class HttpRequestSSLUpgradeDecision {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enums.xml:HttpRequestSSLUpgradeDecision)
 
 HttpRequestSSLUpgradeDecision GetMetricForSSLUpgradeDecision(
-    net::SSLUpgradeDecision upgrade_decision,
+    SSLUpgradeDecision upgrade_decision,
     bool is_secure) {
   switch (upgrade_decision) {
-    case net::SSLUpgradeDecision::kNoUpgrade:
+    case SSLUpgradeDecision::kNoUpgrade:
       return is_secure ? HttpRequestSSLUpgradeDecision::kSSLNoUpgrade
                        : HttpRequestSSLUpgradeDecision::kInsecureNoUpgrade;
-    case net::SSLUpgradeDecision::kStaticUpgrade:
+    case SSLUpgradeDecision::kStaticUpgrade:
       return is_secure ? HttpRequestSSLUpgradeDecision::kSSLStaticUpgrade
                        : HttpRequestSSLUpgradeDecision::kInsecureStaticUpgrade;
-    case net::SSLUpgradeDecision::kDynamicUpgrade:
+    case SSLUpgradeDecision::kDynamicUpgrade:
       return is_secure ? HttpRequestSSLUpgradeDecision::kSSLDynamicUpgrade
                        : HttpRequestSSLUpgradeDecision::kInsecureDynamicUpgrade;
   }
   NOTREACHED();
 }
 
-void RecordSTSHistograms(net::SSLUpgradeDecision upgrade_decision,
+void RecordSTSHistograms(SSLUpgradeDecision upgrade_decision,
                          bool is_secure,
                          int load_flags) {
   // Embrace the layering violation and only record the histogram for main frame
   // navigations. It's possible to record this outside of net/, but the code is
   // a lot more complicated, and while this flag is deprecated, there are no
   // current plans to remove it. See crbug.com/516499 .
-  if (!(load_flags & net::LOAD_MAIN_FRAME_DEPRECATED)) {
+  if (!(load_flags & LOAD_MAIN_FRAME_DEPRECATED)) {
     return;
   }
-  const bool sts_enabled =
-      upgrade_decision != net::SSLUpgradeDecision::kNoUpgrade;
+  const bool sts_enabled = upgrade_decision != SSLUpgradeDecision::kNoUpgrade;
   HttpRequestStsState sts_state = HttpRequestStsState::kUnknown;
   if (is_secure) {
     sts_state = (sts_enabled ? HttpRequestStsState::kProtectedHttps
@@ -342,9 +343,19 @@ void RecordSTSHistograms(net::SSLUpgradeDecision upgrade_decision,
       GetMetricForSSLUpgradeDecision(upgrade_decision, is_secure));
 }
 
-}  // namespace
+bool ClearSiteDataHeaderContainsCookiesOrWildcard(
+    const HttpResponseHeaders* headers) {
+  size_t iter = 0;
+  while (auto maybe_token =
+             headers->EnumerateHeader(&iter, kClearSiteDataHeader)) {
+    if (maybe_token == kDatatypeCookies || maybe_token == kDatatypeWildcard) {
+      return true;
+    }
+  }
+  return false;
+}
 
-namespace net {
+}  // namespace
 
 std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
   const GURL& url = request->url();
@@ -370,8 +381,8 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
     // the request is in no-credential mode so that the http site can't read
     // or set cookies which are shared across http/https, then skip the
     // upgrade.
-    if (((request->load_flags() & net::LOAD_SHOULD_BYPASS_HSTS) ==
-         net::LOAD_SHOULD_BYPASS_HSTS)) {
+    if (((request->load_flags() & LOAD_SHOULD_BYPASS_HSTS) ==
+         LOAD_SHOULD_BYPASS_HSTS)) {
       CHECK(request->allow_credentials() == false);
     } else {
       // Check for HSTS upgrade.
@@ -441,7 +452,7 @@ void URLRequestHttpJob::Start() {
   request_info_.frame_origin = request_->isolation_info().frame_origin();
   request_info_.is_subframe_document_resource =
       request_->isolation_info().request_type() ==
-      net::IsolationInfo::RequestType::kSubFrame;
+      IsolationInfo::RequestType::kSubFrame;
   request_info_.is_main_frame_navigation =
       request_->isolation_info().IsMainFrameRequest();
   request_info_.initiator = request_->initiator();
@@ -449,7 +460,7 @@ void URLRequestHttpJob::Start() {
   request_info_.priority_incremental = request_->priority_incremental();
   request_info_.secure_dns_policy = request_->secure_dns_policy();
   request_info_.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(request_->traffic_annotation());
+      MutableNetworkTrafficAnnotationTag(request_->traffic_annotation());
   request_info_.socket_tag = request_->socket_tag();
   request_info_.idempotency = request_->GetIdempotency();
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -805,7 +816,7 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
           request_->isolation_info().request_type() ||
       request_->force_main_frame_for_same_site_cookies();
   CookieOptions::SameSiteCookieContext same_site_context =
-      net::cookie_util::ComputeSameSiteContextForRequest(
+      cookie_util::ComputeSameSiteContextForRequest(
           request_->method(), request_->url_chain(),
           request_->site_for_cookies(), request_->initiator(),
           is_main_frame_navigation, force_ignore_site_for_cookies);
@@ -868,25 +879,25 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
     // is iterated over. Get metrics for every cookie which is included.
     for (const auto& c : maybe_included_cookies) {
       bool request_is_secure = request_->url().SchemeIsCryptographic();
-      net::CookieSourceScheme cookie_scheme = c.cookie.SourceScheme();
+      CookieSourceScheme cookie_scheme = c.cookie.SourceScheme();
       CookieRequestScheme cookie_request_schemes;
 
       switch (cookie_scheme) {
-        case net::CookieSourceScheme::kSecure:
+        case CookieSourceScheme::kSecure:
           cookie_request_schemes =
               request_is_secure
                   ? CookieRequestScheme::kSecureSetSecureRequest
                   : CookieRequestScheme::kSecureSetNonsecureRequest;
           break;
 
-        case net::CookieSourceScheme::kNonSecure:
+        case CookieSourceScheme::kNonSecure:
           cookie_request_schemes =
               request_is_secure
                   ? CookieRequestScheme::kNonsecureSetSecureRequest
                   : CookieRequestScheme::kNonsecureSetNonsecureRequest;
           break;
 
-        case net::CookieSourceScheme::kUnset:
+        case CookieSourceScheme::kUnset:
           cookie_request_schemes = CookieRequestScheme::kUnsetCookieScheme;
           break;
       }
@@ -1033,19 +1044,8 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
   // If we're clearing the cookies as part of a clear-site-data header we must
   // not also write new ones in the same response.
-  bool clear_site_data_prevents_cookies_from_being_stored = false;
-  std::string clear_site_data_header =
-      headers->GetNormalizedHeader(kClearSiteDataHeader)
-          .value_or(std::string());
-  std::vector<std::string> clear_site_data_types =
-      ClearSiteDataHeaderContents(clear_site_data_header);
-  std::set<std::string> clear_site_data_set(clear_site_data_types.begin(),
-                                            clear_site_data_types.end());
-  if (clear_site_data_set.find(kDatatypeCookies) != clear_site_data_set.end() ||
-      clear_site_data_set.find(kDatatypeWildcard) !=
-          clear_site_data_set.end()) {
-    clear_site_data_prevents_cookies_from_being_stored = true;
-  }
+  bool clear_site_data_prevents_cookies_from_being_stored =
+      ClearSiteDataHeaderContainsCookiesOrWildcard(headers);
 
   std::optional<base::Time> server_time = GetResponseHeaders()->GetDateValue();
 
@@ -1061,7 +1061,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
           request_->isolation_info().request_type() ||
       request_->force_main_frame_for_same_site_cookies();
   CookieOptions::SameSiteCookieContext same_site_context =
-      net::cookie_util::ComputeSameSiteContextForResponse(
+      cookie_util::ComputeSameSiteContextForResponse(
           request_->url_chain(), request_->site_for_cookies(),
           request_->initiator(), is_main_frame_navigation,
           force_ignore_site_for_cookies);
@@ -1090,9 +1090,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
     num_cookie_lines_left_++;
 
-    std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
+    std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,
-        request_->cookie_partition_key(), net::CookieSourceType::kHTTP,
+        request_->cookie_partition_key(), CookieSourceType::kHTTP,
         &returned_status);
 
     std::optional<CanonicalCookie> cookie_to_return = std::nullopt;
@@ -1110,8 +1110,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
       // in this case.
       if (returned_status.IsInclude()) {
         returned_status.AddExclusionReason(
-            net::CookieInclusionStatus::ExclusionReason::
-                EXCLUDE_USER_PREFERENCES);
+            CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES);
       }
     }
     if (clear_site_data_prevents_cookies_from_being_stored) {
@@ -1229,7 +1228,7 @@ void URLRequestHttpJob::ProcessStrictTransportSecurityHeader() {
     return;
 
   // Don't accept HSTS headers for localhost. (crbug.com/41251622)
-  if (net::IsLocalHostname(request_info_.url.host()) &&
+  if (IsLocalHostname(request_info_.url.host()) &&
       base::FeatureList::IsEnabled(features::kIgnoreHSTSForLocalhost)) {
     return;
   }
@@ -1469,7 +1468,7 @@ bool URLRequestHttpJob::GetCharset(std::string* charset) {
 }
 
 void URLRequestHttpJob::GetClientSideContentDecodingTypes(
-    std::vector<net::SourceStreamType>* types) const {
+    std::vector<SourceStreamType>* types) const {
   CHECK(types);
   *types = client_side_content_decoding_types_;
 }
@@ -2020,7 +2019,7 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
       }
 
       auto& proxy_chain = response_info_->proxy_chain;
-      bool direct_only = net::features::kIpPrivacyDirectOnly.Get();
+      bool direct_only = features::kIpPrivacyDirectOnly.Get();
       if (proxy_chain.is_for_ip_protection()) {
         base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached2",
                                 total_time);

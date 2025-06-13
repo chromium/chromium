@@ -801,7 +801,7 @@ void HostResolverManager::InitializeJobKeyAndIPAddress(
   // `https_svcb_options_.enable` has precedence, so if enabled, ignore any
   // other related features.
   if (https_svcb_options_.enable && out_job_key.host.HasScheme()) {
-    static const char* const kSchemesForHttpsQuery[] = {
+    static constexpr std::string_view kSchemesForHttpsQuery[] = {
         url::kHttpScheme, url::kHttpsScheme, url::kWsScheme, url::kWssScheme};
     if (base::Contains(kSchemesForHttpsQuery, out_job_key.host.GetScheme())) {
       effective_types.Put(DnsQueryType::HTTPS);

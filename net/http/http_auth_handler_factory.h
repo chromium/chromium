@@ -259,13 +259,6 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
 
   using FactoryMap =
       std::map<std::string, std::unique_ptr<HttpAuthHandlerFactory>>;
-  std::set<std::string> default_auth_schemes_ {
-    kBasicAuthScheme, kDigestAuthScheme,
-#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
-        kNegotiateAuthScheme,
-#endif
-        kNtlmAuthScheme
-  };
   FactoryMap factory_map_;
 };
 

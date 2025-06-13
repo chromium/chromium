@@ -4,15 +4,15 @@
 
 #include "net/http/http_proxy_client_socket.h"
 
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include <fuzzer/FuzzedDataProvider.h>
 
 #include <memory>
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/address_list.h"
 #include "net/base/auth.h"
@@ -54,8 +54,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::HttpAuthCache auth_cache(
       false /* key_server_entries_by_network_anonymization_key */);
   net::HttpAuthPreferences http_auth_preferences;
-  http_auth_preferences.set_allowed_schemes(
-      std::set<std::string>{net::kBasicAuthScheme, net::kDigestAuthScheme});
+  http_auth_preferences.set_allowed_schemes(base::flat_set<std::string>{
+      net::kBasicAuthScheme, net::kDigestAuthScheme});
   net::HttpAuthHandlerRegistryFactory auth_handler_factory(
       &http_auth_preferences);
 
