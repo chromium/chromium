@@ -15,9 +15,9 @@ features:
 future_on:
 - android
 - fuchsia
+- chrome.*
 supported_on:
 - chrome_os:114-
-- chrome.*:139-
 owners:
 - acostinas@google.com
 - suprnet@google.com
