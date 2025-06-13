@@ -298,33 +298,37 @@ bool EntityShouldProduceSuggestion(const AutofillField& trigger_field,
   return true;
 }
 
-// Returns the set of AttributeTypes for which `entity` could fill a value in
-// `section` of `form`.
-DenseSet<AttributeType> GetAttributeTypesFillableByEntity(
-    const FormStructure& form,
-    const Section& section,
-    const EntityInstance& entity) {
-  DenseSet<AttributeType> attribute_types_in_section;
-  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
-    // Only fill fields that match the triggering field section.
-    if (field->section() != section) {
-      continue;
-    }
-    std::optional<FieldType> field_autofill_ai_prediction =
-        field->GetAutofillAiServerTypePredictions();
-    if (!field_autofill_ai_prediction) {
-      continue;
-    }
-    std::optional<AttributeType> attribute_type =
-        AttributeType::FromFieldType(*field_autofill_ai_prediction);
-    // Only fields that match the triggering field entity should be used to
-    // generate suggestions.
-    if (!attribute_type || entity.type() != attribute_type->entity_type()) {
-      continue;
-    }
-    attribute_types_in_section.insert(*attribute_type);
-  }
-  return attribute_types_in_section;
+// Returns true if `entity` has a non-empty value to fill for some field of
+// `section` in `form`.
+bool CanFillSomeField(const EntityInstance& entity,
+                      const FormStructure& form,
+                      const Section& section,
+                      const std::string& app_locale) {
+  return std::ranges::any_of(
+      form.fields(), [&](const std::unique_ptr<AutofillField>& field) {
+        // Only fill fields that match the triggering field section.
+        if (field->section() != section) {
+          return false;
+        }
+        std::optional<FieldType> field_autofill_ai_prediction =
+            field->GetAutofillAiServerTypePredictions();
+        if (!field_autofill_ai_prediction) {
+          return false;
+        }
+        std::optional<AttributeType> attribute_type =
+            AttributeType::FromFieldType(*field_autofill_ai_prediction);
+        // Only fields that match the triggering field entity should be used to
+        // generate suggestions.
+        if (!attribute_type || entity.type() != attribute_type->entity_type()) {
+          return false;
+        }
+        base::optional_ref<const AttributeInstance> attribute =
+            entity.attribute(*attribute_type);
+        return attribute && !attribute
+                                 ->GetInfo(attribute_type->field_type(),
+                                           app_locale, std::nullopt)
+                                 .empty();
+      });
 }
 
 SuggestionWithMetadata GetSuggestionForEntity(
@@ -458,20 +462,8 @@ std::vector<Suggestion> CreateFillingSuggestions(
     if (entity->type() != trigger_field_attribute_type->entity_type()) {
       continue;
     }
-    DenseSet<AttributeType> attribute_types_in_section =
-        GetAttributeTypesFillableByEntity(form, autofill_field->section(),
-                                          *entity);
-    const bool can_entity_fill_any_field_in_section = std::ranges::any_of(
-        attribute_types_in_section, [&](const AttributeType attribute) {
-          base::optional_ref<const AttributeInstance> instance =
-              entity->attribute(attribute);
-          // If the entity can fill any field in the form, add it.
-          return instance && !instance
-                                  ->GetInfo(attribute.field_type(), app_locale,
-                                            std::nullopt)
-                                  .empty();
-        });
-    if (can_entity_fill_any_field_in_section) {
+    if (CanFillSomeField(*entity, form, autofill_field->section(),
+                         app_locale)) {
       other_entities_that_can_fill_section.push_back(entity);
     }
   }
