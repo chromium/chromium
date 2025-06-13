@@ -90,10 +90,10 @@ class FunctionRef<R(Args...)> {
              // we could teach our trampoline to deal with this, but this may be
              // the sign of an object lifetime bug, and again it's not clear
              // that this isn't just a mistake on the part of the user.
-             (!is_instantiation<FunctionRef, std::decay_t<Functor>>) &&
+             (!is_instantiation<std::decay_t<Functor>, FunctionRef>) &&
              // For the same reason as the second case above, prevent
              // construction from `absl::FunctionRef`.
-             (!is_instantiation<absl::FunctionRef, std::decay_t<Functor>>)
+             (!is_instantiation<std::decay_t<Functor>, absl::FunctionRef>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   FunctionRef(const Functor& functor LIFETIME_BOUND)
       : wrapped_func_ref_(functor) {}

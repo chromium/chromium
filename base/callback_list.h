@@ -254,7 +254,7 @@ class CallbackListBase {
     // that were executed above have all been removed regardless of whether
     // they're counted in |erased_callbacks_|.
     if (removal_callback_ &&
-        (erased_callbacks || is_instantiation<OnceCallback, CallbackType>)) {
+        (erased_callbacks || is_instantiation<CallbackType, OnceCallback>)) {
       removal_callback_.Run();  // May delete |this|!
     }
   }

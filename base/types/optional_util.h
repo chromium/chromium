@@ -21,11 +21,11 @@ namespace internal_optional_util {
 
 template <typename Opt>
 concept IsOptional =
-    base::is_instantiation<std::optional, std::remove_cvref_t<Opt>>;
+    base::is_instantiation<std::remove_cvref_t<Opt>, std::optional>;
 
 template <typename Exp>
 concept IsExpected =
-    base::is_instantiation<base::expected, std::remove_cvref_t<Exp>>;
+    base::is_instantiation<std::remove_cvref_t<Exp>, base::expected>;
 
 template <typename Opt>
   requires(IsOptional<Opt>)

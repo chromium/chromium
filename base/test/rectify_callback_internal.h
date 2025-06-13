@@ -33,7 +33,7 @@ struct RectifyCallbackWrapper<CallbackType,
   template <typename Actual>
   static CallbackType<R(IgnoredArgs..., PartialArgs...)> Rectify(
       Actual&& callback) {
-    if constexpr (is_instantiation<OnceCallback, CallbackType<void()>>) {
+    if constexpr (is_instantiation<CallbackType<void()>, OnceCallback>) {
       return BindOnce(
           [](OnceCallback<R(PartialArgs...)> callback, IgnoredArgs...,
              PartialArgs... args) {

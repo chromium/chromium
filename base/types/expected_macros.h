@@ -359,7 +359,7 @@ struct Trampoline {
   {                                                                           \
     static_assert(                                                            \
         base::internal::IsExpected<decltype(expected)> ||                     \
-            base::is_instantiation<std::optional, decltype(expected)>,        \
+            base::is_instantiation<decltype(expected), std::optional>,        \
         #name                                                                 \
         " should only be used with base::expected<> or std::optional<>");     \
   }                                                                           \

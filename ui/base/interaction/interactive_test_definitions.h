@@ -148,7 +148,7 @@ inline constexpr bool HasCompatibleSignatureValue<F, R(A, Args...)> = true;
 
 // Checks that `T` is a reference wrapper around any type.
 template <typename T>
-concept IsReferenceWrapper = base::is_instantiation<std::reference_wrapper, T>;
+concept IsReferenceWrapper = base::is_instantiation<T, std::reference_wrapper>;
 
 // Helper to determine the type used to match a value. The default is to just
 // use the decayed value type.
@@ -197,7 +197,7 @@ concept HasMatchAndExplain = requires { &T::MatchAndExplain; };
 
 template <typename T>
 concept IsMatcher = IsGtestMatcher<T> || HasMatchAndExplain<T> ||
-                    base::is_instantiation<testing::PolymorphicMatcher, T>;
+                    base::is_instantiation<T, testing::PolymorphicMatcher>;
 
 // Accepts any function-like object that is compatible with
 // `InteractionSequence::StepCallback`.

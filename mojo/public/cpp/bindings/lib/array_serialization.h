@@ -163,7 +163,7 @@ struct ArraySerializer<
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-  requires(!base::is_instantiation<std::optional, typename MojomType::Element>)
+  requires(!base::is_instantiation<typename MojomType::Element, std::optional>)
 struct ArraySerializer<
     MojomType,
     MaybeConstUserType,
@@ -212,7 +212,7 @@ struct ArraySerializer<
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-  requires(base::is_instantiation<std::optional, typename MojomType::Element>)
+  requires(base::is_instantiation<typename MojomType::Element, std::optional>)
 struct ArraySerializer<
     MojomType,
     MaybeConstUserType,

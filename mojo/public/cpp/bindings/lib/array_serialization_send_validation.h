@@ -74,7 +74,7 @@ template <typename MojomType,
           typename MaybeConstUserType,
           SendValidation send_validation,
           typename UserTypeIterator>
-  requires(!base::is_instantiation<std::optional, typename MojomType::Element>)
+  requires(!base::is_instantiation<typename MojomType::Element, std::optional>)
 struct SendValidationArraySerializer<
     MojomType,
     MaybeConstUserType,
@@ -121,7 +121,7 @@ template <typename MojomType,
           typename MaybeConstUserType,
           SendValidation send_validation,
           typename UserTypeIterator>
-  requires(base::is_instantiation<std::optional, typename MojomType::Element>)
+  requires(base::is_instantiation<typename MojomType::Element, std::optional>)
 struct SendValidationArraySerializer<
     MojomType,
     MaybeConstUserType,

@@ -194,7 +194,7 @@ struct ArrayDataTraits<std::optional<bool>> {
 // TODO(ffred): consider merging with the optional<bool> specialization using
 // if constexpr.
 template <typename T>
-  requires(base::is_instantiation<std::optional, T>)
+  requires(base::is_instantiation<T, std::optional>)
 struct ArrayDataTraits<T> {
   using StorageType = typename T::value_type;
 

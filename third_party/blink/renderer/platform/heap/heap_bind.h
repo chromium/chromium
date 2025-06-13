@@ -171,8 +171,8 @@ class BoundState<arg0_is_nullable,
 
   template <typename Functor, typename... FreeArgs>
   auto Run(Functor&& functor, FreeArgs&&... free_args) {
-    if constexpr (base::is_instantiation<HeapCallback,
-                                         std::remove_cvref_t<Functor>>) {
+    if constexpr (base::is_instantiation<std::remove_cvref_t<Functor>,
+                                         HeapCallback>) {
       return std::forward<Functor>(functor).Run(
           std::get<index>(storage_).Unwrap()...,
           std::forward<FreeArgs>(free_args)...);
@@ -226,7 +226,7 @@ struct FunctorTraitsForCallable;
 template <typename R, typename C, typename... Args>
 struct FunctorTraitsForCallable<R (C::*)(Args...) const>
     : public FunctorTraits<R (*)(Args...)> {
-  static_assert(!base::is_instantiation<base::FunctionRef, C>,
+  static_assert(!base::is_instantiation<C, base::FunctionRef>,
                 "base::FunctionRef<> can't be bound");
   static_assert(std::is_empty_v<C>, "Capturing lambdas can't be bound");
 };

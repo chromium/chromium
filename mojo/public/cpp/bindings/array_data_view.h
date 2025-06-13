@@ -70,7 +70,7 @@ class ArrayDataViewImpl<
 };
 
 template <typename T>
-  requires(!base::is_instantiation<std::optional, T>)
+  requires(!base::is_instantiation<T, std::optional>)
 class ArrayDataViewImpl<
     T,
     typename std::enable_if<
@@ -103,7 +103,7 @@ class ArrayDataViewImpl<
 };
 
 template <typename T>
-  requires(base::is_instantiation<std::optional, T>)
+  requires(base::is_instantiation<T, std::optional>)
 class ArrayDataViewImpl<
     T,
     typename std::enable_if<
