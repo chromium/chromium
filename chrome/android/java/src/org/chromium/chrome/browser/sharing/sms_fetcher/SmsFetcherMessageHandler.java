@@ -10,8 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -19,6 +17,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -28,20 +28,22 @@ import org.chromium.chrome.browser.sharing.SharingNotificationUtil;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 /** Handles Sms Fetcher messages and notifications for Android. */
+@NullMarked
 public class SmsFetcherMessageHandler {
     private static final String NOTIFICATION_ACTION_CONFIRM = "sms_fetcher_notification.confirm";
     private static final String NOTIFICATION_ACTION_CANCEL = "sms_fetcher_notification.cancel";
     private static final String TAG = "SmsMessageHandler";
     private static final boolean DEBUG = false;
     private static long sSmsFetcherMessageHandlerAndroid;
-    private static String sTopOrigin;
-    private static String sEmbeddedOrigin;
+    private static @Nullable String sTopOrigin;
+    private static @Nullable String sEmbeddedOrigin;
 
     /** Handles the interaction of an incoming notification when an expected SMS arrives. */
     public static final class NotificationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
+            assert action != null;
             boolean nativeIsDestroyed = sSmsFetcherMessageHandlerAndroid == 0;
             RecordHistogram.recordBooleanHistogram(
                     "Sharing.SmsFetcherTapWithChromeDestroyed", nativeIsDestroyed);
@@ -79,7 +81,10 @@ public class SmsFetcherMessageHandler {
      * @param clientName The client name where the remote request comes from
      */
     private static String getNotificationTitle(
-            String oneTimeCode, String topOrigin, String embeddedOrigin, String clientName) {
+            String oneTimeCode,
+            String topOrigin,
+            @Nullable String embeddedOrigin,
+            String clientName) {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
             if (embeddedOrigin == null) {
@@ -106,7 +111,7 @@ public class SmsFetcherMessageHandler {
      * @param clientName The client name where the remote request comes from
      */
     private static String getNotificationText(
-            String topOrigin, String embeddedOrigin, String clientName) {
+            String topOrigin, @Nullable String embeddedOrigin, String clientName) {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
             if (embeddedOrigin == null) return clientName;
@@ -193,12 +198,12 @@ public class SmsFetcherMessageHandler {
     interface Natives {
         void onConfirm(
                 long nativeSmsFetchRequestHandler,
-                @JniType("std::u16string") String topOrigin,
-                String embeddedOrigin);
+                @JniType("std::u16string") @Nullable String topOrigin,
+                @Nullable String embeddedOrigin);
 
         void onDismiss(
                 long nativeSmsFetchRequestHandler,
-                @JniType("std::u16string") String topOrigin,
-                String embeddedOrigin);
+                @JniType("std::u16string") @Nullable String topOrigin,
+                @Nullable String embeddedOrigin);
     }
 }

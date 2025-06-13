@@ -7,14 +7,15 @@ package org.chromium.chrome.browser.suggestions.tile;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.suggestions.OfflinableSuggestion;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.components.favicon.IconType;
 import org.chromium.url.GURL;
 
 /** Holds the details to populate a site suggestion tile. */
+@NullMarked
 public class Tile implements OfflinableSuggestion {
     private final SiteSuggestion mSiteData;
 
@@ -24,11 +25,11 @@ public class Tile implements OfflinableSuggestion {
 
     private @IconType int mIconType = IconType.INVALID;
 
-    @Nullable private Drawable mIcon;
+    private @Nullable Drawable mIcon;
 
-    @Nullable private ColorStateList mIconTint;
+    private @Nullable ColorStateList mIconTint;
 
-    @Nullable private Long mOfflinePageOfflineId;
+    private @Nullable Long mOfflinePageOfflineId;
 
     /**
      * @param suggestion The site data we want to populate the tile with.
@@ -53,9 +54,8 @@ public class Tile implements OfflinableSuggestion {
         mOfflinePageOfflineId = offlineId;
     }
 
-    @Nullable
     @Override
-    public Long getOfflinePageOfflineId() {
+    public @Nullable Long getOfflinePageOfflineId() {
         return mOfflinePageOfflineId;
     }
 
@@ -145,7 +145,7 @@ public class Tile implements OfflinableSuggestion {
         mIconTint = iconTint;
     }
 
-    public ColorStateList getIconTint() {
+    public @Nullable ColorStateList getIconTint() {
         return mIconTint;
     }
 

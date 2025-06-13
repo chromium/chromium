@@ -20,6 +20,8 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.sharing.SharingNotificationUtil;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 /** Manages ClickToCall related notifications for Android. */
+@NullMarked
 public class ClickToCallMessageHandler {
     private static final String EXTRA_PHONE_NUMBER = "ClickToCallMessageHandler.EXTRA_PHONE_NUMBER";
 
@@ -36,7 +39,7 @@ public class ClickToCallMessageHandler {
      *
      * @param phoneNumber The phone number to show in the dialer.
      */
-    private static void openDialer(String phoneNumber) {
+    private static void openDialer(@Nullable String phoneNumber) {
         try {
             ContextUtils.getApplicationContext().startActivity(getDialIntent(phoneNumber));
             ClickToCallUma.recordDialerPresent(true);
@@ -121,7 +124,7 @@ public class ClickToCallMessageHandler {
                 /* startsActivity= */ true);
     }
 
-    private static Intent getDialIntent(String phoneNumber) {
+    private static Intent getDialIntent(@Nullable String phoneNumber) {
         Intent dialIntent =
                 TextUtils.isEmpty(phoneNumber)
                         ? new Intent(Intent.ACTION_DIAL)
