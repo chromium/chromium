@@ -14,7 +14,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/sessions/core/session_types.h"
 #include "ui/base/window_open_disposition.h"
 
