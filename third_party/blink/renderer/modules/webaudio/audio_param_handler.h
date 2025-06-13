@@ -365,9 +365,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // State of the timeline for the current event.
   struct AutomationState {
-    // Parameters for the current automation request.  Number of
-    // values to be computed for the automation request
-    const unsigned number_of_values;
     // Start and end frames for this automation request
     const size_t start_frame;
     const size_t end_frame;
@@ -377,7 +374,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     const double control_rate;
 
     // Parameters needed for processing the current event.
-    const unsigned fill_to_frame;
+    const size_t fill_to_frame;
     const size_t fill_to_end_frame;
 
     // Value and time for the current event
@@ -424,8 +421,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   float ValuesForFrameRange(size_t start_frame,
                             size_t end_frame,
                             float default_value,
-                            float* values,
-                            unsigned number_of_values,
+                            base::span<float> values,
                             double sample_rate,
                             double control_rate,
                             float min_value,
@@ -446,8 +442,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   float ValuesForFrameRangeImpl(size_t start_frame,
                                 size_t end_frame,
                                 float default_value,
-                                float* values,
-                                unsigned number_of_values,
+                                base::span<float> values,
                                 double sample_rate,
                                 double control_rate,
                                 unsigned render_quantum_frames)
@@ -460,9 +455,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // starts after `start_frame`.  These initial values are filled using
   // `default_value`.  The updated `current_frame` and `write_index` is
   // returned.
-  std::tuple<size_t, unsigned> HandleFirstEvent(float* values,
+  std::tuple<size_t, unsigned> HandleFirstEvent(base::span<float> values,
                                                 float default_value,
-                                                unsigned number_of_values,
                                                 size_t start_frame,
                                                 size_t end_frame,
                                                 double sample_rate,
@@ -490,8 +484,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   bool HandleAllEventsInThePast(double current_time,
                                 double sample_rate,
                                 float& default_value,
-                                unsigned number_of_values,
-                                float* values,
+                                base::span<float> values,
                                 unsigned render_quantum_frames)
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
@@ -523,7 +516,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessLinearRamp(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index);
@@ -533,7 +526,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessExponentialRamp(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index);
@@ -543,7 +536,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessSetTarget(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index);
@@ -553,7 +546,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessSetValueCurve(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index);
@@ -563,7 +556,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessCancelValues(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index) EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
@@ -589,10 +582,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web
   // Audio specification.
-  void CalculateFinalValues(float* values,
-                            unsigned number_of_values,
-                            bool sample_accurate);
-  void CalculateTimelineValues(float* values, unsigned number_of_values);
+  void CalculateFinalValues(base::span<float> values, bool sample_accurate);
+  void CalculateTimelineValues(base::span<float> values);
 
   // The type of AudioParam, indicating what this AudioParam represents and
   // what node it belongs to.  Mostly for informational purposes and doesn't

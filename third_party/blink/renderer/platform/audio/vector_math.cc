@@ -119,28 +119,27 @@ void Vsub(const float* source1p,
              dest_stride, frames_to_process);
 }
 
-void Vclip(const float* source_p,
+void Vclip(base::span<const float> source_p,
            int source_stride,
            const float* low_threshold_p,
            const float* high_threshold_p,
-           float* dest_p,
-           int dest_stride,
-           uint32_t frames_to_process) {
+           base::span<float> dest_p,
+           int dest_stride) {
   float low_threshold = *low_threshold_p;
   float high_threshold = *high_threshold_p;
 
 #if DCHECK_IS_ON()
   // Do the same DCHECKs that |ClampTo| would do so that optimization paths do
   // not have to do them.
-  for (size_t i = 0u; i < frames_to_process; ++i) {
+  for (size_t i = 0u; i < dest_p.size(); ++i) {
     DCHECK(!std::isnan(source_p[i]));
   }
   // This also ensures that thresholds are not NaNs.
   DCHECK_LE(low_threshold, high_threshold);
 #endif
 
-  impl::Vclip(source_p, source_stride, &low_threshold, &high_threshold, dest_p,
-              dest_stride, frames_to_process);
+  impl::Vclip(source_p.data(), source_stride, &low_threshold, &high_threshold,
+              dest_p.data(), dest_stride, dest_p.size());
 }
 
 void Vclip(const float* source_p,

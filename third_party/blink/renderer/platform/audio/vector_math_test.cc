@@ -151,6 +151,7 @@ class TestVector {
   T* p() const { return p_; }
   size_t size() const { return size_; }
   int stride() const { return static_cast<int>(memory_layout()->stride); }
+  base::span<T> as_span() const { return base::span<T>(p_.get(), size_); }
 
   bool operator==(const TestVector& other) const {
     return std::ranges::equal(*this, other, Equal);
@@ -365,8 +366,8 @@ TEST_F(VectorMathTest, Vclip) {
       expected_dest[i] = ClampTo(source[i], low_threshold, high_threshold);
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      Vclip(source.p(), source.stride(), &low_threshold, &high_threshold,
-            dest.p(), dest.stride(), source.size());
+      Vclip(source.as_span(), source.stride(), &low_threshold, &high_threshold,
+            dest.as_span(), dest.stride());
       EXPECT_EQ(expected_dest, dest);
     }
   }
