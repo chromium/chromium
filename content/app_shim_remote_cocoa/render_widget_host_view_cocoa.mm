@@ -26,6 +26,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/input/web_input_event_builders_mac.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/browser/cocoa/system_hotkey_helper_mac.h"

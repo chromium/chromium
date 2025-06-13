@@ -4,6 +4,7 @@
 
 #include "components/input/child_frame_input_helper.h"
 
+#include "base/trace_event/trace_event.h"
 #include "components/input/features.h"
 #include "components/input/render_input_router.h"
 #include "components/input/render_widget_host_input_event_router.h"

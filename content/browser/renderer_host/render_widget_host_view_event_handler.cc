@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/switches.h"
