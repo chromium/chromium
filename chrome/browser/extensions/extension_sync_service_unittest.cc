@@ -32,9 +32,6 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/extensions/sync_helper.h"
@@ -60,11 +57,20 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/pending_extension_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::AccountExtensionTracker;
 using extensions::AppSorting;
@@ -873,6 +879,8 @@ TEST_F(ExtensionSyncServiceTest, SyncForUninstalledExternalExtension) {
       ExtensionPrefs::Get(profile())->IsExternalExtensionUninstalled(kGoodCrx));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Disabled on Android since Android does not support Chrome Apps.
 TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettings) {
   InitializeEmptyExtensionService();
   const Extension* app =
@@ -929,6 +937,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettings) {
 // ExtensionService, so this test probably needs a new home. Unfortunately, it
 // relies pretty heavily on things like InitializeExtension[Sync]Service() and
 // PackAndInstallCRX(). When we clean up a bit more, this should move out.
+// Disabled on Android since Android does not support Chrome Apps.
 TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettingsOnExtensionMoved) {
   InitializeEmptyExtensionService();
   const size_t kAppCount = 3;
@@ -973,6 +982,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettingsOnExtensionMoved) {
     EXPECT_TRUE(app_launch_ordinals[0].LessThan(app_launch_ordinals[2]));
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ExtensionSyncServiceTest, GetSyncDataList) {
   InitializeEmptyExtensionService();
@@ -1856,6 +1866,8 @@ TEST_F(ExtensionSyncServiceCustomGalleryTest,
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Disabled on Android since Android does not support themes.
 // Regression test for crbug.com/558299
 TEST_F(ExtensionSyncServiceTest, DontSyncThemes) {
   InitializeEmptyExtensionService();
@@ -1884,6 +1896,7 @@ TEST_F(ExtensionSyncServiceTest, DontSyncThemes) {
   waiter.WaitForThemeChanged();
   EXPECT_TRUE(processor->changes().empty());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests sync behavior in the case of an item that starts out as an app and gets
 // updated to become an extension.

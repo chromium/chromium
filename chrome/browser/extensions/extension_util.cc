@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +52,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/ui/browser.h"
 #endif
 
@@ -229,13 +229,10 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
 
   // Reloading the extension invalidates the |extension| pointer.
   extension = registry->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
-  // TODO(crbug.com/356905053): Enable extensions sync on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
   if (extension) {
     Profile* profile = Profile::FromBrowserContext(context);
     ExtensionSyncService::Get(profile)->SyncExtensionChangeIfNeeded(*extension);
   }
-#endif
 }
 
 void SetAllowFileAccess(const std::string& extension_id,

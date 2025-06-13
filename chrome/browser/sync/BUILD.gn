@@ -161,10 +161,6 @@ source_set("sync") {
     ]
   } else {
     sources += [
-      "glue/extension_data_type_controller.cc",
-      "glue/extension_data_type_controller.h",
-      "glue/extension_setting_data_type_controller.cc",
-      "glue/extension_setting_data_type_controller.h",
       "sessions/browser_list_router_helper.cc",
       "sessions/browser_list_router_helper.h",
     ]
@@ -174,19 +170,28 @@ source_set("sync") {
     ]
     deps += [
       "//chrome/browser/accessibility/tree_fixing:prefs",
-      "//chrome/browser/themes",
       "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  }
+  if (enable_extensions_core) {
+    sources += [
+      "glue/extension_data_type_controller.cc",
+      "glue/extension_data_type_controller.h",
+      "glue/extension_setting_data_type_controller.cc",
+      "glue/extension_setting_data_type_controller.h",
+    ]
+    public_deps += [ "//extensions/buildflags" ]
+    deps += [
+      "//extensions/browser",
+      "//extensions/browser/api/storage",
+      "//extensions/common",
+    ]
+  }
+  if (enable_extensions) {
+    deps += [
+      "//chrome/browser/themes",
       "//chrome/browser/web_applications",
     ]
-
-    if (enable_extensions) {
-      public_deps += [ "//extensions/buildflags" ]
-      deps += [
-        "//extensions/browser",
-        "//extensions/browser/api/storage",
-        "//extensions/common",
-      ]
-    }
   }
   if (is_chromeos) {
     sources += [

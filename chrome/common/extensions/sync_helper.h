@@ -5,6 +5,10 @@
 #ifndef CHROME_COMMON_EXTENSIONS_SYNC_HELPER_H_
 #define CHROME_COMMON_EXTENSIONS_SYNC_HELPER_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 class Extension;

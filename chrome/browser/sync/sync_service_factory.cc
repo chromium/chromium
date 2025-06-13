@@ -88,14 +88,17 @@
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/extension_sync_service.h"  // nogncheck
+#include "extensions/browser/api/storage/storage_frontend.h"   // nogncheck
+#include "extensions/browser/extension_system_provider.h"      // nogncheck
+#include "extensions/browser/extensions_browser_client.h"      // nogncheck
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "extensions/browser/api/storage/storage_frontend.h"  // nogncheck
-#include "extensions/browser/extension_system_provider.h"     // nogncheck
-#include "extensions/browser/extensions_browser_client.h"     // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -281,9 +284,12 @@ syncer::DataTypeController::TypeVector CreateChromeControllers(
   builder.SetSecurityEventRecorder(
       SecurityEventRecorderFactory::GetForProfile(profile));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   builder.SetExtensionSyncService(ExtensionSyncService::Get(profile));
   builder.SetExtensionSystemProfile(profile);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   builder.SetThemeService(ThemeServiceFactory::GetForProfile(profile));
   builder.SetWebAppProvider(
       web_app::AreWebAppsEnabled(profile)
@@ -563,12 +569,16 @@ SyncServiceFactory::SyncServiceFactory()
 #endif  // BUILDFLAG(IS_ANDROID)
   DependsOn(WebDataServiceFactory::GetInstance());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(extensions::StorageFrontend::GetFactoryInstance());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 #if BUILDFLAG(IS_CHROMEOS)
   DependsOn(app_list::AppListSyncableServiceFactory::GetInstance());
   DependsOn(

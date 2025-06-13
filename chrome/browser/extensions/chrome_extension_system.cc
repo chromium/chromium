@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/extension_garbage_collector.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
@@ -63,7 +64,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_app_sorting.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
 #else
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "extensions/browser/null_app_sorting.h"
@@ -289,10 +289,8 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
 
   extension_service_->Init();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Make sure ExtensionSyncService is created.
   ExtensionSyncService::Get(profile_);
-#endif
 
   // Make the chrome://extension-icon/ resource available.
   content::URLDataSource::Add(profile_,

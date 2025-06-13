@@ -119,10 +119,13 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::SECURITY_EVENTS);
     datatypes.Put(syncer::SUPERVISED_USER_SETTINGS);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    datatypes.Put(syncer::APPS);
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     datatypes.Put(syncer::EXTENSIONS);
     datatypes.Put(syncer::EXTENSION_SETTINGS);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    datatypes.Put(syncer::APPS);
     datatypes.Put(syncer::APP_SETTINGS);
     datatypes.Put(syncer::WEB_APPS);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

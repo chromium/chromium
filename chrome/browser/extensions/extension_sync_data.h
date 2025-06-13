@@ -13,8 +13,11 @@
 #include "base/version.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/model/sync_change.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace syncer {
 class SyncData;

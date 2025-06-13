@@ -26,6 +26,9 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -176,10 +179,13 @@ class ExtensionSyncService : public syncer::SyncableService,
   // asynchronously via MergeDataAndStartSyncing as soon as possible.
   SyncableService::StartSyncFlare flare_;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Caches the set of Chrome app IDs undergoing migration to web apps because
   // it is expensive to generate every time (multiple SkBitmap copies).
+  // Android does not support Chrome apps.
   std::optional<base::flat_set<std::string>>
       migrating_default_chrome_app_ids_cache_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<ExtensionSyncService> weak_ptr_factory_{this};
 };
