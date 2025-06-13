@@ -132,6 +132,13 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabBackPressHandler
                                         .getCustomTabSameTaskHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB)
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSameTaskHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB)
                         .expectNoRecords(
                                 BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
                         .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
@@ -165,6 +172,13 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabBackPressHandler
                                         .getCustomTabSameTaskHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB)
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSameTaskHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB)
                         .expectNoRecords(
                                 BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
                         .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
