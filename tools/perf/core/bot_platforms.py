@@ -496,6 +496,14 @@ def _crossbench_loadline_tablet(estimated_runtime=3600, arguments=None):
                           arguments=arguments)
 
 
+# Webview:
+def _crossbench_loading(estimated_runtime=60, arguments=None):
+  return CrossbenchConfig('loading.crossbench',
+                          'loading',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
     _crossbench_jetstream2(),
     _crossbench_speedometer3(),
@@ -545,6 +553,19 @@ _CROSSBENCH_TANGOR = frozenset([
         '--cool-down-threshold=moderate',
         '--no-splash',
     ]),
+])
+
+_CROSSBENCH_WEBVIEW = frozenset([
+    _crossbench_loading(
+        estimated_runtime=750,
+        arguments=[
+            '--wpr=crossbench_android_loading_000.wprgo',
+            '--probe=chrome_histograms:{"baseline":false,"metrics":'
+            '{"Android.WebView.Startup.CreationTime.StartChromiumLocked":["mean"]}}',
+            '--repetitions=50',
+            '--stories=cnn',
+        ]
+    ),
 ])
 
 _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite(
@@ -975,10 +996,12 @@ ANDROID_PIXEL4_PGO = PerfPlatform(
     pinpoint_only=True)
 ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
     'android-pixel4_webview-perf', 'Android R',
-    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 23, 'android')
+    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 23, 'android',
+    crossbench=_CROSSBENCH_WEBVIEW)
 ANDROID_PIXEL4_WEBVIEW_PGO = PerfPlatform(
     'android-pixel4_webview-perf-pgo', 'Android R',
-    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
+    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android',
+    crossbench=_CROSSBENCH_WEBVIEW)
 ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               'Android U',
                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
