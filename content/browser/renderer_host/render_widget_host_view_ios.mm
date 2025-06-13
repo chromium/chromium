@@ -758,7 +758,6 @@ void RenderWidgetHostViewIOS::OnUpdateTextInputStateCalled(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view,
     bool did_update_state) {
-#if !BUILDFLAG(IS_IOS_TVOS)
   if (text_input_manager->GetActiveWidget()) {
     [ui_view_->view_
         onUpdateTextInputState:*text_input_manager->GetTextInputState()
@@ -769,7 +768,6 @@ void RenderWidgetHostViewIOS::OnUpdateTextInputStateCalled(
     [ui_view_->view_ onUpdateTextInputState:ui::mojom::TextInputState()
                                  withBounds:[ui_view_->view_ bounds]];
   }
-#endif
 }
 
 void RenderWidgetHostViewIOS::OnTextSelectionChanged(
