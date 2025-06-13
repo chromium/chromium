@@ -19,7 +19,6 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"

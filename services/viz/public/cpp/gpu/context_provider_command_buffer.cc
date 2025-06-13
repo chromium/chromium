@@ -39,7 +39,6 @@
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/skia_utils.h"
-#include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"

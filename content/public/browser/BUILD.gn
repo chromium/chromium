@@ -607,7 +607,6 @@ source_set("browser_sources") {
     "//components/viz/host",
     "//content/browser",  # Must not be public_deps!
     "//device/fido",
-    "//gpu",
     "//gpu/command_buffer/service:gles2",
     "//media",
     "//media/capture",
