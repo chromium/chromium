@@ -187,7 +187,7 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
 CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
   CHECK(IsWebGPU());
-  auto* provider = ResourceProviderDEPRECATED();
+  auto* provider = GetResourceProviderForWebGPU();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
       provider = CreateCanvasResourceProviderWebGPU();

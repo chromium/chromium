@@ -141,6 +141,10 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
     CHECK(IsWebGL());
     return ResourceProviderDEPRECATED();
   }
+  CanvasResourceProvider* GetResourceProviderForWebGPU() const {
+    CHECK(IsWebGPU());
+    return ResourceProviderDEPRECATED();
+  }
   CanvasResourceProvider* GetResourceProviderForCanvas2D() const {
     CHECK(IsRenderingContext2D());
     return ResourceProviderDEPRECATED();
