@@ -1680,7 +1680,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'I9DcrpteFBl2d2LwjrGGN07Kcsom-8r_VGyqAfakS2cC',
+          'version': 'Qnm0rlf-dVJZJzD3cigXJErvHBVBFNFvsTmMgSPAosUC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
