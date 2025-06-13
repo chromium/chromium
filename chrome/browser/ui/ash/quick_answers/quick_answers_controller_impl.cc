@@ -20,6 +20,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -87,23 +88,22 @@ bool ShouldShowQuickAnswers() {
     return true;
   }
 
-  // If feature type is `kQuickAnswers`, return `true` for the case `kUnknown`
-  // to show a consent UI.
   if (QuickAnswersState::GetFeatureType() ==
-      QuickAnswersState::FeatureType::kQuickAnswers) {
-    base::expected<quick_answers::prefs::ConsentStatus,
-                   QuickAnswersState::Error>
-        maybe_consent_status = QuickAnswersState::GetConsentStatus();
-    if (!maybe_consent_status.has_value()) {
-      return false;
-    }
-
-    if (maybe_consent_status.value() ==
-        quick_answers::prefs::ConsentStatus::kUnknown) {
-      return true;
-    }
+          QuickAnswersState::FeatureType::kHmr &&
+      !chromeos::features::IsMagicBoostRevampForQuickAnswersEnabled()) {
+    return false;
   }
 
+  base::expected<quick_answers::prefs::ConsentStatus, QuickAnswersState::Error>
+      maybe_consent_status = QuickAnswersState::GetConsentStatus();
+  if (!maybe_consent_status.has_value()) {
+    return false;
+  }
+
+  if (maybe_consent_status.value() ==
+      quick_answers::prefs::ConsentStatus::kUnknown) {
+    return true;
+  }
   return false;
 }
 
@@ -575,10 +575,9 @@ QuickAnswersControllerImpl::GetWeakPtr() {
 bool QuickAnswersControllerImpl::MaybeShowUserConsent(
     IntentType intent_type,
     const std::u16string& intent_text) {
-  // For non-QuickAnswers case (i.e., HMR), user consent is handled outside of
-  // QuickAnswers code.
-  if (QuickAnswersState::GetFeatureType() !=
-      QuickAnswersState::FeatureType::kQuickAnswers) {
+  if (QuickAnswersState::GetFeatureType() ==
+          QuickAnswersState::FeatureType::kHmr &&
+      !chromeos::features::IsMagicBoostRevampForQuickAnswersEnabled()) {
     return false;
   }
 
