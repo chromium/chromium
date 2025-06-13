@@ -325,8 +325,8 @@ bool CanFillSomeField(const EntityInstance& entity,
         base::optional_ref<const AttributeInstance> attribute =
             entity.attribute(*attribute_type);
         return attribute && !attribute
-                                 ->GetInfo(attribute_type->field_type(),
-                                           app_locale, std::nullopt)
+                                 ->GetInfo(field->Type().GetStorableType(),
+                                           app_locale, field->format_string())
                                  .empty();
       });
 }
