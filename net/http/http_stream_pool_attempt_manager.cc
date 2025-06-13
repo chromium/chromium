@@ -207,7 +207,7 @@ HttpStreamPool::AttemptManager::~AttemptManager() {
 void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
   CHECK(availability_state_ == AvailabilityState::kAvailable);
 
-  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::StartJob", track_,
+  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::RequestStream", track_,
                       NetLogWithSourceToFlow(job->request_net_log()));
 
   net_log_.AddEvent(
