@@ -1454,6 +1454,10 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
   }
 
   OnTextOrLinkAreaClickInternal(point_data, click_count);
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  client_->MaybeShowSearchifyInProgress();
+#endif
   return true;
 }
 
@@ -1910,6 +1914,10 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
     client_->NotifyNumberOfFindResultsChanged(0, true);
     return;
   }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  client_->MaybeShowSearchifyInProgress();
+#endif
 
   bool first_search = (current_find_text_ != text);
   int character_to_start_searching_from = 0;

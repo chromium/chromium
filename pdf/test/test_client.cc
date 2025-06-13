@@ -82,6 +82,8 @@ bool TestClient::IsInAnnotationMode() const {
 void TestClient::OnSearchifyStateChange(bool busy) {}
 
 void TestClient::OnHasSearchifyText() {}
+
+void TestClient::MaybeShowSearchifyInProgress() {}
 #endif
 
 }  // namespace chrome_pdf

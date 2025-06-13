@@ -143,14 +143,6 @@ constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
 constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// This constant should have the same value as the one in
-// `pdf_view_web_plugin_unittest.cc`.
-// LINT.IfChange(searchify_state_propagation_delay)
-constexpr base::TimeDelta kSearchifyStatePropagationDelay = base::Seconds(1);
-// LINT.ThenChange(//pdf/pdf_view_web_plugin_unittest.cc:searchify_state_propagation_delay)
-#endif
-
 constexpr std::string_view kChromeExtensionHost =
     "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
 
@@ -1549,48 +1541,52 @@ bool PdfViewWebPlugin::IsInAnnotationMode() const {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
-  if (!busy) {
-    if (show_searchify_in_progress_) {
-      show_searchify_in_progress_ = false;
-      // The UI is asked to hide the progress indicator with 1s delay, so that
-      // when the OCR process finishes in less than 1s, the indicator would not
-      // flicker.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  switch (searchify_state_) {
+    case SearchifyState::kNotStarted:
+      // Expected to be called only to say searchify started.
+      CHECK(busy);
+      pdf_host_->OnSearchifyStarted();
+      searchify_state_ = SearchifyState::kStarted;
+      break;
+
+    case SearchifyState::kStarted:
+      // Expected to be called only to say searchify stopped.
+      CHECK(!busy);
+      searchify_state_ = SearchifyState::kStopped;
+      break;
+
+    case SearchifyState::kShowingInProgress:
+      // Expected to be called only to say searchify stopped.
+      CHECK(!busy);
+      // Executing the script directly may cause a crash in blink as it might be
+      // during layout change, hence posting it (crbug.com/401142034).
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&PdfViewWebPlugin::SetShowSearchifyInProgress,
-                         weak_factory_.GetWeakPtr(), /*show=*/false),
-          kSearchifyStatePropagationDelay);
-    }
-    return;
-  }
+                         weak_factory_.GetWeakPtr(), /*show=*/false));
+      searchify_state_ = SearchifyState::kStopped;
+      break;
 
-  if (!searchify_started_) {
-    searchify_started_ = true;
-    pdf_host_->OnSearchifyStarted();
+    case SearchifyState::kStopped:
+      // Expected to be called only to say searchify started again.
+      CHECK(busy);
+      searchify_state_ = SearchifyState::kStarted;
+      break;
   }
+}
 
-  if (!show_searchify_in_progress_) {
-    show_searchify_in_progress_ = true;
+void PdfViewWebPlugin::MaybeShowSearchifyInProgress() {
+  if (searchify_state_ == SearchifyState::kStarted) {
+    searchify_state_ = SearchifyState::kShowingInProgress;
     // Executing the script directly may cause a crash in blink as it might be
     // during layout change, hence posting it (crbug.com/401142034).
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&PdfViewWebPlugin::SetShowSearchifyInProgress,
                                   weak_factory_.GetWeakPtr(), /*show=*/true));
-    return;
   }
 }
 
 void PdfViewWebPlugin::SetShowSearchifyInProgress(bool show) {
-  // Searchify tasks are expected to be quite fast most of the times, and if so,
-  // progress indicator should be kept visible for at least 1s to avoiding
-  // flickering.
-  // A false `show` and a true `show_searchify_in_progress_` means that during
-  // the 1s after OCR stopped, it started again and hence the UI should keep the
-  // progress bar visible.
-  if (!show && show_searchify_in_progress_) {
-    return;
-  }
-
   client_->PostMessage(base::Value::Dict()
                            .Set("type", "showSearchifyInProgress")
                            .Set("show", show));

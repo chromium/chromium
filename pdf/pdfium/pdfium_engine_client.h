@@ -211,6 +211,10 @@ class PDFiumEngineClient {
   // Notifies that at least one page is searchified. This function is called at
   // most once.
   virtual void OnHasSearchifyText() = 0;
+
+  // Show searchify in progress indicator if searchify is running and the
+  // indicator is not showing.
+  virtual void MaybeShowSearchifyInProgress() = 0;
 #endif
 };
 

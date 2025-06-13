@@ -186,6 +186,10 @@ void PreviewModeClient::OnSearchifyStateChange(bool busy) {
 void PreviewModeClient::OnHasSearchifyText() {
   NOTREACHED();
 }
+
+void PreviewModeClient::MaybeShowSearchifyInProgress() {
+  NOTREACHED();
+}
 #endif
 
 }  // namespace chrome_pdf

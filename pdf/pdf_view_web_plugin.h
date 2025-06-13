@@ -400,6 +400,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void OnSearchifyStateChange(bool busy) override;
   void OnHasSearchifyText() override;
+  void MaybeShowSearchifyInProgress() override;
 #endif
 
   // pdf::mojom::PdfListener:
@@ -996,10 +997,14 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   uint32_t max_save_buffer_size_;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  bool show_searchify_in_progress_ = false;
+  enum class SearchifyState {
+    kNotStarted,
+    kStarted,
+    kShowingInProgress,
+    kStopped,
+  };
 
-  // Tells if searchify ever started.
-  bool searchify_started_ = false;
+  SearchifyState searchify_state_ = SearchifyState::kNotStarted;
 #endif
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
