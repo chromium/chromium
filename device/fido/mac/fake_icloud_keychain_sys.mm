@@ -2,15 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
+#include "device/fido/mac/fake_icloud_keychain_sys.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <objc/message.h>
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "base/strings/sys_string_conversions.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/mac/fake_icloud_keychain_sys.h"
+
+// Fake subclass to simulate a largeBlob registration output.
+
+API_AVAILABLE(macos(14.0))
+@interface FakeLargeBlobRegistrationOutput
+    : ASAuthorizationPublicKeyCredentialLargeBlobRegistrationOutput
+@property(nonatomic) BOOL isSupported;
+@end
+
+@implementation FakeLargeBlobRegistrationOutput
+@synthesize isSupported = _isSupported;
+- (BOOL)isSupported {
+  return _isSupported;
+}
+@end
 
 // A number of AuthenticationServices objects are subclassed so that the
 // values of readonly properties can be overridden in tests.
@@ -44,16 +61,19 @@ API_AVAILABLE(macos(13.3))
 
 API_AVAILABLE(macos(13.3))
 @interface FakeASAuthorizationPublicKeyCredentialRegistration
-    : NSObject <ASAuthorizationPublicKeyCredentialRegistration>
+    : ASAuthorizationPlatformPublicKeyCredentialRegistration
 @property(nonatomic, copy) NSData* rawAttestationObject;
 @property(nonatomic, copy) NSData* rawClientDataJSON;
 @property(nonatomic, copy) NSData* credentialID;
+@property(nonatomic, strong) API_AVAILABLE(macos(14.0))
+    FakeLargeBlobRegistrationOutput* largeBlob;
 @end
 
 @implementation FakeASAuthorizationPublicKeyCredentialRegistration
 @synthesize rawAttestationObject = _rawAttestationObject;
 @synthesize rawClientDataJSON = _rawClientDataJSON;
 @synthesize credentialID = _credentialID;
+@synthesize largeBlob = _largeBlob;
 
 + (BOOL)supportsSecureCoding {
   return NO;
@@ -211,6 +231,7 @@ void FakeSystemInterface::GetPlatformCredentials(
 void FakeSystemInterface::MakeCredential(
     NSWindow* window,
     CtapMakeCredentialRequest request,
+    MakeCredentialOptions options,
     base::OnceCallback<void(ASAuthorization*, NSError*)> callback) {
   if (create_callback_) {
     create_callback_.Run(request);
@@ -237,10 +258,21 @@ void FakeSystemInterface::MakeCredential(
                                                             userInfo:nullptr]);
   } else {
     FakeASAuthorizationPublicKeyCredentialRegistration* result =
-        [[FakeASAuthorizationPublicKeyCredentialRegistration alloc] init];
+        [FakeASAuthorizationPublicKeyCredentialRegistration alloc];
     result.rawAttestationObject = ToNSData(*attestation_object_bytes);
     result.credentialID = ToNSData(*credential_id);
-
+    if (@available(macOS 14.0, *)) {
+      if (options.large_blob_support != LargeBlobSupport::kNotRequested) {
+        CHECK(options.large_blob_support != LargeBlobSupport::kRequired ||
+              large_blob_support_state_ !=
+                  LargeBlobSupportState::kNotSupported);
+        FakeLargeBlobRegistrationOutput* blob_output =
+            [[FakeLargeBlobRegistrationOutput alloc] init];
+        blob_output.isSupported = large_blob_support_state_ ==
+                                  LargeBlobSupportState::kSupportedAndEnabled;
+        result.largeBlob = blob_output;
+      }
+    }
     FakeASAuthorization* authorization = [FakeASAuthorization alloc];
     authorization.credential = result;
 

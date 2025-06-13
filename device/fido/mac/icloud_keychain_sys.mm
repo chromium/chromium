@@ -12,6 +12,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/fido/features.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/mac/icloud_keychain_internals.h"
 
 namespace {
@@ -288,6 +290,7 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
   void MakeCredential(
       NSWindow* window,
       CtapMakeCredentialRequest request,
+      MakeCredentialOptions options,
       base::OnceCallback<void(ASAuthorization*, NSError*)> callback) override {
     DCHECK(!create_controller_);
     DCHECK(!get_controller_);
@@ -306,6 +309,29 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
             [provider createCredentialRegistrationRequestWithChallenge:challenge
                                                                   name:name
                                                                 userID:user_id];
+    if (options.large_blob_support != LargeBlobSupport::kNotRequested) {
+      if (@available(macOS 14.0, *)) {
+        ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirement
+            support_mode;
+        switch (options.large_blob_support) {
+          case LargeBlobSupport::kRequired:
+            support_mode =
+                ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementRequired;
+            break;
+          case LargeBlobSupport::kPreferred:
+            support_mode =
+                ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementPreferred;
+            break;
+          case LargeBlobSupport::kNotRequested:
+            NOTREACHED();
+        }
+        ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput*
+            large_blob_input =
+                [[ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput
+                    alloc] initWithSupportRequirement:support_mode];
+        create_request.largeBlob = large_blob_input;
+      }
+    }
     create_request.attestationPreference =
         Convert(request.attestation_preference);
     create_request.userVerificationPreference =

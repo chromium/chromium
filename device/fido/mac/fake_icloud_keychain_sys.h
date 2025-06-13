@@ -26,6 +26,12 @@ namespace device::fido::icloud_keychain {
 // and install it with `SetSystemInterfaceForTesting`.
 class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
  public:
+  enum class LargeBlobSupportState {
+    kNotSupported,
+    kSupportedAndEnabled,
+    kSupportedButDisabled,
+  };
+
   FakeSystemInterface();
 
   // set_auth_state sets the state that `GetAuthState` will report.
@@ -88,6 +94,7 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   void MakeCredential(
       NSWindow* window,
       CtapMakeCredentialRequest request,
+      MakeCredentialOptions options,
       base::OnceCallback<void(ASAuthorization*, NSError*)> callback) override;
 
   void GetAssertion(
@@ -96,6 +103,10 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
       base::OnceCallback<void(ASAuthorization*, NSError*)> callback) override;
 
   void Cancel() override;
+
+  void set_large_blob_support_state(LargeBlobSupportState state) {
+    large_blob_support_state_ = state;
+  }
 
  protected:
   friend class base::RefCounted<SystemInterface>;
@@ -122,6 +133,9 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   unsigned cancel_count_ = 0;
 
   std::vector<DiscoverableCredentialMetadata> creds_;
+
+  LargeBlobSupportState large_blob_support_state_ =
+      LargeBlobSupportState::kNotSupported;
 };
 
 }  // namespace device::fido::icloud_keychain

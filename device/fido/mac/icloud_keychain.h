@@ -36,6 +36,10 @@ std::unique_ptr<FidoDiscoveryBase> NewDiscovery(
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::optional<bool> HasPermission();
 
+// SupportsLargeBlob returns true if the current macOS version and the chrome
+// feature flag both support large blob extension for iCloud Keychain.
+COMPONENT_EXPORT(DEVICE_FIDO) bool SupportsLargeBlob();
+
 }  // namespace fido::icloud_keychain
 }  // namespace device
 
