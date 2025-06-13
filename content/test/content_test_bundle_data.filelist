@@ -6581,7 +6581,6 @@ data/back_forward_cache/page_with_non_existing_image.html
 data/back_forward_cache/page_with_nonexistent_script.html
 data/back_forward_cache/page_with_pageshow.html
 data/back_forward_cache/page_with_same_origin_subframe_with_pageshow.html
-data/back_forward_cache/page_with_shared_worker.html
 data/back_forward_cache/page_with_wakelock.html
 data/back_forward_cache/page_with_webgl.html
 data/back_forward_cache/page_with_websocket_external_script.html
@@ -6597,7 +6596,6 @@ data/back_forward_cache/service_worker_post_message.html
 data/back_forward_cache/service_worker_post_message.js
 data/back_forward_cache/service_worker_registration.html
 data/back_forward_cache/service_worker_registration.js
-data/back_forward_cache/shared_worker.js
 data/back_forward_cache/websocket_external_script.js
 data/back_forward_cache/webusb/nested-worker.js
 data/back_forward_cache/webusb/worker.js
