@@ -131,6 +131,18 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // five minutes.
   void OnWebContentsHidden(WebContentsImpl* web_contents);
 
+  // Notifies the instance that `assistive_tech` is the most significant of any
+  // assistive technologies discovered. AXPlatform observers are notified if
+  // `assistive_tech` differs from the most recent discovery. Called by
+  // subclasses or accessibility managers when they detect the presence of
+  // assistive tech via platform-specific means.
+  void OnAssistiveTechFound(ui::AssistiveTech assistive_tech);
+
+  void SetDiscoverAssistiveTechnologyCallbackForTesting(
+      base::RepeatingClosure callback) {
+    discover_at_callback_for_testing_ = std::move(callback);
+  }
+
   // A hidden WebContents is guaranteed to retain its accessibility state when
   // the ProgressiveAccessibility feature is in disable_on_hide mode for at
   // least five minutes, plus or minus twenty seconds.
@@ -144,13 +156,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
  protected:
   BrowserAccessibilityStateImpl();
-
-  // Notifies the instance that `assistive_tech` is the most significant of any
-  // assistive technologies discovered. AXPlatform observers are notified if
-  // `assistive_tech` differs from the most recent discovery. Called by
-  // subclasses when they detect a the presence of assistive tech via
-  // platform-specific means.
-  void OnAssistiveTechFound(ui::AssistiveTech assistive_tech);
 
   // Refreshes the assistive tech if an AXMode change indicates that the
   // presence of an active screen reader may have changed.
@@ -297,6 +302,12 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // that is pushed out of this list when a sixth element is added.
   std::list<raw_ptr<WebContentsImpl>> last_hidden_;
 
+  // Keeps track of whether screen reader presence was checked. Resets with
+  // every new page load. A new check only occurs if kAXModeComplete is active
+  // and a screen reader isn't running.
+  bool has_recently_checked_for_screen_reader_ = false;
+
+  base::RepeatingClosure discover_at_callback_for_testing_;
   friend class ui::AXPlatform;
 };
 

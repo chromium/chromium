@@ -709,10 +709,34 @@ void BrowserAccessibilityStateImpl::OnHTMLAttributesUsed() {
 void BrowserAccessibilityStateImpl::OnActionFromAssistiveTech() {
   // See OnUserInputEvent for how this is used to disable accessibility.
   user_input_event_count_ = 0;
+  if (has_recently_checked_for_screen_reader_) {
+    return;
+  }
+  has_recently_checked_for_screen_reader_ = true;
+
+  // Some platforms might not perfectly signal when an assistive technology (AT)
+  // is active, and may re-check for ATs after the AXMode
+  // changes. If the AXMode is already configured with `kAXModeComplete`
+  // (meaning all accessibility features are enabled), a new AT trying to access
+  // APIs won't cause a mode change because those flags are already present.
+  // This check allows for an AT to be detected and computed when a page loads
+  // and the AT requests an action, specifically in the rare scenario where the
+  // current mode is `ui::kAXModeComplete` but no AT has been identified yet.
+  // This ensures the algorithm is complete.
+  const bool has_ax_mode_complete =
+      (GetAccessibilityMode() & ui::kAXModeComplete) == ui::kAXModeComplete;
+  if (has_ax_mode_complete && !ax_platform_.IsScreenReaderActive()) {
+    if (discover_at_callback_for_testing_) {
+      discover_at_callback_for_testing_.Run();
+      return;
+    }
+    RefreshAssistiveTechIfNecessary(GetAccessibilityMode());
+  }
 }
 
 void BrowserAccessibilityStateImpl::OnPageNavigationComplete() {
   ++num_page_navs_before_first_use_;
+  has_recently_checked_for_screen_reader_ = false;
 }
 
 void BrowserAccessibilityStateImpl::OnWebContentsInitialized(

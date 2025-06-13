@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -330,16 +331,75 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest, Filtering) {
       (ui::kAXModeComplete | ui::AXMode::kLabelImages) & ~kIgnoredModeFlags);
 }
 
+// Verifies that usage from the platform will set AXModes and that if the
+// AXModes do not change, platform still have the chance to discover assistive
+// technology in case we have enough signals of a screen reader may be running.
+IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest, AXModesFromPlatform) {
+  // Set changes from platform, as this is turned off by default for tests.
+  accessibility_state().SetActivationFromPlatformEnabled(true);
+
+  // Accessibility is off to start with.
+  ASSERT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::AXMode());
+
+  ui::AXPlatform::GetInstance().OnPropertiesUsedInBrowserUI();
+  ASSERT_EQ(accessibility_state().GetAccessibilityMode(),
+            ui::AXMode(ui::AXMode::kNativeAPIs));
+
+  ui::AXPlatform::GetInstance().OnExtendedPropertiesUsedInWebContent();
+  ASSERT_EQ(accessibility_state().GetAccessibilityMode(),
+            ui::kAXModeBasic | ui::AXMode::kExtendedProperties);
+
+  ui::AXPlatform::GetInstance().OnInlineTextBoxesUsedInWebContent();
+  ASSERT_EQ(accessibility_state().GetAccessibilityMode(), ui::kAXModeComplete);
+
+  // Configure the detection of a screen reader, that will be triggered the next
+  // time a page loads. Since the AXMode is already kAXModeComplete, there will
+  // be no change in the AXMode the next time the platforms tries to access
+  // accessibility APIs.
+
+  std::unique_ptr<ScopedAccessibilityMode> screen_reader_mode;
+  BrowserAccessibilityStateImpl::GetInstance()
+      ->SetDiscoverAssistiveTechnologyCallbackForTesting(
+          base::BindLambdaForTesting([&]() {
+            BrowserAccessibilityStateImpl::GetInstance()->OnAssistiveTechFound(
+                ui::AssistiveTech::kGenericScreenReader);
+            screen_reader_mode =
+                accessibility_state().CreateScopedModeForProcess(
+                    ui::kAXModeComplete | ui::AXMode::kScreenReader);
+          }));
+
+  ui::AXPlatform::GetInstance().OnExtendedPropertiesUsedInWebContent();
+
+  // The mode will not change because it is already complete, so the discovery
+  // phase of ATs did not run yet.
+  ASSERT_FALSE(screen_reader_mode);
+  ASSERT_FALSE(accessibility_state().GetAccessibilityMode().has_mode(
+      ui::AXMode::kScreenReader));
+
+  const std::string html = "<p>Hello World</p>";
+  GURL url("data:text/html," + base::EscapeQueryParamValue(html, false));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Simulate an action coming from ATs, which likely indicates a potential
+  // screen reader.
+  ui::AXPlatform::GetInstance().OnActionFromAssistiveTech();
+  ASSERT_EQ(web_contents1().GetAccessibilityMode(),
+            ui::kAXModeComplete | ui::AXMode::kScreenReader);
+  BrowserAccessibilityStateImpl::GetInstance()
+      ->SetDiscoverAssistiveTechnologyCallbackForTesting({});
+}
+
 class AccessibilityPerformanceMeasurementExperimentTest
     : public ScopedAccessibilityModeTest,
       public testing::WithParamInterface<std::string> {
  protected:
   AccessibilityPerformanceMeasurementExperimentTest() {
-    // Initialize the feature and its parameters before the browser is created,
-    // as its value is accessed during browser initialization. Please see
-    // base::test::ScopedFeatureList documentation for more details. Note that
-    // `GetParam()`will be instantiated for each test case with the possible
-    // experiment groups.
+    // Initialize the feature and its parameters before the browser is
+    // created, as its value is accessed during browser initialization. Please
+    // see base::test::ScopedFeatureList documentation for more details. Note
+    // that `GetParam()`will be instantiated for each test case with the
+    // possible experiment groups.
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kAccessibilityPerformanceMeasurementExperiment,
         {{"accessibility_performance_group_name", GetParam()}});
@@ -494,8 +554,8 @@ IN_PROC_BROWSER_TEST_P(
   GURL url("data:text/html," + base::EscapeQueryParamValue(html, false));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  // This loop will quit once accessibility events arrive in the browser and are
-  // discarded because the "RendererSerializationOnly" variant of the
+  // This loop will quit once accessibility events arrive in the browser and
+  // are discarded because the "RendererSerializationOnly" variant of the
   // performance experiment is active.
   loop.Run();
   RenderAccessibilityHost::SetAccessibilityDataDiscardedCallbackForTesting({});
