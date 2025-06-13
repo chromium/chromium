@@ -18,6 +18,7 @@ namespace autofill::autofill_metrics {
 
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 using UkmFormEventType = ukm::builders::Autofill_FormEvent;
+using UkmInteractedWithFormType = ukm::builders::Autofill_InteractedWithForm;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using test::CreateTestFormField;
 using ::testing::IsEmpty;
@@ -266,6 +267,16 @@ class LoyaltyCardFormEventLoggerBaseKeyMetricsTest
         expected_metrics);
   }
 
+  void VerifyInteractedWithFormUkmMetric() {
+    VerifyUkm(&test_ukm_recorder(), form_,
+              UkmInteractedWithFormType::kEntryName,
+              {{{UkmInteractedWithFormType::kIsForCreditCardName, false},
+                {UkmInteractedWithFormType::kLocalRecordTypeCountName, 2},
+                {UkmInteractedWithFormType::kServerRecordTypeCountName, 0},
+                {UkmInteractedWithFormType::kFormSignatureName,
+                 Collapse(CalculateFormSignature(form_)).value()}}});
+  }
+
   // Fillable form.
   FormData form_;
   std::vector<FieldType> field_types_;
@@ -313,6 +324,8 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
   EXPECT_THAT(
       test_ukm_recorder().GetEntriesByName(UkmSuggestionFilledType::kEntryName),
       IsEmpty());
+
+  VerifyInteractedWithFormUkmMetric();
 }
 
 // Validate Autofill.KeyMetrics.* in case the user does not accept a suggestion.
@@ -364,6 +377,8 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   EXPECT_THAT(
       test_ukm_recorder().GetEntriesByName(UkmSuggestionFilledType::kEntryName),
       IsEmpty());
+
+  VerifyInteractedWithFormUkmMetric();
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has filled a suggestion.
@@ -456,6 +471,8 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, UserAcceptsSuggestion) {
 
   VerifyUkm(&test_ukm_recorder(), form_, UkmFormEventType::kEntryName,
             expected_form_event_metrics);
+
+  VerifyInteractedWithFormUkmMetric();
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has to fix the filled data.
@@ -514,6 +531,8 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
         {UkmSuggestionFilledType::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form_.fields()[1])).value()},
         {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
+
+  VerifyInteractedWithFormUkmMetric();
 }
 
 // Validate Autofill.KeyMetrics.* in case the user fixes the filled data but
@@ -561,6 +580,8 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
         {UkmSuggestionFilledType::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form_.fields()[1])).value()},
         {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
+
+  VerifyInteractedWithFormUkmMetric();
 }
 
 }  // namespace autofill::autofill_metrics

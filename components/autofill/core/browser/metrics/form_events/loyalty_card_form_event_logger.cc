@@ -47,7 +47,13 @@ void LoyaltyCardFormEventLogger::RecordParseForm() {}
 void LoyaltyCardFormEventLogger::RecordShowSuggestions() {}
 
 void LoyaltyCardFormEventLogger::LogUkmInteractedWithForm(
-    FormSignature form_signature) {}
+    FormSignature form_signature) {
+  // Loyalty card Autofill doesn't have the concept of server loyalty cards.
+  client().GetFormInteractionsUkmLogger().LogInteractedWithForm(
+      driver().GetPageUkmSourceId(),
+      /*is_for_credit_card=*/false, record_type_count_,
+      /*server_record_type_count=*/0, form_signature);
+}
 
 bool LoyaltyCardFormEventLogger::HasLoggedDataToFillAvailable() const {
   return record_type_count_ > 0;
