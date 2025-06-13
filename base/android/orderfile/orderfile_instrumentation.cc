@@ -33,6 +33,7 @@
 #if BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
 #include <sstream>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"   // no-presubmit-check
 #include "base/trace_event/memory_dump_provider.h"  // no-presubmit-check
