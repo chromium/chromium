@@ -62,7 +62,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*batch_normalization_input=*/{},
        /*batch_normalization_mean=*/{},
        /*cast_input=*/{SupportedDataTypes::All(), kMaxRank},
-       /*clamp_input=*/{},
+       /*clamp_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*concat_inputs=*/{},
        /*conv2d_input=*/{},
        /*conv2d_bias=*/{},

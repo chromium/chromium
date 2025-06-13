@@ -133,6 +133,9 @@ void ModelEditor::AddInitializer(base::cstring_view name,
                                  base::span<const uint8_t> data) {
   CHECK(!has_built_);
 
+  // TODO(crbug.com/423673304): After enabling OV EP, we need to add a
+  // workaround here since in-memory external data support for OV is still
+  // on-going.
   bool use_external_data = data.size() >= kMinExternalDataSize;
   if (use_external_data) {
     AddInitializerAsExternalData(name, data_type, shape,

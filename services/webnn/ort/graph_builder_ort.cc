@@ -15,6 +15,7 @@
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
+#include "third_party/fp16/src/include/fp16.h"
 
 namespace webnn::ort {
 
@@ -46,6 +47,7 @@ constexpr base::cstring_view kOpTypeErf = "Erf";
 constexpr base::cstring_view kOpTypeReciprocal = "Reciprocal";
 constexpr base::cstring_view kOpTypeCast = "Cast";
 
+constexpr base::cstring_view kOpTypeClamp = "Clip";
 constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
@@ -59,12 +61,71 @@ constexpr base::cstring_view kOpTypeAveragePool2d = "AveragePool";
 constexpr base::cstring_view kOpTypeMaxPool2d = "MaxPool";
 constexpr base::cstring_view kOpTypeLpPool2d = "LpPool";
 
+constexpr std::string_view kInserted = "Inserted";
 constexpr std::string_view kUnderscore = "_";
 
 std::string GetOperandName(std::string_view label, OperandId id) {
   return base::JoinString({label, base::NumberToString(id.value())},
                           kUnderscore);
 }
+
+// Maps a DataType to a `ONNXTensorElementDataType`. Other `TensorTypeMap`
+// overloads may be declared below as needed.
+//
+// Example: TensorTypeMap<uint32_t>::value ->
+// ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32
+template <typename DataType>
+  requires internal::IsSupportedTensorType<DataType>
+struct TensorTypeMap;
+
+template <>
+struct TensorTypeMap<float> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT;
+};
+
+// Use uint16_t to carry bits of float16.
+template <>
+struct TensorTypeMap<uint16_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16;
+};
+
+template <>
+struct TensorTypeMap<int32_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32;
+};
+
+template <>
+struct TensorTypeMap<uint32_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32;
+};
+
+template <>
+struct TensorTypeMap<int64_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64;
+};
+
+template <>
+struct TensorTypeMap<uint64_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64;
+};
+
+template <>
+struct TensorTypeMap<int8_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8;
+};
+
+template <>
+struct TensorTypeMap<uint8_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
+};
 
 }  // namespace
 
@@ -106,6 +167,42 @@ std::string GraphBuilderOrt::GetOperandNameById(OperandId operand_id) const {
 std::string GraphBuilderOrt::GenerateOperationName(std::string_view label) {
   return base::JoinString({label, base::NumberToString(next_operation_id_++)},
                           kUnderscore);
+}
+
+std::string GraphBuilderOrt::GenerateOperandName() {
+  next_operand_id_++;
+  CHECK(next_operand_id_.IsValid());
+  return base::JoinString(
+      {kInserted, base::NumberToString(
+                      static_cast<uint32_t>(next_operand_id_.ValueOrDie()))},
+      kUnderscore);
+}
+
+template <typename DataType>
+  requires internal::IsSupportedTensorType<DataType>
+std::string GraphBuilderOrt::CreateInitializer(
+    base::span<const int64_t> shape,
+    base::span<const DataType> data) {
+  std::string name = GenerateOperandName();
+  base::span<const uint8_t> byte_span;
+  if constexpr (std::floating_point<DataType>) {
+    // Floating point types do not have unique object representations, but
+    // this code appears to be using a byte span to type-erase, which is fine.
+    byte_span = base::as_byte_span(base::allow_nonunique_obj, data);
+  } else {
+    byte_span = base::as_byte_span(data);
+  }
+
+  model_editor_.AddInitializer(name, TensorTypeMap<DataType>::value, shape,
+                               byte_span);
+  return name;
+}
+
+template <typename DataType>
+  requires internal::IsSupportedTensorType<DataType>
+std::string GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
+  return CreateInitializer<DataType>(
+      /*shape=*/{}, base::span_from_ref(value));
 }
 
 template <typename T>
@@ -283,6 +380,86 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
   }
 }
 
+void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
+  const std::string node = GenerateOperationName(clamp.label);
+  const std::string input = GetOperandNameById(clamp.input_operand_id);
+  const std::string output = GetOperandNameById(clamp.output_operand_id);
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  const OperandDescriptor& input_descriptor =
+      GetOperand(clamp.input_operand_id).descriptor;
+  CHECK(data_type_limits.clamp_input.Supports(input_descriptor));
+
+  const OperandDataType input_data_type = input_descriptor.data_type();
+
+  // Min and max are 0-D operands with the same data type of input.
+  std::string min;
+  std::string max;
+  switch (input_data_type) {
+    case OperandDataType::kFloat32: {
+      min = CreateScalarInitializer(clamp.min_value);
+      max = CreateScalarInitializer(clamp.max_value);
+      break;
+    }
+    case OperandDataType::kFloat16: {
+      min = CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.min_value));
+      max = CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.max_value));
+      break;
+    }
+    case OperandDataType::kInt32: {
+      min = CreateScalarInitializer(
+          base::saturated_cast<int32_t>(clamp.min_value));
+      max = CreateScalarInitializer(
+          base::saturated_cast<int32_t>(clamp.max_value));
+      break;
+    }
+    case OperandDataType::kUint32: {
+      min = CreateScalarInitializer(
+          base::saturated_cast<uint32_t>(clamp.min_value));
+      max = CreateScalarInitializer(
+          base::saturated_cast<uint32_t>(clamp.max_value));
+      break;
+    }
+    case OperandDataType::kInt64: {
+      min = CreateScalarInitializer(
+          base::saturated_cast<int64_t>(clamp.min_value));
+      max = CreateScalarInitializer(
+          base::saturated_cast<int64_t>(clamp.max_value));
+      break;
+    }
+    case OperandDataType::kUint64: {
+      min = CreateScalarInitializer(
+          base::saturated_cast<uint64_t>(clamp.min_value));
+      max = CreateScalarInitializer(
+          base::saturated_cast<uint64_t>(clamp.max_value));
+      break;
+    }
+    case OperandDataType::kInt8: {
+      min = CreateScalarInitializer(
+          base::saturated_cast<int8_t>(clamp.min_value));
+      max = CreateScalarInitializer(
+          base::saturated_cast<int8_t>(clamp.max_value));
+      break;
+    }
+    case OperandDataType::kUint8: {
+      min = CreateScalarInitializer(
+          base::saturated_cast<uint8_t>(clamp.min_value));
+      max = CreateScalarInitializer(
+          base::saturated_cast<uint8_t>(clamp.max_value));
+      break;
+    }
+    default: {
+      NOTREACHED() << "[WebNN] Clamp only supports data type float32, float16, "
+                      "int32, uint32, int64, uint64, int8 and uint8.";
+    }
+  }
+
+  std::array<const char*, 3> inputs = {input.c_str(), min.c_str(), max.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeClamp, node, inputs, outputs);
+}
+
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   const std::string node = GenerateOperationName(gemm.label);
   const std::string input_a = GetOperandNameById(gemm.a_operand_id);
@@ -428,6 +605,10 @@ GraphBuilderOrt::BuildModel() {
     const DataTypeLimits& data_type_limits =
         context_properties_.data_type_limits;
     switch (operation->which()) {
+      case mojom::Operation::Tag::kClamp: {
+        AddClampOperation(*operation->get_clamp());
+        break;
+      }
       case mojom::Operation::Tag::kElementWiseBinary: {
         AddElementWiseBinaryOperation(*operation->get_element_wise_binary());
         break;
@@ -484,7 +665,6 @@ GraphBuilderOrt::BuildModel() {
       }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
-      case mojom::Operation::Tag::kClamp:
       case mojom::Operation::Tag::kConcat:
       case mojom::Operation::Tag::kConv2d:
       case mojom::Operation::Tag::kCumulativeSum:
