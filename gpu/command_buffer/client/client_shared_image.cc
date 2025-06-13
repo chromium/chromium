@@ -552,6 +552,12 @@ std::unique_ptr<RasterScopedAccess> ClientSharedImage::BeginRasterAccess(
     InterfaceBase* raster_interface,
     const SyncToken& sync_token,
     bool readonly) {
+  SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel", debug_label_);
+  SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage", metadata_.usage);
+  DUMP_WILL_BE_CHECK(
+      metadata_.usage.Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
+      metadata_.usage.Has(SHARED_IMAGE_USAGE_RASTER_WRITE) ||
+      metadata_.usage.Has(SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE));
   return base::WrapUnique(
       new RasterScopedAccess(raster_interface, this, sync_token, readonly));
 }
@@ -784,6 +790,17 @@ RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,
   CHECK(raster_interface_);
   shared_image_->BeginAccess(readonly);
   raster_interface_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel",
+                            shared_image_->debug_label());
+  SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage", shared_image_->usage());
+  if (readonly) {
+    DUMP_WILL_BE_CHECK(
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE));
+  } else {
+    DUMP_WILL_BE_CHECK(
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_WRITE));
+  }
 }
 
 // static

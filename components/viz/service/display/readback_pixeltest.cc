@@ -1004,7 +1004,9 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
   auto shared_image = sii->CreateSharedImage(
       {MultiPlaneFormat::kNV12, source_size, gfx::ColorSpace::CreateREC709(),
-       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels"},
+       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
+       "TestLabels"},
       gpu::kNullSurfaceHandle);
   CHECK(shared_image);
 
