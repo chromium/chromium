@@ -6193,6 +6193,38 @@ TEST_F(SnapGroupOverviewTest, NoDuplicateGroupItemsWithActivatableTransient) {
   EXPECT_EQ(1u, overview_grid->item_list().size());
 }
 
+// Make sure that ungrouping while dragging snapgroup in overview will not
+// crash.
+TEST_F(SnapGroupOverviewTest, UngroupDuringDragInOverview) {
+  // Set the min width so that the windows don't fit after zooming in using
+  // keyboard shortcut.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  ASSERT_FALSE(IsInOverviewSession());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true,
+                     GetEventGenerator());
+  auto* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  OverviewItemBase* overview_group_item = GetOverviewItemForWindow(w1.get());
+  ASSERT_TRUE(overview_group_item);
+
+  DragItemToPoint(overview_group_item, gfx::Point(200, 100),
+                  GetEventGenerator(),
+                  /*by_touch_gestures=*/false, /*drop=*/false);
+
+  ASSERT_TRUE(overview_group_item->IsDragItem());
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Restore the window during the drag. This should not cause a crash.
+  ::wm::Restore(w1.get());
+  EXPECT_TRUE(IsInOverviewSession());
+  EXPECT_NE(overview_group_item, GetOverviewItemForWindow(w1.get()));
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupDesksTest:
 using SnapGroupDesksTest = SnapGroupTest;

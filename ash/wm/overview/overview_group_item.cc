@@ -17,6 +17,7 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
@@ -467,6 +468,11 @@ void OverviewGroupItem::OnMovingItemToAnotherDesk() {
 void OverviewGroupItem::Shutdown() {
   for (const auto& overview_item : overview_items_) {
     overview_item->Shutdown();
+  }
+  if (IsDragItem() && overview_grid_->drop_target()) {
+    auto* drag_controller = overview_session_->window_drag_controller();
+    CHECK(drag_controller);
+    drag_controller->ResetGesture();
   }
 }
 
