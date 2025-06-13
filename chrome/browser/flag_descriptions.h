@@ -441,9 +441,16 @@ extern const char kAutofillEnableAmountExtractionTestingDescription[];
 extern const char kAutofillEnableBuyNowPayLaterName[];
 extern const char kAutofillEnableBuyNowPayLaterDescription[];
 
+extern const char kAutofillEnableBuyNowPayLaterForKlarnaName[];
+extern const char kAutofillEnableBuyNowPayLaterForKlarnaDescription[];
+
 extern const char kAutofillEnableBuyNowPayLaterSyncingName[];
 extern const char kAutofillEnableBuyNowPayLaterSyncingDescription[];
-#endif
+
+extern const char kAutofillEnableBuyNowPayLaterSyncingForKlarnaName[];
+extern const char kAutofillEnableBuyNowPayLaterSyncingForKlarnaDescription[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kAutofillEnableCvcStorageAndFillingName[];
 extern const char kAutofillEnableCvcStorageAndFillingDescription[];

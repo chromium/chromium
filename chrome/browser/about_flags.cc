@@ -12934,7 +12934,6 @@ BUILDFLAG(IS_WIN)
      flag_descriptions::kTransferableResourcePassAlphaTypeDirectlyDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(features::kTransferableResourcePassAlphaTypeDirectly)},
-    // Add new entries above this line.
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-exclusive-access-manager-on-android",
@@ -12942,6 +12941,27 @@ BUILDFLAG(IS_WIN)
      flag_descriptions::kEnableExclusiveAccessManagerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kEnableExclusiveAccessManager)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"autofill-enable-buy-now-pay-later-for-klarna",
+     flag_descriptions::kAutofillEnableBuyNowPayLaterForKlarnaName,
+     flag_descriptions::kAutofillEnableBuyNowPayLaterForKlarnaDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableBuyNowPayLaterForKlarna)},
+
+    {"autofill-enable-buy-now-pay-later-syncing-for-klarna",
+     flag_descriptions::kAutofillEnableBuyNowPayLaterSyncingForKlarnaName,
+     flag_descriptions::
+         kAutofillEnableBuyNowPayLaterSyncingForKlarnaDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableBuyNowPayLaterSyncingForKlarna)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+    // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

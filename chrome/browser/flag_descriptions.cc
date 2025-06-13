@@ -714,11 +714,24 @@ const char kAutofillEnableBuyNowPayLaterDescription[] =
     "When enabled, users will have the option to pay with buy now pay later on "
     "specific merchant webpages.";
 
+const char kAutofillEnableBuyNowPayLaterForKlarnaName[] =
+    "Enable buy now pay later on Autofill for Klarna";
+const char kAutofillEnableBuyNowPayLaterForKlarnaDescription[] =
+    "When enabled, users will have the option to pay with buy now pay later "
+    "with Klarna on specific merchant webpages.";
+
 const char kAutofillEnableBuyNowPayLaterSyncingName[] =
     "Enable syncing buy now pay later user data.";
 const char kAutofillEnableBuyNowPayLaterSyncingDescription[] =
     "When enabled, Chrome will sync user data related to buy now pay later.";
-#endif
+
+const char kAutofillEnableBuyNowPayLaterSyncingForKlarnaName[] =
+    "Enable syncing buy now pay later user data for Klarna";
+const char kAutofillEnableBuyNowPayLaterSyncingForKlarnaDescription[] =
+    "When enabled, Chrome will sync user data related to buy now pay later for "
+    "Klarna.";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 const char kAutofillEnableCvcStorageAndFillingName[] =
     "Enable CVC storage and filling for payments autofill";

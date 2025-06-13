@@ -11513,6 +11513,8 @@ from previous Chrome versions.
   <int value="-912456561" label="MidiManagerWinrt:enabled"/>
   <int value="-911535733" label="ImageDescriptionsAlternateRouting:disabled"/>
   <int value="-910452816" label="ChromeOSParentalControlsSettings:disabled"/>
+  <int value="-910238027"
+      label="AutofillEnableBuyNowPayLaterForKlarna:enabled"/>
   <int value="-910007270" label="FeedbackReportQuestionnaire:enabled"/>
   <int value="-909905655" label="AllowAllSitesToInitiateMirroring:disabled"/>
   <int value="-909351661" label="OmniboxOnFocusSuggestions:disabled"/>
@@ -16629,6 +16631,8 @@ from previous Chrome versions.
   <int value="1016132283" label="SeparateLocalAndAccountSearchEngines:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>
   <int value="1017523412" label="ExtensionsMenuAccessControl:disabled"/>
+  <int value="1017617938"
+      label="AutofillEnableBuyNowPayLaterForKlarna:disabled"/>
   <int value="1018101051" label="TabGroupShortcuts:enabled"/>
   <int value="1018797564" label="EnableAppListSearchAutocomplete:disabled"/>
   <int value="1018998019" label="memlog"/>
@@ -19088,6 +19092,8 @@ from previous Chrome versions.
   <int value="1903206193" label="NewWindowAppMenu:disabled"/>
   <int value="1903444879" label="VirtualKeyboardApi:disabled"/>
   <int value="1903793531" label="FasterSplitScreenSetup:enabled"/>
+  <int value="1904716652"
+      label="AutofillEnableBuyNowPayLaterSyncingForKlarna:disabled"/>
   <int value="1905129994"
       label="AutofillEnableAndroidNKeyForFidoAuthentication:enabled"/>
   <int value="1905465678" label="ContextualSearchSingleActions:enabled"/>
@@ -19343,6 +19349,8 @@ from previous Chrome versions.
   <int value="1995322219" label="EmojiHandwritingVoiceInput:enabled"/>
   <int value="1995377612"
       label="HappinessTrackingSurveysForDesktopPrivacySandbox:disabled"/>
+  <int value="1995893754"
+      label="AutofillEnableBuyNowPayLaterSyncingForKlarna:enabled"/>
   <int value="1996051411" label="DeprecateAltBasedSixPack:enabled"/>
   <int value="1996125159" label="AutoplayMutedVideos:enabled"/>
   <int value="1997047666" label="NTPSnippetsIncreasedVisibility:disabled"/>
