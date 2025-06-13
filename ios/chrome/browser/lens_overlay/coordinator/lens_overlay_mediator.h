@@ -20,6 +20,7 @@
 class LensOmniboxClient;
 @protocol LensOverlayCommands;
 @protocol LensOverlayMediatorDelegate;
+@class LensOverlayMetricsRecorder;
 @protocol LensToolbarConsumer;
 @class OmniboxCoordinator;
 class PrefService;
@@ -58,6 +59,9 @@ class WebStateList;
 @property(nonatomic, weak) id<LensOverlayBottomSheetPresentationDelegate>
     presentationDelegate;
 
+/// Utility for recoding Lens Overlay metrics.
+@property(nonatomic, weak) LensOverlayMetricsRecorder* metricsRecorder;
+
 /// TemplateURLService to observe default search engine change.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 
@@ -66,8 +70,6 @@ class WebStateList;
 /// Current lens result. Readonly.
 @property(nonatomic, strong, readonly) id<ChromeLensOverlayResult>
     currentLensResult;
-/// Number of tabs opened by the lens overlay during this session.
-@property(nonatomic, assign, readonly) NSInteger generatedTabCount;
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                         profilePrefs:(const PrefService*)profilePrefs

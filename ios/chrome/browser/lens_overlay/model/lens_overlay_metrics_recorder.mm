@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_metrics_recorder.h"
 
+#import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/timer/elapsed_timer.h"
@@ -43,6 +44,8 @@ lens::MimeType MimeTypeFromWebState(web::WebState* web_state) {
   BOOL _lensOverlayInForeground;
   /// The time at which the overlay was invoked.
   base::ElapsedTimer _invocationTime;
+  /// Time where lens started the search request.
+  base::ElapsedTimer _startSearchRequestTime;
   /// The time at which the overlay UI was `shown`. null when hidden.
   base::TimeTicks _foregroundTime;
   /// The total foregroud duration since invoked.
@@ -57,6 +60,8 @@ lens::MimeType MimeTypeFromWebState(web::WebState* web_state) {
   lens::MimeType _mimeType;
   /// The entrypoint of the lens overlay.
   LensOverlayEntrypoint _entrypoint;
+  /// Number of tab opened by the lens overlay.
+  int _generatedTabCount;
 }
 
 - (instancetype)initWithEntrypoint:(LensOverlayEntrypoint)entrypoint
@@ -162,8 +167,7 @@ lens::MimeType MimeTypeFromWebState(web::WebState* web_state) {
 
 /// Metrics recorded on lens overlay dismissal.
 - (void)recordDismissalMetricsWithSource:
-            (lens::LensOverlayDismissalSource)dismissalSource
-                       generatedTabCount:(NSInteger)generatedTabCount {
+    (lens::LensOverlayDismissalSource)dismissalSource {
   [self recordLensOverlayClosed];
 
   // Invocation metrics.
@@ -185,17 +189,43 @@ lens::MimeType MimeTypeFromWebState(web::WebState* web_state) {
   lens::RecordSessionDuration(_invocationSource, sessionDuration);
 
   // Records number of tabs opened by the lens overlay during session.
-  lens::RecordGeneratedTabCount((int)generatedTabCount);
+  lens::RecordGeneratedTabCount(_generatedTabCount);
 
   // Session end UKM metrics.
   lens::RecordUKMSessionEndMetrics(
       _sourceID, _invocationSource, _searchPerformedInSession, sessionDuration,
-      _mimeType, _foregroundDuration, generatedTabCount);
+      _mimeType, _foregroundDuration, _generatedTabCount);
 }
 
 - (void)recordSearchWithCameraTapped {
   RecordAction(
       base::UserMetricsAction("Mobile.LensOverlay.SearchWithCamera.Tapped"));
+}
+
+- (void)recordResultsPageOmniboxFocus {
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.FocusOmnibox"));
+}
+
+- (void)recordResultsPageBack {
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Back"));
+}
+
+- (void)recordNewLensResultGenerated {
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.NewResult"));
+}
+
+- (void)recordNewTabGeneratedWithSource:
+    (lens::LensOverlayNewTabSource)newTabSource {
+  _generatedTabCount += 1;
+  lens::RecordNewTabGenerated(newTabSource);
+}
+
+- (void)startTimingLensSearchRequest {
+  _startSearchRequestTime = base::ElapsedTimer();
+}
+
+- (void)recordLensSearchRequestElapsedTime {
+  lens::RecordLensResponseTime(_startSearchRequestTime.Elapsed());
 }
 
 @end

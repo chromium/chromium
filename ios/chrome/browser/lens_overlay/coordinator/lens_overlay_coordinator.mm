@@ -273,6 +273,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
               profilePrefs:browser->GetProfile()->GetPrefs()];
   _mediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  _mediator.metricsRecorder = _metricsRecorder;
 
   // Results UI is lazily initialized; see comment in LensOverlayResultConsumer
   // section.
@@ -647,9 +648,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 
   [self monitorMemoryWarnings:NO];
-  [_metricsRecorder
-      recordDismissalMetricsWithSource:dismissalSource
-                     generatedTabCount:_mediator.generatedTabCount];
+  [_metricsRecorder recordDismissalMetricsWithSource:dismissalSource];
 
   // The reason the UI is destroyed can be that Omnient gets associated to a
   // different tab. In this case mark the stale tab helper as not shown.
