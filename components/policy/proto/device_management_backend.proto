@@ -569,7 +569,8 @@ message BrowserDeviceIdentifier {
 }
 
 message PolicyFetchRequest {
-  reserved 5;
+  reserved 5, 11;
+  reserved "invalidation_topics_only";
 
   // This is the policy type, which maps to D3 policy type internally.
   // By convention, we use "/" as separator to create policy namespace.
@@ -653,11 +654,6 @@ message PolicyFetchRequest {
   // Encoded information from a policy invalidation notification. This is opaque
   // to the client and should be forwarded from the invalidation notification.
   optional string policy_invalidation_info = 10 [deprecated = true];
-
-  // Whether or not the client only supports the new PolicyData invalidation
-  // topics. If true, only the policy_invalidation_topic and
-  // command_invalidation_topic fields will be set in the PolicyData response.
-  optional bool invalidation_topics_only = 11 [deprecated = true];
 
   // If this is an affiliated user, this is the device's DMToken.
   optional string device_dm_token = 12;
