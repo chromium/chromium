@@ -323,6 +323,9 @@
       <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL" desc="" formatter_data="android_java" translateable="false">
         Pause tracking protections
       </message>
+      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_RELOADING_SITE_LABEL" desc="" translateable="false">
+        Reloading site
+      </message>
       <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
         Try pausing tracking protections on this site, which can help site features work as expected.
       </message>

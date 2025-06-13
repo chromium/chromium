@@ -42,6 +42,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/md_text_button_with_spinner.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/vector_icons.h"
 
@@ -817,6 +818,28 @@ class CookieControlsInteractiveUiTrackingProtectionTest
                 IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION)));
   }
 
+  auto CheckTrackingProtectionsActiveStateReloading() {
+    return Steps(
+        CheckViewProperty(
+            CookieControlsContentView::kTrackingProtectionsButton,
+            &views::LabelButton::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTIONS_BUBBLE_RELOADING_SITE_LABEL)),
+        CheckViewProperty(CookieControlsContentView::kTrackingProtectionsButton,
+                          &views::View::GetEnabled, false),
+        CheckViewProperty(CookieControlsContentView::kTrackingProtectionsButton,
+                          &views::MdTextButtonWithSpinner::GetSpinnerVisible,
+                          true),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE)),
+        CheckViewProperty(
+            CookieControlsContentView::kDescription, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION)));
+  }
+
   auto CheckTrackingProtectionsPausedState() {
     return Steps(
         CheckViewProperty(
@@ -824,6 +847,28 @@ class CookieControlsInteractiveUiTrackingProtectionTest
             &views::LabelButton::GetText,
             l10n_util::GetStringUTF16(
                 IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL)),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE)),
+        CheckViewProperty(
+            CookieControlsContentView::kDescription, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION)));
+  }
+
+  auto CheckTrackingProtectionsPausedReloadingState() {
+    return Steps(
+        CheckViewProperty(
+            CookieControlsContentView::kTrackingProtectionsButton,
+            &views::LabelButton::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTIONS_BUBBLE_RELOADING_SITE_LABEL)),
+        CheckViewProperty(CookieControlsContentView::kTrackingProtectionsButton,
+                          &views::View::GetEnabled, false),
+        CheckViewProperty(CookieControlsContentView::kTrackingProtectionsButton,
+                          &views::MdTextButtonWithSpinner::GetSpinnerVisible,
+                          true),
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
             l10n_util::GetStringUTF16(
@@ -850,8 +895,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
             CheckTrackingProtectionsActiveState(),
             PressButton(CookieControlsContentView::kTrackingProtectionsButton),
             EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
-            // TODO(crbug.com/388294499): Add testing for reloading state UI.
-            CheckTrackingProtectionsActiveState(),
+            CheckTrackingProtectionsActiveStateReloading(),
             WaitForHide(CookieControlsBubbleView::kCookieControlsBubble))));
   // Ensure that the reloading timeout doesn't execute when page reloads faster
   // than the timeout window.
@@ -877,8 +921,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
             CheckTrackingProtectionsPausedState(),
             PressButton(CookieControlsContentView::kTrackingProtectionsButton),
             EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
-            // TODO(crbug.com/388294499): Add testing for reloading state UI.
-            CheckTrackingProtectionsPausedState(),
+            CheckTrackingProtectionsPausedReloadingState(),
             WaitForHide(CookieControlsBubbleView::kCookieControlsBubble))));
   // Ensure that the reloading timeout doesn't execute when page reloads faster
   // than the timeout window.

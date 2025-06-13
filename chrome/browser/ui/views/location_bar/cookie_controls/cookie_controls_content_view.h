@@ -20,6 +20,7 @@ class Label;
 class LabelButton;
 class ToggleButton;
 class ImageView;
+class MdTextButtonWithSpinner;
 }  // namespace views
 
 // Content view used to display the cookie Controls.
@@ -59,6 +60,8 @@ class CookieControlsContentView : public views::View {
   virtual void SetFeedbackSectionVisibility(bool visible);
 
   virtual void UpdateFeedbackButtonSubtitle(const std::u16string& subtitle);
+
+  virtual void SetTrackingProtectionsButtonReloadingState();
 
   base::CallbackListSubscription RegisterToggleButtonPressedCallback(
       base::RepeatingCallback<void(bool)> callback);
@@ -102,7 +105,8 @@ class CookieControlsContentView : public views::View {
 
   // Used for Tracking protections UI.
   void AddTrackingProtectionsButton();
-  raw_ptr<views::LabelButton> tracking_protections_button_ = nullptr;
+  raw_ptr<views::MdTextButtonWithSpinner> tracking_protections_button_ =
+      nullptr;
 
   base::RepeatingClosureList feedback_button_callback_list_;
 };

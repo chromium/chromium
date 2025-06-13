@@ -97,7 +97,10 @@ void CookieControlsBubbleViewController::OnUserTriggeredReloadingAction() {
 }
 
 void CookieControlsBubbleViewController::SwitchToReloadingView() {
-  if (!controller_->ShowActFeatures()) {
+  if (controller_->ShowActFeatures()) {
+    bubble_view_->GetContentView()
+        ->SetTrackingProtectionsButtonReloadingState();
+  } else {
     bubble_view_->SwitchToReloadingView();
     bubble_view_->GetReloadingView()->GetViewAccessibility().AnnounceText(
         l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,
@@ -323,8 +326,6 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
 
 void CookieControlsBubbleViewController::OnTrackingProtectionsButtonPressed() {
   if (is_reloading_state_) {
-    // TODO(crbug.com/388294499): Ensure that the button UI is visually disabled
-    // when reloading state is active.
     return;
   }
   // TODO(crbug.com/388294499): Add metrics for ACT actions.
