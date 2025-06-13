@@ -299,6 +299,8 @@ component("net") {
     "base/sockaddr_storage.cc",
     "base/sockaddr_storage.h",
     "base/sys_addrinfo.h",
+    "base/task/task_runner.cc",
+    "base/task/task_runner.h",
     "base/trace_event_stub.h",
     "base/tracing.h",
     "base/transport_info.cc",

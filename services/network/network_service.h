@@ -89,6 +89,7 @@ class HttpAuthCacheCopier;
 class NetLogProxySink;
 class NetworkContext;
 class NetworkService;
+class NetworkServiceScheduler;
 class SCTAuditingCache;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
@@ -557,6 +558,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif  // BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<network::tpcd::metadata::Manager> tpcd_metadata_manager_;
+
+  // An experimental task scheduler for NetworkService.
+  std::unique_ptr<NetworkServiceScheduler> scheduler_;
 
   bool exclusive_cookie_database_locking_ = true;
   base::WeakPtrFactory<NetworkService> weak_factory_{this};

@@ -1026,6 +1026,9 @@ message SequenceManagerTask {
 
     V8_USER_VISIBLE_TQ = 56;
     V8_BEST_EFFORT_TQ = 57;
+
+    NETWORK_SERVICE_THREAD_HIGH_TQ = 58;
+    NETWORK_SERVICE_THREAD_DEFAULT_TQ = 59;
   }
 
   optional Priority priority = 1;
