@@ -57,6 +57,7 @@ constexpr int kOnAccessibilityUsageUpdateDelaySecs = 5;
 const char kAXModeBundleBasic[] = "basic";
 const char kAXModeBundleFormControls[] = "form-controls";
 const char kAXModeBundleComplete[] = "complete";
+const char kAXModeBundleOnScreen[] = "on-screen";
 
 // A data holder attached to a WebContents while it is hidden and has
 // accessibility enabled. Used only when the disable_on_hide feature of
@@ -355,13 +356,15 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     } else {
       // Support
       // --force-renderer-accessibility=[basic|form-controls|complete|
-      //                                 screen-reader]
+      //                                 screen-reader|on-screen]
       if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
         initial_mode = ui::kAXModeBasic;
       } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
         initial_mode = ui::kAXModeFormControls;
       } else if (ax_mode_bundle.compare(kAXModeBundleComplete) == 0) {
         initial_mode = ui::kAXModeComplete;
+      } else if (ax_mode_bundle.compare(kAXModeBundleOnScreen) == 0) {
+        initial_mode = ui::kAXModeOnScreen;
       } else {
         // If 'screen-reader', or invalid, default to screen reader bundle,
         // which is the most useful in development and testing scenarios.
