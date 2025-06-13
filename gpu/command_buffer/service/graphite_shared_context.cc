@@ -132,6 +132,7 @@ GraphiteSharedContext::GraphiteSharedContext(
     std::unique_ptr<skgpu::graphite::Context> graphite_context,
     bool is_thread_safe)
     : graphite_context_(std::move(graphite_context)) {
+  DCHECK(graphite_context_);
   if (is_thread_safe) {
     lock_.emplace();
   }
