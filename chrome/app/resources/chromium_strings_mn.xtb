@@ -342,6 +342,7 @@
 <translation id="5775198138441669627">Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл бүртгэлийнхээ Chromium-н өгөгдлийг <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromium-г өөрчилж, хянана уу. Chromium-г өгөгдмөлөөрөө тохируулна уу.</translation>
 <translation id="5809516625706423866">Интернэтэд холбогдох боломжгүй байна. HTTP 401 зөвшөөрөлгүй. Прокси тохируулгаа шалгана уу.</translation>
+<translation id="5817952762723416573">Chromium-н V8 системээр сайтыг хурдасгах ч Chromium-г халдлагад арай тэсвэр багатай болгоно. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="5821520528363214608">Google Бүртгэлдээ Chromium-н өгөгдлийг ашиглах болон хадгалахын тулд Chromium-г шинэчилнэ үү</translation>
 <translation id="5824893331272123205">Энэ түр зуурын самбарыг ачаалж чадсангүй. Дахин оролдоно уу</translation>
 <translation id="5862307444128926510">Chromium-д тавтай морил</translation>
@@ -431,6 +432,7 @@
 <translation id="6729124504294600478">Хувийн болгох болон бусад онцлогийг авахын тулд Chromium-г Веб, аппын үйл ажиллагаа болон Google-н холбосон үйлчилгээнүүдэд оруулна уу</translation>
 <translation id="6734291798041940871">Chromium-г таны компьютерийн бүх хэрэглэгчид суулгасан байна.</translation>
 <translation id="674245979920622322">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон өөр <ph name="COUNT" /> зөвшөөрлийг хассан</translation>
+<translation id="6751374565094704799">Chromium-н V8 системээр сайтыг хурдасгах ч Chromium-г халдлагад арай тэсвэр багатай болгоно. Энэ тохиргоо асаалттай байна.</translation>
 <translation id="67706546131546258">Энэ файл аюултай байж магадгүй тул Chromium үүнийг скан хийхийг зөвлөж байна.</translation>
 <translation id="6779406956731413166">ChromiumOS-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="6831043979455480757">Хөрвүүлэх</translation>

@@ -4764,6 +4764,7 @@
 <translation id="4305402730127028764">複製到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="4305817255990598646">切換</translation>
 <translation id="4306119971288449206">應用程式的內容類型應設為「<ph name="CONTENT_TYPE" />」</translation>
+<translation id="4306489587293957491">輸入</translation>
 <translation id="4306810703452026910">Chrome 不會再將來自這個網站的通知標示為垃圾訊息</translation>
 <translation id="4307992518367153382">基本選項</translation>
 <translation id="4309165024397827958">允許具有位置存取權的 Android 應用程式和服務使用您裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用這類資料，藉此提高定位精確度及改善適地性服務。</translation>
@@ -4821,6 +4822,7 @@
 <translation id="4350230709416545141">一律禁止 <ph name="HOST" /> 存取你的位置資訊</translation>
 <translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">請前往「<ph name="APP_NAME" />」應用程式，管理已安裝和串流的應用程式</translation>
+<translation id="4352913519324947509">密碼未變更，但你應該還能使用現有密碼存取網站</translation>
 <translation id="4354073718307267720">網站必須先詢問你，才能根據你的周遭環境建立 3D 地圖或追蹤攝影機位置</translation>
 <translation id="4354344420232759511">這裡會顯示你曾造訪的網站</translation>
 <translation id="435527878592612277">請選取你的相片</translation>
@@ -8302,6 +8304,7 @@
 <translation id="686831807558000905">不登入</translation>
 <translation id="686839242150793617">允許自動進入子母畫面</translation>
 <translation id="6868934826811377550">查看詳情</translation>
+<translation id="6870470066213933201">管理 JavaScript 最佳化和安全性</translation>
 <translation id="6871644448911473373">OCSP 回應程式：<ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">語言...</translation>
 <translation id="6873571253135628430">變更網站權限</translation>

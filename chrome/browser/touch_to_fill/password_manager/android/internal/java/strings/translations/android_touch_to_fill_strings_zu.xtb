@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Sebenzisa iphasiwedi egciniwe noma ukhiye wokudlula?</translation>
 <translation id="5624120631404540903">Phatha amaphasiwedi</translation>
 <translation id="592182999816790476">Iphasiwedi ka-<ph name="USERNAME" /> ilondolozelwe i-<ph name="WEBSITE" /></translation>
+<translation id="593924516471361340">Iphasiwedi yokuthola yesikhashana uma kuba nenkinga ka-<ph name="USERNAME" />yokulondolozelwa i-<ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Ukhiye wokudlula we-<ph name="USERNAME" />, sebenzisa ukukhiya kwakho isikrini</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Iphasiwedi entsha yaleli sayithi}one{Amaphasiwedi amasha waleli sayithi}other{Amaphasiwedi amasha waleli sayithi}}</translation>
 <translation id="7286867818472074330">Khetha ukhiye wokudlula</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> kokungu-<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Uthole amaphasiwedi we-<ph name="SITE_NAME" /></translation>
+<translation id="8202660122967066153">Iphasiwedi yokuthola yesikhashana uma kuba nenkinga ka-<ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Ukuthola kwesikhashana uma kunezinkinga</translation>
 <translation id="8614995815226664591">U-<ph name="SENDER_NAME" /> wabelane nawe ngephasiwedi ye-<ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Uhlu lwemininingwane luvaliwe.</translation>

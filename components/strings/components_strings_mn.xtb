@@ -937,6 +937,7 @@
 <translation id="2546283357679194313">Cookies болон сайтын дата</translation>
 <translation id="254947805923345898">Удирдамжийн утга хүчингүй байна.</translation>
 <translation id="2549836668759467704">Барилгын зөвлөгөө болон гэрээт үйлчилгээ</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> болон бусад</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> хүчингүй хариу илгээсэн байна.</translation>
 <translation id="2551608178605132291">Хаяг: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Хагаки</translation>
@@ -4818,6 +4819,7 @@
 <translation id="9219103736887031265">Зураг</translation>
 <translation id="922152298093051471">Chrome-г өөрчлөх</translation>
 <translation id="9222403027701923763">Бага болон дунд сургууль (K-12)</translation>
+<translation id="9222463428840654067">Картын дугаар буруу байна</translation>
 <translation id="922849469395748170">Лояалти карт</translation>
 <translation id="93020190163435405">Дадлага</translation>
 <translation id="931598121743515856">Худалдан авалтын дүн <ph name="CHECKOUT_AMOUNT_MINIMUM" />-с дээш байх ёстой</translation>

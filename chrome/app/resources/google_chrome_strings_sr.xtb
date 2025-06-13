@@ -65,6 +65,7 @@
 <translation id="178701303897325119">Овај додатак више није подржан. Chrome препоручује да га уклоните.</translation>
 <translation id="1812689907177901597">Када то укључите, можете да се пријављујете на Google сајтове, као што је Gmail, али се не пријављујете у Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome препоручује да паузирате картицу која успорава прегледач}one{Chrome препоручује да паузирате картице које успоравају прегледач}few{Chrome препоручује да паузирате картице које успоравају прегледач}other{Chrome препоручује да паузирате картице које успоравају прегледач}}</translation>
+<translation id="1832046143430087831">Убрзава сајтове уз Chrome механизам V8, али чини Chrome мало мање отпорним на нападе. Ово подешавање је искључено.</translation>
 <translation id="1838374766361614909">Обришите претрагу</translation>
 <translation id="1860536484129686729">Chrome тражи дозволу да приступи камери за овај сајт</translation>
 <translation id="1873233029667955273">Google Chrome није подразумевани прегледач</translation>
@@ -451,6 +452,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6718739135284199302">Убрзајте Chrome</translation>
 <translation id="6735387454586646204">Chrome OS Flex систем</translation>
 <translation id="6750954913813541382">Да би исправио правописне грешке, Chrome Google-у шаље текст који уносите у прегледач</translation>
+<translation id="6760235774835597023">Убрзава сајтове уз Chrome механизам V8, али чини Chrome мало мање отпорним на нападе. Ово подешавање је укључено.</translation>
 <translation id="677276454032249905">Желите ли ипак да затворите Chrome?</translation>
 <translation id="6794858689789885890">Увек избришите податке о сајтовима са уређаја када затворите Chrome</translation>
 <translation id="6831043979455480757">Преведи</translation>

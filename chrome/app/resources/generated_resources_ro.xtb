@@ -4768,6 +4768,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4305402730127028764">Copiază pe <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Comută</translation>
 <translation id="4306119971288449206">Aplicațiile trebuie să fie difuzate utilizând antetul content-type „<ph name="CONTENT_TYPE" />”</translation>
+<translation id="4306489587293957491">Introdu</translation>
 <translation id="4306810703452026910">Chrome nu va mai semnala notificările de la acest site ca spam</translation>
 <translation id="4307992518367153382">Elemente de bază</translation>
 <translation id="4309165024397827958">Permite ca serviciile și aplicațiile pentru Android cu permisiune pentru locație să folosească locația dispozitivului. Google poate să culeagă periodic date despre locație și să le folosească în mod anonim pentru a îmbunătăți precizia localizării și a serviciilor bazate pe locație.</translation>
@@ -4825,6 +4826,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4350230709416545141">Blochează întotdeauna accesul <ph name="HOST" /> la locație</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Accesează aplicația <ph name="APP_NAME" /> pentru a gestiona aplicațiile instalate și redate în stream</translation>
+<translation id="4352913519324947509">Parola nu s-a modificat, dar ar trebui să poți accesa în continuare site-ul cu parola actuală</translation>
 <translation id="4354073718307267720">Anunță-mă dacă un site vrea să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video</translation>
 <translation id="4354344420232759511">Site-urile pe care le accesezi apar aici</translation>
 <translation id="435527878592612277">Selectează fotografia</translation>
@@ -8312,6 +8314,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="686831807558000905">Nu mă conectez</translation>
 <translation id="686839242150793617">Au permisiunea de a intra automat în modul picture-in-picture</translation>
 <translation id="6868934826811377550">Afișează detaliile</translation>
+<translation id="6870470066213933201">Gestionează optimizarea și securitatea JavaScript</translation>
 <translation id="6871644448911473373">Respondent OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Limbi...</translation>
 <translation id="6873571253135628430">Modifică permisiunile site-urilor</translation>

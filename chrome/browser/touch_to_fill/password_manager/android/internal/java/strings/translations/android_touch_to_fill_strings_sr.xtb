@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Желите да користите сачувану лозинку или приступни кôд?</translation>
 <translation id="5624120631404540903">Управљај лозинкама</translation>
 <translation id="592182999816790476">Лозинка за <ph name="USERNAME" /> је сачувана за <ph name="WEBSITE" /></translation>
+<translation id="593924516471361340">Привремена лозинка за опоравак у случају проблема за <ph name="USERNAME" /> је сачувана за <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Приступни кôд за <ph name="USERNAME" />, користите откључавање екрана</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Нова лозинка за овај сајт}one{Нове лозинке за овај сајт}few{Нове лозинке за овај сајт}other{Нове лозинке за овај сајт}}</translation>
 <translation id="7286867818472074330">Изабери приступни кључ</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> од <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Примили сте лозинке за <ph name="SITE_NAME" /></translation>
+<translation id="8202660122967066153">Привремена лозинка за опоравак у случају проблема за <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Привремено опоравак у случају проблема</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> дели са вама лозинку за <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Листа акредитива је затворена.</translation>

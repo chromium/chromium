@@ -1118,6 +1118,15 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
       목록의 순서는 chrome://settings/languages의 '환경설정에 따른 언어 순서' 섹션의 순서와 동일하게 표시됩니다. 사용자는 정책에서 설정된 언어를 삭제하거나 순서를 변경할 수는 없지만 정책에서 설정된 언어 아래에 언어를 추가할 수는 있습니다. 다른 정책에 의해 강제되지 않는 한 사용자는 브라우저의 UI 언어 및 번역/맞춤법 검사 설정을 원하는 대로 변경할 수 있습니다.
 
       정책을 설정하지 않으면 사용자가 기본 언어의 전체 목록을 변경할 수 있습니다.</translation>
+<translation id="180243155313050440">이 정책은 관리 브라우저를 나타내는 데 사용되는 맞춤 라벨을 제어합니다. 관리 브라우저의 경우 이 라벨은 새 탭 페이지 하단의 관리 면책 조항에 표시됩니다. 맞춤 라벨은 번역되지 않습니다.
+
+이 정책이 적용되면 16자(영문 기준)를 초과하는 문자열은 '…'로 잘립니다. 긴 이름을 사용하지 마세요.
+
+이 정책은 관리 브라우저에만 적용되므로, 관리되지 않는 브라우저의 관리 사용자에게는 영향을 미치지 않습니다.
+
+<ph name="MS_WIN_NAME" />의 경우 이 정책은 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.
+
+<ph name="MAC_OS_NAME" />의 경우 이 정책은 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.</translation>
 <translation id="1803646570632580723">런처에 표시되는 고정된 앱 목록</translation>
 <translation id="1808715480127969042">이 사이트에서 쿠키 차단</translation>
 <translation id="1810261428246410396">인스턴트 테더링 사용 허용</translation>
@@ -4537,6 +4546,15 @@ Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 <translation id="4297483555396496700">정책을 true로 설정하면 사용자가 기기의 출시 채널만 변경할 수 있습니다. 정책을 false로 설정하거나 설정하지 않으면 사용자가 채널을 변경할 수 없습니다.
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 설정은 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />를 false로 설정하는 경우에만 적용됩니다.</translation>
+<translation id="4297774573405304484">관리 브라우저에 기업 배지로 사용될 이미지의 URL입니다. URL은 이미지를 가리켜야 합니다.
+
+파비콘(예: https://www.google.com/favicon.ico) 또는 48x48픽셀 이상의 아이콘을 사용하는 것이 좋습니다.
+
+이 정책은 관리 브라우저에만 적용되므로, 관리되지 않는 브라우저의 관리 사용자에게는 영향을 미치지 않습니다.
+
+<ph name="MS_WIN_NAME" />의 경우 이 정책은 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.
+
+<ph name="MAC_OS_NAME" />의 경우 이 정책은 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.</translation>
 <translation id="4301478455179579340">프로그레시브 웹 애플리케이션 설치 중 네이티브 애플리케이션 서명</translation>
 <translation id="4303167373847512281">개발자 모드 허용</translation>
 <translation id="4307116964468610577">이 정책은 하루에 한 번만 완전 충전하여 시스템 배터리 수명을 연장합니다. 남은 시간 동안은 시스템이 전원에 연결되어 있더라도 배터리가 보관에 유리한 저충전 상태로 유지됩니다.
