@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.65.0"
 name = "hashbrown"
-version = "0.15.3"
+version = "0.15.4"
 authors = ["Amanieu d'Antras <amanieu@gmail.com>"]
 build = false
 exclude = [
@@ -64,7 +64,6 @@ raw-entry = []
 rustc-dep-of-std = [
     "nightly",
     "core",
-    "compiler_builtins",
     "alloc",
     "rustc-internal-api",
 ]
@@ -116,10 +115,6 @@ version = "0.2.9"
 features = ["alloc"]
 optional = true
 default-features = false
-
-[dependencies.compiler_builtins]
-version = "0.1.2"
-optional = true
 
 [dependencies.core]
 version = "1.0.0"

@@ -50,7 +50,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Amanieu d'Antras <amanieu@gmail.com>"
   cargo_pkg_name = "hashbrown"
   cargo_pkg_description = "A Rust port of Google's SwissTable hash map"
-  cargo_pkg_version = "0.15.3"
+  cargo_pkg_version = "0.15.4"
 
   allow_unsafe = true
 
