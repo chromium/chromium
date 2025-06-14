@@ -1727,10 +1727,10 @@ BASE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64,
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kMediaFoundationD3DVideoProcessing,
              "MediaFoundationD3DVideoProcessing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMediaFoundationSharedImageEncode,
              "MediaFoundationSharedImageEncode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Controls whether muted media stream audio should continue to render.
