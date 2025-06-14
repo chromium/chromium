@@ -313,16 +313,15 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
     const gfx::Size plane_size = format().GetPlaneSize(i, size());
     const SkIRect src_rect =
         SkIRect::MakeWH(plane_size.width(), plane_size.height());
-    context_state_->graphite_shared_context()->asyncRescaleAndReadPixels(
-        sk_image.get(), pixmaps[i].info(), src_rect,
-        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-        base::BindOnce(&OnReadPixelsDone), &contexts[i]);
-  }
-
-  if (!context_state_->graphite_shared_context()->submit(
-          skgpu::graphite::SyncToCpu::kYes)) {
-    LOG(ERROR) << "Graphite context submit() failed";
-    return false;
+    if (!context_state_->graphite_shared_context()
+             ->asyncRescaleAndReadPixelsAndSubmit(
+                 sk_image.get(), pixmaps[i].info(), src_rect,
+                 SkImage::RescaleGamma::kSrc,
+                 SkImage::RescaleMode::kRepeatedLinear,
+                 base::BindOnce(&OnReadPixelsDone), &contexts[i])) {
+      LOG(ERROR) << "Graphite context submit() failed";
+      return false;
+    }
   }
 
   for (int i = 0; i < format().NumberOfPlanes(); i++) {

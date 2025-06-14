@@ -45,12 +45,11 @@ bool GraphiteReadPixelsSyncImpl(GraphiteSharedContext* context,
   const SkIRect src_rect =
       SkIRect::MakeXYWH(src_x, src_x, dst_info.width(), dst_info.height());
 
-  context->asyncRescaleAndReadPixels(
+  context->asyncRescaleAndReadPixelsAndSubmit(
       imageOrSurface, dst_info, src_rect, SkImage::RescaleGamma::kSrc,
       SkImage::RescaleMode::kRepeatedLinear, base::BindOnce(&OnReadPixelsDone),
       &read_context);
 
-  context->submit(skgpu::graphite::SyncToCpu::kYes);
   CHECK(read_context.finished);
 
   if (!read_context.async_result) {
