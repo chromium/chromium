@@ -65,6 +65,9 @@ BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV3Ios);
 // expanding forms.
 BASE_DECLARE_FEATURE(kAutofillRefillForFormsIos);
 
+// Reports JS errors that occur upon handling form submission in the renderer.
+BASE_DECLARE_FEATURE(kAutofillReportFormSubmissionErrors);
+
 // Makes the autofill and password infobars sticky on iOS. The sticky infobar
 // sticks there until navigating from an explicit user gesture (e.g. reload or
 // load a new page from the omnibox). This includes the infobar UI and the

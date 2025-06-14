@@ -24,7 +24,7 @@ inline constexpr char kProgrammaticFormSubmissionHistogram[] =
     "Autofill.iOS.FormSubmission.IsProgrammatic";
 
 inline constexpr char kFormSubmissionOutcomeHistogram[] =
-    "Autofill.iOS.FormSubmission.Outcome";
+    "Autofill.iOS.FormSubmission.OutcomeV2";
 
 inline constexpr char kInvalidSubmittedFormReasonHistogram[] =
     "Autofill.iOS.FormSubmission.Outcome.InvalidFormReason";

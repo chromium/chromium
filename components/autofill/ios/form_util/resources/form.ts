@@ -325,7 +325,7 @@ function getFullyQualifiedUrl(originalURL: string): string {
 }
 
 // Send the form data to the browser.
-function formSubmitted(
+function formSubmittedInternal(
     form: HTMLFormElement,
     messageHandler: string,
     programmaticSubmission: boolean,
@@ -358,6 +358,65 @@ function formSubmitted(
   sendWebKitMessage(messageHandler, message);
 }
 
+/**
+ * Sends the form data to the browser. Errors that are caught via the try/catch
+ * are reported to the browser. This is done before the error bubbles above
+ * `formSubmitted()` so the generic JS errors wrapper doesn't intercept the
+ * error before this custom error handler.
+ *
+ * @param form The form that was submitted.
+ * @param messageHandler The name of the message handler to send the message to.
+ * @param programmaticSubmission True if the form submission is programmatic.
+ * @includeRemoteFrameToken True if the remote frame token should be included
+ *   in the payload of the message sent to the browser.
+ */
+function formSubmitted(
+    form: HTMLFormElement,
+    messageHandler: string,
+    programmaticSubmission: boolean,
+    includeRemoteFrameToken: boolean = false,
+    ): void {
+  try {
+    formSubmittedInternal(
+        form, messageHandler, programmaticSubmission, includeRemoteFrameToken);
+  } catch (error) {
+    if (gCrWebLegacy.autofill_form_features
+            .isAutofillReportFormSubmissionErrorsEnabled()) {
+      reportFormSubmissionError(error, programmaticSubmission, messageHandler);
+    } else {
+      // Just let the error go through if not reported.
+      throw error;
+    }
+  }
+}
+
+/**
+ * Reports a form submission error to the browser.
+ * @param error Object that holds information on the error.
+ * @param programmaticSubmission True if the submission that errored was
+ *   programmatic.
+ * @param handler The name of the handler to send the error message to.
+ */
+function reportFormSubmissionError(
+    error: any, programmaticSubmission: boolean, handler: string) {
+  let errorMessage = '';
+  let errorStack = '';
+  if (error && error instanceof Error) {
+    errorMessage = error.message;
+    if (error.stack) {
+      errorStack = error.stack;
+    }
+  }
+
+  const message = {
+    command: 'form.submit.error',
+    errorStack,
+    errorMessage,
+    programmaticSubmission,
+  };
+  sendWebKitMessage(handler, message);
+}
+
 gCrWebLegacy.form = {
   wasEditedByUser,
   isFormControlElement,
@@ -370,4 +429,5 @@ gCrWebLegacy.form = {
   getFormElementFromRendererId,
   fieldWasEditedByUser,
   formSubmitted,
+  reportFormSubmissionError,
 };

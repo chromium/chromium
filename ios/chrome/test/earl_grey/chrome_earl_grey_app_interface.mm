@@ -91,6 +91,7 @@
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/browser_state_utils.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -1081,12 +1082,27 @@ NSString* SerializedValue(const base::Value* value) {
 #pragma mark - JavaScript Utilities (EG2)
 
 + (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript {
+  return [ChromeEarlGreyAppInterface
+      executeJavaScript:javaScript
+                inWorld:static_cast<int>(web::ContentWorld::kPageContentWorld)];
+}
+
++ (JavaScriptExecutionResult*)executeJavaScriptInIsolatedWorld:
+    (NSString*)javaScript {
+  return [ChromeEarlGreyAppInterface
+      executeJavaScript:javaScript
+                inWorld:static_cast<int>(web::ContentWorld::kIsolatedWorld)];
+}
+
++ (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript
+                                        inWorld:(int)world {
   __block web::WebFrame* main_frame = nullptr;
   bool completed =
       WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-        main_frame = chrome_test_util::GetCurrentWebState()
-                         ->GetPageWorldWebFramesManager()
-                         ->GetMainWebFrame();
+        main_frame =
+            chrome_test_util::GetCurrentWebState()
+                ->GetWebFramesManager(static_cast<web::ContentWorld>(world))
+                ->GetMainWebFrame();
         return main_frame != nullptr;
       });
 

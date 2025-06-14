@@ -97,4 +97,12 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillDedupeFormSubmission(
       base::Value::List().Append(enabled));
 }
 
+// Enables/disables reporting form submission errors.
+void AutofillFormFeaturesJavaScriptFeature::
+    SetAutofillReportFormSubmissionErrors(web::WebFrame* frame, bool enabled) {
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillReportFormSubmissionErrors",
+      base::Value::List().Append(enabled));
+}
+
 }  // namespace autofill

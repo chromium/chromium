@@ -3770,7 +3770,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.iOS.FormSubmission.Outcome"
+<histogram name="Autofill.iOS.FormSubmission.Outcome.InvalidFormReason"
+    enum="InvalidSubmittedFormReasonIOS" expires_after="2025-11-16">
+  <owner>eic@google.com</owner>
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the reason why a submitted form data was found invalid by the
+    browser process. Recorded when the browser process receives a form
+    submission message from the renderer. iOS only.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.iOS.FormSubmission.OutcomeV2"
     enum="FormSubmissionOutcomeIOS" expires_after="2025-11-16">
   <owner>eic@google.com</owner>
   <owner>vincb@google.com</owner>
@@ -3781,18 +3793,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     process from the renderer may be invalid or successfully handled. Recorded
     when the browser process receives a form submission message from the
     renderer. iOS only.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.iOS.FormSubmission.Outcome.InvalidFormReason"
-    enum="InvalidSubmittedFormReasonIOS" expires_after="2025-11-16">
-  <owner>eic@google.com</owner>
-  <owner>vincb@google.com</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    Records the reason why a submitted form data was found invalid by the
-    browser process. Recorded when the browser process receives a form
-    submission message from the renderer. iOS only.
   </summary>
 </histogram>
 
