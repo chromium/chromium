@@ -19,59 +19,59 @@
   <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT2" desc="Second alternative label text for the action match that opens lens.">
     Ask Google Search about this page
   </message>
-  <message name="IDS_OMNIBOX_TOOLBELT_LABEL" desc="The label shown before actions in the omnibox toolbelt." translateable="false">
-    Your tools
+  <message name="IDS_OMNIBOX_TOOLBELT_LABEL" desc="The label shown before actions in the omnibox toolbelt.">
+    Search shortcuts
   </message>
 
-  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_HINT" desc="The button text contents to suggest an omnibox action that opens lens" translateable="false">
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_HINT" desc="The button text contents to suggest an omnibox action that opens lens">
     Ask Google about this page
   </message>
-  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that opens lens" translateable="false">
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that opens lens">
     Ask Google about this page
   </message>
-  <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to open lens." translateable="false">
+  <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to open lens.">
     <ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to ask Google about this page
   </message>
-  <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION" desc="Announcement when lens action button is focused" translateable="false">
+  <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION" desc="Announcement when lens action button is focused">
     Ask Google about this page button, activate to ask Google about this page
   </message>
 
-  <message name="IDS_STARTER_PACK_BOOKMARKS_ACTION_HINT" desc="The button label for an omnibox action that invokes bookmark search keyword mode." translateable="false">
+  <message name="IDS_STARTER_PACK_BOOKMARKS_ACTION_HINT" desc="The button label for an omnibox action that invokes bookmark search keyword mode.">
     Search Bookmarks
   </message>
-  <message name="IDS_STARTER_PACK_BOOKMARKS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes bookmark search keyword mode." translateable="false">
+  <message name="IDS_STARTER_PACK_BOOKMARKS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes bookmark search keyword mode.">
     Search Bookmarks
   </message>
-  <message name="IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke bookmark search." translateable="false">
+  <message name="IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke bookmark search.">
     <ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to search bookmarks
   </message>
-  <message name="IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION" desc="Announcement when Search Bookmarks action button is focused" translateable="false">
+  <message name="IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION" desc="Announcement when Search Bookmarks action button is focused">
     Search Bookmarks button, activate to search bookmarks
   </message>
 
-  <message name="IDS_STARTER_PACK_HISTORY_ACTION_HINT" desc="The button label for an omnibox action that invokes history search keyword mode." translateable="false">
+  <message name="IDS_STARTER_PACK_HISTORY_ACTION_HINT" desc="The button label for an omnibox action that invokes history search keyword mode.">
     Search History
   </message>
-  <message name="IDS_STARTER_PACK_HISTORY_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes history search keyword mode." translateable="false">
+  <message name="IDS_STARTER_PACK_HISTORY_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes history search keyword mode.">
     Search History
   </message>
-  <message name="IDS_ACC_STARTER_PACK_HISTORY_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke history search." translateable="false">
+  <message name="IDS_ACC_STARTER_PACK_HISTORY_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke history search.">
     <ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to search history
   </message>
-  <message name="IDS_ACC_STARTER_PACK_HISTORY_ACTION" desc="Announcement when Search History action button is focused" translateable="false">
+  <message name="IDS_ACC_STARTER_PACK_HISTORY_ACTION" desc="Announcement when Search History action button is focused">
     Search History button, activate to search history
   </message>
 
-  <message name="IDS_STARTER_PACK_TABS_ACTION_HINT" desc="The button label for an omnibox action that invokes bookmark search keyword mode." translateable="false">
+  <message name="IDS_STARTER_PACK_TABS_ACTION_HINT" desc="The button label for an omnibox action that invokes bookmark search keyword mode.">
     Search Tabs
   </message>
-  <message name="IDS_STARTER_PACK_TABS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes bookmark search keyword mode." translateable="false">
+  <message name="IDS_STARTER_PACK_TABS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes bookmark search keyword mode.">
     Search Tabs
   </message>
-  <message name="IDS_ACC_STARTER_PACK_TABS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke bookmark search." translateable="false">
+  <message name="IDS_ACC_STARTER_PACK_TABS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke bookmark search.">
     <ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to search tabs
   </message>
-  <message name="IDS_ACC_STARTER_PACK_TABS_ACTION" desc="Announcement when Search Tabs action button is focused" translateable="false">
+  <message name="IDS_ACC_STARTER_PACK_TABS_ACTION" desc="Announcement when Search Tabs action button is focused">
     Search Tabs button, activate to search tabs
   </message>
 
@@ -522,7 +522,7 @@
   <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH_LINK_TEXT" desc="The link displayed on the last row in the Omnibox as IPH informing them their info is sent to Google.">
     Learn more
   </message>
-  <message name="IDS_ACC_OMNIBOX_IPH_LINK_SELECTED" desc="Announcement when an IPH Chrome Tip link is selected." translateable="false">
+  <message name="IDS_ACC_OMNIBOX_IPH_LINK_SELECTED" desc="Announcement when an IPH Chrome Tip link is selected.">
     Chrome Tip link, press Enter to open <ph name="IPH_LINK_FOCUSED_LINK_TEXT">$1<ex>Learn more</ex></ph>
   </message>
 

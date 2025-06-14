@@ -63,9 +63,13 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
     LabelStrings();
     LabelStrings(const LabelStrings&);
     ~LabelStrings();
+    // Displayed text.
     std::u16string hint;
+    // Tooltip text.
     std::u16string suggestion_contents;
+    // Unsure?
     std::u16string accessibility_suffix;
+    // Announced when focused.
     std::u16string accessibility_hint;
   };
 
