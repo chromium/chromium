@@ -31,6 +31,7 @@
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/layers/tile_display_layer_impl.h"
+#include "cc/layers/ui_resource_layer_impl.h"
 #include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -149,6 +150,10 @@ base::expected<void, std::string> CreateLayer(
 
     case cc::mojom::LayerType::kTexture:
       layer = cc::TextureLayerImpl::Create(&tree, id);
+      break;
+
+    case cc::mojom::LayerType::kUIResource:
+      layer = cc::UIResourceLayerImpl::Create(&tree, id);
       break;
 
     case cc::mojom::LayerType::kViewTransitionContent: {
@@ -519,6 +524,15 @@ void UpdateTextureLayerExtra(const mojom::TextureLayerExtraPtr& extra,
   }
 }
 
+void UpdateUIResourceLayerExtra(const mojom::UIResourceLayerExtraPtr& extra,
+                                cc::UIResourceLayerImpl& layer) {
+  layer.SetUIResourceId(extra->ui_resource_id);
+  if (extra->ui_resource_id) {
+    layer.SetImageBounds(extra->image_bounds);
+  }
+  layer.SetUV(extra->uv_top_left, extra->uv_bottom_right);
+}
+
 void UpdateScrollbarLayerBaseExtra(
     const mojom::ScrollbarLayerBaseExtraPtr& extra,
     cc::ScrollbarLayerImplBase& layer) {
@@ -746,6 +760,14 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
       UpdateTileDisplayLayerExtra(
           wire.layer_extra->get_tile_display_layer_extra(),
           static_cast<cc::TileDisplayLayerImpl&>(layer));
+      break;
+    case cc::mojom::LayerType::kUIResource:
+      RETURN_IF_FALSE(
+          wire.layer_extra && wire.layer_extra->is_ui_resource_layer_extra(),
+          "Invalid layer_extra type for UIResourceLayerImpl");
+      UpdateUIResourceLayerExtra(
+          wire.layer_extra->get_ui_resource_layer_extra(),
+          static_cast<cc::UIResourceLayerImpl&>(layer));
       break;
     case cc::mojom::LayerType::kViewTransitionContent:
       RETURN_IF_FALSE(

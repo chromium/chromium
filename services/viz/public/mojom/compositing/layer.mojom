@@ -94,6 +94,15 @@ struct TextureLayerExtra {
   TransferableResource? transferable_resource;
 };
 
+// Extra fields in a cc::UIResourceLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct UIResourceLayerExtra {
+  cc.mojom.UIResourceId ui_resource_id;
+  gfx.mojom.Size image_bounds;
+  gfx.mojom.PointF uv_top_left;
+  gfx.mojom.PointF uv_bottom_right;
+};
+
 // Extra fields in a cc::TileDisplayLayerImpl that has been added to a tree or
 // modified in some interesting way since a prior tree update.
 struct TileDisplayLayerExtra {
@@ -199,6 +208,8 @@ union LayerExtra {
   SurfaceLayerExtra surface_layer_extra;
   // Extra properties that are specific to TextureLayerImpl.
   TextureLayerExtra texture_layer_extra;
+  // Extra properties that are specific to UIResourceLayerImpl.
+  UIResourceLayerExtra ui_resource_layer_extra;
   // Extra properties that are specific to TileDisplayLayerImpl.
   TileDisplayLayerExtra tile_display_layer_extra;
   // Extra properties that are specific to ViewTransitionContentLayerImpl.

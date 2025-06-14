@@ -31,6 +31,7 @@
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
+#include "cc/layers/ui_resource_layer_impl.h"
 #include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -748,6 +749,14 @@ void SerializeSolidColorScrollbarLayerExtra(
   extra->color = layer.color();
 }
 
+void SerializeUIResourceLayerExtra(UIResourceLayerImpl& layer,
+                                   viz::mojom::UIResourceLayerExtraPtr& extra) {
+  extra->ui_resource_id = layer.ui_resource_id();
+  extra->image_bounds = layer.image_bounds();
+  extra->uv_top_left = layer.uv_top_left();
+  extra->uv_bottom_right = layer.uv_bottom_right();
+}
+
 void SerializeViewTransitionContentLayerExtra(
     ViewTransitionContentLayerImpl& layer,
     viz::mojom::ViewTransitionContentLayerExtraPtr& extra) {
@@ -897,6 +906,14 @@ void SerializeLayer(LayerImpl& layer,
                                  context_provider);
       wire.layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
           std::move(texture_layer_extra));
+      break;
+    }
+    case mojom::LayerType::kUIResource: {
+      auto ui_resource_layer_extra = viz::mojom::UIResourceLayerExtra::New();
+      SerializeUIResourceLayerExtra(static_cast<UIResourceLayerImpl&>(layer),
+                                    ui_resource_layer_extra);
+      wire.layer_extra = viz::mojom::LayerExtra::NewUiResourceLayerExtra(
+          std::move(ui_resource_layer_extra));
       break;
     }
     case mojom::LayerType::kViewTransitionContent: {

@@ -20,6 +20,7 @@
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
+#include "cc/layers/ui_resource_layer_impl.h"
 #include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -132,6 +133,12 @@ const gfx::RectF kDefaultViewTransitionContentLayerMaxExtentsRect;
 // Default TileDisplayLayer property values
 const std::optional<SkColor4f> kDefaultTileDisplaySolidColor = std::nullopt;
 const bool kDefaultTileDisplayIsBackdropFilterMask = false;
+
+// Default UIResourceLayer property values
+const cc::UIResourceId kDefaultUIResourceId = 123u;
+const gfx::Size kDefaultUIResourceImageBounds(100, 200);
+const gfx::PointF kDefaultUIResourceUVTopLeft(0.f, 0.f);
+const gfx::PointF kDefaultUIResourceUVBottomRight(1.f, 1.f);
 
 class LayerContextImplTest : public testing::Test {
  public:
@@ -406,6 +413,10 @@ class LayerContextImplTest : public testing::Test {
         extra->is_backdrop_filter_mask =
             kDefaultTileDisplayIsBackdropFilterMask;
         return mojom::LayerExtra::NewTileDisplayLayerExtra(std::move(extra));
+      }
+      case cc::mojom::LayerType::kUIResource: {
+        auto extra = mojom::UIResourceLayerExtra::New();
+        return mojom::LayerExtra::NewUiResourceLayerExtra(std::move(extra));
       }
 
       default:
@@ -1819,6 +1830,8 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
         return "SurfaceLayerImpl";
       case cc::mojom::LayerType::kTexture:
         return "TextureLayerImpl";
+      case cc::mojom::LayerType::kUIResource:
+        return "UIResourceLayerImpl";
       case cc::mojom::LayerType::kTileDisplay:
         return "TileDisplayLayerImpl";
       case cc::mojom::LayerType::kViewTransitionContent:
@@ -1883,6 +1896,73 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
     return layer;
   }
 };
+
+TEST_F(LayerContextImplLayerLifecycleTest, UpdateUIResourceLayer) {
+  const cc::UIResourceId kUpdatedUIResourceId = 321u;
+  const gfx::Size kUpdatedUIResourceImageBounds(50, 100);
+
+  // First, create the layer.
+  auto update = CreateDefaultUpdate();
+  int layer_id =
+      AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kUIResource);
+
+  auto ui_resource_extra = mojom::UIResourceLayerExtra::New();
+  ui_resource_extra->ui_resource_id = kDefaultUIResourceId;
+  ui_resource_extra->image_bounds = kDefaultUIResourceImageBounds;
+  update->layers.back()->layer_extra =
+      mojom::LayerExtra::NewUiResourceLayerExtra(std::move(ui_resource_extra));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  // Now, update the layer.
+  auto update2 = CreateDefaultUpdate();
+  auto ui_resource_extra2 = mojom::UIResourceLayerExtra::New();
+  ui_resource_extra2->ui_resource_id = kUpdatedUIResourceId;
+  ui_resource_extra2->image_bounds = kUpdatedUIResourceImageBounds;
+
+  auto layer_update =
+      CreateManualLayer(layer_id, cc::mojom::LayerType::kUIResource);
+  layer_update->layer_extra =
+      mojom::LayerExtra::NewUiResourceLayerExtra(std::move(ui_resource_extra2));
+  update2->layers.push_back(std::move(layer_update));
+
+  auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result2.has_value());
+
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(layer_id);
+  ASSERT_TRUE(layer_impl);
+  ASSERT_EQ(layer_impl->GetLayerType(), cc::mojom::LayerType::kUIResource);
+  auto* ui_resource_layer = static_cast<cc::UIResourceLayerImpl*>(layer_impl);
+
+  EXPECT_EQ(ui_resource_layer->ui_resource_id(), kUpdatedUIResourceId);
+  EXPECT_EQ(ui_resource_layer->image_bounds(), kUpdatedUIResourceImageBounds);
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest, UIResourceLayer) {
+  auto update = CreateDefaultUpdate();
+  int layer_id =
+      AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kUIResource);
+
+  auto ui_resource_extra = mojom::UIResourceLayerExtra::New();
+  ui_resource_extra->ui_resource_id = kDefaultUIResourceId;
+  ui_resource_extra->image_bounds = kDefaultUIResourceImageBounds;
+  ui_resource_extra->uv_top_left = kDefaultUIResourceUVTopLeft;
+  ui_resource_extra->uv_bottom_right = kDefaultUIResourceUVBottomRight;
+  update->layers.back()->layer_extra =
+      mojom::LayerExtra::NewUiResourceLayerExtra(std::move(ui_resource_extra));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(layer_id);
+  ASSERT_TRUE(layer_impl);
+  ASSERT_EQ(layer_impl->GetLayerType(), cc::mojom::LayerType::kUIResource);
+  auto* ui_resource_layer = static_cast<cc::UIResourceLayerImpl*>(layer_impl);
+
+  EXPECT_EQ(ui_resource_layer->ui_resource_id(), kDefaultUIResourceId);
+  EXPECT_EQ(ui_resource_layer->image_bounds(), kDefaultUIResourceImageBounds);
+}
 
 TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   constexpr int kLayerId1 = 2;  // Start after default root layer (ID 1).
@@ -2122,6 +2202,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, CreateLayersOfAllTypes) {
       cc::mojom::LayerType::kSolidColorScrollbar,
       cc::mojom::LayerType::kSurface,
       cc::mojom::LayerType::kTexture,
+      cc::mojom::LayerType::kUIResource,
       cc::mojom::LayerType::kViewTransitionContent,
       // Add other relevant types here.
   };
@@ -2466,6 +2547,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, MissingLayerExtra) {
       cc::mojom::LayerType::kSolidColorScrollbar,
       cc::mojom::LayerType::kSurface,
       cc::mojom::LayerType::kTexture,
+      cc::mojom::LayerType::kUIResource,
       cc::mojom::LayerType::kViewTransitionContent,
   };
 
@@ -2510,6 +2592,7 @@ const cc::mojom::LayerType kLayerTypesWithSpecificExtras[] = {
     cc::mojom::LayerType::kSurface,
     cc::mojom::LayerType::kTexture,
     cc::mojom::LayerType::kTileDisplay,
+    cc::mojom::LayerType::kUIResource,
     cc::mojom::LayerType::kViewTransitionContent,
 };
 
