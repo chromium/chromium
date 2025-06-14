@@ -73,6 +73,13 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_REQUEST)
 //   }
 EVENT_TYPE(HOST_RESOLVER_MANAGER_IPV6_REACHABILITY_CHECK)
 
+// This event is created when the host resolver creates tasks for a request.
+// It contains the following parameter:
+//  {
+//     "tasks": <TaskTypes of a request>,
+//  }
+EVENT_TYPE(HOST_RESOLVER_MANAGER_TASK_SEQUENCE_CREATED)
+
 // This event is logged when a request is handled by a cache entry.
 // It contains the following parameter:
 //   {
