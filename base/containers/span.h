@@ -15,7 +15,6 @@
 
 #include <algorithm>
 #include <concepts>
-#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <limits>
@@ -586,9 +585,10 @@ class GSL_POINTER span {
         delete[] buffer;
       }
     } else {
-      // Using `<=` to compare pointers to different allocations is UB, but
-      // using `std::less_equal` is well-defined ([comparisons.general]).
-      if (std::less_equal{}(to_address(begin()), to_address(other.begin()))) {
+      // Using `<=` to compare pointers to different allocations is UB;
+      // reinterpret_cast is the workaround.
+      if (reinterpret_cast<uintptr_t>(to_address(begin())) <=
+          reinterpret_cast<uintptr_t>(to_address(other.begin()))) {
         std::ranges::copy(other, begin());
       } else {
         std::ranges::copy_backward(other, end());
@@ -626,8 +626,10 @@ class GSL_POINTER span {
     }
 
     // See comments in `copy_from()` re: use of templated comparison objects.
-    DCHECK(std::less_equal{}(to_address(end()), to_address(other.begin())) ||
-           std::greater_equal{}(to_address(begin()), to_address(other.end())));
+    DCHECK(reinterpret_cast<uintptr_t>(to_address(end())) <=
+               reinterpret_cast<uintptr_t>(to_address(other.begin())) ||
+           reinterpret_cast<uintptr_t>(to_address(begin())) >=
+               reinterpret_cast<uintptr_t>(to_address(other.end())));
     std::ranges::copy(other, begin());
   }
   template <typename R, size_t N = internal::kComputedExtent<R>>
@@ -1097,9 +1099,10 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
       }
       delete[] buffer;
     } else {
-      // Using `<=` to compare pointers to different allocations is UB, but
-      // using `std::less_equal` is well-defined ([comparisons.general]).
-      if (std::less_equal{}(to_address(begin()), to_address(other.begin()))) {
+      // Using `<=` to compare pointers to different allocations is UB;
+      // reinterpret_cast is the workaround.
+      if (reinterpret_cast<uintptr_t>(to_address(begin())) <=
+          reinterpret_cast<uintptr_t>(to_address(other.begin()))) {
         std::ranges::copy(other, begin());
       } else {
         std::ranges::copy_backward(other, end());
@@ -1125,8 +1128,10 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
 
     CHECK(size() == other.size());
     // See comments in `copy_from()` re: use of templated comparison objects.
-    DCHECK(std::less_equal{}(to_address(end()), to_address(other.begin())) ||
-           std::greater_equal{}(to_address(begin()), to_address(other.end())));
+    DCHECK(reinterpret_cast<uintptr_t>(to_address(end())) <=
+               reinterpret_cast<uintptr_t>(to_address(other.begin())) ||
+           reinterpret_cast<uintptr_t>(to_address(begin())) >=
+               reinterpret_cast<uintptr_t>(to_address(other.end())));
     std::ranges::copy(other, begin());
   }
 
