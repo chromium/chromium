@@ -19,6 +19,39 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+// Helper function to check if the passed value contains a disabled cancel
+// action.
+bool ValueHasDisabledCancelAction(id value) {
+  if (![value isKindOfClass:[NSArray class]]) {
+    return NO;
+  }
+
+  NSArray* actionsRowsOrActions = (NSArray*)value;
+
+  for (id rowOrActionObject in actionsRowsOrActions) {
+    if ([rowOrActionObject isKindOfClass:[AlertAction class]]) {
+      AlertAction* action = (AlertAction*)rowOrActionObject;
+      if (action.style == UIAlertActionStyleCancel && !action.enabled) {
+        return YES;
+      }
+    } else if ([rowOrActionObject isKindOfClass:[NSArray class]]) {
+      NSArray* actionsInRow = (NSArray*)rowOrActionObject;
+      for (id actionObjectInRow in actionsInRow) {
+        if ([actionObjectInRow isKindOfClass:[AlertAction class]]) {
+          AlertAction* action = (AlertAction*)actionObjectInRow;
+          if (action.style == UIAlertActionStyleCancel && !action.enabled) {
+            return YES;
+          }
+        }
+      }
+    }
+  }
+  return NO;
+}
+}  // namespace
+
 class AutofillProgressDialogMediatorTest : public PlatformTest {
  protected:
   AutofillProgressDialogMediatorTest() {
@@ -74,7 +107,10 @@ TEST_F(AutofillProgressDialogMediatorTest,
 
   // Expectations for the consumer when showing confirmation.
   OCMExpect([consumer_ setProgressState:ProgressIndicatorStateSuccess]);
-  OCMExpect([consumer_ setActions:@[]]);
+
+  OCMExpect([consumer_ setActions:[OCMArg checkWithBlock:^BOOL(id value) {
+                         return ValueHasDisabledCancelAction(value);
+                       }]]);
 
   mediator_->Dismiss(/*show_confirmation_before_closing=*/true,
                      /*is_canceled_by_user=*/false);

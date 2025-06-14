@@ -50,7 +50,16 @@ void AutofillProgressDialogMediator::Dismiss(
   }
 
   [consumer_ setProgressState:ProgressIndicatorStateSuccess];
-  [consumer_ setActions:@[]];
+
+  NSString* cancelTitle =
+      base::SysUTF16ToNSString(model_controller_->GetCancelButtonLabel());
+  AlertAction* disabledCancelAction =
+      [AlertAction actionWithTitle:cancelTitle
+                             style:UIAlertActionStyleCancel
+                           handler:nil];
+  disabledCancelAction.enabled = NO;
+  [consumer_ setActions:@[ @[ disabledCancelAction ] ]];
+
   consumer_.confirmationAccessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_AUTOFILL_PROGRESS_DIALOG_CONFIRMATION_ACCESSIBILITY_ANNOUNCEMENT);
 

@@ -23,6 +23,11 @@
 // Block to be called when this action is triggered.
 @property(nonatomic, readonly) void (^handler)(AlertAction* action);
 
+// Determines whether the action is currently enabled. If set to NO, the
+// corresponding button in the UI will be disabled (e.g., grayed out and
+// non-interactive). Defaults to YES.
+@property(nonatomic, assign, getter=isEnabled) BOOL enabled;
+
 // Initializes an action with `title` and `handler`.
 + (instancetype)actionWithTitle:(NSString*)title
                           style:(UIAlertActionStyle)style

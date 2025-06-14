@@ -6,6 +6,7 @@
 
 #import <ostream>
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
 #import "base/notreached.h"
@@ -23,6 +24,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+// Tag for the button stack view.
+constexpr NSInteger kButtonStackViewTag = 9998;
 
 // Properties of the alert shadow.
 constexpr CGFloat kShadowOffsetX = 0;
@@ -148,19 +151,49 @@ void AddSeparatorToStackView(UIStackView* stackView) {
   }
 }
 
+UIColor* ColorForActionStyle(UIAlertActionStyle style, BOOL enabled) {
+  UIColor* enabledStateDefaultColor = [UIColor colorNamed:kBlueColor];
+  UIColor* enabledStateDestructiveColor = [UIColor colorNamed:kRedColor];
+  UIColor* disabledStateColor = [UIColor lightGrayColor];
+
+  if (!enabled) {
+    return disabledStateColor;
+  }
+
+  switch (style) {
+    case UIAlertActionStyleDefault:
+      return enabledStateDefaultColor;
+    case UIAlertActionStyleCancel:
+      return enabledStateDefaultColor;
+    case UIAlertActionStyleDestructive:
+      return enabledStateDestructiveColor;
+  }
+}
+
+// Update the button foreground color depending on its state.
+void UpdateButtonColorDependingOnEnabledState(UIAlertActionStyle style,
+                                              UIButton* button) {
+  UIButtonConfiguration* configuration = button.configuration;
+  if (!configuration) {
+    return;
+  }
+
+  UIColor* color = ColorForActionStyle(style, button.enabled);
+  if (![configuration.baseForegroundColor isEqual:color]) {
+    configuration = [configuration copy];
+    configuration.baseForegroundColor = color;
+    button.configuration = configuration;
+  }
+}
+
 // Returns a GrayHighlightButton to be added to the alert for `action`.
 GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   UIFont* font = nil;
-  UIColor* textColor = nil;
-  if (action.style == UIAlertActionStyleDefault) {
-    font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    textColor = [UIColor colorNamed:kBlueColor];
-  } else if (action.style == UIAlertActionStyleCancel) {
+
+  if (action.style == UIAlertActionStyleCancel) {
     font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    textColor = [UIColor colorNamed:kBlueColor];
-  } else {  // Style is UIAlertActionStyleDestructive
+  } else {
     font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    textColor = [UIColor colorNamed:kRedColor];
   }
 
   UIButtonConfiguration* buttonConfiguration =
@@ -173,7 +206,9 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
       [[NSAttributedString alloc] initWithString:action.title
                                       attributes:attributes];
   buttonConfiguration.attributedTitle = title;
-  buttonConfiguration.baseForegroundColor = textColor;
+  buttonConfiguration.baseForegroundColor =
+      ColorForActionStyle(action.style, action.enabled);
+
   GrayHighlightButton* button =
       [GrayHighlightButton buttonWithConfiguration:buttonConfiguration
                                      primaryAction:nil];
@@ -182,6 +217,13 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
   button.tag = action.uniqueIdentifier;
+  button.enabled = action.enabled;
+
+  UIAlertActionStyle style = action.style;
+  button.configurationUpdateHandler = ^(UIButton* updatedButton) {
+    UpdateButtonColorDependingOnEnabledState(style, updatedButton);
+  };
+
   return button;
 }
 
@@ -447,6 +489,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 
   if ([self.actions count] > 0) {
     UIStackView* buttonStackView = [self createButtonStackView];
+    buttonStackView.tag = kButtonStackViewTag;
     [stackView addArrangedSubview:buttonStackView];
     AddSameConstraintsToSides(buttonStackView, self.contentView,
                               LayoutSides::kTrailing | LayoutSides::kLeading);
@@ -615,6 +658,56 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   }
 }
 
+- (void)setActions:(NSArray<NSArray<AlertAction*>*>*)newActions {
+  if ([_actions isEqual:newActions]) {
+    return;
+  }
+
+  _actions = [newActions copy];
+  _buttonAlertActionsDictionary = nil;
+
+  if (!self.isViewLoaded) {
+    return;
+  }
+
+  UIStackView* mainContentStackView = [self mainContentStackView];
+
+  if (!mainContentStackView) {
+    return;
+  }
+
+  UIView* oldButtonStackContainer =
+      [mainContentStackView viewWithTag:kButtonStackViewTag];
+  if (oldButtonStackContainer) {
+    [oldButtonStackContainer removeFromSuperview];
+  }
+
+  if (_actions.count > 0) {
+    UIStackView* newButtonStackContainer = [self createButtonStackView];
+    newButtonStackContainer.tag = kButtonStackViewTag;
+    [mainContentStackView addArrangedSubview:newButtonStackContainer];
+    AddSameConstraintsToSides(newButtonStackContainer, self.contentView,
+                              (LayoutSides::kTrailing | LayoutSides::kLeading));
+  }
+}
+
+- (UIStackView*)mainContentStackView {
+  for (UIView* subview_content in self.contentView.subviews) {
+    if (![subview_content isKindOfClass:[UIScrollView class]]) {
+      continue;
+    }
+
+    UIScrollView* scrollView =
+        base::apple::ObjCCastStrict<UIScrollView>(subview_content);
+    for (UIView* subview_scroll in scrollView.subviews) {
+      if ([subview_scroll isKindOfClass:[UIStackView class]]) {
+        return base::apple::ObjCCastStrict<UIStackView>(subview_scroll);
+      }
+    }
+  }
+  return nil;
+}
+
 - (void)setProgressState:(ProgressIndicatorState)progressState {
   if (_progressState != progressState) {
     _progressState = progressState;
@@ -764,9 +857,11 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
       GrayHighlightButton* button = GetButtonForAction(action);
       if (self.actionButtonsAreInitiallyDisabled) {
         button.enabled = NO;
-        [self performSelector:@selector(enableActionButton:)
+        [self performSelector:@selector(updateButtonEnabledState:)
                    withObject:button
                    afterDelay:kEnableActionButtonsDelay];
+      } else {
+        [self updateButtonEnabledState:button];
       }
       [button addTarget:self
                     action:@selector(didSelectActionForButton:)
@@ -821,9 +916,11 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   [self.lastFocusedTextField resignFirstResponder];
 }
 
-// Enables `button`.
-- (void)enableActionButton:(UIButton*)actionButton {
-  actionButton.enabled = YES;
+- (void)updateButtonEnabledState:(UIButton*)button {
+  AlertAction* action = self.buttonAlertActionsDictionary[@(button.tag)];
+  if (action) {
+    button.enabled = action.enabled;
+  }
 }
 
 // Updates the `textFieldStackHolder`'s border color when the view controller's
