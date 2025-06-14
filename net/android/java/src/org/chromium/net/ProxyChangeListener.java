@@ -163,8 +163,10 @@ public class ProxyChangeListener {
         @Override
         @UsedByReflection("WebView embedders call this to override proxy settings")
         public void onReceive(Context context, final Intent intent) {
-            if (Proxy.PROXY_CHANGE_ACTION.equals(intent.getAction())) {
-                runOnThread(() -> proxySettingsChanged(extractNewProxy(intent)));
+            try (TraceEvent e = TraceEvent.scoped("ProxyChangeListener.ProxyReceiver#onReceive")) {
+                if (Proxy.PROXY_CHANGE_ACTION.equals(intent.getAction())) {
+                    runOnThread(() -> proxySettingsChanged(extractNewProxy(intent)));
+                }
             }
         }
     }
@@ -176,119 +178,128 @@ public class ProxyChangeListener {
     // use system properties).
     @SuppressWarnings({"PrivateApi", "ObsoleteSdkInt"})
     private static @Nullable ProxyConfig extractNewProxy(Intent intent) {
-        Bundle extras = intent.getExtras();
-        if (extras == null) {
-            return null;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return ProxyConfig.fromProxyInfo(
-                    (ProxyInfo) extras.get("android.intent.extra.PROXY_INFO"));
-        }
-
-        try {
-            final String getHostName = "getHost";
-            final String getPortName = "getPort";
-            final String getPacFileUrl = "getPacFileUrl";
-            final String getExclusionList = "getExclusionList";
-            final String className = "android.net.ProxyProperties";
-
-            Object props = extras.get("proxy");
-            if (props == null) {
+        try (TraceEvent e = TraceEvent.scoped("ProxyChangeListener#extractNewProxy")) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) {
                 return null;
             }
-
-            Class<?> cls = Class.forName(className);
-            Method getHostMethod = cls.getDeclaredMethod(getHostName);
-            Method getPortMethod = cls.getDeclaredMethod(getPortName);
-            Method getExclusionListMethod = cls.getDeclaredMethod(getExclusionList);
-
-            String host = (String) getHostMethod.invoke(props);
-            int port = (Integer) getPortMethod.invoke(props);
-
-            String[] exclusionList;
-            String s = (String) getExclusionListMethod.invoke(props);
-            exclusionList = s.split(",");
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                Method getPacFileUrlMethod = cls.getDeclaredMethod(getPacFileUrl);
-                String pacFileUrl = (String) getPacFileUrlMethod.invoke(props);
-                if (!TextUtils.isEmpty(pacFileUrl)) {
-                    return new ProxyConfig(host, port, pacFileUrl, exclusionList);
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                return ProxyConfig.fromProxyInfo(
+                        (ProxyInfo) extras.get("android.intent.extra.PROXY_INFO"));
             }
-            return new ProxyConfig(host, port, null, exclusionList);
-        } catch (ClassNotFoundException
-                | NoSuchMethodException
-                | IllegalAccessException
-                | InvocationTargetException
-                | NullPointerException ex) {
-            Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
-            return null;
+
+            try {
+                final String getHostName = "getHost";
+                final String getPortName = "getPort";
+                final String getPacFileUrl = "getPacFileUrl";
+                final String getExclusionList = "getExclusionList";
+                final String className = "android.net.ProxyProperties";
+
+                Object props = extras.get("proxy");
+                if (props == null) {
+                    return null;
+                }
+
+                Class<?> cls = Class.forName(className);
+                Method getHostMethod = cls.getDeclaredMethod(getHostName);
+                Method getPortMethod = cls.getDeclaredMethod(getPortName);
+                Method getExclusionListMethod = cls.getDeclaredMethod(getExclusionList);
+
+                String host = (String) getHostMethod.invoke(props);
+                int port = (Integer) getPortMethod.invoke(props);
+
+                String[] exclusionList;
+                String s = (String) getExclusionListMethod.invoke(props);
+                exclusionList = s.split(",");
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    Method getPacFileUrlMethod = cls.getDeclaredMethod(getPacFileUrl);
+                    String pacFileUrl = (String) getPacFileUrlMethod.invoke(props);
+                    if (!TextUtils.isEmpty(pacFileUrl)) {
+                        return new ProxyConfig(host, port, pacFileUrl, exclusionList);
+                    }
+                }
+                return new ProxyConfig(host, port, null, exclusionList);
+            } catch (ClassNotFoundException
+                    | NoSuchMethodException
+                    | IllegalAccessException
+                    | InvocationTargetException
+                    | NullPointerException ex) {
+                Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+                return null;
+            }
         }
     }
 
     private void proxySettingsChanged(@Nullable ProxyConfig cfg) {
-        assertOnThread();
+        try (TraceEvent e = TraceEvent.scoped("ProxyChangeListener#proxySettingsChanged")) {
+            assertOnThread();
 
-        if (mDelegate != null) {
-            // proxySettingsChanged is called even if mNativePtr == 0, for testing purposes.
-            mDelegate.proxySettingsChanged();
-        }
-        if (mNativePtr == 0) {
-            return;
-        }
+            if (mDelegate != null) {
+                // proxySettingsChanged is called even if mNativePtr == 0, for testing purposes.
+                mDelegate.proxySettingsChanged();
+            }
+            if (mNativePtr == 0) {
+                return;
+            }
 
-        if (cfg != null) {
-            ProxyChangeListenerJni.get()
-                    .proxySettingsChangedTo(
-                            mNativePtr,
-                            ProxyChangeListener.this,
-                            cfg.mHost,
-                            cfg.mPort,
-                            cfg.mPacUrl,
-                            cfg.mExclusionList);
-        } else {
-            ProxyChangeListenerJni.get().proxySettingsChanged(mNativePtr, ProxyChangeListener.this);
+            if (cfg != null) {
+                ProxyChangeListenerJni.get()
+                        .proxySettingsChangedTo(
+                                mNativePtr,
+                                ProxyChangeListener.this,
+                                cfg.mHost,
+                                cfg.mPort,
+                                cfg.mPacUrl,
+                                cfg.mExclusionList);
+            } else {
+                ProxyChangeListenerJni.get()
+                        .proxySettingsChanged(mNativePtr, ProxyChangeListener.this);
+            }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     private @Nullable ProxyConfig getProxyConfig(Intent intent) {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        ProxyConfig configFromConnectivityManager =
-                ProxyConfig.fromProxyInfo(connectivityManager.getDefaultProxy());
+        try (TraceEvent e = TraceEvent.scoped("ProxyChangeListener#getProxyConfig")) {
+            ConnectivityManager connectivityManager =
+                    (ConnectivityManager)
+                            ContextUtils.getApplicationContext()
+                                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            ProxyConfig configFromConnectivityManager =
+                    ProxyConfig.fromProxyInfo(connectivityManager.getDefaultProxy());
 
-        if (configFromConnectivityManager == null) {
-            return ProxyConfig.DIRECT;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                && configFromConnectivityManager.mHost.equals("localhost")
-                && configFromConnectivityManager.mPort == -1) {
-            ProxyConfig configFromIntent = extractNewProxy(intent);
-            Log.i(
-                    TAG,
-                    "configFromConnectivityManager = %s, configFromIntent = %s",
-                    configFromConnectivityManager,
-                    configFromIntent);
+            if (configFromConnectivityManager == null) {
+                return ProxyConfig.DIRECT;
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    && configFromConnectivityManager.mHost.equals("localhost")
+                    && configFromConnectivityManager.mPort == -1) {
+                ProxyConfig configFromIntent = extractNewProxy(intent);
+                Log.i(
+                        TAG,
+                        "configFromConnectivityManager = %s, configFromIntent = %s",
+                        configFromConnectivityManager,
+                        configFromIntent);
 
-            // There's a bug in Android Q+ PAC support. If ConnectivityManager returns localhost:-1
-            // then use the intent from the PROXY_CHANGE_ACTION broadcast to extract the
-            // ProxyConfig's host and port. See http://crbug.com/993538.
-            //
-            // -1 is never a reasonable port so just keep this workaround for future versions until
-            // we're sure it's fixed on the platform side.
-            if (configFromIntent == null) return null;
-            String correctHost = configFromIntent.mHost;
-            int correctPort = configFromIntent.mPort;
-            return new ProxyConfig(
-                    correctHost,
-                    correctPort,
-                    configFromConnectivityManager.mPacUrl,
-                    configFromConnectivityManager.mExclusionList);
+                // There's a bug in Android Q+ PAC support. If ConnectivityManager returns
+                // localhost:-1
+                // then use the intent from the PROXY_CHANGE_ACTION broadcast to extract the
+                // ProxyConfig's host and port. See http://crbug.com/993538.
+                //
+                // -1 is never a reasonable port so just keep this workaround for future versions
+                // until
+                // we're sure it's fixed on the platform side.
+                if (configFromIntent == null) return null;
+                String correctHost = configFromIntent.mHost;
+                int correctPort = configFromIntent.mPort;
+                return new ProxyConfig(
+                        correctHost,
+                        correctPort,
+                        configFromConnectivityManager.mPacUrl,
+                        configFromConnectivityManager.mExclusionList);
+            }
+            return configFromConnectivityManager;
         }
-        return configFromConnectivityManager;
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
