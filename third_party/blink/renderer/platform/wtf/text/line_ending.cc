@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 namespace {
 
 template <typename CharType>
@@ -190,4 +190,4 @@ void NormalizeLineEndingsToNative(const std::string& from,
 #endif
 }
 
-}  // namespace WTF
+}  // namespace blink
