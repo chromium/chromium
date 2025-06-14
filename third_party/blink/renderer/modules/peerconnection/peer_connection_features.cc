@@ -32,4 +32,10 @@ BASE_FEATURE(kWebRtcRtpScriptTransformerFrameRestrictions,
              "WebRtcRtpScriptTransformerFrameRestrictions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Rollout killswitch for unumuting a track when a packet arrives instead of
+// after setRemoteDescription.
+BASE_FEATURE(kWebRtcUnmuteTracksWhenPacketArrives,
+             "WebRtcUnmuteTracksWhenPacketArrives",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace blink

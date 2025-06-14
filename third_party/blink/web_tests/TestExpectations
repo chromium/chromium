@@ -3355,6 +3355,7 @@ crbug.com/371068252 [ Mac14 ] external/wpt/webcodecs/videoFrame-createImageBitma
 crbug.com/370032367 virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/last-frame-dimensions.html [ Timeout ]
 crbug.com/369652659 [ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
 crbug.com/369652659 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
+crbug.com/369652659 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Skip Timeout ]
 crbug.com/369956891 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-nonpercent-height.html [ Failure ]
 crbug.com/369956891 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-nonpercent-height.html [ Failure ]
 crbug.com/369956891 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/tall--cover--height.html [ Failure ]
