@@ -346,6 +346,8 @@ blink_core_sources_layout = [
   "layout_image_resource_style_image.h",
   "layout_inline.cc",
   "layout_inline.h",
+  "layout_invalidation_reason.cc",
+  "layout_invalidation_reason.h",
   "layout_input_node.cc",
   "layout_input_node.h",
   "layout_media.cc",

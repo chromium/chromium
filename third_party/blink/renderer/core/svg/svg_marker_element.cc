@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_marker_element.h"
 
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/svg/svg_angle_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_angle.h"

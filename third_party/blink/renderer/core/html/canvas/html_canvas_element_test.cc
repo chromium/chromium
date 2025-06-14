@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/test_trace_processor.h"
 #include "base/test/trace_test_utils.h"
+#include "base/trace_event/trace_event.h"
 #include "build/buildflag.h"
 #include "cc/paint/paint_op.h"
 #include "cc/test/paint_op_matchers.h"

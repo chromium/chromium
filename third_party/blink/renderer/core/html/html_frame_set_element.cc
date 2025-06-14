@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
