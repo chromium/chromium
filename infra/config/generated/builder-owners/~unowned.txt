@@ -33,7 +33,7 @@ ci/android-webview-13-x64-dbg-tests
 ci/chromeos-js-code-coverage
 ci/fuchsia-code-coverage
 ci/fuchsia-x64-accessibility-rel
-ci/ios-blink-dbg-fyi
+ci/ios-blink-rel-fyi
 ci/ios-catalyst
 ci/ios-device
 ci/ios-fieldtrial-rel
@@ -166,7 +166,7 @@ try/fuchsia-x64-cast-receiver-rel
 try/fuchsia-x64-cast-receiver-rel-compilator
 try/ios-angle-try-intel
 try/ios-asan
-try/ios-blink-dbg-fyi
+try/ios-blink-rel-fyi
 try/ios-catalyst
 try/ios-device
 try/ios-fieldtrial-rel

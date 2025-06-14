@@ -201,7 +201,7 @@
 -SurfaceSynchronizationTestMayAlwaysAckOnActivation.UnAckedSurfaceArrivesBeforeNewActivationDependencies/DoNotAckOnSurfaceActivationWhenInteractive
 -SurfaceSynchronizationTestMayAlwaysAckOnActivation.UnAckedSurfaceArrivesBeforeNewActivationDependencies/DoNotAckOnSurfaceActivationWhenInteractive-
 
-# TODO(crbug.com/383593269): These tests are failing on the ios-blink-dbg-fyi
+# TODO(crbug.com/383593269): These tests are failing on the ios-blink-rel-fyi
 # bot.
 -GPURendererPixelTest.TrilinearFiltering/SkiaGraphiteDawn
 -GPURendererPixelTest.TrilinearFiltering/SkiaGraphiteMetal

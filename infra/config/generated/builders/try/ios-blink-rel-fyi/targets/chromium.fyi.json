@@ -1,5 +1,5 @@
 {
-  "ios-blink-dbg-fyi": {
+  "ios-blink-rel-fyi": {
     "additional_compile_targets": [
       "all"
     ],

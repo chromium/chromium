@@ -8861,7 +8861,7 @@
           }
         ]
       },
-      "ios-blink-dbg-fyi": {
+      "ios-blink-rel-fyi": {
         "problem_specs": [
           {
             "name": "Unhealthy",

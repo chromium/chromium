@@ -5126,7 +5126,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "ios_blink_dbg_tests",
+    name = "ios_blink_rel_tests",
     targets = [
         targets.bundle(
             targets = "ios_blink_tests",

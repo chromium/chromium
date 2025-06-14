@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/ios-blink-dbg-fyi/gn-args.json"
+        "infra/config/generated/builders/try/ios-blink-rel-fyi/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ios-blink-dbg-fyi",
+              "builder": "ios-blink-rel-fyi",
               "project": "chromium"
             },
             "builder_spec": {
@@ -36,17 +36,11 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ios-blink-dbg-fyi",
+          "builder": "ios-blink-rel-fyi",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "ios-blink-dbg-fyi",
-          "group": "tryserver.chromium.mac"
-        }
-      ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-blink-dbg-fyi/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-blink-rel-fyi/targets"
     }
   },
   "$build/siso": {
@@ -58,8 +52,7 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -68,7 +61,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
-  "recipe": "chromium",
+  "builder_group": "tryserver.chromium.mac",
+  "recipe": "chromium_trybot",
   "xcode_build_version": "16f6"
 }

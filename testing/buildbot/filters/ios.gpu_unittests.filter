@@ -11,7 +11,7 @@
 -Service/FeatureInfoTest.InitializeWithANGLE_BGRA8/0
 -Service/FeatureInfoTest.InitializeWithANGLE_BGRA8/1
 
-# TODO(crbug.com/379525871): These tests are failing on the ios-blink-dbg-fyi
+# TODO(crbug.com/379525871): These tests are failing on the ios-blink-rel-fyi
 # bot.
 -ShaderTranslatorTest.GetAttributes
 -ShaderTranslatorTest.GetAttributes
@@ -28,14 +28,14 @@
 -ShaderTranslatorTest.ValidVertexShader
 -ShaderTranslatorTest.ValidVertexShader
 
-# TODO(crbug.com/379525870): These tests are failing on the ios-blink-dbg-fyi
+# TODO(crbug.com/379525870): These tests are failing on the ios-blink-rel-fyi
 # bot.
 -OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/0
 -OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/1
 -OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/2
 -OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/3
 
-# TODO(crbug.com/380308799): These tests are failing on the ios-blink-dbg-fyi
+# TODO(crbug.com/380308799): These tests are failing on the ios-blink-rel-fyi
 # bot.
 -ES3ShaderTranslatorTest.GetInterfaceBlocks
 -ES3ShaderTranslatorTest.InvalidInterfaceBlocks

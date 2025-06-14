@@ -1524,7 +1524,7 @@ ci.builder(
 )
 
 fyi_ios_builder(
-    name = "ios-blink-dbg-fyi",
+    name = "ios-blink-rel-fyi",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -1555,7 +1555,7 @@ fyi_ios_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "ios_blink_dbg_tests",
+            "ios_blink_rel_tests",
         ],
         additional_compile_targets = [
             "all",
