@@ -765,6 +765,16 @@
         "version": "1.0.0-alpha02"
     },
     {
+        "name": "navigationevent-compose",
+        "group": "androidx.navigationevent",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
+        "name": "navigationevent-compose-android",
+        "group": "androidx.navigationevent",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
         "name": "paging-common",
         "group": "androidx.paging",
         "version": "3.4.0-SNAPSHOT"
@@ -937,12 +947,12 @@
     {
         "name": "espresso-core",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-alpha03"
+        "version": "3.7.0-alpha04"
     },
     {
         "name": "espresso-idling-resource",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-alpha03"
+        "version": "3.7.0-alpha04"
     },
     {
         "name": "espresso-intents",
