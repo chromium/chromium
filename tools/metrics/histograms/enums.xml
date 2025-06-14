@@ -13822,6 +13822,7 @@ from previous Chrome versions.
   <int value="-42175674" label="ShareUsageRankingFixedMore:disabled"/>
   <int value="-41548966" label="AutocorrectUseReplaceSurroundingText:disabled"/>
   <int value="-41460305" label="InfobarScrollOptimization:disabled"/>
+  <int value="-41263570" label="OmniboxToolbelt:enabled"/>
   <int value="-41254374" label="WebRtcMetronomeTaskQueue:enabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
   <int value="-38525285" label="AccessibilityManifestV3SelectToSpeak:enabled"/>
@@ -14535,6 +14536,7 @@ from previous Chrome versions.
   <int value="228024890" label="AutofillEnableSaveAndFill:enabled"/>
   <int value="228107154"
       label="OmniboxUpdatedConnectionSecurityIndicators:enabled"/>
+  <int value="228814932" label="OmniboxToolbelt:disabled"/>
   <int value="228845546" label="ShimlessRMAOsUpdate:enabled"/>
   <int value="229312162" label="PriceInsights:disabled"/>
   <int value="229476202" label="CryptAuthV2Enrollment:enabled"/>

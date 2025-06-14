@@ -2868,16 +2868,6 @@ const char kOmitCorsClientCertDescription[] =
     "credential mode disallows. Without this flag enabled, Chrome will always "
     "try sending client certificates regardless of the credential mode.";
 
-const char kOmniboxAdaptiveSuggestionsCountName[] =
-    "Adaptive Omnibox Suggestions count";
-const char kOmniboxAdaptiveSuggestionsCountDescription[] =
-    "Dynamically adjust number of presented Omnibox suggestions depending on "
-    "available space. When enabled, this feature will increase (or decrease) "
-    "amount of offered Omnibox suggestions to fill in the space between the "
-    "Omnibox and soft keyboard (if any). See also Max Autocomplete Matches "
-    "flag to adjust the limit of offered suggestions. The number of shown "
-    "suggestions will be no less than the platform default limit.";
-
 const char kOmniboxAdjustIndentationName[] =
     "Adjust Indentation for Omnibox Text and Suggestions";
 const char kOmniboxAdjustIndentationDescription[] =
@@ -2926,12 +2916,6 @@ const char kOmniboxMobileParityUpdateDescription[] =
     "When set, applies certain assets to match Desktop visuals and "
     "descriptions";
 
-const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[] =
-    "Omnibox MV Tiles Horizontal Render Group";
-const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =
-    "Updates the logic constructing MV tiles to use horizontal render group. "
-    "No user-facing changes expected.";
-
 const char kOmniboxNumNtpZpsRecentSearchesName[] =
     "Omnibox: Recent Searches on new tab page ZPS";
 const char kOmniboxNumNtpZpsRecentSearchesDescription[] =
@@ -2973,6 +2957,10 @@ const char kOmniboxNumWebZpsMostVisitedUrlsName[] =
 const char kOmniboxNumWebZpsMostVisitedUrlsDescription[] =
     "Controls presence/volume of Most Visited URLs shown in zero-prefix "
     "context on the Web";
+
+const char kOmniboxToolbeltName[] = "Omnibox toolbelt";
+const char kOmniboxToolbeltDescription[] =
+    "Adds a row of buttons at the bottom of the omnibox.";
 
 const char kOmniboxZeroSuggestPrefetchDebouncingName[] =
     "Omnibox Zero Prefix Suggest Prefetch Request Debouncing";
@@ -3073,10 +3061,6 @@ const char kOmniboxSuggestionAnswerMigrationName[] =
 const char kOmniboxSuggestionAnswerMigrationDescription[] =
     "Uses protos instead of SuggestionAnswer to hold answer data.";
 
-const char kOmniboxShortcutBoostName[] = "Omnibox shortcut boosting";
-const char kOmniboxShortcutBoostDescription[] =
-    "Promote shortcuts to be default when available.";
-
 const char kOmniboxMaxZeroSuggestMatchesName[] =
     "Omnibox Max Zero Suggest Matches";
 const char kOmniboxMaxZeroSuggestMatchesDescription[] =
@@ -3146,7 +3130,7 @@ const char kOmniboxHideSuggestionGroupHeadersDescription[] =
 
 const char kOmniboxUrlSuggestionsOnFocus[] =
     "Omnibox on-focus URL suggestions on web and SRP";
-const char kOmniboxUrlSuggestionsOnFocusDecription[] =
+const char kOmniboxUrlSuggestionsOnFocusDescription[] =
     "Enables zero-prefix URL suggestions on web and SRP when the omnibox is "
     "focused.";
 

@@ -6880,6 +6880,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayOmniboxEntryPointDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayOmniboxEntryPoint)},
 
+    {"omnibox-toolbelt", flag_descriptions::kOmniboxToolbeltName,
+     flag_descriptions::kOmniboxToolbeltDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::Toolbelt::kOmniboxToolbelt)},
+
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,
      flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,
@@ -6932,7 +6936,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"omnibox-url-suggestions-on-focus",
      flag_descriptions::kOmniboxUrlSuggestionsOnFocus,
-     flag_descriptions::kOmniboxUrlSuggestionsOnFocusDecription, kOsDesktop,
+     flag_descriptions::kOmniboxUrlSuggestionsOnFocusDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::
              kOmniboxUrlSuggestionsOnFocus,

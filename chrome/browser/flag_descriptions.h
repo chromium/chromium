@@ -1661,9 +1661,6 @@ extern const char kOriginKeyedProcessesByDefaultDescription[];
 extern const char kOmitCorsClientCertName[];
 extern const char kOmitCorsClientCertDescription[];
 
-extern const char kOmniboxAdaptiveSuggestionsCountName[];
-extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
-
 extern const char kOmniboxAdjustIndentationName[];
 extern const char kOmniboxAdjustIndentationDescription[];
 
@@ -1675,9 +1672,6 @@ extern const char kOmniboxAsyncViewInflationDescription[];
 
 extern const char kOmniboxCalcProviderName[];
 extern const char kOmniboxCalcProviderDescription[];
-
-extern const char kOmniboxConsumesImeInsetsName[];
-extern const char kOmniboxConsumesImeInsetsDescription[];
 
 extern const char kOmniboxDiagnosticsName[];
 extern const char kOmniboxDiagnosticsDescription[];
@@ -1716,12 +1710,6 @@ extern const char kOmniboxMlUrlSearchBlendingDescription[];
 extern const char kOmniboxMobileParityUpdateName[];
 extern const char kOmniboxMobileParityUpdateDescription[];
 
-extern const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[];
-extern const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[];
-
-extern const char kOmniboxMostVisitedTilesTitleWrapAroundName[];
-extern const char kOmniboxMostVisitedTilesTitleWrapAroundDescription[];
-
 extern const char kOmniboxNumNtpZpsRecentSearchesName[];
 extern const char kOmniboxNumNtpZpsRecentSearchesDescription[];
 
@@ -1752,10 +1740,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[];
 extern const char kOmniboxOnDeviceTailSuggestionsName[];
 extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 
-extern const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedName[];
-extern const char
-    kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription[];
-
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];
 
@@ -1764,12 +1748,6 @@ extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];
 
 extern const char kOmniboxSuggestionAnswerMigrationName[];
 extern const char kOmniboxSuggestionAnswerMigrationDescription[];
-
-extern const char kOmniboxShortcutBoostName[];
-extern const char kOmniboxShortcutBoostDescription[];
-
-extern const char kOmniboxShortcutExpandingName[];
-extern const char kOmniboxShortcutExpandingDescription[];
 
 extern const char kOmniboxStarterPackExpansionName[];
 extern const char kOmniboxStarterPackExpansionDescription[];
@@ -1804,8 +1782,11 @@ extern const char kOmniboxShowPopupOnMouseReleasedDescription[];
 extern const char kOmniboxHideSuggestionGroupHeadersName[];
 extern const char kOmniboxHideSuggestionGroupHeadersDescription[];
 
+extern const char kOmniboxToolbeltName[];
+extern const char kOmniboxToolbeltDescription[];
+
 extern const char kOmniboxUrlSuggestionsOnFocus[];
-extern const char kOmniboxUrlSuggestionsOnFocusDecription[];
+extern const char kOmniboxUrlSuggestionsOnFocusDescription[];
 
 extern const char kOmniboxZeroSuggestPrefetchDebouncingName[];
 extern const char kOmniboxZeroSuggestPrefetchDebouncingDescription[];
