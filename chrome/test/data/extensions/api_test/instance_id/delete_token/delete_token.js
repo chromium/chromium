@@ -86,6 +86,13 @@ function deleteTokenWithInvalidScope() {
 }
 
 function deleteTokenBeforeGetToken() {
+  if (/Android/.test(navigator.userAgent)) {
+    // Skip this test on Android because the underlying call to
+    // com.google.android.gms.iid.InstanceID.deleteToken() always succeeds,
+    // even for non-existent tokens.
+    chrome.test.succeed("skipped");
+    return;
+  }
   chrome.instanceID.deleteToken(
     {"authorizedEntity": "1", "scope": "GCM"},
     function() {

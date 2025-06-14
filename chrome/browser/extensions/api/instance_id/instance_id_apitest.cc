@@ -13,12 +13,15 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/result_catcher.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::ResultCatcher;
 
@@ -67,9 +70,13 @@ IN_PROC_BROWSER_TEST_F(InstanceIDApiTest, DeleteToken) {
 IN_PROC_BROWSER_TEST_F(InstanceIDApiTest, Incognito) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(profile());
+  // Android requires a tab to be created for the incognito profile.
+  auto* incognito_web_contents =
+      PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
+  auto* incognito_context = incognito_web_contents->GetBrowserContext();
+  ASSERT_TRUE(incognito_context->IsOffTheRecord());
   ResultCatcher incognito_catcher;
-  incognito_catcher.RestrictToBrowserContext(
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  incognito_catcher.RestrictToBrowserContext(incognito_context);
 
   ASSERT_TRUE(RunExtensionTest("instance_id/incognito", {},
                                {.allow_in_incognito = true}));
