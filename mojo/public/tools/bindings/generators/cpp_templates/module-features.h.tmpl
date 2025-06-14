@@ -16,6 +16,8 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
+{% if features|length -%}
+
 #include "base/feature_list.h"
 #include "mojo/public/cpp/bindings/runtime_features.h"
 
@@ -35,5 +37,7 @@
 {%   include "feature_declaration.tmpl" %}
 {%- endfor %}
 {{namespace_end(namespaces_as_array)}}
+
+{%- endif %}
 
 #endif  // {{header_guard}}

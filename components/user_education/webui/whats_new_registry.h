@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_WEBUI_WHATS_NEW_REGISTRY_H_
 #define COMPONENTS_USER_EDUCATION_WEBUI_WHATS_NEW_REGISTRY_H_
 
+#include "base/feature_list.h"
 #include "components/user_education/webui/whats_new_storage_service.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
@@ -18,7 +19,7 @@ using BrowserCommand = browser_command::mojom::Command;
 //
 // This should be used sparingly. Typically, this is only used when the
 // server-side team is performing an experiment.
-const char kCustomizationParam[] = "whats_new_customization";
+inline constexpr char kCustomizationParam[] = "whats_new_customization";
 
 // Features for Editions in the What's New system may provide a survey
 // ID to override the default survey.
@@ -28,7 +29,7 @@ const char kCustomizationParam[] = "whats_new_customization";
 // multiple survey parameters are defined in this manner, the first
 // survey found for an active edition will be used. This situation should
 // be avoided.
-const char kSurveyParam[] = "whats_new_survey_id";
+inline constexpr char kSurveyParam[] = "whats_new_survey_id";
 
 // What's New modules represent sections of content on the What's New
 // page. These are meant to contain the Feature they describe, the ownership

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_MODEL_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_MODEL_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 

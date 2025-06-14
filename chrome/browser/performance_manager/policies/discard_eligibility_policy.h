@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_DISCARD_ELIGIBILITY_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_DISCARD_ELIGIBILITY_POLICY_H_
 
+#include <map>
+
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"

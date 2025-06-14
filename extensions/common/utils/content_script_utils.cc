@@ -10,6 +10,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"

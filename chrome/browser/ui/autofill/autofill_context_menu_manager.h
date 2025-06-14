@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/unique_ids.h"
