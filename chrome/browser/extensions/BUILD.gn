@@ -549,6 +549,7 @@ source_set("extensions") {
     "//ui/shell_dialogs",
   ]
   public_deps = [
+    "//chrome/browser/upgrade_detector",
     "//components/safe_browsing/core/browser/db:util",
     "//components/signin/core/browser",
     "//extensions/buildflags",

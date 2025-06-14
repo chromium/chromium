@@ -68,6 +68,7 @@ static_library("handlers") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/tpm",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/upgrade_detector",
     "//chrome/browser/web_applications",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

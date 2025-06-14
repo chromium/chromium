@@ -10,7 +10,10 @@ static_library("system") {
     "system_tray_client_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/upgrade_detector",
+  ]
 
   deps = [
     "//ash/constants",

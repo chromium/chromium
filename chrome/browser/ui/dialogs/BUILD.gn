@@ -23,6 +23,7 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/upgrade_detector",
     "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//content/public/browser",

@@ -7,3 +7,16 @@ source_set("build_state_observer") {
 
   public_deps = [ "//base" ]
 }
+
+source_set("upgrade_detector") {
+  sources = [ "upgrade_observer.h" ]
+  public_deps = []
+
+  if (!is_android) {
+    sources += [ "upgrade_detector.h" ]
+    public_deps = [
+      "//base",
+      "//components/prefs",
+    ]
+  }
+}

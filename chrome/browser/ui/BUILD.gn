@@ -4920,6 +4920,7 @@ static_library("ui") {
       # and chrome/browser/ui/views/sharing_hub/ get componentized.
       "//chrome/browser/prefs:util",
       "//chrome/browser/sharing_hub",
+      "//chrome/browser/upgrade_detector",
       "//ui/base/mojom:ui_base_types",
     ]
 
