@@ -75,6 +75,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_clusters/core/features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/composebox/composebox_query_controller.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -735,8 +736,9 @@ void NewTabPageUI::BindInterface(
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler>
         pending_receiver) {
-  composebox_handler_ =
-      std::make_unique<ComposeboxHandler>(std::move(pending_receiver));
+  composebox_handler_ = std::make_unique<ComposeboxHandler>(
+      std::move(pending_receiver),
+      std::make_unique<ComposeboxQueryController>());
 }
 
 void NewTabPageUI::BindInterface(

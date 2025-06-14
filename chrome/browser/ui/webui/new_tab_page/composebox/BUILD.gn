@@ -22,3 +22,13 @@ mojom("mojo_bindings") {
   sources = [ "composebox.mojom" ]
   webui_module_path = "/"
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "composebox_handler_unittest.cc" ]
+  deps = [
+    ":composebox",
+    "//base/test:test_support",
+    "//components/omnibox/composebox",
+  ]
+}

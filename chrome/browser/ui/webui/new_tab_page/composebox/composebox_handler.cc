@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
-// TODO(420700441) Add unittest coverage.
 ComposeboxHandler::ComposeboxHandler(
-    mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler> handler)
+    mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler> handler,
+    std::unique_ptr<ComposeboxQueryController> query_controller)
     : handler_(this, std::move(handler)),
-      query_controller_{std::make_unique<ComposeboxQueryController>()} {}
+      query_controller_(std::move(query_controller)) {}
 
 ComposeboxHandler::~ComposeboxHandler() = default;
 

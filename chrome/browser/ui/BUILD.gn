@@ -1763,6 +1763,7 @@ static_library("ui") {
       "//components/media_router/common/mojom:media_router",
       "//components/network_session_configurator/common",
       "//components/omnibox/browser:mojo_bindings",
+      "//components/omnibox/composebox",
       "//components/page_load_metrics/browser",
       "//components/paint_preview/browser",
       "//components/paint_preview/common",

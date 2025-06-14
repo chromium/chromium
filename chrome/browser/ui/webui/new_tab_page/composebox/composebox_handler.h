@@ -13,7 +13,8 @@
 class ComposeboxHandler : public composebox::mojom::ComposeboxPageHandler {
  public:
   explicit ComposeboxHandler(
-      mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler> handler);
+      mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler> handler,
+      std::unique_ptr<ComposeboxQueryController> query_controller);
   ~ComposeboxHandler() override;
 
   // composebox::mojom::ComposeboxPageHandler:

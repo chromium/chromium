@@ -19,9 +19,9 @@ class ComposeboxQueryController {
   ComposeboxQueryController() = default;
   virtual ~ComposeboxQueryController();
 
-  // Session management.
-  void NotifySessionStarted();
-  void NotifySessionAbandoned();
+  // Session management. Virtual for testing.
+  virtual void NotifySessionStarted();
+  virtual void NotifySessionAbandoned();
 
   SessionState session_state() { return session_state_; }
 
