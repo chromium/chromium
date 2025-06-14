@@ -12,17 +12,19 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.Adapter;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -47,6 +49,7 @@ import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +61,10 @@ import java.util.function.Function;
  */
 @NullMarked
 class AppMenuHandlerImpl
-        implements AppMenuHandler, StartStopWithNativeObserver, ConfigurationChangedObserver {
+        implements AppMenuHandler,
+                AppMenuClickHandler,
+                StartStopWithNativeObserver,
+                ConfigurationChangedObserver {
 
     /** An {@link Adapter} for the list of items in the app menu. */
     private static final class AppMenuAdapter extends ModelListAdapter {
@@ -161,7 +167,7 @@ class AppMenuHandlerImpl
                         updateModelForHighlightAndClick(
                                 mModelList,
                                 mHighlightMenuId,
-                                mAppMenu,
+                                AppMenuHandlerImpl.this,
                                 /* startIndex= */ index,
                                 /* withAssertions= */ false);
                     }
@@ -172,7 +178,7 @@ class AppMenuHandlerImpl
                         updateModelForHighlightAndClick(
                                 mModelList,
                                 mHighlightMenuId,
-                                mAppMenu,
+                                AppMenuHandlerImpl.this,
                                 /* startIndex= */ index,
                                 /* withAssertions= */ false);
                     }
@@ -274,7 +280,7 @@ class AppMenuHandlerImpl
             mAppMenu = new AppMenu(itemRowHeight, this, mContext.getResources());
             mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
-        setupModelForHighlightAndClick(mModelList, mHighlightMenuId, mAppMenu);
+        setupModelForHighlightAndClick(mModelList, mHighlightMenuId, this);
         AppMenuAdapter adapter = new AppMenuAdapter(mModelList);
         mAppMenu.updateMenu(mModelList, adapter);
 
@@ -385,16 +391,15 @@ class AppMenuHandlerImpl
         hideAppMenu();
     }
 
-    /**
-     * Called when a menu item is selected.
-     *
-     * @param itemId The menu item ID.
-     * @param triggeringMotion The {@link MotionEventInfo} that triggered the click; it is {@code
-     *     null} if {@link MotionEvent} wasn't available when the click was detected, such as in
-     *     {@link android.view.View.OnClickListener}.
-     */
-    @VisibleForTesting
-    void onOptionsItemSelected(int itemId, @Nullable MotionEventInfo triggeringMotion) {
+    @Override
+    public void onItemClick(PropertyModel model, @Nullable MotionEventInfo triggeringMotion) {
+        if (mAppMenu == null) return;
+        if (!model.get(AppMenuItemProperties.ENABLED)) return;
+
+        int itemId = model.get(AppMenuItemProperties.MENU_ITEM_ID);
+        mAppMenu.setSelectedItemBeforeDismiss(true);
+        mAppMenu.dismiss();
+
         if (mTestOptionsItemSelectedListener != null) {
             mTestOptionsItemSelectedListener.onResult(itemId);
             return;
@@ -404,8 +409,35 @@ class AppMenuHandlerImpl
                 itemId, mDelegate.getBundleForMenuItem(itemId), triggeringMotion);
     }
 
+    @Override
+    public boolean onItemLongClick(PropertyModel model, View view) {
+        if (mAppMenu == null) return false;
+        if (!model.get(AppMenuItemProperties.ENABLED)) return false;
+
+        mAppMenu.setSelectedItemBeforeDismiss(true);
+
+        CharSequence titleCondensed = model.get(AppMenuItemProperties.TITLE_CONDENSED);
+        CharSequence message =
+                TextUtils.isEmpty(titleCondensed)
+                        ? model.get(AppMenuItemProperties.TITLE)
+                        : titleCondensed;
+        return showToastForItem(message, view);
+    }
+
+    private static boolean showToastForItem(CharSequence message, View view) {
+        Context context = view.getContext();
+        final @ColorInt int backgroundColor = ContextCompat.getColor(context, R.color.toast_color);
+        return new Toast.Builder(context)
+                .withText(message)
+                .withAnchoredView(view)
+                .withBackgroundColor(backgroundColor)
+                .withTextAppearance(R.style.TextAppearance_TextSmall_Primary)
+                .buildAndShow();
+    }
+
     /**
      * Called by AppMenu to report that the App Menu visibility has changed.
+     *
      * @param isVisible Whether the App Menu is showing.
      */
     void onMenuVisibilityChanged(boolean isVisible) {

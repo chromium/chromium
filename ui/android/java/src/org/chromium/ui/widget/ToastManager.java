@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -59,6 +60,13 @@ public class ToastManager {
     static ToastManager getInstance() {
         if (sInstance == null) sInstance = new ToastManager();
         return sInstance;
+    }
+
+    /** Override the toast manager for use in testing. */
+    public static void setInstanceForTesting(ToastManager manager) {
+        ToastManager previousManager = sInstance;
+        sInstance = manager;
+        ResettersForTesting.register(() -> sInstance = previousManager);
     }
 
     private ToastManager() {

@@ -40,7 +40,9 @@ public class AppMenuTestSupport {
     public static void onOptionsItemSelected(AppMenuCoordinator coordinator, int itemId) {
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
-                .onOptionsItemSelected(itemId, /* triggeringMotion= */ null);
+                .onItemClick(
+                        getMenuItemPropertyModel(coordinator, itemId),
+                        /* triggeringMotion= */ null);
     }
 
     /**
@@ -72,23 +74,41 @@ public class AppMenuTestSupport {
 
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
-                .getAppMenu()
                 .onItemClick(model, triggeringMotion);
     }
 
     /**
+     * Simulates a long click on the menu item matching the provided id.
+     *
+     * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
+     * @param menuItemId The id of the menu item to click.
+     * @param view The view that was clicked.
+     */
+    public static void callOnItemLongClick(
+            AppMenuCoordinator coordinator, int menuItemId, View view) {
+        PropertyModel model =
+                ((AppMenuCoordinatorImpl) coordinator)
+                        .getAppMenuHandlerImplForTesting()
+                        .getAppMenu()
+                        .getMenuItemPropertyModel(menuItemId);
+
+        ((AppMenuCoordinatorImpl) coordinator)
+                .getAppMenuHandlerImplForTesting()
+                .onItemLongClick(model, view);
+    }
+
+    /**
      * Show the app menu.
+     *
      * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
      * @param anchorView Anchor view (usually a menu button) to be used for the popup, if null is
-     *         passed then hardware menu button anchor will be used.
+     *     passed then hardware menu button anchor will be used.
      * @param startDragging Whether dragging is started. For example, if the app menu is showed by
-     *         tapping on a button, this should be false. If it is showed by start
-     *         dragging down on the menu button, this should be true. Note that if
-     *         anchorView is null, this must be false since we no longer support
-     *         hardware menu button dragging.
-     * @return True, if the menu is shown, false, if menu is not shown, example
-     *         reasons: the menu is not yet available to be shown, or the menu is
-     *         already showing.
+     *     tapping on a button, this should be false. If it is showed by start dragging down on the
+     *     menu button, this should be true. Note that if anchorView is null, this must be false
+     *     since we no longer support hardware menu button dragging.
+     * @return True, if the menu is shown, false, if menu is not shown, example reasons: the menu is
+     *     not yet available to be shown, or the menu is already showing.
      */
     public static boolean showAppMenu(
             AppMenuCoordinator coordinator, View anchorView, boolean startDragging) {

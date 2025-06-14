@@ -67,6 +67,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.widget.Toast;
+import org.chromium.ui.widget.ToastManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -333,35 +335,23 @@ public class AppMenuTest {
 
     @Test
     @MediumTest
-    public void testClickMenuItem_UsingPosition() throws TimeoutException {
-        showMenuAndAssert();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mAppMenuHandler.getAppMenu().onItemClick(null, null, 0, 0));
-
-        mDelegate.itemSelectedCallbackHelper.waitForCallback(0);
-        Assert.assertEquals(
-                "Incorrect id for last selected item.",
-                R.id.menu_item_one,
-                mDelegate.lastSelectedItemId);
-    }
-
-    @Test
-    @MediumTest
     public void testLongClickMenuItem_Title() throws TimeoutException {
         mPropertiesDelegate.enableAppIconRow = true;
         showMenuAndAssert();
-        AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
+
+        ToastManager toastManager = Mockito.mock(ToastManager.class);
+        ToastManager.setInstanceForTesting(toastManager);
 
         View testView = new View(sActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    spiedMenu.onItemLongClick(
-                            mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_one),
-                            testView);
+                    AppMenuTestSupport.callOnItemLongClick(
+                            mAppMenuCoordinator, R.id.icon_one, testView);
                 });
 
-        Mockito.verify(spiedMenu, Mockito.times(1)).showToastForItem("Icon One", testView);
+        ArgumentCaptor<Toast> toastCaptor = ArgumentCaptor.forClass(Toast.class);
+        Mockito.verify(toastManager, Mockito.times(1)).requestShow(toastCaptor.capture());
+        Assert.assertEquals("Icon One", toastCaptor.getValue().getText());
     }
 
     @Test
@@ -369,17 +359,20 @@ public class AppMenuTest {
     public void testLongClickMenuItem_TitleCondensed() throws TimeoutException {
         mPropertiesDelegate.enableAppIconRow = true;
         showMenuAndAssert();
-        AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
+
+        ToastManager toastManager = Mockito.mock(ToastManager.class);
+        ToastManager.setInstanceForTesting(toastManager);
 
         View testView = new View(sActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    spiedMenu.onItemLongClick(
-                            mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_two),
-                            testView);
+                    AppMenuTestSupport.callOnItemLongClick(
+                            mAppMenuCoordinator, R.id.icon_two, testView);
                 });
 
-        Mockito.verify(spiedMenu, Mockito.times(1)).showToastForItem("2", testView);
+        ArgumentCaptor<Toast> toastCaptor = ArgumentCaptor.forClass(Toast.class);
+        Mockito.verify(toastManager, Mockito.times(1)).requestShow(toastCaptor.capture());
+        Assert.assertEquals("2", toastCaptor.getValue().getText());
     }
 
     @Test
@@ -387,18 +380,18 @@ public class AppMenuTest {
     public void testLongClickMenuItem_Disabled() throws TimeoutException {
         mPropertiesDelegate.enableAppIconRow = true;
         showMenuAndAssert();
-        AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
+
+        ToastManager toastManager = Mockito.mock(ToastManager.class);
+        ToastManager.setInstanceForTesting(toastManager);
 
         View testView = new View(sActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    spiedMenu.onItemLongClick(
-                            mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_three),
-                            testView);
+                    AppMenuTestSupport.callOnItemLongClick(
+                            mAppMenuCoordinator, R.id.icon_three, testView);
                 });
 
-        Mockito.verify(spiedMenu, Mockito.times(0))
-                .showToastForItem(Mockito.any(CharSequence.class), Mockito.any(View.class));
+        Mockito.verify(toastManager, Mockito.times(0)).requestShow(Mockito.any(Toast.class));
     }
 
     @Test
@@ -594,9 +587,6 @@ public class AppMenuTest {
                             .getModelListForTesting()
                             .add(0, new MVCListAdapter.ListItem(AppMenuItemType.STANDARD, model));
                 });
-        // ensure clicking on the newly added item doesn't break anything
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mAppMenuHandler.getAppMenu().onItemClick(null, null, 0, 0));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

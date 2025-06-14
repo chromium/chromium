@@ -21,6 +21,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -145,8 +146,9 @@ public class Toast {
         mText = text;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Nullable
-    CharSequence getText() {
+    public CharSequence getText() {
         return mText;
     }
 

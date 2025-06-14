@@ -16,7 +16,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -29,17 +28,13 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewStub;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
@@ -55,7 +50,6 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -63,7 +57,6 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +74,7 @@ import java.util.function.Function;
  * </ul>
  */
 @NullMarked
-class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler {
+class AppMenu implements OnKeyListener {
     private static final float LAST_ITEM_SHOW_FRACTION = 0.5f;
 
     /** A means of reporting an exception/stack without crashing. */
@@ -335,7 +328,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         mSelectedItemBeforeDismiss = false;
         mMenuShownTimeMs = SystemClock.elapsedRealtime();
 
-        mListView.setOnItemClickListener(this);
         mListView.setItemsCanFocus(true);
         mListView.setOnKeyListener(this);
 
@@ -420,44 +412,9 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         return position;
     }
 
-    @Override
-    public void onItemClick(PropertyModel model, @Nullable MotionEventInfo triggeringMotion) {
-        if (!model.get(AppMenuItemProperties.ENABLED)) return;
-
-        int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
-        mSelectedItemBeforeDismiss = true;
-        dismiss();
-        mHandler.onOptionsItemSelected(id, triggeringMotion);
-    }
-
-    @Override
-    public boolean onItemLongClick(PropertyModel model, View view) {
-        if (!model.get(AppMenuItemProperties.ENABLED)) return false;
-
-        mSelectedItemBeforeDismiss = true;
-        CharSequence titleCondensed = model.get(AppMenuItemProperties.TITLE_CONDENSED);
-        CharSequence message =
-                TextUtils.isEmpty(titleCondensed)
-                        ? model.get(AppMenuItemProperties.TITLE)
-                        : titleCondensed;
-        return showToastForItem(message, view);
-    }
-
-    @VisibleForTesting
-    boolean showToastForItem(CharSequence message, View view) {
-        Context context = view.getContext();
-        final @ColorInt int backgroundColor = ContextCompat.getColor(context, R.color.toast_color);
-        return new Toast.Builder(context)
-                .withText(message)
-                .withAnchoredView(view)
-                .withBackgroundColor(backgroundColor)
-                .withTextAppearance(R.style.TextAppearance_TextSmall_Primary)
-                .buildAndShow();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        onItemClick(mModelList.get(position).model);
+    /** Marks whether an item was selected prior to dismissal. */
+    public void setSelectedItemBeforeDismiss(boolean selected) {
+        mSelectedItemBeforeDismiss = selected;
     }
 
     @Override
