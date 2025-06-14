@@ -74,6 +74,21 @@ inline constexpr char kDidSyncTabGroupsInLastSession[] =
 inline constexpr char kDidEnableSharedTabGroupsInLastSession[] =
     "saved_tab_groups.did_enable_shared_tab_groups_in_last_session";
 
+// Prefs for Data Sharing (Versioning).
+// Stores whether the instant message prompting users to update chrome to
+// continue using shared tab groups has been shown.
+inline constexpr char kDataSharingHasShownVersionOutOfDateInstantMessage[] =
+    "data_sharing.has_shown_out_of_date_instant_message";
+// Stores whether the persistent message prompting users to update chrome to
+// continue using shared tab groups has been shown and dismissed by the user.
+inline constexpr char
+    kDataSharingHasDismissedVersionOutOfDatePersistentMessage[] =
+        "data_sharing.has_dismissed_out_of_date_persistent_message";
+// Stores whether the message that chrome has been updated to support shared tab
+// groups has been shown.
+inline constexpr char kDataSharingHasShownVersionUpdatedMessage[] =
+    "data_sharing.has_shown_version_updated_message";
+
 // Registers the Clear Browsing Data UI prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

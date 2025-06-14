@@ -25,6 +25,7 @@ source_set("public") {
     "types.h",
     "utils.cc",
     "utils.h",
+    "versioning_message_controller.h",
   ]
   deps = [
     "//base",

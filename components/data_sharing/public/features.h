@@ -29,6 +29,13 @@ BASE_DECLARE_FEATURE(kDataSharingJoinOnly);
 // autopush server environment is set.
 BASE_DECLARE_FEATURE(kDataSharingNonProductionEnvironment);
 
+// Feature flag to show UI that prompts the user to update Chrome when a version
+// mismatch is detected.
+// Note: Do not clean up this feature as it is meant to be used in unforeseen
+// situations as a kill switch in future from finch when the shared tab groups
+// feature becomes incompatible for the current chrome client.
+BASE_DECLARE_FEATURE(kDataSharingEnableUpdateChromeUI);
+
 extern const base::FeatureParam<std::string> kDataSharingURL;
 extern const base::FeatureParam<std::string> kLearnMoreSharedTabGroupPageURL;
 extern const base::FeatureParam<std::string> kLearnAboutBlockedAccountsURL;
