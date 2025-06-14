@@ -165,6 +165,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncUtils.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupUiActionHandler.java",
+      "android/java/src/org/chromium/components/tab_group_sync/VersioningMessageController.java",
     ]
 
     deps = [
@@ -185,7 +186,10 @@ if (is_android) {
       ":*",
       "//components/saved_tab_groups:*",
     ]
-    sources = [ "types.h" ]
+    sources = [
+      "types.h",
+      "versioning_message_controller.h",
+    ]
   }
 
   android_library("test_support_java") {

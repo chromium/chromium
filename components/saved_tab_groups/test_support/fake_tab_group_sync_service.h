@@ -115,6 +115,7 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   std::unique_ptr<std::vector<SavedTabGroup>>
   TakeSharedTabGroupsAvailableAtStartupForMessaging() override;
   bool HadSharedTabGroupsLastSession(bool open_shared_tab_groups) override;
+  VersioningMessageController* GetVersioningMessageController() override;
   void OnLastTabClosed(const SavedTabGroup& saved_tab_group) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

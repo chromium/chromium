@@ -328,4 +328,10 @@ public interface TabGroupSyncService {
      * @param collaborationId Collaboration ID with which the collaboration group is associated.
      */
     void setCollaborationAvailableInFinderForTesting(String collaborationId);
+
+    /**
+     * @return The {@link VersioningMessageController} which is responsible for business logic
+     *     related to shared tab groups versioning related messages.
+     */
+    VersioningMessageController getVersioningMessageController();
 }

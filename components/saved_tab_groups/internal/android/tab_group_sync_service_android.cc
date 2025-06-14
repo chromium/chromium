@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/saved_tab_groups/internal/android/versioning_message_controller_android.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
@@ -59,6 +60,9 @@ TabGroupSyncServiceAndroid::TabGroupSyncServiceAndroid(
     : tab_group_sync_service_(tab_group_sync_service) {
   DCHECK(tab_group_sync_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
+  versioning_messaging_controller_android_ =
+      std::make_unique<VersioningMessageControllerAndroid>(
+          tab_group_sync_service_->GetVersioningMessageController());
   java_obj_.Reset(env, Java_TabGroupSyncServiceImpl_create(
                            env, reinterpret_cast<int64_t>(this))
                            .obj());
@@ -441,6 +445,13 @@ void TabGroupSyncServiceAndroid::UpdateArchivalStatus(
   auto sync_group_id = JavaStringToUuid(env, j_sync_group_id);
   tab_group_sync_service_->UpdateArchivalStatus(sync_group_id,
                                                 j_archival_status);
+}
+
+ScopedJavaLocalRef<jobject>
+TabGroupSyncServiceAndroid::GetVersioningMessageController(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller) {
+  return versioning_messaging_controller_android_->GetJavaObject(env);
 }
 
 void TabGroupSyncServiceAndroid::SetCollaborationAvailableInFinderForTesting(

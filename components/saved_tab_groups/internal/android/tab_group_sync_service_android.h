@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
+#include "components/saved_tab_groups/internal/android/versioning_message_controller_android.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
 using base::android::JavaParamRef;
@@ -167,6 +168,10 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                             const JavaParamRef<jstring>& j_sync_group_id,
                             const jboolean j_archival_status);
 
+  ScopedJavaLocalRef<jobject> GetVersioningMessageController(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_caller);
+
   void SetCollaborationAvailableInFinderForTesting(
       JNIEnv* env,
       const JavaParamRef<jobject>& j_caller,
@@ -176,6 +181,10 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
   // A reference to the Java counterpart of this class.  See
   // TabGroupSyncServiceImpl.java.
   ScopedJavaGlobalRef<jobject> java_obj_;
+
+  // Owns the JNI bridge for VersioningMessageController.
+  std::unique_ptr<VersioningMessageControllerAndroid>
+      versioning_messaging_controller_android_;
 
   // Not owned. This is safe because the JNI bridge is destroyed and the
   // native pointer in Java is cleared whenever TabGroupSyncService is

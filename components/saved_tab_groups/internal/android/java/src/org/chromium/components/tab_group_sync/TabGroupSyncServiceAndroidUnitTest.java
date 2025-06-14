@@ -16,6 +16,7 @@ import org.jni_zero.JNINamespace;
 import org.junit.Assert;
 import org.mockito.ArgumentCaptor;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -41,11 +42,11 @@ public class TabGroupSyncServiceAndroidUnitTest {
     private static final int LOCAL_TAB_ID_1 = 2;
     private static final int LOCAL_TAB_ID_2 = 4;
     private static final int TAB_POSITION = 3;
-
     private TabGroupSyncService mService;
     private TabGroupSyncService.Observer mObserver;
     private final ArgumentCaptor<SavedTabGroup> mTabGroupCaptor =
             ArgumentCaptor.forClass(SavedTabGroup.class);
+    private Callback<Boolean> mCallback;
 
     @CalledByNative
     private TabGroupSyncServiceAndroidUnitTest() {
@@ -256,5 +257,26 @@ public class TabGroupSyncServiceAndroidUnitTest {
     @CalledByNative
     public void testUpdateArchivalStatus(String uuid, boolean archivalStatus) {
         mService.updateArchivalStatus(uuid, archivalStatus);
+    }
+
+    @CalledByNative
+    public void testShouldShowMessageUiAsync() {
+        mCallback = mock(Callback.class);
+        mService.getVersioningMessageController()
+                .shouldShowMessageUiAsync(
+                        MessageType.VERSION_OUT_OF_DATE_INSTANT_MESSAGE, mCallback);
+        verify(mCallback).onResult(true);
+    }
+
+    @CalledByNative
+    public void testOnMessageUiShown() {
+        mService.getVersioningMessageController()
+                .onMessageUiShown(MessageType.VERSION_OUT_OF_DATE_INSTANT_MESSAGE);
+    }
+
+    @CalledByNative
+    public void testOnMessageUiDismissed() {
+        mService.getVersioningMessageController()
+                .onMessageUiDismissed(MessageType.VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE);
     }
 }

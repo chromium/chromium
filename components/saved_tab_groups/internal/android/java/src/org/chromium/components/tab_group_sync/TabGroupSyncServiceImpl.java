@@ -257,6 +257,11 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
+    public VersioningMessageController getVersioningMessageController() {
+        return TabGroupSyncServiceImplJni.get().getVersioningMessageController(mNativePtr, this);
+    }
+
+    @Override
     public void setCollaborationAvailableInFinderForTesting(String collaborationId) {
         if (mNativePtr == 0) return;
         TabGroupSyncServiceImplJni.get()
@@ -453,6 +458,9 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 TabGroupSyncServiceImpl caller,
                 String syncTabGroupId,
                 boolean archivalStatus);
+
+        VersioningMessageController getVersioningMessageController(
+                long nativeTabGroupSyncServiceAndroid, TabGroupSyncServiceImpl caller);
 
         void setCollaborationAvailableInFinderForTesting(
                 long nativeTabGroupSyncServiceAndroid,

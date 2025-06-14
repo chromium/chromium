@@ -33,6 +33,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/public/versioning_message_controller.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/collaboration_id.h"
 
@@ -187,6 +188,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   std::unique_ptr<std::vector<SavedTabGroup>>
   TakeSharedTabGroupsAvailableAtStartupForMessaging() override;
   bool HadSharedTabGroupsLastSession(bool open_shared_tab_groups) override;
+  VersioningMessageController* GetVersioningMessageController() override;
   void OnLastTabClosed(const SavedTabGroup& saved_tab_group) override;
 
   void AddObserver(TabGroupSyncService::Observer* observer) override;
@@ -463,6 +465,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // sharing requests for different tab groups (e.g. from different windows).
   std::map<base::Uuid, TabGroupSharingTimeoutInfo>
       tab_group_sharing_timeout_info_;
+
+  // The versioning message controller which is responsible for business logic
+  // related to shared tab groups versioning related messages.
+  std::unique_ptr<VersioningMessageController> versioning_message_controller_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

@@ -34,6 +34,7 @@ namespace tab_groups {
 class CollaborationFinder;
 class TabGroupSyncDelegate;
 class TabGroupSyncMetricsLogger;
+class VersioningMessageController;
 
 // A RAII class that pauses local tab model observers when required.
 class ScopedLocalObservationPauser {
@@ -397,6 +398,10 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Add / remove observers.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Returns the versioning message controller which is responsible for business
+  // logic related to shared tab groups versioning related messages.
+  virtual VersioningMessageController* GetVersioningMessageController() = 0;
 
   // For testing only. This is needed to test the API calls received before
   // service init as we need to explicitly un-initialize the service for these

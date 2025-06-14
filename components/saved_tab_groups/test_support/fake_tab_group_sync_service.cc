@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/public/versioning_message_controller.h"
 #include "components/sync/base/collaboration_id.h"
 
 namespace tab_groups {
@@ -454,6 +455,11 @@ FakeTabGroupSyncService::TakeSharedTabGroupsAvailableAtStartupForMessaging() {
 bool FakeTabGroupSyncService::HadSharedTabGroupsLastSession(
     bool open_shared_tab_groups) {
   return false;
+}
+
+VersioningMessageController*
+FakeTabGroupSyncService::GetVersioningMessageController() {
+  return nullptr;
 }
 
 void FakeTabGroupSyncService::OnLastTabClosed(
