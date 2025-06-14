@@ -27,7 +27,8 @@ ChromeAppIconLoader::ChromeAppIconLoader(Profile* profile,
                                          int icon_size_in_dip,
                                          const ResizeFunction& resize_function,
                                          AppIconLoaderDelegate* delegate)
-    : AppIconLoader(profile, icon_size_in_dip, delegate),
+    : AppIconLoader(icon_size_in_dip, delegate),
+      profile_(profile),
       resize_function_(resize_function) {}
 
 ChromeAppIconLoader::ChromeAppIconLoader(Profile* profile,

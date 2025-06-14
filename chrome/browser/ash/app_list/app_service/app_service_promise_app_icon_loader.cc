@@ -27,7 +27,7 @@ AppServicePromiseAppIconLoader::AppServicePromiseAppIconLoader(
     Profile* profile,
     int resource_size_in_dip,
     AppIconLoaderDelegate* delegate)
-    : AppIconLoader(profile, resource_size_in_dip, delegate) {
+    : AppIconLoader(resource_size_in_dip, delegate), profile_(profile) {
   promise_app_registry_cache_observation_.Observe(
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache());

@@ -6,11 +6,8 @@
 
 AppIconLoader::AppIconLoader() = default;
 
-AppIconLoader::AppIconLoader(Profile* profile,
-                             int icon_size_in_dip,
+AppIconLoader::AppIconLoader(int icon_size_in_dip,
                              AppIconLoaderDelegate* delegate)
-    : profile_(profile),
-      icon_size_in_dip_(icon_size_in_dip),
-      delegate_(delegate) {}
+    : icon_size_in_dip_(icon_size_in_dip), delegate_(delegate) {}
 
 AppIconLoader::~AppIconLoader() = default;

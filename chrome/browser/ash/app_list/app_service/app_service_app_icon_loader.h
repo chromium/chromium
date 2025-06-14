@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_icon_loader.h"
@@ -59,7 +60,11 @@ class AppServiceAppIconLoader : public AppIconLoader,
   // Returns true if the app_id does exist in icon_map_.
   bool Exist(const std::string& app_id);
 
+  Profile* profile() { return profile_; }
+
  private:
+  const raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
+
   // Maps from an app id to shelf app ids.
   AppIDToShelfAppId shelf_app_id_map_;
 

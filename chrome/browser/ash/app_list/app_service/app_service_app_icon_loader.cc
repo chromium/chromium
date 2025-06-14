@@ -63,7 +63,7 @@ AppServiceAppIconLoader::AppServiceAppIconLoader(
     Profile* profile,
     int resource_size_in_dip,
     AppIconLoaderDelegate* delegate)
-    : AppIconLoader(profile, resource_size_in_dip, delegate) {
+    : AppIconLoader(resource_size_in_dip, delegate), profile_(profile) {
   app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile)
            ->AppRegistryCache());

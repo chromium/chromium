@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
@@ -47,6 +48,8 @@ class AppServicePromiseAppIconLoader
 
   static bool CanLoadImage(Profile* profile, const std::string& id);
 
+  Profile* profile() { return profile_; }
+
  private:
   base::ScopedObservation<apps::PromiseAppRegistryCache,
                           apps::PromiseAppRegistryCache::Observer>
@@ -59,6 +62,8 @@ class AppServicePromiseAppIconLoader
   // Callback invoked when the icon is loaded.
   void OnLoadIcon(const apps::PackageId& package_id,
                   apps::IconValuePtr icon_value);
+
+  const raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   base::WeakPtrFactory<AppServicePromiseAppIconLoader> weak_ptr_factory_{this};
 };

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/ui/app_icon_loader.h"
 
@@ -54,12 +55,16 @@ class ChromeAppIconLoader : public AppIconLoader, public ChromeAppIconDelegate {
   // Sets `extensions_only_` as true to load icons for extensions only.
   void SetExtensionsOnly();
 
+  Profile* profile() { return profile_; }
+
  private:
   using ExtensionIDToChromeAppIconMap =
       std::map<std::string, std::unique_ptr<ChromeAppIcon>>;
 
   // ChromeAppIconDelegate:
   void OnIconUpdated(ChromeAppIcon* icon) override;
+
+  const raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   // Maps from extension id to ChromeAppIcon.
   ExtensionIDToChromeAppIconMap map_;
