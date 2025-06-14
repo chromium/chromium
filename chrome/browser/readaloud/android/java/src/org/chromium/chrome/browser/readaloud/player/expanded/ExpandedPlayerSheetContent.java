@@ -278,6 +278,16 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         }
     }
 
+    void setRequestedPlaybackMode(PlaybackMode playbackMode) {
+      if  (playbackMode == PlaybackMode.OVERVIEW) {
+        mLoadingTextView.setText(mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
+        mLoadingTextView.setContentDescription(mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
+      } else {
+        mLoadingTextView.setText(mContext.getString(R.string.readaloud_playback_loading));
+        mLoadingTextView.setContentDescription(mContext.getString(R.string.readaloud_playback_loading));
+      }
+    }
+
     void showFeedbackButtons() {
         mThumbUpButton.setVisibility(View.VISIBLE);
         mThumbDownButton.setVisibility(View.VISIBLE);

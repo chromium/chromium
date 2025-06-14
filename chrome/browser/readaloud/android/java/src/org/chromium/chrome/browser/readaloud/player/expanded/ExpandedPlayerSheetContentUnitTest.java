@@ -321,4 +321,15 @@ public class ExpandedPlayerSheetContentUnitTest {
         scrollView.scrollTo(0, 100);
         assertEquals(100, mContent.getVerticalScrollOffset());
     }
+
+    @Test
+    public void testLoadingTextIsSetCorrectly() {
+      TextView loadingText = (TextView) mContentView.findViewById(R.id.readaloud_loading_text);
+
+      mContent.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
+      assertEquals(loadingText.getText(), mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
+
+      mContent.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
+      assertEquals(loadingText.getText(), mContext.getString(R.string.readaloud_playback_loading));
+    }
 }

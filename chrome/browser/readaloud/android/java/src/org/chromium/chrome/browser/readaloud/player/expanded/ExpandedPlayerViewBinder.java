@@ -77,6 +77,9 @@ public class ExpandedPlayerViewBinder {
                             model.get(PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED)));
         } else if (key == PlayerProperties.FEEDBACK_TYPE) {
           content.setSentFeedback(FeedbackType.fromValue(model.get(PlayerProperties.FEEDBACK_TYPE)));
+        } else if (key == PlayerProperties.REQUESTED_PLAYBACK_MODE) {
+            content.setRequestedPlaybackMode(
+                    PlaybackMode.fromValue(model.get(PlayerProperties.REQUESTED_PLAYBACK_MODE)));
         }
     }
 }
