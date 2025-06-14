@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
@@ -104,24 +105,23 @@ EntitiesLabels GetLabelsForSuggestions(
     base::span<const EntityInstance*> other_entities_that_can_fill_section,
     const std::string& app_locale) {
   CHECK(!suggestions_with_metadata.empty());
-  std::vector<const EntityInstance*> entities =
-      base::ToVector(suggestions_with_metadata,
-                     [](SuggestionWithMetadata suggestion_with_metadata) {
-                       return &suggestion_with_metadata.entity.get();
-                     });
+  std::vector<const EntityInstance*> entities = base::ToVector(
+      suggestions_with_metadata,
+      [](const SuggestionWithMetadata& suggestion_with_metadata) {
+        return &suggestion_with_metadata.entity.get();
+      });
   entities.insert(entities.end(), other_entities_that_can_fill_section.begin(),
                   other_entities_that_can_fill_section.end());
 
   // Note that `all_entities_labels` are for all entities, including
-  // that were not used in suggestions generation.
+  // those that were not used in suggestion generation.
   EntitiesLabels all_entities_labels =
       GetLabelsForEntities(entities, /*allow_only_disambiguating_types=*/true,
                            /*return_at_least_one_label=*/false, app_locale);
-  // Returns only the first N labels for entity, which refers to the N
-  // suggestion in `suggestions_with_metadata`.
-  return EntitiesLabels(std::vector<std::vector<std::u16string>>(
-      all_entities_labels->begin(),
-      all_entities_labels->begin() + suggestions_with_metadata.size()));
+  if (all_entities_labels->size() > suggestions_with_metadata.size()) {
+    all_entities_labels->resize(suggestions_with_metadata.size());
+  }
+  return all_entities_labels;
 }
 
 // Generates suggestions with labels given `suggestions_with_metadata` (which
@@ -134,64 +134,61 @@ EntitiesLabels GetLabelsForSuggestions(
 //    name).
 //
 // 2. Get the disambiguating attributes to be used. Note that we take into
-// account both the entities
-//    Used to generate the suggestions and any other entities that can fill
-//    other fields in the form (`other_entities_that_can_fill_section`). This is
-//    because we want the labels to be consistent across all fields in the
-//    filling group.
+//    account both the entities used to generate the suggestions and any other
+//    entities that can fill other fields in the form
+//    (`other_entities_that_can_fill_section`). This is because we want the
+//    labels to be consistent across all fields in the filling group.
 //
-// 4. Assigns the labels acquired in step 2# and return the updated suggestions.
+// 4. Assigns the labels acquired in step #2 and return the updated suggestions.
 std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
     AttributeType trigger_attribute,
     std::vector<SuggestionWithMetadata> suggestions_with_metadata,
     base::span<const EntityInstance*> other_entities_that_can_fill_section,
     const std::string& app_locale) {
-  // Step 1#
-  const size_t n_suggestions = suggestions_with_metadata.size();
+  // Step #1
+  const size_t num_suggestions = suggestions_with_metadata.size();
   // Initialize the output using `suggestions_with_metadata`.
   std::vector<Suggestion> suggestions_with_labels;
-  suggestions_with_labels.reserve(n_suggestions);
+  suggestions_with_labels.reserve(num_suggestions);
   for (SuggestionWithMetadata& s : suggestions_with_metadata) {
     suggestions_with_labels.push_back(std::move(s.suggestion));
   }
 
-  // Initialize the final list of labels to be used by each suggestion. Note
-  // that they always contain at least the entity name.
-  EntitiesLabels suggestions_labels =
-      EntitiesLabels(std::vector<std::vector<std::u16string>>(
-          n_suggestions,
-          {std::u16string(trigger_attribute.entity_type().GetNameForI18n())}));
+  // The final list of labels to be used by each suggestion. Note that they
+  // always contain at least the entity name.
+  EntitiesLabels suggestions_labels;
 
-  // Step 2#
-  // Get the list of disambiguating labels, the list is created for the entities
-  // used to build the suggestions, but it also uses other entity that can fill
-  // a field in the form.
+  // Step #2
+  // Get the list of disambiguating labels. The list is created for the entities
+  // used to build the suggestions, but it also uses other entities that can
+  // fill a field in the form.
   EntitiesLabels disambiguating_labels_for_all_entities_that_fill_section =
       GetLabelsForSuggestions(suggestions_with_metadata,
                               other_entities_that_can_fill_section, app_locale);
 
-  for (size_t i = 0; i < suggestions_labels->size(); i++) {
-    std::vector<std::u16string>& suggestion_labels = (*suggestions_labels)[i];
-    std::vector<std::u16string>& disambiguator_labels_for_suggestion =
-        (*disambiguating_labels_for_all_entities_that_fill_section)[i];
+  for (size_t i = 0; i < num_suggestions; i++) {
     // Do not assign labels that are identical or derived from the triggering
     // field, as they are redundant.
     const EntityInstance& entity = *suggestions_with_metadata[i].entity;
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(trigger_attribute);
-    // The entity used to build the suggestion should be able to fill the
+    // The entity used to build the suggestion must be able to fill the
     // triggering field.
     CHECK(attribute);
-    std::erase_if(disambiguator_labels_for_suggestion,
-                  [&](const std::u16string& label) {
-                    return label == attribute->GetCompleteInfo(app_locale);
-                  });
 
-    suggestion_labels.insert(suggestion_labels.end(),
-                             disambiguator_labels_for_suggestion.begin(),
-                             disambiguator_labels_for_suggestion.end());
+    std::vector<std::u16string> disambiguating_labels = std::move(
+        (*disambiguating_labels_for_all_entities_that_fill_section)[i]);
+    std::erase_if(disambiguating_labels, [&](const std::u16string& label) {
+      return label == attribute->GetCompleteInfo(app_locale);
+    });
+
+    std::vector<std::u16string>& suggestion_labels =
+        suggestions_labels->emplace_back();
+    suggestion_labels.push_back(std::u16string(entity.type().GetNameForI18n()));
+    base::Extend(suggestion_labels, std::move(disambiguating_labels));
   }
-  // Step 3#
+
+  // Step #3:
   // Assign the labels.
   return AssignLabelsToSuggestions(std::move(suggestions_labels),
                                    std::move(suggestions_with_labels));
