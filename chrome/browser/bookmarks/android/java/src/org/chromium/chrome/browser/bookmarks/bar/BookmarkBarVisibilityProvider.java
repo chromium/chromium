@@ -9,17 +9,26 @@ import android.content.res.Configuration;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 
 /**
- * A provider which observes changes to device configuration state and the bookmark bar user setting
- * in order to propagate visibility change events.
+ * A provider which observes changes to device configuration state and the Bookmark Bar user setting
+ * in order to propagate visibility change events. This class allows observers to get notifications
+ * of changes in visibility in a Profile-agnostic way. This circumvents the need for clients to
+ * explicitly observe both profile and preference change events, as well as the Configuration, in
+ * order to track the current visibility state of the Bookmark Bar.
  */
 @NullMarked
 public class BookmarkBarVisibilityProvider {
@@ -49,8 +58,11 @@ public class BookmarkBarVisibilityProvider {
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final ConfigurationChangedObserver mConfigurationChangedListener;
     private final ObservableSupplier<Profile> mProfileSupplier;
-    private final BookmarkBarSettingProvider mSettingProvider;
+    private final Callback<Profile> mProfileSupplierObserver;
     private final ObserverList<BookmarkBarVisibilityObserver> mObservers;
+
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
+    private final @Nullable PrefObserver mPrefObserver;
 
     /**
      * Constructor.
@@ -72,8 +84,16 @@ public class BookmarkBarVisibilityProvider {
         mConfigurationChangedListener = this::processConfigurationChange;
         mActivityLifecycleDispatcher.register(mConfigurationChangedListener);
 
-        mSettingProvider =
-                new BookmarkBarSettingProvider(mProfileSupplier, this::processSettingChange);
+        mProfileSupplierObserver = this::processProfileChange;
+        mProfileSupplier.addObserver(mProfileSupplierObserver);
+
+        mPrefObserver =
+                new PrefObserver() {
+                    @Override
+                    public void onPreferenceChange() {
+                        processPrefChange();
+                    }
+                };
     }
 
     /**
@@ -98,11 +118,12 @@ public class BookmarkBarVisibilityProvider {
     /** Destroys the visibility provider. */
     public void destroy() {
         mActivityLifecycleDispatcher.unregister(mConfigurationChangedListener);
-        mSettingProvider.destroy();
+        mProfileSupplier.removeObserver(mProfileSupplierObserver);
+        destroyPrefChangeRegistrar();
         mObservers.clear();
     }
 
-    private void processSettingChange(Boolean isSettingEnabled) {
+    private void notifyVisibilityChange() {
         boolean visibility = BookmarkBarUtils.isFeatureVisible(mActivity, mProfileSupplier.get());
         for (BookmarkBarVisibilityObserver observer : mObservers) {
             observer.onVisibilityChanged(visibility);
@@ -117,6 +138,38 @@ public class BookmarkBarVisibilityProvider {
         }
 
         // Configuration changes can also result in visibility changes (e.g. window size change).
-        processSettingChange(BookmarkBarUtils.isSettingEnabled(mProfileSupplier.get()));
+        notifyVisibilityChange();
+    }
+
+    private void processProfileChange(@Nullable Profile profile) {
+        // On a profile change, we may have either received a profile for the first time, or we
+        // have received a new profile, in which case we want to destroy the previous pref change
+        // registrar and create a new one.
+        destroyPrefChangeRegistrar();
+
+        if (profile != null) {
+            mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
+            mPrefChangeRegistrar.addObserver(Pref.SHOW_BOOKMARK_BAR, this::processPrefChange);
+        }
+
+        // Profile changes can also result in visibility changes (e.g. different setting prefs).
+        notifyVisibilityChange();
+    }
+
+    private void processPrefChange() {
+        // On any pref change, we need to notify all observers of visibility change.
+        notifyVisibilityChange();
+    }
+
+    private void destroyPrefChangeRegistrar() {
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.removeObserver(Pref.SHOW_BOOKMARK_BAR);
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
+    }
+
+    @Nullable PrefObserver getPrefObserverForTesting() {
+        return mPrefObserver;
     }
 }

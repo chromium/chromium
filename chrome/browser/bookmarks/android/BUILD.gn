@@ -87,7 +87,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManager.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProvider.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarProperties.java",
-    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSettingProvider.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarViewBinder.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarVisibilityProvider.java",
@@ -205,7 +204,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
-    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSettingProviderTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarVisibilityProviderTest.java",
   ]

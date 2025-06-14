@@ -21,7 +21,7 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,12 +34,15 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.HashSet;
@@ -55,11 +58,11 @@ public class BookmarkBarVisibilityProviderTest {
     @Mock private Resources mResources;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private Configuration mConfig;
-    @Mock private PrefChangeRegistrarJni mPrefChangeRegistrarJni;
+    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
-    @Mock private UserPrefsJni mUserPrefsJni;
-    @Mock private BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver mObserver;
+    @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Mock private BookmarkBarVisibilityObserver mObserver;
 
     private final Set<ConfigurationChangedObserver> mConfigChangeObserverCache = new HashSet<>();
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
@@ -91,8 +94,8 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingObserverCacheForTesting(mSettingObserverCache);
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public static void tearDown() {
         PrefChangeRegistrarJni.setInstanceForTesting(null);
         UserPrefsJni.setInstanceForTesting(null);
     }
@@ -183,7 +186,7 @@ public class BookmarkBarVisibilityProviderTest {
 
     @Test
     @SmallTest
-    public void testSettingChange() {
+    public void testPrefChange() {
         // Set up.
         BookmarkBarUtils.setFeatureAllowedForTesting(true);
         BookmarkBarUtils.setSettingEnabledForTesting(true);
@@ -207,6 +210,32 @@ public class BookmarkBarVisibilityProviderTest {
         provider.destroy();
     }
 
+    @Test
+    @SmallTest
+    public void testProfileChange() {
+        // Set up.
+        BookmarkBarUtils.setFeatureAllowedForTesting(true);
+        BookmarkBarUtils.setSettingEnabledForTesting(true);
+        BookmarkBarVisibilityProvider provider = createProvider();
+        Robolectric.flushForegroundThreadScheduler();
+
+        // Case: Profile changed to `null`
+        BookmarkBarUtils.setSettingEnabledForTesting(false);
+        mProfileSupplier.set(null);
+        verify(mObserver, times(1)).onVisibilityChanged(false);
+        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        clearInvocations(mObserver);
+
+        // Case: Profile changed from `null`
+        BookmarkBarUtils.setSettingEnabledForTesting(true);
+        mProfileSupplier.set(mProfile);
+        verify(mObserver, times(1)).onVisibilityChanged(true);
+        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+
+        // Clean up.
+        provider.destroy();
+    }
+
     private @NonNull <T> Answer<Void> addValueAtIndexToSet(@NonNull Set<T> set, int index) {
         return invocation -> {
             final T value = invocation.getArgument(index);
@@ -220,6 +249,7 @@ public class BookmarkBarVisibilityProviderTest {
                 new BookmarkBarVisibilityProvider(
                         mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
         provider.addObserver(mObserver);
+        mSettingObserverCache.add(provider.getPrefObserverForTesting());
         return provider;
     }
 
