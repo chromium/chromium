@@ -1582,6 +1582,11 @@ std::vector<uint8_t> MockSSLClientSocket::GetECHRetryConfigs() {
   return data_->ech_retry_configs;
 }
 
+std::vector<std::vector<uint8_t>>
+MockSSLClientSocket::GetServerTrustAnchorIDsForRetry() {
+  return data_->server_trust_anchor_ids_for_retry;
+}
+
 void MockSSLClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
                                            int result) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

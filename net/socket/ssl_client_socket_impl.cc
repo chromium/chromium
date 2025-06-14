@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -310,6 +311,23 @@ std::vector<uint8_t> SSLClientSocketImpl::GetECHRetryConfigs() {
   // serialized ECHConfigList.
   return UNSAFE_BUFFERS(
       std::vector<uint8_t>(retry_configs, retry_configs + retry_configs_len));
+}
+
+std::vector<std::vector<uint8_t>>
+SSLClientSocketImpl::GetServerTrustAnchorIDsForRetry() {
+  const uint8_t* available_trust_anchor_ids;
+  size_t available_trust_anchor_ids_len;
+  SSL_get0_peer_available_trust_anchors(ssl_.get(), &available_trust_anchor_ids,
+                                        &available_trust_anchor_ids_len);
+  // SAFETY:
+  // https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#SSL_get0_peer_available_trust_anchors
+  // says `available_trust_anchor_ids` and `available_trust_anchor_ids_len`
+  // define a buffer containing a list of Trust Anchor IDs in wire format
+  // (length-prefixed non-empty strings);
+  base::SpanReader<const uint8_t> reader(
+      UNSAFE_BUFFERS(base::span<const uint8_t>(
+          available_trust_anchor_ids, available_trust_anchor_ids_len)));
+  return ParseServerTrustAnchorIDs(&reader);
 }
 
 int SSLClientSocketImpl::ExportKeyingMaterial(
@@ -1468,6 +1486,25 @@ void SSLClientSocketImpl::RetryAllOperations() {
 
   if (rv_write != ERR_IO_PENDING)
     DoWriteCallback(rv_write);
+}
+
+// static
+std::vector<std::vector<uint8_t>>
+SSLClientSocketImpl::ParseServerTrustAnchorIDs(
+    base::SpanReader<const uint8_t>* reader) {
+  std::vector<std::vector<uint8_t>> trust_anchor_ids;
+  while (reader->remaining() > 0) {
+    uint8_t len;
+    if (!reader->ReadU8BigEndian(len) || len < 1u) {
+      return {};
+    }
+    std::optional<base::span<const uint8_t>> bytes = reader->Read(len);
+    if (!bytes) {
+      return {};
+    }
+    trust_anchor_ids.emplace_back(base::ToVector(*bytes));
+  }
+  return trust_anchor_ids;
 }
 
 int SSLClientSocketImpl::ClientCertRequestCallback(SSL* ssl) {

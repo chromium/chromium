@@ -59,6 +59,15 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
   // connection can be retried with ECH disabled.
   virtual std::vector<uint8_t> GetECHRetryConfigs() = 0;
 
+  // Called in response to a connection error in Connect(), when the client
+  // advertised the TLS Trust Anchor IDs extension. If this method returns a
+  // non-empty set, it is the Trust Anchor IDs (in binary representation) that
+  // the server provided in the handshake. The connection can be retried with
+  // these new Trust Anchor IDs, overriding the Trust Anchor IDs that the server
+  // advertised in DNS.
+  virtual std::vector<std::vector<uint8_t>>
+  GetServerTrustAnchorIDsForRetry() = 0;
+
   // Log SSL key material to |logger|. Must be called before any
   // SSLClientSockets are created.
   //

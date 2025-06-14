@@ -249,11 +249,17 @@ int SSLConnectJob::DoTransportConnect() {
   DCHECK(!TimerIsRunning());
 
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
-  // If this is an ECH retry, connect to the same server as before.
+  // If this is an ECH or Trust Anchor IDs retry, connect to the same server as
+  // before.
   std::optional<TransportConnectJob::EndpointResultOverride>
       endpoint_result_override;
-  if (ech_retry_configs_) {
-    DCHECK(ssl_client_context()->config().ech_enabled);
+  if (ech_retry_configs_ || !trust_anchor_ids_for_retry_.empty()) {
+    if (ech_retry_configs_) {
+      DCHECK(ssl_client_context()->config().ech_enabled);
+    }
+    if (!trust_anchor_ids_for_retry_.empty()) {
+      DCHECK(base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs));
+    }
     DCHECK(endpoint_result_);
     endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
   }
@@ -380,12 +386,15 @@ int SSLConnectJob::DoSSLConnect() {
   }
 
   if (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs) &&
-      endpoint_result_ &&
-      !endpoint_result_->metadata.trust_anchor_ids.empty() &&
       !ssl_client_context()->config().trust_anchor_ids.empty()) {
-    ssl_config.trust_anchor_ids = SSLConfig::SelectTrustAnchorIDs(
-        endpoint_result_->metadata.trust_anchor_ids,
-        ssl_client_context()->config().trust_anchor_ids);
+    if (!trust_anchor_ids_for_retry_.empty()) {
+      ssl_config.trust_anchor_ids = trust_anchor_ids_for_retry_;
+    } else if (endpoint_result_ &&
+               !endpoint_result_->metadata.trust_anchor_ids.empty()) {
+      ssl_config.trust_anchor_ids = SSLConfig::SelectTrustAnchorIDs(
+          endpoint_result_->metadata.trust_anchor_ids,
+          ssl_client_context()->config().trust_anchor_ids);
+    }
   }
 
   net_log().AddEvent(NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT, [&] {
@@ -458,6 +467,36 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     return OK;
   }
 
+  // If we got a certificate error and the server advertised some Trust Anchor
+  // IDs in the handshake that we trust, then retry the connection, using the
+  // fresh Trust Anchor IDs from the server. We only want to retry once; if we
+  // already have |server_trust_anchor_ids_for_retry_| set at this point, it
+  // means we already retried, so we skip all of this and treat the connection
+  // error as usual.
+  //
+  // TODO(https://crbug.com/399937371): clarify and test the interactions of ECH
+  // retry and TAI retry.
+  if (IsCertificateError(result) && trust_anchor_ids_for_retry_.empty() &&
+      base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+    std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
+        ssl_socket_->GetServerTrustAnchorIDsForRetry();
+    // https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-retry-mechanism:
+    // If the EncryptedExtensions had no trust_anchor extension, or no match was
+    // found, the client returns the error to the application.
+    if (!server_trust_anchor_ids.empty()) {
+      trust_anchor_ids_for_retry_ = SSLConfig::SelectTrustAnchorIDs(
+          server_trust_anchor_ids,
+          ssl_client_context()->config().trust_anchor_ids);
+      if (!trust_anchor_ids_for_retry_.empty()) {
+        ResetStateForRestart();
+        next_state_ = GetInitialState(params_->GetConnectionType());
+        return OK;
+      }
+    }
+  }
+
+  // TODO(crbug.com/422931824): pass in Trust Anchor IDs info and record
+  // TAI-specific metrics.
   SSLClientSocket::RecordSSLConnectResult(ssl_socket_.get(), result,
                                           is_ech_capable, ech_enabled,
                                           ech_retry_configs_, connect_timing_);
