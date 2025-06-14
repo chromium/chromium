@@ -1942,7 +1942,7 @@ String ApplyMathAutoTransform(const String& text, TextOffsetMap* offset_map) {
     return text;
   }
   UChar character = text[0];
-  UChar32 transformed_char = ItalicMathVariant(text[0]);
+  UChar32 transformed_char = unicode::ItalicMathVariant(text[0]);
   if (transformed_char == static_cast<UChar32>(character)) {
     return text;
   }

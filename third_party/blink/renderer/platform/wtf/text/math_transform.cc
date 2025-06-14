@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
-namespace WTF {
+namespace blink {
 namespace unicode {
 
 static UChar32 mathVariantGreek(UChar32 code_point, UChar32 base_char) {
@@ -124,4 +124,4 @@ UChar32 ItalicMathVariant(UChar32 code_point) {
 }
 
 }  // namespace unicode
-}  // namespace WTF
+}  // namespace blink

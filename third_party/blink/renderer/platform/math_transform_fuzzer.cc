@@ -22,7 +22,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   blink::UTF16TextIterator text_iterator(content.Span16());
   UChar32 code_point;
   while (text_iterator.Consume(code_point)) {
-    WTF::unicode::ItalicMathVariant(code_point);
+    blink::unicode::ItalicMathVariant(code_point);
     text_iterator.Advance();
   }
   return 0;
