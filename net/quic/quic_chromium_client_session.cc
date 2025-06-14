@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -1023,6 +1024,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),
       path_validation_writer_delegate_(this, task_runner_),
       ech_config_list_(metadata.ech_config_list),
+      trust_anchor_ids_(metadata.trust_anchor_ids),
       allow_server_preferred_address_(allow_server_preferred_address),
       session_creation_initiator_(session_creation_initiator) {
   default_network_ = default_network;
@@ -1682,10 +1684,22 @@ void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
 
 quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
   quic::QuicSSLConfig config = quic::QuicSpdyClientSessionBase::GetSSLConfig();
-  if (ssl_config_service_->GetSSLContextConfig().ech_enabled) {
+  SSLContextConfig ssl_context_config =
+      ssl_config_service_->GetSSLContextConfig();
+  if (ssl_context_config.ech_enabled) {
     config.ech_grease_enabled = true;
     config.ech_config_list.assign(ech_config_list_.begin(),
                                   ech_config_list_.end());
+  }
+  if (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+    if (!trust_anchor_ids_.empty() &&
+        !ssl_context_config.trust_anchor_ids.empty()) {
+      std::vector<uint8_t> selected_trust_anchor_ids =
+          SSLConfig::SelectTrustAnchorIDs(trust_anchor_ids_,
+                                          ssl_context_config.trust_anchor_ids);
+      config.trust_anchor_ids = std::string(selected_trust_anchor_ids.begin(),
+                                            selected_trust_anchor_ids.end());
+    }
   }
   return config;
 }
