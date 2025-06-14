@@ -7,6 +7,8 @@
 
 #include <wrl/client.h>
 
+#include <sstream>
+
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "media/base/status.h"

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <sstream>
 
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_util.h"

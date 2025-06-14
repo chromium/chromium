@@ -7,6 +7,7 @@
 #include <sys/system_properties.h>
 
 #include <memory>
+#include <sstream>
 #include <string>
 
 #include "base/android/build_info.h"
