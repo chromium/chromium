@@ -32,6 +32,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_BOUNDS_ACCUMULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_BOUNDS_ACCUMULATOR_H_
 
+#include <array>
+
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "ui/gfx/geometry/rect_f.h"

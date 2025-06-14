@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERING_CONTEXT_WEBGPU_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERING_CONTEXT_WEBGPU_BASE_H_
 
+#include <array>
 #include <memory>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"

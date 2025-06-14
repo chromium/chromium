@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_AD_SIZES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_AD_SIZES_H_
 
+#include <array>
+
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {

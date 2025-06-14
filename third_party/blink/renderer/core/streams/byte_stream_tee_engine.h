@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_BYTE_STREAM_TEE_ENGINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_BYTE_STREAM_TEE_ENGINE_H_
 
+#include <array>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

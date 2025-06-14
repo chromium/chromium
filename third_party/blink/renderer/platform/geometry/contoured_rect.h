@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CONTOURED_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CONTOURED_RECT_H_
 
+#include <array>
 #include <optional>
 
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"

@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ENTITY_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ENTITY_PARSER_H_
 
+#include <array>
 #include <string_view>
 
 #include "third_party/blink/renderer/core/core_export.h"

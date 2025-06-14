@@ -4,6 +4,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_COLOR_FUNCTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_COLOR_FUNCTION_H_
 
+#include <array>
+
 #include "base/containers/fixed_flat_map.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"

@@ -4,6 +4,8 @@
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SHAPE_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SHAPE_VALUE_H_
+
+#include <array>
 #include <initializer_list>
 
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
