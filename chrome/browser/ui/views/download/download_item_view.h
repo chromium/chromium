@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>

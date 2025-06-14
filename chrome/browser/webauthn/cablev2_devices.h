@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_CABLEV2_DEVICES_H_
 #define CHROME_BROWSER_WEBAUTHN_CABLEV2_DEVICES_H_
 
+#include <array>
 #include <memory>
 #include <string_view>
 #include <vector>

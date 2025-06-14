@@ -5,6 +5,7 @@
 #ifndef CC_METRICS_COMPOSITOR_FRAME_REPORTING_CONTROLLER_H_
 #define CC_METRICS_COMPOSITOR_FRAME_REPORTING_CONTROLLER_H_
 
+#include <array>
 #include <map>
 #include <memory>
 #include <vector>

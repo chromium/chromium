@@ -5,6 +5,7 @@
 #ifndef CC_TREES_LAYER_TREE_IMPL_H_
 #define CC_TREES_LAYER_TREE_IMPL_H_
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>

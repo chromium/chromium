@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_UKM_LOGGER_HELPERS_H_
 #define CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_UKM_LOGGER_HELPERS_H_
 
+#include <array>
 #include <map>
 #include <string>
 

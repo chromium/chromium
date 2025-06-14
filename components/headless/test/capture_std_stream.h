@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HEADLESS_TEST_CAPTURE_STD_STREAM_H_
 #define COMPONENTS_HEADLESS_TEST_CAPTURE_STD_STREAM_H_
 
+#include <array>
 #include <cstdio>
 #include <string>
 

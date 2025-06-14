@@ -5,6 +5,8 @@
 #ifndef BASE_CONTAINERS_AUTO_SPANIFICATION_HELPER_H_
 #define BASE_CONTAINERS_AUTO_SPANIFICATION_HELPER_H_
 
+#include <array>
+
 #include "base/numerics/checked_math.h"
 
 namespace base {

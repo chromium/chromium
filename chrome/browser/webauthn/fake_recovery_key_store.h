@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_FAKE_RECOVERY_KEY_STORE_H_
 #define CHROME_BROWSER_WEBAUTHN_FAKE_RECOVERY_KEY_STORE_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>

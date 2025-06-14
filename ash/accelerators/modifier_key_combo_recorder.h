@@ -5,6 +5,8 @@
 #ifndef ASH_ACCELERATORS_MODIFIER_KEY_COMBO_RECORDER_H_
 #define ASH_ACCELERATORS_MODIFIER_KEY_COMBO_RECORDER_H_
 
+#include <array>
+
 #include "ash/ash_export.h"
 #include "ash/events/prerewritten_event_forwarder.h"
 #include "ui/events/event.h"

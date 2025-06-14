@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_HLS_TYPES_H_
 #define MEDIA_FORMATS_HLS_TYPES_H_
 
+#include <array>
 #include <cstdint>
 #include <optional>
 

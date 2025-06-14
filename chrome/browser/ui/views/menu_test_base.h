@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MENU_TEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_MENU_TEST_BASE_H_
 
+#include <array>
 #include <memory>
 
 #include "base/functional/callback.h"

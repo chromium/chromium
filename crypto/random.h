@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -29,6 +30,7 @@ std::array<uint8_t, N> RandBytesAsArray() {
   RandBytes(result);
   return result;
 }
-}
+
+}  // namespace crypto
 
 #endif  // CRYPTO_RANDOM_H_

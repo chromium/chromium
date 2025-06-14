@@ -5,6 +5,7 @@
 #ifndef DEVICE_VR_TEST_TEST_HOOK_H_
 #define DEVICE_VR_TEST_TEST_HOOK_H_
 
+#include <array>
 #include <cstdint>
 
 #include "base/check.h"

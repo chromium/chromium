@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_VAAPI_VP9_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_VP9_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>

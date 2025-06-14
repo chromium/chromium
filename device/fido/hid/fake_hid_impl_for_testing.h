@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_HID_FAKE_HID_IMPL_FOR_TESTING_H_
 #define DEVICE_FIDO_HID_FAKE_HID_IMPL_FOR_TESTING_H_
 
+#include <array>
 #include <map>
 #include <string>
 #include <vector>

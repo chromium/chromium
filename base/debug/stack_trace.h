@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iosfwd>
 #include <string>
 

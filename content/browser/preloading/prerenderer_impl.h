@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDERER_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDERER_IMPL_H_
 
+#include <array>
 #include <tuple>
 
 #include "base/scoped_observation.h"

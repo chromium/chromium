@@ -5,6 +5,7 @@
 #ifndef MOJO_CORE_IPCZ_DRIVER_INVITATION_H_
 #define MOJO_CORE_IPCZ_DRIVER_INVITATION_H_
 
+#include <array>
 #include <cstdint>
 #include <string>
 

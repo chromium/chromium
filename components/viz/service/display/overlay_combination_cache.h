@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_COMBINATION_CACHE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_COMBINATION_CACHE_H_
 
+#include <array>
 #include <bitset>
 #include <map>
 #include <memory>

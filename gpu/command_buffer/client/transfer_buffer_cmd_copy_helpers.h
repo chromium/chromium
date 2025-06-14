@@ -10,6 +10,7 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_TRANSFER_BUFFER_CMD_COPY_HELPERS_H_
 #define GPU_COMMAND_BUFFER_CLIENT_TRANSFER_BUFFER_CMD_COPY_HELPERS_H_
 
+#include <array>
 #include <bit>
 
 #include "base/numerics/safe_math.h"

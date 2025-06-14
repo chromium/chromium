@@ -5,6 +5,8 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_COMPUTE_PRESSURE_CPU_PRESSURE_CONVERTER_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_COMPUTE_PRESSURE_CPU_PRESSURE_CONVERTER_H_
 
+#include <array>
+
 #include "base/timer/timer.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
 

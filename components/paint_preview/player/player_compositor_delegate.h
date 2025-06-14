@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAINT_PREVIEW_PLAYER_PLAYER_COMPOSITOR_DELEGATE_H_
 #define COMPONENTS_PAINT_PREVIEW_PLAYER_PLAYER_COMPOSITOR_DELEGATE_H_
 
+#include <array>
 #include <optional>
 
 #include "base/cancelable_callback.h"

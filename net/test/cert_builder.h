@@ -5,6 +5,7 @@
 #ifndef NET_TEST_CERT_BUILDER_H_
 #define NET_TEST_CERT_BUILDER_H_
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>

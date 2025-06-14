@@ -5,6 +5,7 @@
 #ifndef UI_GFX_X_CONNECTION_H_
 #define UI_GFX_X_CONNECTION_H_
 
+#include <array>
 #include <optional>
 
 #include "base/compiler_specific.h"

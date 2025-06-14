@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_FEATURE_QUERY_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_FEATURE_QUERY_H_
 
+#include <array>
+
 #include "base/memory/stack_allocated.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TEST_TEST_APP_WINDOW_ICON_OBSERVER_H_
 #define CHROME_BROWSER_UI_TEST_TEST_APP_WINDOW_ICON_OBSERVER_H_
 
+#include <array>
 #include <map>
 #include <string>
 #include <vector>

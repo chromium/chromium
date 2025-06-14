@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <deque>
 #include <string>
 #include <vector>

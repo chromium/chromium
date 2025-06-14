@@ -5,6 +5,7 @@
 #ifndef NET_HTTP_HTTP_COOKIE_INDICES_H_
 #define NET_HTTP_HTTP_COOKIE_INDICES_H_
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>

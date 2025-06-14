@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_OBFUSCATION_CORE_DOWNLOAD_OBFUSCATOR_H_
 #define COMPONENTS_ENTERPRISE_OBFUSCATION_CORE_DOWNLOAD_OBFUSCATOR_H_
 
+#include <array>
+
 #include "base/files/file.h"
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"

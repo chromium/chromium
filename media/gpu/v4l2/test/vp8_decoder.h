@@ -12,6 +12,7 @@
 
 #include <linux/v4l2-controls.h>
 
+#include <array>
 #include <set>
 
 #include "base/files/memory_mapped_file.h"

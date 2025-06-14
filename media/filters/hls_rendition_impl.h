@@ -5,6 +5,8 @@
 #ifndef MEDIA_FILTERS_HLS_RENDITION_IMPL_H_
 #define MEDIA_FILTERS_HLS_RENDITION_IMPL_H_
 
+#include <array>
+
 #include "crypto/aes_cbc.h"
 #include "media/filters/hls_rendition.h"
 #include "media/formats/hls/segment_stream.h"

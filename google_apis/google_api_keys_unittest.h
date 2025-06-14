@@ -5,6 +5,7 @@
 #ifndef GOOGLE_APIS_GOOGLE_API_KEYS_UNITTEST_H_
 #define GOOGLE_APIS_GOOGLE_API_KEYS_UNITTEST_H_
 
+#include <array>
 #include <memory>
 #include <string>
 

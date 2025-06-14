@@ -5,6 +5,7 @@
 #ifndef CC_TILES_GPU_IMAGE_DECODE_CACHE_H_
 #define CC_TILES_GPU_IMAGE_DECODE_CACHE_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>

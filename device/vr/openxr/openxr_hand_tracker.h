@@ -5,6 +5,7 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_HAND_TRACKER_H_
 #define DEVICE_VR_OPENXR_OPENXR_HAND_TRACKER_H_
 
+#include <array>
 #include <optional>
 
 #include "base/memory/raw_ref.h"

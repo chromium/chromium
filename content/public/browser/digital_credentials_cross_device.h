@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DIGITAL_CREDENTIALS_CROSS_DEVICE_H_
 #define CONTENT_PUBLIC_BROWSER_DIGITAL_CREDENTIALS_CROSS_DEVICE_H_
 
+#include <array>
 #include <variant>
 #include <vector>
 

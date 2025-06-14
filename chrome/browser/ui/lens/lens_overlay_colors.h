@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_COLORS_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_COLORS_H_
 
+#include <array>
+
 #include "base/containers/fixed_flat_map.h"
 #include "third_party/skia/include/core/SkColor.h"
 

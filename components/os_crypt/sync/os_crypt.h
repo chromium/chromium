@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OS_CRYPT_SYNC_OS_CRYPT_H_
 #define COMPONENTS_OS_CRYPT_SYNC_OS_CRYPT_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>

@@ -6,6 +6,8 @@
 #define GPU_COMMAND_BUFFER_SERVICE_COPY_SHARED_IMAGE_HELPER_H_
 
 #include <stdint.h>
+
+#include <array>
 #include <string>
 
 #include "base/memory/raw_ptr.h"

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_POLICY_HANDLER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_POLICY_HANDLER_H_
 
+#include <array>
 #include <optional>
 
 #include "base/component_export.h"

@@ -5,6 +5,7 @@
 #ifndef GOOGLE_APIS_API_KEY_CACHE_H_
 #define GOOGLE_APIS_API_KEY_CACHE_H_
 
+#include <array>
 #include <string>
 
 #include "base/feature_list.h"

@@ -5,6 +5,7 @@
 #ifndef MEDIA_AUDIO_AUDIO_OPUS_ENCODER_H_
 #define MEDIA_AUDIO_AUDIO_OPUS_ENCODER_H_
 
+#include <array>
 #include <memory>
 #include <vector>
 

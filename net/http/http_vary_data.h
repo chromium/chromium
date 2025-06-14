@@ -5,6 +5,7 @@
 #ifndef NET_HTTP_HTTP_VARY_DATA_H_
 #define NET_HTTP_HTTP_VARY_DATA_H_
 
+#include <array>
 #include <string_view>
 
 #include "crypto/obsolete/md5.h"

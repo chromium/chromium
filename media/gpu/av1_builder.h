@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_AV1_BUILDER_H_
 #define MEDIA_GPU_AV1_BUILDER_H_
 
+#include <array>
 #include <optional>
 #include <vector>
 

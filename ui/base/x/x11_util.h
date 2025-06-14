@@ -7,6 +7,7 @@
 
 // This file declares utility functions for X11 (Linux only).
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>

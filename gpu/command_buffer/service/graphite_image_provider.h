@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_IMAGE_PROVIDER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_IMAGE_PROVIDER_H_
 
+#include <array>
+
 #include "base/containers/lru_cache.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkTiledImageUtils.h"

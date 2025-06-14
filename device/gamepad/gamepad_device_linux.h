@@ -5,6 +5,7 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_DEVICE_LINUX_H_
 #define DEVICE_GAMEPAD_GAMEPAD_DEVICE_LINUX_H_
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>

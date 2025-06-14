@@ -10,6 +10,8 @@
 #ifndef SKIA_PUBLIC_MOJOM_SKCOLORSPACE_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_SKCOLORSPACE_MOJOM_TRAITS_H_
 
+#include <array>
+
 #include "skia/public/mojom/skcolorspace.mojom-shared.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"

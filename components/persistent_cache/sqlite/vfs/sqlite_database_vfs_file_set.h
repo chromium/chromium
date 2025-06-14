@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_DATABASE_VFS_FILE_SET_H_
 #define COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_DATABASE_VFS_FILE_SET_H_
 
+#include <array>
 #include <memory>
 
 #include "base/component_export.h"

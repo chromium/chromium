@@ -10,6 +10,8 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_GENERIC_SENSOR_SENSOR_MOJOM_TRAITS_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_GENERIC_SENSOR_SENSOR_MOJOM_TRAITS_H_
 
+#include <array>
+
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"

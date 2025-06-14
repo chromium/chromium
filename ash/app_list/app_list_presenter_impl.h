@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "ash/app_list/app_list_metrics.h"

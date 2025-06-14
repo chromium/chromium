@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_ACCOUNT_TRANSFER_CLIENT_DATA_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_ACCOUNT_TRANSFER_CLIENT_DATA_H_
 
+#include <array>
 #include <string>
 
 #include "chromeos/ash/components/quick_start/types.h"

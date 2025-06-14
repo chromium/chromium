@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_BACKEND_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_BACKEND_H_
 
+#include <array>
 #include <memory>
 #include <set>
 #include <vector>

@@ -5,6 +5,8 @@
 #ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAKE_FAST_PAIR_DATA_ENCRYPTOR_H_
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAKE_FAST_PAIR_DATA_ENCRYPTOR_H_
 
+#include <array>
+
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 
 namespace ash {

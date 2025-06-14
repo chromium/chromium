@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_LONG_TASK_SCHEDULER_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_LONG_TASK_SCHEDULER_H_
 
+#include <array>
 #include <memory>
 
 #include "base/component_export.h"

@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_IMAGE_BUTTON_H_
 #define UI_VIEWS_CONTROLS_BUTTON_IMAGE_BUTTON_H_
 
+#include <array>
 #include <memory>
 #include <utility>
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_H_
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>

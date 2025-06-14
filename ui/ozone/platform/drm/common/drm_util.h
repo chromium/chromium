@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>

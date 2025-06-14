@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <variant>
 #include <vector>
 

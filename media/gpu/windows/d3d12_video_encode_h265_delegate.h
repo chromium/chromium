@@ -10,6 +10,7 @@
 
 #include <wrl.h>
 
+#include <array>
 #include <vector>
 
 #include "media/base/encoder_status.h"

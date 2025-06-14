@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_H_
 #define CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_H_
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"

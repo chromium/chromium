@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_VAAPI_VP8_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_VP8_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
+#include <array>
 #include <vector>
 
 #include "media/base/video_bitrate_allocation.h"

@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_CREDENTIAL_MANAGEMENT_H_
 #define DEVICE_FIDO_CREDENTIAL_MANAGEMENT_H_
 
+#include <array>
 #include <optional>
 
 #include "base/component_export.h"

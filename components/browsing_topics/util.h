@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_UTIL_H_
 #define COMPONENTS_BROWSING_TOPICS_UTIL_H_
 
+#include <array>
+
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"

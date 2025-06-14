@@ -8,6 +8,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_PASSTHROUGH_H_
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <vector>

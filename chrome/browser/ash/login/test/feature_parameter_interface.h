@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_FEATURE_PARAMETER_INTERFACE_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_FEATURE_PARAMETER_INTERFACE_H_
 
+#include <array>
 #include <cstddef>
 #include <string>
 

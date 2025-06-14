@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_DEVICE_DELEGATE_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_DEVICE_DELEGATE_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <queue>

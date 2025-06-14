@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VR_TEST_MOCK_XR_DEVICE_HOOK_BASE_H_
 #define CHROME_BROWSER_VR_TEST_MOCK_XR_DEVICE_HOOK_BASE_H_
 
+#include <array>
 #include <atomic>
 #include <memory>
 #include <queue>

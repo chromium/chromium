@@ -8,6 +8,7 @@
 #include <cups/cups.h>
 #include <stddef.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>

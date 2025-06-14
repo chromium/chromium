@@ -10,6 +10,7 @@
 
 #include <wrl.h>
 
+#include <array>
 #include <utility>
 #include <vector>
 

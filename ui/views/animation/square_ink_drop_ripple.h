@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_ANIMATION_SQUARE_INK_DROP_RIPPLE_H_
 #define UI_VIEWS_ANIMATION_SQUARE_INK_DROP_RIPPLE_H_
 
+#include <array>
 #include <memory>
 #include <string>
 

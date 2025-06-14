@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_INPUT_RENDER_INPUT_ROUTER_H_
 #define COMPONENTS_INPUT_RENDER_INPUT_ROUTER_H_
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>

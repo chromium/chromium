@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_CONNECTION_H_
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_CONNECTION_H_
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>

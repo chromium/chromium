@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_PAINT_IMAGE_H_
 #define CC_PAINT_PAINT_IMAGE_H_
 
+#include <array>
 #include <optional>
 #include <string>
 #include <vector>

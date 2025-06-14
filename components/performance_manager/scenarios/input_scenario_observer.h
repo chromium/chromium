@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_SCENARIOS_INPUT_SCENARIO_OBSERVER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_SCENARIOS_INPUT_SCENARIO_OBSERVER_H_
 
+#include <array>
+
 #include "base/sequence_checker.h"
 #include "components/performance_manager/decorators/frame_input_state_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"

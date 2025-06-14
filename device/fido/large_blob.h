@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_LARGE_BLOB_H_
 #define DEVICE_FIDO_LARGE_BLOB_H_
 
+#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <optional>

@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <cmath>
 #include <iosfwd>
 #include <limits>

@@ -5,6 +5,7 @@
 #ifndef NET_DNS_DNS_UTIL_H_
 #define NET_DNS_DNS_UTIL_H_
 
+#include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
