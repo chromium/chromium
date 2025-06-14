@@ -546,7 +546,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3513019849832307207">Alătură-te și deschide</translation>
 <translation id="3513704683820682405">Realitate augmentată</translation>
 <translation id="3516053221628030540">Accesează Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{S-au eliminat permisiunile de notificare de pe un site pe care nu l-ai accesat recent}few{S-au eliminat permisiunile de notificare de pe # site-uri pe care nu le-ai accesat recent}other{S-au eliminat permisiunile de notificare de pe # de site-uri pe care nu le-ai accesat recent}}</translation>
 <translation id="3518985090088779359">Acceptă și continuă</translation>
 <translation id="3519014757432845220">Contribuie la îmbunătățirea protecției împotriva spamului trimițând la Google conținutul notificării și adresa URL a site-ului. Conținutul poate fi examinat de oameni.</translation>
 <translation id="3521388823983121502">Nu poți folosi <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1651,7 +1650,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8244387390464017490">Personalizează Fila nouă</translation>
 <translation id="8250920743982581267">Documente</translation>
 <translation id="8255617931166444521">Site-urile pot folosi cookie-uri numai pentru a-ți vedea activitatea de navigare pe site-ul respectiv</translation>
-<translation id="8256087213273124136">Chrome te-a dezabonat de la notificări</translation>
 <translation id="8258999165172757081">Adăugat</translation>
 <translation id="8259179246279078674">Întrucât paginile preîncărcate sunt criptate, Google nu va afla nimic despre conținutul paginii preîncărcate. Serverele Google vor afla ce site-uri sunt preîncărcate în mod privat. Aceste informații sunt folosite numai la preîncărcarea paginilor și nu sunt conectate cu alte informații din Contul Google.</translation>
 <translation id="8260126382462817229">Încearcă să te conectezi din nou</translation>

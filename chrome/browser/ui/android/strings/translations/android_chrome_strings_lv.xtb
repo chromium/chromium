@@ -546,7 +546,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3513019849832307207">Pievienoties un atvērt</translation>
 <translation id="3513704683820682405">Papildinātā realitāte</translation>
 <translation id="3516053221628030540">Pāriet uz Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Tika noņemtas paziņojumu atļaujas vienai vietnei, ko pēdējā laikā neesat apmeklējis.}zero{Tika noņemtas paziņojumu atļaujas # vietnēm, ko pēdējā laikā neesat apmeklējis.}one{Tika noņemtas paziņojumu atļaujas # vietnei, ko pēdējā laikā neesat apmeklējis.}other{Tika noņemtas paziņojumu atļaujas # vietnēm, ko pēdējā laikā neesat apmeklējis.}}</translation>
 <translation id="3518985090088779359">Piekrist un turpināt</translation>
 <translation id="3519014757432845220">Palīdziet uzlabot aizsardzību pret nevēlamu saturu, kopīgojot paziņojuma saturu un vietnes URL ar uzņēmumu Google. Saturu var pārskatīt cilvēki.</translation>
 <translation id="3521388823983121502">Nevar turpināt darbu ar identitātes nodrošinātāju <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -715,6 +714,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4298388696830689168">Saistītās vietnes</translation>
 <translation id="4300632303535881174">Doties uz iepriekšējo lapu</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Ievadīt</translation>
 <translation id="4307992518367153382">Pamata</translation>
 <translation id="4311652497846705514">Vai atvērt PDF failu?</translation>
 <translation id="4320177379694898372">Nav interneta savienojuma.</translation>
@@ -1650,7 +1650,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8244387390464017490">Pielāgot jaunas cilnes lapu</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8255617931166444521">Vietnes var izmantot jūsu sīkfailus tikai jūsu pārlūkošanas darbību skatīšanai savā vietnē.</translation>
-<translation id="8256087213273124136">Pārlūkā Chrome tika anulēts jūsu paziņojumu abonements</translation>
 <translation id="8258999165172757081">Pievienota</translation>
 <translation id="8259179246279078674">Tā kā iepriekš ielādētās lapas ir šifrētas, Google neiegūs nekādu informāciju par iepriekš ielādēto lapu saturu. Google serveri iegūs informāciju par to, kuras vietnes ir privāti iepriekš ielādētas. Šī informācija tiek izmantota tikai lapu iepriekšējai ielādei, un tā nav saistīta ar citu informāciju no Google konta.</translation>
 <translation id="8260126382462817229">Mēģiniet pierakstīties vēlreiz</translation>

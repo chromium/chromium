@@ -546,7 +546,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3513019849832307207">Gå med och öppna</translation>
 <translation id="3513704683820682405">Förstärkt verklighet</translation>
 <translation id="3516053221628030540">Besök Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Aviseringsbehörigheter har tagits bort från en webbplats som du inte har besökt nyligen}other{Aviseringsbehörigheter har tagits bort från # webbplatser som du inte har besökt nyligen}}</translation>
 <translation id="3518985090088779359">Godkänn och fortsätt</translation>
 <translation id="3519014757432845220">Hjälp oss att förbättra skyddet mot spam genom att dela meddelandeinnehåll och webbplatsens webbadress med Google. Innehållet kan granskas av människor.</translation>
 <translation id="3521388823983121502">Det går inte att fortsätta med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -716,6 +715,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4298388696830689168">Länkade webbplatser</translation>
 <translation id="4300632303535881174">Återvänd till föregående sida</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Ange</translation>
 <translation id="4307992518367153382">Grunderna</translation>
 <translation id="4311652497846705514">Vill du öppna PDF-filen?</translation>
 <translation id="4320177379694898372">Ingen internetanslutning</translation>
@@ -1651,7 +1651,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8244387390464017490">Anpassa sidan Ny flik</translation>
 <translation id="8250920743982581267">Dokument</translation>
 <translation id="8255617931166444521">Webbplatser får endast se din webbaktivitet på den aktuella webbplatsen med hjälp av cookies</translation>
-<translation id="8256087213273124136">Chrome har avslutat din prenumeration på aviseringar</translation>
 <translation id="8258999165172757081">Tillagt</translation>
 <translation id="8259179246279078674">Eftersom förinlästa sidor är krypterade får Google ingen information om innehållet på dem. Googles servrar lär sig vilka webbplatser som läses in privat i förväg. Den här informationen används endast för att läsa in sidor i förväg och är inte länkar till andra uppgifter från ditt Google-konto.</translation>
 <translation id="8260126382462817229">Försök att logga in igen</translation>

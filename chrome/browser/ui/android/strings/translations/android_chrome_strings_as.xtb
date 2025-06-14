@@ -546,7 +546,6 @@
 <translation id="3513019849832307207">যোগদান কৰক আৰু খোলক</translation>
 <translation id="3513704683820682405">পৰিৱৰ্ধিত বাস্তৱিকতা</translation>
 <translation id="3516053221628030540">Google Playলৈ যাওক</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{আপুনি শেহতীয়াকৈ নোচোৱা এটা ছাইটৰ পৰা জাননীৰ অনুমতি আঁতৰোৱা হৈছে}one{আপুনি শেহতীয়াকৈ নোচোৱা # টা ছাইটৰ পৰা জাননীৰ অনুমতি আঁতৰোৱা হৈছে}other{আপুনি শেহতীয়াকৈ নোচোৱা # টা ছাইটৰ পৰা জাননীৰ অনুমতি আঁতৰোৱা হৈছে}}</translation>
 <translation id="3518985090088779359">গ্ৰহণ কৰি আগুৱাওক</translation>
 <translation id="3519014757432845220">Googleৰ সৈতে জাননীৰ সমল আৰু ছাইটটোৰ URL শ্বেয়াৰ কৰি স্পামৰ পৰা সুৰক্ষা উন্নত কৰাত সহায় কৰক। সমল মানুহে পৰ্যালোচনা কৰিব পাৰে।</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে অব্যাহত ৰাখিব নোৱাৰি</translation>
@@ -715,6 +714,7 @@
 <translation id="4298388696830689168">লিংক হৈ থকা ছাইটবোৰ</translation>
 <translation id="4300632303535881174">পূৰ্বৱৰ্তী পৃষ্ঠাখনলৈ যাওক</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">দিয়ক</translation>
 <translation id="4307992518367153382">মৌলিক</translation>
 <translation id="4311652497846705514">PDF খুলিব নেকি?</translation>
 <translation id="4320177379694898372">ইণ্টাৰনেট সংযোগ নাই</translation>
@@ -1650,7 +1650,6 @@
 <translation id="8244387390464017490">নতুন টেবৰ পৃষ্ঠা কাষ্টমাইজ কৰক</translation>
 <translation id="8250920743982581267">নথিপত্রসমূহ</translation>
 <translation id="8255617931166444521">ছাইটসমূহে কেৱল নিজৰ ছাইটত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ চাবলৈ কেৱল আপোনাৰ কুকিসমূহ ব্যৱহাৰ কৰিব পাৰে</translation>
-<translation id="8256087213273124136">Chromeএ আপোনাৰ জাননী আনছাবস্ক্ৰাইব কৰিছে</translation>
 <translation id="8258999165172757081">যোগ কৰা হ’ল</translation>
 <translation id="8259179246279078674">আগতীয়াকৈ ল’ড হোৱা পৃষ্ঠাসমূহ যিহেতু এনক্ৰিপ্ট কৰা থাকে, আগতীয়াকৈ ল’ড হোৱা পৃষ্ঠাৰ সমলৰ বিষয়ে Googleএ একো নাজানিব। Googleৰ ছাৰ্ভাৰসমূহে কোনবোৰ ছাইট গোপনে আগতীয়াকৈ ল’ড কৰা হৈছে সেয়া জানিব। এই তথ্যখিনি কেৱল পৃষ্ঠাসমূহ আগতীয়াকৈ ল’ড কৰিবলৈহে ব্যৱহাৰ কৰা হয় আৰু সেয়া আপোনাৰ Google একাউণ্টৰ অন্য তথ্যৰ সৈতে লিংক কৰা নহয়।</translation>
 <translation id="8260126382462817229">আকৌ ছাইন ইন কৰিবলৈ চেষ্টা কৰক</translation>

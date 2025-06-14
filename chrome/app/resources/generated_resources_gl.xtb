@@ -4770,6 +4770,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4305402730127028764">Copiar en <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306119971288449206">As aplicacións deben incluír o tipo de contido "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306489587293957491">Introducir</translation>
 <translation id="4306810703452026910">Chrome deixará de marcar como spam as notificacións deste sitio</translation>
 <translation id="4307992518367153382">Opcións básicas</translation>
 <translation id="4309165024397827958">Permite que as aplicacións e os servizos de Android con permiso de localización utilicen a do teu dispositivo. Google pode recompilar datos de localización periodicamente e utilizalos de forma anónima para mellorar a precisión da localización e os servizos baseados nela.</translation>
@@ -4827,6 +4828,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4350230709416545141">Impedir sempre que <ph name="HOST" /> teña acceso á túa localización</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Vai á aplicación <ph name="APP_NAME" /> para xestionar as aplicacións instaladas e as de acceso en remoto</translation>
+<translation id="4352913519324947509">Non se modificou o teu contrasinal, pero deberías poder seguindo acceder ao sitio co contrasinal actual</translation>
 <translation id="4354073718307267720">Preguntar cando un sitio queira crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
 <translation id="4354344420232759511">Os sitios que visitas aparecerán aquí</translation>
 <translation id="435527878592612277">Seleccionar a túa foto</translation>
@@ -8311,6 +8313,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="686831807558000905">Non iniciar sesión</translation>
 <translation id="686839242150793617">Permiso concedido para acceder automaticamente ao modo de pantalla superposta</translation>
 <translation id="6868934826811377550">Consultar detalles</translation>
+<translation id="6870470066213933201">Xestionar a optimización e seguranza de JavaScript</translation>
 <translation id="6871644448911473373">Dispositivo de resposta OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Idiomas…</translation>
 <translation id="6873571253135628430">Cambiar os permisos do sitio</translation>

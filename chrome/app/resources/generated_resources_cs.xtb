@@ -4767,6 +4767,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4305402730127028764">Kopírovat do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Přejít</translation>
 <translation id="4306119971288449206">Aplikace musí být poskytovány s typem obsahu <ph name="CONTENT_TYPE" /></translation>
+<translation id="4306489587293957491">Zadejte</translation>
 <translation id="4306810703452026910">Chrome přestane označovat oznámení z tohoto webu jako spam</translation>
 <translation id="4307992518367153382">Základy</translation>
 <translation id="4309165024397827958">Povolte aplikacím a službám pro Android s oprávněním pro přístup k poloze využívat polohu vašeho zařízení. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.</translation>
@@ -4824,6 +4825,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4350230709416545141">Webu <ph name="HOST" /> vždy blokovat přístup k vaší poloze</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Pokud chcete spravovat nainstalované a streamované aplikace, přejděte do aplikace <ph name="APP_NAME" />.</translation>
+<translation id="4352913519324947509">Vaše heslo nebylo změněno, ale pořád byste k webu měli mít přístup pomocí svého aktuálního hesla</translation>
 <translation id="4354073718307267720">Zeptat se, když chce web vytvořit 3D mapu vašeho okolí nebo sledovat polohu kamery</translation>
 <translation id="4354344420232759511">Zde se zobrazí weby, které navštívíte</translation>
 <translation id="435527878592612277">Vyberte svou fotografii</translation>
@@ -8310,6 +8312,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="686831807558000905">Nepřihlašovat se</translation>
 <translation id="686839242150793617">Povolení automaticky aktivovat režim obrazu v obraze</translation>
 <translation id="6868934826811377550">Zobrazit podrobnosti</translation>
+<translation id="6870470066213933201">Spravovat optimalizaci a zabezpečení JavaScriptu</translation>
 <translation id="6871644448911473373">Odpovídač OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Jazyky…</translation>
 <translation id="6873571253135628430">Změnit oprávnění webu</translation>

@@ -4765,6 +4765,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4305402730127028764">Copiar a <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306119971288449206">Las apps deben incluir el encabezado content-type "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306489587293957491">Ingresar</translation>
 <translation id="4306810703452026910">Chrome dejará de marcar las notificaciones de este sitio como spam</translation>
 <translation id="4307992518367153382">Opciones básicas</translation>
 <translation id="4309165024397827958">Permite que los servicios y las apps para Android habilitadas usen la ubicación de este dispositivo. Es posible que Google recopile datos de ubicación anónimos periódicamente y los use para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
@@ -4822,6 +4823,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4350230709416545141">Siempre impedir que <ph name="HOST" /> acceda a tu ubicación</translation>
 <translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">Ve a la app de "<ph name="APP_NAME" />" para administrar las apps instaladas y transmitidas</translation>
+<translation id="4352913519324947509">No se modificó tu contraseña, pero deberías poder acceder al sitio con la contraseña actual</translation>
 <translation id="4354073718307267720">Preguntar cuando un sitio desee crear un mapa 3D de tu entorno o hacer un seguimiento de la posición de la cámara</translation>
 <translation id="4354344420232759511">Los sitios que visitas aparecerán aquí</translation>
 <translation id="435527878592612277">Seleccionar tu foto</translation>
@@ -8309,6 +8311,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="686831807558000905">No acceder</translation>
 <translation id="686839242150793617">Pueden ingresar automáticamente al modo de pantalla en pantalla</translation>
 <translation id="6868934826811377550">Ver detalles</translation>
+<translation id="6870470066213933201">Administra la optimización y la seguridad de JavaScript</translation>
 <translation id="6871644448911473373">Respondedor de OCSP:<ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Idiomas…</translation>
 <translation id="6873571253135628430">Cambiar los permisos de sitios</translation>

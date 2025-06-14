@@ -937,6 +937,7 @@
 <translation id="2546283357679194313">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
 <translation id="254947805923345898">നയത്തിൻ്റെ മൂല്യം അസാധുവാണ്.</translation>
 <translation id="2549836668759467704">നിർമാണ കൺസൾട്ടിംഗും കരാറും</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> എന്നിവയും മറ്റും</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> അസാധുവായ ഒരു പ്രതികരണം അയച്ചു.</translation>
 <translation id="2551608178605132291">വിലാസം: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">ഹഗാക്കി</translation>
@@ -4816,6 +4817,7 @@
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="9222403027701923763">പ്രാഥമിക, സെക്കൻഡറി സ്‌കൂൾ വിദ്യാഭ്യാസം (K-12)</translation>
+<translation id="9222463428840654067">കാർഡ് നമ്പർ അസാധുവാണ്</translation>
 <translation id="922849469395748170">ലോയൽറ്റി കാർഡുകൾ</translation>
 <translation id="93020190163435405">ഇന്റേൺഷിപ്പുകൾ</translation>
 <translation id="931598121743515856"><ph name="CHECKOUT_AMOUNT_MINIMUM" /> എന്നതിൽ കൂടുതലായിരിക്കണം വാങ്ങൽ</translation>

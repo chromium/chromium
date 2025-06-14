@@ -342,6 +342,7 @@
 <translation id="5775198138441669627">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="SETTINGS_LINK" /> data Chromium di akun Anda</translation>
 <translation id="5800158606660203929">Sesuaikan dan kontrol Chromium. Setel Chromium sebagai browser default.</translation>
 <translation id="5809516625706423866">Tidak dapat terhubung ke internet. HTTP 401 Tidak Sah. Periksa konfigurasi proxy Anda.</translation>
+<translation id="5817952762723416573">Mempercepat situs dengan mesin V8 Chromium, tetapi membuat Chromium sedikit lebih rentan terhadap serangan. Setelan ini nonaktif.</translation>
 <translation id="5821520528363214608">Untuk menggunakan dan menyimpan data Chromium di Akun Google Anda, update Chromium</translation>
 <translation id="5824893331272123205">Tidak dapat memuat panel ini, coba lagi</translation>
 <translation id="5862307444128926510">Selamat Datang di Chromium</translation>
@@ -431,6 +432,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="6729124504294600478">Untuk mendapatkan personalisasi dan fitur lainnya, sertakan Chromium dalam Aktivitas Web &amp; Aplikasi serta layanan Google tertaut</translation>
 <translation id="6734291798041940871">Chromium sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="674245979920622322">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="COUNT" /> lainnya</translation>
+<translation id="6751374565094704799">Mempercepat situs dengan mesin V8 Chromium, tetapi membuat Chromium sedikit lebih rentan terhadap serangan. Setelan ini aktif.</translation>
 <translation id="67706546131546258">Chromium merekomendasikan pemindaian file ini karena file mungkin berbahaya.</translation>
 <translation id="6779406956731413166">ChromiumOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>

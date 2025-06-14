@@ -344,6 +344,7 @@
 <translation id="5775198138441669627">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, <ph name="SETTINGS_LINK" /> ຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ</translation>
 <translation id="5800158606660203929">ປັບແຕ່ງ ແລະ ຄວບຄຸມ Chromium. ຕັ້ງ Chromium ເປັນຄ່າເລີ່ມຕົ້ນຂອງທ່ານ.</translation>
 <translation id="5809516625706423866">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. HTTP 401 ບໍ່ໄດ້ຮັບອະນຸຍາດ. ກະລຸນາກວດສອບການຕັ້ງຄ່າພຣັອກຊີຂອງທ່ານ.</translation>
+<translation id="5817952762723416573">ເພີ່ມຄວາມໄວເວັບໄຊດ້ວຍເຄື່ອງຈັກ V8 ຂອງ Chromium ແຕ່ເຮັດໃຫ້ Chromium ມີຄວາມທົນທານຕໍ່ການໂຈມຕີໜ້ອຍລົງເລັກນ້ອຍ. ການຕັ້ງຄ່ານີ້ປິດຢູ່.</translation>
 <translation id="5821520528363214608">ເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chromium ໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາອັບເດດ Chromium</translation>
 <translation id="5824893331272123205">ບໍ່ສາມາດໂຫຼດແຜງນີ້ໄດ້, ກະລຸນາລອງໃໝ່</translation>
 <translation id="5862307444128926510">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Chromium</translation>
@@ -433,6 +434,7 @@
 <translation id="6729124504294600478">ເພື່ອຮັບການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ຄຸນສົມບັດອື່ນໆ, ໃຫ້ຮວມ Chromium ໄວ້ໃນການເຄື່ອນໄຫວເວັບ ແລະ ແອັບ ພ້ອມທັງບໍລິການ Google ທີ່ລິ້ງໄວ້</translation>
 <translation id="6734291798041940871">ຕິດຕັ້ງ Chromium ສຳລັບຜູ້ໃຊ້ທຸກຄົນໃນຄອມພິວເຕີຂອງທ່ານແລ້ວ.</translation>
 <translation id="674245979920622322">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chromium ໄດ້ລຶບສິດເຂົ້າເຖິງ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="COUNT" /> ລາຍການອອກແລ້ວ</translation>
+<translation id="6751374565094704799">ເພີ່ມຄວາມໄວເວັບໄຊດ້ວຍເຄື່ອງຈັກ V8 ຂອງ Chromium ແຕ່ເຮັດໃຫ້ Chromium ມີຄວາມທົນທານຕໍ່ການໂຈມຕີໜ້ອຍລົງເລັກນ້ອຍ. ການຕັ້ງຄ່ານີ້ເປີດຢູ່.</translation>
 <translation id="67706546131546258">Chromium ແນະນຳໃຫ້ສະແກນໄຟລ໌ນີ້ເນື່ອງຈາກມັນອາດເປັນອັນຕະລາຍໄດ້.</translation>
 <translation id="6779406956731413166">ChromiumOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
 <translation id="6831043979455480757">ແປພາສາ</translation>

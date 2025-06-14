@@ -937,6 +937,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2546283357679194313">Piškotki in podatki spletnih mest</translation>
 <translation id="254947805923345898">Vrednost pravilnika ni veljavna.</translation>
 <translation id="2549836668759467704">Gradbeno svetovanje in sklepanje pogodb</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> in drugo</translation>
 <translation id="255002559098805027">Spletno mesto <ph name="HOST_NAME" /> je poslalo neveljaven odgovor.</translation>
 <translation id="2551608178605132291">Naslov: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4819,6 +4820,7 @@ Dodatne podrobnosti:
 <translation id="9219103736887031265">Slike</translation>
 <translation id="922152298093051471">Prilagodi Chrome</translation>
 <translation id="9222403027701923763">Osnovno- in srednješolsko izobraževanje (K-12)</translation>
+<translation id="9222463428840654067">Številka kartice je neveljavna</translation>
 <translation id="922849469395748170">Kartice zvestobe</translation>
 <translation id="93020190163435405">Pripravništva</translation>
 <translation id="931598121743515856">Znesek nakupa mora biti višji od <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

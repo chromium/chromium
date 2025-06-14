@@ -547,7 +547,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3513019849832307207">Ymuno ac agor</translation>
 <translation id="3513704683820682405">Realiti Estynedig</translation>
 <translation id="3516053221628030540">Mynd i Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Tynnwyd caniatâd hysbysu o un wefan nad ydych wedi ymweld â hi'n ddiweddar}zero{Tynnwyd caniatâd hysbysu o # gwefannau nad ydych wedi ymweld â hi'n ddiweddar}two{Tynnwyd caniatâd hysbysu o # wefan nad ydych wedi ymweld â hi'n ddiweddar}few{Tynnwyd caniatâd hysbysu o # gwefan nad ydych wedi ymweld â hi'n ddiweddar}many{Tynnwyd caniatâd hysbysu o # gwefan nad ydych wedi ymweld â hi'n ddiweddar}other{Tynnwyd caniatâd hysbysu o # gwefan nad ydych wedi ymweld â hi'n ddiweddar}}</translation>
 <translation id="3518985090088779359">Derbyn a pharhau</translation>
 <translation id="3519014757432845220">Helpu i wella amddiffyniad rhag sothach drwy rannu cynnwys hysbysiadau ac URL y wefan â Google. Gall y cynnwys gael ei adolygu gan bobl.</translation>
 <translation id="3521388823983121502">Methu â pharhau gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -716,6 +715,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4298388696830689168">Gwefannau cysylltiedig</translation>
 <translation id="4300632303535881174">Ewch i'r dudalen flaenorol</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Nodwch</translation>
 <translation id="4307992518367153382">Hanfodion</translation>
 <translation id="4311652497846705514">Agor PDF?</translation>
 <translation id="4320177379694898372">Dim cysylltiad rhyngrwyd</translation>
@@ -1651,7 +1651,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8244387390464017490">Addasu tudalen tab newydd</translation>
 <translation id="8250920743982581267">Dogfennau</translation>
 <translation id="8255617931166444521">Dim ond i weld eich gweithgarwch pori ar eu gwefan eu hunain y gall gwefannau ddefnyddio'ch cwcis</translation>
-<translation id="8256087213273124136">Mae Chrome wedi eich dad-danysgrifio o hysbysiadau</translation>
 <translation id="8258999165172757081">Ychwanegwyd</translation>
 <translation id="8259179246279078674">Oherwydd bod y tudalennau sydd wedi'u rhaglwytho wedi'u hamgryptio, ni fydd Google yn dysgu unrhyw beth am gynnwys y dudalen sydd wedi'i rhaglwytho. Bydd gweinyddion Google yn dysgu pa wefannau sy'n cael eu rhaglwytho'n breifat. Defnyddir y wybodaeth hon i raglwytho'r tudalennau yn unig, ac nid yw'n gysylltiedig â gwybodaeth arall o'ch Cyfrif Google.</translation>
 <translation id="8260126382462817229">Rhowch gynnig arall ar fewngofnodi</translation>

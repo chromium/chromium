@@ -546,7 +546,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3513019849832307207">Se joindre et ouvrir</translation>
 <translation id="3513704683820682405">Réalité augmentée</translation>
 <translation id="3516053221628030540">Accéder à Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Autorisations de notification supprimées d'un site que vous n'avez pas visité récemment}one{Autorisations de notification supprimées de # site que vous n'avez pas visité récemment}other{Autorisations de notification supprimées de # sites que vous n'avez pas visités récemment}}</translation>
 <translation id="3518985090088779359">Accepter et continuer</translation>
 <translation id="3519014757432845220">Aidez à améliorer la protection contre les pourriels en envoyant le contenu des notifications et l'URL du site à Google. Le contenu peut être révisé par des humains.</translation>
 <translation id="3521388823983121502">Impossible de continuer avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4298388696830689168">Sites associés</translation>
 <translation id="4300632303535881174">Accéder à la page précédente</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Entrer</translation>
 <translation id="4307992518367153382">Paramètres de base</translation>
 <translation id="4311652497846705514">Ouvrir un fichier PDF?</translation>
 <translation id="4320177379694898372">Pas de connexion Internet</translation>
@@ -1650,7 +1650,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8244387390464017490">Personn. page Nouvel onglet</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8255617931166444521">Les sites peuvent uniquement utiliser vos témoins pour connaître votre activité de navigation que sur leur propre site</translation>
-<translation id="8256087213273124136">Chrome vous a désabonné des notifications</translation>
 <translation id="8258999165172757081">Ajouté</translation>
 <translation id="8259179246279078674">Étant donné que les pages préchargées sont chiffrées, Google n'apprendra rien à propos du contenu des pages préchargées. Les serveurs de Google découvriront quels sites sont préchargés en privé. Cette information est uniquement utilisée pour précharger les pages et n'est pas associée à d'autres renseignements provenant de votre compte Google.</translation>
 <translation id="8260126382462817229">Essayez de vous reconnecter</translation>

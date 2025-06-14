@@ -344,6 +344,7 @@
 <translation id="5775198138441669627">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો તમારા એકાઉન્ટમાંનો Chromiumનો ડેટા <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromiumને કસ્ટમાઇઝ અને તેનું નિયંત્રણ કરો. Chromiumને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો.</translation>
 <translation id="5809516625706423866">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. HTTP 401 અનધિકૃત. કૃપા કરીને તમારું પ્રૉક્સી કન્ફિગ્યુરેશન ચેક કરો.</translation>
+<translation id="5817952762723416573">Chromiumના V8 એન્જિન વડે સાઇટની ગતિ વધારે છે પરંતુ Chromiumને અટૅક સામે થોડું ઓછું પ્રતિરોધક બનાવે છે. આ સેટિંગ બંધ છે.</translation>
 <translation id="5821520528363214608">તમારા Google એકાઉન્ટમાં Chromiumના ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, Chromium અપડેટ કરો</translation>
 <translation id="5824893331272123205">આ પૅનલ લોડ કરી શકાઇ નથી, ફરી પ્રયાસ કરો</translation>
 <translation id="5862307444128926510">Chromium માં સ્વાગત છે</translation>
@@ -433,6 +434,7 @@
 <translation id="6729124504294600478">મનગમતું બનાવવાની અને અન્ય સુવિધાઓ મેળવવા માટે, Chromiumનો વેબ અને ઍપ ઍક્ટિવિટી અને લિંક કરેલી Google સેવાઓમાં સમાવેશ કરો</translation>
 <translation id="6734291798041940871">Chromium, તમારા કમ્પ્યુટર પર તમામ વપરાશકર્તાઓ માટે પહેલાંથી ઇન્સ્ટૉલ કરેલ છે.</translation>
 <translation id="674245979920622322">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chromium દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને <ph name="COUNT" />ની પરવાનગીઓ કાઢી નાખવામાં આવી</translation>
+<translation id="6751374565094704799">Chromiumના V8 એન્જિન વડે સાઇટની ગતિ વધારે છે પરંતુ Chromiumને અટૅક સામે થોડું ઓછું પ્રતિરોધક બનાવે છે. આ સેટિંગ ચાલુ છે.</translation>
 <translation id="67706546131546258">Chromium આ ફાઇલને સ્કૅન કરવાનો સુઝાવ આપે છે, કારણ કે તે જોખમકારક હોઈ શકે છે.</translation>
 <translation id="6779406956731413166">ChromiumOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>

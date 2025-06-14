@@ -546,7 +546,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3513019849832307207">Bli med og åpne</translation>
 <translation id="3513704683820682405">Utvidet virkelighet</translation>
 <translation id="3516053221628030540">Gå til Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Fjernet varslingstillatelser fra 1 nettsted du ikke har besøkt nylig}other{Fjernet varslingstillatelser fra # nettsteder du ikke har besøkt nylig}}</translation>
 <translation id="3518985090088779359">Godta og fortsett</translation>
 <translation id="3519014757432845220">Bidra til å gjøre beskyttelsen mot søppelpost bedre ved å dele varselinnholdet og nettadressen med Google. Innholdet kan bli gjennomgått av mennesker.</translation>
 <translation id="3521388823983121502">Kan ikke fortsette med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4298388696830689168">Tilknyttede nettsteder</translation>
 <translation id="4300632303535881174">Gå til forrige side</translation>
 <translation id="4303044213806199882">chrome_skjermdump_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Skriv inn</translation>
 <translation id="4307992518367153382">Generelt</translation>
 <translation id="4311652497846705514">Vil du åpne PDF-filen?</translation>
 <translation id="4320177379694898372">Ingen internettilkobling</translation>
@@ -1650,7 +1650,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8244387390464017490">Tilpass Ny fane-siden</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8255617931166444521">Nettsteder kan bare bruke informasjonskapslene dine til å se surfeaktiviteten din på sitt eget nettsted</translation>
-<translation id="8256087213273124136">Chrome har meldt deg av varsler</translation>
 <translation id="8258999165172757081">Lagt til</translation>
 <translation id="8259179246279078674">Siden de forhåndslastede sidene er krypterte, får ikke Google vite noe om det forhåndslastede sideinnholdet. Googles tjenere får vite hvilke nettsteder som forhåndslastes privat. Denne informasjonen brukes bare til å forhåndslaste sidene og blir ikke knyttet til annen informasjon i Google-kontoen din.</translation>
 <translation id="8260126382462817229">Prøv å logge på igjen</translation>

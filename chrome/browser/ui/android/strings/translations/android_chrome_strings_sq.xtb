@@ -546,7 +546,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3513019849832307207">Bashkohu dhe hap</translation>
 <translation id="3513704683820682405">Realiteti i zgjeruar</translation>
 <translation id="3516053221628030540">Shko te Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{U hoqën lejet për njoftimet nga një sajt që nuk e ke vizituar së fundi}other{U hoqën lejet për njoftimet nga # sajte që nuk i ke vizituar së fundi}}</translation>
 <translation id="3518985090088779359">Prano dhe vazhdo</translation>
 <translation id="3519014757432845220">Ndihmo në përmirësimin e mbrojtjes nga përmbajtjet e bezdisshme duke ndarë përmbajtjet e njoftimeve dhe URL-në e sajtit me Google. Përmbajtjet mund të shqyrtohen nga njerëzit.</translation>
 <translation id="3521388823983121502">Nuk mund të vazhdosh me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4298388696830689168">Sajtet e lidhura</translation>
 <translation id="4300632303535881174">Shko te faqja e mëparshme</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Fut</translation>
 <translation id="4307992518367153382">Bazat</translation>
 <translation id="4311652497846705514">Të hapet skedari PDF?</translation>
 <translation id="4320177379694898372">Nuk ka lidhje me internetin</translation>
@@ -1650,7 +1650,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8244387390464017490">Personalizo faqen e skedës së re</translation>
 <translation id="8250920743982581267">Dokumentet</translation>
 <translation id="8255617931166444521">Sajtet mund t'i përdorin kukit e tua vetëm për të parë aktivitetin tënd të shfletimit në sajtin e tyre</translation>
-<translation id="8256087213273124136">Chrome të çabonoi nga njoftimet</translation>
 <translation id="8258999165172757081">U shtua</translation>
 <translation id="8259179246279078674">Për shkak se faqet e ngarkuara paraprakisht janë të enkriptuara, Google nuk do të mësojë asgjë rreth përmbajtjes së faqes së ngarkuar paraprakisht. Serverët e Google do të mësojnë se cilat sajte janë ngarkuar paraprakisht në mënyrë private. Ky informacion përdoret vetëm për të ngarkuar paraprakisht faqet dhe nuk lidhet me informacione të tjera nga "Llogaria jote e Google".</translation>
 <translation id="8260126382462817229">Provo të identifikohesh përsëri</translation>

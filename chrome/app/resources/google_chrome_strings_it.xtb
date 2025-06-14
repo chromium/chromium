@@ -61,6 +61,7 @@
 <translation id="178701303897325119">Questa estensione non è più supportata. Chrome consiglia di rimuoverla.</translation>
 <translation id="1812689907177901597">Se disattivi questa funzione, puoi accedere ai siti Google quali Gmail senza accedere a Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome consiglia di mettere in pausa la scheda che rallenta il browser}other{Chrome consiglia di mettere in pausa le schede che rallentano il browser}}</translation>
+<translation id="1832046143430087831">Accelera i siti con il motore V8 di Chrome, ma rende Chrome leggermente meno resistente agli attacchi. Questa impostazione non è attiva.</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="1860536484129686729">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
 <translation id="1873233029667955273">Google Chrome non è il browser predefinito</translation>
@@ -442,6 +443,7 @@
 <translation id="6718739135284199302">Rendi Chrome più veloce</translation>
 <translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
 <translation id="6750954913813541382">Per correggere gli errori ortografici, Chrome invia a Google il testo che digiti nel browser</translation>
+<translation id="6760235774835597023">Accelera i siti con il motore V8 di Chrome, ma rende Chrome leggermente meno resistente agli attacchi. Questa impostazione è attiva.</translation>
 <translation id="677276454032249905">Vuoi uscire comunque da Chrome?</translation>
 <translation id="6794858689789885890">Elimina sempre i dati dei siti dal dispositivo alla chiusura di Chrome</translation>
 <translation id="6831043979455480757">Traduci</translation>

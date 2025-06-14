@@ -341,6 +341,7 @@
 <translation id="5775198138441669627">‏اگر گذرعبارت را فراموش کرده‌اید یا می‌خواهید این تنظیم را تغییر دهید، داده‌های Chromium ذخیره‌شده در حسابتان را <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">‏‫Chromium را سفارشی‌سازی و کنترل کنید. ‫Chromium را به‌عنوان مرورگر پیش‌فرض تنظیم کنید.</translation>
 <translation id="5809516625706423866">‏اتصال به اینترنت برقرار نشد. HTTP ۴۰۱ مجاز نیست. لطفاً پیکربندی پروکسی‌تان را بررسی کنید.</translation>
+<translation id="5817952762723416573">‏با این کار سرعت سایت‌ها با موتور Chromium نسخه ۸ بالاتر می‌رود اما مقاومت Chromium دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم خاموش است.</translation>
 <translation id="5821520528363214608">‏برای استفاده و ذخیره کردن داده‌های Chromium در «حساب Google» خود، Chromium را به‌روز کنید</translation>
 <translation id="5824893331272123205">این پانل بارگیری نشد، دوباره امتحان کنید</translation>
 <translation id="5862307444128926510">‏به Chromium خوش آمدید</translation>
@@ -430,6 +431,7 @@
 <translation id="6729124504294600478">‏برای دریافت شخصی‌سازی و ویژگی‌های دیگر، Chromium را به «فعالیت‌ها در وب و برنامه» و سرویس‌های پیوندشده Google اضافه کنید</translation>
 <translation id="6734291798041940871">‏Chromium از قبل برای همه کاربران این رایانه نصب شده است.</translation>
 <translation id="674245979920622322">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت</translation>
+<translation id="6751374565094704799">‏با این کار سرعت سایت‌ها با موتور Chromium نسخه ۸ بالاتر می‌رود اما مقاومت Chromium دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم روشن است.</translation>
 <translation id="67706546131546258">‏Chromium توصیه می‌کند این فایل را اسکن کنید زیرا ممکن است خطرناک باشد.</translation>
 <translation id="6779406956731413166">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="6831043979455480757">ترجمه</translation>

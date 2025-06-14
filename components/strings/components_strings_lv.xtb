@@ -937,6 +937,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
 <translation id="254947805923345898">Politikas vērtība nav derīga.</translation>
 <translation id="2549836668759467704">Konsultācijas un līgumi par celtniecību</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> un vēl</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> nosūtīja nederīgu atbildi.</translation>
 <translation id="2551608178605132291">Adrese: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4817,6 +4818,7 @@ Papildu informācija:
 <translation id="9219103736887031265">Attēli</translation>
 <translation id="922152298093051471">Pielāgot pārlūkprogrammu Chrome</translation>
 <translation id="9222403027701923763">Pamatizglītība un vidējā izglītība (K-12)</translation>
+<translation id="9222463428840654067">Kartes numurs nav derīgs.</translation>
 <translation id="922849469395748170">Lojalitātes kartes</translation>
 <translation id="93020190163435405">Prakse</translation>
 <translation id="931598121743515856">Pirkuma summai ir jābūt lielākai par <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

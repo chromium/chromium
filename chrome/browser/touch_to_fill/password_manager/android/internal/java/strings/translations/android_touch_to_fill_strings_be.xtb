@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Выкарыстаць захаваны пароль або ключ доступу?</translation>
 <translation id="5624120631404540903">Кіраваць паролямі</translation>
 <translation id="592182999816790476">Пароль карыстальніка <ph name="USERNAME" /> захаваны для <ph name="WEBSITE" /></translation>
+<translation id="593924516471361340">Часовы пароль для аднаўлення ў выпадку праблем у карыстальніка (<ph name="USERNAME" />), захаваны для вэб-сайта <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Ключ доступу для карыстальніка <ph name="USERNAME" />. Выкарыстайце блакіроўку экрана.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Новы пароль для гэта сайта}one{Новыя паролі для гэта сайта}few{Новыя паролі для гэта сайта}many{Новыя паролі для гэта сайта}other{Новыя паролі для гэта сайта}}</translation>
 <translation id="7286867818472074330">Выбраць ключ доступу</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> з <ph name="ITEMS_TOTAL" /></translation>
 <translation id="7738288782501322815">Вы атрымалі паролі для сайта <ph name="SITE_NAME" /></translation>
+<translation id="8202660122967066153">Часовы пароль для аднаўлення ў выпадку праблем у карыстальніка (<ph name="USERNAME" />)</translation>
 <translation id="8363484128299778310">Часовае аднаўленне доступу ў выпадку праблем</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> абагульвае з вамі пароль для сайта <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Спіс уліковых даных закрыты.</translation>

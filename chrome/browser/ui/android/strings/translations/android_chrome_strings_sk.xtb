@@ -546,7 +546,6 @@
 <translation id="3513019849832307207">Pripojiť sa a otvoriť</translation>
 <translation id="3513704683820682405">Rozšírená realita</translation>
 <translation id="3516053221628030540">Prejsť do služby Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Boli odstránené povolenia posielať upozornenia z jedného webu, ktorý ste v poslednom čase nenavštívili}few{Boli odstránené povolenia posielať upozornenia z # webov, ktoré ste v poslednom čase nenavštívili}many{Removed notification permissions from # sites you haven’t visited recently}other{Boli odstránené povolenia posielať upozornenia z # webov, ktoré ste v poslednom čase nenavštívili}}</translation>
 <translation id="3518985090088779359">Prijať a pokračovať</translation>
 <translation id="3519014757432845220">Pomôžte zlepšiť ochranu pred spamom tak, že s Googlom budete zdieľať obsah upozornenia a adresu príslušného webu. Obsah môžu kontrolovať ľudia.</translation>
 <translation id="3521388823983121502">Nedá sa pokračovať s poskytovateľom <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@
 <translation id="4298388696830689168">Prepojené weby</translation>
 <translation id="4300632303535881174">Prechod na predchádzajúcu stránku</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Zadať</translation>
 <translation id="4307992518367153382">Základy</translation>
 <translation id="4311652497846705514">Chcete súbor PDF otvoriť?</translation>
 <translation id="4320177379694898372">Žiadne internetové pripojenie</translation>
@@ -1650,7 +1650,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8244387390464017490">Upraviť stránku Nová karta</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="8255617931166444521">Weby môžu pomocou vašich súborov cookie zobrazovať iba vašu aktivitu prehliadania na nich</translation>
-<translation id="8256087213273124136">Chrome zrušil váš odber upozornení</translation>
 <translation id="8258999165172757081">Pridané</translation>
 <translation id="8259179246279078674">Prednačítavané stránky sú šifrované, takže Google nezistí nič o ich obsahu. Servery Googlu budú mať k dispozícii informáciu, ktoré weby sú súkromne prednačítavané. Bude slúžiť iba na prednačítanie stránok, ale nebude spojená z ďalšími informáciami z vášho účtu Google.</translation>
 <translation id="8260126382462817229">Skúste sa znova prihlásiť</translation>

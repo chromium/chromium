@@ -937,6 +937,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2546283357679194313">Evästeet ja sivustotiedot</translation>
 <translation id="254947805923345898">Käytännön arvo ei kelpaa.</translation>
 <translation id="2549836668759467704">Rakennusurakat ja konsultointi</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> ja 1 muu</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> lähetti virheellisen vastauksen.</translation>
 <translation id="2551608178605132291">Osoite: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4821,6 +4822,7 @@ Lisätietoja:
 <translation id="9219103736887031265">Kuvat</translation>
 <translation id="922152298093051471">Yksilöi Chromea</translation>
 <translation id="9222403027701923763">Ensimmäisen ja toisen asteen koulutus</translation>
+<translation id="9222463428840654067">Kortin numero on virheellinen</translation>
 <translation id="922849469395748170">Kanta-asiakaskortit</translation>
 <translation id="93020190163435405">Harjoittelujaksot</translation>
 <translation id="931598121743515856">Ostoksen summan on oltava yli <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

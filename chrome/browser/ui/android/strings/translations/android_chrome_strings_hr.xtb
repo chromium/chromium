@@ -546,7 +546,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3513019849832307207">Pridružite se i otvorite</translation>
 <translation id="3513704683820682405">Proširena stvarnost</translation>
 <translation id="3516053221628030540">Otvorite Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Uklonjena su dopuštenja za obavijesti s jedne web-lokacije koju niste posjetili u posljednje vrijeme}one{Uklonjena su dopuštenja za slanje obavijesti s # web-lokacije koju niste posjetili u posljednje vrijeme}few{Uklonjena su dopuštenja za slanje obavijesti s # web-lokacije koje niste posjetili u posljednje vrijeme}other{Uklonjena su dopuštenja za slanje obavijesti s # web-lokacija koje niste posjetili u posljednje vrijeme}}</translation>
 <translation id="3518985090088779359">Prihvati i nastavi</translation>
 <translation id="3519014757432845220">Pomozite poboljšati zaštitu od neželjenog sadržaja tako što ćete Googleu poslati sadržaj obavijesti i URL web-lokacije. Sadržaj mogu pregledavati ljudi.</translation>
 <translation id="3521388823983121502">Nije moguće nastaviti s: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4298388696830689168">Povezane web-lokacije</translation>
 <translation id="4300632303535881174">Otvaranje prethodne stranice</translation>
 <translation id="4303044213806199882">chrome_snimka_zaslona_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Unesite</translation>
 <translation id="4307992518367153382">Osnove</translation>
 <translation id="4311652497846705514">Želite li otvoriti PDF?</translation>
 <translation id="4320177379694898372">Nema internetske veze</translation>
@@ -1650,7 +1650,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8244387390464017490">Prilagodba stranice nove kartice</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8255617931166444521">Pojedina web-lokacija može upotrebljavati vaše kolačiće samo za uvid u vašu aktivnost pregledavanja na toj web-lokaciji</translation>
-<translation id="8256087213273124136">Chrome je otkazao vašu pretplatu na obavijesti</translation>
 <translation id="8258999165172757081">Dodano</translation>
 <translation id="8259179246279078674">Budući da se predučitane stranice šifriraju, Google neće saznati ništa o sadržaju predučitanih stranica. Googleovi poslužitelji saznat će koje se web-lokacije anonimno predučitavaju. Ti se podaci koriste samo za predučitavanje stranica i ne povezuju se s drugim podacima s vašeg Google računa.</translation>
 <translation id="8260126382462817229">Ponovo se pokušajte prijaviti</translation>

@@ -937,6 +937,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="254947805923345898">Principens värde är inte giltigt.</translation>
 <translation id="2549836668759467704">Konsult- och entreprenadtjänster inom konstruktion</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> med mera</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> skickade ett ogiltigt svar.</translation>
 <translation id="2551608178605132291">Adress: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4820,6 +4821,7 @@ Mer information:
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
 <translation id="9222403027701923763">Grundskola och gymnasium</translation>
+<translation id="9222463428840654067">Kortnumret är ogiltigt</translation>
 <translation id="922849469395748170">Stamkundskort</translation>
 <translation id="93020190163435405">Arbetspraktik</translation>
 <translation id="931598121743515856">Köpet måste överstiga <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

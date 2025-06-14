@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Saxlanmış parol və ya giriş açarından istifadə edilsin?</translation>
 <translation id="5624120631404540903">Parolları idarə edin</translation>
 <translation id="592182999816790476"><ph name="USERNAME" /> adlı istifadəçinin <ph name="WEBSITE" /> şifrəsi yadda saxlanıldı</translation>
+<translation id="593924516471361340"><ph name="USERNAME" /> üçün <ph name="WEBSITE" /> veb-saytında problem olduğu halda istifadə olunacaq müvəqqəti bərpa parolu yadda saxlanıldı</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> üçün giriş açarı. Ekran kilidindən istifadə edin</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Bu sayt üçün yeni parol}other{Bu sayt üçün yeni parollar}}</translation>
 <translation id="7286867818472074330">Giriş açarı seçin</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" /> – <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815"><ph name="SITE_NAME" /> üçün parollar qəbul etmisiniz</translation>
+<translation id="8202660122967066153"><ph name="USERNAME" /> üçün problem halında istifadə olunacaq müvəqqəti bərpa parolu</translation>
 <translation id="8363484128299778310">Problem halında müvəqqəti bərpa</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> <ph name="SITE_NAME" /> üçün sizinlə parol paylaşıb</translation>
 <translation id="8891372124884726271">Giriş məlumatlarının siyahısı bağlanıb.</translation>

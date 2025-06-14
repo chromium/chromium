@@ -4778,6 +4778,7 @@
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> वर कॉपी करा</translation>
 <translation id="4305817255990598646">स्विच</translation>
 <translation id="4306119971288449206">अ‍ॅप्स "<ph name="CONTENT_TYPE" />" आशय प्रकारासह दिली जाणे आवश्यक आहे</translation>
+<translation id="4306489587293957491">एंटर करा</translation>
 <translation id="4306810703452026910">या साइटवरील नोटिफिकेशनना स्पॅम म्हणून फ्लॅग करणे Chrome द्वारे थांबवले जाईल</translation>
 <translation id="4307992518367153382">मूलभूत</translation>
 <translation id="4309165024397827958">स्थान परवानगी असलेल्या Android अ‍ॅप्स आणि सेवांना तुमच्या डिव्हाइसचे स्थान वापरण्याची अनुमती द्या. Google अधूनमधून स्थान डेटा गोळा करू शकते आणि स्थान अचूकता व स्थानाधारित सेवांमध्ये सुधारणा करण्यासाठी हा डेटा निनावी वापरू शकते.</translation>
@@ -4835,6 +4836,7 @@
 <translation id="4350230709416545141">तुमचे स्थान अ‍ॅक्सेस करण्यापासून <ph name="HOST" /> ला नेहमी ब्लॉक करा</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">इंस्टॉल आणि स्‍ट्रीम केलेली अ‍ॅप्स व्यवस्थापित करण्यासाठी "<ph name="APP_NAME" />" अ‍ॅपवर जा</translation>
+<translation id="4352913519324947509">तुमचा पासवर्ड बदलला नव्हता, पण तुम्हाला तरीही तुमचा जुना पासवर्ड वापरून साइट ॲक्सेस करता आली पाहिजे</translation>
 <translation id="4354073718307267720">साइटला तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करायचा किंवा कॅमेर्‍याचे स्थान ट्रॅक करायचे असेल तेव्हा विचारा</translation>
 <translation id="4354344420232759511">तुम्ही भेट दिलेल्या साइट येथे दिसतील</translation>
 <translation id="435527878592612277">तुमचा फोटो निवडा</translation>
@@ -8325,6 +8327,7 @@ I feel - विटांची इमारत</translation>
 <translation id="686831807558000905">साइन इन करू नका</translation>
 <translation id="686839242150793617">चित्रात-चित्र यामध्ये आपोआप प्रवेश करण्याची अनुमती आहे</translation>
 <translation id="6868934826811377550">तपशील पहा</translation>
+<translation id="6870470066213933201">JavaScript ऑप्टिमायझेशन आणि सुरक्षा व्यवस्थापित करा</translation>
 <translation id="6871644448911473373">OCSP प्रतिसादकर्ता: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">भाषा...</translation>
 <translation id="6873571253135628430">साइटच्या परवानग्या बदला</translation>

@@ -343,6 +343,7 @@
 <translation id="5775198138441669627">암호가 기억나지 않거나 이 설정을 변경하려면 계정의 Chromium 데이터를 <ph name="SETTINGS_LINK" />하세요.</translation>
 <translation id="5800158606660203929">Chromium을 맞춤설정 및 제어합니다. Chromium을 기본 브라우저로 설정합니다.</translation>
 <translation id="5809516625706423866">인터넷에 연결할 수 없습니다(HTTP 401 Unauthorized). 프록시 설정을 확인하시기 바랍니다.</translation>
+<translation id="5817952762723416573">Chromium의 V8 엔진으로 사이트 속도를 높이지만 Chromium이 공격에 약간 더 취약해집니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="5821520528363214608">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 Chromium을 업데이트하세요.</translation>
 <translation id="5824893331272123205">패널을 로드할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
@@ -432,6 +433,7 @@
 <translation id="6729124504294600478">맞춤설정 및 기타 기능을 사용하려면 웹 및 앱 활동 그리고 연결된 Google 서비스에 Chromium을 포함하세요</translation>
 <translation id="6734291798041940871">모든 사용자가 사용할 수 있도록 컴퓨터에 Chromium이 이미 설치되어 있습니다.</translation>
 <translation id="674245979920622322">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 권한 <ph name="COUNT" />개를 삭제했습니다.</translation>
+<translation id="6751374565094704799">Chromium의 V8 엔진으로 사이트 속도를 높이지만 Chromium이 공격에 약간 더 취약해집니다. 설정이 사용 설정되어 있습니다.</translation>
 <translation id="67706546131546258">위험할 수 있는 파일이므로 검사하는 것이 좋습니다.</translation>
 <translation id="6779406956731413166">ChromiumOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="6831043979455480757">번역</translation>

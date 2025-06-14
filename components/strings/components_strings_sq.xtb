@@ -937,6 +937,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
 <translation id="254947805923345898">Vlera e politikës nuk është e vlefshme.</translation>
 <translation id="2549836668759467704">Konsultimi dhe nënkontraktimi në ndërtim</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> etj.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> dërgoi një përgjigje të pavlefshme.</translation>
 <translation id="2551608178605132291">Adresa: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4817,6 +4818,7 @@ Detaje shtesë:
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="922152298093051471">Personalizo Chrome</translation>
 <translation id="9222403027701923763">Arsimi fillor dhe i mesëm (K-12)</translation>
+<translation id="9222463428840654067">Numri i kartës është i pavlefshëm</translation>
 <translation id="922849469395748170">Kartat e besnikërisë</translation>
 <translation id="93020190163435405">Stazhe</translation>
 <translation id="931598121743515856">Blerja duhet të jetë mbi <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

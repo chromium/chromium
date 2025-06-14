@@ -546,7 +546,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3513019849832307207">Katıl ve aç</translation>
 <translation id="3513704683820682405">Artırılmış Gerçeklik</translation>
 <translation id="3516053221628030540">Google Play'e gidin</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Son zamanlarda ziyaret etmediğiniz bir sitenin bildirim izinleri kaldırıldı}other{Son zamanlarda ziyaret etmediğiniz # sitenin bildirim izinleri kaldırıldı}}</translation>
 <translation id="3518985090088779359">Kabul et ve devam et</translation>
 <translation id="3519014757432845220">Bildirim içeriğini ve sitenin URL'sini Google ile paylaşarak spam korumasını iyileştirmeye yardımcı olun. İçerik, gerçek kişiler tarafından incelenebilir.</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile devam edilemiyor</translation>
@@ -715,6 +714,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4298388696830689168">Bağlantılı siteler</translation>
 <translation id="4300632303535881174">Önceki sayfaya gidin</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Gir</translation>
 <translation id="4307992518367153382">Temel Bilgiler</translation>
 <translation id="4311652497846705514">PDF açılsın mı?</translation>
 <translation id="4320177379694898372">İnternet bağlantısı yok</translation>
@@ -1650,7 +1650,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8244387390464017490">Yeni sekmeyi özelleştir</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>
 <translation id="8255617931166444521">Siteler, çerezlerinizi yalnızca kendi sitelerindeki tarama etkinliğinizi görmek için kullanabilir</translation>
-<translation id="8256087213273124136">Chrome, bildirim aboneliğinizi iptal etti</translation>
 <translation id="8258999165172757081">Eklendi</translation>
 <translation id="8259179246279078674">Önceden yüklenmiş sayfalar şifrelenmiş olduğu için Google, önceden yüklenmiş sayfa içeriğiyle ilgili hiçbir şey öğrenmez. Google sunucuları hangi sitelerin gizli olarak önceden yüklendiğini öğrenir. Bu bilgi yalnızca sayfaları önceden yüklemek için kullanılır ve Google Hesabınızdaki diğer bilgilerle bağlantılı değildir.</translation>
 <translation id="8260126382462817229">Tekrar oturum açmayı deneyin</translation>

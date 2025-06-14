@@ -937,6 +937,7 @@
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="254947805923345898">정책 값이 유효하지 않습니다.</translation>
 <translation id="2549836668759467704">건설 컨설팅 및 계약</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> 등</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" />에서 잘못된 응답을 전송했습니다.</translation>
 <translation id="2551608178605132291">주소: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">엽서</translation>
@@ -4817,6 +4818,7 @@
 <translation id="9219103736887031265">이미지</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="9222403027701923763">초중고교(K-12)</translation>
+<translation id="9222463428840654067">카드 번호가 잘못됨</translation>
 <translation id="922849469395748170">포인트 카드</translation>
 <translation id="93020190163435405">인턴십</translation>
 <translation id="931598121743515856">구매 금액이 <ph name="CHECKOUT_AMOUNT_MINIMUM" /> 이상이어야 함</translation>

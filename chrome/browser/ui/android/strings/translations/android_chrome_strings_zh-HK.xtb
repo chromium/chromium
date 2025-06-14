@@ -546,7 +546,6 @@
 <translation id="3513019849832307207">加入並開啟</translation>
 <translation id="3513704683820682405">擴張實境</translation>
 <translation id="3516053221628030540">前往 Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{已從你最近未瀏覽的 1 個網站移除通知權限}other{已從你最近未瀏覽的 # 個網站移除通知權限}}</translation>
 <translation id="3518985090088779359">接受並繼續</translation>
 <translation id="3519014757432845220">與 Google 分享通知內容和網站網址，協助改善垃圾內容阻截功能。內容可能會送交真人審核。</translation>
 <translation id="3521388823983121502">無法繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
@@ -1651,7 +1650,6 @@
 <translation id="8244387390464017490">自訂新分頁</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
-<translation id="8256087213273124136">Chrome 已為你取消訂閱通知</translation>
 <translation id="8258999165172757081">已新增</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已加密，Google 不會得知預先載入網頁內容的相關資料。Google 伺服器會知道哪些網站已透過私密方式預先載入。此資料只用於預先載入網頁，不會與您 Google 帳戶的其他資料連結。</translation>
 <translation id="8260126382462817229">請嘗試再次登入</translation>

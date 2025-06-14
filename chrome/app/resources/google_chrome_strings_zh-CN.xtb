@@ -61,6 +61,7 @@
 <translation id="178701303897325119">此扩展程序已不再受支持。Chrome 建议您移除它。</translation>
 <translation id="1812689907177901597">关闭此设置后，您可以仅登录 Gmail 等 Google 网站，而不同时登录 Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome 建议您暂停导致浏览器运行缓慢的标签页}other{Chrome 建议您暂停导致浏览器运行缓慢的标签页}}</translation>
+<translation id="1832046143430087831">使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微降低。此设置已关闭。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1860536484129686729">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
 <translation id="1873233029667955273">Google Chrome 不是您的默认浏览器</translation>
@@ -442,6 +443,7 @@
 <translation id="6718739135284199302">提高 Chrome 的运行速度</translation>
 <translation id="6735387454586646204">ChromeOS Flex 系统</translation>
 <translation id="6750954913813541382">为了修正拼写错误，Chrome 会将您在浏览器中输入的文字发送给 Google</translation>
+<translation id="6760235774835597023">使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微降低。此设置已开启。</translation>
 <translation id="677276454032249905">仍要退出 Chrome？</translation>
 <translation id="6794858689789885890">始终在关闭 Chrome 时删除设备上的网站数据</translation>
 <translation id="6831043979455480757">翻译</translation>

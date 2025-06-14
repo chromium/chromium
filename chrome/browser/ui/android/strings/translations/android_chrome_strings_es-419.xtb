@@ -546,7 +546,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3513019849832307207">Unirse y abrir</translation>
 <translation id="3513704683820682405">Realidad aumentada</translation>
 <translation id="3516053221628030540">Ir a Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Se quitaron los permisos de notificaciones de un sitio que no visitaste recientemente}other{Se quitaron los permisos de notificaciones de # sitios que no visitaste recientemente}}</translation>
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3519014757432845220">Para ayudar a mejorar la protección contra spam, comparte el contenido de la notificación y la URL del sitio con Google. Es posible que una persona revise el contenido.</translation>
 <translation id="3521388823983121502">No puedes continuar con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4298388696830689168">Sitios vinculados</translation>
 <translation id="4300632303535881174">Ir a la página anterior</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Ingresar</translation>
 <translation id="4307992518367153382">Opciones básicas</translation>
 <translation id="4311652497846705514">¿Quieres abrir el PDF?</translation>
 <translation id="4320177379694898372">Sin conexión a Internet</translation>
@@ -1650,7 +1650,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8244387390464017490">Personalizar nueva pestaña</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8255617931166444521">Los sitios solo pueden utilizar las cookies para ver tu actividad de navegación en su propio sitio.</translation>
-<translation id="8256087213273124136">Chrome anuló tu suscripción a las notificaciones</translation>
 <translation id="8258999165172757081">Agregado</translation>
 <translation id="8259179246279078674">Debido a que las páginas precargadas están encriptadas, Google no analizará el contenido de esas páginas. Los servidores de Google sabrán qué sitios se precargaron de forma privada. Esta información solo se usará para precargar las páginas y no se vincula a otra información de tu Cuenta de Google.</translation>
 <translation id="8260126382462817229">Intenta volver a acceder</translation>
@@ -1794,7 +1793,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8856931513242997049">El flujo de permisos de notificaciones está cerrado</translation>
 <translation id="8863714995118816041">Se volvieron a otorgar permisos para <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Datos de Chrome de tu cuenta</translation>
-<translation id="8888527824584402177">Las pestañas que no usaste durante <ph name="DAYS_INACTIVE" /> días se mueven aquí<ph name="AUTODELETE_SECTION" />. Puedes cambiar este parámetro cuando lo desees en <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8888527824584402177">Las pestañas que no usaste durante <ph name="DAYS_INACTIVE" /> días se mueven aquí <ph name="AUTODELETE_SECTION" />. Puedes cambiar este parámetro cuando lo desees en <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8890668505403261809">Buscar en tus pestañas de incógnito</translation>
 <translation id="8898822736010347272">Envía a Google las URLs de algunas páginas que visitas, información limitada del sistema y parte del contenido de las páginas para ayudar a detectar nuevas amenazas y proteger a todos los usuarios en la Web.</translation>
 <translation id="8903921497873541725">Acercar</translation>
@@ -1852,7 +1851,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9102803872260866941">Está abierta la pestaña de vista previa</translation>
 <translation id="9102864637938129124">Los sitios y anunciantes pueden entender el rendimiento de los anuncios. Este parámetro de configuración está activado.</translation>
 <translation id="9104217018994036254">Lista de dispositivos con los que se puede compartir una pestaña.</translation>
-<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{No se usó durante 1 día o más}other{No se usó durante # días o más}}</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{No se usó durante 1 día o más}other{No se usaron durante # días o más}}</translation>
 <translation id="9106148373857059373">El flujo para guardar favoritos está cerrado</translation>
 <translation id="9108808586816295166">Es posible que el DNS seguro no esté disponible en todo momento</translation>
 <translation id="910908805481542201">Ayudarme a solucionar este problema</translation>

@@ -546,7 +546,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3513019849832307207">참여하고 열기</translation>
 <translation id="3513704683820682405">증강 현실</translation>
 <translation id="3516053221628030540">Google Play로 이동</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{최근에 방문하지 않은 사이트 1개의 알림 권한이 삭제됨}other{최근에 방문하지 않은 사이트 #개의 알림 권한이 삭제됨}}</translation>
 <translation id="3518985090088779359">동의하고 계속</translation>
 <translation id="3519014757432845220">알림 콘텐츠와 사이트 URL을 Google과 공유하여 스팸 보호 기능을 개선하는 데 도움을 주세요. 콘텐츠가 사람에 의해 검토될 수 있습니다.</translation>
 <translation id="3521388823983121502">ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)로 계속할 수 없음</translation>
@@ -715,6 +714,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4298388696830689168">연결된 사이트</translation>
 <translation id="4300632303535881174">이전 페이지로 이동</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">입력</translation>
 <translation id="4307992518367153382">기본설정</translation>
 <translation id="4311652497846705514">PDF를 여시겠습니까?</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
@@ -1650,7 +1650,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8244387390464017490">새 탭 페이지 맞춤설정</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="8255617931166444521">사이트에서 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
-<translation id="8256087213273124136">Chrome에서 알림을 수신 거부했습니다</translation>
 <translation id="8258999165172757081">추가됨</translation>
 <translation id="8259179246279078674">미리 로드된 페이지는 암호화되어 있으므로 Google에서는 미리 로드된 페이지의 콘텐츠에 관해 어떠한 정보도 알 수 없습니다. Google 서버는 어떤 사이트가 비공개로 미리 로드되었는지 파악하게 됩니다. 이 정보는 페이지를 미리 로드하는 데에만 사용되며, Google 계정의 다른 정보와 연결되지 않습니다.</translation>
 <translation id="8260126382462817229">다시 로그인해 주세요.</translation>

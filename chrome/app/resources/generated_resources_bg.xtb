@@ -4778,6 +4778,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4305402730127028764">Копиране на <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Превключване</translation>
 <translation id="4306119971288449206">Приложенията трябва да се показват с тип съдържание „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4306489587293957491">Въведете</translation>
 <translation id="4306810703452026910">Chrome ще спре да означава известията от този сайт като спам</translation>
 <translation id="4307992518367153382">Основни положения</translation>
 <translation id="4309165024397827958">Позволете на приложенията и услугите за Android да ползват местоположението на устройството ви, ако имат съответното разрешение. Google може периодично да събира информация за местоположението и да я използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги.</translation>
@@ -4835,6 +4836,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4350230709416545141">Достъпът до местоположението ви винаги да е блокиран за <ph name="HOST" /></translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Отворете приложението <ph name="APP_NAME" />, за да управлявате инсталираните и поточно предаваните приложения</translation>
+<translation id="4352913519324947509">Паролата ви не бе променена. Би трябвало да имате достъп до сайта с текущата си парола</translation>
 <translation id="4354073718307267720">Извеждане на запитване, когато сайт иска да създаде триизмерна карта на заобикалящата ви среда или да следи позицията на камерата</translation>
 <translation id="4354344420232759511">Посетените от вас сайтове ще се показват тук</translation>
 <translation id="435527878592612277">Изберете своя снимка</translation>
@@ -8323,6 +8325,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="686831807558000905">Без влизане в профила</translation>
 <translation id="686839242150793617">Сайтове с разрешение за автоматично преминаване в режим „картина в картината“</translation>
 <translation id="6868934826811377550">Преглед на подробностите</translation>
+<translation id="6870470066213933201">Управление на оптимизирането и сигурността на JavaScript</translation>
 <translation id="6871644448911473373">OCSP респондер: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Езици...</translation>
 <translation id="6873571253135628430">Промяна на разрешенията за сайтовете</translation>

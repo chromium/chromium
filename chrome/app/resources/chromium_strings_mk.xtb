@@ -344,6 +344,7 @@
 <translation id="5775198138441669627">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="SETTINGS_LINK" /> податоците од Chromium во вашата сметка</translation>
 <translation id="5800158606660203929">Приспособете го и контролирајте го Chromium. Поставете го Chromium како стандарден прелистувач.</translation>
 <translation id="5809516625706423866">Не може да се поврзе на интернет. HTTP-грешка 401: неовластен пристап. Проверете ја вашата конфигурација на прокси.</translation>
+<translation id="5817952762723416573">Ги забрзува сајтовите со пребарувачот V8 на Chromium, но го прави Chromium малку понеотпорен на напади. Поставкава е исклучена.</translation>
 <translation id="5821520528363214608">За да користите и да зачувувате податоци од Chromium во вашата сметка на Google, ажурирајте го Chromium</translation>
 <translation id="5824893331272123205">Таблава не можеше да се вчита, обидете се повторно</translation>
 <translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
@@ -433,6 +434,7 @@
 <translation id="6729124504294600478">За да добиете персонализација и други функции, опфатете го Chromium во „Активноста на интернет и апликации“ и поврзаните услуги на Google</translation>
 <translation id="6734291798041940871">Chromium веќе е инсталиран за сите корисници на вашиот компјутер.</translation>
 <translation id="674245979920622322">Не сте отвориле одамна. Chromium ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="COUNT" /></translation>
+<translation id="6751374565094704799">Ги забрзува сајтовите со пребарувачот V8 на Chromium, но го прави Chromium малку понеотпорен на напади. Поставкава е вклучена.</translation>
 <translation id="67706546131546258">Chromium препорачува скенирање на датотекава бидејќи можеби е опасна.</translation>
 <translation id="6779406956731413166">Chromium OS е овозможен со дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Преведи</translation>

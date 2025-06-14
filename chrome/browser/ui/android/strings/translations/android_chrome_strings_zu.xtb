@@ -546,7 +546,6 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="3513019849832307207">Joyina futhi vula</translation>
 <translation id="3513704683820682405">I-Augmented Reality</translation>
 <translation id="3516053221628030540">Iya kuGoogle Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Zisusiwe izimvume zezaziso kwenye isayithi osekunesikhathi ungayivakasheli}one{Zisusiwe izimvume zezaziso kumasayithi angu-# osekunesikhathi ungayivakasheli}other{Zisusiwe izimvume zezaziso kumasayithi angu-# osekunesikhathi ungayivakasheli}}</translation>
 <translation id="3518985090088779359">Yamukela uphinde uqhubeke</translation>
 <translation id="3519014757432845220">Siza ukuthuthukisa ukuvikeleka kogaxekile ngokwabelana ngekhontenti yesaziso kanye ne-URL yesayithi neGoogle. Ikhontenti ingase ibuyekezwe abantu.</translation>
 <translation id="3521388823983121502">Ayikwazi ukuqhubeka nge-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1651,7 +1650,6 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="8244387390464017490">Hlela ngendlela oyithandayo ikhasi elisha lethebhu</translation>
 <translation id="8250920743982581267">Amadokhumenti</translation>
 <translation id="8255617931166444521">Amasayithi angasebenzisa amakhukhi akho kuphela ukuze abone umsebenzi wakho wokuphequlula kuphela kusayithi lawo</translation>
-<translation id="8256087213273124136">IGoogle Chrome iyakukhipha ohlwini lwabathola izaziso</translation>
 <translation id="8258999165172757081">Kungeziwe</translation>
 <translation id="8259179246279078674">Ngenxa yokuthi amakhasi alayishwe kusengaphambili abethelwe, i-Google ngeke ifunde lutho mayelana nokuqukethwe kwekhasi elilayishwe kusengaphambili. Iziphakeli ze-Google zizofunda ukuthi yimaphi amasayithi alayishwe kusengaphambili ngokuyimfihlo. Lolu lwazi lusetshenziselwa ukulayisha kusengaphambili amakhasi kuphela, futhi aluxhunyanisiwe nolunye ulwazi olusuka ku-Google Account yakho.</translation>
 <translation id="8260126382462817229">Zama ukuphinda ungene ngemvume</translation>

@@ -4784,6 +4784,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4305402730127028764">Kopijuoti į „<ph name="DEVICE_NAME" />“</translation>
 <translation id="4305817255990598646">Perjungti</translation>
 <translation id="4306119971288449206">Teikiamų programų turinio tipas turi būti „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4306489587293957491">Klavišas „Enter“</translation>
 <translation id="4306810703452026910">„Chrome“ nebežymės šios svetainės pranešimų kaip šlamšto</translation>
 <translation id="4307992518367153382">Pagrindai</translation>
 <translation id="4309165024397827958">Leiskite „Android“ programoms ir paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti įrenginio vietovę. „Google“ gali periodiškai rinkti vietovės duomenis ir juos naudoti kaip anoniminius, siekdama tiksliau nustatyti vietovę ir gerinti paslaugas pagal vietovę.</translation>
@@ -4841,6 +4842,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4350230709416545141">Visada blokuoti <ph name="HOST" />, kad nepasiektų jūsų vietovės informacijos</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Eikite į programą „<ph name="APP_NAME" />“, jei norite tvarkyti įdiegtas ir srautu perduodamas programas</translation>
+<translation id="4352913519324947509">Slaptažodis nebuvo pakeistas, bet vis tiek turėtumėte galėti pasiekti svetainę naudodami dabatinį slaptažodį</translation>
 <translation id="4354073718307267720">Klausti, kai svetainė nori kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį</translation>
 <translation id="4354344420232759511">Lankytos svetainės bus rodomos čia</translation>
 <translation id="435527878592612277">Pasirinkite nuotrauką</translation>
@@ -8335,6 +8337,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="686831807558000905">Neprisijungti</translation>
 <translation id="686839242150793617">Leidžiama automatiškai įjungti vaizdo vaizde režimą</translation>
 <translation id="6868934826811377550">Žr. išsamią informaciją</translation>
+<translation id="6870470066213933201">Tvarkyti „JavaScript“ optimizavimą ir saugą</translation>
 <translation id="6871644448911473373">OCSP atsakiklis: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Kalbos...</translation>
 <translation id="6873571253135628430">Keisti svetainės leidimus</translation>

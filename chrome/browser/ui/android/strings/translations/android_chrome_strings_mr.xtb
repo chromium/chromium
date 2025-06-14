@@ -546,7 +546,6 @@
 <translation id="3513019849832307207">सामील व्हा आणि उघडा</translation>
 <translation id="3513704683820682405">ऑगमेंटेड रिअ‍ॅलिटी</translation>
 <translation id="3516053221628030540">Google Play वर जा</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{तुम्ही अलीकडे भेट न दिलेल्या साइटवरून नोटिफिकेशन परवानग्या काढून टाकल्या आहेत}other{तुम्ही अलीकडे भेट न दिलेल्या # साइटवरून नोटिफिकेशन परवानग्या काढून टाकल्या आहेत}}</translation>
 <translation id="3518985090088779359">स्वीकारा आणि सुरू ठेवा</translation>
 <translation id="3519014757432845220">Google सह नोटिफिकेशनशी संबंधित आशय आणि site ची URL शेअर करून स्पॅम संरक्षणामध्ये सुधारणा करण्यात मदत करा. आशयाचे मानवांकडून पुनरावलोकन केले जाऊ शकते.</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह पुढे सुरू ठेवू शकत नाही</translation>
@@ -715,6 +714,7 @@
 <translation id="4298388696830689168">लिंक केलेल्या साइट</translation>
 <translation id="4300632303535881174">मागील पेजवर जा</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">एंटर करा</translation>
 <translation id="4307992518367153382">मूलभूत</translation>
 <translation id="4311652497846705514">PDF उघडायची आहे का?</translation>
 <translation id="4320177379694898372">कोणतेही इंटरनेट कनेक्शन नाही</translation>
@@ -1650,7 +1650,6 @@
 <translation id="8244387390464017490">नवीन टॅब पेज कस्टमाइझ करा</translation>
 <translation id="8250920743982581267">दस्तऐवज</translation>
 <translation id="8255617931166444521">साइट फक्त तुमच्या कुकीचा वापर फक्त त्यांच्या स्वतःच्या साइटवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी पाहण्यासाठी करू शकतात</translation>
-<translation id="8256087213273124136">Chrome ने सूचनांमधून तुमचे सदस्यत्व रद्द केले आहे</translation>
 <translation id="8258999165172757081">जोडले</translation>
 <translation id="8259179246279078674">प्रीलोड केलेली पेज एंक्रिप्ट केलेली असल्यामुळे, प्रीलोड केलेल्या पेज आशयाबद्दल Google ला काहीही समजणार नाही. कोणत्या साइट खाजगीरीत्या प्रीलोड केलेल्या आहेत हे Google सर्व्हरना समजेल. ही माहिती फक्त पेज प्रीलोड करण्यासाठी वापरली जाते आणि तुमच्या Google खाते मधील इतर माहितीशी लिंक केलेली नाही.</translation>
 <translation id="8260126382462817229">पुन्हा साइन इन करण्याचा प्रयत्न करा</translation>

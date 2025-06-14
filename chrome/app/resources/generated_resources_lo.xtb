@@ -4780,6 +4780,7 @@
 <translation id="4305402730127028764">ສຳເນົາໄປໃສ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">ປ່ຽນ</translation>
 <translation id="4306119971288449206">ຕ້ອງໃຊ້ແອັບກັບເນື້ອຫາປະເພດ "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306489587293957491">Enter</translation>
 <translation id="4306810703452026910">Chrome ຈະຢຸດປັກທຸງການແຈ້ງເຕືອນຈາກເວັບໄຊນີ້ວ່າເປັນສະແປມ</translation>
 <translation id="4307992518367153382">ພື້ນ​ຖານ</translation>
 <translation id="4309165024397827958">ອະນຸຍາດໃຫ້ແອັບ ແລະ ບໍລິການ Android ຕ່າງໆທີ່ມີການອະນຸຍາດສະຖານທີ່ສາມາດໃຊ້ສະຖານທີ່ຂອງອຸປະກອນທ່ານໄດ້. Google ອາດເກັບກຳຂໍ້ມູນສະຖານທີ່ເປັນໄລຍະໆ ແລະ ໃຊ້ຂໍ້ມູນນີ້ໃນແບບບໍ່ລະບຸຕົວຕົນເພື່ອປັບປຸງຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ ແລະ ບໍລິການທີ່ອ້າງອີງສະຖານທີ່.</translation>
@@ -4837,6 +4838,7 @@
 <translation id="4350230709416545141">ບລັອກບໍ່ໃຫ້ <ph name="HOST" /> ເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານທຸກເທື່ອ</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">ໄປຫາແອັບ "<ph name="APP_NAME" />" ເພື່ອຈັດການແອັບທີ່ຕິດຕັ້ງໄວ້ ແລະ ສະຕຣີມໄວ້</translation>
+<translation id="4352913519324947509">ບໍ່ໄດ້ປ່ຽນລະຫັດຜ່ານຂອງທ່ານ, ແຕ່ທ່ານຄວນຈະຍັງຄົງສາມາດເຂົ້າເຖິງເວັບໄຊດ້ວຍລະຫັດຜ່ານປັດຈຸບັນຂອງທ່ານໄດ້ຢູ່</translation>
 <translation id="4354073718307267720">ຖາມເມື່ອເວັບໄຊຕ້ອງການສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="4354344420232759511">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="435527878592612277">ເລືອກຮູບພາບຂອງທ່ານ</translation>
@@ -8323,6 +8325,7 @@
 <translation id="686831807558000905">ບໍ່ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="686839242150793617">ອະນຸຍາດໃຫ້ເຂົ້າໄປການສະແດງຜົນຊ້ອນກັນໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6868934826811377550">ເບິ່ງລາຍລະອຽດ</translation>
+<translation id="6870470066213933201">ຈັດການການປັບແຕ່ງ ແລະ ຄວາມປອດໄພ JavaScript</translation>
 <translation id="6871644448911473373">ເຄື່ອງຕອບຮັບ OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">ພາສາ...</translation>
 <translation id="6873571253135628430">ປ່ຽນສິດທິຂອງເວັບໄຊ</translation>

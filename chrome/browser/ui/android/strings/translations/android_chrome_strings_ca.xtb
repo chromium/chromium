@@ -546,7 +546,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3513019849832307207">Uneix-me i obre</translation>
 <translation id="3513704683820682405">Realitat augmentada</translation>
 <translation id="3516053221628030540">Ves a Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{S'han suprimit els permisos de notificacions d'un lloc web que no has visitat recentment}other{S'han suprimit els permisos de notificacions de # llocs web que no has visitat recentment}}</translation>
 <translation id="3518985090088779359">Accepta i continua</translation>
 <translation id="3519014757432845220">Ajuda a millorar la protecció contra el contingut brossa compartint amb Google el contingut de les notificacions i l'URL del lloc web. És possible que un equip de persones revisi el contingut.</translation>
 <translation id="3521388823983121502">No pots continuar amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4298388696830689168">Llocs web enllaçats</translation>
 <translation id="4300632303535881174">Ves a la pàgina anterior</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Introdueix</translation>
 <translation id="4307992518367153382">Configuració bàsica</translation>
 <translation id="4311652497846705514">Vols obrir el PDF?</translation>
 <translation id="4320177379694898372">No hi ha connexió a Internet</translation>
@@ -1650,7 +1650,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8244387390464017490">Personalitza Pestanya nova</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8255617931166444521">Els llocs web només poden fer servir les teves galetes per veure la teva activitat de navegació només en aquests mateixos llocs web</translation>
-<translation id="8256087213273124136">Chrome ha cancel·lat la teva subscripció a les notificacions</translation>
 <translation id="8258999165172757081">S'ha afegit</translation>
 <translation id="8259179246279078674">Com que les pàgines precarregades estan encriptades, Google no obtindrà informació del contingut de la pàgina precarregada. Els servidors de Google sabran quins llocs web es precarreguen de manera privada. Aquesta informació només s'utilitza per precarregar les pàgines i no es vincula amb cap altra informació del teu Compte de Google.</translation>
 <translation id="8260126382462817229">Prova d'iniciar la sessió de nou</translation>

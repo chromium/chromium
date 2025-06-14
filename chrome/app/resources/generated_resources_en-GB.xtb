@@ -4781,6 +4781,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4305402730127028764">Copy to <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Switch</translation>
 <translation id="4306119971288449206">Apps must be served with content-type '<ph name="CONTENT_TYPE" />'</translation>
+<translation id="4306489587293957491">Enter</translation>
 <translation id="4306810703452026910">Chrome will stop flagging notifications from this site as spam</translation>
 <translation id="4307992518367153382">Basics</translation>
 <translation id="4309165024397827958">Allow Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.</translation>
@@ -4838,6 +4839,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4350230709416545141">Always block <ph name="HOST" /> from accessing your location</translation>
 <translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">Go to the '<ph name="APP_NAME" />' app to manage installed and streamed apps</translation>
+<translation id="4352913519324947509">Your password wasn't changed, but you should still be able to access the site with your current password</translation>
 <translation id="4354073718307267720">Ask when a site wants to create a 3D map of your surroundings or track camera position</translation>
 <translation id="4354344420232759511">Sites that you visit will appear here</translation>
 <translation id="435527878592612277">Select your photo</translation>
@@ -8325,6 +8327,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="686831807558000905">Don't sign in</translation>
 <translation id="686839242150793617">Allowed to enter picture-in-picture automatically</translation>
 <translation id="6868934826811377550">See details.</translation>
+<translation id="6870470066213933201">Manage JavaScript optimisation and security</translation>
 <translation id="6871644448911473373">OCSP Responder: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Languages…</translation>
 <translation id="6873571253135628430">Change site permissions</translation>

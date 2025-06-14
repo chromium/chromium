@@ -937,6 +937,7 @@
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
 <translation id="254947805923345898">ຄ່ານະໂຍບາຍບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="2549836668759467704">ທີ່ປຶກສາການກໍ່ສ້າງ ແລະ ການເຮັດສັນຍາ</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> ແລະ ອື່ນໆ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ໄດ້ສົ່ງຄຳຕອບທີ່ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="2551608178605132291">ທີ່ຢູ່: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4818,6 +4819,7 @@
 <translation id="9219103736887031265">ຮູບ</translation>
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
 <translation id="9222403027701923763">ໂຮງຮຽນປະຖົມ ແລະ ມັດທະຍົມ (K-12)</translation>
+<translation id="9222463428840654067">ໝາຍເລກບັດບໍ່ຖືກຕ້ອງ</translation>
 <translation id="922849469395748170">ບັດສະມາຊິກ</translation>
 <translation id="93020190163435405">ການເຝິກວຽກ</translation>
 <translation id="931598121743515856">ການຊື້ຕ້ອງມີມູນຄ່າສູງກວ່າ <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

@@ -937,6 +937,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2546283357679194313">Informasjonskapsler og data fra nettsteder</translation>
 <translation id="254947805923345898">Regelverdien er ikke gyldig.</translation>
 <translation id="2549836668759467704">Byggentreprenører og -konsulenter</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> og flere</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> sendte et ugyldig svar.</translation>
 <translation id="2551608178605132291">Adresse: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4818,6 +4819,7 @@ Mer informasjon:
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="922152298093051471">Tilpass Chrome</translation>
 <translation id="9222403027701923763">Grunnskole og videregående skole (K-12)</translation>
+<translation id="9222463428840654067">Kortnummeret er ugyldig</translation>
 <translation id="922849469395748170">Stamkundekort</translation>
 <translation id="93020190163435405">Praktikantstillinger</translation>
 <translation id="931598121743515856">Kjøpet må være på mer enn <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

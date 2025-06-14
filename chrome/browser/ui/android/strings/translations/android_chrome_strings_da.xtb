@@ -546,7 +546,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3513019849832307207">Deltag og åbn</translation>
 <translation id="3513704683820682405">Augmented reality</translation>
 <translation id="3516053221628030540">Gå til Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Notifikationstilladelser fra ét website, du ikke har besøgt for nylig, er blevet fjernet}one{Notifikationstilladelser fra # website, du ikke har besøgt for nylig, er blevet fjernet}other{Notifikationstilladelser fra # websites, du ikke har besøgt for nylig, er blevet fjernet}}</translation>
 <translation id="3518985090088779359">Acceptér og fortsæt</translation>
 <translation id="3519014757432845220">Hjælp med at forbedre spambeskyttelsen ved at dele notifikationsindhold og sidens webadresse med Google. Indholdet bliver muligvis gennemgået af menneskelige kontrollanter.</translation>
 <translation id="3521388823983121502">Det er ikke muligt at fortsætte med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4298388696830689168">Tilknyttede websites</translation>
 <translation id="4300632303535881174">Gå til forrige side</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Angiv</translation>
 <translation id="4307992518367153382">Grundlæggende valgmuligheder</translation>
 <translation id="4311652497846705514">Vil du åbne PDF-filen?</translation>
 <translation id="4320177379694898372">Ingen internetforbindelse</translation>
@@ -1650,7 +1650,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8244387390464017490">Tilpas siden Ny fane</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8255617931166444521">Websites kan kun bruge dine cookies til at se din browseraktivitet på deres eget website</translation>
-<translation id="8256087213273124136">Chrome har frameldt dig notifikationer</translation>
 <translation id="8258999165172757081">Tilføjet</translation>
 <translation id="8259179246279078674">Fordi de forudindlæste sider er krypterede, vil Google ikke få nogle oplysninger om det forudindlæste sideindhold. Googles servere vil få oplysninger om, hvilke websites der forudindlæses privat. Disse oplysninger bruges udelukkende til at forudindlæse siderne og knyttes ikke til andre oplysninger på din Google-konto.</translation>
 <translation id="8260126382462817229">Prøv at logge ind igen</translation>

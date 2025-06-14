@@ -937,6 +937,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="254947805923345898">La valeur de la règle n'est pas valide.</translation>
 <translation id="2549836668759467704">Conseil et passation de marchés dans le secteur du bâtiment</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> et d'autres</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> a envoyé une réponse incorrecte.</translation>
 <translation id="2551608178605132291">Adresse : <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4819,6 +4820,7 @@ Informations supplémentaires :
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
 <translation id="9222403027701923763">Scolarité primaire et secondaire</translation>
+<translation id="9222463428840654067">Le numéro de carte n'est pas valide</translation>
 <translation id="922849469395748170">Cartes de fidélité</translation>
 <translation id="93020190163435405">Stages</translation>
 <translation id="931598121743515856">L'achat doit être supérieur à <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

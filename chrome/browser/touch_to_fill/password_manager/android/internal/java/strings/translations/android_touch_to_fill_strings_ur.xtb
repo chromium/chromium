@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">محفوظ کردہ پاس ورڈ یا پاس کی استعمال کریں؟</translation>
 <translation id="5624120631404540903">پاس ورڈز کا نظم کریں</translation>
 <translation id="592182999816790476"><ph name="USERNAME" /> کا پاس ورڈ <ph name="WEBSITE" /> کے لیے محفوظ کیا گیا</translation>
+<translation id="593924516471361340">‫<ph name="USERNAME" /> کی خاطر دشواری کی صورت میں بازیابی کا عارضی پاس ورڈ <ph name="WEBSITE" /> کے لیے محفوظ کیا گیا</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> کے لیے پاس کی، اپنے اسکرین لاک کا استعمال کریں</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{اس سائٹ کے لیے نیا پاس ورڈ}other{اس سائٹ کے لیے نئے پاس ورڈز}}</translation>
 <translation id="7286867818472074330">پاس کی کو منتخب کریں</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />، <ph name="ITEM_POSITION" /> از <ph name="ITEMS_TOTAL" />۔</translation>
 <translation id="7738288782501322815">آپ کو <ph name="SITE_NAME" /> کے لیے پاس ورڈز موصول ہوئے ہیں</translation>
+<translation id="8202660122967066153">‫<ph name="USERNAME" /> کے لیے دشواری کی صورت میں بازیابی کا عارضی پاس ورڈ</translation>
 <translation id="8363484128299778310">دشواری کی صورت میں عارضی بازیابی</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> نے <ph name="SITE_NAME" /> کے لیے آپ کے ساتھ پاس ورڈ کا اشتراک کیا ہے</translation>
 <translation id="8891372124884726271">اسناد کی فہرست بند ہے۔</translation>

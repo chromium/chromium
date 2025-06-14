@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Use saved password or passkey?</translation>
 <translation id="5624120631404540903">Manage passwords</translation>
 <translation id="592182999816790476">Password for <ph name="USERNAME" /> saved for <ph name="WEBSITE" /></translation>
+<translation id="593924516471361340">Temporary recovery password in case of trouble for <ph name="USERNAME" /> saved for <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Passkey for <ph name="USERNAME" />, use your screen lock</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{New password for this site}other{New passwords for this site}}</translation>
 <translation id="7286867818472074330">Select passkey</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> of <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">You have received passwords for <ph name="SITE_NAME" /></translation>
+<translation id="8202660122967066153">Temporary recovery password in case of trouble for <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Temp recovery in case of trouble</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> has shared a password with you for <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">List of credentials is closed.</translation>

@@ -546,7 +546,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3513019849832307207">Unirme y abrir</translation>
 <translation id="3513704683820682405">Realidad aumentada</translation>
 <translation id="3516053221628030540">Ir a Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Se han eliminado los permisos de notificaciones de un sitio que no has visitado recientemente}other{Se han eliminado los permisos de notificaciones de # sitios que no has visitado recientemente}}</translation>
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3519014757432845220">Ayuda a mejorar la protección contra el spam compartiendo con Google el contenido de la notificación y la URL del sitio. Es posible que el contenido lo revisen personas.</translation>
 <translation id="3521388823983121502">No se puede continuar con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4298388696830689168">Sitios web enlazados</translation>
 <translation id="4300632303535881174">Ir a la página anterior</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Introducir</translation>
 <translation id="4307992518367153382">Configuración básica</translation>
 <translation id="4311652497846705514">¿Abrir PDF?</translation>
 <translation id="4320177379694898372">No hay conexión a Internet</translation>
@@ -1650,7 +1650,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8244387390464017490">Personalizar Nueva pestaña</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8255617931166444521">Los sitios solo pueden usar las cookies para ver tu actividad de navegación en ellos mismos.</translation>
-<translation id="8256087213273124136">Chrome ha anulado tu suscripción a las notificaciones</translation>
 <translation id="8258999165172757081">Añadido</translation>
 <translation id="8259179246279078674">Dado que las páginas precargadas están cifradas, Google no analizará el contenido de la página precargada. Los servidores de Google sabrán qué sitios se precargan de forma privada. Esta información solo se usa para precargar las páginas, y no está vinculada a ninguna otra información de tu cuenta de Google.</translation>
 <translation id="8260126382462817229">Prueba a iniciar sesión de nuevo</translation>

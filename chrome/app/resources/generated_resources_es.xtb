@@ -4768,6 +4768,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4305402730127028764">Copiar en <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306119971288449206">Las aplicaciones deben incluir el encabezado content-type "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306489587293957491">Introducir</translation>
 <translation id="4306810703452026910">Chrome dejará de marcar como spam las notificaciones de este sitio</translation>
 <translation id="4307992518367153382">Configuración básica</translation>
 <translation id="4309165024397827958">Permite que las aplicaciones y los servicios de Android que tengan permiso de ubicación usen la ubicación de tu dispositivo. Es posible que Google recoja datos de ubicación periódicamente y que los use de forma anónima para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
@@ -4825,6 +4826,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4350230709416545141">Impedir siempre que <ph name="HOST" /> acceda a tu ubicación</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Ve a la aplicación <ph name="APP_NAME" /> para gestionar las aplicaciones instaladas y emitidas</translation>
+<translation id="4352913519324947509">Tu contraseña no se ha cambiado, pero deberías poder acceder al sitio con tu contraseña actual</translation>
 <translation id="4354073718307267720">Preguntar cuando un sitio web quiera crear un mapa 3D de tu entorno o hacer un seguimiento de la posición de la cámara</translation>
 <translation id="4354344420232759511">Los sitios que visites aparecerán aquí</translation>
 <translation id="435527878592612277">Selecciona una foto</translation>
@@ -8310,6 +8312,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="686831807558000905">No iniciar sesión</translation>
 <translation id="686839242150793617">Pueden acceder a la función de imagen en imagen automáticamente</translation>
 <translation id="6868934826811377550">Ver detalles</translation>
+<translation id="6870470066213933201">Gestionar optimización y seguridad de JavaScript</translation>
 <translation id="6871644448911473373">Respuesta de OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Idiomas...</translation>
 <translation id="6873571253135628430">Cambiar permisos de sitios</translation>

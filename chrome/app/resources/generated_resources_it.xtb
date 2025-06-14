@@ -2166,6 +2166,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="24786041351753425">Attiva il servizio di recupero dati</translation>
 <translation id="2479541499757560845">Impostazioni della tastiera di accessibilità</translation>
 <translation id="2480868415629598489">Modifica dei dati copiati e incollati</translation>
+<translation id="2480881140544300950">Motore di ricerca corrente che gestisce la pagina Nuova scheda</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2482895651873876648">Scheda spostata nel gruppo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Imposta il motore di ricerca nelle impostazioni del browser Chrome</translation>
@@ -4768,6 +4769,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4305402730127028764">Copia su <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Cambia</translation>
 <translation id="4306119971288449206">Le app devono essere installate con il tipo di contenuto "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306489587293957491">Inserisci</translation>
 <translation id="4306810703452026910">Chrome non segnalerà più le notifiche di questo sito come spam</translation>
 <translation id="4307992518367153382">Impostazioni di base</translation>
 <translation id="4309165024397827958">Consenti ai servizi Android e alle app che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>
@@ -4825,6 +4827,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4350230709416545141">Impedisci sempre al sito <ph name="HOST" /> di accedere alla tua posizione</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Vai all'app "<ph name="APP_NAME" />" per gestire le app installate e riprodotte in streaming</translation>
+<translation id="4352913519324947509">La tua password non è stata cambiata, ma dovresti comunque riuscire ad accedere al sito con la tua password attuale</translation>
 <translation id="4354073718307267720">Chiedi conferma quando un sito vuole creare una mappa 3D dell'ambiente circostante o monitorare la posizione della fotocamera</translation>
 <translation id="4354344420232759511">Qui verranno visualizzati i siti visitati</translation>
 <translation id="435527878592612277">Seleziona la foto</translation>
@@ -5365,6 +5368,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4742970037960872810">Rimuovi evidenziazione</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Scopri come aggiornare le applicazioni<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l'<ph name="LINK_BEGIN" />accesso al microfono del sistema<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">I revisori umani esaminano le pagine delle password e le informazioni correlate per migliorare questa funzionalità, anche se la tua password è criptata e non può essere visualizzata da nessuno.</translation>
 <translation id="4744260496658845719">Luminosità della retroilluminazione della tastiera</translation>
 <translation id="4744268813103118742">Vai al sito</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6323,6 +6327,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5434065355175441495">PKCS #1 con crittografia RSA</translation>
 <translation id="5435274640623994081">Abilita registrazione earcon</translation>
 <translation id="5435779377906857208">Consenti sempre al sito <ph name="HOST" /> di accedere alla tua posizione</translation>
+<translation id="5436211819997237281">Estensione corrente che gestisce la pagina Nuova scheda</translation>
 <translation id="5436492226391861498">In attesa del tunnel proxy...</translation>
 <translation id="5436510242972373446">Cerca su <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Larghezza della finestra di <ph name="WINDOW_SIDE" />: <ph name="WINDOW_SIZE_PERCENT" />, larghezza del riquadro di <ph name="PANE_SIDE" />: <ph name="PANE_SIZE_PERCENT" />.</translation>
@@ -8308,6 +8313,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="686831807558000905">Non accedere</translation>
 <translation id="686839242150793617">Siti autorizzati ad attivare automaticamente la modalità Picture in picture</translation>
 <translation id="6868934826811377550">Visualizza dettagli</translation>
+<translation id="6870470066213933201">Gestisci la sicurezza e l'ottimizzazione di JavaScript</translation>
 <translation id="6871644448911473373">Risponditore OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Lingue...</translation>
 <translation id="6873571253135628430">Modifica le autorizzazioni dei siti</translation>
@@ -9209,6 +9215,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7529411698175791732">Controlla la connessione a Internet. Se il problema persiste, prova a uscire e ad accedere di nuovo.</translation>
 <translation id="7529865045818406536">Le reti preferite verranno utilizzate se sarà disponibile più di una rete precedente</translation>
 <translation id="7530016656428373557">Velocità di esaurimento in watt</translation>
+<translation id="7530215951451994972">Crea immagine</translation>
 <translation id="7531771599742723865">Dispositivo in uso</translation>
 <translation id="7531779363494549572">Seleziona Impostazioni &gt; App e notifiche &gt; Notifiche.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> non risponde. Seleziona "Termina" per chiudere l'app.</translation>

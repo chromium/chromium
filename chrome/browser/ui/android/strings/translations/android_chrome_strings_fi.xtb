@@ -546,7 +546,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3513019849832307207">Liity ja avaa</translation>
 <translation id="3513704683820682405">Lisätty todellisuus</translation>
 <translation id="3516053221628030540">Siirry Google Playhin</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Ilmoitusluvat poistettu yhdeltä sivustolta, jolla et ole käynyt viime aikoina}other{Ilmoitusluvat poistettu # sivustolta, joilla et ole käynyt viime aikoina}}</translation>
 <translation id="3518985090088779359">Hyväksy ja jatka</translation>
 <translation id="3519014757432845220">Auta parantamaan roskasisältösuojausta jakamalla ilmoituksen sisältö ja sivuston URL-osoite Googlelle. Ihmiset voivat tarkastaa sisältöä.</translation>
 <translation id="3521388823983121502">Jatkaminen ei onnistu: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4298388696830689168">Linkitetyt sivustot</translation>
 <translation id="4300632303535881174">Siirry edelliselle sivulle</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Lisää</translation>
 <translation id="4307992518367153382">Perustiedot</translation>
 <translation id="4311652497846705514">Avataanko PDF?</translation>
 <translation id="4320177379694898372">Ei internetyhteyttä</translation>
@@ -1650,7 +1650,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8244387390464017490">Muuta Uusi välilehti ‑sivua</translation>
 <translation id="8250920743982581267">Dokumentit</translation>
 <translation id="8255617931166444521">Sivustot voivat nähdä selaustoimintaasi evästeiden kautta vain omalla sivustollaan</translation>
-<translation id="8256087213273124136">Chrome perui ilmoitusten tilauksen</translation>
 <translation id="8258999165172757081">Lisätty</translation>
 <translation id="8259179246279078674">Google ei saa mitään tietoja esiladattujen sivujen sisällöstä, sillä nämä sivut ovat salattuja. Googlen palvelimet saavat tietää, mitkä sivustot on esiladattu yksityisesti. Tietoja käytetään vain sivujen esilataamiseen, eikä niitä linkitetä muihin Google-tilisi tietoihin.</translation>
 <translation id="8260126382462817229">Yritä kirjautua uudelleen sisään.</translation>

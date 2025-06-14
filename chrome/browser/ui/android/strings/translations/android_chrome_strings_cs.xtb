@@ -546,7 +546,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3513019849832307207">Přidat se a otevřít</translation>
 <translation id="3513704683820682405">Rozšířená realita</translation>
 <translation id="3516053221628030540">Přejít na Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Jednomu webu, který v poslední době nenavštívili, byla odebrána oprávnění k zasílání oznámení}few{# webům, které jste v poslední době nenavštívili, byla odebrána oprávnění k zasílání oznámení}many{# webu, který jste v poslední době nenavštívili, byla odebrána oprávnění k zasílání oznámení}other{# webům, které jste v poslední době nenavštívili, byla odebrána oprávnění k zasílání oznámení}}</translation>
 <translation id="3518985090088779359">PŘIJMOUT A POKRAČOVAT</translation>
 <translation id="3519014757432845220">Pomozte zlepšit ochranu proti spamu tím, že obsah oznámení a adresu URL webu budete sdílet s Googlem. Obsah můžou zkontrolovat lidé.</translation>
 <translation id="3521388823983121502">S <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nelze pokračovat</translation>
@@ -715,6 +714,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4298388696830689168">Propojené weby</translation>
 <translation id="4300632303535881174">Přejít na předchozí stránku</translation>
 <translation id="4303044213806199882">snimek_obrazovky_chrome_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Zadejte</translation>
 <translation id="4307992518367153382">Základy</translation>
 <translation id="4311652497846705514">Otevřít PDF?</translation>
 <translation id="4320177379694898372">Žádné připojení k internetu</translation>
@@ -1650,7 +1650,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8244387390464017490">Upravit stránku nová karta</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="8255617931166444521">Weby mohou pomocí souborů cookie sledovat aktivitu prohlížení pouze na svém vlastním webu</translation>
-<translation id="8256087213273124136">Chrome vás odhlásil z odběru oznámení</translation>
 <translation id="8258999165172757081">Přidáno</translation>
 <translation id="8259179246279078674">Protože jsou předběžně načítané stránky zašifrované, Google nedozví nic o jejich obsahu. Servery Google se dozví, které weby se soukromě předběžně načítají. Tyto informace se používají pouze k předběžnému načítání stránek a nejsou spojeny s jinými informacemi z vašeho účtu Google.</translation>
 <translation id="8260126382462817229">Zkuste se přihlásit znovu.</translation>

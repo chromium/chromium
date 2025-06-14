@@ -937,6 +937,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
 <translation id="254947805923345898">El valor de la política no es válido.</translation>
 <translation id="2549836668759467704">Asesoría en construcción y contratación de personal</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> y más</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> envió una respuesta no válida.</translation>
 <translation id="2551608178605132291">Dirección: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4821,6 +4822,7 @@ Detalles adicionales:
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="9222403027701923763">Escuela primaria y secundaria (preescolar a bachillerato)</translation>
+<translation id="9222463428840654067">El número de tarjeta no es válido</translation>
 <translation id="922849469395748170">Tarjetas de lealtad</translation>
 <translation id="93020190163435405">Pasantías</translation>
 <translation id="931598121743515856">La compra debe ser superior a <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

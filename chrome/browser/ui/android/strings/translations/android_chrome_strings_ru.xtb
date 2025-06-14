@@ -546,7 +546,6 @@
 <translation id="3513019849832307207">Присоединиться и открыть</translation>
 <translation id="3513704683820682405">Дополненная реальность</translation>
 <translation id="3516053221628030540">Перейти в Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Разрешения на уведомления отозваны у 1 сайта, который вы давно не посещали.}one{Разрешения на уведомления отозваны у # сайта, который вы давно не посещали.}few{Разрешения на уведомления отозваны у # сайтов, которые вы давно не посещали.}many{Разрешения на уведомления отозваны у # сайтов, которые вы давно не посещали.}other{Разрешения на уведомления отозваны у # сайта, которые вы давно не посещали.}}</translation>
 <translation id="3518985090088779359">Продолжить</translation>
 <translation id="3519014757432845220">Отправляйте контент уведомлений и URL сайтов в Google. Это поможет нам улучшать защиту от спама. Контент могут проверять специалисты.</translation>
 <translation id="3521388823983121502">Не удалось войти через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -715,6 +714,7 @@
 <translation id="4298388696830689168">Связанные сайты</translation>
 <translation id="4300632303535881174">Перейти на предыдущую страницу</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Ввод</translation>
 <translation id="4307992518367153382">Основные</translation>
 <translation id="4311652497846705514">Открыть PDF-файл?</translation>
 <translation id="4320177379694898372">Нет подключения к Интернету</translation>
@@ -1124,7 +1124,7 @@
 <translation id="6138832295072039549">Изменить настройки сайта можно здесь</translation>
 <translation id="6140912465461743537">Страна/регион</translation>
 <translation id="6142183503755612900">Вы в любой момент можете изменить выбор в настройках.</translation>
-<translation id="6143892791267458416">и закрываются через <ph name="DAYS_ARCHIVED" /> дн</translation>
+<translation id="6143892791267458416">\u0020и закрываются через <ph name="DAYS_ARCHIVED" /> дн</translation>
 <translation id="6146563240635539929">Видео</translation>
 <translation id="614890671148262506">Всегда разрешать уведомления от этого сайта</translation>
 <translation id="6150320133806434356">Закладка сохранена</translation>
@@ -1650,7 +1650,6 @@
 <translation id="8244387390464017490">Настроить стр. быстр. дост.</translation>
 <translation id="8250920743982581267">Документы</translation>
 <translation id="8255617931166444521">С помощью файлов cookie сайт может только определять, какие действия вы совершали на нем.</translation>
-<translation id="8256087213273124136">Ваша подписка на уведомления в Chrome отменена</translation>
 <translation id="8258999165172757081">Добавлено</translation>
 <translation id="8259179246279078674">Так как предзагруженные страницы зашифрованы, Google ничего не узнает об их содержимом. Серверы Google получат сведения о том, какие сайты анонимно предзагружены. Эта информация используется только для предварительной загрузки страниц и не связана с другими данными из вашего аккаунта Google.</translation>
 <translation id="8260126382462817229">Снова войдите в аккаунт</translation>

@@ -937,6 +937,7 @@
 <translation id="2546283357679194313">कुकीहरू र साइट डाटा</translation>
 <translation id="254947805923345898">नीतिको मान मान्य छैन।</translation>
 <translation id="2549836668759467704">निर्माणसम्बन्धी परामर्श तथा सम्झौता</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> र अरू विषय</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ले अमान्य प्रतिक्रिया पठायो।</translation>
 <translation id="2551608178605132291">ठेगाना: <ph name="ADDRESS" />।</translation>
 <translation id="2552246211866555379">हागाकी</translation>
@@ -4816,6 +4817,7 @@
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="922152298093051471">Chrome आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="9222403027701923763">प्राथमिक र माध्यमिक विद्यालय (K-१२)</translation>
+<translation id="9222463428840654067">कार्ड नम्बर अवैध छ</translation>
 <translation id="922849469395748170">लोयल्टी कार्डहरू</translation>
 <translation id="93020190163435405">प्रशिक्षार्थी कर्मचारी</translation>
 <translation id="931598121743515856">खरिदको रकम अनिवार्य रूपमा <ph name="CHECKOUT_AMOUNT_MINIMUM" /> भन्दा बढी हुनु पर्छ</translation>

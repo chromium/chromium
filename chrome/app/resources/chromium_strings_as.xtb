@@ -344,6 +344,7 @@
 <translation id="5775198138441669627">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰিছে বা এই ছেটিংটো সলাব বিচাৰে, তেন্তে আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromium কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক। Chromiumক আপোনাৰ ডিফ’ল্ট হিচাপে ছেট কৰক।</translation>
 <translation id="5809516625706423866">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই। HTTP 401 অকৰ্তৃত্বশীল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰ’ক্সি কনফিগাৰেশ্বন পৰীক্ষা কৰক।</translation>
+<translation id="5817952762723416573">Chromiumৰ V8 ইঞ্জিনৰ সৈতে ছাইটবোৰ খৰতকীয়া কৰি তোলে কিন্তু Chromiumক আক্ৰমণৰ পৰা সামান্য কম প্ৰতিৰোধী কৰে। এই ছেটিংটো অফ হৈ আছে।</translation>
 <translation id="5821520528363214608">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ, Chromium আপডে’ট কৰক</translation>
 <translation id="5824893331272123205">এই পেনেলটো ল’ড কৰিব পৰা নগ’ল, পুনৰ চেষ্টা কৰক</translation>
 <translation id="5862307444128926510">Chromium লৈ স্বাগতম</translation>
@@ -433,6 +434,7 @@
 <translation id="6729124504294600478">ব্যক্তিগতকৰণ আৰু অন্য সুবিধাসমূহ পাবলৈ, ৱেব আৰু এপৰ কাৰ্যকলাপত Chromium আৰু লিংক কৰি থোৱা Google সেৱাসমূহক অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="6734291798041940871">Chromium আপোনাৰ কম্পিউটাৰত থকা সকলো ব্যৱহাৰকাৰীৰ বাবে ইতিমধ্যেই ইনষ্টল কৰা হৈছে।</translation>
 <translation id="674245979920622322">আপুনি শেহতীয়াকৈ চোৱা নাই। Chromiumএ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="COUNT" /> টা অনুমতি আঁতৰাইছে</translation>
+<translation id="6751374565094704799">Chromiumৰ V8 ইঞ্জিনৰ সৈতে ছাইটবোৰ খৰতকীয়া কৰি তোলে কিন্তু Chromiumক আক্ৰমণৰ পৰা সামান্য কম প্ৰতিৰোধী কৰে। এই ছেটিংটো অন হৈ আছে।</translation>
 <translation id="67706546131546258">Chromiumএ এই ফাইলটো স্কেন কৰাটো চুপাৰিছ কৰে কাৰণ ই বিপজ্জনক হ’ব পাৰে।</translation>
 <translation id="6779406956731413166">অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ জৰিয়তে ChromiumOSক ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>
 <translation id="6831043979455480757">Translate</translation>

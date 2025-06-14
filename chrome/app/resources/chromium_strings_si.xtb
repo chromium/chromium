@@ -343,6 +343,7 @@
 <translation id="5775198138441669627">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, ඔබේ ගිණුමේ ඇති Chromium දත්ත <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromium අභිරුචි කිරීම සහ පාලනය. Chromium ඔබේ පෙරනිමිය ලෙස සකසන්න.</translation>
 <translation id="5809516625706423866">අන්තර්ජාලය වෙත සම්බන්ධ වීමට නොහැකි වේ. HTTP 401 අනවසරයි. ඔබේ ප්‍රොක්සි වින්‍යාසය පරීක්ෂා කරන්න.</translation>
+<translation id="5817952762723416573">Chromium හි V8 එන්ජිම සමග අඩවි වේගවත් කරයි, නමුත් Chromium ප්‍රහාරවලට තරමක් අඩු ප්‍රතිරෝධයක් දක්වයි. මෙම සැකසීම ක්‍රියාවිරහිතයි.</translation>
 <translation id="5821520528363214608">ඔබේ Google ගිණුමේ Chromium දත්ත භාවිත කිරීමට සහ සුරැකීමට, Chromium යාවත්කාලීන කරන්න</translation>
 <translation id="5824893331272123205">මෙම පැනලය පූරණය කිරීමට නොහැකි විය, නැවත උත්සාහ කරන්න</translation>
 <translation id="5862307444128926510">Chromium වෙත සාදරයෙන් පිළිගනිමු</translation>
@@ -432,6 +433,7 @@
 <translation id="6729124504294600478">පුද්ගලායන සහ අනෙකුත් විශේෂාංග ලබා ගැනීමට, වෙබ් සහ යෙදුම් ක්‍රියාකාරකම සහ සම්බන්‍ධ Google සේවා තුළ Chromium ඇතුළු කරන්න</translation>
 <translation id="6734291798041940871">ඔබේ පරිගණකය මත සියලුම පරිශීලකයින් සඳහා Chromium දැනටමත් ස්ථාපනය කර ඇත.</translation>
 <translation id="674245979920622322">ඔබ මෑත පැමිණ නැත. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, සහ තව <ph name="COUNT" /> ක් ඉවත් කළා</translation>
+<translation id="6751374565094704799">Chromium හි V8 එන්ජිම සමග අඩවි වේගවත් කරයි, නමුත් Chromium ප්‍රහාරවලට තරමක් අඩු ප්‍රතිරෝධයක් දක්වයි. මෙම සැකසීම ක්‍රියාත්මකයි.</translation>
 <translation id="67706546131546258">Chromium මෙම ගොනුව අනතුරුදායක විය හැකි නිසා ස්කෑන් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="6779406956731413166">ChromiumOS හට අතිරේක <ph name="BEGIN_LINK_CROS_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_CROS_OSS" /> මගින් හැකියාව ලබාදී ඇත.</translation>
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>

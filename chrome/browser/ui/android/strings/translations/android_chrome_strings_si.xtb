@@ -546,7 +546,6 @@
 <translation id="3513019849832307207">එකතු වී විවෘත කරන්න</translation>
 <translation id="3513704683820682405">ආවර්ධිත යථාර්තය</translation>
 <translation id="3516053221628030540">Google Play වෙත යන්න</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{ඔබ මෑතක දී නොපිවිසි එක් අඩවියකින් දැනුම්දීම් අවසර ඉවත් කරන ලදි}one{ඔබ මෑතක දී නොපිවිසි අඩවි #කින් දැනුම්දීම් අවසර ඉවත් කරන ලදි}other{ඔබ මෑතක දී නොපිවිසි අඩවි #කින් දැනුම්දීම් අවසර ඉවත් කරන ලදි}}</translation>
 <translation id="3518985090088779359">පිළිගෙන කරගෙන යන්න</translation>
 <translation id="3519014757432845220">දැනුම්දීම් අන්තර්ගතය සහ අඩවියේ URL එක Google සමග බෙදා ගැනීමෙන් අයාචිත ආරක්ෂණය වැඩි දියුණු කිරීමට උදවු කරන්න. අන්තර්ගතය මිනිසුන් විසින් සමාලෝචනය කළ හැක.</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> සමග ඉදිරියට යාමට නොහැක</translation>
@@ -715,6 +714,7 @@
 <translation id="4298388696830689168">සබැඳි කළ වෙබ් අඩවි</translation>
 <translation id="4300632303535881174">පෙර පිටුවට යන්න</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">Enter</translation>
 <translation id="4307992518367153382">මූලික</translation>
 <translation id="4311652497846705514">PDF විවෘත කරන්න ද?</translation>
 <translation id="4320177379694898372">අන්තර්ජාල සබැඳුම නැත</translation>
@@ -1650,7 +1650,6 @@
 <translation id="8244387390464017490">නව පටිති පිටුව අභිරුචිකරණය කරන්න</translation>
 <translation id="8250920743982581267">ලේඛන</translation>
 <translation id="8255617931166444521">ඔවුන්ගේම අඩවියේ පමණක් ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම බැලීමට පමණක් අඩවිවලට ඔබගේ කුකි භාවිත කිරීමට හැකිය</translation>
-<translation id="8256087213273124136">Chrome ඔබව දැනුම්දීම් වලින් ග්‍රාහක නොකර ඇත</translation>
 <translation id="8258999165172757081">එක් කළේය</translation>
 <translation id="8259179246279078674">පූර්ව පූරණය කරන ලද පිටු සංකේතනය කර ඇති නිසා, Google පූර්ව පූරණය කර ඇති පිටු අන්තර්ගතය ගැන කිසිවක් දැන නොගනු ඇත. පුද්ගලිකව පූර්ව පූරණය කර ඇති අඩවි මොනවාදැයි Google සේවාදායකවලින් දැන ගනු ඇත. මෙම තොරතුරු පිටු පූර්ව පූරණය කිරීමට පමණක් භාවිත වන අතර, ඔබගේ Google ගිණුමෙන් වෙනත් තොරතුරුවලට සම්බන්ධ නොවේ.</translation>
 <translation id="8260126382462817229">නැවත පිරීම උත්සාහ කරන්න</translation>

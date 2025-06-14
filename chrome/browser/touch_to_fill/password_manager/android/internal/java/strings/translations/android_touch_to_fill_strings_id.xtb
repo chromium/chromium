@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Gunakan sandi atau kunci sandi tersimpan?</translation>
 <translation id="5624120631404540903">Kelola sandi</translation>
 <translation id="592182999816790476">Sandi untuk <ph name="USERNAME" /> disimpan untuk <ph name="WEBSITE" /></translation>
+<translation id="593924516471361340">Sandi pemulihan sementara jika terjadi masalah untuk <ph name="USERNAME" /> yang disimpan untuk <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Kunci sandi untuk <ph name="USERNAME" />, gunakan kunci layar</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Sandi baru untuk situs ini}other{Sandi baru untuk situs ini}}</translation>
 <translation id="7286867818472074330">Pilih kunci sandi</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> dari <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Anda telah menerima sandi untuk <ph name="SITE_NAME" /></translation>
+<translation id="8202660122967066153">Sandi pemulihan sementara jika terjadi masalah untuk <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Pemulihan sementara jika terjadi masalah</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> telah berbagi sandi dengan Anda untuk <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Daftar kredensial ditutup.</translation>

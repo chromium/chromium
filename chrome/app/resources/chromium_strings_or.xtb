@@ -343,6 +343,7 @@
 <translation id="5775198138441669627">ଯଦି ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଆପଣ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="SETTINGS_LINK" /> ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟା</translation>
 <translation id="5800158606660203929">Chromiumକୁ କଷ୍ଟମାଇଜ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ। Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ।</translation>
 <translation id="5809516625706423866">ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରିବାରେ ଅସମର୍ଥ। HTTP 401 ଅନଧିକୃତ। ଦୟାକରି ଆପଣଙ୍କ ପ୍ରକ୍ସି କନଫିଗରେସନ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
+<translation id="5817952762723416573">Chromiumର V8 ଇଞ୍ଜିନ ମାଧ୍ୟମରେ ସାଇଟଗୁଡ଼ିକର ସ୍ପିଡ ବଢ଼ାଏ କିନ୍ତୁ Chromiumକୁ ଆକ୍ରମଣ ପ୍ରତି ସାମାନ୍ୟ କମ ପ୍ରତିରୋଧୀ କରିଥାଏ। ଏହି ସେଟିଂ ବନ୍ଦ ଅଛି।</translation>
 <translation id="5821520528363214608">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ Chromiumକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="5824893331272123205">ଏହି ପେନେଲକୁ ଲୋଡ କରାଯାଇପାରିଲା ନାହିଁ, ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="5862307444128926510">Chromiumକୁ ସ୍ଵାଗତ</translation>
@@ -432,6 +433,7 @@
 <translation id="6729124504294600478">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଅନ୍ୟ ଫିଚରଗୁଡ଼ିକ ପାଇବାକୁ ୱେବ ଏବଂ ଆପ କାର୍ଯ୍ୟକଳାପରେ Chromium ଏବଂ ଲିଙ୍କ ହୋଇଥିବା Google ସେବାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="6734291798041940871">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ରେ ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ Chromium ପୂର୍ବରୁ ଇନ୍‌ଷ୍ଟଲ୍ କରାଯାଇଛି।</translation>
 <translation id="674245979920622322">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଏବଂ <ph name="COUNT" /> ଅଧିକକୁ କାଢ଼ି ଦେଇଛି</translation>
+<translation id="6751374565094704799">Chromiumର V8 ଇଞ୍ଜିନ ମାଧ୍ୟମରେ ସାଇଟଗୁଡ଼ିକର ସ୍ପିଡ ବଢ଼ାଏ କିନ୍ତୁ Chromiumକୁ ଆକ୍ରମଣ ପ୍ରତି ସାମାନ୍ୟ କମ ପ୍ରତିରୋଧୀ କରିଥାଏ। ଏହି ସେଟିଂ ଚାଲୁ ଅଛି।</translation>
 <translation id="67706546131546258">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇପାରେ ବୋଲି Chromium ଏହାକୁ ସ୍କାନ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="6779406956731413166">ChromiumOS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="6831043979455480757">Translate</translation>

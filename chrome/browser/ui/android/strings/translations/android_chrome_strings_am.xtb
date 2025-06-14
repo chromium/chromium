@@ -546,7 +546,6 @@
 <translation id="3513019849832307207">ተቀላቀል እና ክፈት</translation>
 <translation id="3513704683820682405">ትክክለኛ እውነታ</translation>
 <translation id="3516053221628030540">ወደ Google Play ሂድ</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{በቅርብ ጊዜ ካልጎበኙት አንድ ጣቢያ የማሳወቂያ ፈቃዶች ተወግደዋል}one{በቅርብ ጊዜ ካልጎበኙት # ጣቢያ የማሳወቂያ ፈቃዶች ተወግደዋል}other{በቅርብ ጊዜ ካልጎበኟቸው # ጣቢያዎች የማሳወቂያ ፈቃዶች ተወግደዋል}}</translation>
 <translation id="3518985090088779359">ተቀበል እና ቀጥል</translation>
 <translation id="3519014757432845220">የማሳወቂያ ይዘት እና የጣቢያውን ዩአርኤል ወደ Google በማጋራት የአይፈለጌ መልዕክት ጥበቃን በማሻሻል ላይ ያግዙ። ይዘት በሰዎች ሊገመገም ይችላል።</translation>
 <translation id="3521388823983121502">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> መቀጠል አልተቻለም</translation>
@@ -715,6 +714,7 @@
 <translation id="4298388696830689168">የተገናኙ ጣቢያዎች</translation>
 <translation id="4300632303535881174">ወደ ቀዳሚ ገፅ ሂድ</translation>
 <translation id="4303044213806199882">የchrome_ቅጽበታዊ ገፅ ዕይታ_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">አስገባ</translation>
 <translation id="4307992518367153382">መሠረታዊ</translation>
 <translation id="4311652497846705514">PDF ይክፈቱ?</translation>
 <translation id="4320177379694898372">ምንም የበይነመረብ ግንኙነት የለም</translation>
@@ -1650,7 +1650,6 @@
 <translation id="8244387390464017490">አዲስ የትር ገፅ አብጅ</translation>
 <translation id="8250920743982581267">ሰነዶች</translation>
 <translation id="8255617931166444521">ጣቢያዎች የአሰሳ እንቅስቃሴዎን በራሳቸው ጣቢያ ላይ ብቻ ለማየት የእርስዎን ኩኪዎች ብቻ ሊጠቀሙ ይችላሉ።</translation>
-<translation id="8256087213273124136">Chrome እርስዎን ከማሳወቂያዎች የደንበኝነት ምዝገባ አስወጥቷል</translation>
 <translation id="8258999165172757081">ታክሏል</translation>
 <translation id="8259179246279078674">ቅድሚያ የሚጫኑ ገጾች የተመሠጠሩ ስለሆኑ Google ቅድሚያ ስለተጫነው የገጽ ይዘት ምንም ነገር አያውቅም። የGoogle አገልጋዮች የትኛዎቹ ጣቢያዎች በግል ቅድሚያ እንደሚጫኑ ይማራል። ይህ መረጃ ገጾቹን ቅድሚያ ለመጫን ብቻ ነው ሥራ ላይ የሚውለው፣ እና ከGoogle መለያዎ ከመጣ ሌላ መረጃ ጋር አይገናኝም።</translation>
 <translation id="8260126382462817229">እንደገና ለመግባት ይሞክሩ</translation>

@@ -343,6 +343,7 @@
 <translation id="5775198138441669627">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, तुमच्या खात्यामधील Chromium डेटा <ph name="SETTINGS_LINK" /> हे करा</translation>
 <translation id="5800158606660203929">Chromium कस्टमाइझ करा आणि नियंत्रित करा. Chromium तुमचा डीफॉल्ट म्हणून सेट करा.</translation>
 <translation id="5809516625706423866">इंटरनेटशी कनेक्ट करता आले नाही. HTTP 401 प्रतिबंधित. कृपया तुमचे प्रॉक्सी कॉन्फिगरेशन तपासा.</translation>
+<translation id="5817952762723416573">Chromium चे V8 इंजीन साइटचा वेग वाढवते, पण त्यामुळे Chromium ची हल्ले रोखण्याची क्षमता किंचित कमी होते. हे सेटिंग बंद आहे.</translation>
 <translation id="5821520528363214608">तुमच्या Google खाते मध्ये Chromium डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी, Chromium अपडेट करा</translation>
 <translation id="5824893331272123205">हे पॅनल लोड करता आले नाही, पुन्हा प्रयत्न करा</translation>
 <translation id="5862307444128926510">Chromium वर तुमचे स्‍वागत आहे</translation>
@@ -432,6 +433,7 @@
 <translation id="6729124504294600478">पर्सनलायझेशन व इतर वैशिष्ट्ये मिळवण्यासाठी, वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी व लिंक केलेल्या Google सेवांमध्ये Chromium चा समावेश करा</translation>
 <translation id="6734291798041940871">तुमच्या कॉंप्युटरवर सर्व वापरकर्त्यांसाठी आधीच Chromium इंस्टॉल केले आहे.</translation>
 <translation id="674245979920622322">तुम्ही अलीकडे भेट दिलेली नाही. Chromium ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="COUNT" /> परवानग्या काढून टाकल्या</translation>
+<translation id="6751374565094704799">Chromium चे V8 इंजीन साइटचा वेग वाढवते, पण त्यामुळे Chromium ची हल्ले रोखण्याची क्षमता किंचित कमी होते. हे सेटिंग सुरू आहे.</translation>
 <translation id="67706546131546258">Chromium हे ही फाइल स्कॅन करण्याची शिफारस करते, कारण ती धोकादायक असू शकते.</translation>
 <translation id="6779406956731413166">ChromiumOS हे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="6831043979455480757">भाषांतर करा</translation>

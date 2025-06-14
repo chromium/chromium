@@ -4768,6 +4768,7 @@
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> میں کاپی کریں</translation>
 <translation id="4305817255990598646">سوئچ کریں</translation>
 <translation id="4306119971288449206">ایپس کو مواد کی قسم "<ph name="CONTENT_TYPE" />" کے ساتھ پیش کیا جانا ضروری ہے</translation>
+<translation id="4306489587293957491">درج کریں</translation>
 <translation id="4306810703452026910">‏‫Chrome بطور اسپام اس سائٹ کی اطلاعات پر جھنڈا لگانا بند کر دے گا</translation>
 <translation id="4307992518367153382">بنیادی باتیں</translation>
 <translation id="4309165024397827958">‏مقام کی اجازت والی Android ایپس اور سروسز کو اپنے آلہ کا مقام استعمال کرنے کی اجازت دیں۔ Google وقفے وقفے سے مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔</translation>
@@ -4825,6 +4826,7 @@
 <translation id="4350230709416545141">اپنے مقام تک رسائی حاصل کرنے سے <ph name="HOST" /> کو ہمیشہ مسدود کریں</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">انسٹال کردہ اور اسٹریم شدہ ایپس کا نظم کرنے کے لیے "<ph name="APP_NAME" />" ایپ پر جائیں</translation>
+<translation id="4352913519324947509">آپ کا پاس ورڈ تبدیل نہیں کیا گیا لیکن پھر بھی آپ کو اپنے موجودہ پاس ورڈ سے سائٹ تک رسائی حاصل ہونی چاہیے</translation>
 <translation id="4354073718307267720">‏جب کوئی سائٹ آپ کے اطراف کا 3D نقشہ تخلیق یا کیمرے کی پوزیشن ٹریک کرنا چاہے تو پوچھیں</translation>
 <translation id="4354344420232759511">آپ کی ملاحظہ کردہ سائٹس یہاں ظاہر ہوں گی</translation>
 <translation id="435527878592612277">اپنی تصویر منتخب کریں</translation>
@@ -8309,6 +8311,7 @@
 <translation id="686831807558000905">سائن ان نہ کریں</translation>
 <translation id="686839242150793617">سائٹس کو خودکار طور پر تصویر میں تصویر داخل کرنے کی اجازت ہے</translation>
 <translation id="6868934826811377550">تفصیلات دیکھیں</translation>
+<translation id="6870470066213933201">‏‫JavaScript آپٹیمائزیشن اور سیکیورٹی کا نظم کریں</translation>
 <translation id="6871644448911473373">‏OCSP ریسپانڈر: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">زبانیں...</translation>
 <translation id="6873571253135628430">سائٹ کی اجازت تبدیل کریں</translation>

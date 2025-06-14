@@ -343,6 +343,7 @@
 <translation id="5775198138441669627">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو اپنے اکاؤنٹ میں موجود Chromium ڈیٹا کو <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">‏Chromium کو حسب ضرورت بنائیں اور کنٹرول کریں۔ Chromium کو بطور ڈیفالٹ براؤزر سیٹ کریں۔</translation>
 <translation id="5809516625706423866">‏انٹرنیٹ سے منسلک ہونے سے قاصر ہے۔ HTTP 401 غیر مجاز ہے۔ براہ کرم اپنی پراکسی کنفیگریشن چیک کریں۔</translation>
+<translation id="5817952762723416573">‏‫Chromium کے V8 انجن کے ساتھ سائٹس کو تیز رفتار بناتا ہے لیکن Chromium کو حملوں کے خلاف قدرے کم مزاحم بناتا ہے۔ یہ ترتیب آف ہے۔</translation>
 <translation id="5821520528363214608">‏اپنے Google اکاؤنٹ میں Chromium ڈیٹا استعمال کرنے اور محفوظ کرنے کے لیے، Chromium کو اپ ڈیٹ کریں</translation>
 <translation id="5824893331272123205">اس پینل کو لوڈ نہیں کیا جا سکا، دوبارہ کوشش کریں</translation>
 <translation id="5862307444128926510">‏Chromium میں خوش آمدید</translation>
@@ -432,6 +433,7 @@
 <translation id="6729124504294600478">‏ذاتی نوعیت سازی اور دیگر خصوصیات حاصل کرنے کے لیے، ویب اور ایپ سرگرمی اور لنک کردہ Google سروسز میں Chromium شامل کریں</translation>
 <translation id="6734291798041940871">‏Chromium پہلے سے آپ کے کمپیوٹر پر سبھی صارفین کیلئے انسٹال ہے۔</translation>
 <translation id="674245979920622322">‏آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔ ‫Chromium نے <ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="COUNT" /> مزید کو ہٹا دیا</translation>
+<translation id="6751374565094704799">‏‫Chromium کے V8 انجن کے ساتھ سائٹس کو تیز رفتار بناتا ہے لیکن Chromium کو حملوں کے خلاف قدرے کم مزاحم بناتا ہے۔ یہ ترتیب آن ہے۔</translation>
 <translation id="67706546131546258">‏Chromium اس فائل کو اسکین کرنے کی تجویز کرتا ہے کیونکہ یہ خطرناک ہو سکتی ہے۔</translation>
 <translation id="6779406956731413166">‏ChromeOS اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن ہو پایا ہے۔</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>

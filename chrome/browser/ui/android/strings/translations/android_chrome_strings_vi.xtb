@@ -546,7 +546,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3513019849832307207">Tham gia và mở</translation>
 <translation id="3513704683820682405">Thực tế tăng cường</translation>
 <translation id="3516053221628030540">Truy cập Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Đã loại bỏ quyền gửi thông báo của một trang web mà gần đây bạn không truy cập}other{Đã loại bỏ quyền gửi thông báo của # trang web mà gần đây bạn không truy cập}}</translation>
 <translation id="3518985090088779359">Chấp nhận và tiếp tục</translation>
 <translation id="3519014757432845220">Giúp cải thiện tính năng chống nội dung rác bằng cách chia sẻ với Google nội dung thông báo và URL của trang web. Nội dung có thể sẽ được nhân viên xem xét.</translation>
 <translation id="3521388823983121502">Không thể tiếp tục với <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1651,7 +1650,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8244387390464017490">Tuỳ chỉnh trang thẻ mới</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
 <translation id="8255617931166444521">Các trang web chỉ có thể dùng cookie để xem hoạt động duyệt web của bạn trên trang web của riêng họ</translation>
-<translation id="8256087213273124136">Chrome đã giúp bạn huỷ đăng ký nhận thông báo</translation>
 <translation id="8258999165172757081">Đã thêm</translation>
 <translation id="8259179246279078674">Vì các trang tải trước đã được mã hóa, nên Google sẽ không tìm hiểu bất cứ điều gì về nội dung trên trang được tải trước. Máy chủ của Google sẽ tìm hiểu những trang web nào đã được tải trước ở chế độ riêng tư. Thông tin này chỉ được dùng để tải trước các trang và không được liên kết với thông tin khác trong Tài khoản Google của bạn.</translation>
 <translation id="8260126382462817229">Thử đăng nhập lại</translation>

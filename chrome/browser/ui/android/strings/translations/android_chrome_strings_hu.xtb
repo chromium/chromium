@@ -546,7 +546,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3513019849832307207">Csatlakozás és megnyitás</translation>
 <translation id="3513704683820682405">Kiterjesztett valóság</translation>
 <translation id="3516053221628030540">A Google Play megnyitása</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Az értesítési engedélyek megvonva 1 olyan webhelytől, amelyet nem keresett fel mostanában}other{Az értesítési engedélyek megvonva # olyan webhelytől, amelyet nem keresett fel mostanában}}</translation>
 <translation id="3518985090088779359">Elfogadás és tovább</translation>
 <translation id="3519014757432845220">Segítsen a spam elleni védelem továbbfejlesztésében azzal, hogy megosztja az értesítés tartalmát és a webhely URL-jét a Google-lal. A tartalmat emberek is felülvizsgálhatják.</translation>
 <translation id="3521388823983121502">Nem lehet folytatni a bejelentkezést itt: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1651,7 +1650,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8244387390464017490">Új lap oldal testreszabása</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>
 <translation id="8255617931166444521">A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék az Ön, csak a saját webhelyükön végzett böngészési tevékenységeit</translation>
-<translation id="8256087213273124136">A Chrome leiratkoztatta Önt az értesítésekről</translation>
 <translation id="8258999165172757081">Hozzáadva</translation>
 <translation id="8259179246279078674">Mivel az előre betöltött oldalak titkosítottak, a Google semmilyen információt nem tud meg az előre betöltött oldal tartalmával kapcsolatban. A Google-szerverek csak annyit tudnak majd meg, hogy mely webhelyek töltődnek be előre privát módon. Ez az információ csak az oldalak előtöltésére szolgálnak, és a rendszer nem kapcsolja össze őket az Ön Google-fiókjából származó egyéb információkkal.</translation>
 <translation id="8260126382462817229">Próbáljon meg újra bejelentkezni</translation>

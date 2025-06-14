@@ -546,7 +546,6 @@
 <translation id="3513019849832307207">پیوستن و باز کردن</translation>
 <translation id="3513704683820682405">واقعیت افزوده</translation>
 <translation id="3516053221628030540">‏رفتن به Google Play</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{اجازه‌های اعلان از یک سایت که اخیراً از آن بازدید نکرده‌اید برداشته شد}one{اجازه‌های اعلان از # سایت که اخیراً از آن بازدید نکرده‌اید برداشته شد}other{اجازه‌های اعلان از # سایت که اخیراً از آن‌ها بازدید نکرده‌اید برداشته شد}}</translation>
 <translation id="3518985090088779359">پذیرش و ادامه</translation>
 <translation id="3519014757432845220">‏با هم‌رسانی محتوای اعلان و نشانی وب سایت با Google، به بهبود محافظت در برابر هرزنامه کمک کنید. محتوا ممکن است توسط انسان ارزیابی شود.</translation>
 <translation id="3521388823983121502">نمی‌توان با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ادامه داد</translation>
@@ -715,6 +714,7 @@
 <translation id="4298388696830689168">سایت‌های مرتبط</translation>
 <translation id="4300632303535881174">رفتن به صفحه قبلی</translation>
 <translation id="4303044213806199882"><ph name="CURRENT_TIMESTAMP_MS" />chrome_screenshot_‎</translation>
+<translation id="4306489587293957491">وارد کردن</translation>
 <translation id="4307992518367153382">موارد اصلی</translation>
 <translation id="4311652497846705514">‏فایل PDF باز شود؟</translation>
 <translation id="4320177379694898372">اتصال اینترنتی ندارید</translation>
@@ -1650,7 +1650,6 @@
 <translation id="8244387390464017490">سفارشی‌سازی صفحه زبانه جدید</translation>
 <translation id="8250920743982581267">اسناد</translation>
 <translation id="8255617931166444521">سایت‌ها فقط می‌توانند از کوکی‌هایتان برای دیدن فعالیت مرورتان در سایت خودشان استفاده کنند</translation>
-<translation id="8256087213273124136">‏‫Chrome اشتراک دریافت اعلان شما را لغو کرد</translation>
 <translation id="8258999165172757081">اضافه شد</translation>
 <translation id="8259179246279078674">‏ازآنجایی‌که صفحات پیش‌بارگیری‌شده رمزگذاری شده‌اند، Google هیچ اطلاعاتی درباره محتوای صفحه پیش‌بارگیری‌شده دریافت نخواهد کرد. سرورهای Google مطلع خواهد شد که کدام سایت‌ها خصوصی پیش‌بارگیری می‌شوند. از این اطلاعات فقط برای پیش‌بارگیری صفحات استفاده می‌شود و با سایر اطلاعات «حساب Google» شما پیوند داده نمی‌شود.</translation>
 <translation id="8260126382462817229">دوباره سعی کنید به سیستم وارد شوید</translation>

@@ -344,7 +344,7 @@
 <translation id="1569487616857761740">وارد کردن تاریخ انقضا</translation>
 <translation id="1569694109004336106">‏Google Chrome می‌خواهد Windows Hello را برای پر کردن گذرواژه‌ها روشن کند.</translation>
 <translation id="1572765991610098222">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> اینچ</translation>
-<translation id="1574714699824202614">درحال تأیید روش پرداخت</translation>
+<translation id="1574714699824202614">درحال درستی‌سنجی روش پرداخت</translation>
 <translation id="1576277203042721907">اطلاعات آماری خرید</translation>
 <translation id="1579189948231786790">سازمانتان این سایت را مسدود کرده است</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -937,6 +937,7 @@
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
 <translation id="254947805923345898">مقدار خط‌مشی معتبر نیست.</translation>
 <translation id="2549836668759467704">مشاوره و قرارداد ساخت‌وساز</translation>
+<translation id="2549919488151689436">‫<ph name="TOPIC_1" />، <ph name="TOPIC_2" />، و موضوع دیگر</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> پاسخی نامعتبر ارسال کرد.</translation>
 <translation id="2551608178605132291">آدرس: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">کارت‌پستال</translation>
@@ -4819,6 +4820,7 @@
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="922152298093051471">‏سفارشی‌سازی Chrome</translation>
 <translation id="9222403027701923763">‏تحصیلات ابتدایی و متوسطه (K-12)</translation>
+<translation id="9222463428840654067">شماره کارت نامعتبر است</translation>
 <translation id="922849469395748170">کارت‌های وفاداری</translation>
 <translation id="93020190163435405">کارآموزی</translation>
 <translation id="931598121743515856">خرید باید بیشتر از <ph name="CHECKOUT_AMOUNT_MINIMUM" /> باشد</translation>

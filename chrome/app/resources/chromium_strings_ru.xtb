@@ -339,6 +339,7 @@
 <translation id="5775198138441669627">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="SETTINGS_LINK" /> данные Chromium из аккаунта.</translation>
 <translation id="5800158606660203929">Настройка Chromium и управление им. Сделайте Chromium браузером по умолчанию.</translation>
 <translation id="5809516625706423866">Не удалось подключиться к интернету. Ошибка HTTP 401: нет авторизации. Проверьте настройки прокси-сервера.</translation>
+<translation id="5817952762723416573">Ускоряет работу сайтов с помощью движка Chromium V8, но делает Chromium чуть менее устойчивым к атакам. Параметр отключен.</translation>
 <translation id="5821520528363214608">Чтобы использовать и сохранять данные Chromium в аккаунте Google, обновите Chromium.</translation>
 <translation id="5824893331272123205">Не удалось загрузить панель. Повторите попытку.</translation>
 <translation id="5862307444128926510">Добро пожаловать в Chromium</translation>
@@ -428,6 +429,7 @@
 <translation id="6729124504294600478">Чтобы настроить персонализацию и другие функции, добавьте Chromium в историю приложений и веб-поиска и связанные сервисы Google</translation>
 <translation id="6734291798041940871">Chromium уже установлен для всех пользователей вашего компьютера</translation>
 <translation id="674245979920622322">Вы давно не посещали сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и другие (ещё <ph name="COUNT" />).</translation>
+<translation id="6751374565094704799">Ускоряет работу сайтов с помощью движка Chromium V8, но делает Chromium чуть менее устойчивым к атакам. Параметр включен.</translation>
 <translation id="67706546131546258">Chromium рекомендует просканировать этот потенциально вредоносный файл.</translation>
 <translation id="6779406956731413166">Chromium OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Перевести</translation>

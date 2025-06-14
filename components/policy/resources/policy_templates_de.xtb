@@ -1105,6 +1105,15 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
       Die Reihenfolge der Liste entspricht derjenigen im Bereich „Ordne Sprachen in der gewünschten Reihenfolge an“ unter chrome://settings/languages. Nutzer können Sprachen, die durch die Richtlinie festgelegt sind, nicht entfernen oder neu anordnen, sie haben aber die Möglichkeit, unter den durch diese Richtlinie vorgegebenen Sprachen weitere Sprachen hinzuzufügen. Darüber hinaus haben Nutzer die volle Kontrolle über die Sprache der Benutzeroberfläche und die Übersetzungs- und Rechtschreibprüfungseinstellungen des Browsers, sofern diese nicht durch andere Richtlinien zwingend vorgegeben sind.
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die gesamte Liste bevorzugter Sprachen beliebig anpassen.</translation>
+<translation id="180243155313050440">Über diese Richtlinie wird ein benutzerdefiniertes Label gesteuert, mit dem ein verwalteter Browser gekennzeichnet werden kann. Bei verwalteten Browsern wird dieses Label in einem Haftungsausschluss für die Verwaltung in der Fußzeile der Seite „Neuer Tab“ angezeigt. Das benutzerdefinierte Label wird nicht übersetzt.
+
+Wenn diese Richtlinie angewendet wird, werden alle Zeichenfolgen, die länger als 16 Zeichen sind, mit „…“ abgeschnitten. Verwende daher keine langen Namen.
+
+Diese Richtlinie wird nur auf verwaltete Browser angewendet. Sie hat also keine Auswirkungen auf verwaltete Nutzer von nicht verwalteten Browsern.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="1803646570632580723">Liste der im Launcher angezeigten Apps ansehen</translation>
 <translation id="1808715480127969042">Cookies auf diesen Websites blockieren</translation>
 <translation id="1810261428246410396">Verwendung von Instant Tethering erlauben.</translation>
@@ -4485,6 +4494,15 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="4297483555396496700">Nutzer dürfen die Release-Version des Geräts nur ändern, wenn diese Richtlinie auf „True“ gesetzt ist. Wenn diese Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, dürfen Nutzer die Version nicht ändern.
 
 Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirksam, wenn <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>
+<translation id="4297774573405304484">Eine URL zu einem Bild, das als Unternehmenslogo für einen verwalteten Browser verwendet wird. Die URL muss auf ein Bild verweisen.
+
+Wir empfehlen, das Favicon (Beispiel: https://www.google.com/favicon.ico) oder ein Symbol mit mindestens 48 × 48 Pixeln zu verwenden.
+
+Diese Richtlinie wird nur auf verwaltete Browser angewendet. Sie hat also keine Auswirkungen auf verwaltete Nutzer von nicht verwalteten Browsern.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="4301478455179579340">Signatur nativer Anwendungen während der Installation einer progressiven Webanwendung</translation>
 <translation id="4303167373847512281">Entwicklermodus zulassen</translation>
 <translation id="4307116964468610577">Die Richtlinie verlängert die Lebensdauer von Systemakkus, indem sie nur einmal pro Tag vollständig aufgeladen werden. Für den Rest des Tages werden die Akkus in einem niedrigeren Ladezustand gehalten. So werden sie geschont, auch wenn das System an eine Stromquelle angeschlossen ist.

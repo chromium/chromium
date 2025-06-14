@@ -937,6 +937,7 @@
 <translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
 <translation id="254947805923345898">Саясаттын мааниси туура эмес көрсөтүлдү.</translation>
 <translation id="2549836668759467704">Курулуш боюнча кеңеш берүү жана курулушта келишимдин негизинде иштөө</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> жана башкалар</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> сайты жараксыз жооп жөнөттү.</translation>
 <translation id="2551608178605132291">Дарек: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4817,6 +4818,7 @@
 <translation id="9219103736887031265">Сүрөттөр</translation>
 <translation id="922152298093051471">Chrome'ду ыңгайлаштыруу</translation>
 <translation id="9222403027701923763">Башталгыч жана орто мектеп (K-12)</translation>
+<translation id="9222463428840654067">Картанын номери жараксыз</translation>
 <translation id="922849469395748170">Туруктуу кардарлардын карталары</translation>
 <translation id="93020190163435405">Практикалар</translation>
 <translation id="931598121743515856">Сатып алуунун суммасы <ph name="CHECKOUT_AMOUNT_MINIMUM" /> жогору болушу керек</translation>

@@ -936,6 +936,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2546283357679194313">Cookieak eta webguneetako datuak</translation>
 <translation id="254947805923345898">Gidalerroaren balioak ez du balio.</translation>
 <translation id="2549836668759467704">Eraikuntza-aholkularitza eta -kontratazioa</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> eta beste</translation>
 <translation id="255002559098805027">Ez du balio <ph name="HOST_NAME" /> webguneak bidali duen erantzunak.</translation>
 <translation id="2551608178605132291">Helbidea: <ph name="ADDRESS" /></translation>
 <translation id="2552246211866555379">Hagaki formatua</translation>
@@ -1559,6 +1560,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3641116835972736297">Futbol amerikarra</translation>
 <translation id="3642196846309122856">Saiatu berriro fitxategiak deskargatzen</translation>
 <translation id="3642638418806704195">Aplikazioa:</translation>
+<translation id="3644768007456662469">Ordainketa-elementu baten ikonoa</translation>
 <translation id="3646643500201740985">Iragarkien errendimendua neurtzea</translation>
 <translation id="3647286794400715637">URL kate bakoitzak URL bat edo bi izan behar ditu.</translation>
 <translation id="3647400963805615193">Chrome-ren aholkua baztertzeko botoia. Baztertzeko, sakatu Sartu. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -4805,6 +4807,7 @@ Xehetasun gehiago:
 <translation id="9219103736887031265">Irudiak</translation>
 <translation id="922152298093051471">Pertsonalizatu Chrome</translation>
 <translation id="9222403027701923763">Lehen eta bigarren hezkuntza</translation>
+<translation id="9222463428840654067">Txartel-zenbakiak ez du balio</translation>
 <translation id="922849469395748170">Fideltasun-txartelak</translation>
 <translation id="93020190163435405">Egonaldiak</translation>
 <translation id="931598121743515856"><ph name="CHECKOUT_AMOUNT_MINIMUM" /> edo gehiagokoa izan behar du erosketak</translation>

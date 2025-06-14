@@ -344,6 +344,7 @@
 <translation id="5775198138441669627">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, խորհուրդ ենք տալիս <ph name="SETTINGS_LINK" /> Chromium-ի տվյալները ձեր հաշվից</translation>
 <translation id="5800158606660203929">Անհատականացրեք և վերահսկեք Chromium-ը։ Դարձրեք Chromium-ը ձեր կանխադրված դիտարկիչը։</translation>
 <translation id="5809516625706423866">Հնարավոր չէ միանալ ինտերնետին։ HTTP 401 Unauthorized։ Ստուգեք ձեր պրոքսի սերվերի կազմաձևը։</translation>
+<translation id="5817952762723416573">Արագացնում է կայքերի աշխատանքը Chromium-ի V8 շարժիչի օգնությամբ, սակայն փոքր-ինչ խոցելի է դարձնում Chromium-ը հարձակումների նկատմամբ։ Այս կարգավորումն անջատված է։</translation>
 <translation id="5821520528363214608">Chromium-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար թարմացրեք Chromium-ը</translation>
 <translation id="5824893331272123205">Չհաջողվեց բեռնել այս վահանակը։ Նորից փորձեք։</translation>
 <translation id="5862307444128926510">Բարի գալուստ Chromium</translation>
@@ -433,6 +434,7 @@
 <translation id="6729124504294600478">Անհատականացումը և այլ գործառույթներ կարգավորելու համար ավելացրեք Chromium-ը Վեբ որոնման և հավելվածների պատմության մեջ և Google-ի կապված ծառայություններում</translation>
 <translation id="6734291798041940871">Chromium-ն արդեն տեղադրված է ձեր համակարգչում բոլոր օգտատերերի համար:</translation>
 <translation id="674245979920622322">Դուք վաղուց չեք այցելել կայք։ Chromium-ը հեռացրել է «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="COUNT" /> թույլտվություն։</translation>
+<translation id="6751374565094704799">Արագացնում է կայքերի աշխատանքը Chromium-ի V8 շարժիչի օգնությամբ, սակայն փոքր-ինչ խոցելի է դարձնում Chromium-ը հարձակումների նկատմամբ։ Այս կարգավորումը միացված է։</translation>
 <translation id="67706546131546258">Chromium-ը խորհուրդ է տալիս ստուգել այս ֆայլը, քանի որ այն կարող է վտանգավոր լինել։</translation>
 <translation id="6779406956731413166">ChromiumOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա։</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>

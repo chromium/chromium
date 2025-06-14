@@ -546,7 +546,6 @@
 <translation id="3513019849832307207">شامل ہوں اور کھولیں</translation>
 <translation id="3513704683820682405">افزودہ حقیقت</translation>
 <translation id="3516053221628030540">‏‫Google Play پر جائیں</translation>
-<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{ایسی ایک سائٹ سے اطلاع کی اجازتیں ہٹائی گئیں جسے آپ نے حال ہی میں ملاحظہ نہیں کیا ہے}other{ایسی # سائٹس سے اطلاع کی اجازتیں ہٹائی گئیں جنہیں آپ نے حال ہی میں ملاحظہ نہیں کیا ہے}}</translation>
 <translation id="3518985090088779359">قبول کرکے جاری رکھیں</translation>
 <translation id="3519014757432845220">‏اطلاع کے مواد اور سائٹ کے URL کا Google کے ساتھ اشتراک کر کے اسپام سے تحفظ کو بہتر بنانے میں مدد کریں۔ مواد کا انسانوں کے ذریعے جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ جاری نہیں رکھ سکتے</translation>
@@ -715,6 +714,7 @@
 <translation id="4298388696830689168">لنک کردہ سائٹس</translation>
 <translation id="4300632303535881174">گزشتہ صفحے پر جائیں</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4306489587293957491">درج کریں</translation>
 <translation id="4307992518367153382">بنیادی باتیں</translation>
 <translation id="4311652497846705514">‏PDF کھولیں؟</translation>
 <translation id="4320177379694898372">کوئی انٹرنیٹ کنکشن نہیں ہے</translation>
@@ -1650,7 +1650,6 @@
 <translation id="8244387390464017490">نئے ٹیب کا صفحہ حسب ضرورت بنائیں</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
 <translation id="8255617931166444521">سائٹس آپ کی کوکیز کو صرف اپنی خود کی سائٹ پر آپ کی براؤزنگ سرگرمی دیکھنے کے لیے استعمال کر سکتی ہیں</translation>
-<translation id="8256087213273124136">‏‫Chrome نے آپ کو اطلاعات سے اَن سبسکرائب کیا</translation>
 <translation id="8258999165172757081">شامل کر دیا گیا</translation>
 <translation id="8259179246279078674">‏چونکہ پیشگی لوڈ کردہ صفحات مرموز کردہ ہیں، Google پیشگی لوڈ کردہ صفحہ کے مواد کے بارے میں کچھ نہیں سیکھے گا Google سرورز یہ سیکھیں گے کون سی سائٹس نجی طور پر پیشگی لوڈ کردہ ہیں۔ یہ معلومات صرف صفحات کو پیشگی لوڈ کرنے کے لیے استعمال کی جاتی ہے اور آپ کے Google اکاؤنٹ کی دیگر معلومات سے لنک نہیں ہے۔</translation>
 <translation id="8260126382462817229">دوبارہ سائن ان کرنے کی کوشش کریں</translation>

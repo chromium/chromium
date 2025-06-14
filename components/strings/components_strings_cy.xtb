@@ -937,6 +937,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2546283357679194313">Cwcis a data gwefan</translation>
 <translation id="254947805923345898">Nid yw'r gwerth polisi yn ddilys.</translation>
 <translation id="2549836668759467704">Ymgynghori a Chontractio Gwaith Adeiladu</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" />, ac eraill</translation>
 <translation id="255002559098805027">Gwnaeth <ph name="HOST_NAME" /> anfon ymateb annilys.</translation>
 <translation id="2551608178605132291">Cyfeiriad: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -4818,6 +4819,7 @@ Manylion ychwanegol:
 <translation id="9219103736887031265">Lluniau</translation>
 <translation id="922152298093051471">Personoleiddio Chrome</translation>
 <translation id="9222403027701923763">Ysgolion Cynradd ac Uwchradd (K-12)</translation>
+<translation id="9222463428840654067">Mae rhif y cerdyn yn annilys</translation>
 <translation id="922849469395748170">Cardiau teyrngarwch</translation>
 <translation id="93020190163435405">Interniaethau</translation>
 <translation id="931598121743515856">Rhaid i'r taliad fod dros <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

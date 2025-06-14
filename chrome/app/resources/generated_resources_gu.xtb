@@ -4766,6 +4766,7 @@
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> પર કૉપિ કરો</translation>
 <translation id="4305817255990598646">સ્વિચ</translation>
 <translation id="4306119971288449206">ઍપ "<ph name="CONTENT_TYPE" />" કન્ટેન્ટ-પ્રકાર સાથે ઉપલબ્ધ કરાવવી જોઈએ</translation>
+<translation id="4306489587293957491">દાખલ કરો</translation>
 <translation id="4306810703452026910">Chrome આ સાઇટ તરફથી મળતા નોટિફિકેશનને સ્પામ તરીકે ચિહ્નિત કરવાનું બંધ કરશે</translation>
 <translation id="4307992518367153382">પાયાગત</translation>
 <translation id="4309165024397827958">તમારા ડિવાઇસના સ્થાનનો ઉપયોગ કરવા માટે, સ્થાનની પરવાનગી ધરાવતી Android ઍપ અને સેવાઓને મંજૂરી આપો. Google સમય-સમય પર સ્થાન ડેટા એકત્રિત કરી અને આ ડેટાને સ્થાનની સચોટતા અને સ્થાન-આધારિત સેવાઓને બહેતર બનાવવા માટે અનામી રીતે ઉપયોગમાં લઈ શકે છે.</translation>
@@ -4823,6 +4824,7 @@
 <translation id="4350230709416545141"><ph name="HOST" />ને હંમેશાં તમારા સ્થાનને ઍક્સેસ કરવાથી બ્લૉક કરો</translation>
 <translation id="4350782034419308508">ઓકે Google</translation>
 <translation id="435185728237714178">ઇન્સ્ટૉલ કરેલી અને સ્ટ્રીમ કરેલી ઍપ મેનેજ કરવા માટે, "<ph name="APP_NAME" />" પર જાઓ</translation>
+<translation id="4352913519324947509">તમારો પાસવર્ડ બદલવામાં આવ્યો ન હતો, પરંતુ તમે તમારા હાલના પાસવર્ડ વડે હજી પણ સાઇટ ઍક્સેસ કરી શકશો</translation>
 <translation id="4354073718307267720">જ્યારે કોઈ સાઇટ તમારી આજુબાજુનો 3D નકશો બનાવવા અથવા કૅમેરાના સ્ટેટસને ટ્રૅક કરવા ઇચ્છતી હોય, ત્યારે પૂછો</translation>
 <translation id="4354344420232759511">તમે મુલાકાત લીધેલી સાઇટ અહીં દેખાશે</translation>
 <translation id="435527878592612277">તમારો ફોટો પસંદ કરો</translation>
@@ -8314,6 +8316,7 @@ USB ડિવાઇસ</translation>
 <translation id="686831807558000905">સાઇન ઇન કરશો નહીં</translation>
 <translation id="686839242150793617">ચિત્ર-માં-ચિત્ર મોડમાં ઑટોમૅટિક રીતે દાખલ થવાની મંજૂરી છે</translation>
 <translation id="6868934826811377550">વિગતો જુઓ</translation>
+<translation id="6870470066213933201">JavaScript ઑપ્ટિમાઇઝેશન અને સિક્યુરિટી મેનેજ કરો</translation>
 <translation id="6871644448911473373">OCSP પ્રતિસાદકર્તા: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">ભાષાઓ...</translation>
 <translation id="6873571253135628430">સાઇટની પરવાનગીઓ બદલો</translation>

@@ -938,6 +938,7 @@
 <translation id="2546283357679194313">ကူကီးများ နှင့် ဆိုက် ဒေတာ</translation>
 <translation id="254947805923345898">မူဝါဒတန်ဖိုး မမှန်ကန်ပါ။</translation>
 <translation id="2549836668759467704">ဆောက်လုပ်ရေးအကြံပေးနှင့် ကန်ထရိုက်လုပ်ခြင်း</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />၊ <ph name="TOPIC_2" /> စသည်</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> သည်မမှန်ကန်သည့် တုံ့ပြန်မှုကို ပို့ခဲ့ပါသည်။</translation>
 <translation id="2551608178605132291">လိပ်စာ- <ph name="ADDRESS" />။</translation>
 <translation id="2552246211866555379">ဟာဂကီ</translation>
@@ -4820,6 +4821,7 @@
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="9222403027701923763">မူလတန်းနှင့် အလယ်တန်းကျောင်းထားခြင်း (K-12)</translation>
+<translation id="9222463428840654067">ကတ်နံပါတ် မမှန်ပါ</translation>
 <translation id="922849469395748170">ဖောက်သည်ကတ်များ</translation>
 <translation id="93020190163435405">အလုပ်သင်</translation>
 <translation id="931598121743515856">ဝယ်ယူမှုသည် <ph name="CHECKOUT_AMOUNT_MINIMUM" /> အထက်ဖြစ်ရမည်</translation>
