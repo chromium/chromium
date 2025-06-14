@@ -98,6 +98,7 @@ class DownloadManagerCoordinatorImpl
                         /* listContentView= */ mListCoordinator.getView(),
                         mSelectionDelegate,
                         config.isSeparateActivity,
+                        config.autoFocusSearchBox,
                         tracker);
 
         initializeView();

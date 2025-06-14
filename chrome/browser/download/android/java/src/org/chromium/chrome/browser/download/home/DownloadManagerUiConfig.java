@@ -58,6 +58,9 @@ public class DownloadManagerUiConfig {
      */
     public final boolean showDangerousItems;
 
+    /** Whether need to focus on search box at first. */
+    public final boolean autoFocusSearchBox;
+
     /** Constructor. */
     private DownloadManagerUiConfig(Builder builder) {
         otrProfileId = builder.mOtrProfileId;
@@ -70,6 +73,7 @@ public class DownloadManagerUiConfig {
         showPaginationHeaders = builder.mShowPaginationHeaders;
         startWithPrefetchedContent = builder.mStartWithPrefetchedContent;
         showDangerousItems = builder.mShowDangerousItems;
+        autoFocusSearchBox = builder.mAutoFocusSearchBox;
     }
 
     /** Helper class for building a {@link DownloadManagerUiConfig}. */
@@ -88,6 +92,7 @@ public class DownloadManagerUiConfig {
         private boolean mShowPaginationHeaders;
         private boolean mStartWithPrefetchedContent;
         private boolean mShowDangerousItems;
+        private boolean mAutoFocusSearchBox;
 
         public Builder() {
             mSupportFullWidthImages =
@@ -143,6 +148,11 @@ public class DownloadManagerUiConfig {
 
         public Builder setShowDangerousItems(boolean showDangerousItems) {
             mShowDangerousItems = showDangerousItems;
+            return this;
+        }
+
+        public Builder setAutoFocusSearchBox(boolean autoFocusSearchBox) {
+            mAutoFocusSearchBox = autoFocusSearchBox;
             return this;
         }
 

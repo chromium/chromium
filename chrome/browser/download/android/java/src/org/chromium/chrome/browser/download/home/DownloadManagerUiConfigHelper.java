@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download.home;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Helper class to build default or base {@link DownloadManagerUiConfig.Builder} instances. */
 @NullMarked
@@ -19,6 +20,7 @@ public class DownloadManagerUiConfigHelper {
                         && !ChromeFeatureList.sMaliciousApkDownloadCheckTelemetryOnly.getValue();
         return new DownloadManagerUiConfig.Builder()
                 .setShowDangerousItems(showDangerousItems)
-                .setSupportsGrouping(true);
+                .setSupportsGrouping(true)
+                .setAutoFocusSearchBox(DeviceFormFactor.isTablet());
     }
 }

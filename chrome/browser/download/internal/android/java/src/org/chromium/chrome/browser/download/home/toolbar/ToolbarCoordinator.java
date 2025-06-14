@@ -96,6 +96,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
             View listContentView,
             SelectionDelegate<ListItem> selectionDelegate,
             boolean hasCloseButton,
+            boolean autoFocusSearchBox,
             Tracker tracker) {
         mDelegate = delegate;
         mListActionDelegate = listActionDelegate;
@@ -115,7 +116,10 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
         mToolbar.setOnMenuItemClickListener(this::onMenuItemClick);
         mToolbar.setFocusable(true);
         mToolbar.setListContentView(listContentView);
-
+        if (autoFocusSearchBox) {
+            // Request focus for the toolbar by default attach state listener
+            mView.addOnAttachStateChangeListener(new FocusListener());
+        }
         // TODO(crbug.com/41412009): Pass the visible group to the toolbar during initialization.
         mToolbar.initializeSearchView(
                 mSearchDelegate, R.string.download_manager_search, R.id.search_menu_id);
@@ -210,6 +214,21 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
         } else {
             return false;
         }
+    }
+
+    /**
+     * A listener in download page that focuses the search view when the toolbar is first attached
+     * to the window, then removes itself.
+     */
+    private class FocusListener implements View.OnAttachStateChangeListener {
+        @Override
+        public void onViewAttachedToWindow(View v) {
+            mToolbar.showSearchView(true);
+            v.removeOnAttachStateChangeListener(this);
+        }
+
+        @Override
+        public void onViewDetachedFromWindow(View v) {}
     }
 
     // TODO(shaktisahu): May be merge toolbar shadow logic into the toolbar itself.
