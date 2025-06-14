@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/profiler/sample_metadata.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -143,6 +144,8 @@ void ProxyMain::BeginMainFrame(
                     perfetto::protos::pbzero::MainFramePipeline::Step::
                         BEGIN_MAIN_FRAME);
               });
+  base::ScopedSampleMetadata metadata("ProxyMain::BeginMainFrame", 1,
+                                      base::SampleMetadataScope::kProcess);
 
   // This needs to run unconditionally, so do it before any early-returns.
   if (layer_tree_host_->scheduling_client())
