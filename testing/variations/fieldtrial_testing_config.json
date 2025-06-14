@@ -19677,24 +19677,6 @@
             ]
         }
     ],
-    "ReadAnythingDocsIntegrationRollout": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReadAnythingDocsIntegration"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadAnythingIPHRollout": [
         {
             "platforms": [
