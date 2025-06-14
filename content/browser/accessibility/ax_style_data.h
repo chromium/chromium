@@ -58,7 +58,7 @@ struct CONTENT_EXPORT AXStyleData {
     if (!field) {
       field.emplace();
     }
-    (*field)[value].emplace_back(start, end);
+    (*field)[std::move(value)].emplace_back(start, end);
   }
 
   // Returns a string representation of the style data for testing.

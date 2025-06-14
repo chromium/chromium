@@ -8,15 +8,19 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/accessibility/ax_style_data.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom-data-view.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
+
 namespace content {
 
 namespace {
@@ -27,6 +31,11 @@ BrowserAccessibilityManagerAndroid* ToBrowserAccessibilityManagerAndroid(
 }  // namespace
 
 using RetargetEventType = ui::AXTreeManager::RetargetEventType;
+using RangePairs = AXStyleData::RangePairs;
+
+using ::testing::Eq;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 class MockContentClient : public TestContentClient {
  public:
@@ -67,6 +76,8 @@ class BrowserAccessibilityAndroidTest : public ::testing::Test {
   ~BrowserAccessibilityAndroidTest() override;
 
  protected:
+  static const ui::AXNodeID ROOT_ID = 100;
+
   std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
   ui::TestAXNodeIdDelegate node_id_delegate_;
@@ -698,6 +709,656 @@ TEST_F(BrowserAccessibilityAndroidTest,
             image_succeeded_with_name->GetTextContentUTF16());
   EXPECT_EQ(std::u16string(),
             image_succeeded_with_name->GetSupplementalDescription());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_Suggestions) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101};
+  last_node->role = ax::mojom::Role::kTextField;
+  last_node->SetValue(u"Some very wrrrongly spelled words");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->child_ids = {201, 202, 203};
+  last_node->role = ax::mojom::Role::kGenericContainer;
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 201;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 202;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("very wrrrongly spelled");
+  last_node->AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int>(ax::mojom::MarkerType::kSuggestion)});
+  last_node->AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
+                                 {5});
+  last_node->AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                 {14});
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 203;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" words");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some very wrrrongly spelled words"));
+  ASSERT_TRUE(style_data.suggestions);
+  EXPECT_THAT(*style_data.suggestions,
+              UnorderedElementsAre(Pair(u"", RangePairs{{10, 19}})));
+}
+
+// TODO: aluh - Enable once link nodes are merged into text content.
+TEST_F(BrowserAccessibilityAndroidTest, DISABLED_TextStyling_Links) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("A ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->child_ids = {201};
+  last_node->role = ax::mojom::Role::kLink;
+  last_node->AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                "https://www.example.com/");
+  last_node->SetName("simple");
+  last_node->SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 201;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("simple");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" link");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"A simple link"));
+  ASSERT_TRUE(style_data.links);
+  EXPECT_THAT(*style_data.links,
+              UnorderedElementsAre(
+                  Pair(u"https://www.example.com/", RangePairs{{2, 8}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_NestedStyle) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("bold");
+  last_node->AddTextStyle(ax::mojom::TextStyle::kBold);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some bold text"));
+  ASSERT_TRUE(style_data.text_styles);
+  EXPECT_THAT(*style_data.text_styles,
+              UnorderedElementsAre(
+                  Pair(ax::mojom::TextStyle::kBold, RangePairs{{5, 9}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_MixedStyles) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103, 104, 105};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("bold ");
+  last_node->AddTextStyle(ax::mojom::TextStyle::kBold);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("and");
+  last_node->AddTextStyle(ax::mojom::TextStyle::kBold);
+  last_node->AddTextStyle(ax::mojom::TextStyle::kItalic);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 104;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" italic");
+  last_node->AddTextStyle(ax::mojom::TextStyle::kItalic);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 105;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some bold and italic text"));
+  ASSERT_TRUE(style_data.text_styles);
+  EXPECT_THAT(
+      *style_data.text_styles,
+      UnorderedElementsAre(
+          Pair(ax::mojom::TextStyle::kBold, RangePairs{{5, 10}, {10, 13}}),
+          Pair(ax::mojom::TextStyle::kItalic, RangePairs{{10, 13}, {13, 20}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_TextSizes) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("big");
+  last_node->AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize, 24.0f);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some big text"));
+  ASSERT_TRUE(style_data.text_sizes);
+  EXPECT_THAT(*style_data.text_sizes,
+              UnorderedElementsAre(Pair(24.0f, RangePairs{{5, 8}})));
+}
+
+// TODO: aluh - Enable once super/subscript nodes are merged into text content.
+TEST_F(BrowserAccessibilityAndroidTest, DISABLED_TextStyling_TextPositions) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 104};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kSuperscript;
+  last_node->SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+  last_node->child_ids = {103};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("superscript");
+  last_node->SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 104;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some superscript text"));
+  ASSERT_TRUE(style_data.text_positions);
+  EXPECT_THAT(*style_data.text_positions,
+              UnorderedElementsAre(Pair(ax::mojom::TextPosition::kSuperscript,
+                                        RangePairs{{5, 16}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_ForegroundColors) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("red");
+  last_node->AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFFF0000);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some red text"));
+  ASSERT_TRUE(style_data.foreground_colors);
+  EXPECT_THAT(
+      *style_data.foreground_colors,
+      UnorderedElementsAre(Pair(0x00000000, RangePairs{{0, 5}, {8, 13}}),
+                           Pair(0xFFFF0000, RangePairs{{5, 8}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_BackgroundColors) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("highlighted");
+  last_node->AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
+                             0xFF00FF00);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some highlighted text"));
+  ASSERT_TRUE(style_data.background_colors);
+  EXPECT_THAT(
+      *style_data.background_colors,
+      UnorderedElementsAre(Pair(0x00000000, RangePairs{{0, 5}, {16, 21}}),
+                           Pair(0xFF00FF00, RangePairs{{5, 16}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_BlendedColors) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+  last_node->role = ax::mojom::Role::kGenericContainer;
+  last_node->AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFFF0000);
+  last_node->AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
+                             0xFFFFFF00);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("blended color");
+  last_node->AddIntAttribute(ax::mojom::IntAttribute::kColor, 0x55007788);
+  last_node->AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
+                             0x8800FFFF);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some blended color text"));
+  ASSERT_TRUE(style_data.foreground_colors);
+  EXPECT_THAT(
+      *style_data.foreground_colors,
+      UnorderedElementsAre(Pair(0xFFFF0000, RangePairs{{0, 5}, {18, 23}}),
+                           Pair(0xFFAA282D, RangePairs{{5, 18}})));
+  ASSERT_TRUE(style_data.background_colors);
+  EXPECT_THAT(
+      *style_data.background_colors,
+      UnorderedElementsAre(Pair(0xFFFFFF00, RangePairs{{0, 5}, {18, 23}}),
+                           Pair(0xFF77FF88, RangePairs{{5, 18}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_FontFamilies) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+  last_node->AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
+                                "serif");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("sans serif");
+  last_node->AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
+                                "sans-serif");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some sans serif text"));
+  ASSERT_TRUE(style_data.font_families);
+  EXPECT_THAT(*style_data.font_families,
+              UnorderedElementsAre(Pair("serif", RangePairs{{0, 5}, {15, 20}}),
+                                   Pair("sans-serif", RangePairs{{5, 15}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_Locales) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+  last_node->AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "en-US");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("繁體中文");
+  last_node->AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "zh-TW");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some 繁體中文 text"));
+  ASSERT_TRUE(style_data.locales);
+  EXPECT_THAT(*style_data.locales,
+              UnorderedElementsAre(Pair("en-US", RangePairs{{0, 5}, {9, 14}}),
+                                   Pair("zh-TW", RangePairs{{5, 9}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_ManyAttributes) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("fancy");
+  last_node->AddTextStyle(ax::mojom::TextStyle::kBold);
+  last_node->AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize, 32.0f);
+  last_node->AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFFF0000);
+  last_node->AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
+                             0xFF0000FF);
+  last_node->AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
+                                "serif");
+  last_node->AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "ja-JP");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some fancy text"));
+  ASSERT_TRUE(style_data.text_styles);
+  EXPECT_THAT(*style_data.text_styles,
+              UnorderedElementsAre(
+                  Pair(ax::mojom::TextStyle::kBold, RangePairs{{5, 10}})));
+  ASSERT_TRUE(style_data.text_sizes);
+  EXPECT_THAT(*style_data.text_sizes,
+              UnorderedElementsAre(Pair(32.0f, RangePairs{{5, 10}})));
+  ASSERT_TRUE(style_data.foreground_colors);
+  EXPECT_THAT(
+      *style_data.foreground_colors,
+      UnorderedElementsAre(Pair(0x00000000, RangePairs{{0, 5}, {10, 15}}),
+                           Pair(0xFFFF0000, RangePairs{{5, 10}})));
+  ASSERT_TRUE(style_data.background_colors);
+  EXPECT_THAT(
+      *style_data.background_colors,
+      UnorderedElementsAre(Pair(0x00000000, RangePairs{{0, 5}, {10, 15}}),
+                           Pair(0xFF0000FF, RangePairs{{5, 10}})));
+  ASSERT_TRUE(style_data.font_families);
+  EXPECT_THAT(*style_data.font_families,
+              UnorderedElementsAre(Pair("serif", RangePairs{{5, 10}})));
+  ASSERT_TRUE(style_data.locales);
+  EXPECT_THAT(*style_data.locales,
+              UnorderedElementsAre(Pair("ja-JP", RangePairs{{5, 10}})));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_IgnoreInvalidValues) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("normal");
+  last_node->AddIntAttribute(ax::mojom::IntAttribute::kTextStyle, 0);
+  last_node->AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize, 0);
+  last_node->AddStringAttribute(ax::mojom::StringAttribute::kFontFamily, "");
+  last_node->AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some normal text"));
+  EXPECT_FALSE(style_data.text_styles);
+  EXPECT_FALSE(style_data.text_sizes);
+  EXPECT_FALSE(style_data.font_families);
+  EXPECT_FALSE(style_data.locales);
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TextStyling_EmptyStyledText) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = ROOT_ID;
+
+  ui::AXNodeData* last_node = &tree.nodes.emplace_back();
+  last_node->id = ROOT_ID;
+  last_node->child_ids = {101, 102, 103};
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 101;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("Some ");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 102;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName("");
+  last_node->AddTextStyle(ax::mojom::TextStyle::kBold);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 103;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" text");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  AXStyleData style_data;
+  BrowserAccessibilityAndroid* container =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
+  EXPECT_THAT(
+      container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
+      Eq(u"Some  text"));
+  ASSERT_TRUE(style_data.text_styles);
+  EXPECT_THAT(*style_data.text_styles,
+              UnorderedElementsAre(
+                  Pair(ax::mojom::TextStyle::kBold, RangePairs{{5, 5}})));
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_AttributeChange) {

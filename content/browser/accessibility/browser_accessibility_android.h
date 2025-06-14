@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,8 @@
 #include "ui/accessibility/platform/browser_accessibility.h"
 
 namespace content {
+
+struct AXStyleData;
 
 class CONTENT_EXPORT BrowserAccessibilityAndroid
     : public ui::BrowserAccessibility {
@@ -133,8 +136,11 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
 
   typedef base::RepeatingCallback<bool(const std::u16string& partial)>
       EarlyExitPredicate;
+  // Gets the text content of this node, up to at least `min_length` if given.
+  // If `style_data` is provided, it's populated with styling information.
   std::u16string GetSubstringTextContentUTF16(
-      std::optional<size_t> min_length) const;
+      std::optional<size_t> min_length,
+      AXStyleData* style_data = nullptr) const;
   static EarlyExitPredicate NonEmptyPredicate();
   static EarlyExitPredicate LengthAtLeast(size_t length);
 
@@ -178,6 +184,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // superscript from the methods above.
   float GetTextSize() const;
   int GetTextStyle() const;
+  int GetTextPosition() const;
   int GetTextColor() const;
   int GetTextBackgroundColor() const;
   std::string GetFontFamily() const;
@@ -307,6 +314,11 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
 
   // Returns tree if any child has kSelect action verb.
   bool HasSelectActionVerbChildren() const;
+
+  // Helper function that accumulates the text content for the node.
+  void AccumulateSubstringTextContentUTF16(std::u16string* accumulated_text,
+                                           std::optional<size_t> min_length,
+                                           AXStyleData* style_data) const;
 
   std::u16string cached_text_;
   std::u16string old_value_;
