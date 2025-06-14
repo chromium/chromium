@@ -141,12 +141,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void QueueLongAnimationFrameTiming(
       AnimationFrameTimingInfo*,
       std::optional<DOMPaintTimingInfo> paint_timing_info = std::nullopt);
-  void AddFirstPaintTiming(const DOMPaintTimingInfo& paint_timing_info,
-                           bool is_triggered_by_soft_navigation);
+  void AddFirstPaintTiming(const DOMPaintTimingInfo& paint_timing_info);
 
   void AddFirstContentfulPaintTiming(
-      const DOMPaintTimingInfo& paint_timing_info,
-      bool is_triggered_by_soft_navigation);
+      const DOMPaintTimingInfo& paint_timing_info);
 
   // PerformanceMonitor::Client implementation.
   void ReportLongTask(base::TimeTicks start_time,

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -42,23 +43,27 @@ class Image;
 class PaintTimingCallbackManager;
 class StyleImage;
 struct DOMPaintTimingInfo;
+class SoftNavigationContext;
 
 static constexpr double kMinimumEntropyForLCP = 0.05;
 
 // TODO(crbug/960502): we should limit the access of these properties.
 // TODO(yoav): Rename all mentions of "image" to "media"
-class ImageRecord : public GarbageCollected<ImageRecord> {
+class CORE_EXPORT ImageRecord : public GarbageCollected<ImageRecord> {
  public:
   ImageRecord(DOMNodeId new_node_id,
               const MediaTiming* new_media_timing,
               uint64_t new_recorded_size,
               const gfx::Rect& frame_visual_rect,
               const gfx::RectF& root_visual_rect,
-              MediaRecordIdHash hash)
+              MediaRecordIdHash hash,
+              SoftNavigationContext* soft_navigation_context)
       : node_id(new_node_id),
         media_timing(new_media_timing),
         hash(hash),
-        recorded_size(new_recorded_size) {
+        root_visual_rect(root_visual_rect),
+        recorded_size(new_recorded_size),
+        soft_navigation_context_(soft_navigation_context) {
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
           frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
@@ -83,6 +88,7 @@ class ImageRecord : public GarbageCollected<ImageRecord> {
   MediaRecordIdHash hash;
   // Mind that |recorded_size| has to be assigned before any size comparisons
   // (to determine largest image) are performed.
+  gfx::RectF root_visual_rect;
   uint64_t recorded_size = 0;
   unsigned frame_index = 0;
   // The time of the first paint after fully loaded. 0 means not painted yet.
@@ -100,6 +106,7 @@ class ImageRecord : public GarbageCollected<ImageRecord> {
   // Images that come from origin-dirty styles should have some limitations on
   // what they report.
   bool origin_clean = true;
+  WeakMember<SoftNavigationContext> soft_navigation_context_;
 };
 
 // |ImageRecordsManager| is the manager of all of the images that Largest
@@ -140,12 +147,13 @@ class CORE_EXPORT ImageRecordsManager {
   // Always adds media record to `recorded_images_`, and might create a new
   // ImageRecord to add to `pending_images_`.
   ImageRecord* RecordFirstPaintAndMaybeCreateImageRecord(
-      bool record_media_only_and_skip_measuring_all_image_records,
+      bool is_recording_lcp,
       const MediaRecordId& record_id,
       const uint64_t& visual_size,
       const gfx::Rect& frame_visual_rect,
       const gfx::RectF& root_visual_rect,
-      double bpp);
+      double bpp,
+      SoftNavigationContext* soft_navigation_context);
   bool IsRecordedImage(MediaRecordIdHash record_id_hash) const {
     return recorded_images_.Contains(record_id_hash);
   }
@@ -177,24 +185,28 @@ class CORE_EXPORT ImageRecordsManager {
   void MaybeUpdateLargestIgnoredImage(const MediaRecordId&,
                                       const uint64_t& visual_size,
                                       const gfx::Rect& frame_visual_rect,
-                                      const gfx::RectF& root_visual_rect);
-  void ReportLargestIgnoredImage(unsigned current_frame_index);
+                                      const gfx::RectF& root_visual_rect,
+                                      bool is_recording_lcp);
+  void ReportLargestIgnoredImage(unsigned current_frame_index,
+                                 bool is_recording_lcp);
 
   void AssignPaintTimeToRegisteredQueuedRecords(
       const base::TimeTicks&,
       const DOMPaintTimingInfo&,
-      unsigned last_queued_frame_index);
+      unsigned last_queued_frame_index,
+      bool is_recording_lcp);
 
-  void AddPendingImage(ImageRecord* record);
+  void AddPendingImage(ImageRecord* record, bool is_recording_lcp);
   void ClearImagesQueuedForPaintTime();
-  void Clear();
 
-  ImageRecord* CreateImageRecord(const LayoutObject& object,
-                                 const MediaTiming* media_timing,
-                                 const uint64_t& visual_size,
-                                 const gfx::Rect& frame_visual_rect,
-                                 const gfx::RectF& root_visual_rect,
-                                 MediaRecordIdHash hash);
+  ImageRecord* CreateImageRecord(
+      const LayoutObject& object,
+      const MediaTiming* media_timing,
+      const uint64_t& visual_size,
+      const gfx::Rect& frame_visual_rect,
+      const gfx::RectF& root_visual_rect,
+      MediaRecordIdHash hash,
+      SoftNavigationContext* soft_navigation_context);
   inline void QueueToMeasurePaintTime(ImageRecord* record,
                                       unsigned current_frame_index) {
     CHECK(record);
@@ -313,11 +325,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void StopRecordingLargestImagePaint() {
     recording_largest_image_paint_ = false;
   }
-  void RestartRecordingLargestImagePaint() {
-    recording_largest_image_paint_ = true;
-    records_manager_.Clear();
-  }
-
   void Trace(Visitor*) const;
 
  private:

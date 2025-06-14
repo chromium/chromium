@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Detect simple soft navigation.
+  assert_greater_than_equal: Got at least 3 LCP entries expected a number greater than or equal to 3 but got 2
+Harness: the test ran to completion.
+

@@ -36,8 +36,7 @@ AtomicString FromPaintTypeToString(PerformancePaintTiming::PaintType type) {
 PerformancePaintTiming::PerformancePaintTiming(
     PaintType type,
     const DOMPaintTimingInfo& paint_timing_info,
-    DOMWindow* source,
-    bool is_triggered_by_soft_navigation)
+    DOMWindow* source)
     : PerformanceEntry(
           FromPaintTypeToString(type),
           // https://w3c.github.io/paint-timing/#report-paint-timing
@@ -45,8 +44,7 @@ PerformancePaintTiming::PerformancePaintTiming(
           // given paintTimingInfo.
           paint_timing_info.presentation_time,
           paint_timing_info.presentation_time,
-          source,
-          is_triggered_by_soft_navigation) {
+          source) {
   SetPaintTimingInfo(paint_timing_info);
 }
 

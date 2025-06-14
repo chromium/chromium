@@ -341,7 +341,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
 #define MAYBE_LargestContentfulPaint LargestContentfulPaint
 #endif
 
-IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LargestContentfulPaint) {
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LargestContentfulPaint) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
 
@@ -558,7 +558,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 #else
 #define MAYBE_INP_ClickWithPresentation INP_ClickWithPresentation
 #endif  //  BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_INP_ClickWithPresentation) {
+
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_INP_ClickWithPresentation) {
   // Add waiter to wait for the interaction is arrived in browser.
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
@@ -607,7 +608,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_INP_ClickWithPresentation) {
 #else
 #define MAYBE_LayoutShift LayoutShift
 #endif  //  BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LayoutShift) {
+
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LayoutShift) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
 

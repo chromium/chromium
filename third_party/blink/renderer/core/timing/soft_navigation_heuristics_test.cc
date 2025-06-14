@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -26,7 +27,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-
 namespace blink {
 
 using TaskScope = scheduler::TaskAttributionTracker::TaskScope;
@@ -54,16 +54,6 @@ class SoftNavigationHeuristicsTest : public testing::Test {
     LocalDOMWindow* window = LocalDOMWindow::From(script_state);
     Document* document = window->document();
     return document->CreateRawElement(html_names::kDivTag);
-  }
-
-  void ReportPaintRectForTest(SoftNavigationHeuristics* heuristics,
-                              Node* node) {
-    ScriptState* script_state = GetScriptStateForTest();
-    LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-    LocalFrame* frame = window->GetFrame();
-    gfx::RectF rect{1000, 1000};
-    heuristics->RecordPaint(frame, rect, node);
-    return heuristics->OnPaintFinished();
   }
 
   ScriptState* GetScriptStateForTest() {
@@ -353,7 +343,13 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
 
   // Simulate a paint in a separate task.
   {
-    ReportPaintRectForTest(heuristics, node1);
+    TextRecord* record = MakeGarbageCollected<TextRecord>(
+        *node1, 0, gfx::RectF(1000, 1000), gfx::Rect(1000, 1000),
+        gfx::RectF(1000, 1000),
+        /* frame_index= */ 0,
+        /* is_needed_for_timing= */ false, context);
+    context->AddPaintedArea(record);
+    heuristics->OnPaintFinished();
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
     EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
   }
@@ -369,13 +365,19 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
 
   // And another paint
   {
-    ReportPaintRectForTest(heuristics, node2);
+    TextRecord* record = MakeGarbageCollected<TextRecord>(
+        *node2, 0, gfx::RectF(1000, 1000), gfx::Rect(1000, 1000),
+        gfx::RectF(1000, 1000),
+        /* frame_index= */ 0,
+        /* is_needed_for_timing= */ false, context);
+    context->AddPaintedArea(record);
+    heuristics->OnPaintFinished();
+    EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
+    // Should still just have one single soft-nav because a single context
+    // with a single Interaction should only emit once, even if it e.g.
+    // navigates twice (i.e. client-side redirects).
+    EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
   }
-
-  // Should still just have one single soft-nav because a single context
-  // with a single Interaction should only emit once, even if it e.g. navigates
-  // twice (i.e. client-side redirects).
-  EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
 }
 
 TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigation) {

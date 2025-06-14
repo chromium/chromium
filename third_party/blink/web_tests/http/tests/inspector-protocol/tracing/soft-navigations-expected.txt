@@ -37,7 +37,6 @@ Object: {
 			paintedArea: number
 			repaintedArea: number
 			softNavContextId: number
-			unattributedPaintedArea: number
 			wasEmitted: boolean
 		}
 		frame: string

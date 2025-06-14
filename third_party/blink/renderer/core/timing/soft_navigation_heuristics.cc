@@ -399,8 +399,6 @@ bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
   auto* performance = DOMWindowPerformance::performance(*window_.Get());
   performance->AddSoftNavigationEntry(AtomicString(context->InitialUrl()),
                                       context->UserInteractionTimestamp());
-
-  CommitPreviousPaintTimings(frame);
   ReportSoftNavigationToMetrics(frame, context);
 
   TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
@@ -411,12 +409,13 @@ bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
   return true;
 }
 
-void SoftNavigationHeuristics::RecordPaint(LocalFrame* frame,
-                                           const gfx::RectF& rect,
-                                           Node* node) {
-  if (context_for_current_url_) {
-    context_for_current_url_->AddPaintedArea(node, rect, true);
+SoftNavigationContext*
+SoftNavigationHeuristics::MaybeGetSoftNavigationContextForTiming(Node* node) {
+  if (context_for_current_url_ &&
+      context_for_current_url_->IsNeededForTiming(node)) {
+    return context_for_current_url_;
   }
+  return nullptr;
 }
 
 void SoftNavigationHeuristics::OnPaintFinished() {
@@ -424,6 +423,17 @@ void SoftNavigationHeuristics::OnPaintFinished() {
     if (context->OnPaintFinished()) {
       EmitSoftNavigationEntryIfAllConditionsMet(context);
     }
+  }
+}
+
+void SoftNavigationHeuristics::UpdateSoftLcpCandidate() {
+  if (!context_for_current_url_) {
+    return;
+  }
+  // Performance timeline won't allow emitting LCP entries without this flag,
+  // but we can save a lot of needless work by also just not even trying.
+  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
+    context_for_current_url_->UpdateSoftLcpCandidate();
   }
 }
 
@@ -454,34 +464,6 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
   // Count "successful soft nav" in histogram
   base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
                                 SoftNavigationOutcome::kSoftNavigationDetected);
-}
-
-void SoftNavigationHeuristics::ResetPaintTimingsIfNeeded() {
-  LocalFrame* frame = GetLocalFrameIfOutermostAndNotDetached();
-  if (!frame) {
-    return;
-  }
-  LocalFrameView* local_frame_view = frame->View();
-  CHECK(local_frame_view);
-  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
-    local_frame_view->GetPaintTimingDetector().RestartRecordingLCP();
-  }
-
-  local_frame_view->GetPaintTimingDetector().RestartRecordingLCPToUkm();
-}
-
-// Once all the soft navigation conditions are met (verified in
-// `EmitSoftNavigationEntryIfAllConditionsMet()`), the previous paints are
-// committed, to make sure accumulated FP, FCP and LCP entries are properly
-// fired.
-void SoftNavigationHeuristics::CommitPreviousPaintTimings(LocalFrame* frame) {
-  CHECK(frame && frame->IsOutermostMainFrame());
-  LocalFrameView* local_frame_view = frame->View();
-
-  CHECK(local_frame_view);
-
-  local_frame_view->GetPaintTimingDetector().SoftNavigationDetected(
-      window_.Get());
 }
 
 void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
@@ -590,17 +572,13 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     // "new interaction" (i.e. keydown), but will create a new one if that has
     // been cleared, which can happen in tests.
     if (IsInteractionStart(type) || !active_interaction_context_) {
-      active_interaction_context_ =
-          MakeGarbageCollected<SoftNavigationContext>(paint_attribution_mode_);
+      active_interaction_context_ = MakeGarbageCollected<SoftNavigationContext>(
+          *window_, paint_attribution_mode_);
       potential_soft_navigations_.push_back(active_interaction_context_);
       TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
                           "SoftNavigationHeuristics::CreateNewContext",
                           "context", *active_interaction_context_);
     }
-
-    // Ensure that paints would be reset, so that paint recording would continue
-    // despite the user interaction.
-    ResetPaintTimingsIfNeeded();
   }
   CHECK(active_interaction_context_.Get());
 

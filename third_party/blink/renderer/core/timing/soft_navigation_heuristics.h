@@ -100,9 +100,9 @@ class CORE_EXPORT SoftNavigationHeuristics
   // TaskAttributionTracker::Observer's implementation.
   void OnCreateTaskScope(scheduler::TaskAttributionInfo&) override;
 
-  void RecordPaint(LocalFrame*, const gfx::RectF& rect, Node* node);
-
+  SoftNavigationContext* MaybeGetSoftNavigationContextForTiming(Node* node);
   void OnPaintFinished();
+  void UpdateSoftLcpCandidate();
 
   // Returns an `EventScope` suitable for navigation. Used for navigations not
   // yet associated with an event.
@@ -130,8 +130,6 @@ class CORE_EXPORT SoftNavigationHeuristics
       SoftNavigationContext*) const;
   SoftNavigationContext* GetSoftNavigationContextForCurrentTask() const;
 
-  void ResetPaintTimingsIfNeeded();
-  void CommitPreviousPaintTimings(LocalFrame*);
   bool EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
   LocalFrame* GetLocalFrameIfOutermostAndNotDetached() const;
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);

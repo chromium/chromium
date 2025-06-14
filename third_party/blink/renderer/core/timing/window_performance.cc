@@ -1304,17 +1304,15 @@ void WindowPerformance::QueueLongAnimationFrameTiming(
 }
 
 void WindowPerformance::AddFirstPaintTiming(
-    const DOMPaintTimingInfo& paint_timing_info,
-    bool is_triggered_by_soft_navigation) {
+    const DOMPaintTimingInfo& paint_timing_info) {
   AddPaintTiming(PerformancePaintTiming::PaintType::kFirstPaint,
-                 paint_timing_info, is_triggered_by_soft_navigation);
+                 paint_timing_info);
 }
 
 void WindowPerformance::AddFirstContentfulPaintTiming(
-    const DOMPaintTimingInfo& paint_timing_info,
-    bool is_triggered_by_soft_navigation) {
+    const DOMPaintTimingInfo& paint_timing_info) {
   AddPaintTiming(PerformancePaintTiming::PaintType::kFirstContentfulPaint,
-                 paint_timing_info, is_triggered_by_soft_navigation);
+                 paint_timing_info);
 }
 
 void WindowPerformance::AddLongAnimationFrameEntry(PerformanceEntry* entry) {
@@ -1487,6 +1485,11 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     const String& url,
     Element* element,
     bool is_triggered_by_soft_navigation) {
+  if (is_triggered_by_soft_navigation &&
+      !RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
+          GetExecutionContext())) {
+    return;
+  }
   DOMHighResTimeStamp load_timestamp =
       MonotonicTimeToDOMHighResTimeStamp(load_time);
 

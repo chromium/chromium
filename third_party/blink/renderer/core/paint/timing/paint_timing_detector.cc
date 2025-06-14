@@ -245,7 +245,7 @@ void PaintTimingDetector::NotifyImageRemoved(
 void PaintTimingDetector::OnInputOrScroll() {
   // If we have already stopped and we're no longer recording the largest image
   // paint, then abort.
-  if (!image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
+  if (!record_lcp_to_metrics_) {
     return;
   }
 
@@ -295,50 +295,6 @@ bool PaintTimingDetector::NeedToNotifyInputOrScroll() const {
          image_paint_timing_detector_;
 }
 
-void PaintTimingDetector::RestartRecordingLCP() {
-  text_paint_timing_detector_->RestartRecordingLargestTextPaint();
-  image_paint_timing_detector_->RestartRecordingLargestImagePaint();
-  lcp_was_restarted_ = true;
-  soft_navigation_was_detected_ = false;
-  GetLargestContentfulPaintCalculator()->ResetMetricsLcp();
-}
-
-void PaintTimingDetector::SoftNavigationDetected(LocalDOMWindow* window) {
-  soft_navigation_was_detected_ = true;
-  auto* lcp_calculator = GetLargestContentfulPaintCalculator();
-  // If the window is detached (no calculator) or we haven't yet got any
-  // presentation times for neither a text record nor an image one, bail. The
-  // web exposed entry will get updated when the presentation times callback
-  // will be called.
-  if (!lcp_calculator || (!potential_soft_navigation_text_record_ &&
-                          !potential_soft_navigation_image_record_)) {
-    return;
-  }
-  if (!lcp_was_restarted_ ||
-      RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
-    lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
-        potential_soft_navigation_text_record_,
-        potential_soft_navigation_image_record_,
-        /*is_triggered_by_soft_navigation=*/lcp_was_restarted_);
-  }
-
-  // Report the soft navigation LCP to metrics.
-  CHECK(record_soft_navigation_lcp_for_metrics_);
-  soft_navigation_lcp_details_for_metrics_ =
-      largest_contentful_paint_calculator_->LatestLcpDetails();
-  DidChangePerformanceTiming();
-}
-
-void PaintTimingDetector::RestartRecordingLCPToUkm() {
-  text_paint_timing_detector_->RestartRecordingLargestTextPaint();
-  image_paint_timing_detector_->RestartRecordingLargestImagePaint();
-  record_soft_navigation_lcp_for_metrics_ = true;
-  // Reset the lcp candidate and the soft navigation LCP for reporting to UKM
-  // when a new soft navigation happens. When this resetting happens, the
-  // previous lcp details should already be updated.
-  soft_navigation_lcp_details_for_metrics_ = LargestContentfulPaintDetails();
-}
-
 LargestContentfulPaintCalculator*
 PaintTimingDetector::GetLargestContentfulPaintCalculator() {
   if (largest_contentful_paint_calculator_) {
@@ -359,24 +315,13 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
 void PaintTimingDetector::UpdateMetricsLcp() {
   // The DidChangePerformanceTiming method which triggers the reporting of
   // metrics LCP would not be called when we are not recording metrics LCP.
-  if (!record_lcp_to_metrics_ && !record_soft_navigation_lcp_for_metrics_) {
+  if (!record_lcp_to_metrics_) {
     return;
   }
 
-  if (record_lcp_to_metrics_) {
-    auto latest_lcp_details =
-        GetLargestContentfulPaintCalculator()->LatestLcpDetails();
-    lcp_details_for_metrics_ = latest_lcp_details;
-  }
-
-  // If we're waiting on a softnav and it wasn't detected yet, keep on waiting
-  // and don't update.
-  if (record_soft_navigation_lcp_for_metrics_ &&
-      soft_navigation_was_detected_) {
-    auto latest_lcp_details =
-        GetLargestContentfulPaintCalculator()->LatestLcpDetails();
-    soft_navigation_lcp_details_for_metrics_ = latest_lcp_details;
-  }
+  auto latest_lcp_details =
+      GetLargestContentfulPaintCalculator()->LatestLcpDetails();
+  lcp_details_for_metrics_ = latest_lcp_details;
 
   DidChangePerformanceTiming();
 }
@@ -467,25 +412,11 @@ void PaintTimingDetector::UpdateLcpCandidate() {
   if (image_update_result.second || text_update_result.second) {
     UpdateMetricsLcp();
   }
-  // If we stopped and then restarted LCP measurement (to support soft
-  // navigations), and didn't yet detect a soft navigation, put aside the
-  // records as potential soft navigation LCP ones, and don't update the web
-  // exposed entries just yet. We'll do that once we actually detect the soft
-  // navigation.
-  if (lcp_was_restarted_ && !soft_navigation_was_detected_) {
-    potential_soft_navigation_text_record_ = text_update_result.first;
-    potential_soft_navigation_image_record_ = image_update_result.first;
-    return;
-  }
-  potential_soft_navigation_text_record_ = nullptr;
-  potential_soft_navigation_image_record_ = nullptr;
 
-  // If we're still recording the initial LCP, or if LCP was explicitly
-  // restarted for soft navigations, fire the web exposed entry.
-  if (record_lcp_to_metrics_ || lcp_was_restarted_) {
+  if (record_lcp_to_metrics_) {
     lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
         text_update_result.first, image_update_result.first,
-        /*is_triggered_by_soft_navigation=*/lcp_was_restarted_);
+        /*is_triggered_by_soft_navigation=*/false);
   }
 }
 
@@ -558,8 +489,6 @@ void PaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(image_paint_timing_detector_);
   visitor->Trace(frame_view_);
   visitor->Trace(largest_contentful_paint_calculator_);
-  visitor->Trace(potential_soft_navigation_image_record_);
-  visitor->Trace(potential_soft_navigation_text_record_);
 }
 
 }  // namespace blink

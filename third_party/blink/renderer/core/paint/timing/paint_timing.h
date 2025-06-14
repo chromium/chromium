@@ -123,20 +123,12 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // instance, the first time that text or image content was painted after the
   // user landed on the page.
   base::TimeTicks FirstContentfulPaintIgnoringSoftNavigations() const {
-    return first_contentful_paint_presentation_ignoring_soft_navigations_;
+    return first_contentful_paint_presentation_;
   }
 
   base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
       const {
     return paint_details_.first_contentful_paint_;
-  }
-
-  void ResetFirstPaintAndFCP() {
-    soft_navigation_pending_paint_details_ = PaintDetails();
-    first_paints_reset_ = true;
-    soft_navigation_detected_ = false;
-    soft_navigation_fp_reported_ = false;
-    soft_navigation_fcp_reported_ = false;
   }
 
   // FirstImagePaint returns the first time that image content was painted.
@@ -185,8 +177,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void SetTickClockForTesting(const base::TickClock* clock);
 
   void OnRestoredFromBackForwardCache();
-
-  void SoftNavigationDetected();
 
   void MarkPaintTiming();
 
@@ -254,33 +244,20 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     base::TimeTicks first_contentful_paint_presentation_;
   };
 
-  PaintDetails& GetRelevantPaintDetails() {
-    return first_paints_reset_ ? soft_navigation_pending_paint_details_
-                               : paint_details_;
-  }
+  PaintDetails& GetRelevantPaintDetails() { return paint_details_; }
 
   DOMPaintTimingInfo ToDOMPaintTimingInfo(const PaintTimingInfo&) const;
 
   PaintDetails paint_details_;
-  PaintDetails soft_navigation_pending_paint_details_;
-  std::optional<PaintTimingInfo>
-      soft_navigation_pending_first_paint_timing_info_;
-  std::optional<PaintTimingInfo>
-      soft_navigation_pending_first_contentful_paint_timing_info_;
   // First paint timestamp that doesn't update after soft navigations, and only
   // used for UKM reporting.
   base::TimeTicks first_paint_presentation_for_ukm_;
   // FCP timestamp that does not update after soft navigations.
-  base::TimeTicks
-      first_contentful_paint_presentation_ignoring_soft_navigations_;
+  base::TimeTicks first_contentful_paint_presentation_;
   base::TimeTicks first_meaningful_paint_presentation_;
   base::TimeTicks first_meaningful_paint_candidate_;
   base::TimeTicks first_eligible_to_paint_;
   base::TimeTicks last_rendering_update_end_time_;
-  bool first_paints_reset_ = false;
-  bool soft_navigation_detected_ = false;
-  bool soft_navigation_fp_reported_ = false;
-  bool soft_navigation_fcp_reported_ = false;
 
   base::TimeTicks lcp_mouse_over_dispatch_time_;
 

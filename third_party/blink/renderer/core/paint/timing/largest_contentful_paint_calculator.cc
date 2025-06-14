@@ -122,13 +122,13 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   const AtomicString& image_id =
       image_element ? image_element->GetIdAttribute() : AtomicString();
 
+  // TODO(crbug.com/424433918): Create a new entry type, specific to soft-navs.
   window_performance_->OnLargestContentfulPaintUpdated(
       expose_paint_time_to_api
           ? std::make_optional(largest_image->paint_timing_info)
           : std::nullopt,
       /*paint_size=*/largest_image->recorded_size,
       /*load_time=*/largest_image->load_time,
-
       /*id=*/image_id, /*url=*/image_url, /*element=*/image_element,
       is_triggered_by_soft_navigation);
 
@@ -164,6 +164,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
       text_node->IsInShadowTree() ? nullptr : DynamicTo<Element>(text_node);
   const AtomicString& text_id =
       text_element ? text_element->GetIdAttribute() : AtomicString();
+
+  // TODO(crbug.com/424433918): Create a new entry type, specific to soft-navs.
   // Always use paint time as start time for text LCP candidate.
   window_performance_->OnLargestContentfulPaintUpdated(
       largest_text.paint_timing_info,
