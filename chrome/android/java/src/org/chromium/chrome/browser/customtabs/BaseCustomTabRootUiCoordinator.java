@@ -444,7 +444,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager, null);
 
         CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
-        toolbar.calculateToolbarWidthBeforeMeasure(mActivity, mIntentDataProvider.get());
+        toolbar.initVisibilityRule(
+                mActivity,
+                () -> mAppMenuCoordinator.getAppMenuHandler(),
+                mIntentDataProvider.get());
         if (ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
             toolbar.setFeatureOverridesManager(mFeatureOverridesManagerSupplier.get());
         }

@@ -98,4 +98,9 @@ public interface AppMenuHandler {
      * @return A new {@link AppMenuButtonHelper} to hook up to a view containing a menu button.
      */
     AppMenuButtonHelper createAppMenuButtonHelper();
+
+    /**
+     * @return {@link AppMenuPropertiesDelegate} that builds the menu list.
+     */
+    AppMenuPropertiesDelegate getMenuPropertiesDelegate();
 }

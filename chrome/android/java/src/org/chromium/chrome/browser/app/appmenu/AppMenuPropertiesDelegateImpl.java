@@ -1029,6 +1029,34 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      */
     @Nullable
     protected ListItem maybeBuildPriceTrackingListItem(@Nullable Tab currentTab, boolean showIcon) {
+        Boolean show = getPriceTrackingMenuItemInfo(currentTab);
+        if (show == null) return null;
+
+        if (show) {
+            return new ListItem(
+                    AppMenuItemType.STANDARD,
+                    buildModelForStandardMenuItem(
+                            R.id.enable_price_tracking_menu_id,
+                            R.string.enable_price_tracking_menu_item,
+                            showIcon ? R.drawable.price_tracking_disabled : 0));
+        } else {
+            return new ListItem(
+                    AppMenuItemType.STANDARD,
+                    buildModelForStandardMenuItem(
+                            R.id.disable_price_tracking_menu_id,
+                            R.string.disable_price_tracking_menu_item,
+                            showIcon ? R.drawable.price_tracking_enabled_filled : 0));
+        }
+    }
+
+    /**
+     * Determine which menu to show for price tracking feature.
+     *
+     * @param currentTab The currently selected tab.
+     * @return {@code true} to show 'enable'. Shows no option if {@code null}.
+     */
+    @Nullable
+    public Boolean getPriceTrackingMenuItemInfo(@Nullable Tab currentTab) {
         if (currentTab == null || currentTab.getWebContents() == null) {
             return null;
         }
@@ -1060,21 +1088,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             showStartPriceTracking = !isSubscribed;
         }
 
-        if (showStartPriceTracking) {
-            return new ListItem(
-                    AppMenuItemType.STANDARD,
-                    buildModelForStandardMenuItem(
-                            R.id.enable_price_tracking_menu_id,
-                            R.string.enable_price_tracking_menu_item,
-                            showIcon ? R.drawable.price_tracking_disabled : 0));
-        } else {
-            return new ListItem(
-                    AppMenuItemType.STANDARD,
-                    buildModelForStandardMenuItem(
-                            R.id.disable_price_tracking_menu_id,
-                            R.string.disable_price_tracking_menu_item,
-                            showIcon ? R.drawable.price_tracking_enabled_filled : 0));
-        }
+        return showStartPriceTracking;
     }
 
     /**

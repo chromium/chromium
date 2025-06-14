@@ -140,7 +140,7 @@ public class AppMenuTestSupport {
             AppMenuCoordinator coordinator) {
         return ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
-                .getDelegateForTests();
+                .getMenuPropertiesDelegate();
     }
 
     /**

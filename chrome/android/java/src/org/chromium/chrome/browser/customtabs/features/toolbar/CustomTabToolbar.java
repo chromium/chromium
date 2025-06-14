@@ -68,6 +68,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
@@ -108,6 +109,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
@@ -118,6 +120,8 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -187,6 +191,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private boolean mShouldHighlightCookieControlsIcon;
     private int mBlockingStatus3pcd;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
+    private Supplier<AppMenuHandler> mAppMenuHandler;
 
     private final Handler mTaskHandler = new Handler();
     private final ButtonVisibilityRule mButtonVisibilityRule =
@@ -408,15 +413,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /**
-     * Calculate toolbar with before {@link onMeasure(int, int)} is called.
+     * initialize the toolbar with menu,.
      *
      * @param activity The {@link Activity} that the toolbar is attached to.
+     * @param appMenuHandler Supplief of {@link AppMenuHandler}.
      * @param intentDataProvider {@link BrowserServicesIntentDataProvider} for accessing CCT intent
      *     data.
      */
     @ExperimentalOpenInBrowser
-    public void calculateToolbarWidthBeforeMeasure(
-            Activity activity, BrowserServicesIntentDataProvider intentDataProvider) {
+    public void initVisibilityRule(
+            Activity activity,
+            Supplier<AppMenuHandler> appMenuHandler,
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        mAppMenuHandler = appMenuHandler;
         if (mIntentDataProvider == null) {
             mIntentDataProvider = intentDataProvider;
             @CustomTabsButtonState
@@ -1520,8 +1529,52 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 return;
             }
 
-            boolean show = buttonVariant != AdaptiveToolbarButtonVariant.READER_MODE;
+            boolean show =
+                    AdaptiveToolbarFeatures.isDynamicAction(buttonVariant)
+                            && buttonVariant != AdaptiveToolbarButtonVariant.READER_MODE;
             mMenuButton.findViewById(R.id.menu_dot).setVisibility(show ? View.VISIBLE : View.GONE);
+            if (!show) return;
+
+            int menuId = getHighlightMenuId(buttonVariant);
+            if (menuId < 0) return;
+
+            mAppMenuHandler.get().setMenuHighlight(menuId, false);
+            AppMenuObserver menuObserver =
+                    new AppMenuObserver() {
+                        @Override
+                        public void onMenuVisibilityChanged(boolean isVisible) {
+                            // TODO(crbug.com/424807997): Do this toggling in MenuButton MVC. Do it
+                            // upon page navigation as well.
+                            if (isVisible) {
+                                mMenuButton.findViewById(R.id.menu_dot).setVisibility(View.GONE);
+                                mAppMenuHandler.get().removeObserver(this);
+                            }
+                        }
+
+                        @Override
+                        public void onMenuHighlightChanged(boolean highlighting) {}
+                    };
+            mAppMenuHandler.get().addObserver(menuObserver);
+        }
+
+        private int getHighlightMenuId(@AdaptiveToolbarButtonVariant int buttonVariant) {
+            return switch (buttonVariant) {
+                case AdaptiveToolbarButtonVariant.PRICE_TRACKING -> {
+                    // Figure out which of the two menu items (enable/disable) appears and needs
+                    // highlighting.
+                    // TODO(crbug.com/424807997): Avoid casting.
+                    var appMenuDelegate =
+                            (AppMenuPropertiesDelegateImpl)
+                                    mAppMenuHandler.get().getMenuPropertiesDelegate();
+                    var showEnabled = appMenuDelegate.getPriceTrackingMenuItemInfo(getCurrentTab());
+                    if (showEnabled == null) yield -1;
+                    yield showEnabled
+                            ? R.id.enable_price_tracking_menu_id
+                            : R.id.disable_price_tracking_menu_id;
+                }
+                case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS -> R.id.price_insights_menu_id;
+                default -> -1;
+            };
         }
 
         private void updateOptionalButtonTint() {

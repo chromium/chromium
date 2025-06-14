@@ -457,7 +457,8 @@ class AppMenuHandlerImpl
         mTestOptionsItemSelectedListener = onOptionsItemSelectedListener;
     }
 
-    AppMenuPropertiesDelegate getDelegateForTests() {
+    @Override
+    public AppMenuPropertiesDelegate getMenuPropertiesDelegate() {
         return mDelegate;
     }
 
