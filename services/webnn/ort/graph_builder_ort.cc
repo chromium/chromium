@@ -53,8 +53,10 @@ constexpr base::cstring_view kOpTypeGemm = "Gemm";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
 constexpr base::cstring_view kOpTypeSigmoid = "Sigmoid";
+constexpr base::cstring_view kOpTypeSoftmax = "Softmax";
 constexpr base::cstring_view kOpTypeSoftsign = "Softsign";
 constexpr base::cstring_view kOpTypeTanh = "Tanh";
+constexpr base::cstring_view kOpTypeTranspose = "Transpose";
 
 // Pooling operations
 constexpr base::cstring_view kOpTypeAveragePool2d = "AveragePool";
@@ -588,6 +590,44 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   model_editor_.AddNode(op_type, node, inputs, outputs, attributes);
 }
 
+void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
+  const std::string node = GenerateOperationName(softmax.label);
+  const std::string input = GetOperandNameById(softmax.input_operand_id);
+  const std::string output = GetOperandNameById(softmax.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.softmax_input.Supports(
+      GetOperand(softmax.input_operand_id).descriptor));
+
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrAxis = "axis";
+  std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
+      kAttrAxis, static_cast<int64_t>(softmax.axis))};
+
+  model_editor_.AddNode(kOpTypeSoftmax, node, inputs, outputs, attributes);
+}
+
+void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
+  const std::string node = GenerateOperationName(transpose.label);
+  const std::string input = GetOperandNameById(transpose.input_operand_id);
+  const std::string output = GetOperandNameById(transpose.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.transpose_input.Supports(
+      GetOperand(transpose.input_operand_id).descriptor));
+
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrPerm = "perm";
+  std::vector<int64_t> perm_value(transpose.permutation.begin(),
+                                  transpose.permutation.end());
+  std::array<ScopedOrtOpAttr, 1> attributes = {
+      model_editor_.CreateAttribute(kAttrPerm, perm_value)};
+
+  model_editor_.AddNode(kOpTypeTranspose, node, inputs, outputs, attributes);
+}
+
 [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
                              mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
@@ -650,6 +690,10 @@ GraphBuilderOrt::BuildModel() {
         AddUnaryOperation(*operation->get_sigmoid(), kOpTypeSigmoid);
         break;
       }
+      case mojom::Operation::Tag::kSoftmax: {
+        AddSoftmaxOperation(*operation->get_softmax());
+        break;
+      }
       case mojom::Operation::Tag::kSoftsign: {
         CHECK(data_type_limits.softsign_input.Supports(
             GetOperand(operation->get_softsign()->input_operand_id)
@@ -661,6 +705,10 @@ GraphBuilderOrt::BuildModel() {
         CHECK(data_type_limits.tanh_input.Supports(
             GetOperand(operation->get_tanh()->input_operand_id).descriptor));
         AddUnaryOperation(*operation->get_tanh(), kOpTypeTanh);
+        break;
+      }
+      case mojom::Operation::Tag::kTranspose: {
+        AddTransposeOperation(*operation->get_transpose());
         break;
       }
       case mojom::Operation::Tag::kArgMinMax:
@@ -694,11 +742,9 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kScatterElements:
       case mojom::Operation::Tag::kScatterNd:
       case mojom::Operation::Tag::kSlice:
-      case mojom::Operation::Tag::kSoftmax:
       case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTile:
-      case mojom::Operation::Tag::kTranspose:
       case mojom::Operation::Tag::kTriangular:
       case mojom::Operation::Tag::kWhere:
         NOTREACHED() << "[WebNN] Unsupported operation.";
