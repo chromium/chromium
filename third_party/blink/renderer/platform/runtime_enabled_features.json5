@@ -2898,6 +2898,10 @@
       status: "stable",
     },
     {
+      name: "LayoutNewReplacedLogic",
+      status: "stable",
+    },
+    {
       name: "LayoutNGShapeCache",
       status: "stable",
       base_feature: "LayoutNGShapeCache",

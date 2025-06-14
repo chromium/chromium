@@ -1086,12 +1086,21 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
       replaced_block = space.AvailableSize().block_size;
       DCHECK_GE(*replaced_block, 0);
     } else {
+      const Length& non_stretch_length =
+          RuntimeEnabledFeatures::LayoutNewReplacedLogicEnabled()
+              ? Length::FitContent()
+              : Length::Auto();
       const Length& auto_block_length = space.IsBlockAutoBehaviorStretch()
                                             ? Length::FillAvailable()
-                                            : Length::Auto();
-      const LayoutUnit block_size = ResolveMainBlockLength(
-          space, style, border_padding, block_length, &auto_block_length,
-          /* intrinsic_size */ kIndefiniteSize);
+                                            : non_stretch_length;
+      const LayoutUnit block_size =
+          RuntimeEnabledFeatures::LayoutNewReplacedLogicEnabled()
+              ? ResolveMainBlockLength(space, style, border_padding,
+                                       block_length, &auto_block_length,
+                                       BlockSizeFunc)
+              : ResolveMainBlockLength(space, style, border_padding,
+                                       block_length, &auto_block_length,
+                                       /* intrinsic_size */ kIndefiniteSize);
       if (block_size != kIndefiniteSize) {
         DCHECK_GE(block_size, LayoutUnit());
         replaced_block = block_min_max_sizes.ClampSizeToMinAndMax(block_size);
@@ -1138,14 +1147,32 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
   MinMaxSizes inline_min_max_sizes;
   std::optional<LayoutUnit> replaced_inline;
   if (mode == ReplacedSizeMode::kIgnoreInlineLengths) {
-    // Don't resolve any inline lengths or constraints.
-    inline_min_max_sizes = {LayoutUnit(), LayoutUnit::Max()};
+    // Just use the transferred sizes.
+    inline_min_max_sizes =
+        RuntimeEnabledFeatures::LayoutNewReplacedLogicEnabled()
+            ? transferred_min_max_sizes
+            : MinMaxSizes{LayoutUnit(), LayoutUnit::Max()};
   } else {
     inline_min_max_sizes = {
         ResolveMinInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMinWidth()),
         ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMaxWidth())};
+
+    // Transfer the block min/max sizes if applicable.
+    if (RuntimeEnabledFeatures::LayoutNewReplacedLogicEnabled() &&
+        style.LogicalWidth().HasAuto() &&
+        space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) {
+      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
+      inline_min_max_sizes.min_size =
+          std::max(inline_min_max_sizes.min_size,
+                   std::min(transferred_min_max_sizes.min_size,
+                            inline_min_max_sizes.max_size));
+      inline_min_max_sizes.max_size = std::min(
+          inline_min_max_sizes.max_size, transferred_min_max_sizes.max_size);
+    }
+
+    // Ensure the max-size encompasses the min-size.
     inline_min_max_sizes.max_size =
         std::max(inline_min_max_sizes.min_size, inline_min_max_sizes.max_size);
 
@@ -1153,9 +1180,13 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
       replaced_inline = space.AvailableSize().inline_size;
       DCHECK_GE(*replaced_inline, 0);
     } else {
+      const Length& non_stretch_length =
+          RuntimeEnabledFeatures::LayoutNewReplacedLogicEnabled()
+              ? Length::FitContent()
+              : Length::Auto();
       const Length& auto_length = space.IsInlineAutoBehaviorStretch()
                                       ? Length::FillAvailable()
-                                      : Length::Auto();
+                                      : non_stretch_length;
       const LayoutUnit inline_size =
           ResolveMainInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                   inline_length, &auto_length);
@@ -1191,15 +1222,16 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
           Length::FillAvailable(), /* auto_length */ nullptr,
           /* override_available_size */ kIndefiniteSize);
     }
+    if (RuntimeEnabledFeatures::LayoutNewReplacedLogicEnabled()) {
+      return size;
+    }
     return transferred_min_max_sizes.ClampSizeToMinAndMax(size);
   };
 
   // We have *only* an aspect-ratio with no sizes (natural or otherwise), we
   // default to stretching.
   if (!natural_size && !replaced_inline && !replaced_block) {
-    replaced_inline = StretchFit();
-    replaced_inline =
-        inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
+    replaced_inline = inline_min_max_sizes.ClampSizeToMinAndMax(StretchFit());
   }
 
   // We only know one size, the other gets computed via the aspect-ratio (if
@@ -1227,9 +1259,14 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     return LogicalSize(*replaced_inline, *replaced_block);
   }
 
-  // Both lengths are unknown, start with the natural-size.
-  DCHECK(!replaced_inline);
-  DCHECK(!replaced_block);
+  // Both sizes are unknown.
+  if (RuntimeEnabledFeatures::LayoutNewReplacedLogicEnabled()) {
+    return {
+        inline_min_max_sizes.ClampSizeToMinAndMax(natural_size->inline_size),
+        block_min_max_sizes.ClampSizeToMinAndMax(natural_size->block_size)};
+  }
+
+  // Start with the natural-size.
   replaced_inline = natural_size->inline_size;
   replaced_block = natural_size->block_size;
 
