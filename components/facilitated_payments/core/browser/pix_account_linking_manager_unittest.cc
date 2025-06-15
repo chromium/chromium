@@ -85,6 +85,7 @@ TEST_F(PixAccountLinkingManagerTest,
 }
 
 TEST_F(PixAccountLinkingManagerTest, OnAccepted) {
+  EXPECT_CALL(client(), DismissPrompt);
   EXPECT_CALL(client(), OnPixAccountLinkingPromptAccepted);
 
   test_api().OnAccepted();
@@ -94,6 +95,8 @@ TEST_F(PixAccountLinkingManagerTest, PromptDeclined_UserPrefUpdated) {
   // The account linking user pref should be default enabled .
   ASSERT_TRUE(autofill::prefs::IsFacilitatedPaymentsPixAccountLinkingEnabled(
       pref_service_.get()));
+
+  EXPECT_CALL(client(), DismissPrompt);
 
   test_api().OnDeclined();
 

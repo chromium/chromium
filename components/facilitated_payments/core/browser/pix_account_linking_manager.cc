@@ -44,11 +44,13 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPrompt() {
 
 void PixAccountLinkingManager::OnAccepted() {
   // TODO(crbug.com/419108993): Add metrics.
+  client_->DismissPrompt();
   client_->OnPixAccountLinkingPromptAccepted();
 }
 
 void PixAccountLinkingManager::OnDeclined() {
   // TODO(crbug.com/419108993): Add metrics.
+  client_->DismissPrompt();
   client_->GetPaymentsDataManager()
       ->SetFacilitatedPaymentsPixAccountLinkingUserPref(/* enabled= */ false);
 }
