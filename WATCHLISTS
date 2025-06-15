@@ -1075,6 +1075,12 @@
     'dbus': {
       'filepath': 'dbus/',
     },
+    'desktop_composebox': {
+      'filepath': '^chrome/browser/resources/new_tab_page/composebox/|'\
+                  '^chrome/browser/ui/webui/new_tab_page/composebox/|'\
+                  '^chrome/test/data/webui/new_tab_page/composebox/|'\
+                  '^components/omnibox/composebox/',
+    },
     'desktop_in_product_help': {
       'filepath': 'components/feature_engagement/|'\
                   'components/user_education/|'\
@@ -1085,6 +1091,23 @@
                   'chrome/browser/ui/views/user_education/|'\
                   'chrome/browser/ui/webui/user_education_internals/|'\
                   'chrome/browser/ui/webui/whats_new/',
+    },
+    'desktop_omnibox': {
+      'filepath': '^chrome/browser/ash/app_list/search/omnibox/|'\
+                  '^chrome/browser/autocomplete/|'\
+                  '^chrome/browser/resources/omnibox|'\
+                  '^chrome/browser/ui/location_bar/|'\
+                  '^chrome/browser/ui/omnibox/|'\
+                  '^chrome/browser/ui/views/location_bar/|'\
+                  '^chrome/browser/ui/views/omnibox/|'\
+                  '^chrome/browser/ui/webui/omnibox/|'\
+                  '^components/omnibox/|'\
+                  '^components/search_engines/'
+    },
+    'desktop_searchbox': {
+      'filepath': '^chrome/browser/ui/webui/searchbox/|'\
+                  '^chrome/test/data/webui/cr_components/searchbox/|'\
+                  '^ui/webui/resources/cr_components/searchbox/',
     },
     'desktop_whats_new': {
       'filepath': 'chrome/browser/resources/whats_new/|'\
@@ -1757,21 +1780,6 @@
       'filepath': 'components/offline_pages/'\
                   '|chrome/browser/android/offline_pages/'\
                   '|chrome/android/java/src/org/chromium/chrome/browser/offlinepages/'
-    },
-    'omnibox_desktop': {
-      'filepath': '^chrome/browser/ash/app_list/search/omnibox/|'\
-                  '^chrome/browser/autocomplete/|'\
-                  '^chrome/browser/resources/new_tab_page/realbox/|'\
-                  '^chrome/browser/resources/omnibox|'\
-                  '^chrome/browser/ui/location_bar/|'\
-                  '^chrome/browser/ui/omnibox/|'\
-                  '^chrome/browser/ui/views/location_bar/|'\
-                  '^chrome/browser/ui/views/omnibox/|'\
-                  '^chrome/browser/ui/webui/omnibox/|'\
-                  '^chrome/browser/ui/webui/realbox/|'\
-                  '^chrome/test/data/webui/new_tab_page/realbox/|'\
-                  '^components/omnibox/|'\
-                  '^components/search_engines/'
     },
     'omnibox_ios': {
       'filepath': '^components/omnibox/|'\
@@ -2915,8 +2923,12 @@
                    'pnevase@microsoft.com'],
     'data_decoder': ['mbarowsky+watch-data-decoder@chromium.org'],
     'dbus': ['hashimoto+watch@chromium.org'],
+    'desktop_composebox': ['omnibox-dev+watch@chromium.org'],
     'desktop_in_product_help': ['dfried+watch@chromium.org',
-                                'estalin+watch@chromium.org'],
+      'estalin+watch@chromium.org'],
+    'desktop_omnibox': ['jdonnelly+watch@chromium.org',
+                        'omnibox-dev+watch@chromium.org'],
+    'desktop_searchbox': ['omnibox-dev+watch@chromium.org'],
     'desktop_whats_new': ['mickeyburks+watch@chromium.org'],
     'device_bluetooth': ['mattreynolds+watch@chromium.org'],
     'device_bound_sessions': ['drubery+watch@chromium.org'],
@@ -3146,8 +3158,6 @@
     'offline_pages': ['chili+watch@chromium.org',
                       'dimich+watch@chromium.org',
                       'fgorski+watch@chromium.org'],
-    'omnibox_desktop': ['jdonnelly+watch@chromium.org',
-                        'mahmadi+watch@chromium.org'],
     'omnibox_ios': ['christianxu+watch@chromium.org'],
     'origin_trials': ['chasej+watch@chromium.org',
                       'iclelland+watch@chromium.org'],
