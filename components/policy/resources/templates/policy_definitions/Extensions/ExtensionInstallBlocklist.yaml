@@ -2,7 +2,7 @@ caption: Configure extension installation blocklist
 desc: |-
   Allows you to specify which extensions the users can NOT install. Extensions already installed will be disabled if blocked, without a way for the user to enable them. Once an extension disabled due to the blocklist is removed from it, it will automatically get re-enabled.
 
-            A blocklist value of '*' means all extensions are blocked unless they are explicitly listed in the allowlist.
+            A blocklist value of '*' means all extensions are blocked by default. Extensions that are explicitly listed in the allowlist are allowed if they are signed (packed). All unpacked extensions are blocked.
 
             If this policy is left not set the user can install any extension in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 example_value:

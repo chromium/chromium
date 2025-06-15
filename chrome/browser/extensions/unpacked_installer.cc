@@ -306,7 +306,8 @@ bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
     return true;
   }
   // If there is a "*" in the extension blocklist, then no extensions should be
-  // allowed at all (except explicitly allowlisted extensions).
+  // allowed at all except packed extensions that are explicitly listed in the
+  // allowlist.
   return !ExtensionManagementFactory::GetForBrowserContext(profile_)
               ->BlocklistedByDefault();
 }
