@@ -7655,6 +7655,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOM_LINKS_CANT_REMOVE" desc="A catchall error message for when the shortcut cannot be removed. (On the New Tab Page)">
        Can't remove shortcut
       </message>
+      <message name="IDS_NTP_CUSTOM_LINKS_HELP_PIN" desc="The in-product help text instructing the user on how to pin a shortcut (On the New Tab Page)">
+        Tap and hold to pin shortcuts
+      </message>
       <message name="IDS_NTP_CONFIRM_MSG_SHORTCUT_REMOVED" desc="The title of the shortcut removed confirmation message when removing a custom link. (On the New Tab Page)">
         Shortcut removed
       </message>
