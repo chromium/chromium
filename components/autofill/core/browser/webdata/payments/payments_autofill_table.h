@@ -7,24 +7,17 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
-#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
-
-namespace base {
-class Time;
-}
 
 namespace autofill {
 
@@ -35,19 +28,8 @@ struct CreditCardCloudTokenData;
 class Iban;
 struct PaymentsCustomerData;
 struct PaymentsMetadata;
+struct ServerCvc;
 class VirtualCardUsageData;
-// Helper struct to better group server cvc related variables for better
-// passing last_updated_timestamp, which is needed for sync bridge. Limited
-// scope in autofill table & sync bridge.
-struct ServerCvc {
-  bool operator==(const ServerCvc&) const = default;
-  // A server generated id to identify the corresponding credit card.
-  int64_t instrument_id;
-  // CVC value of the card.
-  std::u16string cvc;
-  // The timestamp of the most recent update to the data entry.
-  base::Time last_updated_timestamp;
-};
 
 // This class manages the various payments Autofill tables within the SQLite
 // database passed to the constructor. It expects the following schemas:

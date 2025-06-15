@@ -732,6 +732,7 @@ static_library("browser") {
     "webdata/payments/payments_autofill_table.h",
     "webdata/payments/payments_sync_bridge_util.cc",
     "webdata/payments/payments_sync_bridge_util.h",
+    "webdata/payments/server_cvc.h",
     "webdata/valuables/valuable_data_type_controller.cc",
     "webdata/valuables/valuable_data_type_controller.h",
     "webdata/valuables/valuable_sync_bridge.cc",

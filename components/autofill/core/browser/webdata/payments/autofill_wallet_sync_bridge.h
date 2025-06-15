@@ -24,6 +24,7 @@ namespace autofill {
 class AutofillSyncMetadataTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
+class BankAccount;
 class CreditCard;
 class Iban;
 struct CreditCardCloudTokenData;
