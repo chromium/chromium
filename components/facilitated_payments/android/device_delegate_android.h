@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_ANDROID_DEVICE_DELEGATE_ANDROID_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_ANDROID_DEVICE_DELEGATE_ANDROID_H_
 
+#include "content/public/browser/web_contents.h"
+
 namespace payments::facilitated {
 
 // Returns true if Google Wallet is installed, and its version supports Pix
@@ -12,7 +14,7 @@ namespace payments::facilitated {
 bool IsWalletEligibleForPixAccountLinking();
 
 // Opens the Pix account linking page in Google Wallet.
-void OpenPixAccountLinkingPageInWallet();
+void OpenPixAccountLinkingPageInWallet(content::WebContents* web_contents);
 
 }  // namespace payments::facilitated
 

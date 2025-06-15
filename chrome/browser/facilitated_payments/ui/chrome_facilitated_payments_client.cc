@@ -186,7 +186,7 @@ void ChromeFacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(
 
 void ChromeFacilitatedPaymentsClient::OnPixAccountLinkingPromptAccepted() {
   // TODO(crbug.com/419108993): Add metrics.
-  payments::facilitated::OpenPixAccountLinkingPageInWallet();
+  payments::facilitated::OpenPixAccountLinkingPageInWallet(&GetWebContents());
 }
 
 void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {

@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 
 robolectric_library("junit") {
   sources = [
+    "src/org/chromium/components/facilitated_payments/DeviceDelegateTest.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridgeUnitTest.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientUnitTest.java",
     "src/org/chromium/components/facilitated_payments/SecurePayloadTest.java",
@@ -22,5 +23,6 @@ robolectric_library("junit") {
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

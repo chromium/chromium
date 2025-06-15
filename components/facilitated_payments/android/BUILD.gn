@@ -21,6 +21,7 @@ static_library("android") {
     "//components/facilitated_payments/core/utils",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
+    "//ui/android",
   ]
 }
 
