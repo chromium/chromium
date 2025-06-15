@@ -323743,9 +323743,13 @@
      "d55b5faaf11be9aa92df01f814d5ce165b23025f",
      []
     ],
+    "clear-cache-bfcache-partitioning.tentative.https-expected.txt": [
+     "10d9481d34c1939ddfe06d7174bd6fc34fb7bcbd",
+     []
+    ],
     "support": {
      "clear-cache-helper.sub.js": [
-      "5db0caf834cbf6a598f02761beda267dc8f1bcf8",
+      "1e9f2c2c33a7c1394c9c813579bd41d4d6a51f38",
       []
      ],
      "clear-site-data-cache.py": [
@@ -479411,8 +479415,18 @@
     ]
    },
    "clear-site-data": {
-    "clear-cache-bfcache.sub.https.html": [
-     "61d810f453b827946cb6ef943b4509b24e5f3246",
+    "clear-cache-bfcache-partitioning.tentative.https.html": [
+     "02a2f020cbca1a14088f60db27de61b61aae2cf8",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "clear-cache-bfcache.https.html": [
+     "b9967c541f1d89f6343ea47df38b3cbdb722ecc1",
      [
       null,
       {
@@ -544533,7 +544547,7 @@
      ],
      "scrolling": {
       "iframe-chains.html": [
-       "fb7d674aae13eee0569987c2c8d635bded7c7018",
+       "c117210537f7c0afa57afc7e3cd620d06442adb0",
        [
         null,
         {
