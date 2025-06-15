@@ -20,7 +20,7 @@ inline ui::ColorId GetOmniboxBackgroundColorId(OmniboxPartState state) {
       kColorOmniboxResultsBackground,
       kColorOmniboxResultsBackgroundHovered,
       kColorOmniboxResultsBackgroundSelected,
-      kColorOmniboxResultsBackgroundIPH,
+      kColorOmniboxResultsBackgroundIph,
   });
   return kIds[static_cast<size_t>(state)];
 }

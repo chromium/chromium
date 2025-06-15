@@ -24,7 +24,8 @@ namespace {
 // The contrast for omnibox colors in high contrast mode.
 constexpr float kOmniboxHighContrastRatio = 6.0f;
 
-// Apply updates to the Omnibox text color tokens per GM3 spec.
+// Apply updates to the Omnibox text color tokens per GM3 spec. Not called when
+// using high contrast mode or a custom theme.
 void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
                               const ui::ColorProviderKey& key) {
   mixer[kColorOmniboxText] = {ui::kColorSysOnSurface};
@@ -57,6 +58,7 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
       kColorOmniboxResultsTextSecondary};
 }
 
+// Not called when using high contrast mode or a custom theme.
 void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
                                   const ui::ColorProviderKey& key) {
   mixer[kColorOmniboxActionIcon] = {ui::kColorSysOnSurfaceSubtle};
@@ -81,6 +83,7 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
 }
 
 // Apply updates to the Omnibox "expanded state" color tokens per CR2023 spec.
+// Not called when using high contrast mode or a custom theme.
 void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
                                            const ui::ColorProviderKey& key) {
   // Update focus bar color.
@@ -88,6 +91,7 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
 
   // Update omnibox popup background color.
   mixer[kColorOmniboxResultsBackground] = {ui::kColorSysBase};
+  mixer[kColorOmniboxResultsBackgroundIph] = {ui::kColorSysSurface2};
 
   // Update suggestion hover fill colors.
   mixer[kColorOmniboxResultsBackgroundHovered] = ui::GetResultingPaintColor(
@@ -232,7 +236,8 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   // Results background, chip, button, and focus colors.
   mixer[kColorOmniboxResultsBackground] =
       ui::GetColorWithMaxContrast(kColorOmniboxText);
-  mixer[kColorOmniboxResultsBackgroundIPH] = {ui::kColorSysSurface2};
+  mixer[kColorOmniboxResultsBackgroundIph] = {
+      kColorOmniboxResultsBackgroundHovered};
   mixer[kColorOmniboxResultsBackgroundHovered] = ui::BlendTowardMaxContrast(
       kColorOmniboxResultsBackground, gfx::kGoogleGreyAlpha200);
   mixer[kColorOmniboxResultsBackgroundSelected] = ui::BlendTowardMaxContrast(
