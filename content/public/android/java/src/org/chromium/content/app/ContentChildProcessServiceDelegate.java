@@ -13,16 +13,19 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.SparseArray;
+import android.view.Surface;
 import android.window.InputTransferToken;
 
 import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.UnguessableToken;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureUma;
@@ -162,6 +165,25 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
         mFdsIdsToKeys = new SparseArray<>();
         for (int i = 0; i < ids.length; ++i) {
             mFdsIdsToKeys.put(ids[i], keys[i]);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @CalledByNative
+    private void forwardSurfaceForSurfaceRequest(
+            @JniType("base::UnguessableToken") UnguessableToken requestToken, Surface surface) {
+        if (mGpuCallback == null) {
+            Log.e(TAG, "No callback interface has been provided.");
+            return;
+        }
+
+        try {
+            mGpuCallback.forwardSurfaceForSurfaceRequest(requestToken, surface);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Unable to call forwardSurfaceForSurfaceRequest: %s", e);
+            return;
+        } finally {
+            surface.release();
         }
     }
 

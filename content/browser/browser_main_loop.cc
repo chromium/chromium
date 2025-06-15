@@ -177,6 +177,7 @@
 #include "content/browser/android/browser_startup_controller.h"
 #include "content/browser/android/input_token_forwarder_manager.h"
 #include "content/browser/android/launcher_thread.h"
+#include "content/browser/android/scoped_surface_request_manager.h"
 #include "content/browser/android/tracing_controller_android.h"
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup_android.h"
 #include "content/browser/screen_orientation/screen_orientation_delegate_android.h"
@@ -726,6 +727,17 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
     parts_->PostCreateMainMessageLoop();
 
 #if BUILDFLAG(IS_ANDROID)
+  {
+    TRACE_EVENT0("startup",
+                 "BrowserMainLoop::Subsystem:ScopedSurfaceRequestManager");
+    if (UsingInProcessGpu()) {
+      gpu::ScopedSurfaceRequestConduit::SetInstance(
+          ScopedSurfaceRequestManager::GetInstance());
+      input::InputTokenForwarder::SetInstance(
+          InputTokenForwarderManager::GetInstance());
+    }
+  }
+
   if (!parsed_command_line_->HasSwitch(
           switches::kDisableScreenOrientationLock)) {
     TRACE_EVENT0("startup",
