@@ -2220,6 +2220,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2514326558286966059">Desbloqueja el dispositiu més ràpidament amb l'empremta digital</translation>
 <translation id="2514465118223423406">Quan es connecti un ratolí</translation>
 <translation id="2514938842036917377">Amb aquesta acció se suprimiran <ph name="TOTAL_USAGE" /> de dades emmagatzemades per <ph name="SITE_NAME" />, pels llocs web relacionats i per les aplicacions instal·lades</translation>
+<translation id="2515489088825102986">Més informació sobre aquesta funció i la teva privadesa</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirma el teu nom d'usuari</translation>
 <translation id="2517472476991765520">Escaneja</translation>
@@ -3421,6 +3422,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3387829698079331264">Sense permís per saber quan estàs utilitzant el dispositiu de manera activa</translation>
 <translation id="3388094447051599208">La safata de sortida és quasi plena</translation>
 <translation id="3388788256054548012">Aquest fitxer està encriptat. Demana al propietari que el desencripti.</translation>
+<translation id="3389326266972418853">Més informació sobre el canvi automàtic de contrasenyes</translation>
 <translation id="3390013585654699824">Detalls de l'aplicació</translation>
 <translation id="3390442085511866400">Desa el &amp;fotograma com a...</translation>
 <translation id="3390530051434634135">Nota: <ph name="NOTE" /></translation>
@@ -5368,6 +5370,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4744268813103118742">Ves al lloc web</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activa el so del lloc web}other{Activa el so dels llocs web}}</translation>
+<translation id="4745096442457817087">La contrasenya s'ha trobat en una violació de les dades públiques</translation>
 <translation id="4745500401920035244">L'administrador ha fet un canvi que desactiva alguns perfils antics en tot el sistema. Ja no pots accedir a aquest perfil, però encara el pots suprimir.</translation>
 <translation id="474609389162964566">Accedeix al teu Assistent amb "Hey Google"</translation>
 <translation id="4746757725581505837">Estàs a punt de suprimir les dades de <ph name="BRAND" /> desades en aquest dispositiu</translation>
@@ -10019,6 +10022,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>
 <translation id="8077749280021225629">Suprimeix també les dades de navegació (<ph name="URL" />). En fer-ho, se't tancarà la sessió del domini <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Cerca d'imatges</translation>
+<translation id="8079606020824373126">El gestor de contrasenyes de Google pot actualitzar el teu compte amb una contrasenya segura i desar-la a <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Els llocs web poden demanar permís per gestionar finestres en totes les pantalles</translation>
 <translation id="8080028325999236607">Tanca totes les pestanyes</translation>
 <translation id="8081989000209387414">Vols desactivar la depuració d'ADB?</translation>
