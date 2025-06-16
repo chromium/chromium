@@ -438,6 +438,9 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // For secure connection |certificate_| is set to the server certificate.
   scoped_refptr<net::X509Certificate> certificate_;
 
+  // The 2-QWAC certificate for a website, if it has one.
+  scoped_refptr<net::X509Certificate> two_qwac_;
+
   // Status of the connection to the website.
   SiteConnectionStatus site_connection_status_;
 

@@ -1440,6 +1440,7 @@ source_set("platform_browser_tests") {
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//components/security_state/content",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/internal:internal",
     "//components/segmentation_platform/internal:test_support",

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
+#include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
@@ -82,6 +83,14 @@ ChromeSecurityStateTabHelper::~ChromeSecurityStateTabHelper() = default;
 std::unique_ptr<security_state::VisibleSecurityState>
 ChromeSecurityStateTabHelper::GetVisibleSecurityState() {
   auto state = SecurityStateTabHelper::GetVisibleSecurityState();
+
+  // Get the 2-QWAC state.
+  QwacWebContentsObserver::QwacStatus* qwac_status =
+      QwacWebContentsObserver::QwacStatus::GetForPage(
+          web_contents()->GetPrimaryPage());
+  if (qwac_status && qwac_status->is_finished()) {
+    state->two_qwac = qwac_status->verified_2qwac_cert();
+  }
 
   // Malware status might already be known even if connection security
   // information is still being initialized, thus no need to check for that.

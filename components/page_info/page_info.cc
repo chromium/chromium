@@ -1018,6 +1018,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
 
   // Identity section.
   certificate_ = visible_security_state.certificate;
+  two_qwac_ = visible_security_state.two_qwac;
 
   if (certificate_ &&
       (!net::IsCertStatusError(visible_security_state.cert_status))) {
@@ -1597,6 +1598,7 @@ void PageInfo::PresentSiteIdentity() {
 #endif
 
   info.certificate = certificate_;
+  info.two_qwac = two_qwac_;
   info.show_ssl_decision_revoke_button = show_ssl_decision_revoke_button_;
   info.show_change_password_buttons = show_change_password_buttons_;
   ui_->SetIdentityInfo(info);

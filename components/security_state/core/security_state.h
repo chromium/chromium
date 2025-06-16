@@ -172,6 +172,7 @@ struct VisibleSecurityState {
   // The following fields contain information about the connection
   // used to load the page or request.
   scoped_refptr<net::X509Certificate> certificate;
+  scoped_refptr<net::X509Certificate> two_qwac;
   net::CertStatus cert_status;
   int connection_status;
   // The ID of the (EC)DH group used by the key exchange. The value is zero if

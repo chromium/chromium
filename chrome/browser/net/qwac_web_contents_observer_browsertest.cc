@@ -12,6 +12,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -170,6 +171,22 @@ class QwacWebContentsObserverTestBase : public PlatformBrowserTest {
     return QwacWebContentsObserver::QwacStatus::GetForPage(
         web_contents()->GetPrimaryPage());
   }
+
+  scoped_refptr<net::X509Certificate> VisibleSecurityStateTwoQwac() {
+    SecurityStateTabHelper* helper =
+        SecurityStateTabHelper::FromWebContents(web_contents());
+    if (!helper) {
+      ADD_FAILURE() << "Failed to load SecurityStateTabHelper";
+      return nullptr;
+    }
+    std::unique_ptr<security_state::VisibleSecurityState>
+        visible_security_state = helper->GetVisibleSecurityState();
+    if (!visible_security_state) {
+      ADD_FAILURE() << "SecurityStateTabHelper has no VisibleSecurityState";
+      return nullptr;
+    }
+    return visible_security_state->two_qwac;
+  }
 };
 
 class QwacWebContentsObserverDisabledBrowserTest
@@ -196,6 +213,7 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverDisabledBrowserTest,
       web_contents(), embedded_https_test_server().GetURL("/main")));
 
   EXPECT_FALSE(GetCurrentPageQwacStatus());
+  EXPECT_FALSE(VisibleSecurityStateTwoQwac());
 }
 
 class QwacWebContentsObserverBrowserTest
@@ -288,6 +306,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
     EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
+
+    auto visible_security_state_two_qwac = VisibleSecurityStateTwoQwac();
+    EXPECT_TRUE(visible_security_state_two_qwac);
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        visible_security_state_two_qwac.get()));
   }
 
   // Navigate to a different page without a qwac.
@@ -295,6 +318,7 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
       web_contents(),
       embedded_https_test_server().GetURL("www.example.com", "/main_noqwac")));
   EXPECT_FALSE(GetCurrentPageQwacStatus());
+  EXPECT_FALSE(VisibleSecurityStateTwoQwac());
 
   // Now go back to the previous page. If BFCache is enabled, qwac status
   // should still be available and not need to be re-fetched, otherwise it
@@ -316,6 +340,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
     EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
+
+    auto visible_security_state_two_qwac = VisibleSecurityStateTwoQwac();
+    EXPECT_TRUE(visible_security_state_two_qwac);
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        visible_security_state_two_qwac.get()));
   }
 }
 
@@ -360,6 +389,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
     EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
+
+    auto visible_security_state_two_qwac = VisibleSecurityStateTwoQwac();
+    EXPECT_TRUE(visible_security_state_two_qwac);
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        visible_security_state_two_qwac.get()));
   }
 
   // Navigate to a different page without a qwac.
@@ -367,6 +401,7 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
       web_contents(),
       embedded_https_test_server().GetURL("www.example.com", "/main_noqwac")));
   EXPECT_FALSE(GetCurrentPageQwacStatus());
+  EXPECT_FALSE(VisibleSecurityStateTwoQwac());
 
   // Now navigate to the original page URL again.
   // The page and the 2-QWAC should be in HTTP cache, so the page and qwac
@@ -386,6 +421,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
     EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
+
+    auto visible_security_state_two_qwac = VisibleSecurityStateTwoQwac();
+    EXPECT_TRUE(visible_security_state_two_qwac);
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        visible_security_state_two_qwac.get()));
   }
 }
 
@@ -428,6 +468,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
               .get()));
       ASSERT_TRUE(status->tls_cert());
       EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
+
+      auto visible_security_state_two_qwac = VisibleSecurityStateTwoQwac();
+      EXPECT_TRUE(visible_security_state_two_qwac);
+      EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+          visible_security_state_two_qwac.get()));
     }
 
     // Save the port number and release the `test_server_handle`, shutting down
@@ -482,6 +527,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
             .get()));
     ASSERT_TRUE(status->tls_cert());
     EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf_2.get()));
+
+    auto visible_security_state_two_qwac = VisibleSecurityStateTwoQwac();
+    EXPECT_TRUE(visible_security_state_two_qwac);
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        visible_security_state_two_qwac.get()));
   }
 }
 
@@ -526,6 +576,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
     EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
+
+    auto visible_security_state_two_qwac = VisibleSecurityStateTwoQwac();
+    EXPECT_TRUE(visible_security_state_two_qwac);
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        visible_security_state_two_qwac.get()));
   }
 
   // Navigate to a different URL with the same page.
@@ -545,6 +600,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
     EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
     EXPECT_EQ(1, main_page_handler.request_count());
     EXPECT_EQ(1, qwac_handler.request_count());
+
+    auto visible_security_state_two_qwac = VisibleSecurityStateTwoQwac();
+    EXPECT_TRUE(visible_security_state_two_qwac);
+    EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+        visible_security_state_two_qwac.get()));
   }
 }
 
@@ -584,6 +644,11 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
       binding_builder.GetLeafBuilder()->GetX509CertificateFullChain().get()));
   ASSERT_TRUE(status->tls_cert());
   EXPECT_TRUE(status->tls_cert()->EqualsExcludingChain(tls_leaf.get()));
+
+  auto visible_security_state_two_qwac = VisibleSecurityStateTwoQwac();
+  EXPECT_TRUE(visible_security_state_two_qwac);
+  EXPECT_TRUE(status->verified_2qwac_cert()->EqualsIncludingChain(
+      visible_security_state_two_qwac.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
@@ -607,6 +672,7 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
   // The QWAC link header was present on a redirect, but not on the final page
   // load, so no QwacStatus should be created.
   EXPECT_FALSE(GetCurrentPageQwacStatus());
+  EXPECT_FALSE(VisibleSecurityStateTwoQwac());
 }
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
@@ -637,6 +703,7 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
   ASSERT_TRUE(status);
   ASSERT_TRUE(WaitForStatusFinished(status));
   EXPECT_FALSE(status->verified_2qwac_cert());
+  EXPECT_FALSE(VisibleSecurityStateTwoQwac());
 }
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
@@ -662,6 +729,7 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
   // Since the initial QWAC url was cross-origin, the fetch is never started
   // and no QwacStatus should be created.
   EXPECT_FALSE(GetCurrentPageQwacStatus());
+  EXPECT_FALSE(VisibleSecurityStateTwoQwac());
   EXPECT_EQ(1, main_page_handler.request_count());
 }
 
@@ -684,6 +752,7 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest,
   ASSERT_TRUE(WaitForStatusFinished(status));
   EXPECT_FALSE(status->verified_2qwac_cert());
   EXPECT_EQ(1, qwac_handler.request_count());
+  EXPECT_FALSE(VisibleSecurityStateTwoQwac());
 }
 
 IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest, NotFetchedForHttp) {
@@ -699,6 +768,7 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest, NotFetchedForHttp) {
       embedded_test_server()->GetURL("www.example.com", "/main")));
 
   EXPECT_FALSE(GetCurrentPageQwacStatus());
+  EXPECT_FALSE(VisibleSecurityStateTwoQwac());
   EXPECT_EQ(1, main_page_handler.request_count());
 }
 
