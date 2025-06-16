@@ -1101,12 +1101,13 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      */
     @Nullable
     protected ListItem maybeBuildRequestDesktopSiteListItem(
-            Tab currentTab, boolean isNativePage, boolean showIcon) {
+            @Nullable Tab currentTab, boolean isNativePage, boolean showIcon) {
         // Hide request desktop site on all native pages. Also hide it for desktop Android, which
         // always requests desktop sites.
         boolean itemVisible =
                 !isNativePage
                         && !shouldShowReaderModePrefs(currentTab)
+                        && currentTab != null
                         && currentTab.getWebContents() != null
                         && !BuildConfig.IS_DESKTOP_ANDROID;
 
