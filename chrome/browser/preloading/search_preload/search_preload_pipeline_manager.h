@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
@@ -30,7 +31,8 @@ enum class NavigationPredictor;
 // - Manages preload pipelines per WebContents.
 // - Starts preloads in response to Omnibox events.
 class SearchPreloadPipelineManager
-    : public content::WebContentsUserData<SearchPreloadPipelineManager> {
+    : public content::WebContentsUserData<SearchPreloadPipelineManager>,
+      public content::WebContentsObserver {
  public:
   ~SearchPreloadPipelineManager() override;
 
@@ -45,6 +47,10 @@ class SearchPreloadPipelineManager
   base::WeakPtr<SearchPreloadPipelineManager> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  // Implements `content::WebContentsObserver`
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Clears all preloads.
   void ClearPreloads();

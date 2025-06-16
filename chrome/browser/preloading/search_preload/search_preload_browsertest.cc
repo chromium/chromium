@@ -964,6 +964,59 @@ IN_PROC_BROWSER_TEST_F(
             ParseNoVarySearchData(R"(key-order, params, except=("q"))"));
 }
 
+// A pipeline is consumed by navigation.
+//
+// Note that this is for aligning the behavior of `SearchPrefetchService`. It
+// would be nice to discuss the ideal behavior.
+//
+// See also
+// https://docs.google.com/document/d/1NjxwlOEoBwpXojG13M85XtS8nH-S4uc0F6VOrlwIAXE/edit?pli=1&tab=t.0#heading=h.5qv0ome418fo
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
+                       PipelineIsConsumedByNavigation) {
+  SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "hello";
+  std::string search_terms = original_query;
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  {
+    content::test::TestPrefetchWatcher watcher;
+
+    ChangeAutocompleteResult(original_query, search_terms,
+                             PrefetchHint::kEnabled, PrerenderHint::kDisabled);
+
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
+  }
+
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
+
+  // Navigate.
+  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), urls.navigation));
+
+  // Prefetch is used.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
+
+  // Prefetch was consumed by the navigation.
+  ASSERT_FALSE(GetSearchPreloadService().InvalidatePipelineForTesting(
+      GetWebContents(), urls.navigation));
+
+  // Navigate.
+  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), urls.navigation));
+
+  // Prefetch is not available.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
+}
+
 class SearchPreloadBrowserTest_ErrorBackoffDuration
     : public SearchPreloadBrowserTestBase {
   void InitFeatures(
