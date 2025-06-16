@@ -4491,6 +4491,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="Autofill.PaymentMethodsSettingsPage.ManagePaymentMethodsLinkClicked">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <description>
+    Recorded when the user clicks the link on the payment methods settings page
+    to manage Google Pay payment methods.
+  </description>
+</action>
+
 <action name="Autofill.PaymentMethodsSettingsPage.ScanCardClicked">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>

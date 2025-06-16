@@ -65,6 +65,7 @@ export interface SettingsPaymentsSectionElement {
     canMakePaymentToggle: SettingsToggleButtonElement,
     creditCardSharedMenu: CrActionMenuElement,
     ibanSharedActionMenu: CrLazyRenderElement<CrActionMenuElement>,
+    manageLink: HTMLElement,
     mandatoryAuthToggle: SettingsToggleButtonElement,
     menuEditCreditCard: HTMLElement,
     menuRemoveCreditCard: HTMLElement,
@@ -281,6 +282,15 @@ export class SettingsPaymentsSectionElement extends
 
     // Record that the user opened the payments settings.
     chrome.metricsPrivate.recordUserAction('AutofillCreditCardsViewed');
+
+    // Measure clicks on the 'Google Account' link for managing payment methods.
+    const manageAccountAnchor = this.$.manageLink.querySelector('a');
+    if (manageAccountAnchor !== null) {
+      manageAccountAnchor.addEventListener('click', () => {
+        MetricsBrowserProxyImpl.getInstance().recordAction(
+            'Autofill.PaymentMethodsSettingsPage.ManagePaymentMethodsLinkClicked');
+      });
+    }
   }
 
   override disconnectedCallback() {

@@ -53,6 +53,31 @@ suite('PaymentsSection', function() {
     });
   });
 
+  test('ManagePaymentMethodsLink_RecordsMetrics', async function() {
+    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
+
+    const manageAnchor = section.$.manageLink.querySelector('a');
+    assertTrue(!!manageAnchor);
+
+    // To avoid opening a new tab in the test (which ends up breaking the other
+    // tests), make the anchor basically non-operable before clicking it.
+    manageAnchor.href = '#';
+    manageAnchor.target = '';
+
+    manageAnchor.click();
+    const recordedAction =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+
+    assertEquals(
+        'Autofill.PaymentMethodsSettingsPage.ManagePaymentMethodsLinkClicked',
+        recordedAction);
+  });
+
   test('verifyNoCreditCards', async function() {
     const section = await createPaymentsSection(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
