@@ -22,6 +22,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {isBatteryChargeLimitAvailable} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -172,6 +173,13 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
         },
       },
 
+      batteryChargeLimitAvailable_: {
+        type: Boolean,
+        value() {
+          return isBatteryChargeLimitAvailable();
+        },
+      },
+
       batterySaverFeatureEnabled_: Boolean,
 
       batterySaverHidden_: {
@@ -197,6 +205,7 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
   private adaptiveChargingEnabled_: boolean;
   private adaptiveChargingManaged_: boolean;
   private adaptiveChargingPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  private readonly batteryChargeLimitAvailable_: boolean;
   private batteryIdleManaged_: boolean;
   private batteryIdleOptions_: IdleOption[];
   private batterySaverHidden_: boolean;

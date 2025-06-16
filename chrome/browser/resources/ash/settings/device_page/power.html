@@ -50,6 +50,8 @@
     deep-link-focus-id$="[[Setting.kBatterySaver]]">
 </settings-toggle-button>
 
+<template is="dom-if" if="[[batteryChargeLimitAvailable_]]" restamp></template>
+
 <settings-toggle-button id="adaptiveChargingToggle"
     class$="[[getClassForRow_(batteryStatus_.present, 'adaptiveCharging')]]"
     hidden$="[[!adaptiveChargingEnabled_]]"

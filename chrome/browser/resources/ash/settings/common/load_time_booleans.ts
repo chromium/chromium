@@ -119,3 +119,8 @@ export function isScannerSettingsToggleVisible(): boolean {
 export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');
 }
+
+// Power page
+export function isBatteryChargeLimitAvailable(): boolean {
+  return loadTimeData.getBoolean('isBatteryChargeLimitAvailable');
+}
