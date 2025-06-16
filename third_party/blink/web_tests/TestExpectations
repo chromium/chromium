@@ -2763,8 +2763,6 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/425041677 [ Mac ] external/wpt/svg/text/reftests/text-context-fill.svg [ Failure ]
-crbug.com/425041677 [ Win ] external/wpt/svg/text/reftests/text-context-fill.svg [ Failure ]
 crbug.com/425056982 [ Mac14 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/devicePixelRatio-undisplayed-iframe.tentative.html [ Crash ]
 crbug.com/425118323 [ Mac14 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/async_001.htm [ Timeout ]
 crbug.com/425118323 [ Mac14 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/002.html [ Timeout ]
