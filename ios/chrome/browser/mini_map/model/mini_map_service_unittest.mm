@@ -19,6 +19,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 class MiniMapServiceTest : public PlatformTest {
  public:
@@ -40,6 +41,7 @@ class MiniMapServiceTest : public PlatformTest {
   }
 
   void TearDown() override {
+    EXPECT_OCMOCK_VERIFY(application_);
     [application_ stopMocking];
     PlatformTest::TearDown();
   }
