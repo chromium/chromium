@@ -18,10 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/debug/alias.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
-#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -29,7 +26,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "base/values.h"
 #include "components/input/utils.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
@@ -315,23 +311,9 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
 void FrameSinkManagerImpl::DestroyCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     DestroyCompositorFrameSinkCallback callback) {
-  const bool is_root =
-      root_sink_map_.find(frame_sink_id) != root_sink_map_.end();
-  base::TimeTicks start = base::TimeTicks::Now();
-  frame_sinks_detached_ = 0;
-
   sink_map_.erase(frame_sink_id);
   root_sink_map_.erase(frame_sink_id);
   std::move(callback).Run();
-
-  base::TimeDelta time_taken_to_destroy = base::TimeTicks::Now() - start;
-  if (is_root && frame_sinks_detached_ != 0 &&
-      time_taken_to_destroy > base::Milliseconds(30)) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FrameSinkManagerImpl::DumpCrashKeys,
-                       weak_factory_.GetWeakPtr(), time_taken_to_destroy));
-  }
 }
 
 void FrameSinkManagerImpl::RegisterFrameSinkHierarchy(
@@ -691,16 +673,6 @@ void FrameSinkManagerImpl::UnregisterBeginFrameSource(
     RecursivelyAttachBeginFrameSource(source_iter.second, source_iter.first);
 }
 
-void FrameSinkManagerImpl::DumpCrashKeys(
-    base::TimeDelta time_taken_to_destroy) {
-  base::Value::Dict dict = base::Value::Dict();
-  dict.Set("num_frame_sinks_detached", frame_sinks_detached_);
-  dict.Set("time_taken_us", base::TimeDeltaToValue(time_taken_to_destroy));
-  SCOPED_CRASH_KEY_STRING1024("crbug414568877", "crbug414568877",
-                              dict.DebugString());
-  base::debug::DumpWithoutCrashing();
-}
-
 void FrameSinkManagerImpl::RecursivelyAttachBeginFrameSource(
     const FrameSinkId& frame_sink_id,
     BeginFrameSource* source) {
@@ -744,7 +716,6 @@ void FrameSinkManagerImpl::RecursivelyDetachBeginFrameSource(
       // RenderInputRouter (for layer tree frame sinks associated CFSS) and
       // updating it earlier may cause UAF bugs.
       if (GetInputManager()) {
-        frame_sinks_detached_++;
         GetInputManager()->SetBeginFrameSource(frame_sink_id, nullptr);
       }
       client_iter->second->SetBeginFrameSource(nullptr);

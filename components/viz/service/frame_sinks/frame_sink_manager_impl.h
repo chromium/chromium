@@ -398,9 +398,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   friend class CompositorFrameSinkSupportTestBase;
   friend class FlingSchedulerTest;
 
-  // TOOD(6635304): Remove once the crash investigation is complete.
-  void DumpCrashKeys(base::TimeDelta time_taken_to_destroy);
-
   // Metadata for a CompositorFrameSink.
   struct FrameSinkData {
     explicit FrameSinkData(bool report_activation);
@@ -616,8 +613,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       nullptr;
 
   ReservedResourceIdTracker reserved_resource_id_tracker_;
-
-  int frame_sinks_detached_ = 0;
 
   gfx::Size copy_output_request_result_size_for_testing_;
 
