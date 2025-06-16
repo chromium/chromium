@@ -31,20 +31,23 @@ COMPONENT_EXPORT(UI_BASE) std::string_view GetLanguage(std::string_view locale);
 // Takes normalized locale as `locale`. Returns country part (after '-').
 COMPONENT_EXPORT(UI_BASE) std::string_view GetCountry(std::string_view locale);
 
-// This method translates a generic locale name to one of the locally defined
-// ones. This method returns true if it succeeds.
-// If |perform_io| is false, this will not perform any I/O but may return false
-// positives on Android and iOS. See the |kPlatformLocales| documentation in
-// l10n_util.cc for more information.
-COMPONENT_EXPORT(UI_BASE)
-bool CheckAndResolveLocale(const std::string& locale,
-                           std::string* resolved_locale,
-                           const bool perform_io);
+enum class CheckLocaleMode {
+  // Checks that the localization data is present on disk. It is the default,
+  // but potentially costly.
+  kVerifyLocalizationDataExists,
+  // Checks that the locale is in the list of known locales. It may lead to
+  // false positives on platforms where localization is downloaded on-demand
+  // - i.e., Android and iOS. See the `kPlatformLocales` documentation in
+  // l10n_util.cc for more information.
+  kUseKnownLocalesList,
+};
 
-// Convenience wrapper for the above (with |perform_io| set to true).
+// Translates a generic locale name to one of the locally defined ones or
+// `std::nullopt` if the resolution is unsuccessful.
 COMPONENT_EXPORT(UI_BASE)
-bool CheckAndResolveLocale(const std::string& locale,
-                           std::string* resolved_locale);
+std::optional<std::string> CheckAndResolveLocale(
+    std::string_view locale,
+    CheckLocaleMode mode = CheckLocaleMode::kVerifyLocalizationDataExists);
 
 // This method is responsible for determining the locale as defined below. In
 // nearly all cases you shouldn't call this, rather use GetApplicationLocale

@@ -26,10 +26,14 @@ std::string_view ExtractBaseLanguage(std::string_view language_code) {
 }
 
 bool ConvertToActualUILocale(std::string* input_locale) {
-  std::string original_locale;
-  input_locale->swap(original_locale);
-  return l10n_util::CheckAndResolveLocale(original_locale, input_locale,
-                                          /*perform_io=*/false);
+  if (std::optional<std::string> resolved_locale =
+          l10n_util::CheckAndResolveLocale(
+              *input_locale,
+              l10n_util::CheckLocaleMode::kUseKnownLocalesList)) {
+    input_locale->swap(*resolved_locale);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace language

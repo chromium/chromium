@@ -1759,10 +1759,7 @@ void UserManagerImpl::UpdateUserAccountLocale(const AccountId& account_id,
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             [](const std::string& locale) {
-              std::string resolved_locale;
-              std::ignore =
-                  l10n_util::CheckAndResolveLocale(locale, &resolved_locale);
-              return resolved_locale;
+              return l10n_util::CheckAndResolveLocale(locale).value_or("");
             },
             locale),
         base::BindOnce(&UserManagerImpl::DoUpdateAccountLocale,

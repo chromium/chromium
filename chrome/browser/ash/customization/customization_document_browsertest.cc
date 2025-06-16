@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -34,6 +35,8 @@ namespace {
 
 using locale_util::LanguageSwitchResult;
 using locale_util::SwitchLanguageCallback;
+using ::testing::Optional;
+using ::testing::StrEq;
 
 class LanguageSwitchedWaiter {
  public:
@@ -200,11 +203,9 @@ IN_PROC_BROWSER_TEST_F(CustomizationLocaleTest, CheckAvailableLocales) {
                                 ProfileManager::GetActiveUserProfile());
     waiter.Wait();
     {
-      std::string resolved_locale;
       base::ScopedAllowBlockingForTesting allow_blocking;
-      l10n_util::CheckAndResolveLocale(languages_available[i],
-                                       &resolved_locale);
-      EXPECT_EQ(GetExpectedLanguage(languages_available[i]), resolved_locale)
+      EXPECT_THAT(l10n_util::CheckAndResolveLocale(languages_available[i]),
+                  Optional(StrEq(GetExpectedLanguage(languages_available[i]))))
           << "CheckAndResolveLocale() failed for language='"
           << languages_available[i] << "'";
     }

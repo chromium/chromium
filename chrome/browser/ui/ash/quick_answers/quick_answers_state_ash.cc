@@ -238,19 +238,18 @@ void QuickAnswersStateAsh::OnApplicationLocaleReady() {
 
   // We should not directly use the pref locale, resolve the generic locale name
   // to one of the locally defined ones first.
-  std::string resolved_locale;
-  bool resolve_success =
-      l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
-                                       /*perform_io=*/false);
-  DCHECK(resolve_success);
+  const std::optional<std::string> resolved_locale =
+      l10n_util::CheckAndResolveLocale(
+          locale, l10n_util::CheckLocaleMode::kUseKnownLocalesList);
+  DCHECK(resolved_locale);
 
   if (resolved_application_locale_ == resolved_locale) {
     return;
   }
-  resolved_application_locale_ = resolved_locale;
+  resolved_application_locale_ = resolved_locale.value_or("");
 
   for (auto& observer : observers_) {
-    observer.OnApplicationLocaleReady(resolved_locale);
+    observer.OnApplicationLocaleReady(resolved_locale.value_or(""));
   }
 
   MaybeNotifyEligibilityChanged();

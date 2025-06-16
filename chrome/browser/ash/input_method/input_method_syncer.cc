@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/input_method/input_method_syncer.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -81,11 +83,11 @@ std::string CheckAndResolveLocales(const std::string& app_locale,
 
     // If a language code resolves to a supported backup locale, replace it
     // with the resolved locale.
-    std::string resolved_locale;
-    if (l10n_util::CheckAndResolveLocale(*value_iter, &resolved_locale)) {
+    if (std::optional<std::string> resolved_locale =
+            l10n_util::CheckAndResolveLocale(*value_iter)) {
       if (binary_search(accept_language_codes.begin(),
-                        accept_language_codes.end(), resolved_locale)) {
-        *value_iter = resolved_locale;
+                        accept_language_codes.end(), *resolved_locale)) {
+        *value_iter = *resolved_locale;
         ++value_iter;
         continue;
       }

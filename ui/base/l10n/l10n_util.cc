@@ -259,7 +259,7 @@ constexpr auto kAcceptLanguageList = base::MakeFixedFlatSet<std::string_view>({
 });
 
 // The list of locales that expected on the current platform, generated from the
-// |locales| variable in GN (defined in build/config/locales.gni). This is
+// `locales` variable in GN (defined in build/config/locales.gni). This is
 // equivalently the list of locales that we expect to have translation strings
 // for on the current platform. Guaranteed to be in sorted order and guaranteed
 // to have no duplicates.
@@ -268,9 +268,9 @@ constexpr auto kAcceptLanguageList = base::MakeFixedFlatSet<std::string_view>({
 // - On Android, locale files are dynamically shipped in app bundles which are
 //   only downloaded when needed - so the |locales| variable does not accurately
 //   reflect the UI strings that are currently available on disk.
-//   See the comment at the top of |LoadLocaleResources| in
+//   See the comment at the top of `LoadLocaleResources` in
 //   ui/base/resource/resource_bundle_android.cc for more information.
-// - On iOS, some locales aren't shipped (|ios_unsupported_locales|) as they are
+// - On iOS, some locales aren't shipped (`ios_unsupported_locales`) as they are
 //   not supported by the operating system. These locales are included in this
 //   variable.
 //
@@ -326,8 +326,8 @@ bool IsLocalePartiallyPopulated(const std::string& locale_name) {
 // positives on Android and iOS. See the `kPlatformLocales` documentation for
 // more information.
 bool HasStringsForLocale(std::string_view locale,
-                         const bool perform_io = true) {
-  if (!perform_io) {
+                         l10n_util::CheckLocaleMode mode) {
+  if (mode == l10n_util::CheckLocaleMode::kUseKnownLocalesList) {
     return kPlatformLocales.contains(locale);
   }
   // If locale has any illegal characters in it, we don't want to try to
@@ -410,29 +410,27 @@ std::string_view GetCountry(std::string_view locale) {
 
 // TODO(jshin): revamp this function completely to use a more systematic
 // and generic locale fallback based on ICU/CLDR.
-bool CheckAndResolveLocale(const std::string& locale,
-                           std::string* resolved_locale,
-                           const bool perform_io) {
-  if (HasStringsForLocale(locale, perform_io)) {
-    *resolved_locale = locale;
-    return true;
+std::optional<std::string> CheckAndResolveLocale(std::string_view locale,
+                                                 CheckLocaleMode mode) {
+  if (HasStringsForLocale(locale, mode)) {
+    return std::optional<std::string>(locale);
   }
 
   // If there's a variant, skip over it so we can try without the region
   // code.  For example, ca_ES@valencia should cause us to try ca@valencia
   // before ca.
-  std::string::size_type variant_pos = locale.find('@');
-  if (variant_pos != std::string::npos)
-    return false;
+  if (locale.find('@') != std::string::npos) {
+    return std::nullopt;
+  }
 
   // If the locale matches language but not country, use that instead.
   // TODO(jungshik) : Nothing is done about languages that Chrome
   // does not support but available on Windows. We fall
   // back to en-US in GetApplicationLocale so that it's a not critical,
   // but we can do better.
-  const std::string lang(GetLanguage(locale));
+  const std::string_view lang = GetLanguage(locale);
   if (lang.size() < locale.size()) {
-    std::string region(locale, lang.size() + 1);
+    const std::string_view region = locale.substr(lang.size() + 1);
     std::string tmp_locale(lang);
     // Map es-RR other than es-ES to es-419 (Chrome's Latin American
     // Spanish locale).
@@ -470,9 +468,8 @@ bool CheckAndResolveLocale(const std::string& locale,
         tmp_locale.append("-GB");
       }
     }
-    if (HasStringsForLocale(tmp_locale, perform_io)) {
-      resolved_locale->swap(tmp_locale);
-      return true;
+    if (HasStringsForLocale(tmp_locale, mode)) {
+      return tmp_locale;
     }
   }
 
@@ -487,20 +484,13 @@ bool CheckAndResolveLocale(const std::string& locale,
   };
   for (const auto& alias : kAliasMap) {
     if (base::EqualsCaseInsensitiveASCII(lang, alias.source)) {
-      std::string tmp_locale(alias.dest);
-      if (HasStringsForLocale(tmp_locale, perform_io)) {
-        resolved_locale->swap(tmp_locale);
-        return true;
+      if (HasStringsForLocale(alias.dest, mode)) {
+        return std::optional<std::string>(alias.dest);
       }
     }
   }
 
-  return false;
-}
-
-bool CheckAndResolveLocale(const std::string& locale,
-                           std::string* resolved_locale) {
-  return CheckAndResolveLocale(locale, resolved_locale, /*perform_io=*/true);
+  return std::nullopt;
 }
 
 #if BUILDFLAG(IS_APPLE)
@@ -522,7 +512,6 @@ std::string GetApplicationLocaleInternalMac(const std::string& pref_locale) {
 
 #if !BUILDFLAG(IS_APPLE)
 std::string GetApplicationLocaleInternalNonMac(const std::string& pref_locale) {
-  std::string resolved_locale;
   std::vector<std::string> candidates;
 
   // We only use --lang and the app pref on Windows.  On Linux, we only
@@ -574,15 +563,18 @@ std::string GetApplicationLocaleInternalNonMac(const std::string& pref_locale) {
 
   std::vector<std::string>::const_iterator i = candidates.begin();
   for (; i != candidates.end(); ++i) {
-    if (CheckAndResolveLocale(*i, &resolved_locale)) {
-      return resolved_locale;
+    if (std::optional<std::string> resolved_locale =
+            CheckAndResolveLocale(*i)) {
+      return *resolved_locale;
     }
   }
 
   // Fallback on en-US.
   const std::string fallback_locale("en-US");
-  if (HasStringsForLocale(fallback_locale))
+  if (HasStringsForLocale(fallback_locale,
+                          CheckLocaleMode::kVerifyLocalizationDataExists)) {
     return fallback_locale;
+  }
 
   return std::string();
 }
@@ -977,12 +969,13 @@ const std::vector<std::string>& GetAvailableICULocales() {
 }
 
 bool IsUserFacingUILocale(const std::string& locale) {
-  std::string resolved_locale;
   // As there are many callers of IsUserFacingUILocale and
   // GetUserFacingUILocaleList from threads where I/O is prohibited, do not
   // perform I/O here.
-  if (!l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
-                                        /*perform_io=*/false)) {
+  const std::optional<std::string> resolved_locale =
+      l10n_util::CheckAndResolveLocale(locale,
+                                       CheckLocaleMode::kUseKnownLocalesList);
+  if (!resolved_locale) {
     return false;
   }
 
