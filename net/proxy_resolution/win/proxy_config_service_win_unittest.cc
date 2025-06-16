@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/proxy_resolution/win/proxy_config_service_win.h"
+
+#include <array>
 
 #include "net/base/net_errors.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -24,7 +21,7 @@ TEST(ProxyConfigServiceWinTest, SetFromIEConfig) {
     const wchar_t* proxy;
     const wchar_t* proxy_bypass;
   };
-  const struct {
+  struct Test {
     // Input.
     IEProxyConfig ie_config;
 
@@ -33,7 +30,9 @@ TEST(ProxyConfigServiceWinTest, SetFromIEConfig) {
     GURL pac_url;
     ProxyRulesExpectation proxy_rules;
     const char* proxy_bypass_list;  // newline separated
-  } tests[] = {
+  };
+
+  auto tests = std::to_array<Test>({
       // Auto detect.
       {
           {
@@ -208,7 +207,7 @@ TEST(ProxyConfigServiceWinTest, SetFromIEConfig) {
           GURL(),  // pac_url
           ProxyRulesExpectation::EmptyWithBypass("foo.com,google.com"),
       },
-  };
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ie_config = {
