@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -98,6 +99,12 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     agent_ = [[DefaultBrowserPromoSceneAgent alloc] init];
     agent_.sceneState = scene_state_;
     agent_.promosManager = promos_manager_.get();
+
+    base::RunLoop run_loop;
+    // Call IsFirstSessionAfterDeviceRestore() explicitly to make sure sentinel
+    // files related to backup/restore are fully created before the test begins.
+    IsFirstSessionAfterDeviceRestore(run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   void TearDown() override {
@@ -108,6 +115,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     scene_state_ = nil;
     profile_.reset();
     ClearDefaultBrowserPromoData();
+    ResetDeviceRestoreDataForTesting();
   }
 
   void SignIn() {
@@ -124,6 +132,8 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     [[NSUserDefaults standardUserDefaults]
         setBool:YES
          forKey:@"SimulatePostDeviceRestore"];
+
+    ResetDeviceRestoreDataForTesting();
   }
 
   void VerifyPromoRegistration(std::set<promos_manager::Promo> promos) {
@@ -253,11 +263,7 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 
 // Tests that the Post Restore Default Browser Promo is registered when the
 // conditions are met.
-// TODO(crbug.com/417431030): disabled because it fails after fixing the UaF
-// caused by bad interaction between FakeSceneState and TestProfileIOS. It
-// should be fixed and re-enabled.
-TEST_F(DefaultBrowserPromoSceneAgentTest,
-       DISABLED_TestPromoRegistrationPostRestore) {
+TEST_F(DefaultBrowserPromoSceneAgentTest, TestPromoRegistrationPostRestore) {
   SimulatePostDeviceRestore();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   LogOpenHTTPURLFromExternalURL();
