@@ -86,9 +86,18 @@ ReportingService::GetClipboardSource(
 
   using SourceType = enterprise_connectors::ContentMetaData::CopiedTextSource;
 
-  enterprise_connectors::ContentMetaData::CopiedTextSource copied_text_source;
+  SourceType copied_text_source;
   if (!source.browser_context()) {
-    copied_text_source.set_context(SourceType::CLIPBOARD);
+    // This off the record check will also include guest profile sources, but
+    // since there is no way to disambiguate them with a null BrowserContext
+    // INCOGNITO is selected instead of CLIPBOARD to not share the source URL in
+    // such cases.
+    if (source.data_transfer_endpoint() &&
+        source.data_transfer_endpoint()->off_the_record()) {
+      copied_text_source.set_context(SourceType::INCOGNITO);
+    } else {
+      copied_text_source.set_context(SourceType::CLIPBOARD);
+    }
   } else if (Profile::FromBrowserContext(source.browser_context())
                  ->IsIncognitoProfile()) {
     copied_text_source.set_context(SourceType::INCOGNITO);
@@ -101,8 +110,18 @@ ReportingService::GetClipboardSource(
   switch (copied_text_source.context()) {
     case SourceType::UNSPECIFIED:
     case SourceType::INCOGNITO:
-    case SourceType::CLIPBOARD:
       break;
+    case SourceType::CLIPBOARD:
+      // If the user does something like closing the browser between the time
+      // they copy and then paste, the DTE might have a URL even though the lack
+      // of browser context will make it impossible to know if the `SourceType`
+      // is `SAME_PROFILE` or `OTHER_PROFILE`.
+      //
+      // In that case, we can be conservative and perform the same check as
+      // `OTHER_PROFILE`. Note that this code path is unreachable in the case of
+      // an incognito source URL as that is handled in the `set_context`
+      // conditions above.
+      [[fallthrough]];
     case SourceType::OTHER_PROFILE:
       // Only add a source URL if the other profile is getting the policy
       // applied at the machine scope, not the user scope.
