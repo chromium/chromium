@@ -565,39 +565,16 @@ OffscreenCanvas::GetOrCreateResourceProviderForImageBitmap() {
 
   std::unique_ptr<CanvasResourceProvider> provider;
   gfx::Size surface_size(width(), height());
-  const bool can_use_gpu =
-      SharedGpuContext::IsGpuCompositingEnabled() &&
-      (IsImageBitmapRenderingContext() ||
-       (RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
-        !(context_->CreationAttributes().will_read_frequently ==
-          CanvasContextCreationAttributesCore::WillReadFrequently::kTrue)));
-  const bool use_shared_image =
-      can_use_gpu ||
-      (HasPlaceholderCanvas() && SharedGpuContext::IsGpuCompositingEnabled());
-  const bool use_scanout =
-      use_shared_image && HasPlaceholderCanvas() &&
-      SharedGpuContext::MaySupportImageChromium() &&
-      (IsRenderingContext2D() &&
-       RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled());
-
-  gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  if (use_scanout) {
-    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  }
-
   const SkAlphaType alpha_type = GetRenderingContextAlphaType();
   const viz::SharedImageFormat format = GetRenderingContextFormat();
   const gfx::ColorSpace color_space = GetRenderingContextColorSpace();
-  if (use_shared_image) {
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         Size(), format, alpha_type, color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
-        SharedGpuContext::ContextProviderWrapper(),
-        can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
-        shared_image_usage_flags, this);
+        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, this);
   } else if (HasPlaceholderCanvas()) {
-    // using the software compositor
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         GetOrCreateResourceDispatcher()->GetWeakPtr();
     provider =
