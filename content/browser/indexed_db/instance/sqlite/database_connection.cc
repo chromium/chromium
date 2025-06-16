@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -19,10 +18,7 @@
 #include "base/types/expected.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/instance/record.h"
-#include "content/browser/indexed_db/instance/sqlite/backing_store_cursor_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_transaction_impl.h"
-#include "content/browser/indexed_db/instance/sqlite/record_iterator.h"
 #include "content/browser/indexed_db/status.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -172,113 +168,6 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
   }
 
   return metadata;
-}
-
-// Returns a `RecordIterator` and the initial `Record` for the range of object
-// store records determined by the parameters. Returns nullptrs if the range is
-// empty or an error if one occurs.
-StatusOr<std::pair<std::unique_ptr<RecordIterator>, std::unique_ptr<Record>>>
-CreateObjectStoreRecordIterator(sql::Database* db,
-                                int64_t object_store_id,
-                                const blink::IndexedDBKeyRange& key_range,
-                                bool ascending_order,
-                                bool key_only) {
-  std::vector<std::string_view> query_pieces{
-      "SELECT ", key_only ? "key" : "key, value",
-      " FROM records WHERE object_store_id = @object_store_id"};
-  if (key_range.lower().IsValid()) {
-    query_pieces.push_back(key_range.lower_open() ? " AND key > @lower"
-                                                  : " AND key >= @lower");
-  }
-  if (key_range.upper().IsValid()) {
-    query_pieces.push_back(key_range.upper_open() ? " AND key < @upper"
-                                                  : " AND key <= @upper");
-  }
-  if (ascending_order) {
-    query_pieces.push_back(
-        " AND (@is_first_seek = 1 OR key > @position)"
-        " AND (@target_key IS NULL OR key >= @target_key)"
-        " ORDER BY key ASC");
-  } else {
-    query_pieces.push_back(
-        " AND (@is_first_seek = 1 OR key < @position)"
-        " AND (@target_key IS NULL OR key <= @target_key)"
-        " ORDER BY key DESC");
-  }
-  // LIMIT is needed to use OFFSET. A negative LIMIT implies no limit on the
-  // number of rows returned:
-  // https://www.sqlite.org/lang_select.html#the_limit_clause.
-  query_pieces.push_back(" LIMIT -1 OFFSET @offset");
-
-  auto statement = std::make_unique<sql::Statement>(
-      db->GetReadonlyStatement(base::StrCat(query_pieces)));
-  int param_index = 0;
-  statement->BindInt64(param_index++, object_store_id);
-  if (key_range.lower().IsValid()) {
-    statement->BindBlob(param_index++, EncodeSortableIDBKey(key_range.lower()));
-  }
-  if (key_range.upper().IsValid()) {
-    statement->BindBlob(param_index++, EncodeSortableIDBKey(key_range.upper()));
-  }
-  int is_first_seek_index = param_index++;
-  int position_index = param_index++;
-  int target_key_index = param_index++;
-  int offset_index = param_index++;
-
-  RecordIterator::BindCallback bind_parameters = base::BindRepeating(
-      [](int is_first_seek_index, int position_index, int target_key_index,
-         int offset_index, sql::Statement& statement,
-         const std::string& position, const blink::IndexedDBKey& target_key,
-         const blink::IndexedDBKey& _, uint32_t offset) {
-        statement.BindBool(is_first_seek_index, false);
-        statement.BindBlob(position_index, position);
-        if (target_key.IsValid()) {
-          statement.BindBlob(target_key_index,
-                             EncodeSortableIDBKey(target_key));
-        } else {
-          statement.BindNull(target_key_index);
-        }
-        statement.BindInt64(offset_index, offset);
-      },
-      is_first_seek_index, position_index, target_key_index, offset_index);
-
-  RecordIterator::ReadCallback read_row = base::BindRepeating(
-      [](bool key_only, sql::Statement& statement)
-          -> StatusOr<RecordIterator::PositionAndRecord> {
-        std::string position;
-        TRANSIENT_CHECK(statement.ColumnBlobAsString(0, &position));
-        blink::IndexedDBKey key = DecodeSortableIDBKey(position);
-        if (key_only) {
-          return std::make_pair(
-              std::move(position),
-              std::make_unique<ObjectStoreKeyOnlyRecord>(std::move(key)));
-        }
-        IndexedDBValue value;
-        TRANSIENT_CHECK(statement.ColumnBlobAsVector(1, &value.bits));
-        return std::make_pair(std::move(position),
-                              std::make_unique<ObjectStoreRecord>(
-                                  std::move(key), std::move(value)));
-      },
-      key_only);
-
-  // Attempt to find the initial record in the range.
-  statement->BindBool(is_first_seek_index, true);
-  statement->BindNull(position_index);
-  statement->BindNull(target_key_index);
-  statement->BindInt(offset_index, 0);
-  if (!statement->Step()) {
-    TRANSIENT_CHECK(statement->Succeeded());
-    // Empty range.
-    return std::make_pair(nullptr, nullptr);
-  }
-  return read_row.Run(*statement)
-      .transform([&](RecordIterator::PositionAndRecord result) {
-        return std::make_pair(
-            std::make_unique<RecordIterator>(
-                std::move(statement), std::move(bind_parameters),
-                std::move(read_row), std::move(result.first)),
-            std::move(result.second));
-      });
 }
 
 }  // namespace
@@ -473,8 +362,10 @@ DatabaseConnection::GetRecordIdentifierIfExists(
       db_->GetCachedStatement(SQL_FROM_HERE,
                               "SELECT row_id FROM records "
                               "WHERE object_store_id = ? AND key = ?"));
+  std::string encoded_key;
+  EncodeSortableIDBKey(key, &encoded_key);
   statement.BindInt64(0, object_store_id);
-  statement.BindBlob(1, EncodeSortableIDBKey(key));
+  statement.BindBlob(1, std::move(encoded_key));
   if (statement.Step()) {
     return BackingStore::RecordIdentifier{statement.ColumnInt64(0)};
   }
@@ -490,8 +381,10 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
       db_->GetCachedStatement(SQL_FROM_HERE,
                               "SELECT value FROM records "
                               "WHERE object_store_id = ? AND key = ?"));
+  std::string encoded_key;
+  EncodeSortableIDBKey(key, &encoded_key);
   statement.BindInt64(0, object_store_id);
-  statement.BindBlob(1, EncodeSortableIDBKey(key));
+  statement.BindBlob(1, std::move(encoded_key));
   if (statement.Step()) {
     IndexedDBValue value;
     TRANSIENT_CHECK(statement.ColumnBlobAsVector(0, &value.bits));
@@ -511,7 +404,9 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
       "INSERT OR REPLACE INTO records "
       "(object_store_id, key, value) VALUES (?, ?, ?)"));
   statement.BindInt64(0, object_store_id);
-  statement.BindBlob(1, EncodeSortableIDBKey(key));
+  std::string encoded_key;
+  EncodeSortableIDBKey(key, &encoded_key);
+  statement.BindBlob(1, std::move(encoded_key));
   statement.BindBlob(2, std::move(value.bits));
   TRANSIENT_CHECK(statement.Run());
   return BackingStore::RecordIdentifier{db_->GetLastInsertRowId()};
@@ -523,13 +418,19 @@ StatusOr<uint32_t> DatabaseConnection::GetObjectStoreKeyCount(
     blink::IndexedDBKeyRange key_range) {
   std::vector<std::string_view> query_pieces{
       "SELECT COUNT() FROM records WHERE object_store_id = ?"};
+  std::string lower_encoded;
+  std::string upper_encoded;
   if (key_range.lower().IsValid()) {
-    query_pieces.push_back(key_range.lower_open() ? " AND key > ?"
-                                                  : " AND key >= ?");
+    EncodeSortableIDBKey(key_range.lower(), &lower_encoded);
+    query_pieces.insert(
+        query_pieces.end(),
+        {" AND key ", key_range.lower_open() ? ">" : ">=", " ?"});
   }
   if (key_range.upper().IsValid()) {
-    query_pieces.push_back(key_range.upper_open() ? " AND key < ?"
-                                                  : " AND key <= ?");
+    EncodeSortableIDBKey(key_range.upper(), &upper_encoded);
+    query_pieces.insert(
+        query_pieces.end(),
+        {" AND key ", key_range.upper_open() ? "<" : "<=", " ?"});
   }
 
   // TODO(crbug.com/40253999): Evaluate performance benefit of using
@@ -538,36 +439,14 @@ StatusOr<uint32_t> DatabaseConnection::GetObjectStoreKeyCount(
       db_->GetReadonlyStatement(base::StrCat(query_pieces)));
   int param_index = 0;
   statement.BindInt64(param_index++, object_store_id);
-  if (key_range.lower().IsValid()) {
-    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.lower()));
+  if (!lower_encoded.empty()) {
+    statement.BindBlob(param_index++, lower_encoded);
   }
-  if (key_range.upper().IsValid()) {
-    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.upper()));
+  if (!upper_encoded.empty()) {
+    statement.BindBlob(param_index++, upper_encoded);
   }
   TRANSIENT_CHECK(statement.Step());
   return statement.ColumnInt(0);
-}
-
-StatusOr<std::unique_ptr<BackingStore::Cursor>>
-DatabaseConnection::OpenObjectStoreCursor(
-    base::PassKey<BackingStoreTransactionImpl>,
-    int64_t object_store_id,
-    const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection direction,
-    bool key_only) {
-  bool ascending_order =
-      (direction == blink::mojom::IDBCursorDirection::Next ||
-       direction == blink::mojom::IDBCursorDirection::NextNoDuplicate);
-  return CreateObjectStoreRecordIterator(db_.get(), object_store_id, key_range,
-                                         ascending_order, key_only)
-      .transform([](std::pair<std::unique_ptr<RecordIterator>,
-                              std::unique_ptr<Record>> result) {
-        return result.first
-                   ? std::make_unique<BackingStoreCursorImpl>(
-                         std::move(result.first), std::move(result.second))
-                   // Empty range.
-                   : nullptr;
-      });
 }
 
 }  // namespace content::indexed_db::sqlite

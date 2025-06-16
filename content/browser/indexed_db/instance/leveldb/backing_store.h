@@ -365,7 +365,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     const blink::IndexedDBKey& GetKey() const override;
     const blink::IndexedDBKey& GetPrimaryKey() const override;
     blink::IndexedDBKey TakeKey() && override;
-    StatusOr<bool> Continue() override;
     StatusOr<bool> Continue(const blink::IndexedDBKey& key,
                             const blink::IndexedDBKey& primary_key) override;
     StatusOr<bool> Advance(uint32_t count) override;

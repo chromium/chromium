@@ -420,14 +420,13 @@ bool MaybeEncodeIDBKey(const IndexedDBKey& value, std::string* into) {
   return EncodeIDBKeyRecursively(value, into, 0);
 }
 
-void EncodeSortableIDBKeyRecursively(const IndexedDBKey& value,
-                                     std::string* into) {
+void EncodeSortableIDBKey(const IndexedDBKey& value, std::string* into) {
   size_t previous_size = into->size();
   switch (value.type()) {
     case blink::mojom::IDBKeyType::Array: {
       EncodeByte(kOrderedArrayTypeByte, into);
       for (const IndexedDBKey& key : value.array()) {
-        EncodeSortableIDBKeyRecursively(key, into);
+        EncodeSortableIDBKey(key, into);
       }
       EncodeByte(kSentinel, into);
       DCHECK_GT(into->size(), previous_size);
@@ -455,12 +454,6 @@ void EncodeSortableIDBKeyRecursively(const IndexedDBKey& value,
     default:
       NOTREACHED();
   }
-}
-
-std::string EncodeSortableIDBKey(const IndexedDBKey& value) {
-  std::string encoded;
-  EncodeSortableIDBKeyRecursively(value, &encoded);
-  return encoded;
 }
 
 #define COMPILE_ASSERT_MATCHING_VALUES(a, b)                          \
