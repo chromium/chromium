@@ -298,6 +298,10 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   // Cancels the immediate mediation timer when the UI is shown.
   void CancelImmediateTimeout();
 
+  // Cancels the current request if it's an immediate mediation and no immediate
+  // mediation UI was shown.
+  void CancelRequestForImmediateMediation();
+
   // Cancels the currently pending request (if any) with the supplied status.
   void CancelWithStatus(blink::mojom::AuthenticatorStatus status);
 

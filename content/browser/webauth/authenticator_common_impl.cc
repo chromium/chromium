@@ -36,6 +36,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/strings/string_view_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -972,10 +973,8 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       base::BindOnce(&AuthenticatorCommonImpl::OnCancelFromUI,
                      weak_factory_.GetWeakPtr()) /* cancel_callback */,
       base::BindOnce(
-          &AuthenticatorCommonImpl::CancelWithStatus,
-          weak_factory_.GetWeakPtr(),
-          blink::mojom::AuthenticatorStatus::
-              IMMEDIATE_NOT_FOUND) /* immediate_not_found_callback */,
+          &AuthenticatorCommonImpl::CancelRequestForImmediateMediation,
+          weak_factory_.GetWeakPtr()) /* immediate_not_found_callback */,
       base::BindRepeating(
           &AuthenticatorCommonImpl::StartGetAssertionRequest,
           weak_factory_.GetWeakPtr(),
@@ -2559,7 +2558,7 @@ void AuthenticatorCommonImpl::BeginImmediateRequestTimeout() {
 
 void AuthenticatorCommonImpl::OnImmediateTimeout() {
   base::UmaHistogramBoolean(kImmediateTimeoutWhileWaitingForUi, true);
-  CancelWithStatus(blink::mojom::AuthenticatorStatus::IMMEDIATE_NOT_FOUND);
+  CancelRequestForImmediateMediation();
 }
 
 void AuthenticatorCommonImpl::CancelImmediateTimeout() {
@@ -2569,6 +2568,24 @@ void AuthenticatorCommonImpl::CancelImmediateTimeout() {
   }
   base::UmaHistogramBoolean(kImmediateTimeoutWhileWaitingForUi, false);
   req_state_->immediate_timer->Stop();
+}
+
+void AuthenticatorCommonImpl::CancelRequestForImmediateMediation() {
+  // Post a task to defer the cancellation, otherwise a reentrancy may occur.
+  // For example all authenticators may report no credentials; but the
+  // discoveries may still be active. See crbug.com/424491613 for an example.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<AuthenticatorCommonImpl> auth_ptr) {
+            if (!auth_ptr) {
+              return;
+            }
+
+            auth_ptr->CancelWithStatus(
+                blink::mojom::AuthenticatorStatus::IMMEDIATE_NOT_FOUND);
+          },
+          weak_factory_.GetWeakPtr()));
 }
 
 void AuthenticatorCommonImpl::CancelWithStatus(
