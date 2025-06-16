@@ -134,6 +134,11 @@ class BaseCtaTransitTestRule {
         mActivityTestRule.resumeMainActivityFromLauncher();
     }
 
+    // TODO(crbug.com/406324209): Support finishing and restarting activity in Public Transit.
+    public void restartMainActivityFromLauncher() throws Exception {
+        mActivityTestRule.startMainActivityFromLauncher();
+    }
+
     // TODO(crbug.com/406324209): ChromeTabbedActivityTestRule#startActivityCompletely() already
     // calls this. Double check that callers are using those entry points and remove this.
     public void waitForActivityNativeInitializationComplete() {

@@ -40,7 +40,6 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,11 +70,11 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -92,14 +91,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
 public class TabGroupUiTest {
-
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -111,19 +105,20 @@ public class TabGroupUiTest {
                     .build();
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private RegularNewTabPageStation mNtp;
 
     @Before
     public void setUp() {
-        sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        TabUiTestHelper.verifyTabSwitcherLayoutType(sActivityTestRule.getActivity());
+        mNtp = mActivityTestRule.startOnNtp();
+        TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
         CriteriaHelper.pollUiThread(
-                sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }
 
     @Test
     @MediumTest
     public void testStripShownOnGroupTabPage() {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
@@ -147,7 +142,7 @@ public class TabGroupUiTest {
     @Feature({"RenderTest"})
     @DisableIf.Build(supported_abis_includes = "x86")
     public void testRenderStrip_Select5thTabIn10Tabs() throws IOException {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 9);
         enterTabSwitcher(cta);
@@ -180,7 +175,7 @@ public class TabGroupUiTest {
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/359640997")
     public void testRenderStrip_Select10thTabIn10Tabs() throws IOException {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 9);
         enterTabSwitcher(cta);
@@ -212,7 +207,7 @@ public class TabGroupUiTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderStrip_toggleNotificationBubble() throws IOException {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<ViewGroup> controlsReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 1);
         enterTabSwitcher(cta);
@@ -263,7 +258,7 @@ public class TabGroupUiTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderStrip_AddTab() throws IOException {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 9);
         enterTabSwitcher(cta);
@@ -302,7 +297,7 @@ public class TabGroupUiTest {
     @Feature({"RenderTest"})
     @DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
     public void testRenderStrip_BackgroundAddTab() throws IOException {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -351,7 +346,7 @@ public class TabGroupUiTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderStrip_BackgroundAddTab_ResizeableView() throws IOException {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -402,14 +397,14 @@ public class TabGroupUiTest {
     public void testVisibilityChangeWithOmnibox() throws Exception {
 
         // Create a tab group with 2 tabs.
-        finishActivity(sActivityTestRule.getActivity());
+        finishActivity(mActivityTestRule.getActivity());
         createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         createTabStatesAndMetadataFile(new int[] {0, 1}, new int[] {0, 0});
 
         // Restart Chrome and make sure tab strip is showing.
-        sActivityTestRule.startMainActivityFromLauncher();
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        mActivityTestRule.restartMainActivityFromLauncher();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
         ViewUtils.waitForVisibleView(
                 allOf(
@@ -433,7 +428,7 @@ public class TabGroupUiTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
-                            sActivityTestRule
+                            mActivityTestRule
                                     .getActivity()
                                     .getProfileProviderSupplier()
                                     .get()
@@ -443,14 +438,14 @@ public class TabGroupUiTest {
                 });
 
         // Create a tab group with 2 tabs.
-        finishActivity(sActivityTestRule.getActivity());
+        finishActivity(mActivityTestRule.getActivity());
         createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         createTabStatesAndMetadataFile(new int[] {0, 1}, new int[] {0, 0});
 
         // Restart Chrome and make sure tab strip is showing.
-        sActivityTestRule.startMainActivityFromLauncher();
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        mActivityTestRule.restartMainActivityFromLauncher();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
         ViewUtils.waitForVisibleView(
                 allOf(
@@ -459,7 +454,7 @@ public class TabGroupUiTest {
                         isCompletelyDisplayed()));
 
         BottomControlsCoordinator coordinator =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getToolbarManager()
