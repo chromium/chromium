@@ -321,6 +321,26 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideMultiple) {
             IPAddressSpace::kPrivate);
 }
 
+// Verifies that a port of 0 will apply to all ports
+TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideWildcardPort) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
+                                 "10.2.3.4:0=public,[2001::]:0=loopback");
+  EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(10, 2, 3, 4), 80)),
+            IPAddressSpace::kPublic);
+
+  EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(10, 2, 3, 4), 200)),
+            IPAddressSpace::kPublic);
+
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("2001::"), 2000)),
+      IPAddressSpace::kLocal);
+
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("2001::"), 2001)),
+      IPAddressSpace::kLocal);
+}
+
 // Verifies that private and local are both the kPrivate address space (until
 // the enum gets renamed).
 TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceLocalPrivateSame) {

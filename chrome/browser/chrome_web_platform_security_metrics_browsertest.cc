@@ -31,6 +31,7 @@
 #include "pdf/buildflags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -185,6 +186,10 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
   void SetUpCommandLine(base::CommandLine* command_line) final {
     // For https_server()
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    // Clear default from InProcessBrowserTest as test doesn't want 127.0.0.1 in
+    // the public address space
+    command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                    "");
   }
 
   net::EmbeddedTestServer https_server_;

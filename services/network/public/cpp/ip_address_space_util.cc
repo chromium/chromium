@@ -168,6 +168,10 @@ std::optional<IPAddressSpace> ApplyCommandLineOverrides(
     if (endpoint_override.endpoint == endpoint) {
       return endpoint_override.space;
     }
+    if ((endpoint_override.endpoint.port() == 0) &&
+        (endpoint_override.endpoint.address() == endpoint.address())) {
+      return endpoint_override.space;
+    }
   }
 
   return std::nullopt;

@@ -1934,6 +1934,8 @@ test("content_browsertests") {
     "//services/metrics",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
+    "//services/network/public/cpp:flags_and_switches",
+    "//services/network/public/cpp:ip_address_space_overrides_test_utils",
     "//services/network/public/mojom",
     "//services/network/trust_tokens:test_support",
     "//services/service_manager/public/cpp",

@@ -17,6 +17,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,6 +57,13 @@ network::mojom::ContentSecurityPolicyPtr MakeTestCSP() {
 // presence of navigation history in particular.
 class NavigationPolicyContainerBuilderBrowserTest : public ContentBrowserTest {
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    // Clear default from InProcessBrowserTest as test expects 127.0.0.1 in
+    // the local address space
+    command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                    "");
+  }
   explicit NavigationPolicyContainerBuilderBrowserTest() {
     CHECK(embedded_test_server()->Start());
   }

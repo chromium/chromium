@@ -327,8 +327,8 @@ class HttpsUpgradesBrowserTest
 
     http_server_.AddDefaultHandlers(GetChromeTestDataDir());
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    http_server_.StartAcceptingConnections();
-    https_server_.StartAcceptingConnections();
+    ASSERT_TRUE(http_server_.Start());
+    ASSERT_TRUE(https_server_.Start());
 
     HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server()->port());
     HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server()->port());
@@ -369,18 +369,6 @@ class HttpsUpgradesBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     mock_cert_verifier_.SetUpCommandLine(command_line);
-
-    ASSERT_TRUE(http_server_.InitializeAndListen());
-    ASSERT_TRUE(https_server_.InitializeAndListen());
-
-    // Treat the test server as public to bypass Local Network Access checks.
-    //
-    // TODO(crbug.com/422956041): figure out why we need to do this, there may
-    // be a bug where IP address spaces are not being set correctly.
-    network::AddIpAddressSpaceOverridesToCommandLine(
-        {network::GenerateIpAddressSpaceOverride(http_server_),
-         network::GenerateIpAddressSpaceOverride(https_server_)},
-        *command_line);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -2719,6 +2707,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   // Load "logo.gif" as an image on the page.
   GURL image = https_server()->GetURL("foo.com", "/ssl/google_files/logo.gif");
 
+  // TODO(crbug.com/422956041): this fetch generates an LNA request, its unclear
+  // why. Investigation is required to see if this is an LNA bug or not.
   EXPECT_EQ(
       true,
       EvalJs(tab,

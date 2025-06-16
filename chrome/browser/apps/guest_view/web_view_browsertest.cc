@@ -6205,6 +6205,14 @@ class LocalNetworkAccessWebViewTest : public WebViewTest {
                                             std::move(disabled_features));
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebViewTest::SetUpCommandLine(command_line);
+    // Clear default from InProcessBrowserTest as test doesn't want 127.0.0.1 in
+    // the public address space
+    command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                    "");
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };

@@ -14,6 +14,24 @@
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 
 namespace network {
+namespace {
+// TODO(crbug.com/418737577): use network::IPAddressSpaceToStringPiece after
+// address space rename finishes.
+std::string_view IPAddressSpaceToStringPieceForOverride(
+    mojom::IPAddressSpace space) {
+  switch (space) {
+    case mojom::IPAddressSpace::kUnknown:
+      return "unknown";
+    case mojom::IPAddressSpace::kPublic:
+      return "public";
+    case mojom::IPAddressSpace::kPrivate:
+      return "local";
+    case mojom::IPAddressSpace::kLocal:
+      return "loopback";
+  }
+}
+
+}  // namespace
 
 void AddPublicIpAddressSpaceOverrideToCommandLine(
     const net::test_server::EmbeddedTestServer& server,
@@ -36,7 +54,7 @@ std::string GenerateIpAddressSpaceOverride(
     mojom::IPAddressSpace space) {
   CHECK(server.Started());
   return base::StrCat({server.host_port_pair().ToString(), "=",
-                       IPAddressSpaceToStringPiece(space)});
+                       IPAddressSpaceToStringPieceForOverride(space)});
 }
 
 }  // namespace network

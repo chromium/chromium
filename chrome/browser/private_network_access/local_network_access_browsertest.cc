@@ -20,6 +20,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 // Path to a response that passes Local Network Access checks.
@@ -89,6 +90,10 @@ class LocalNetworkAccessBrowserTest : public policy::PolicyTest {
   void SetUpCommandLine(base::CommandLine* command_line) final {
     // Ignore cert errors when connecting to https_server()
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    // Clear default from InProcessBrowserTest as test doesn't want 127.0.0.1 in
+    // the public address space
+    command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                    "");
   }
 
   net::EmbeddedTestServer https_server_;

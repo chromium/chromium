@@ -87,6 +87,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "ui/base/ui_base_features.h"
@@ -333,6 +334,16 @@ void BrowserTestBase::SetUp() {
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  // Force all EmbeddedTestServers started into the public address space. This
+  // avoids Local Network Access (LNA) checks on tests that don't intend to
+  // exercise LNA functionality.
+  //
+  // Don't overwrite any IP address overrides that test have already set.
+  if (!command_line->HasSwitch(network::switches::kIpAddressSpaceOverrides)) {
+    command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                    "127.0.0.1:0=public");
+  }
 
   if (!command_line->HasSwitch(switches::kUseFakeDeviceForMediaStream))
     command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);

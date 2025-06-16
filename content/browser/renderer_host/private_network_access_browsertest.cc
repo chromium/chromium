@@ -39,6 +39,7 @@
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -350,18 +351,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRangeRequest(
 
 // A `net::EmbeddedTestServer` that pretends to be in a given IP address space.
 //
-// NOTE(titouan): The IP address space overrides CLI switch is copied to utility
-// processes when said processes are started. Thus if any server is instantiated
-// after the network process has started, updates we make to our own CLI
-// switches will not propagate to the network process, yielding inconsistent
-// results.
+// Set up of the command line in order for this server to be considered a part
+// of `ip_address_space` must be done outside of server creation.
 class FakeAddressSpaceServer {
  public:
   FakeAddressSpaceServer(net::EmbeddedTestServer::Type type,
                          net::test_server::HttpConnection::Protocol protocol,
                          network::mojom::IPAddressSpace ip_address_space,
                          const base::FilePath& test_data_path)
-      : server_(type, protocol) {
+      : server_(type, protocol), ip_address_space_(ip_address_space) {
     // Use a certificate valid for multiple domains, which we can use to
     // distinguish `local`, `private` and `public` address spaces.
     server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -371,26 +369,10 @@ class FakeAddressSpaceServer {
     server_.RegisterRequestHandler(base::BindRepeating(&HandleRangeRequest));
     server_.AddDefaultHandlers(test_data_path);
     CHECK(server_.Start());
+  }
 
-    // Set up the command line in order for this server to be considered a part
-    // of `ip_address_space`, irrespective of the actual IP it binds to.
-    base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-    std::string switch_str = command_line.GetSwitchValueASCII(
-        network::switches::kIpAddressSpaceOverrides);
-
-    // If `switch_str` was empty, we prepend an empty value by unconditionally
-    // adding a comma before the new entry. This empty value is ignored by the
-    // switch parsing logic.
-    base::StrAppend(&switch_str,
-                    {
-                        ",",
-                        server_.host_port_pair().ToString(),
-                        "=",
-                        IPAddressSpaceToSwitchValue(ip_address_space),
-                    });
-
-    command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
-                                   switch_str);
+  std::string GenerateCommandLineSwitchOverride() const {
+    return network::GenerateIpAddressSpaceOverride(server_, ip_address_space_);
   }
 
   // Returns the underlying test server.
@@ -402,24 +384,10 @@ class FakeAddressSpaceServer {
   const RequestObserver& request_observer() const { return request_observer_; }
 
  private:
-  static std::string_view IPAddressSpaceToSwitchValue(
-      network::mojom::IPAddressSpace space) {
-    switch (space) {
-      case network::mojom::IPAddressSpace::kLocal:
-        return "loopback";
-      case network::mojom::IPAddressSpace::kPrivate:
-        return "local";
-      case network::mojom::IPAddressSpace::kPublic:
-        return "public";
-      default:
-        ADD_FAILURE() << "Unhandled address space " << space;
-        return "";
-    }
-  }
-
   ConnectionCounter connection_counter_;
   RequestObserver request_observer_;
   net::EmbeddedTestServer server_;
+  const network::mojom::IPAddressSpace ip_address_space_;
 };
 
 }  // namespace
@@ -499,6 +467,19 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
     host_resolver()->AddRule(kOtherLocalHost, "127.0.0.1");
     host_resolver()->AddRule(kPrivateHost, "127.0.0.1");
     host_resolver()->AddRule(kPublicHost, "127.0.0.1");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    // Add correct ip address space overrides.
+    network::AddIpAddressSpaceOverridesToCommandLine(
+        {insecure_local_server_.GenerateCommandLineSwitchOverride(),
+         insecure_private_server_.GenerateCommandLineSwitchOverride(),
+         insecure_public_server_.GenerateCommandLineSwitchOverride(),
+         secure_local_server_.GenerateCommandLineSwitchOverride(),
+         secure_private_server_.GenerateCommandLineSwitchOverride(),
+         secure_public_server_.GenerateCommandLineSwitchOverride()},
+        *command_line);
   }
 
   const FakeAddressSpaceServer& InsecureLocalServer() const {
