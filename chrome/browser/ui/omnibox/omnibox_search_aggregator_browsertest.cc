@@ -256,8 +256,9 @@ class OmniboxSearchAggregatorSingleRequestTest
   }
 };
 
+// TODO(crbug.com/425120649) Flaky.
 IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
-                       GoodJsonResponse) {
+                       DISABLED_GoodJsonResponse) {
   net::test_server::ControllableHttpResponse search_aggregator_response(
       embedded_test_server(), kSearchAggregatorPolicySuggestPath);
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -333,8 +334,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
       })));
 }
 
+// TODO(crbug.com/425120649): Flaky.
 IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
-                       GoodJsonResponseMultipleRequests) {
+                       DISABLED_GoodJsonResponseMultipleRequests) {
   std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
       requests = {};
   for (size_t i = 0; i < 3; ++i) {
@@ -406,8 +408,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
           })));
 }
 
+// TODO(crbug.com/425120649) Flaky.
 IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
-                       RedirectedResponse) {
+                       DISABLED_RedirectedResponse) {
   net::test_server::ControllableHttpResponse redirect_response(
       embedded_test_server(), kSearchAggregatorPolicySuggestPath);
   const std::string redirected_path = "/suggest-redirect";
@@ -513,15 +516,10 @@ class OmniboxSearchAggregatorHTTPErrorTest
       search_aggregator_query_response_;
 };
 
-// TODO(crbug.com/421836646): Re-enable this test once the flakiness is
-// resolved.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HTTPErrorResponse DISABLED_HTTPErrorResponse
-#else
-#define MAYBE_HTTPErrorResponse HTTPErrorResponse
-#endif
+// TODO(crbug.com/421836646): Flaky on `BUILDFLAG(IS_WIN)`
+// TODO(crbug.com/425120649): Flaky.
 IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
-                       MAYBE_HTTPErrorResponse) {
+                       DISABLED_HTTPErrorResponse) {
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
