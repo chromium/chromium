@@ -123,6 +123,14 @@ class TRACING_EXPORT EtwConsumer
                           base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Decodes a ReadyThread Event and emits a Perfetto trace event; see
+  // https://learn.microsoft.com/en-us/windows/win32/etw/readythread.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeReadyThreadEvent(const EVENT_HEADER& header,
+                              const ETW_BUFFER_CONTEXT& buffer_context,
+                              base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Returns a new perfetto trace event to be emitted for an ETW event with a
   // given event header. The timestamp and cpu fields of the returned event are
   // prepopulated.

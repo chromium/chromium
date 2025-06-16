@@ -188,11 +188,15 @@ void EtwConsumer::HandleThreadEvent(const EVENT_HEADER& header,
         DLOG(ERROR) << "Error decoding CSwitch Event";
       }
       break;
+    case 50:  // ReadyThread
+      if (!DecodeReadyThreadEvent(header, buffer_context, packet_data)) {
+        DLOG(ERROR) << "Error decoding ReadyThread Event";
+      }
+      break;
     case 72:  // ThreadSetName (v2)
       OnThreadSetName(header, buffer_context, packet_data);
       break;
     default:
-      // 50: ReadyThread
       break;
   }
 }
@@ -444,6 +448,40 @@ bool EtwConsumer::DecodeCSwitchEvent(const EVENT_HEADER& header,
       old_thread_wait_ideal_processor);
   c_switch->set_new_thread_wait_time(new_thread_wait_time);
 
+  return true;
+}
+
+bool EtwConsumer::DecodeReadyThreadEvent(
+    const EVENT_HEADER& header,
+    const ETW_BUFFER_CONTEXT& buffer_context,
+    base::span<const uint8_t> packet_data) {
+  using perfetto::protos::pbzero::ReadyThreadEtwEvent;
+
+  // Size of ReadyThread v2 in bytes (1 x 32-bit plus 4 x 8-bit).
+  static constexpr size_t kMinimumReadyThreadLength = 1 * 4 + 4;
+  if (packet_data.size() < kMinimumReadyThreadLength) {
+    return false;
+  }
+
+  // Read and validate the contents of `packet_data`.
+  base::BufferIterator<const uint8_t> iterator{packet_data};
+  auto thread_id = *iterator.CopyObject<uint32_t>();
+  auto adjust_reason = *iterator.Object<int8_t>();
+  auto adjust_increment = *iterator.Object<int8_t>();
+  auto flag = *iterator.Object<int8_t>();
+
+  // Generate a ReadyThreadEtwEvent.
+  auto* event = MakeNextEvent(header, buffer_context);
+  if (inclusion_policy_.ShouldIncludeThreadId(header.ThreadId)) {
+    event->set_thread_id(header.ThreadId);
+  }
+  auto* ready_thread = event->set_ready_thread();
+  if (inclusion_policy_.ShouldIncludeThreadId(thread_id)) {
+    ready_thread->set_t_thread_id(thread_id);
+  }
+  ready_thread->set_adjust_reason_int(adjust_reason);
+  ready_thread->set_adjust_increment(adjust_increment);
+  ready_thread->set_flag_int(flag);
   return true;
 }
 
