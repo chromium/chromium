@@ -14,10 +14,8 @@
 #include "android_webview/common/aw_features.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
 #include "base/task/bind_post_task.h"
@@ -30,7 +28,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -45,12 +42,12 @@ namespace android_webview {
 
 namespace {
 
-const double kEpsilon = 1e-8;
+constexpr double kEpsilon = 1e-8;
 
 // Used to calculate memory allocation. Determined experimentally.
-const size_t kMemoryMultiplier = 20;
-const size_t kBytesPerPixel = 4;
-const size_t kMemoryAllocationStep = 5 * 1024 * 1024;
+constexpr size_t kMemoryMultiplier = 20;
+constexpr size_t kBytesPerPixel = 4;
+constexpr size_t kMemoryAllocationStep = 5 * 1024 * 1024;
 
 const void* const kBrowserViewRendererUserDataKey =
     &kBrowserViewRendererUserDataKey;
@@ -61,16 +58,16 @@ class BrowserViewRendererUserData : public base::SupportsUserData::Data {
 
   static BrowserViewRenderer* GetBrowserViewRenderer(
       content::WebContents* web_contents) {
-    if (!web_contents)
-      return NULL;
-    BrowserViewRendererUserData* data =
-        static_cast<BrowserViewRendererUserData*>(
-            web_contents->GetUserData(kBrowserViewRendererUserDataKey));
-    return data ? data->bvr_.get() : NULL;
+    if (!web_contents) {
+      return nullptr;
+    }
+    auto* data = static_cast<BrowserViewRendererUserData*>(
+        web_contents->GetUserData(kBrowserViewRendererUserDataKey));
+    return data ? data->bvr_.get() : nullptr;
   }
 
  private:
-  raw_ptr<BrowserViewRenderer> bvr_;
+  const raw_ptr<BrowserViewRenderer> bvr_;
 };
 
 }  // namespace
