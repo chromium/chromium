@@ -73,8 +73,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #else
-#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -192,19 +190,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {
-        TestingProfile::TestingFactory{
-            StatefulSSLHostStateDelegateFactory::GetInstance(),
-            StatefulSSLHostStateDelegateFactory::GetDefaultFactoryForTesting()},
-#if !BUILDFLAG(IS_ANDROID)
-        // Setup mock sentiment service for ChromePageInfoDelegate.
-        TestingProfile::TestingFactory {
-          TrustSafetySentimentServiceFactory::GetInstance(),
-          base::BindRepeating(&BuildMockTrustSafetySentimentService)
-        }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-    };
+    return {TestingProfile::TestingFactory{
+        StatefulSSLHostStateDelegateFactory::GetInstance(),
+        StatefulSSLHostStateDelegateFactory::GetDefaultFactoryForTesting()}};
   }
 
   void SetDefaultUIExpectations(MockPageInfoUI* mock_ui) {

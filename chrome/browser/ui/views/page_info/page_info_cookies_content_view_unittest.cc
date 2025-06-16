@@ -8,8 +8,6 @@
 #include <string_view>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -91,13 +89,6 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
     presenter_.reset();
     content_view_.reset();
     TestWithBrowserView::TearDown();
-  }
-
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {// Setup mock sentiment service for ChromePageInfoDelegate.
-            TestingProfile::TestingFactory{
-                TrustSafetySentimentServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildMockTrustSafetySentimentService)}};
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -12,8 +12,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -128,13 +126,6 @@ class PageInfoPermissionContentViewTestMediaPreview
     web_contents_tester_ = nullptr;
     web_contents_.reset();
     TestWithBrowserView::TearDown();
-  }
-
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {// Setup mock sentiment service for ChromePageInfoDelegate.
-            TestingProfile::TestingFactory{
-                TrustSafetySentimentServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildMockTrustSafetySentimentService)}};
   }
 
   std::u16string GetExpectedCameraLabelText(size_t devices) {

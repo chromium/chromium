@@ -132,11 +132,4 @@ source_set("unit_tests") {
     "//net:test_support",
     "//services/device/public/cpp:test_support",
   ]
-
-  if (!is_android) {
-    deps += [
-      "//chrome/browser/ui/hats",
-      "//chrome/browser/ui/hats:test_support",
-    ]
-  }
 }
