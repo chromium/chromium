@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"

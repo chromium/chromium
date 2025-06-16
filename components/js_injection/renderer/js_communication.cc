@@ -4,6 +4,7 @@
 
 #include "components/js_injection/renderer/js_communication.h"
 
+#include "base/feature_list.h"
 #include "components/js_injection/renderer/js_binding.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/public/common/isolated_world_ids.h"
