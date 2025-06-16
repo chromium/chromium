@@ -145,7 +145,11 @@ class UiUtils {
             } else { // 1 incognito and 3 more tabs will be closed
                 msg =
                         res.getQuantityString(
-                                R.plurals.instance_switcher_close_confirm_deleted_incognito_mixed,
+                                isInstanceSwitcherV2Enabled()
+                                        ? R.plurals
+                                                .instance_switcher_close_confirm_deleted_incognito_mixed_v2
+                                        : R.plurals
+                                                .instance_switcher_close_confirm_deleted_incognito_mixed,
                                 item.tabCount,
                                 incognitoTabCount,
                                 item.tabCount,
@@ -158,7 +162,9 @@ class UiUtils {
         } else { // YouTube and 3 more tabs will be closed
             msg =
                     res.getQuantityString(
-                            R.plurals.instance_switcher_close_confirm_deleted_tabs_many,
+                            isInstanceSwitcherV2Enabled()
+                                    ? R.plurals.instance_switcher_close_confirm_deleted_tabs_many_v2
+                                    : R.plurals.instance_switcher_close_confirm_deleted_tabs_many,
                             totalTabCount - 1,
                             title,
                             totalTabCount - 1,

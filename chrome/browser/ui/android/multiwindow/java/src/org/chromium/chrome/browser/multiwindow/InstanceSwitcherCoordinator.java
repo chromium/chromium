@@ -591,9 +591,11 @@ public class InstanceSwitcherCoordinator {
         Dialog dialog = new Dialog(mContext, style);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.close_confirmation_dialog);
-
         Resources res = mContext.getResources();
         String title = res.getString(R.string.instance_switcher_close_confirm_header);
+        if (UiUtils.isInstanceSwitcherV2Enabled() && item.type == InstanceInfo.Type.CURRENT) {
+            title = res.getString(R.string.instance_switcher_close_confirm_header_current);
+        }
         ((TextView) dialog.findViewById(R.id.title)).setText(title);
         TextView messageView = dialog.findViewById(R.id.message);
         messageView.setText(mUiUtils.getConfirmationMessage(item));

@@ -15,5 +15,6 @@ found in the LICENSE file.
         <item name="buttonBarNegativeButtonStyle">@style/TextButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 </resources>

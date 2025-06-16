@@ -17,9 +17,6 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
 
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,10 +26,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.favicon.LargeIconBridge;
 
 /** Tests for {@link UiUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
 public class UiUtilsUnitTest {
     // Title
     private static final String TITLE = "Title";
@@ -64,12 +65,7 @@ public class UiUtilsUnitTest {
         doReturn(NO_TABS).when(mResources).getString(R.string.instance_switcher_tab_count_zero);
         doReturn(TWO_TABS_ONE_INCOGNITO)
                 .when(mResources)
-                .getQuantityString(
-                        R.plurals.instance_switcher_desc_mixed,
-                        2,
-                        1,
-                        2,
-                        1);
+                .getQuantityString(R.plurals.instance_switcher_desc_mixed, 2, 1, 2, 1);
         doReturn(CURRENT).when(mResources).getString(R.string.instance_switcher_current_window);
         doReturn(OPEN).when(mResources).getString(R.string.instance_switcher_adjacent_window);
         mUiUtils =
@@ -384,6 +380,52 @@ public class UiUtilsUnitTest {
         verify(mResources)
                 .getQuantityString(
                         R.plurals.instance_switcher_close_confirm_deleted_tabs_many,
+                        totalTabCount - 1,
+                        TITLE,
+                        totalTabCount - 1,
+                        TITLE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testCloseConfirmationMessageForInstanceSwitcherV2() {
+        // Mixed tabs -> TITLE and # other tabs...
+        int normalTabCount = 3;
+        int incognitoTabCount = 2;
+        int totalTabCount = 5;
+        InstanceInfo item = mockInstance(57, normalTabCount, incognitoTabCount, false);
+        mUiUtils.getConfirmationMessage(item);
+        verify(mResources)
+                .getQuantityString(
+                        R.plurals.instance_switcher_close_confirm_deleted_tabs_many_v2,
+                        totalTabCount - 1,
+                        TITLE,
+                        totalTabCount - 1,
+                        TITLE);
+        clearInvocations(mResources);
+
+        // Mixed tabs, incognito-selected -> Incognito and # other tabs...
+        item = mockInstance(57, normalTabCount, incognitoTabCount, true);
+        mUiUtils.getConfirmationMessage(item);
+        verify(mResources)
+                .getQuantityString(
+                        R.plurals.instance_switcher_close_confirm_deleted_incognito_mixed_v2,
+                        normalTabCount,
+                        incognitoTabCount,
+                        normalTabCount,
+                        incognitoTabCount);
+        clearInvocations(mResources);
+
+        // Incognito-selected, mixed tabs, killed task ->  TITLE and 2 other tabs...
+        // Incognito tabs are not restored. Shown with the last focused normal tab info.
+        normalTabCount = 3;
+        incognitoTabCount = 2;
+        totalTabCount = 3; // 2 incognito tabs are discarded.
+        item = mockInstance(-1, normalTabCount, incognitoTabCount, true);
+        mUiUtils.getConfirmationMessage(item);
+        verify(mResources)
+                .getQuantityString(
+                        R.plurals.instance_switcher_close_confirm_deleted_tabs_many_v2,
                         totalTabCount - 1,
                         TITLE,
                         totalTabCount - 1,

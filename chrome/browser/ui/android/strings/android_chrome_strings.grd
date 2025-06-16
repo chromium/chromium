@@ -5809,8 +5809,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TARGET_SELECTOR_MOVE" desc="The message in the button in target selector dialog that starts moving a tab.">
         Move tab
       </message>
-      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_HEADER" desc="The header of multi-instance switcher dialog confirming close operation.">
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_HEADER" desc="The header of multi-instance switcher dialog confirming close operation for a non-current window.">
         Close window?
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_HEADER_CURRENT" desc="The header of multi-instance switcher dialog confirming close operation for the current window.">
+        Close your current window?
       </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_ZERO" desc="The phrase used in the message when there is a single tab to delete.">
         The window will be closed
@@ -5822,6 +5825,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         {TAB_COUNT, plural,
           =1 {<ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> and <ph name="TAB_COUNT_ONE">%2$s</ph> more tab will be closed}
           other {<ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> and <ph name="TAB_COUNT_MANY">%2$s</ph> more tabs will be closed}}
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_MANY_V2" desc="The phrase used in the message when there are multiple tabs to delete.">
+        {TAB_COUNT, plural,
+          =1 {<ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> and <ph name="TAB_COUNT_ONE">%2$s</ph> other tab will be closed}
+          other {<ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> and <ph name="TAB_COUNT_MANY">%2$s</ph> other tabs will be closed}}
       </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_INCOGNITO" desc="The phrase used in the message for deleting incognito-only instance.">
         {TAB_COUNT, plural,
@@ -5835,6 +5843,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_INSTANCE_LAST_ACCESSED_CURRENT" desc="The current window indicator text.">
         Current window
+      </message>
+       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_INCOGNITO_MIXED_V2" desc="The phrase used in the message for deleting incognito-selected instance.">
+        {TAB_COUNT, plural,
+          =1 {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>2</ex></ph> incognito and <ph name="TAB_COUNT_ONE">%2$s<ex>1</ex></ph> other tab will be closed}
+          other {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>4</ex></ph> incognito and <ph name="TAB_COUNT_MANY">%2$s<ex>4</ex></ph> other tabs will be closed}}
       </message>
 
       <!-- Multi-instance message strings -->
