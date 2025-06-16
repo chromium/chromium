@@ -15,4 +15,8 @@ std::unique_ptr<ObservationDelayController> Tool::GetObservationDelayer(
   return std::make_unique<ObservationDelayController>(target_frame);
 }
 
+bool Tool::RequiresFrame() const {
+  return true;
+}
+
 }  // namespace actor

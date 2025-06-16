@@ -43,6 +43,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="ArgumentsInvalid"/>
   <int value="23" label="TaskPaused"/>
   <int value="24" label="kExecutorDestroyed"/>
+  <int value="25" label="kWindowWentAway"/>
   <int value="100" label="NavigateInvalidUrl"/>
   <int value="200" label="ClickSuppressed"/>
   <int value="300" label="DragAndReleaseFromOffscreen"/>

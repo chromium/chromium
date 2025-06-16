@@ -71,8 +71,12 @@ using content::WaitForDOMContentLoaded;
 using content::WeakDocumentPtr;
 using content::WebContents;
 using content::WebContentsObserver;
+using optimization_guide::proto::Action;
+using optimization_guide::proto::Actions;
+using optimization_guide::proto::ActionsResult;
 using optimization_guide::proto::BrowserAction;
 using optimization_guide::proto::ClickAction;
+using optimization_guide::proto::CreateTabAction;
 using optimization_guide::proto::NavigateAction;
 using tabs::TabInterface;
 
@@ -142,9 +146,15 @@ class ActorToolsTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
-    auto execution_engine = std::make_unique<ExecutionEngine>(
-        browser()->profile(), browser()->GetActiveTabInterface());
+    auto execution_engine = InitializeExecutionEngine();
+    ExecutionEngine* raw_execution_engine = execution_engine.get();
     actor_task_ = std::make_unique<ActorTask>(std::move(execution_engine));
+    raw_execution_engine->SetOwner(actor_task_.get());
+  }
+
+  virtual std::unique_ptr<ExecutionEngine> InitializeExecutionEngine() {
+    return std::make_unique<ExecutionEngine>(
+        browser()->profile(), browser()->GetActiveTabInterface());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -189,9 +199,30 @@ class ActorToolsTest : public InProcessBrowserTest {
         .ExtractString();
   }
 
+  ActorTask& actor_task() const {
+    CHECK(actor_task_);
+    return *actor_task_.get();
+  }
+
  private:
   ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ActorTask> actor_task_;
+};
+
+// ActorToolsTest but using the V2 ExecutionEngine API.
+// TODO(crbug.com/411462297): All tests should eventually use the V2 API and the
+// original test harness should be migrated to the new API. New tests should use
+// this harness.
+class ActorToolsTestV2 : public ActorToolsTest {
+ public:
+  ActorToolsTestV2() = default;
+  ~ActorToolsTestV2() override = default;
+  explicit ActorToolsTestV2(const ActorToolsTest&) = delete;
+  ActorToolsTestV2& operator=(const ActorToolsTestV2&) = delete;
+
+  std::unique_ptr<ExecutionEngine> InitializeExecutionEngine() override {
+    return std::make_unique<ExecutionEngine>(browser()->profile());
+  }
 };
 
 // ===============================================
@@ -1311,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_CSSZoom) {
 class ActorToolsTestDSF2 : public ActorToolsTest {
  public:
   ActorToolsTestDSF2() = default;
-  explicit ActorToolsTestDSF2(const ActorToolsTest&) = delete;
+  explicit ActorToolsTestDSF2(const ActorToolsTestDSF2&) = delete;
   ActorToolsTestDSF2& operator=(const ActorToolsTestDSF2&) = delete;
 
   ~ActorToolsTestDSF2() override = default;
@@ -2177,6 +2208,60 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool) {
   TestFuture<mojom::ActionResultPtr> result;
   execution_engine().Act(wait, result.GetCallback());
   ExpectOkResult(result);
+}
+
+// ===============================================
+// Tab Management Tool
+// ===============================================
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestV2,
+                       TabManagementTool_CreateForegroundTab) {
+  // Navigate the starting tab so it can be differentiated from the new tab.
+  const GURL start_tab_url =
+      embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
+
+  const int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
+
+  Actions actions;
+  actions.set_task_id(actor_task().id().GetUnsafeValue());
+  CreateTabAction* create_tab = actions.add_actions()->mutable_create_tab();
+  create_tab->set_foreground(true);
+  create_tab->set_window_id(browser()->session_id().id());
+
+  TestFuture<ActionsResult> result;
+  execution_engine().Act(actions, result.GetCallback());
+  EXPECT_EQ(result.Get().action_result(),
+            static_cast<int>(mojom::ActionResultCode::kOk));
+
+  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(GURL("about:blank"),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestV2,
+                       TabManagementTool_CreateBackgroundTab) {
+  // Navigate the starting tab so it can be differentiated from the new tab.
+  const GURL start_tab_url =
+      embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
+
+  const int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
+
+  Actions actions;
+  actions.set_task_id(actor_task().id().GetUnsafeValue());
+  CreateTabAction* create_tab = actions.add_actions()->mutable_create_tab();
+  create_tab->set_foreground(false);
+  create_tab->set_window_id(browser()->session_id().id());
+
+  TestFuture<ActionsResult> result;
+  execution_engine().Act(actions, result.GetCallback());
+  EXPECT_EQ(result.Get().action_result(),
+            static_cast<int>(mojom::ActionResultCode::kOk));
+
+  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(start_tab_url,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
 // ===============================================

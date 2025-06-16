@@ -54,6 +54,13 @@ class Tool {
   // completed and a new frame presented.
   virtual std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       content::RenderFrameHost& target_frame) const;
+
+  // Whether or not the tool requires a frame to operate on. Note, this also
+  // includes "tab-scoped" tools which are considered to operate on the "main
+  // frame" in the tab.
+  // TODO(crbug.com/411462297): Temporary until we have a better mechanism for
+  // non-frame-scoped tools.
+  virtual bool RequiresFrame() const;
 };
 
 }  // namespace actor

@@ -509,6 +509,16 @@ bool IsShowingNTP(content::WebContents* web_contents) {
 ////////////////////////////////////////////////////////////////////////////////
 // Browser, CreateParams:
 
+BrowserWindowInterface* BrowserWindowInterface::FromSessionID(
+    const SessionID& session_id) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->GetSessionID() == session_id) {
+      return browser;
+    }
+  }
+  return nullptr;
+}
+
 Browser::CreateParams::CreateParams(Profile* profile, bool user_gesture)
     : CreateParams(TYPE_NORMAL, profile, user_gesture) {}
 

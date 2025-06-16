@@ -98,6 +98,9 @@ class BrowserWindowInterface : public content::PageNavigator {
   // The following methods will be removed in the future.
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Returns nullptr if no browser window with the given session ID exists.
+  static BrowserWindowInterface* FromSessionID(const SessionID& session_id);
+
   // The contents of the active tab is rendered in a views::WebView. When the
   // active tab switches, the contents of the views::WebView is modified, but
   // the instance itself remains the same.

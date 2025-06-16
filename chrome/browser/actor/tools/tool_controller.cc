@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/tools/history_tool.h"
 #include "chrome/browser/actor/tools/navigate_tool.h"
 #include "chrome/browser/actor/tools/page_tool.h"
+#include "chrome/browser/actor/tools/tab_management_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
@@ -84,7 +85,12 @@ std::unique_ptr<Tool> ToolController::CreateTool(AggregatedJournal& journal,
     case Action::kWait: {
       return std::make_unique<WaitTool>();
     }
-    case Action::kCreateTab:
+    case Action::kCreateTab: {
+      // Extract the window ID from the action.
+      int32_t window_id = action.create_tab().window_id();
+      return std::make_unique<TabManagementTool>(window_id,
+                                                 action.create_tab());
+    }
     case Action::kCloseTab:
     case Action::kActivateTab:
     case Action::kCreateWindow:
@@ -145,16 +151,16 @@ void ToolController::ValidationComplete(mojom::ActionResultPtr result) {
 
   // TODO(crbug.com/389739308): Ensure the acting tab remains valid (i.e. alive
   // and focused), return error otherwise.
-
-  RenderFrameHost* target_frame =
-      active_state_->weak_document_ptr.AsRenderFrameHostIfValid();
-  if (!target_frame) {
-    CompleteToolRequest(MakeResult(mojom::ActionResultCode::kFrameWentAway));
-    return;
+  if (active_state_->tool->RequiresFrame()) {
+    RenderFrameHost* target_frame =
+        active_state_->weak_document_ptr.AsRenderFrameHostIfValid();
+    if (!target_frame) {
+      CompleteToolRequest(MakeResult(mojom::ActionResultCode::kFrameWentAway));
+      return;
+    }
+    observation_delayer_ =
+        active_state_->tool->GetObservationDelayer(*target_frame);
   }
-
-  observation_delayer_ =
-      active_state_->tool->GetObservationDelayer(*target_frame);
 
   active_state_->tool->Invoke(base::BindOnce(
       &ToolController::DidFinishToolInvoke, weak_ptr_factory_.GetWeakPtr()));
