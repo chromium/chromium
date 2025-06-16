@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+In https://crbug.com/423310049 the color space transformation wasn't quite
+right - with the test image below the symptom was that yellow and cyan
+bands were swapped (magenta and black bands were preserved).
+<p>
+The test image below was created by
+<ul>
+  <li>Taking IHDR, IDAT, and IEND chunks from basn2c08 from the PNG test suite
+  <li>Taking iCCP chunk from the repro image from https://crbug.com/423310049
+</ul>
+<hr>
+<img src="resources/crbug423310049.png">
