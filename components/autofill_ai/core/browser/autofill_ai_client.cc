@@ -11,32 +11,4 @@
 
 namespace autofill_ai {
 
-AutofillAiClient::EntitySaveOrUpdatePromptResult::
-    EntitySaveOrUpdatePromptResult(
-        bool did_user_decline,
-        std::optional<autofill::EntityInstance> entity)
-    : did_user_decline(did_user_decline), entity(std::move(entity)) {}
-
-AutofillAiClient::EntitySaveOrUpdatePromptResult::
-    EntitySaveOrUpdatePromptResult() = default;
-
-AutofillAiClient::EntitySaveOrUpdatePromptResult::
-    EntitySaveOrUpdatePromptResult(
-        const AutofillAiClient::EntitySaveOrUpdatePromptResult&) = default;
-
-AutofillAiClient::EntitySaveOrUpdatePromptResult::
-    EntitySaveOrUpdatePromptResult(
-        AutofillAiClient::EntitySaveOrUpdatePromptResult&&) = default;
-
-AutofillAiClient::EntitySaveOrUpdatePromptResult&
-AutofillAiClient::EntitySaveOrUpdatePromptResult::operator=(
-    const AutofillAiClient::EntitySaveOrUpdatePromptResult&) = default;
-
-AutofillAiClient::EntitySaveOrUpdatePromptResult&
-AutofillAiClient::EntitySaveOrUpdatePromptResult::operator=(
-    AutofillAiClient::EntitySaveOrUpdatePromptResult&&) = default;
-
-AutofillAiClient::EntitySaveOrUpdatePromptResult::
-    ~EntitySaveOrUpdatePromptResult() = default;
-
 }  // namespace autofill_ai

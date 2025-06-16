@@ -28,29 +28,6 @@ class AutofillAiManager;
 // Autofill in the settings while the client is alive.
 class AutofillAiClient {
  public:
-  // Contains the result of a user interaction with the save/update AutofillAi
-  // prompt.
-  struct EntitySaveOrUpdatePromptResult final {
-    EntitySaveOrUpdatePromptResult();
-    EntitySaveOrUpdatePromptResult(
-        bool did_user_decline,
-        std::optional<autofill::EntityInstance> entity);
-    EntitySaveOrUpdatePromptResult(const EntitySaveOrUpdatePromptResult&);
-    EntitySaveOrUpdatePromptResult(EntitySaveOrUpdatePromptResult&&);
-    EntitySaveOrUpdatePromptResult& operator=(
-        const EntitySaveOrUpdatePromptResult&);
-    EntitySaveOrUpdatePromptResult& operator=(EntitySaveOrUpdatePromptResult&&);
-    ~EntitySaveOrUpdatePromptResult();
-
-    // Whether the user explicitly declined the dialog.
-    bool did_user_decline = false;
-
-    // Non-empty iff the prompt was accepted.
-    std::optional<autofill::EntityInstance> entity;
-  };
-  using EntitySaveOrUpdatePromptResultCallback =
-      base::OnceCallback<void(EntitySaveOrUpdatePromptResult result)>;
-
   virtual ~AutofillAiClient() = default;
 
   // Returns the AutofillClient that is scoped to the same object (e.g., tab) as
@@ -64,15 +41,6 @@ class AutofillAiClient {
   // Returns the `AutofillAiManager` associated with this
   // client.
   virtual AutofillAiManager& GetManager() = 0;
-
-  // Shows a bubble asking whether the user wants to save or update Autofill AI
-  // data. `old_entity` is present in the update cases. It is used to give users
-  // a better understanding of what was updated.
-  virtual void ShowSaveOrUpdateBubble(
-      autofill::EntityInstance new_entity,
-      std::optional<autofill::EntityInstance> old_entity,
-      EntitySaveOrUpdatePromptResultCallback
-          save_prompt_acceptance_callback) = 0;
 };
 
 }  // namespace autofill_ai

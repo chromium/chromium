@@ -112,7 +112,7 @@ SaveOrUpdateAutofillAiDataController::GetOrCreate(
 void SaveOrUpdateAutofillAiDataControllerImpl::ShowPrompt(
     autofill::EntityInstance new_entity,
     std::optional<autofill::EntityInstance> old_entity,
-    AutofillAiClient::EntitySaveOrUpdatePromptResultCallback
+    autofill::AutofillClient::EntitySaveOrUpdatePromptResultCallback
         save_prompt_acceptance_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {

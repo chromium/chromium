@@ -43,10 +43,11 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   ~SaveOrUpdateAutofillAiDataControllerImpl() override;
 
   // SaveOrUpdateAutofillAiDataController:
-  void ShowPrompt(autofill::EntityInstance new_entity,
-                  std::optional<autofill::EntityInstance> old_entity,
-                  AutofillAiClient::EntitySaveOrUpdatePromptResultCallback
-                      save_prompt_acceptance_callback) override;
+  void ShowPrompt(
+      autofill::EntityInstance new_entity,
+      std::optional<autofill::EntityInstance> old_entity,
+      autofill::AutofillClient::EntitySaveOrUpdatePromptResultCallback
+          save_prompt_acceptance_callback) override;
   void OnSaveButtonClicked() override;
   base::optional_ref<const autofill::EntityInstance> GetAutofillAiData()
       const override;
@@ -87,7 +88,7 @@ class SaveOrUpdateAutofillAiDataControllerImpl
 
   // Callback to notify the data provider about the user decision for the save
   // or update prompt.
-  AutofillAiClient::EntitySaveOrUpdatePromptResultCallback
+  autofill::AutofillClient::EntitySaveOrUpdatePromptResultCallback
       save_prompt_acceptance_callback_;
 
   base::WeakPtrFactory<SaveOrUpdateAutofillAiDataControllerImpl>

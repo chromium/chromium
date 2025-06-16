@@ -82,7 +82,7 @@ class SaveOrUpdateAutofillAiDataController {
   virtual void ShowPrompt(
       autofill::EntityInstance new_entity,
       std::optional<autofill::EntityInstance> old_entity,
-      AutofillAiClient::EntitySaveOrUpdatePromptResultCallback
+      autofill::AutofillClient::EntitySaveOrUpdatePromptResultCallback
           save_prompt_acceptance_callback) = 0;
 
   // Called when the user accepts to save or update Autofill AI data.

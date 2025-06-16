@@ -91,12 +91,12 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   void HandleSavePromptResult(
       const GURL& form_url,
       const autofill::EntityInstance& entity,
-      AutofillAiClient::EntitySaveOrUpdatePromptResult result);
+      autofill::AutofillClient::EntitySaveOrUpdatePromptResult result);
   // Updates the `EntityDataManager` and the update strike database depending on
   // the prompt `result`.
   void HandleUpdatePromptResult(
       const base::Uuid& entity_uuid,
-      AutofillAiClient::EntitySaveOrUpdatePromptResult result);
+      autofill::AutofillClient::EntitySaveOrUpdatePromptResult result);
 
   autofill::LogManager* GetCurrentLogManager();
 

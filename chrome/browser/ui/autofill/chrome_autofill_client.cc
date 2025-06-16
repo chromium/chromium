@@ -1201,4 +1201,20 @@ ChromeAutofillClient::GetMqlsUploadService() {
 #endif
 }
 
+void ChromeAutofillClient::ShowEntitySaveOrUpdateBubble(
+    EntityInstance new_entity,
+    std::optional<EntityInstance> old_entity,
+    EntitySaveOrUpdatePromptResultCallback prompt_acceptance_callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller =
+          autofill_ai::SaveOrUpdateAutofillAiDataController::GetOrCreate(
+              &*web_contents(), GetAppLocale())) {
+    controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
+                           std::move(prompt_acceptance_callback));
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  std::move(prompt_acceptance_callback).Run(EntitySaveOrUpdatePromptResult());
+}
+
 }  // namespace autofill

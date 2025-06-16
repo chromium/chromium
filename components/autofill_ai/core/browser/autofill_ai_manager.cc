@@ -306,9 +306,9 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
       auto prompt_result_callback =
           BindOnce(&AutofillAiManager::HandleSavePromptResult, GetWeakPtr(),
                    form.source_url(), entity);
-      client_->ShowSaveOrUpdateBubble(std::move(entity),
-                                      /*old_entity=*/std::nullopt,
-                                      std::move(prompt_result_callback));
+      client_->GetAutofillClient().ShowEntitySaveOrUpdateBubble(
+          std::move(entity),
+          /*old_entity=*/std::nullopt, std::move(prompt_result_callback));
       return true;
     }
     if (std::optional<std::pair<EntityInstance, EntityInstance>>
@@ -320,9 +320,9 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
       auto prompt_result_callback =
           BindOnce(&AutofillAiManager::HandleUpdatePromptResult, GetWeakPtr(),
                    old_entity.guid());
-      client_->ShowSaveOrUpdateBubble(std::move(new_entity),
-                                      std::move(old_entity),
-                                      std::move(prompt_result_callback));
+      client_->GetAutofillClient().ShowEntitySaveOrUpdateBubble(
+          std::move(new_entity), std::move(old_entity),
+          std::move(prompt_result_callback));
       return true;
     }
   }
@@ -332,7 +332,7 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
 void AutofillAiManager::HandleSavePromptResult(
     const GURL& form_url,
     const autofill::EntityInstance& entity,
-    AutofillAiClient::EntitySaveOrUpdatePromptResult result) {
+    autofill::AutofillClient::EntitySaveOrUpdatePromptResult result) {
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForSaveAttempt(form_url, entity);
@@ -352,7 +352,7 @@ void AutofillAiManager::HandleSavePromptResult(
 
 void AutofillAiManager::HandleUpdatePromptResult(
     const base::Uuid& entity_uuid,
-    AutofillAiClient::EntitySaveOrUpdatePromptResult result) {
+    autofill::AutofillClient::EntitySaveOrUpdatePromptResult result) {
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForUpdateAttempt(entity_uuid);

@@ -209,6 +209,28 @@ class AutofillClient {
     ArrowPosition arrow_position;
   };
 
+  // Contains the result of a user interaction with the save/update AutofillAi
+  // prompt.
+  struct EntitySaveOrUpdatePromptResult final {
+    EntitySaveOrUpdatePromptResult();
+    EntitySaveOrUpdatePromptResult(bool did_user_decline,
+                                   std::optional<EntityInstance> entity);
+    EntitySaveOrUpdatePromptResult(const EntitySaveOrUpdatePromptResult&);
+    EntitySaveOrUpdatePromptResult(EntitySaveOrUpdatePromptResult&&);
+    EntitySaveOrUpdatePromptResult& operator=(
+        const EntitySaveOrUpdatePromptResult&);
+    EntitySaveOrUpdatePromptResult& operator=(EntitySaveOrUpdatePromptResult&&);
+    ~EntitySaveOrUpdatePromptResult();
+
+    // Whether the user explicitly declined the dialog.
+    bool did_user_decline = false;
+
+    // Non-empty iff the prompt was accepted.
+    std::optional<EntityInstance> entity;
+  };
+  using EntitySaveOrUpdatePromptResultCallback =
+      base::OnceCallback<void(EntitySaveOrUpdatePromptResult result)>;
+
   // Callback to run when the user makes a decision on whether to save the
   // profile. If the user edits the Autofill profile and then accepts edits, the
   // edited version of the profile should be passed as the second parameter. No
@@ -626,6 +648,14 @@ class AutofillClient {
   // Returns the service used in order to log metrics into MQLS.
   virtual optimization_guide::ModelQualityLogsUploaderService*
   GetMqlsUploadService();
+
+  // Shows a bubble asking whether the user wants to save or update Autofill AI
+  // data. `old_entity` is present in the update cases. It is used to give users
+  // a better understanding of what was updated.
+  virtual void ShowEntitySaveOrUpdateBubble(
+      EntityInstance new_entity,
+      std::optional<EntityInstance> old_entity,
+      EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback);
 };
 
 }  // namespace autofill

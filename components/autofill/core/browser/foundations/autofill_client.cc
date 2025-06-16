@@ -50,6 +50,31 @@ AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
 AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
     AutofillClient::PopupOpenArgs&&) = default;
 
+AutofillClient::EntitySaveOrUpdatePromptResult::EntitySaveOrUpdatePromptResult(
+    bool did_user_decline,
+    std::optional<EntityInstance> entity)
+    : did_user_decline(did_user_decline), entity(std::move(entity)) {}
+
+AutofillClient::EntitySaveOrUpdatePromptResult::
+    EntitySaveOrUpdatePromptResult() = default;
+
+AutofillClient::EntitySaveOrUpdatePromptResult::EntitySaveOrUpdatePromptResult(
+    const AutofillClient::EntitySaveOrUpdatePromptResult&) = default;
+
+AutofillClient::EntitySaveOrUpdatePromptResult::EntitySaveOrUpdatePromptResult(
+    AutofillClient::EntitySaveOrUpdatePromptResult&&) = default;
+
+AutofillClient::EntitySaveOrUpdatePromptResult&
+AutofillClient::EntitySaveOrUpdatePromptResult::operator=(
+    const AutofillClient::EntitySaveOrUpdatePromptResult&) = default;
+
+AutofillClient::EntitySaveOrUpdatePromptResult&
+AutofillClient::EntitySaveOrUpdatePromptResult::operator=(
+    AutofillClient::EntitySaveOrUpdatePromptResult&&) = default;
+
+AutofillClient::EntitySaveOrUpdatePromptResult::
+    ~EntitySaveOrUpdatePromptResult() = default;
+
 version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
@@ -259,5 +284,10 @@ optimization_guide::ModelQualityLogsUploaderService*
 AutofillClient::GetMqlsUploadService() {
   return nullptr;
 }
+
+void AutofillClient::ShowEntitySaveOrUpdateBubble(
+    EntityInstance new_entity,
+    std::optional<EntityInstance> old_entity,
+    EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback) {}
 
 }  // namespace autofill

@@ -62,19 +62,3 @@ autofill::ContentAutofillClient& ChromeAutofillAiClient::GetAutofillClient() {
 autofill_ai::AutofillAiManager& ChromeAutofillAiClient::GetManager() {
   return prediction_improvements_manager_;
 }
-
-void ChromeAutofillAiClient::ShowSaveOrUpdateBubble(
-    autofill::EntityInstance new_entity,
-    std::optional<autofill::EntityInstance> old_entity,
-    EntitySaveOrUpdatePromptResultCallback prompt_acceptance_callback) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (auto* controller =
-          autofill_ai::SaveOrUpdateAutofillAiDataController::GetOrCreate(
-              &*web_contents_, GetAutofillClient().GetAppLocale())) {
-    controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
-                           std::move(prompt_acceptance_callback));
-    return;
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-  std::move(prompt_acceptance_callback).Run(EntitySaveOrUpdatePromptResult());
-}

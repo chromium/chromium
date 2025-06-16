@@ -33,11 +33,6 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   // AutofillAiClient:
   autofill::ContentAutofillClient& GetAutofillClient() override;
   autofill_ai::AutofillAiManager& GetManager() override;
-  void ShowSaveOrUpdateBubble(
-      autofill::EntityInstance new_entity,
-      std::optional<autofill::EntityInstance> old_entity,
-      EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback)
-      override;
 
  private:
   explicit ChromeAutofillAiClient(content::WebContents* web_contents);
