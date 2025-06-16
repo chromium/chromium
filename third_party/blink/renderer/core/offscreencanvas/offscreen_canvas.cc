@@ -645,18 +645,16 @@ OffscreenCanvas::GetOrCreateResourceProviderForCanvas2D() {
   gfx::Size surface_size(width(), height());
   const bool can_use_gpu =
       SharedGpuContext::IsGpuCompositingEnabled() &&
-      (IsImageBitmapRenderingContext() ||
-       (RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
-        !(context_->CreationAttributes().will_read_frequently ==
-          CanvasContextCreationAttributesCore::WillReadFrequently::kTrue)));
+      RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
+      !(context_->CreationAttributes().will_read_frequently ==
+        CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   const bool use_shared_image =
       can_use_gpu ||
       (HasPlaceholderCanvas() && SharedGpuContext::IsGpuCompositingEnabled());
   const bool use_scanout =
       use_shared_image && HasPlaceholderCanvas() &&
       SharedGpuContext::MaySupportImageChromium() &&
-      (IsRenderingContext2D() &&
-       RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled());
+      RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
 
   gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
