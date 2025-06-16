@@ -45,8 +45,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -72,10 +74,12 @@ public class CloseAllTabsDialogTest {
                     new ParameterSet().value(true, true).name("Incognito_ClickAppMenuViaMouse"));
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private final boolean mIsIncognito;
     private final boolean mClickAppMenuViaMouse;
+    private WebPageStation mInitialPage;
 
     public CloseAllTabsDialogTest(boolean isIncognito, boolean clickAppMenuViaMouse) {
         mIsIncognito = isIncognito;
@@ -84,7 +88,7 @@ public class CloseAllTabsDialogTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL("about:blank");
+        mInitialPage = mActivityTestRule.startOnBlankPage();
     }
 
     /** Tests that close all tabs works after modal dialog. */
