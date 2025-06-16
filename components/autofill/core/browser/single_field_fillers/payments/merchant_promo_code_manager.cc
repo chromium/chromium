@@ -55,6 +55,12 @@ void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
   uma_recorder_.OnOfferSuggestionSelected(suggestion.type);
 }
 
+void MerchantPromoCodeManager::OnOffersSuggestionsShown(
+    const FieldGlobalId& field_global_id,
+    const std::vector<const AutofillOfferData*>& offers) {
+  uma_recorder_.OnOffersSuggestionsShown(field_global_id, offers);
+}
+
 void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(
     const FieldGlobalId& field_global_id,
     const std::vector<const AutofillOfferData*>& offers) {
@@ -144,9 +150,6 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
   std::move(on_suggestions_returned)
       .Run(field.global_id(),
            GetPromoCodeSuggestionsFromPromoCodeOffers(promo_code_offers));
-
-  // Log that promo code autofill suggestions were shown.
-  uma_recorder_.OnOffersSuggestionsShown(field.global_id(), promo_code_offers);
 }
 
 }  // namespace autofill

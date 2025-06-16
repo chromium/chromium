@@ -2092,6 +2092,31 @@ void BrowserAutofillManager::DidShowSuggestions(
         ->OnIbanSuggestionsShown(field_id);
   }
 
+  if (shown_suggestion_types.contains(
+          SuggestionType::kMerchantPromoCodeEntry)) {
+    std::vector<const AutofillOfferData*> shown_offers;
+    for (const Suggestion& suggestion : suggestions) {
+      if (suggestion.type == SuggestionType::kMerchantPromoCodeEntry) {
+        int64_t offer_id;
+        base::StringToInt64(
+            std::get<Suggestion::Guid>(suggestion.payload).value(), &offer_id);
+        const AutofillOfferData* offer =
+            client()
+                .GetPaymentsAutofillClient()
+                ->GetPaymentsDataManager()
+                .GetMerchantPromoCodeByOfferId(offer_id);
+        if (offer) {
+          shown_offers.push_back(offer);
+        }
+      }
+    }
+
+    client()
+        .GetPaymentsAutofillClient()
+        ->GetMerchantPromoCodeManager()
+        ->OnOffersSuggestionsShown(field_id, shown_offers);
+  }
+
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   const bool has_cached_form_and_field = GetCachedFormAndField(

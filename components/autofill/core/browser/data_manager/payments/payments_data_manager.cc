@@ -557,6 +557,16 @@ const Iban* PaymentsDataManager::GetIbanByGUID(const std::string& guid) const {
   return iter != local_ibans_.end() ? iter->get() : nullptr;
 }
 
+const AutofillOfferData* PaymentsDataManager::GetMerchantPromoCodeByOfferId(
+    const int64_t offer_id) const {
+  auto iter = std::ranges::find_if(
+      autofill_offer_data_,
+      [&offer_id](const std::unique_ptr<AutofillOfferData>& offer_data) {
+        return offer_data->GetOfferId() == offer_id;
+      });
+  return iter != autofill_offer_data_.end() ? iter->get() : nullptr;
+}
+
 const Iban* PaymentsDataManager::GetIbanByInstrumentId(
     int64_t instrument_id) const {
   for (const Iban* iban : GetServerIbans()) {

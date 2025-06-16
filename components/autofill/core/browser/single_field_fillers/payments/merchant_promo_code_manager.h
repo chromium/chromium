@@ -55,8 +55,15 @@ class MerchantPromoCodeManager : public KeyedService {
           on_suggestions_returned);
   virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
 
+  // Called when offer suggestions are shown; used to record metrics.
+  // `field_global_id` is the global id of the field that had suggestions shown.
+  void OnOffersSuggestionsShown(
+    const FieldGlobalId& field_global_id,
+    const std::vector<const AutofillOfferData*>& offers);
+
  private:
   friend class MerchantPromoCodeManagerTest;
+  friend class MerchantPromoCodeManagerTestApi;
   FRIEND_TEST_ALL_PREFIXES(MerchantPromoCodeManagerTest,
                            DoesNotShowPromoCodeOffersForOffTheRecord);
   FRIEND_TEST_ALL_PREFIXES(
@@ -79,6 +86,8 @@ class MerchantPromoCodeManager : public KeyedService {
     void OnOfferSuggestionSelected(SuggestionType type);
 
    private:
+    friend class MerchantPromoCodeManagerTestApi;
+
     // The global id of the field that most recently had suggestions shown.
     FieldGlobalId most_recent_suggestions_shown_field_global_id_;
 
