@@ -243,11 +243,17 @@ void PaintTimingDetector::NotifyImageRemoved(
 }
 
 void PaintTimingDetector::OnInputOrScroll() {
-  // If we have already stopped and we're no longer recording the largest image
-  // paint, then abort.
-  if (!record_lcp_to_metrics_) {
+  if (LocalDOMWindow* window = frame_view_->GetFrame().DomWindow()) {
+    if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
+      heuristics->OnInputOrScroll();
+    }
+  }
+
+  // Set first_input_or_scroll_notified_timestamp_ only once.
+  if (!first_input_or_scroll_notified_timestamp_.is_null()) {
     return;
   }
+  first_input_or_scroll_notified_timestamp_ = base::TimeTicks::Now();
 
   // TextPaintTimingDetector is used for both Largest Contentful Paint and for
   // Element Timing. Therefore, here we only want to stop recording Largest
@@ -258,12 +264,6 @@ void PaintTimingDetector::OnInputOrScroll() {
   image_paint_timing_detector_->StopRecordEntries();
   image_paint_timing_detector_->StopRecordingLargestImagePaint();
   largest_contentful_paint_calculator_ = nullptr;
-  record_lcp_to_metrics_ = false;
-
-  // Set first_input_or_scroll_notified_timestamp_ only once.
-  if (first_input_or_scroll_notified_timestamp_ == base::TimeTicks()) {
-    first_input_or_scroll_notified_timestamp_ = base::TimeTicks::Now();
-  }
 
   DidChangePerformanceTiming();
 }
@@ -289,14 +289,12 @@ void PaintTimingDetector::NotifyScroll(mojom::blink::ScrollType scroll_type) {
   OnInputOrScroll();
 }
 
-bool PaintTimingDetector::NeedToNotifyInputOrScroll() const {
-  DCHECK(text_paint_timing_detector_);
-  return text_paint_timing_detector_->IsRecordingLargestTextPaint() ||
-         image_paint_timing_detector_;
-}
-
 LargestContentfulPaintCalculator*
 PaintTimingDetector::GetLargestContentfulPaintCalculator() {
+  // Do not create an LCP calculator once we stop measuring hard LCP.
+  if (!first_input_or_scroll_notified_timestamp_.is_null()) {
+    return nullptr;
+  }
   if (largest_contentful_paint_calculator_) {
     return largest_contentful_paint_calculator_.Get();
   }
@@ -315,7 +313,7 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
 void PaintTimingDetector::UpdateMetricsLcp() {
   // The DidChangePerformanceTiming method which triggers the reporting of
   // metrics LCP would not be called when we are not recording metrics LCP.
-  if (!record_lcp_to_metrics_) {
+  if (!first_input_or_scroll_notified_timestamp_.is_null()) {
     return;
   }
 
@@ -393,31 +391,27 @@ void PaintTimingDetector::UpdateLcpCandidate() {
     return;
   }
 
+  CHECK_EQ(first_input_or_scroll_notified_timestamp_.is_null(),
+           image_paint_timing_detector_->IsRecordingLargestImagePaint());
+  CHECK_EQ(first_input_or_scroll_notified_timestamp_.is_null(),
+           text_paint_timing_detector_->IsRecordingLargestTextPaint());
+
   // * nullptr means there is no new candidate update, which could be caused by
   // user input or no content show up on the page.
   // * Record.paint_time == 0 means there is an image but the image is still
   // loading. The perf API should wait until the paint-time is available.
-  std::pair<TextRecord*, bool> text_update_result = {nullptr, false};
-  std::pair<ImageRecord*, bool> image_update_result = {nullptr, false};
-
-  if (text_paint_timing_detector_->IsRecordingLargestTextPaint()) {
-    text_update_result = text_paint_timing_detector_->UpdateMetricsCandidate();
-  }
-
-  if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
-    image_update_result =
-        image_paint_timing_detector_->UpdateMetricsCandidate();
-  }
+  std::pair<TextRecord*, bool> text_update_result =
+      text_paint_timing_detector_->UpdateMetricsCandidate();
+  std::pair<ImageRecord*, bool> image_update_result =
+      image_paint_timing_detector_->UpdateMetricsCandidate();
 
   if (image_update_result.second || text_update_result.second) {
     UpdateMetricsLcp();
   }
 
-  if (record_lcp_to_metrics_) {
-    lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
-        text_update_result.first, image_update_result.first,
-        /*is_triggered_by_soft_navigation=*/false);
-  }
+  lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
+      text_update_result.first, image_update_result.first,
+      /*is_triggered_by_soft_navigation=*/false);
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {

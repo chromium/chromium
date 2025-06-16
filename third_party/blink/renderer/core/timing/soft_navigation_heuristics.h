@@ -102,6 +102,7 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   SoftNavigationContext* MaybeGetSoftNavigationContextForTiming(Node* node);
   void OnPaintFinished();
+  void OnInputOrScroll();
   void UpdateSoftLcpCandidate();
 
   // Returns an `EventScope` suitable for navigation. Used for navigations not

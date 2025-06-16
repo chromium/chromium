@@ -426,6 +426,15 @@ void SoftNavigationHeuristics::OnPaintFinished() {
   }
 }
 
+void SoftNavigationHeuristics::OnInputOrScroll() {
+  for (const auto& context : potential_soft_navigations_) {
+    // TODO(crbug.com/425402677): Is this is a good time to emit metrics to UKM,
+    // and potentially force exhausting the context / remove it from
+    // `potential_soft_navigations_`?
+    context->OnInputOrScroll();
+  }
+}
+
 void SoftNavigationHeuristics::UpdateSoftLcpCandidate() {
   if (!context_for_current_url_) {
     return;

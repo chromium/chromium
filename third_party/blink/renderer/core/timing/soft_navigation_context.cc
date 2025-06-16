@@ -99,6 +99,11 @@ bool SoftNavigationContext::AddPaintedArea(ImageRecord* image_record) {
 
 bool SoftNavigationContext::AddPaintedAreaInternal(Node* node,
                                                    const gfx::RectF& rect) {
+  // Stop recording paints once we have next input/scroll.
+  if (!first_input_or_scroll_time_.is_null()) {
+    return false;
+  }
+
   DCHECK(IsNeededForTiming(node));
 
   uint64_t painted_area = rect.size().GetArea();
@@ -165,6 +170,26 @@ bool SoftNavigationContext::OnPaintFinished() {
   return new_painted_area > 0;
 }
 
+void SoftNavigationContext::OnInputOrScroll() {
+  if (!first_input_or_scroll_time_.is_null()) {
+    return;
+  }
+  // Between interaction and first painted area, we allow other inputs or
+  // scrolling to happen.  Once we observe the first paint, we have to constrain
+  // to that initial viewport, or else the viewport area and set of candidates
+  // gets messy.
+  if (!painted_area_) {
+    return;
+  }
+  first_input_or_scroll_time_ = base::TimeTicks::Now();
+
+  // TODO(crbug.com/422958651): Same as with hard-LCP, although we have just
+  // scrolled/had input, we might still be waiting for presentation time
+  // feedback from paints that came before that scroll/input.  It seems
+  // perfectly reasonable to keep lcp_calculator_ around until those report.
+  lcp_calculator_ = nullptr;
+}
+
 // TODO(crbug.com/419386429): This gets called after each new presentation time
 // update, but this might have a range of deficiencies:
 //
@@ -191,6 +216,11 @@ bool SoftNavigationContext::OnPaintFinished() {
 // there are concerns with reporting Candidates after Paint but before
 // Presentation.
 void SoftNavigationContext::UpdateSoftLcpCandidate() {
+  // Check if we have already stopped measuring LCP (Input or Scroll)
+  if (!lcp_calculator_) {
+    return;
+  }
+  // Check if we are ready to start measuring LCP (After soft-nav entry).
   if (!WasEmitted()) {
     return;
   }

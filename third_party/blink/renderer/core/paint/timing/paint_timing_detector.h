@@ -75,7 +75,6 @@ class CORE_EXPORT PaintTimingDetector
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
   void NotifyPaintFinished();
   void NotifyInputEvent(WebInputEvent::Type);
-  bool NeedToNotifyInputOrScroll() const;
   void NotifyScroll(mojom::blink::ScrollType);
 
   void DidChangePerformanceTiming();
@@ -156,9 +155,6 @@ class CORE_EXPORT PaintTimingDetector
   LargestContentfulPaintDetails lcp_details_for_metrics_;
   // The soft navigation LCP details reported to metrics (UKM).
   LargestContentfulPaintDetails soft_navigation_lcp_details_for_metrics_;
-  // Ensures LCP stops being reported as a hard navigation metric once we start
-  // reporting soft navigation ones.
-  bool record_lcp_to_metrics_ = true;
 };
 
 // Largest Text Paint and Text Element Timing aggregate text nodes by these

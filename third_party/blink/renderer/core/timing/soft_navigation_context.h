@@ -71,6 +71,7 @@ class CORE_EXPORT SoftNavigationContext
   // Returns true if we update the total attributed area this animation frame.
   // Used to check if it is worthwhile to call `SatisfiesSoftNavPaintCriteria`.
   bool OnPaintFinished();
+  void OnInputOrScroll();
   void UpdateSoftLcpCandidate();
 
   bool SatisfiesSoftNavNonPaintCriteria() const;
@@ -87,11 +88,14 @@ class CORE_EXPORT SoftNavigationContext
   // largest value and can be used to identify the most recent context.
   const uint64_t context_id_ = ++last_context_id_;
 
-  base::TimeTicks user_interaction_timestamp_;
-  String initial_url_;
-  String most_recent_url_;
   bool was_emitted_ = false;
   const features::SoftNavigationHeuristicsMode paint_attribution_mode_;
+
+  base::TimeTicks user_interaction_timestamp_;
+  base::TimeTicks first_input_or_scroll_time_;
+
+  String initial_url_;
+  String most_recent_url_;
 
   blink::HeapHashSet<WeakMember<Node>> modified_nodes_;
   blink::HeapHashSet<WeakMember<Node>> already_painted_modified_nodes_;
