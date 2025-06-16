@@ -3133,6 +3133,11 @@ class Spanifier {
             lhs_param)));
     Match(var_passed_in_constructor2, MatchAdjacency);
 
+    // Handles member field initializers.
+    auto field_init = fieldDecl(lhs_field, has(rhs_expr_variations),
+                                unless(isExpansionInSystemHeader()));
+    Match(field_init, MatchAdjacency);
+
     // handles Obj o{temp} when Obj has no constructor.
     // This creates a link between the expr and the underlying field.
     auto var_passed_in_initlistExpr = traverse(
