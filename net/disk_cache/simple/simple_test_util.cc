@@ -4,6 +4,7 @@
 
 #include "net/disk_cache/simple/simple_test_util.h"
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "net/base/hash_value.h"
@@ -25,7 +26,7 @@ bool CreateCorruptFileForTests(const std::string& key,
   if (!entry_file.IsValid())
     return false;
 
-  return UNSAFE_TODO(entry_file.Write(0, "dummy", 1)) == 1;
+  return entry_file.WriteAndCheck(0, base::byte_span_from_cstring("d"));
 }
 
 bool RemoveKeySHA256FromEntry(const std::string& key,

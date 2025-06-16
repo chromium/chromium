@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <iostream>
 #include <memory>
 #include <string_view>
@@ -51,10 +46,9 @@ struct EntryData {
 constexpr int kResponseInfoIndex = 0;
 constexpr int kResponseContentIndex = 1;
 
-const char* const kCommandNames[] = {
-    "stop",          "get_size",   "list_keys",          "get_stream",
-    "delete_stream", "delete_key", "update_raw_headers", "list_dups",
-    "set_header"};
+auto kCommandNames = std::to_array(
+    {"stop", "get_size", "list_keys", "get_stream", "delete_stream",
+     "delete_key", "update_raw_headers", "list_dups", "set_header"});
 
 // Prints the command line help.
 void PrintHelp() {
