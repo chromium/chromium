@@ -3265,6 +3265,11 @@ inline constexpr char kDeviceWeeklyScheduledSuspend[] =
 // sessions.
 inline constexpr char kKioskChromeAppsForceAllowed[] =
     "kiosk_chrome_apps_force_allowed";
+
+// A boolean pref which determines whether kiosk application level logs would be
+// collected and stored.
+inline constexpr char kKioskApplicationLogCollectionEnabled[] =
+    "kiosk_application_log_collection_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
