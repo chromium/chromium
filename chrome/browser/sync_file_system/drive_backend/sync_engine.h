@@ -19,7 +19,6 @@
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_action.h"
 #include "chrome/browser/sync_file_system/sync_direction.h"
-#include "components/drive/drive_notification_observer.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

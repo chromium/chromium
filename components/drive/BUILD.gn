@@ -28,8 +28,8 @@ component("drive") {
   ]
 
   deps = [
-    "//components/invalidation/public",
     "//components/keyed_service/core",
+    "//google_apis",
     "//services/device/public/mojom",
     "//services/network/public/cpp:cpp",
     "//third_party/leveldatabase",
@@ -101,7 +101,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//components/invalidation/impl:test_support",
     "//content/test:test_support",
     "//google_apis/common:test_support",
     "//google_apis/drive",

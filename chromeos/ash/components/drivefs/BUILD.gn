@@ -109,7 +109,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/power:power_manager_proto",
     "//components/account_id",
     "//components/drive",
-    "//components/invalidation/impl:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//mojo/public/cpp/bindings",

@@ -30,7 +30,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
 #include "components/account_id/account_id.h"
-#include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -190,7 +189,6 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
   const AccountId account_id_;
   mojo::PendingRemote<mojom::DriveFsBootstrap> pending_bootstrap_;
   bool verbose_logging_enabled_ = false;
-  invalidation::FakeInvalidationService invalidation_service_;
   mojom::ExtensionConnectionParamsPtr extension_params_;
 };
 
