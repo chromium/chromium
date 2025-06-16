@@ -330,9 +330,23 @@ public abstract class ConditionalState {
     }
 
     /**
+     * Do nothing to trigger a Transition.
+     *
+     * <p>This is useful to wait ConditionalStates/Conditions to be reached without performing any
+     * action.
+     *
+     * <p>Adds this ConditionalState as context.
+     *
+     * @return a {@link TripBuilder} to perform the Transition.
+     */
+    public TripBuilder noopTo() {
+        return Triggers.noopTo().withContext(this);
+    }
+
+    /**
      * Run an arbitrary function on the instrumentation thread to trigger a Transition.
      *
-     * <p>Adds this Station as context.
+     * <p>Adds this ConditionalState as context.
      *
      * @return a {@link TripBuilder} to perform the Transition.
      */
@@ -343,7 +357,7 @@ public abstract class ConditionalState {
     /**
      * Run an arbitrary function on the UI thread to trigger a Transition.
      *
-     * <p>Adds this Station as context.
+     * <p>Adds this ConditionalState as context.
      *
      * @return a {@link TripBuilder} to perform the Transition.
      */
@@ -354,7 +368,7 @@ public abstract class ConditionalState {
     /**
      * Press back to trigger a Transition.
      *
-     * <p>Adds this Station as context.
+     * <p>Adds this ConditionalState as context.
      *
      * @return a {@link TripBuilder} to perform the Transition.
      */

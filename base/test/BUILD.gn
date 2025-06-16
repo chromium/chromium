@@ -720,6 +720,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/Transition.java",
       "android/javatests/src/org/chromium/base/test/transit/TravelException.java",
       "android/javatests/src/org/chromium/base/test/transit/Triggers.java",
+      "android/javatests/src/org/chromium/base/test/transit/Trip.java",
       "android/javatests/src/org/chromium/base/test/transit/TripBuilder.java",
       "android/javatests/src/org/chromium/base/test/transit/UiThreadCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewConditions.java",

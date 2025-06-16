@@ -24,12 +24,16 @@ import java.util.List;
 public class TripBuilder {
     private final List<Facility<?>> mFacilitiesToEnter = new ArrayList<>();
     private final List<Facility<?>> mFacilitiesToExit = new ArrayList<>();
+    private final List<CarryOn> mCarryOnsToPickUp = new ArrayList<>();
+    private final List<CarryOn> mCarryOnsToDrop = new ArrayList<>();
     private final List<Condition> mConditions = new ArrayList<>();
     private @Nullable Trigger mTrigger;
-    private @Nullable TransitionOptions mOptions;
+    private TransitionOptions mOptions = TransitionOptions.DEFAULT;
     private @Nullable Station<?> mDestinationStation;
+    private @Nullable Station<?> mOriginStation;
     private @Nullable Station<?> mContextStation;
     private @Nullable Facility<?> mContextFacility;
+    private @Nullable CarryOn mContextCarryOn;
 
     public TripBuilder() {}
 
@@ -63,6 +67,8 @@ public class TripBuilder {
         } else if (conditionalState instanceof Facility<?> facility) {
             mContextFacility = facility;
             mContextStation = facility.getHostStation();
+        } else if (conditionalState instanceof CarryOn carryOn) {
+            mContextCarryOn = carryOn;
         }
         return this;
     }
@@ -83,11 +89,7 @@ public class TripBuilder {
      */
     @CheckReturnValue
     public TripBuilder withOptions(TransitionOptions options) {
-        if (mOptions == null) {
-            mOptions = options;
-        } else {
-            mOptions = TransitionOptions.merge(/* primary= */ options, /* secondary= */ mOptions);
-        }
+        mOptions = TransitionOptions.merge(/* primary= */ options, /* secondary= */ mOptions);
         return this;
     }
 
@@ -95,6 +97,26 @@ public class TripBuilder {
     @CheckReturnValue
     public TripBuilder waitForConditionsAnd(Condition... conditions) {
         mConditions.addAll(Arrays.asList(conditions));
+        return this;
+    }
+
+    @CheckReturnValue
+    public TripBuilder pickUpCarryOnAnd(CarryOn carryOn) {
+        mCarryOnsToPickUp.add(carryOn);
+        return this;
+    }
+
+    @CheckReturnValue
+    public TripBuilder dropCarryOnAnd() {
+        assert mContextCarryOn != null
+                : "Context CarryOn not set, pass the not to drop as a parameter";
+        mCarryOnsToDrop.add(mContextCarryOn);
+        return this;
+    }
+
+    @CheckReturnValue
+    public TripBuilder dropCarryOnAnd(CarryOn carryOn) {
+        mCarryOnsToDrop.add(carryOn);
         return this;
     }
 
@@ -153,6 +175,19 @@ public class TripBuilder {
         waitForConditionsAnd(conditions).complete();
     }
 
+    public <CarryOnT extends CarryOn> CarryOnT pickUpCarryOn(CarryOnT carryOn) {
+        pickUpCarryOnAnd(carryOn).complete();
+        return carryOn;
+    }
+
+    public void dropCarryOn() {
+        dropCarryOnAnd().complete();
+    }
+
+    public void dropCarryOn(CarryOn carryOn) {
+        dropCarryOnAnd(carryOn).complete();
+    }
+
     /** Execute the transition synchronously, entering |facility| and returning it. */
     public <FacilityT extends Facility<?>> FacilityT enterFacility(FacilityT facility) {
         enterFacilityAnd(facility).complete();
@@ -193,70 +228,62 @@ public class TripBuilder {
     public void complete() {
         assert mTrigger != null : "Trigger not set";
 
-        // TODO(crbug.com/406325581): Support Station#spawnSync().
-        if (mContextStation == null) {
+        // If a context Station is required, infer it from the active Stations.
+        // A context Station is required to travel to a Station or to enter Facilities.
+        if (mContextStation == null
+                && (mDestinationStation != null || !mFacilitiesToEnter.isEmpty())) {
             List<Station<?>> activeStations = TrafficControl.getActiveStations();
             if (activeStations.size() == 1) {
                 mContextStation = activeStations.get(0);
             } else {
                 assert false
-                        : "Context Station not set, cannot infer because there isn't exactly one"
-                                + " active Station.";
+                        : String.format(
+                                "Context Station not set with withContext(), cannot infer because"
+                                        + " there isn't exactly one active Station. Had %d active"
+                                        + " Stations.",
+                                activeStations.size());
             }
         }
 
-        Transition trip = buildTrip();
-        trip.transitionSync();
-    }
+        // If entering a station, assume to be exiting an active Station too.
+        //
+        // TODO(crbug.com/406325581): Stop assuming this if the TransitionBuilder is set to spawn a
+        // Station. This is needed to support Station#spawnSync().
+        if (mDestinationStation != null) {
+            mOriginStation = mContextStation;
+        }
 
-    // TODO(crbug.com/406325581): Create a generic Trip class to replace these.
-    private Transition buildTrip() {
         if (mDestinationStation != null) {
             for (Facility<?> facility : mFacilitiesToEnter) {
                 mDestinationStation.addInitialFacility(facility);
             }
-
             // TODO(crbug.com/406325581): Support Station#spawnSync().
-            mDestinationStation.requireToBeInSameTask(mContextStation);
-            return new StationToStationTrip(
-                    List.of(mContextStation), List.of(mDestinationStation), getOptions(), mTrigger);
+            mDestinationStation.requireToBeInSameTask(mOriginStation);
         } else {
-            if (!mFacilitiesToEnter.isEmpty()) {
-                // TODO(crbug.com/406325581): Support entering Facilities from multiple Stations in
-                // multi-window.
-                for (Facility<?> facility : mFacilitiesToEnter) {
-                    mContextStation.registerFacility(facility);
-                }
-
-                if (!mFacilitiesToExit.isEmpty()) {
-                    return new FacilitySwap(
-                            mFacilitiesToExit, mFacilitiesToEnter, getOptions(), mTrigger);
-                } else {
-                    return new FacilityCheckIn(mFacilitiesToEnter, getOptions(), mTrigger);
-                }
-            } else {
-                if (!mFacilitiesToExit.isEmpty()) {
-                    return new FacilityCheckOut(mFacilitiesToExit, getOptions(), mTrigger);
-                } else {
-                    // TODO(crbug.com/406325581): Support Transitions to/from CarryOns and
-                    // Conditions-only.
-                    throw new UnsupportedOperationException(
-                            "TripBuilder only supports transitions with Stations and Facilities for"
-                                    + " now.");
-                }
+            // TODO(crbug.com/406325581): Support entering Facilities from multiple Stations in
+            // multi-window.
+            for (Facility<?> facility : mFacilitiesToEnter) {
+                mContextStation.registerFacility(facility);
             }
         }
-    }
-
-    private TransitionOptions getOptions() {
-        TransitionOptions options = mOptions == null ? TransitionOptions.DEFAULT : mOptions;
 
         if (!mConditions.isEmpty()) {
-            options =
+            mOptions =
                     TransitionOptions.merge(
                             Transition.conditionOption(mConditions.toArray(new Condition[0])),
                             mOptions);
         }
-        return options;
+
+        Transition trip =
+                new Trip(
+                        mOriginStation,
+                        mDestinationStation,
+                        mFacilitiesToExit,
+                        mFacilitiesToEnter,
+                        mCarryOnsToDrop,
+                        mCarryOnsToPickUp,
+                        mOptions,
+                        mTrigger);
+        trip.transitionSync();
     }
 }

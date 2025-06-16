@@ -261,7 +261,7 @@ public class ConditionWaiter {
 
         // If the preCheck already saw all Conditions fulfilled and there is no trigger which might
         // cause state changes, avoid checking Conditions a second time.
-        if (mTransition.mTrigger == null && !anyCriteriaMissing) {
+        if (!mTransition.hasTrigger() && !anyCriteriaMissing) {
             mPreCheckFulfilledConditions = true;
 
             Log.i(

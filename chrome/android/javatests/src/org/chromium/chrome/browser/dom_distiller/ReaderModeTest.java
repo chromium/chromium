@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.transit.Triggers.noopTo;
 import static org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DOM_DISTILLER_SCHEME;
 
 import android.app.Activity;
@@ -35,7 +36,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -334,27 +334,35 @@ public class ReaderModeTest implements CustomMainActivityStart {
         DistilledPagePrefs prefs = getDistilledPagePrefs();
         prefs.addObserver(mTestObserver);
 
-        Condition.waitFor(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
+        noopTo().waitForConditions(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
 
         ReaderModePreferencesDialog dialog = ReaderModePreferencesDialog.open(activity);
 
         // Test setting background color
-        dialog.pickColorDark(new TabBackgroundColorCondition(tab, "\"rgb(32, 33, 36)\""));
-        dialog.pickColorSepia(new TabBackgroundColorCondition(tab, "\"rgb(254, 247, 224)\""));
-        dialog.pickColorLight(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
+        dialog.darkButtonElement
+                .clickTo()
+                .waitForConditions(new TabBackgroundColorCondition(tab, "\"rgb(32, 33, 36)\""));
+        dialog.sepiaButtonElement
+                .clickTo()
+                .waitForConditions(new TabBackgroundColorCondition(tab, "\"rgb(254, 247, 224)\""));
+        dialog.lightButtonElement
+                .clickTo()
+                .waitForConditions(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
         verify(mTestObserver, times(3)).onChangeTheme(anyInt());
 
         // Test setting font size
-        Condition.waitFor(new TabFontSizeCondition(tab, "\"14px\""));
+        noopTo().waitForConditions(new TabFontSizeCondition(tab, "\"14px\""));
         // Max is 200% font size.
-        dialog.setFontSizeSliderToMax(new TabFontSizeCondition(tab, "\"28px\""));
+        dialog.setFontSizeSliderToMaxTo()
+                .waitForConditions(new TabFontSizeCondition(tab, "\"28px\""));
         // Min is 50% font size.
-        dialog.setFontSizeSliderToMin(new TabFontSizeCondition(tab, "\"7px\""));
+        dialog.setFontSizeSliderToMinTo()
+                .waitForConditions(new TabFontSizeCondition(tab, "\"7px\""));
         verify(mTestObserver, times(2)).onChangeFontScaling(anyFloat());
 
         // TODO(crbug.com/40125950): change font family as well.
 
-        dialog.pressBackToClose();
+        dialog.pressBackTo().dropCarryOn();
     }
 
     /**

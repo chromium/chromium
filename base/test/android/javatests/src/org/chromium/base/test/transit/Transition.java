@@ -6,6 +6,7 @@ package org.chromium.base.test.transit;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -24,6 +25,11 @@ public abstract class Transition {
         /** Code to trigger the transition, e.g. click a View. */
         void triggerTransition();
     }
+
+    // NOOP_TRIGGER is a trigger that does nothing when triggered and is special-cased in
+    // Transition to be handled like a null Trigger. This causes the Transition to not fail if
+    // all Conditions are already fulfilled in preCheck().
+    public static final Trigger NOOP_TRIGGER = () -> {};
 
     private static final String TAG = "Transit";
     private static int sLastTripId;
@@ -67,11 +73,12 @@ public abstract class Transition {
     private boolean shouldFailOnAlreadyFulfilled() {
         // At least one Condition should be not fulfilled, or this is likely an incorrectly
         // designed Transition. Exceptions to this rule:
-        //     1. null Trigger, for example when focusing on secondary elements of a screen that
-        //        aren't declared in the Station's constructor or in its declareExtraElements().
+        //     1. null or NOOP_TRIGGER Trigger, for example when focusing on secondary elements of a
+        //        screen that aren't declared in the Station's constructor or in its
+        //        declareExtraElements().
         //     2. A explicit exception is made with TransitionOptions.mPossiblyAlreadyFulfilled.
         //        E.g. when not possible to determine whether the trigger needs to be run.
-        return !mOptions.getPossiblyAlreadyFulfilled() && mTrigger != null;
+        return !mOptions.getPossiblyAlreadyFulfilled() && hasTrigger();
     }
 
     protected void onBeforeTransition() {
@@ -123,12 +130,13 @@ public abstract class Transition {
     }
 
     protected void triggerTransition() {
-        if (mTrigger != null) {
-            Log.i(TAG, "%s: will run trigger", toDebugString());
+        if (hasTrigger()) {
             try {
                 if (mOptions.getRunTriggerOnUiThread()) {
+                    Log.i(TAG, "%s: will run trigger on UI thread", toDebugString());
                     ThreadUtils.runOnUiThread(mTrigger::triggerTransition);
                 } else {
+                    Log.i(TAG, "%s: will run trigger on Instrumentation thread", toDebugString());
                     mTrigger.triggerTransition();
                 }
                 Log.i(TAG, "%s: finished running trigger", toDebugString());
@@ -267,7 +275,7 @@ public abstract class Transition {
          * <p>Returns a new TransitionOptions instance.
          */
         static TransitionOptions merge(TransitionOptions primary, TransitionOptions secondary) {
-            TransitionOptions.Builder builder = secondary.new Builder();
+            TransitionOptions.Builder builder = newOptions();
 
             // Merge Transition Conditions
             if (secondary.mTransitionConditions != null) {
@@ -393,5 +401,10 @@ public abstract class Transition {
         } else {
             return states.toString();
         }
+    }
+
+    @EnsuresNonNullIf("mTrigger")
+    boolean hasTrigger() {
+        return mTrigger != null && mTrigger != NOOP_TRIGGER;
     }
 }

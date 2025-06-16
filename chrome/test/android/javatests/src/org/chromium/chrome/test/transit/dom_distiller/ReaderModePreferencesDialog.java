@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 
-import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.GeneralClickAction;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.Press;
@@ -19,7 +18,8 @@ import androidx.test.espresso.action.Tap;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.chromium.base.test.transit.CarryOn;
-import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.Triggers;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.test.R;
@@ -67,46 +67,26 @@ public class ReaderModePreferencesDialog extends CarryOn {
         fontSizeSliderElement = declareView(SeekBar.class, withId(R.id.font_size));
     }
 
-    public void pickColorLight(Condition condition) {
-        Condition.runAndWaitFor(lightButtonElement.getClickTrigger(), condition);
-    }
-
-    public void pickColorDark(Condition condition) {
-        Condition.runAndWaitFor(darkButtonElement.getClickTrigger(), condition);
-    }
-
-    public void pickColorSepia(Condition condition) {
-        Condition.runAndWaitFor(sepiaButtonElement.getClickTrigger(), condition);
-    }
-
-    public void setFontSizeSliderToMin(Condition condition) {
+    public TripBuilder setFontSizeSliderToMinTo() {
         // Min is 50% font size.
-        Condition.runAndWaitFor(
-                fontSizeSliderElement.getPerformTrigger(
-                        new GeneralClickAction(
-                                Tap.SINGLE, GeneralLocation.CENTER_LEFT, Press.FINGER)),
-                condition);
+        return fontSizeSliderElement.performViewActionTo(
+                new GeneralClickAction(Tap.SINGLE, GeneralLocation.CENTER_LEFT, Press.FINGER));
     }
 
-    public void setFontSizeSliderToMax(Condition condition) {
-        Condition.runAndWaitFor(
-                fontSizeSliderElement.getPerformTrigger(
-                        new GeneralClickAction(
-                                Tap.SINGLE, GeneralLocation.CENTER_RIGHT, Press.FINGER)),
-                condition);
-    }
-
-    public void pressBackToClose() {
-        drop(Espresso::pressBack);
+    public TripBuilder setFontSizeSliderToMaxTo() {
+        return fontSizeSliderElement.performViewActionTo(
+                new GeneralClickAction(Tap.SINGLE, GeneralLocation.CENTER_RIGHT, Press.FINGER));
     }
 
     public static ReaderModePreferencesDialog open(ChromeActivity activity) {
-        return CarryOn.pickUp(
-                new ReaderModePreferencesDialog(),
-                () ->
-                        MenuUtils.invokeCustomMenuActionSync(
-                                InstrumentationRegistry.getInstrumentation(),
-                                activity,
-                                R.id.reader_mode_prefs_id));
+        // TODO(crbug.com/350074837): when this is a Facility, use
+        // ChromeTriggers#invokeCustomMenuActionTo().
+        return Triggers.runTo(
+                        () ->
+                                MenuUtils.invokeCustomMenuActionSync(
+                                        InstrumentationRegistry.getInstrumentation(),
+                                        activity,
+                                        R.id.reader_mode_prefs_id))
+                .pickUpCarryOn(new ReaderModePreferencesDialog());
     }
 }

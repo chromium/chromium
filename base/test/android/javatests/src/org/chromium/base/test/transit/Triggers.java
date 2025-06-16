@@ -9,6 +9,16 @@ import androidx.test.espresso.Espresso;
 /** Common Triggers to start Transitions. */
 public class Triggers {
     /**
+     * Do nothing to trigger a Transition.
+     *
+     * <p>This is useful to wait ConditionalStates/Conditions to be reached without performing any
+     * action.
+     */
+    public static TripBuilder noopTo() {
+        return new TripBuilder().withTrigger(Transition.NOOP_TRIGGER);
+    }
+
+    /**
      * Run an arbitrary function on the instrumentation thread to trigger a Transition.
      *
      * @return a {@link TripBuilder} to perform the Transition.
