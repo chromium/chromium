@@ -162,9 +162,10 @@ SupervisedUserURLFilter::ResultCallback WrapCallbackWithMetrics(
                         context, transition_type);
 }
 
-// Tells if url filtering is set at the correct level of pref store hierarchy
-// for parental settings.
-bool ConsistentParentalSetting(const PrefService& pref_service) {
+// Tells if url filtering settings are configured by family link. See
+// supervised_user::SupervisedUserPrefStore to understand how the prefs are
+// organized.
+bool IsConfiguredByFamilyLink(const PrefService& pref_service) {
   return IsSubjectToParentalControls(pref_service) &&
          pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
              ->IsManagedByCustodian() &&
@@ -173,9 +174,10 @@ bool ConsistentParentalSetting(const PrefService& pref_service) {
              ->IsManagedByCustodian();
 }
 
-// Tells if url filtering is set at the correct level of pref store hierarchy
-// for user settings.
-bool ConsistentUserSetting(const PrefService& pref_service) {
+// Tells if url filtering settings are configured locally. See
+// supervised_user::SupervisedUserService::SetUserSettingsActive to understand
+// how the prefs are organized.
+bool IsConfiguredLocally(const PrefService& pref_service) {
   return IsSubjectToUserControls(pref_service) &&
          pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
              ->HasUserSetting() &&
@@ -197,14 +199,12 @@ bool AreUrlFilterPrefsDefault(const PrefService& pref_service) {
 }
 
 // Returns true when the pref configuration suggests that filtering settings are
-// unset. Validates if the filter configuration is consistent with user type:
-// *) Users under parental controls have the prefs managed,
-// *) Users under self-controls have the prefs set by themselves,
-// *) Other users can either have all prefs default.
+// unset. Validates whether the preferences configuration is consistent state:
+// filter is either disabled, configured by family link or locally.
 bool FilterIsDisabled(const PrefService& pref_service) {
   bool is_disabled = AreUrlFilterPrefsDefault(pref_service);
-  CHECK_NE(is_disabled, ConsistentParentalSetting(pref_service) ||
-                            ConsistentUserSetting(pref_service));
+  CHECK_NE(is_disabled, IsConfiguredByFamilyLink(pref_service) ||
+                            IsConfiguredLocally(pref_service));
   return is_disabled;
 }
 
