@@ -141,10 +141,12 @@ export class SearchboxElement extends SearchboxElementBase {
         reflectToAttribute: true,
       },
 
+      composeboxEnabled: {
+        type: Boolean,
+      },
+
       composeButtonEnabled: {
         type: Boolean,
-        computed: `computeComposeButtonEnabled_()`,
-        reflectToAttribute: true,
       },
 
       composeIcon: {
@@ -298,6 +300,7 @@ export class SearchboxElement extends SearchboxElementBase {
   declare searchboxLensSearchEnabled: boolean;
   declare searchboxChromeRefreshTheming: boolean;
   declare searchboxSteadyStateShadow: boolean;
+  declare composeboxEnabled: boolean;
   declare composeButtonEnabled: boolean;
   declare composeIcon: string;
   declare showThumbnail: boolean;
@@ -335,11 +338,6 @@ export class SearchboxElement extends SearchboxElementBase {
 
   private computeInputAriaLive_(): string {
     return this.selectedMatch_ ? 'off' : 'polite';
-  }
-
-  private computeComposeButtonEnabled_(): boolean {
-    return loadTimeData.getBoolean('searchboxShowComposeEntrypoint') &&
-        !this.isLensSearchbox_;
   }
 
   override connectedCallback() {
@@ -836,8 +834,7 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   private onComposeButtonClick_(e: MouseEvent) {
-    if (this.composeButtonEnabled &&
-        !loadTimeData.getBoolean('searchboxShowComposebox')) {
+    if (!this.composeboxEnabled) {
       // Construct navigation url.
       const searchParams = new URLSearchParams();
       searchParams.append('sourceid', 'chrome');
@@ -849,6 +846,10 @@ export class SearchboxElement extends SearchboxElementBase {
           new URL('/search', loadTimeData.getString('googleBaseUrl'));
       queryUrl.search = searchParams.toString();
       const href = queryUrl.href;
+
+      chrome.metricsPrivate.recordBoolean(
+          'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
+          !this.isInputEmpty());
 
       // Handle mouse events.
       e.preventDefault();

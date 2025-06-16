@@ -174,38 +174,6 @@ TEST_F(RealboxHandlerTest, RealboxObservationWorks) {
   EXPECT_TRUE(observer.called());
 }
 
-TEST_F(RealboxHandlerTest, RealboxShowAIMEntrypoint) {
-  // Enable entry point feature and AIMode Settings pref.
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{ntp_features::kNtpSearchboxComposeEntrypoint,
-                             {{}}}},
-      /*disabled_features=*/{});
-  {
-    profile()->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 1);
-    RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
-                                         profile());
-    // Searchbox entrypoint should be disabled if policy is not set and flag is
-    // enabled.
-    EXPECT_FALSE(source()
-                     ->GetLocalizedStrings()
-                     ->FindBool("searchboxShowComposeEntrypoint")
-                     .value());
-  }
-
-  {
-    profile()->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
-    RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
-                                         profile());
-    // Searchbox entrypoint should be enabled if policy is set and flag is
-    // enabled.
-    EXPECT_TRUE(source()
-                    ->GetLocalizedStrings()
-                    ->FindBool("searchboxShowComposeEntrypoint")
-                    .value());
-  }
-}
-
 TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
   // Stop observing the AutocompleteController instance which will be destroyed.
   handler_->autocomplete_controller_observation_.Reset();

@@ -989,6 +989,121 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
+  suite('ComposeEntryPoint', () => {
+    suite('compose feature disabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          searchboxShowComposeEntrypoint: false,
+          searchboxShowComposebox: false,
+        });
+      });
+
+      test('compose entrypoint not shown', () => {
+        // Assert entrypoint is not shown.
+        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+        assertTrue(!!searchboxContainer);
+        const composeButton =
+            searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
+                '#composeButton');
+        assertFalse(!!composeButton);
+
+        // Assert shown histogram not logged.
+        assertEquals(0, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
+      });
+    });
+
+    suite('compose features enabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          searchboxShowComposeEntrypoint: true,
+          searchboxShowComposebox: true,
+        });
+      });
+
+      test('compose entrypoint shows', () => {
+        // Assert shown histogram logged.
+        assertEquals(1, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
+        // Assert entrypoint is shown.
+        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+        assertTrue(!!searchboxContainer);
+        const composeButton =
+            searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
+                '#composeButton');
+        assertTrue(!!composeButton);
+      });
+    });
+
+    suite('compose entrypoint enabled - composebox disabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          searchboxShowComposeEntrypoint: true,
+          searchboxShowComposebox: false,
+        });
+        // Needed so `.click()` calls don't navigate.
+        window.open = () => null;
+      });
+
+      test('compose entry point emits histograms when shown', () => {
+        // Assert shown histogram logged.
+        assertEquals(1, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
+        // Assert button is present.
+        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+        assertTrue(!!searchboxContainer);
+        const composeButton =
+            searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
+                '#composeButton');
+        assertTrue(!!composeButton);
+      });
+      test('compose entry point emits histograms when clicked', () => {
+        // Assert compose button is present.
+        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+        assertTrue(!!searchboxContainer);
+        const composeButton =
+            searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
+                '#composeButton');
+        assertTrue(!!composeButton);
+
+        composeButton.click();
+        // Metric should be recorded without user text present.
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.ComposeEntrypoint.Click.UserTextPresent'));
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.ComposeEntrypoint.Click.UserTextPresent', false));
+      });
+      test(
+          'compose entry point emits histograms when clicked with text present',
+          () => {
+            // Assert compose button is present.
+            const searchboxContainer =
+                app.shadowRoot.querySelector('cr-searchbox');
+            assertTrue(!!searchboxContainer);
+            const composeButton =
+                searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
+                    '#composeButton');
+            assertTrue(!!composeButton);
+
+            searchboxContainer.shadowRoot!
+                .querySelector<HTMLInputElement>('#input')!.value = 'hello';
+
+            composeButton.click();
+            // Metric should be recorded with user text present.
+            assertEquals(
+                1,
+                metrics.count(
+                    'NewTabPage.ComposeEntrypoint.Click.UserTextPresent'));
+            assertEquals(
+                1,
+                metrics.count(
+                    'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
+                    true));
+          });
+    });
+  });
+
   suite('WallpaperSearch', () => {
     setup(async () => {
       // Set a theme with no background image and a baseline color to avoid
