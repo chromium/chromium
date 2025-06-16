@@ -471,12 +471,11 @@ function populateRemoteTargets(devices) {
                 row, 'close', sendTargetCommand.bind(null, 'close', page),
                 false);
           }
-          if (browserNeedsFallback) {
-            addActionLink(
-                row, 'inspect fallback',
-                sendTargetCommand.bind(null, 'inspect-fallback', page),
-                page.hasNoUniqueId || page.adbAttachedForeign);
-          }
+          addActionLink(
+              row, 'inspect fallback',
+              sendTargetCommand.bind(null, 'inspect-fallback', page),
+              page.hasNoUniqueId || page.adbAttachedForeign,
+              'Best-effort fallback to debug the target using this browser instance\'s potentially mismatching DevTools version.');
         }
       }
       updateBrowserVisibility(browserSection);
@@ -712,10 +711,13 @@ function addTargetToList(data, list, properties) {
   return row;
 }
 
-function addActionLink(row, text, handler, opt_disabled) {
+function addActionLink(row, text, handler, opt_disabled, opt_title) {
   const link = document.createElement('span');
   link.classList.add('action');
   link.setAttribute('tabindex', 1);
+  if (opt_title) {
+    link.title = opt_title;
+  }
   if (opt_disabled) {
     link.classList.add('disabled');
   } else {
