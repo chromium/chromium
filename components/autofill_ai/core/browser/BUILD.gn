@@ -7,6 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 if (is_win || is_mac || is_linux || is_chromeos) {
   static_library("browser") {
     sources = [
+      "autofill_ai_client.cc",
+      "autofill_ai_client.h",
       "autofill_ai_manager.cc",
       "autofill_ai_manager.h",
       "autofill_ai_metrics.cc",
@@ -34,7 +36,11 @@ if (is_win || is_mac || is_linux || is_chromeos) {
 
   static_library("test_support") {
     testonly = true
-    sources = [ "autofill_ai_manager_test_api.h" ]
+    sources = [
+      "autofill_ai_manager_test_api.h",
+      "mock_autofill_ai_client.cc",
+      "mock_autofill_ai_client.h",
+    ]
     deps = [
       ":browser",
       "//base",

@@ -33,7 +33,9 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager_test_api.h"
+#include "components/autofill_ai/core/browser/mock_autofill_ai_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,6 +143,8 @@ class AutofillAiManagerTest : public testing::Test {
         {autofill::features::kAutofillAiWithDataSchema,
          autofill::features::kAutofillAiServerModel},
         {});
+    ON_CALL(client(), GetAutofillClient)
+        .WillByDefault(ReturnRef(autofill_client_));
     autofill_client().GetPersonalDataManager().SetPrefService(
         autofill_client().GetPrefs());
     autofill_client().set_entity_data_manager(
@@ -194,6 +198,7 @@ class AutofillAiManagerTest : public testing::Test {
   }
 
   MockAutofillClient& autofill_client() { return autofill_client_; }
+  MockAutofillAiClient& client() { return client_; }
   autofill::EntityDataManager& edm() {
     return *autofill_client().GetEntityDataManager();
   }
@@ -207,8 +212,9 @@ class AutofillAiManagerTest : public testing::Test {
   autofill::AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<autofill::EntityTable>()};
   NiceMock<MockAutofillClient> autofill_client_;
+  NiceMock<MockAutofillAiClient> client_;
   autofill::TestStrikeDatabase strike_database_;
-  AutofillAiManager manager_{&autofill_client(), &strike_database_};
+  AutofillAiManager manager_{&client(), &strike_database_};
 };
 
 // Tests that the user receives a filling suggestion when interacting with

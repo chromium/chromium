@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/autofill_ai/chrome_autofill_ai_client.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -229,6 +230,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<permissions::PermissionIndicatorsTabData>(
             tab.GetContents());
 
+    chrome_autofill_ai_client_ =
+        ChromeAutofillAiClient::MaybeCreateForWebContents(tab.GetContents());
+
     pinned_translate_action_listener_ =
         std::make_unique<PinnedTranslateActionListener>(&tab);
 
@@ -398,6 +402,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   // scoped.
   side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+
+  if (chrome_autofill_ai_client_) {
+    chrome_autofill_ai_client_ =
+        ChromeAutofillAiClient::MaybeCreateForWebContents(new_contents);
+  }
 
   if (privacy_sandbox_tab_observer_) {
     privacy_sandbox_tab_observer_.reset();

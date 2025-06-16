@@ -32,7 +32,7 @@ void LogFunnelMetric(std::string_view funnel_metric_name,
 
 }  // namespace
 
-AutofillAiLogger::AutofillAiLogger(autofill::AutofillClient* client)
+AutofillAiLogger::AutofillAiLogger(AutofillAiClient* client)
     : ukm_logger_(client) {}
 AutofillAiLogger::~AutofillAiLogger() = default;
 

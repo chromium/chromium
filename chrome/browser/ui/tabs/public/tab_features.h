@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
 
+class ChromeAutofillAiClient;
 class FileSystemAccessPageActionController;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class IntentPickerViewPageActionController;
@@ -156,6 +157,10 @@ class TabFeatures {
     return side_panel_registry_.get();
   }
 
+  ChromeAutofillAiClient* chrome_autofill_ai_client() {
+    return chrome_autofill_ai_client_.get();
+  }
+
   ReadAnythingSidePanelController* read_anything_side_panel_controller() {
     return read_anything_side_panel_controller_.get();
   }
@@ -296,6 +301,8 @@ class TabFeatures {
   // Responsible for the customize chrome tab-scoped side panel.
   std::unique_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
+
+  std::unique_ptr<ChromeAutofillAiClient> chrome_autofill_ai_client_;
 
   std::unique_ptr<ReadAnythingSidePanelController>
       read_anything_side_panel_controller_;

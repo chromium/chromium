@@ -99,8 +99,8 @@ optimization_guide::proto::AutofillAiFieldEventType GetFieldEventType(
 
 }  // namespace
 
-AutofillAiUkmLogger::AutofillAiUkmLogger(autofill::AutofillClient* client)
-    : client_(CHECK_DEREF(client)) {}
+AutofillAiUkmLogger::AutofillAiUkmLogger(AutofillAiClient* autofill_client)
+    : autofill_client_(CHECK_DEREF(autofill_client)) {}
 
 AutofillAiUkmLogger::~AutofillAiUkmLogger() = default;
 
@@ -112,9 +112,10 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
                                         bool edited_autofilled_field,
                                         bool opt_in_status) {
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
-          client_->GetMqlsUploadService();
+          autofill_client_->GetAutofillClient().GetMqlsUploadService();
       uploader_ && autofill::MayPerformAutofillAiAction(
-                       *client_, autofill::AutofillAiAction::kLogToMqls)) {
+                       autofill_client_->GetAutofillClient(),
+                       autofill::AutofillAiAction::kLogToMqls)) {
     // Note that the actual logging of the metric happens when `log_entry` goes
     // out of scope and is destroyed.
     optimization_guide::ModelQualityLogEntry log_entry(uploader_->GetWeakPtr());
@@ -159,7 +160,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
   if (suggestion_filled) {
     builder.SetFillingCorrectness(!edited_autofilled_field);
   }
-  builder.Record(client_->GetUkmRecorder());
+  builder.Record(autofill_client_->GetAutofillClient().GetUkmRecorder());
 }
 
 void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
@@ -178,15 +179,18 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
           autofill::UNKNOWN_TYPE));
 
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
-          client_->GetMqlsUploadService();
+          autofill_client_->GetAutofillClient().GetMqlsUploadService();
       uploader_ && autofill::MayPerformAutofillAiAction(
-                       *client_, autofill::AutofillAiAction::kLogToMqls)) {
+                       autofill_client_->GetAutofillClient(),
+                       autofill::AutofillAiAction::kLogToMqls)) {
     // Note that the actual logging of the metric happens when `log_entry` goes
     // out of scope and is destroyed. Also note that in this case it is not
     // necessary to check if the user is opted in because it is assumed that all
     // field event types can only occur if the user is opted in for Autofill AI.
     optimization_guide::ModelQualityLogEntry log_entry(
-        client_->GetMqlsUploadService()->GetWeakPtr());
+        autofill_client_->GetAutofillClient()
+            .GetMqlsUploadService()
+            ->GetWeakPtr());
 
     optimization_guide::proto::AutofillAiFieldEvent* mqls_field_event =
         log_entry.log_ai_data_request()
@@ -229,11 +233,11 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
       .SetFieldType(field_type)
       .SetAiFieldType(ai_field_type)
       .SetEventType(base::to_underlying(event_type))
-      .Record(client_->GetUkmRecorder());
+      .Record(autofill_client_->GetAutofillClient().GetUkmRecorder());
 }
 
 bool AutofillAiUkmLogger::CanLogUkm(ukm::SourceId ukm_source_id) const {
-  return client_->GetUkmRecorder() != nullptr &&
+  return autofill_client_->GetAutofillClient().GetUkmRecorder() != nullptr &&
          ukm_source_id != ukm::kInvalidSourceId;
 }
 

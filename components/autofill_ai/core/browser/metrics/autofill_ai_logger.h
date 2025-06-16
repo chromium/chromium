@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/metrics/autofill_ai_ukm_logger.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -19,7 +20,7 @@ namespace autofill_ai {
 // interactions with forms.
 class AutofillAiLogger {
  public:
-  explicit AutofillAiLogger(autofill::AutofillClient* client);
+  explicit AutofillAiLogger(AutofillAiClient* client);
   AutofillAiLogger(const AutofillAiLogger&) = delete;
   AutofillAiLogger& operator=(const AutofillAiLogger&) = delete;
   ~AutofillAiLogger();

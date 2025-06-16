@@ -36,7 +36,6 @@
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
@@ -275,10 +274,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<LogManager> log_manager_;
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};
-
-#if !BUILDFLAG(IS_ANDROID)
-  autofill_ai::AutofillAiManager autofill_ai_manager_;
-#endif
 
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.
