@@ -53,6 +53,9 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
   friend class SharesheetBubbleViewTest;
   friend class SharesheetBubbleViewNearbyShareBrowserTest;
 
+  void OnClose(::sharesheet::CloseCallback close_callback,
+               views::Widget::ClosedReason reason);
+
   SharesheetBubbleView* GetBubbleViewForTesting();
 
   std::unique_ptr<SharesheetBubbleView> sharesheet_bubble_view_owned_;

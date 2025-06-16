@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -40,6 +41,8 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
+#include "ui/wm/core/transient_window_manager.h"
 
 namespace {
 
@@ -69,7 +72,8 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
   }
 };
 
-class SharesheetBubbleViewTest : public ChromeAshTestBase {
+class SharesheetBubbleViewTest : public ChromeAshTestBase,
+                                 public views::WidgetObserver {
  public:
   SharesheetBubbleViewTest() = default;
 
@@ -101,15 +105,19 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     if (bubble_delegate_) {
       bubble_delegate_->CloseBubble(::sharesheet::SharesheetResult::kCancel);
     }
-    ASSERT_FALSE(sharesheet_widget_);
+    ASSERT_FALSE(sharesheet_bubble_view_);
     ChromeAshTestBase::TearDown();
+  }
+
+  ::sharesheet::SharesheetService* GetSharesheetService() {
+    return ::sharesheet::SharesheetServiceFactory::GetForProfile(
+        profile_.get());
   }
 
   void ShowAndVerifyBubble(apps::IntentPtr intent,
                            ::sharesheet::LaunchSource source,
                            int num_actions_to_add = 0) {
-    ::sharesheet::SharesheetService* const sharesheet_service =
-        ::sharesheet::SharesheetServiceFactory::GetForProfile(profile_.get());
+    auto* sharesheet_service = GetSharesheetService();
     sharesheet_service->ShowBubbleForTesting(
         parent_window_, std::move(intent), source,
         /*delivered_callback=*/base::DoNothing(),
@@ -124,6 +132,8 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     EXPECT_NE(sharesheet_bubble_view_, nullptr);
     EXPECT_EQ(sharesheet_bubble_view_->GetID(), SHARESHEET_BUBBLE_VIEW_ID);
 
+    sharesheet_bubble_view_->GetWidget()->AddObserver(this);
+
     ASSERT_TRUE(bubble_delegate_->IsBubbleVisible());
     sharesheet_widget_ = sharesheet_bubble_view_->GetWidget();
     ASSERT_EQ(sharesheet_widget_->GetName(), "SharesheetBubbleView");
@@ -132,24 +142,27 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
 
   void CloseBubble() {
     bubble_delegate_->CloseBubble(::sharesheet::SharesheetResult::kCancel);
-    ASSERT_FALSE(sharesheet_widget_);
+    ASSERT_FALSE(sharesheet_bubble_view_);
   }
 
   void CloseBubbleWithEscKey() {
     GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
-    ASSERT_FALSE(sharesheet_widget_);
+    ASSERT_FALSE(sharesheet_bubble_view_);
   }
 
-  bool IsSharesheetVisible() {
-    return sharesheet_widget_ && sharesheet_widget_->IsVisible();
-  }
+  bool IsSharesheetVisible() { return sharesheet_widget_->IsVisible(); }
 
   views::Widget* sharesheet_widget() { return sharesheet_widget_; }
 
   void OnClose(views::Widget::ClosedReason reason) {
     sharesheet_bubble_view_ = nullptr;
-    sharesheet_widget_ = nullptr;
     bubble_delegate_ = nullptr;
+  }
+
+  // views::WidgetObserver::
+  void OnWidgetDestroyed(views::Widget* widget) override {
+    widget->RemoveObserver(this);
+    sharesheet_widget_ = nullptr;
   }
 
   SharesheetBubbleView* sharesheet_bubble_view() {
@@ -278,13 +291,15 @@ TEST_F(SharesheetBubbleViewTest, ClickAndKeyPressCopyToClipboardTogether) {
       ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_TAB);
   ASSERT_TRUE(targets_view->children()[0]->HasFocus());
+
+  // Wait for the widget to get destroyed.
+  views::test::WidgetDestroyedWaiter widget_observer(sharesheet_widget());
+
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_RETURN);
 
   // Click on copy target.
   Click(targets_view->children()[0]);
 
-  // Wait for the widget to get destroyed.
-  views::test::WidgetDestroyedWaiter widget_observer(sharesheet_widget());
   // Ensure the widget does close.
   widget_observer.Wait();
 
@@ -521,6 +536,38 @@ TEST_F(SharesheetBubbleViewTest, ShareActionShowsUpAsExpected) {
 
   CloseBubble();
   ASSERT_FALSE(IsSharesheetVisible());
+}
+
+TEST_F(SharesheetBubbleViewTest, ReshowHiddenBubble) {
+  auto* sharesheet_service = GetSharesheetService();
+  auto app_window = CreateAppWindow();
+
+  auto* transient_window_manager =
+      ::wm::TransientWindowManager::GetIfExists(app_window.get());
+  EXPECT_EQ(0u, transient_window_manager->transient_children().size());
+
+  sharesheet_service->AddShareActionForTest(
+      ::sharesheet::ShareActionType::kNearbyShare);
+  sharesheet_service->ShowNearbyShareBubbleForArc(
+      app_window.get(), ::sharesheet::CreateValidTextIntent(),
+      ::sharesheet::LaunchSource::kUnknown, base::DoNothing(),
+      base::DoNothing(), base::DoNothing());
+  ASSERT_EQ(1u, transient_window_manager->transient_children().size());
+
+  auto* bubble_window = transient_window_manager->transient_children()[0].get();
+
+  window_util::MinimizeAndHideWithoutAnimation({app_window.get()});
+
+  EXPECT_FALSE(app_window->IsVisible());
+  EXPECT_FALSE(bubble_window->IsVisible());
+
+  // Reshowing the bubble shouldn't crash.
+  sharesheet_service->ShowNearbyShareBubbleForArc(
+      app_window.get(), ::sharesheet::CreateValidTextIntent(),
+      ::sharesheet::LaunchSource::kUnknown, base::DoNothing(),
+      base::DoNothing(), base::DoNothing());
+
+  EXPECT_TRUE(bubble_window->IsVisible());
 }
 
 }  // namespace sharesheet

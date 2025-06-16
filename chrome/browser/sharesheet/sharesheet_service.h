@@ -94,6 +94,8 @@ class SharesheetService : public KeyedService {
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback,
                                    ActionCleanupCallback cleanup_callback);
+
+  void AddShareActionForTest(ShareActionType type);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   // |share_action_type| is set to null when testing, but should otherwise have
   // a valid value.
@@ -187,12 +189,14 @@ class SharesheetService : public KeyedService {
   void RecordShareDataMetrics(const apps::IntentPtr& intent);
 
   raw_ptr<Profile> profile_;
-  std::unique_ptr<ShareActionCache> share_action_cache_;
-  raw_ptr<apps::AppServiceProxyAsh> app_service_proxy_;
 
   // Record of all active SharesheetServiceDelegators. These can be retrieved
   // by ShareActions and used as SharesheetControllers to make bubble changes.
   std::vector<std::unique_ptr<SharesheetServiceDelegator>> active_delegators_;
+
+  // Action may have a reference to the delegator, so define before delegator.
+  std::unique_ptr<ShareActionCache> share_action_cache_;
+  raw_ptr<apps::AppServiceProxyAsh> app_service_proxy_;
 
   base::WeakPtrFactory<SharesheetService> weak_factory_{this};
 };

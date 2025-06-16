@@ -72,8 +72,8 @@ bool ShareActionCache::HasVisibleActions(const apps::IntentPtr& intent,
   return false;
 }
 
-void ShareActionCache::AddShareActionForTesting() {
-  AddShareAction(std::make_unique<ExampleAction>());
+void ShareActionCache::AddShareActionForTest(ShareActionType type) {
+  AddShareAction(std::make_unique<ExampleAction>(type));
 }
 
 void ShareActionCache::AddShareAction(std::unique_ptr<ShareAction> action) {

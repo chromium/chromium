@@ -40,19 +40,24 @@ void SharesheetBubbleViewDelegate::ShowBubble(
     }
     return;
   }
-  DCHECK(sharesheet_bubble_view_owned_);
+  CHECK(sharesheet_bubble_view_owned_);
   // The BubbleView gives its own ownership to the widget in ShowBubble(), so we
-  // relinquish our ownership here.
+  // relinquish our ownership here. Unratinaed is safe because this object will
+  // be deleted after the widget is deleted.
   sharesheet_bubble_view_owned_.release()->ShowBubble(
       std::move(targets), std::move(intent), std::move(delivered_callback),
-      std::move(close_callback));
+      base::BindOnce(&SharesheetBubbleViewDelegate::OnClose,
+                     base::Unretained(this), std::move(close_callback)));
 }
 
 void SharesheetBubbleViewDelegate::ShowNearbyShareBubbleForArc(
     apps::IntentPtr intent,
     ::sharesheet::DeliveredCallback delivered_callback,
     ::sharesheet::CloseCallback close_callback) {
-  if (IsBubbleVisible()) {
+  if (!sharesheet_bubble_view_owned_) {
+    if (!IsBubbleVisible()) {
+      sharesheet_bubble_view_->GetWidget()->Show();
+    }
     if (delivered_callback) {
       std::move(delivered_callback)
           .Run(::sharesheet::SharesheetResult::kErrorAlreadyOpen);
@@ -62,12 +67,13 @@ void SharesheetBubbleViewDelegate::ShowNearbyShareBubbleForArc(
     }
     return;
   }
-  DCHECK(sharesheet_bubble_view_owned_);
+  CHECK(sharesheet_bubble_view_owned_);
   // The BubbleView gives its own ownership to the widget in
   // ShowNearbyShareBubbleForArc(), so we relinquish our ownership here.
   sharesheet_bubble_view_owned_.release()->ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),
-      std::move(close_callback));
+      base::BindOnce(&SharesheetBubbleViewDelegate::OnClose,
+                     base::Unretained(this), std::move(close_callback)));
 }
 
 void SharesheetBubbleViewDelegate::OnActionLaunched(bool has_action_view) {
@@ -100,9 +106,18 @@ void SharesheetBubbleViewDelegate::CloseBubble(
 }
 
 bool SharesheetBubbleViewDelegate::IsBubbleVisible() const {
-  DCHECK(sharesheet_bubble_view_);
+  CHECK(sharesheet_bubble_view_);
   return sharesheet_bubble_view_->GetWidget() &&
          sharesheet_bubble_view_->GetWidget()->IsVisible();
+}
+
+void SharesheetBubbleViewDelegate::OnClose(
+    ::sharesheet::CloseCallback close_callback,
+    views::Widget::ClosedReason reason) {
+  if (close_callback) {
+    std::move(close_callback).Run(reason);
+  }
+  sharesheet_bubble_view_ = nullptr;
 }
 
 SharesheetBubbleView* SharesheetBubbleViewDelegate::GetBubbleViewForTesting() {

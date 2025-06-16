@@ -42,7 +42,7 @@ class ShareActionCache {
   // Returns null if |action_type| is not a valid ShareAction.
   const gfx::VectorIcon* GetVectorIconFromType(ShareActionType action_type);
 
-  void AddShareActionForTesting();
+  void AddShareActionForTest(ShareActionType type = ShareActionType::kExample);
 
  private:
   void AddShareAction(std::unique_ptr<ShareAction> action);
