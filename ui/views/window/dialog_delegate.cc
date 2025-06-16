@@ -228,6 +228,10 @@ bool DialogDelegate::ShouldIgnoreButtonPressedEventHandling(
   return false;
 }
 
+bool DialogDelegate::ShouldAllowKeyEventsDuringInputProtection() const {
+  return true;
+}
+
 bool DialogDelegate::Cancel() {
   DCHECK(!already_started_close_);
   if (HasCallback(cancel_callback_)) {

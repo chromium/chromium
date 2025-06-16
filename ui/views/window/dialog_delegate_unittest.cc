@@ -68,6 +68,11 @@ class TestDialog : public DialogDelegateView {
   std::u16string GetWindowTitle() const override { return title_; }
   View* GetInitiallyFocusedView() override { return input_; }
 
+  // DialogDelegate overrides:
+  bool ShouldAllowKeyEventsDuringInputProtection() const override {
+    return should_allow_key_events_during_input_protection_;
+  }
+
   void TearDown() {
     input_ = nullptr;
     GetWidget()->Close();
@@ -80,6 +85,9 @@ class TestDialog : public DialogDelegateView {
   void set_should_handle_escape(bool should_handle_escape) {
     should_handle_escape_ = should_handle_escape;
   }
+  void set_should_allow_key_events_during_input_protection(bool value) {
+    should_allow_key_events_during_input_protection_ = value;
+  }
 
   views::Textfield* input() { return input_; }
 
@@ -88,6 +96,7 @@ class TestDialog : public DialogDelegateView {
   std::u16string title_;
   bool show_close_button_ = true;
   bool should_handle_escape_ = false;
+  bool should_allow_key_events_during_input_protection_ = true;
 };
 
 namespace {
@@ -487,6 +496,14 @@ TEST_F(DialogTest, ButtonEnableUpdatesState) {
   dialog->SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
   dialog->DialogModelChanged();
   EXPECT_FALSE(dialog->GetOkButton()->GetEnabled());
+}
+
+TEST_F(DialogTest, CanOverrideShouldAllowKeyEventsDuringInputProtection) {
+  dialog()->set_should_allow_key_events_during_input_protection(true);
+  EXPECT_TRUE(dialog()->ShouldAllowKeyEventsDuringInputProtection());
+
+  dialog()->set_should_allow_key_events_during_input_protection(false);
+  EXPECT_FALSE(dialog()->ShouldAllowKeyEventsDuringInputProtection());
 }
 
 using DialogDelegateCloseTest = ViewsTestBase;

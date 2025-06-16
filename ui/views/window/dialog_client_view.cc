@@ -403,8 +403,10 @@ void DialogClientView::UpdateDialogButton(raw_ptr<MdTextButton>* member,
 void DialogClientView::ButtonPressed(ui::mojom::DialogButton type,
                                      const ui::Event& event) {
   DialogDelegate* const delegate = GetDialogDelegate();
-  if (!delegate || input_protector_->IsPossiblyUnintendedInteraction(
-                       event, /*allow_key_events=*/true)) {
+  if (!delegate ||
+      input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/delegate
+                     ->ShouldAllowKeyEventsDuringInputProtection())) {
     return;
   }
 

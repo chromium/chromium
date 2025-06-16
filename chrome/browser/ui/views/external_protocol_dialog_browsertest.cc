@@ -18,7 +18,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/event_utils.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/metrics.h"
+#include "ui/views/test/button_test_api.h"
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestAccept) {
   ShowUi(std::string("https://example.test"));
@@ -139,4 +143,56 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, OriginNameTest) {
   // The url should be the url of the last redirecting server and not of the
   // request initiator
   EXPECT_EQ(launch_url_, "b.test");
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
+                       TestPictureInPictureOcclusionStateChanges) {
+  ShowUi(std::string("https://example.test"));
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  EXPECT_FALSE(ShouldIgnoreButtonPressedEventHandling(nullptr, mouse_event));
+
+  // Simulate Picture-in-Picture dialog occlusion.
+  SimulateOcclusionStateChanged(true);
+  EXPECT_TRUE(ShouldIgnoreButtonPressedEventHandling(nullptr, mouse_event));
+
+  // Simulate Picture-in-Picture dialog not occluded.
+  SimulateOcclusionStateChanged(false);
+  EXPECT_FALSE(ShouldIgnoreButtonPressedEventHandling(nullptr, mouse_event));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
+                       TestShouldIgnoreButtonEventsWhenOccluded) {
+  ShowUi(std::string("https://example.test"));
+
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+
+  // Initially not occluded by Picture-in-Picture.
+  EXPECT_FALSE(ShouldIgnoreButtonPressedEventHandling(nullptr, mouse_event));
+
+  SimulateOcclusionStateChanged(true);
+  EXPECT_TRUE(ShouldIgnoreButtonPressedEventHandling(nullptr, mouse_event));
+
+  SimulateOcclusionStateChanged(false);
+  EXPECT_FALSE(ShouldIgnoreButtonPressedEventHandling(nullptr, mouse_event));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
+                       TestKeyEventsAreProtected) {
+  ShowUi(std::string("https://example.test"));
+  EXPECT_FALSE(ShouldAllowKeyEventsDuringInputProtection());
+
+  ui::KeyEvent press_enter(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                           ui::EF_NONE, ui::EventTimeForNow());
+  views::test::ButtonTestApi(dialog_->GetOkButton()).NotifyClick(press_enter);
+  EXPECT_FALSE(url_did_launch_);
+
+  ui::KeyEvent press_enter_delayed(
+      ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
+      ui::EventTimeForNow() +
+          base::Milliseconds(views::GetDoubleClickInterval()));
+  views::test::ButtonTestApi(dialog_->GetOkButton())
+      .NotifyClick(press_enter_delayed);
+  EXPECT_TRUE(url_did_launch_);
 }

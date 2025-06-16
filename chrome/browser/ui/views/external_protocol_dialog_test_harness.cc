@@ -23,6 +23,19 @@ class ExternalProtocolDialogTestApi {
     dialog_->SetRememberSelectionCheckboxCheckedForTesting(checked);
   }
 
+  void SimulateOcclusionStateChanged(bool occluded) {
+    dialog_->SimulateOcclusionStateChangedForTesting(occluded);
+  }
+
+  bool ShouldIgnoreButtonPressedEventHandling(views::View* button,
+                                              const ui::Event& event) const {
+    return dialog_->ShouldIgnoreButtonPressedEventHandling(button, event);
+  }
+
+  bool ShouldAllowKeyEventsDuringInputProtection() const {
+    return dialog_->ShouldAllowKeyEventsDuringInputProtection();
+  }
+
  private:
   raw_ptr<ExternalProtocolDialog> dialog_;
 };
@@ -79,6 +92,25 @@ void ExternalProtocolDialogBrowserTest::ShowUi(
 
 void ExternalProtocolDialogBrowserTest::SetChecked(bool checked) {
   test::ExternalProtocolDialogTestApi(dialog_).SetCheckBoxSelected(checked);
+}
+
+void ExternalProtocolDialogBrowserTest::SimulateOcclusionStateChanged(
+    bool occluded) {
+  test::ExternalProtocolDialogTestApi(dialog_).SimulateOcclusionStateChanged(
+      occluded);
+}
+
+bool ExternalProtocolDialogBrowserTest::ShouldIgnoreButtonPressedEventHandling(
+    views::View* button,
+    const ui::Event& event) const {
+  return test::ExternalProtocolDialogTestApi(dialog_)
+      .ShouldIgnoreButtonPressedEventHandling(button, event);
+}
+
+bool ExternalProtocolDialogBrowserTest::
+    ShouldAllowKeyEventsDuringInputProtection() const {
+  return test::ExternalProtocolDialogTestApi(dialog_)
+      .ShouldAllowKeyEventsDuringInputProtection();
 }
 
 // ExternalProtocolHandler::Delegate:
