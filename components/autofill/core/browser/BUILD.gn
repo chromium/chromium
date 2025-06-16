@@ -1660,6 +1660,10 @@ fuzzer_test("form_structure_fuzzer") {
     "//ui/base",
     "//ui/resources:ui_test_pak",
   ]
+  data_deps = [
+    "//components:components_tests_pak",
+    "//ui/resources:ui_test_pak_data",
+  ]
   seed_corpus = "form_structure_fuzzer_corpus"
   dict = "form_structure_fuzzer.dict"
 }
