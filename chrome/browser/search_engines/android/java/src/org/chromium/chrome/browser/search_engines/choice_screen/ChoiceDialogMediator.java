@@ -217,7 +217,7 @@ class ChoiceDialogMediator {
         mObservationStartedTimeMillis = TimeUtils.currentTimeMillis();
         changeDialogType(DialogType.LOADING);
 
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.i(TAG, "Mediator initializing");
         }
 
@@ -237,7 +237,7 @@ class ChoiceDialogMediator {
         changeDialogType(DialogType.UNKNOWN);
 
         delegate.onMediatorDestroyed();
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.i(TAG, "Mediator destroyed");
         }
     }
@@ -263,7 +263,7 @@ class ChoiceDialogMediator {
         mDialogAddedTimeMillis = TimeUtils.currentTimeMillis();
         mSearchEngineChoiceService.notifyDeviceChoiceBlockShown();
 
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.i(
                     TAG,
                     "onDialogAdded(), time since observation start: %s millis",
@@ -285,7 +285,7 @@ class ChoiceDialogMediator {
 
         if (mFirstServiceEventTimeMillis == null) {
             mFirstServiceEventTimeMillis = TimeUtils.currentTimeMillis();
-            if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+            if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
                 Log.i(
                         TAG,
                         "onIsDeviceChoiceRequiredChanged(%s), time since dialog added: %s millis, "
@@ -318,7 +318,7 @@ class ChoiceDialogMediator {
             if (!wasDialogShown) {
                 mDelegate.showDialog();
 
-                if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+                if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
                     Log.i(TAG, "Dialog shown after a positive backend response.");
                 }
             }
@@ -352,7 +352,7 @@ class ChoiceDialogMediator {
         // Indicates that the backend was disconnected. This would make the dialog non-functional if
         // it is still shown, so let's dismiss it and let the user proceed to Chrome.
         // TODO(b/355201070): Add UMA recording.
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.w(
                     TAG,
                     "Unexpected backend update received. State: "

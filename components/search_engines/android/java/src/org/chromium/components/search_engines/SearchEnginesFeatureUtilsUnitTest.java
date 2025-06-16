@@ -34,11 +34,11 @@ public class SearchEnginesFeatureUtilsUnitTest {
 
     @Test
     public void testIsChoiceApisDebugEnabled() {
-        assertFalse(SearchEnginesFeatureUtils.isChoiceApisDebugEnabled());
+        assertFalse(SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled());
 
         CommandLine.getInstance()
                 .appendSwitch(SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_DEBUG_SWITCH);
-        assertTrue(SearchEnginesFeatureUtils.isChoiceApisDebugEnabled());
+        assertTrue(SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled());
     }
 
     @Test

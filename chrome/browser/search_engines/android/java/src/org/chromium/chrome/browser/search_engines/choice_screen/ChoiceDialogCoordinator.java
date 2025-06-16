@@ -117,7 +117,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 searchEngineChoiceService != null
                         && searchEngineChoiceService.isDeviceChoiceDialogEligible();
 
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.i(TAG, "maybeShow() - Client eligible for the device choice dialog: %b", canShow);
         }
 
@@ -169,7 +169,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
     @Override
     public void updateDialogType(@DialogType int dialogType) {
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.i(TAG, "updateDialogType(%d)", dialogType);
         }
 
@@ -254,7 +254,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         int blockLimit =
                 SearchEnginesFeatureUtils.getInstance().clayBlockingEscapeHatchBlockLimit();
         if (blockCount >= blockLimit) {
-            if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+            if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
                 Log.i(
                         TAG,
                         "The dialog is suppressed: Escape Hatch triggered, blocked %d times"

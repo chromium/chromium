@@ -54,7 +54,7 @@ public class SearchEnginesFeatureUtils {
      * <p>This can be controlled by starting chrome with the <code>--enable-choice-apis-debug</code>
      * command line flag.
      */
-    public static boolean isChoiceApisDebugEnabled() {
+    public boolean isChoiceApisDebugEnabled() {
         return CommandLine.getInstance().hasSwitch(ENABLE_CHOICE_APIS_DEBUG_SWITCH);
     }
 

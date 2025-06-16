@@ -255,7 +255,7 @@ public class SearchEngineChoiceService {
         ThreadUtils.checkUiThread();
 
         assert mDelegate != null;
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.i(TAG, "launchChoiceScreens()");
         }
         mDelegate.launchDeviceChoiceScreens();
@@ -284,7 +284,7 @@ public class SearchEngineChoiceService {
         ThreadUtils.checkUiThread();
 
         assert mDelegate != null;
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
         }
         mDelegate.notifyDeviceChoiceEvent(eventType);
