@@ -72,6 +72,8 @@ void OmniboxController::StopAutocomplete(bool clear_result) const {
 
 void OmniboxController::StartZeroSuggestPrefetch() {
   TRACE_EVENT0("omnibox", "OmniboxController::StartZeroSuggestPrefetch");
+  client_->MaybePrewarmForDefaultSearchEngine();
+
   auto page_classification =
       client_->GetPageClassification(/*is_prefetch=*/true);
 

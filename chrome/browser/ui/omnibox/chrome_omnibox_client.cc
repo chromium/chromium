@@ -834,6 +834,13 @@ ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
   return std::nullopt;
 }
 
+void ChromeOmniboxClient::MaybePrewarmForDefaultSearchEngine() {
+  auto* prerender_manager = PrerenderManager::GetOrCreateForWebContents(
+      location_bar_->GetWebContents());
+  CHECK(prerender_manager);
+  prerender_manager->MaybeStartPrewarmSearchResult();
+}
+
 base::WeakPtr<OmniboxClient> ChromeOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

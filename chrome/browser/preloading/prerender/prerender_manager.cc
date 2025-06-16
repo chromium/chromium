@@ -311,9 +311,14 @@ PrerenderManager::StartPrerenderDirectUrlInput(
   return nullptr;
 }
 
-bool PrerenderManager::StartPrewarmSearchResult() {
-  CHECK(base::FeatureList::IsEnabled(features::kPrewarm));
-  const GURL prewarm_url(features::kPrewarmUrl.Get());
+bool PrerenderManager::MaybeStartPrewarmSearchResult() {
+  if (search_prewarm_handle_ ||
+      !base::FeatureList::IsEnabled(features::kPrewarm)) {
+    return false;
+  }
+
+  const GURL prewarm_url =
+      prewarm_url_for_testing_.value_or(GURL(features::kPrewarmUrl.Get()));
   CHECK(prewarm_url.is_valid());
 
   auto* preloading_data =
@@ -351,6 +356,14 @@ bool PrerenderManager::StartPrewarmSearchResult() {
       /*prerender_navigation_handle_callback=*/{});
 
   return search_prewarm_handle_ != nullptr;
+}
+
+void PrerenderManager::StopPrewarmSearchResultForTesting() {
+  search_prewarm_handle_.reset();
+}
+
+void PrerenderManager::SetPrewarmUrlForTesting(const GURL& url) {
+  prewarm_url_for_testing_ = url;
 }
 
 void PrerenderManager::StartPrerenderSearchResult(

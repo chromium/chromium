@@ -341,7 +341,7 @@ TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {
   // Prerender the prewarm page.
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
-  ASSERT_TRUE(prerender_manager()->StartPrewarmSearchResult());
+  ASSERT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
   registry_observer.WaitForTrigger(prewarm_url);
 
   // Prewarm page should not be found here as it's matcher was set as not

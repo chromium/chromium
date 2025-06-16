@@ -124,6 +124,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   bool IsHistoryEmbeddingsEnabled() const override;
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
+  void MaybePrewarmForDefaultSearchEngine() override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
   // Update shortcuts when a navigation succeeds.

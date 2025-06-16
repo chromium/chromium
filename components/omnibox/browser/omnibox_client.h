@@ -289,6 +289,10 @@ class OmniboxClient {
   // Returns true if history embeddings is enabled and user has opted in.
   virtual bool IsHistoryEmbeddingsEnabled() const;
 
+  // Optionally warm-up for the default search engine so that we can navigate to
+  // the search result page effectively.
+  virtual void MaybePrewarmForDefaultSearchEngine() {}
+
   virtual base::WeakPtr<OmniboxClient> AsWeakPtr() = 0;
 };
 
