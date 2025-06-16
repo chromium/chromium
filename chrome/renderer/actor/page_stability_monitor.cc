@@ -48,24 +48,23 @@ base::TimeDelta GetMainThreadTimeoutDelay() {
 
 }  // namespace
 
-PageStabilityMonitor::PageStabilityMonitor(RenderFrame& frame,
-                                           int32_t task_id,
-                                           Journal& journal)
+PageStabilityMonitor::PageStabilityMonitor(RenderFrame& frame)
     : RenderFrameObserver(&frame) {
   CHECK(render_frame());
   CHECK(render_frame()->GetWebFrame());
   starting_request_count_ =
       render_frame()->GetWebFrame()->GetDocument().ActiveResourceRequestCount();
-
-  journal_entry_ =
-      journal.CreatePendingAsyncEntry(task_id, "PageStability", "");
 }
 
 PageStabilityMonitor::~PageStabilityMonitor() = default;
 
-void PageStabilityMonitor::WaitForStable(base::OnceClosure callback) {
+void PageStabilityMonitor::WaitForStable(int32_t task_id,
+                                         Journal& journal,
+                                         base::OnceClosure callback) {
   CHECK_EQ(state_, State::kInitial);
   CHECK(!is_stable_callback_);
+  journal_entry_ =
+      journal.CreatePendingAsyncEntry(task_id, "PageStability", "");
 
   is_stable_callback_ = std::move(callback);
 

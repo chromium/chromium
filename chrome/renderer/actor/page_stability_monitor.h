@@ -24,14 +24,14 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
  public:
   // Constructs the monitor and takes a baseline observation of the document in
   // the given RenderFrame.
-  PageStabilityMonitor(content::RenderFrame& frame,
-                       int32_t task_id,
-                       Journal& journal);
+  explicit PageStabilityMonitor(content::RenderFrame& frame);
   ~PageStabilityMonitor() override;
 
   // Invokes the given callback when the page is deemed stable enough for an
   // observation to take place or when the document is no longer active.
-  void WaitForStable(base::OnceClosure callback);
+  void WaitForStable(int32_t task_id,
+                     Journal& journal,
+                     base::OnceClosure callback);
 
   // RenderFrameObserver
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;

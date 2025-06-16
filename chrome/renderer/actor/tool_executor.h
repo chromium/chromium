@@ -47,6 +47,7 @@ class ToolExecutor {
   base::raw_ref<Journal> journal_;
   std::unique_ptr<PageStabilityMonitor> page_stability_monitor_;
   ToolExecutorCallback completion_callback_;
+  std::unique_ptr<Journal::PendingAsyncEntry> journal_entry_;
 
   base::WeakPtrFactory<ToolExecutor> weak_ptr_factory_{this};
 };

@@ -87,7 +87,8 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
     const AggregatedJournal::Entry& entry) {
   protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
   msg->set_trusted_packet_sequence_id(sequence_id_++);
-  msg->set_timestamp(NowInNanoseconds());
+  msg->set_timestamp(
+      (entry.data->timestamp - base::Time::UnixEpoch()).InNanoseconds());
   msg->set_timestamp_clock_id(perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
   auto* track_event = msg->set_track_event();
   perfetto::protos::pbzero::TrackEvent_Type pb_type =
