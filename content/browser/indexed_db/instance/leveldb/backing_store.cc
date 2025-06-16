@@ -3247,7 +3247,7 @@ StatusOr<bool> BackingStore::Cursor::FirstSeek() {
 
 StatusOr<bool> BackingStore::Cursor::Advance(uint32_t count) {
   while (count--) {
-    StatusOr<bool> result = indexed_db::BackingStore::Cursor::Continue();
+    StatusOr<bool> result = Continue();
     if (!result.has_value()) {
       return base::unexpected(result.error());
     }
@@ -3257,6 +3257,10 @@ StatusOr<bool> BackingStore::Cursor::Advance(uint32_t count) {
     }
   }
   return true;
+}
+
+StatusOr<bool> BackingStore::Cursor::Continue() {
+  return Continue({}, {});
 }
 
 StatusOr<bool> BackingStore::Cursor::Continue(const IndexedDBKey& key,

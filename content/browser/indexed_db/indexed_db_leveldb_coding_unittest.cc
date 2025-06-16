@@ -852,11 +852,9 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
 
     EXPECT_TRUE(key_a.IsLessThan(key_b));
 
-    std::string encoded_a;
-    EncodeSortableIDBKey(key_a, &encoded_a);
+    std::string encoded_a = EncodeSortableIDBKey(key_a);
     EXPECT_TRUE(encoded_a.size());
-    std::string encoded_b;
-    EncodeSortableIDBKey(key_b, &encoded_b);
+    std::string encoded_b = EncodeSortableIDBKey(key_b);
     EXPECT_TRUE(encoded_b.size());
 
     auto sqlite_compare = [](const std::string& a, const std::string& b) {
@@ -876,8 +874,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
   }
   // Also test decoding by treating all test cases as one massive array key.
   const IndexedDBKey all_keys_key(std::move(keys_vec));
-  std::string encoded;
-  EncodeSortableIDBKey(all_keys_key, &encoded);
+  std::string encoded = EncodeSortableIDBKey(all_keys_key);
   IndexedDBKey decoded_value = DecodeSortableIDBKey(encoded);
   ASSERT_TRUE(decoded_value.IsValid());
   EXPECT_TRUE(all_keys_key.Equals(decoded_value))
@@ -937,13 +934,11 @@ TEST(IndexedDBLevelDBCodingTest, EncodeSortableDoubles) {
       SCOPED_TRACE(testing::Message()
                    << "Comparing " << value_a << " and " << value_b);
 
-      std::string encoded_a;
-      EncodeSortableIDBKey(
-          IndexedDBKey(value_a, blink::mojom::IDBKeyType::Number), &encoded_a);
+      std::string encoded_a = EncodeSortableIDBKey(
+          IndexedDBKey(value_a, blink::mojom::IDBKeyType::Number));
       EXPECT_TRUE(encoded_a.size());
-      std::string encoded_b;
-      EncodeSortableIDBKey(
-          IndexedDBKey(value_b, blink::mojom::IDBKeyType::Number), &encoded_b);
+      std::string encoded_b = EncodeSortableIDBKey(
+          IndexedDBKey(value_b, blink::mojom::IDBKeyType::Number));
       EXPECT_TRUE(encoded_b.size());
       EXPECT_EQ(encoded_a.size(), encoded_b.size());
 
@@ -964,8 +959,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeSortableDoubles) {
 
   for (double value : values) {
     const IndexedDBKey key(value, blink::mojom::IDBKeyType::Number);
-    std::string encoded;
-    EncodeSortableIDBKey(key, &encoded);
+    std::string encoded = EncodeSortableIDBKey(key);
     IndexedDBKey decoded_value = DecodeSortableIDBKey(encoded);
     ASSERT_TRUE(decoded_value.IsValid());
     EXPECT_TRUE(key.Equals(decoded_value))
