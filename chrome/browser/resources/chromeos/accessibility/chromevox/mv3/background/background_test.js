@@ -1733,7 +1733,7 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxMV3BackgroundTest', 'MathMLContent', async function() {
+AX_TEST_F('ChromeVoxBackgroundTest', 'MathMLContent', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <math>
