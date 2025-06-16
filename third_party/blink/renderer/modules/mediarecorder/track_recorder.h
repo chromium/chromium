@@ -50,7 +50,7 @@ enum class MediaTrackContainerType {
   kNone,
   kVideoMp4,
   kVideoWebM,
-  kVidoMatroska,
+  kVideoMatroska,
   kAudioMp4,
   kAudioWebM,
 };

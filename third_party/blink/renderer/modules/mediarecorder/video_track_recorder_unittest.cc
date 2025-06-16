@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -1465,5 +1466,121 @@ TEST_F(VideoTrackRecorderPassthroughTest, PausesAndResumes) {
 INSTANTIATE_TEST_SUITE_P(All,
                          VideoTrackRecorderPassthroughTest,
                          ValuesIn(kTrackRecorderTestCodec));
+
+TEST(VideoTrackRecorder, DefaultCodecWithoutGpuFactories) {
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp8,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoWebM));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp8,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMatroska));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp9,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMp4));
+}
+
+TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedVp9) {
+  auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  sii->UseTestGMBInSharedImageCreationWithBufferUsage();
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
+  ScopedTestingPlatformSupport<MockTestingPlatform> platform;
+  EXPECT_CALL(*platform, GetGpuFactories())
+      .WillRepeatedly(Return(&mock_gpu_factories));
+  EXPECT_CALL(mock_gpu_factories, GetVideoEncodeAcceleratorSupportedProfiles)
+      .WillRepeatedly(
+          Return(std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
+              media::VideoEncodeAccelerator::SupportedProfile(
+                  media::VideoCodecProfile::VP9PROFILE_PROFILE0,
+                  gfx::Size(1920, 1080)),
+          }));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp9,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoWebM));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp9,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMatroska));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp9,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMp4));
+}
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedH264) {
+  auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  sii->UseTestGMBInSharedImageCreationWithBufferUsage();
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
+  ScopedTestingPlatformSupport<MockTestingPlatform> platform;
+  EXPECT_CALL(*platform, GetGpuFactories())
+      .WillRepeatedly(Return(&mock_gpu_factories));
+  EXPECT_CALL(mock_gpu_factories, GetVideoEncodeAcceleratorSupportedProfiles)
+      .WillRepeatedly(
+          Return(std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
+              media::VideoEncodeAccelerator::SupportedProfile(
+                  media::VideoCodecProfile::H264PROFILE_HIGH,
+                  gfx::Size(1920, 1080)),
+          }));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp8,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoWebM));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kH264,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMatroska));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kH264,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMp4));
+}
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedH265) {
+  auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  sii->UseTestGMBInSharedImageCreationWithBufferUsage();
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
+  ScopedTestingPlatformSupport<MockTestingPlatform> platform;
+  EXPECT_CALL(*platform, GetGpuFactories())
+      .WillRepeatedly(Return(&mock_gpu_factories));
+  EXPECT_CALL(mock_gpu_factories, GetVideoEncodeAcceleratorSupportedProfiles)
+      .WillRepeatedly(
+          Return(std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
+              media::VideoEncodeAccelerator::SupportedProfile(
+                  media::VideoCodecProfile::HEVCPROFILE_MAIN,
+                  gfx::Size(1920, 1080)),
+          }));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp8,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoWebM));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kHevc,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMatroska));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kHevc,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMp4));
+}
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
+TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedVp8) {
+  auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  sii->UseTestGMBInSharedImageCreationWithBufferUsage();
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
+  ScopedTestingPlatformSupport<MockTestingPlatform> platform;
+  EXPECT_CALL(*platform, GetGpuFactories())
+      .WillRepeatedly(Return(&mock_gpu_factories));
+  EXPECT_CALL(mock_gpu_factories, GetVideoEncodeAcceleratorSupportedProfiles)
+      .WillRepeatedly(
+          Return(std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
+              media::VideoEncodeAccelerator::SupportedProfile(
+                  media::VideoCodecProfile::VP8PROFILE_ANY,
+                  gfx::Size(1920, 1080)),
+          }));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp8,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoWebM));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp8,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMatroska));
+  EXPECT_EQ(VideoTrackRecorder::CodecId::kVp9,
+            VideoTrackRecorderImpl::GetPreferredCodecId(
+                MediaTrackContainerType::kVideoMp4));
+}
 
 }  // namespace blink

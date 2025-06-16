@@ -19,7 +19,7 @@ MediaTrackContainerType GetMediaContainerTypeFromString(const String& type) {
   } else if (EqualIgnoringASCIICase(type, "video/webm")) {
     return MediaTrackContainerType::kVideoWebM;
   } else if (EqualIgnoringASCIICase(type, "video/x-matroska")) {
-    return MediaTrackContainerType::kVidoMatroska;
+    return MediaTrackContainerType::kVideoMatroska;
   } else if (EqualIgnoringASCIICase(type, "audio/mp4")) {
     return MediaTrackContainerType::kAudioMp4;
   } else if (EqualIgnoringASCIICase(type, "audio/webm")) {

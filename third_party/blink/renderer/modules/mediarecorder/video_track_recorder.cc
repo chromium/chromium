@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_encoder_wrapper.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
+#include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -126,26 +127,73 @@ libyuv::RotationMode MediaVideoRotationToRotationMode(
 
 namespace {
 
-static const struct {
+constexpr MediaTrackContainerType kVp8Types[] = {
+    MediaTrackContainerType::kVideoMatroska,
+    MediaTrackContainerType::kVideoWebM};
+constexpr MediaTrackContainerType kVp9Types[] = {
+    MediaTrackContainerType::kVideoMatroska,
+    MediaTrackContainerType::kVideoWebM, MediaTrackContainerType::kVideoMp4};
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+constexpr MediaTrackContainerType kH264Types[] = {
+    MediaTrackContainerType::kVideoMatroska,
+    MediaTrackContainerType::kVideoMp4};
+#endif
+constexpr MediaTrackContainerType kAv1Types[] = {
+    MediaTrackContainerType::kVideoWebM,
+    MediaTrackContainerType::kVideoMatroska,
+    MediaTrackContainerType::kVideoMp4};
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+constexpr MediaTrackContainerType kH265Types[] = {
+    MediaTrackContainerType::kVideoMatroska,
+    MediaTrackContainerType::kVideoMp4};
+#endif
+
+constexpr struct {
   CodecId codec_id;
   media::VideoCodecProfile min_profile;
   media::VideoCodecProfile max_profile;
+  base::raw_span<const MediaTrackContainerType> supported_container_types;
 } kPreferredCodecIdAndVEAProfiles[] = {
-    {CodecId::kVp8, media::VP8PROFILE_ANY, media::VP8PROFILE_ANY},
-    {CodecId::kVp9, media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE0},
+    {CodecId::kVp8, media::VP8PROFILE_ANY, media::VP8PROFILE_ANY,
+     base::span{kVp8Types}},
+    {CodecId::kVp9, media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE0,
+     base::span{kVp9Types}},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    {CodecId::kH264, media::H264PROFILE_BASELINE, media::H264PROFILE_HIGH},
+    {CodecId::kH264, media::H264PROFILE_BASELINE, media::H264PROFILE_HIGH,
+     base::span{kH264Types}},
 #endif
     {CodecId::kAv1, media::AV1PROFILE_PROFILE_MAIN,
-     media::AV1PROFILE_PROFILE_MAIN},
+     media::AV1PROFILE_PROFILE_MAIN, base::span{kAv1Types}},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    {CodecId::kHevc, media::HEVCPROFILE_MAIN, media::HEVCPROFILE_MAIN},
+    {CodecId::kHevc, media::HEVCPROFILE_MAIN, media::HEVCPROFILE_MAIN,
+     base::span{kH265Types}},
 #endif
 };
 
 static_assert(std::size(kPreferredCodecIdAndVEAProfiles) ==
                   static_cast<int>(CodecId::kLast),
               "|kPreferredCodecIdAndVEAProfiles| should consider all CodecIds");
+
+media::VideoCodec CodecIdToMediaCodec(VideoTrackRecorder::CodecId codec) {
+  switch (codec) {
+    case VideoTrackRecorder::CodecId::kVp8:
+      return media::VideoCodec::kVP8;
+    case VideoTrackRecorder::CodecId::kVp9:
+      return media::VideoCodec::kVP9;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    case VideoTrackRecorder::CodecId::kH264:
+      return media::VideoCodec::kH264;
+#endif
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoTrackRecorder::CodecId::kHevc:
+      return media::VideoCodec::kHEVC;
+#endif
+    case VideoTrackRecorder::CodecId::kAv1:
+      return media::VideoCodec::kAV1;
+    case VideoTrackRecorder::CodecId::kLast:
+      return media::VideoCodec::kUnknown;
+  }
+}
 
 void NotifyEncoderSupportKnown(base::OnceClosure callback) {
   if (!Platform::Current()) {
@@ -683,29 +731,24 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
 // static
 VideoTrackRecorderImpl::CodecId VideoTrackRecorderImpl::GetPreferredCodecId(
     MediaTrackContainerType type) {
-  const auto preferred_codec_id = []() {
-    for (const auto& supported_profile : GetVEASupportedProfiles()) {
-      const media::VideoCodecProfile codec = supported_profile.profile;
-      for (auto& codec_id_and_profile : kPreferredCodecIdAndVEAProfiles) {
-        if (codec >= codec_id_and_profile.min_profile &&
-            codec <= codec_id_and_profile.max_profile) {
-          DVLOG(2) << "Accelerated codec found: "
-                   << media::GetProfileName(codec) << ", min_resolution: "
-                   << supported_profile.min_resolution.ToString()
-                   << ", max_resolution: "
-                   << supported_profile.max_resolution.ToString()
-                   << ", max_framerate: "
-                   << supported_profile.max_framerate_numerator << "/"
-                   << supported_profile.max_framerate_denominator;
-          return codec_id_and_profile.codec_id;
-        }
+  for (const auto& supported_profile : GetVEASupportedProfiles()) {
+    const media::VideoCodecProfile codec = supported_profile.profile;
+    for (auto& entry : kPreferredCodecIdAndVEAProfiles) {
+      if (codec >= entry.min_profile && codec <= entry.max_profile &&
+          std::find(entry.supported_container_types.begin(),
+                    entry.supported_container_types.end(),
+                    type) != entry.supported_container_types.end()) {
+        DVLOG(2) << "Accelerated codec found: " << media::GetProfileName(codec)
+                 << ", min_resolution: "
+                 << supported_profile.min_resolution.ToString()
+                 << ", max_resolution: "
+                 << supported_profile.max_resolution.ToString()
+                 << ", max_framerate: "
+                 << supported_profile.max_framerate_numerator << "/"
+                 << supported_profile.max_framerate_denominator;
+        return entry.codec_id;
       }
     }
-    return CodecId::kLast;
-  }();
-
-  if (preferred_codec_id != CodecId::kLast) {
-    return preferred_codec_id;
   }
 
   if (type == MediaTrackContainerType::kVideoMp4 ||
@@ -731,27 +774,7 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
     }
   }
 
-  const auto media_codec_id = [](CodecId codec) {
-    switch (codec) {
-      case VideoTrackRecorder::CodecId::kVp8:
-        return media::VideoCodec::kVP8;
-      case VideoTrackRecorder::CodecId::kVp9:
-        return media::VideoCodec::kVP9;
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-      case VideoTrackRecorder::CodecId::kH264:
-        return media::VideoCodec::kH264;
-#endif
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      case VideoTrackRecorder::CodecId::kHevc:
-        return media::VideoCodec::kHEVC;
-#endif
-      case VideoTrackRecorder::CodecId::kAv1:
-        return media::VideoCodec::kAV1;
-      case VideoTrackRecorder::CodecId::kLast:
-        return media::VideoCodec::kUnknown;
-    }
-  }(codec_profile.codec_id);
-
+  const auto media_codec_id = CodecIdToMediaCodec(codec_profile.codec_id);
   for (const auto& profile : GetVEASupportedProfiles()) {
     DCHECK_NE(profile.profile, media::VIDEO_CODEC_PROFILE_UNKNOWN);
 
