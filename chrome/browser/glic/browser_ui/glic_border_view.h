@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_BORDER_VIEW_H_
 
 #include "base/scoped_observation.h"
+#include "cc/paint/paint_shader.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -166,6 +167,8 @@ class GlicBorderView : public views::View,
 
   // Empty in production environment.
   const std::unique_ptr<Tester> tester_;
+
+  sk_sp<cc::PaintShader> cached_paint_shader_;
 
   raw_ptr<ui::Compositor> compositor_ = nullptr;
   raw_ptr<ThemeService> theme_service_ = nullptr;

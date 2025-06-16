@@ -3030,7 +3030,7 @@ TEST_F(OopPixelTest, SkSLCommandShader) {
        {.name = SkString("u_center_color"),
         .value = SkColorToSkV4(SkColors::kGreen)}},
       /*int_uniforms=*/
-      {{.name = SkString("u_nudge"), .value = 2}});
+      {{.name = SkString("u_nudge"), .value = 2}}, nullptr);
   ASSERT_TRUE(shader);
 
   const gfx::Size rect(100, 100);

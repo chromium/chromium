@@ -3553,9 +3553,18 @@ TEST(PaintOpBufferTest, SkSLCommandShaderSerialization) {
       {.name = SkString("u_vec4"), .value = SkV4{42.f, 21.f, 10.f, 5.f}}};
   std::vector<PaintShader::IntUniform> int_uniforms = {
       {.name = SkString("u_int"), .value = 2}};
-  flags.setShader(PaintShader::MakeSkSLCommand(
+
+  auto paint_shader = PaintShader::MakeSkSLCommand(
       kCommand, std::move(scalar_uniforms), std::move(float2_uniforms),
-      std::move(float4_uniforms), std::move(int_uniforms)));
+      std::move(float4_uniforms), std::move(int_uniforms), nullptr);
+  flags.setShader(paint_shader);
+
+  auto other_paint_shader =
+      PaintShader::MakeSkSLCommand(kCommand, {}, {}, {}, {}, paint_shader);
+
+  EXPECT_TRUE(
+      paint_shader->MatchingCachedRuntimeEffectForTesting(*other_paint_shader));
+
   PaintOpBuffer buffer;
   buffer.push<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags);
 
