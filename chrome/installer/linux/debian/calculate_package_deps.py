@@ -119,7 +119,10 @@ if distro_check:
             file=sys.stderr)
         ret_code = 1
 if ret_code == 0:
-  with open(dep_filename, 'w') as dep_file:
+  sys.path.append(os.path.join(script_dir, os.path.pardir, os.path.pardir,
+                               os.path.pardir, os.path.pardir, 'build'))
+  import action_helpers
+  with action_helpers.atomic_output(dep_filename, mode='w') as dep_file:
     lines = [interval_set.formatted() + '\n'
            for interval_set in interval_sets]
     dep_file.write(''.join(sorted(lines)))
