@@ -76,6 +76,11 @@ const CGFloat kLargeSizeIPad = 52;
   return self;
 }
 
+- (void)setEnabled:(BOOL)enabled {
+  [super setEnabled:enabled];
+  [self setSymbolPage:self.page];
+}
+
 #pragma mark - Public
 
 - (void)setPage:(TabGridPage)page {
@@ -90,8 +95,10 @@ const CGFloat kLargeSizeIPad = 52;
     case TabGridPageIncognitoTabs:
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB);
-      _imageContainer.image = SymbolWithPalette(
-          _symbol, @[ UIColor.blackColor, UIColor.whiteColor ]);
+      _imageContainer.image = SymbolWithPalette(_symbol, @[
+        UIColor.blackColor,
+        self.enabled ? UIColor.whiteColor : UIColor.grayColor
+      ]);
       break;
     case TabGridPageRegularTabs:
       self.accessibilityLabel =
