@@ -28,6 +28,7 @@ ci/android-15-tablet-x64-rel
 ci/android-15-x64-fyi-rel
 ci/android-15-x64-rel
 ci/android-16-x64-fyi-rel
+ci/android-16-x64-rel
 ci/android-archive-rel
 ci/android-arm64-proguard-rel
 ci/android-bfcache-rel
@@ -64,6 +65,7 @@ try/android-15-tablet-x64-rel
 try/android-15-x64-fyi-rel
 try/android-15-x64-rel
 try/android-16-x64-fyi-rel
+try/android-16-x64-rel
 try/android-clobber-rel
 try/android-desktop-15-x64-fyi-rel
 try/android-desktop-15-x64-rel

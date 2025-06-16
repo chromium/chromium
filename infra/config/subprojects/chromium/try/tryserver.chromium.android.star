@@ -372,6 +372,24 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-16-x64-rel",
+    # TODO(crbug.com/424231911): Enable when green.
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Chromium tests on Android 16 emulator.",
+    mirrors = [
+        "ci/android-16-x64-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-16-x64-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-16-x64-fyi-rel",
     mirrors = [
         "ci/android-16-x64-fyi-rel",
