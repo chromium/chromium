@@ -1680,13 +1680,24 @@ TEST_P(ClientSideDetectionServiceTest,
   // service class.
   csd_service_->SetOnDeviceAvailabilityForTesting(false);
 
-  csd_service_->LogOnDeviceModelEligibilityReason();
+  csd_service_->IsOnDeviceModelAvailable(
+      /*log_failed_eligibility_reason=*/true);
 
   // We expect the histogram value for
   // SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure to be
   // kModelTobeInstalled as we set the EXPECT_CALL above when calling for
   // function GetOnDeviceModelEligibility within the optimization guide service,
   // which is called in the service delegate.
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure",
+      optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
+      1);
+
+  csd_service_->IsOnDeviceModelAvailable(
+      /*log_failed_eligibility_reason=*/false);
+
+  // The histogram is not logged again because
+  // log_failed_eligibility_reason is set to false.
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure",
       optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,

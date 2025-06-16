@@ -229,15 +229,13 @@ void ClientSideDetectionService::NotifyOnDeviceModelAvailable() {
   on_device_model_available_ = true;
 }
 
-bool ClientSideDetectionService::IsOnDeviceModelAvailable() {
-  return on_device_model_available_;
-}
-
-void ClientSideDetectionService::LogOnDeviceModelEligibilityReason() {
-  // Delegate can be null in unit tests.
-  if (delegate_) {
+bool ClientSideDetectionService::IsOnDeviceModelAvailable(
+    bool log_failed_eligibility_reason) {
+  if (log_failed_eligibility_reason && !on_device_model_available_ &&
+      delegate_) {
     delegate_->LogOnDeviceModelEligibilityReason();
   }
+  return on_device_model_available_;
 }
 
 void ClientSideDetectionService::SendClientReportPhishingRequest(
@@ -859,7 +857,7 @@ void ClientSideDetectionService::InquireOnDeviceModel(
         callback) {
   // We have checked the model availability prior to calling this function, but
   // we want to check one last time before creating a session.
-  if (!IsOnDeviceModelAvailable()) {
+  if (!IsOnDeviceModelAvailable(/*log_failed_eligibility_reason=*/false)) {
     std::move(callback).Run(std::nullopt);
     return;
   }

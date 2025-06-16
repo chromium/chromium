@@ -235,11 +235,9 @@ class ClientSideDetectionService
   void NotifyOnDeviceModelAvailable();
 
   // Returns |on_device_model_available_| which indicates the availability of
-  // on-device model session creation.
-  bool IsOnDeviceModelAvailable();
-
-  // Calls the delegate's |LogOnDeviceModelEligibilityReason|.
-  virtual void LogOnDeviceModelEligibilityReason();
+  // on-device model session creation. Also logs failed eligibility reason
+  // histograms if |log_failed_eligibility_reason| is true.
+  bool IsOnDeviceModelAvailable(bool log_failed_eligibility_reason);
 
   // Resets the session that's created by the on-device model. This occurs when
   // there is a new page navigation and at the start and end of

@@ -177,7 +177,6 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
       (std::string,
        base::OnceCallback<void(
            std::optional<optimization_guide::proto::ScamDetectionResponse>)>));
-  MOCK_METHOD0(LogOnDeviceModelEligibilityReason, void());
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -2743,7 +2742,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   raw_delegate_->ForceEmptyInnerText();
   // Because the inner text is empty, we will NOT inquire the on-device model.
-  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(0);
   EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -2776,7 +2774,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   // Because the URL is on the HC allowlist, we will NOT inquire the
   // on-device model.
-  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(0);
   EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -2812,7 +2809,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   csd_service_->SetOnDeviceAvailabilityForTesting(false);
   // Because the on-device model is unavailable, we will NOT inquire the
   // on-device model.
-  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(1);
   EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -2847,7 +2843,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   // Because the client side detection type is POINTER_LOCK_REQUESTED, we will
   // NOT inquire the on-device model.
-  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(0);
   EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,

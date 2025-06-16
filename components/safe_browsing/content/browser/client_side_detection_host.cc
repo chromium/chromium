@@ -1308,7 +1308,8 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
       return;
     }
 
-    bool on_device_model_available = csd_service_->IsOnDeviceModelAvailable();
+    bool on_device_model_available = csd_service_->IsOnDeviceModelAvailable(
+        /*log_failed_eligibility_reason=*/true);
 
     base::UmaHistogramBoolean(
         "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
@@ -1319,10 +1320,6 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
         on_device_model_available);
 
     if (!on_device_model_available) {
-      // When the model is not available at the time of inquiry, we want to log
-      // the current status of the model fetch.
-      csd_service_->LogOnDeviceModelEligibilityReason();
-
       IntelligentScanInfo intelligent_scan_info;
       intelligent_scan_info.set_no_info_reason(
           IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
