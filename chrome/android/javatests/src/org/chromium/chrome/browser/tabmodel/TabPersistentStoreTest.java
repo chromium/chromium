@@ -258,8 +258,8 @@ public class TabPersistentStoreTest {
         public void requestToShowTab(Tab tab, @TabSelectionType int type) {}
 
         @Override
-        public boolean isSessionRestoreInProgress() {
-            return false;
+        public boolean isTabModelRestored() {
+            return true;
         }
     }
 

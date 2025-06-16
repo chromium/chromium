@@ -102,12 +102,12 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @Override
     public abstract boolean isActiveModel();
 
-    /** Returns whether the model is done initializing itself and should be used. */
+    /** Returns whether the model is done initializing itself and should be used in native. */
     public abstract boolean isInitializationComplete();
 
     /**
      * Required to be called before this object is ready for most usage. Used to indicate all tabs
-     * have been loaded and native is ready.
+     * have been loaded and native is ready. This is only called for non-Incognito tab models.
      */
     public abstract void completeInitialization();
 

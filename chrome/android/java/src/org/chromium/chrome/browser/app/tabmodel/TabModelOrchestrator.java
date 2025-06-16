@@ -193,23 +193,23 @@ public abstract class TabModelOrchestrator {
     public void cleanupInstance(int instanceId) {}
 
     /**
-     * If there is an asynchronous session restore in-progress, try to synchronously restore
-     * the state of a tab with the given url as a frozen tab. This method has no effect if
-     * there isn't a tab being restored with this url, or the tab has already been restored.
+     * If there is an asynchronous session restore in-progress, try to synchronously restore the
+     * state of a tab with the given url as a frozen tab. This method has no effect if there isn't a
+     * tab being restored with this url, or the tab has already been restored.
      */
     public void tryToRestoreTabStateForUrl(String url) {
-        if (mTabModelSelector.isSessionRestoreInProgress() && !mTabPersistentStoreDestroyedEarly) {
+        if (!mTabModelSelector.isTabStateInitialized() && !mTabPersistentStoreDestroyedEarly) {
             mTabPersistentStore.restoreTabStateForUrl(url);
         }
     }
 
     /**
-     * If there is an asynchronous session restore in-progress, try to synchronously restore
-     * the state of a tab with the given id as a frozen tab. This method has no effect if
-     * there isn't a tab being restored with this id, or the tab has already been restored.
+     * If there is an asynchronous session restore in-progress, try to synchronously restore the
+     * state of a tab with the given id as a frozen tab. This method has no effect if there isn't a
+     * tab being restored with this id, or the tab has already been restored.
      */
     public void tryToRestoreTabStateForId(int id) {
-        if (mTabModelSelector.isSessionRestoreInProgress() && !mTabPersistentStoreDestroyedEarly) {
+        if (!mTabModelSelector.isTabStateInitialized() && !mTabPersistentStoreDestroyedEarly) {
             mTabPersistentStore.restoreTabStateForId(id);
         }
     }

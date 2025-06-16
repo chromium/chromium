@@ -95,8 +95,8 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     }
 
     @Override
-    public boolean isSessionRestoreInProgress() {
-        return false;
+    public boolean isTabModelRestored() {
+        return true;
     }
 
     @Override

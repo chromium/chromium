@@ -392,7 +392,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     }
 
     @Override
-    public boolean isSessionRestoreInProgress() {
-        return !isTabStateInitialized();
+    public boolean isTabModelRestored() {
+        return isTabStateInitialized();
     }
 }

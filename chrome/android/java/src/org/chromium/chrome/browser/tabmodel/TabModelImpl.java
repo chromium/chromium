@@ -1105,7 +1105,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     protected boolean isSessionRestoreInProgress() {
-        return mModelDelegate.isSessionRestoreInProgress();
+        return !mModelDelegate.isTabModelRestored();
     }
 
     @Override

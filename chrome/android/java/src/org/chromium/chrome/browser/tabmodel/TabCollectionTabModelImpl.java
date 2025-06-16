@@ -65,6 +65,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private final TabUngrouper mTabUngrouper = new PassthroughTabUngrouper(() -> this);
 
     private long mNativeTabCollectionTabModelImplPtr;
+    // Only ever true for the regular tab model. Called after tab state is initialized, before
+    // broadcastSessionRestoreComplete().
     private boolean mInitializationComplete;
     private boolean mActive;
     // TODO(crbug.com/425345868): Consider using indexOf(mCurrentTabSupplier.get()) instead.
@@ -295,7 +297,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assert !mInitializationComplete : "TabCollectionTabModelImpl initialized multiple times.";
         mInitializationComplete = true;
 
-        // TODO(crbug.com/405343634): set activated and current index if applicable.
+        if (getCount() != 0 && mIndex == TabList.INVALID_TAB_INDEX) {
+            if (isActiveModel()) {
+                setIndex(0, TabSelectionType.FROM_USER);
+            } else {
+                mIndex = 0;
+                mCurrentTabSupplier.set(getTabAt(mIndex));
+            }
+        }
 
         for (TabModelObserver observer : mTabModelObservers) observer.restoreCompleted();
     }
@@ -359,7 +368,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     protected boolean isSessionRestoreInProgress() {
-        return false;
+        return !mModelDelegate.isTabModelRestored();
     }
 
     @Override
@@ -512,7 +521,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public boolean isTabModelRestored() {
-        return false;
+        return mModelDelegate.isTabModelRestored();
     }
 
     @Override
@@ -570,7 +579,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // TabGroupModelFilterInternal overrides.
 
     @Override
-    public void markTabStateInitialized() {}
+    public void markTabStateInitialized() {
+        // Intentional no-op. This is handled by mModelDelegate#isTabModelRestored().
+    }
 
     @Override
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {}

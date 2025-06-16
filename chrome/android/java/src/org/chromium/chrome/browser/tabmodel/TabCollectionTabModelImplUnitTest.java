@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -114,6 +115,17 @@ public class TabCollectionTabModelImplUnitTest {
     public void testCompleteInitializationTwice() {
         mTabModel.completeInitialization();
         assertThrows(AssertionError.class, mTabModel::completeInitialization);
+    }
+
+    @Test
+    public void testIsTabModelRestored() {
+        when(mTabModelDelegate.isTabModelRestored()).thenReturn(false);
+        assertFalse(mTabModel.isTabModelRestored());
+        assertTrue(mTabModel.isSessionRestoreInProgress());
+
+        when(mTabModelDelegate.isTabModelRestored()).thenReturn(true);
+        assertTrue(mTabModel.isTabModelRestored());
+        assertFalse(mTabModel.isSessionRestoreInProgress());
     }
 
     @Test

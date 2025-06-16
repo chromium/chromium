@@ -165,8 +165,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
     }
 
     @Override
-    public boolean isSessionRestoreInProgress() {
-        return false;
+    public boolean isTabModelRestored() {
+        return isTabStateInitialized();
     }
 
     private static TabUngrouper createTabUngrouper(
