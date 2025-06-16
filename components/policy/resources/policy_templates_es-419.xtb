@@ -526,11 +526,6 @@ Cuando la estableces como PromptInTab, cuando vence la autenticación del usuari
       Si inhabilitas la política, los usuarios no podrán realizar impresiones en <ph name="CLOUD_PRINT_NAME" /> desde el diálogo de impresión de <ph name="PRODUCT_NAME" />.
 
       Para que se puedan detectar los destinos de <ph name="CLOUD_PRINT_NAME" />, debes habilitar esta política y no debe incluirse <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> en la política <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" />.</translation>
-<translation id="1390901586107713894">Permite especificar las extensiones que los usuarios NO pueden instalar. Si se incluyen en la lista de elementos bloqueados extensiones que ya están instaladas, no funcionarán y el usuario no podrá habilitarlas. Si las quitas de esa lista, se volverán a habilitar automáticamente.
-
-          Un valor de asterisco (*) en una lista de elementos bloqueados significa que todas las extensiones están incluidas en la lista de elementos bloqueados, a menos que se indique explícitamente que están en la lista de elementos permitidos.
-
-          Si no estableces esta política, el usuario podrá instalar cualquier extensión de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1392703142209771447">La expresión regular que coincide con el ID de la impresora.</translation>
 <translation id="1393485621820363363">Impresoras empresariales habilitadas asociadas a dispositivos</translation>
 <translation id="1395505489889158859">Permitir el envío de nombres de usuario y nombres de archivo a impresoras nativas</translation>

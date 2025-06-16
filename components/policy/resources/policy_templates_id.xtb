@@ -526,11 +526,6 @@ Jika kebijakan ini disetel ke PromptInTab, tab baru dengan halaman login Google 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat mencetak ke <ph name="CLOUD_PRINT_NAME" /> dari dialog pencetakan <ph name="PRODUCT_NAME" />.
 
       Agar tujuan <ph name="CLOUD_PRINT_NAME" /> tetap dapat ditemukan, kebijakan ini harus ditetapkan ke Aktif dan <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> tidak boleh dimasukkan ke kebijakan <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" />.</translation>
-<translation id="1390901586107713894">Memungkinkan Anda menentukan ekstensi mana yang TIDAK dapat diinstal pengguna. Ekstensi yang sudah diinstal akan dinonaktifkan jika diblokir, tanpa memberikan opsi kepada pengguna untuk mengaktifkannya. Setelah ekstensi yang dinonaktifkan dihapus dari daftar yang tidak diizinkan, ekstensi akan kembali diaktifkan secara otomatis.
-
-          Nilai '*' untuk daftar yang tidak diizinkan berarti semua ekstensi diblokir kecuali tercantum secara eksplisit dalam daftar yang diizinkan.
-
-          Jika kebijakan ini tidak disetel, pengguna dapat menginstal ekstensi apa pun di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1392703142209771447">Ekspresi reguler untuk mencocokkan ID printer.</translation>
 <translation id="1393485621820363363">Mengaktifkan printer perangkat perusahaan</translation>
 <translation id="1395505489889158859">Aktifkan pengiriman nama pengguna dan nama file ke printer native</translation>

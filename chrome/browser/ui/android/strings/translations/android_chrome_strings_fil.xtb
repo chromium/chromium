@@ -674,6 +674,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4116038641877404294">I-download ang mga page para magamit ang mga ito offline</translation>
 <translation id="4121654769234887259">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Google Password Manager para sa <ph name="USERNAME" /></translation>
 <translation id="4124152339699379357">Nakabukas ang proseso ng pahintulot sa notification nang buo ang taas</translation>
+<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Inihinto ng Chrome ang mga notification mula sa site na ito. Puwede mong suriin at pamahalaan.}one{Inihinto ng Chrome ang mga notification mula sa mga site na ito. Puwede mong suriin at pamahalaan.}other{Inihinto ng Chrome ang mga notification mula sa mga site na ito. Puwede mong suriin at pamahalaan.}}</translation>
 <translation id="4132137475637520539">Hayaang sumali ang sinumang may link</translation>
 <translation id="4135200667068010335">Nakasara ang listahan ng mga device kung saan magbabahagi ng tab.</translation>
 <translation id="4137746084635924146">Kasalukuyang wika ng device</translation>
@@ -936,6 +937,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5267572070504076962">I-on ang Ligtas na Pag-browse para magkaroon ng proteksyon laban sa mga mapanganib na site</translation>
 <translation id="5271967389191913893">Hindi mabuksan ng device ang content na ida-download.</translation>
 <translation id="5273031377282080577">Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
+<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Nag-unsubscribe mula sa isang hindi ginagamit na site}one{Nag-unsubscribe mula sa # hindi ginagamit na site}other{Nag-unsubscribe mula sa # na hindi ginagamit na site}}</translation>
 <translation id="5292796745632149097">Ipadala kay</translation>
 <translation id="5301876394151419436">Naka-sign in ka bilang si <ph name="EMAIL" /> Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="5304593522240415983">Hindi maaaring maging blangko ang field na ito</translation>

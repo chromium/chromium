@@ -3046,6 +3046,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6177531123306197852">C2 boríték</translation>
 <translation id="6180316780098470077">Újrapróbálkozások közötti idő</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184099524311454384">Keresés a lapokon</translation>
 <translation id="6184868291074982484">A Chrome automatikusan korlátozza a harmadik féltől származó cookie-kat</translation>
 <translation id="6190518157737269631">Felülbírálni a billentyűzet egyes gombjait, például az Esc billentyűt</translation>
 <translation id="6194209731893739467">Itt lesz majd látható az összes nyomon követett termék</translation>
@@ -3604,6 +3605,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7130775116821607281">Feltöltés letiltva</translation>
 <translation id="7132939140423847331">A rendszergazda nem engedélyezi az adatok másolását.</translation>
 <translation id="7135130955892390533">Állapot megjelenítése</translation>
+<translation id="7135814714616751706">Billentyűparancs keresése</translation>
 <translation id="7136009930065337683">További információ az inkognitó módról.</translation>
 <translation id="7138472120740807366">Kézbesítési mód</translation>
 <translation id="7138678301420049075">Egyéb</translation>
@@ -4177,6 +4179,7 @@ További részletek:
 <translation id="8092254339843485299">6 × 8 hüvelyk</translation>
 <translation id="8092774999298748321">Mélylila</translation>
 <translation id="8094917007353911263">Az Ön által használt hálózat megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
+<translation id="809543534949702122">Keresési előzmények</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Fizetési mód</translation>

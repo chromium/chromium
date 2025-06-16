@@ -498,11 +498,6 @@
       如果將這項政策設為停用，則使用者無法透過 <ph name="PRODUCT_NAME" /> 列印對話方塊把列印工作提交至 <ph name="CLOUD_PRINT_NAME" />。
 
       如要讓系統搜尋到 <ph name="CLOUD_PRINT_NAME" />目的地，必須將這項政策設為啟用，且不得在 <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" /> 政策中納入 <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />。</translation>
-<translation id="1390901586107713894">這項政策可讓你指定禁止使用者安裝的擴充功能。如果封鎖了已安裝的擴充功能，系統會停用該擴充功能，且使用者無法以任何方式啟用。將因為列入封鎖清單而遭到停用的擴充功能從清單中移除後，系統將自動重新啟用該擴充功能。
-
-          如果將封鎖清單的值設為「*」，系統會封鎖所有擴充功能 (許可清單中明確列出的擴充功能除外)。
-
-          如果不設定這項政策，使用者將可在 <ph name="PRODUCT_NAME" /> 中安裝任何擴充功能。</translation>
 <translation id="1392703142209771447">用於比對印表機 ID 的規則運算式。</translation>
 <translation id="1393485621820363363">已啟用企業裝置印表機</translation>
 <translation id="1395505489889158859">允許將使用者名稱和檔案名稱傳送給原生印表機</translation>

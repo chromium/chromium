@@ -507,11 +507,6 @@ Als je dit beleid instelt op PromptInTab, wordt na het verlopen van de verificat
       Als je dit beleid niet toepast, kunnen gebruikers niet naar <ph name="CLOUD_PRINT_NAME" /> afdrukken vanaf het <ph name="PRODUCT_NAME" />-afdrukdialoogvenster.
 
       Je kunt ervoor zorgen dat <ph name="CLOUD_PRINT_NAME" />-bestemmingen vindbaar blijven door dit beleid toe te passen en <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> niet op te nemen in het beleid <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" />.</translation>
-<translation id="1390901586107713894">Hiermee kun je aangeven welke extensies gebruikers NIET kunnen installeren. Extensies die al zijn geïnstalleerd, worden uitgezet als ze op de blokkeringslijst staan. De gebruiker kan ze niet weer aanzetten. Als een extensie die is uitgezet op basis van de blokkeringslijst, van die lijst wordt verwijderd, wordt de extensie automatisch weer aangezet.
-
-          De waarde * op de blokkeringslijst betekent dat alle extensies worden geblokkeerd, tenzij ze expliciet worden vermeld op de toelatingslijst.
-
-          Als je dit beleid niet instelt, kan de gebruiker elke extensie installeren in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1392703142209771447">Reguliere expressie die moet overeenkomen met de printer-ID.</translation>
 <translation id="1393485621820363363">Zakelijke apparaatprinters aangezet</translation>
 <translation id="1395505489889158859">Gebruikersnaam en bestandsnaam naar systeemeigen printers sturen aanzetten</translation>

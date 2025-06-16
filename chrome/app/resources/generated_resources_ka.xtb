@@ -6470,6 +6470,7 @@
 <translation id="5533343601674003130">PDF სერვისი</translation>
 <translation id="5537725057119320332">მაუწყებლობა</translation>
 <translation id="5539070192556911367">Google-თან დაკავშირება ვერ ხერხდება</translation>
+<translation id="5541091577812545428">პაროლი არ შეცვლილა</translation>
 <translation id="5542132724887566711">პროფილი</translation>
 <translation id="5542750926112347543">ქუქი-ჩანაწერები <ph name="DOMAIN" />-დან დაბლოკილია</translation>
 <translation id="5542949973455282971">მიმდინარეობს <ph name="CARRIER_NAME" />-თან დაკავშირება</translation>
@@ -8272,6 +8273,7 @@
 <translation id="6841186874966388268">შეცდომები</translation>
 <translation id="6842135459748401207">მხოლოდ <ph name="USER_EMAIL" />-ში შესული მოწყობილობები</translation>
 <translation id="6842136130964845393">იმაში დასარწმუნებლად, რომ ყოველთვის შეძლებთ თქვენს შენახულ პაროლებზე წვდომას, დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
+<translation id="6842670680297285750">გაყოფის ახალი ხედი მიმდინარე ჩანართით</translation>
 <translation id="6842749380892715807">საიტების XML სიების ბოლო ჩამოტვირთვის თარიღია <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">თქვენ მიერ თქვენი მოწყობილობის აქტიურად გამოყენების შესახებ ინფორმაცია საიტებს, როგორც წესი, სჭირდება თქვენი ხელმისაწვდომობის მისათითებლად ჩეთის აპებში</translation>
 <translation id="6843264316370513305">ქსელის გამართვა</translation>
@@ -9290,6 +9292,7 @@
 <translation id="7585106857920830898">მიმდინარეობს თქვენი ორგანიზაციის უსაფრთხოების წესებთან შესაბამისობის შემოწმება...</translation>
 <translation id="7586498138629385861">Chrome გააგრძელებს მუშაობას, სანამ Chrome პროგრამები გახსნილი იქნება.</translation>
 <translation id="7587806318633605613">შემოთავაზებების ისტორია</translation>
+<translation id="7589448773774086276">გაყოფის ახალი ხედი მიმდინარე ჩანართით</translation>
 <translation id="7589461650300748890">ფრთხილად!</translation>
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
 <translation id="7592060599656252486">ზოგიერთი</translation>
@@ -10237,6 +10240,7 @@
 <translation id="8230134520748321204">გსურთ, <ph name="ORIGIN" />-ის პაროლის შენახვა?</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" />-ის წაშლა</translation>
 <translation id="8230446983261649357">საიტებისთვის სურათების ჩვენების აკრძალვა</translation>
+<translation id="8231438895476693774">დაამატეთ ჩანართი გაყოფის ახალ ხედში</translation>
 <translation id="823226567613548870">თქვენი <ph name="BRAND" />-ის მონაცემების წაშლა</translation>
 <translation id="8233028084277069927">ახლავე გახსნა</translation>
 <translation id="8234795456569844941">დაეხმარეთ ჩვენს ინჟინრებს ამ პრობლემის მოგვარებაში. გვიამბეთ, რა უძღვოდა წინ პროფილთან დაკავშირებული შეცდომის გამოჩენას:</translation>
@@ -10249,6 +10253,7 @@
 <translation id="8239932336306009582">შეტყობინებების გამოგზავნა დაუშვებელია</translation>
 <translation id="8241040075392580210">ჩრდილოვანი</translation>
 <translation id="8241338426526905580">სერტიფიკატები არ არის</translation>
+<translation id="8241650983304689286">დაამატეთ ჩანართი გაყოფის ახალ ხედში</translation>
 <translation id="8241806945692107836">მოწყობილობის კონფიგურაციის განსაზღვრა...</translation>
 <translation id="8241868517363889229">სანიშნეების წაკითხვა და შეცვლა</translation>
 <translation id="8242273718576931540">თქვენი მოწყობილობა ვერ ახერხებს ამ ქსელთან დაკავშირებას. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>

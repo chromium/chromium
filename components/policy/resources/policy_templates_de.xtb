@@ -508,11 +508,6 @@ Wenn „PromptInTab“ festgelegt ist und die Authentifizierung des Nutzers abl�
       Ist die Richtlinie deaktiviert, können Nutzer im <ph name="PRODUCT_NAME" />-Druckdialogfeld nicht über <ph name="CLOUD_PRINT_NAME" /> drucken.
 
       Damit <ph name="CLOUD_PRINT_NAME" />-Ziele sichtbar sind, muss diese Richtlinie auf „Aktiviert“ gesetzt sein und „<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />“ darf nicht in der Richtlinie <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" /> stehen.</translation>
-<translation id="1390901586107713894">Mit dieser Richtlinie kannst du festlegen, welche Erweiterungen Nutzer NICHT installieren dürfen. Bereits installierte Erweiterungen, die gesperrt sind, werden deaktiviert und Nutzer haben keine Möglichkeit, sie zu aktivieren. Sollte eine aufgrund der Sperrliste deaktivierte Erweiterung aus der Liste entfernt werden, wird sie automatisch wieder aktiviert.
-
-          Der Wert "*" in der Sperrliste gibt an, dass alle Erweiterungen gesperrt sind, sofern sie nicht ausdrücklich auf die Zulassungsliste gesetzt wurden.
-
-          Wenn diese Richtlinie nicht konfiguriert ist, kann der Nutzer jede Erweiterung in <ph name="PRODUCT_NAME" /> installieren.</translation>
 <translation id="1392703142209771447">Regulärer Ausdruck für die Suche nach der Drucker-ID.</translation>
 <translation id="1393485621820363363">Aktivierte, an Geräte gebundene Unternehmensdrucker</translation>
 <translation id="1395505489889158859">Senden von Nutzer- und Dateinamen an native Drucker aktivieren</translation>

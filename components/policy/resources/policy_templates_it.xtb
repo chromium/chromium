@@ -522,11 +522,6 @@ Se impostata su ChiediInUnaScheda, quando l'autenticazione dell'utente scade, ap
       Se la policy viene impostata su Disattivata, gli utenti non possono stampare con <ph name="CLOUD_PRINT_NAME" /> dalla finestra di dialogo di stampa di <ph name="PRODUCT_NAME" />.
 
       Per mantenere rilevabili le destinazioni <ph name="CLOUD_PRINT_NAME" />, questa policy deve essere impostata su Attivata e il valore <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> non deve essere incluso nella policy <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" />.</translation>
-<translation id="1390901586107713894">Consente di specificare le estensioni che gli utenti NON possono installare. Le estensioni già installate vengono disattivate, se bloccate, e l'utente non può attivarle. Un'estensione disattivata da una lista bloccata viene automaticamente riattivata nel caso venga rimossa dalla lista.
-
-          Il valore "*" di una lista bloccata significa che tutte le estensioni sono bloccate, a meno che vengano elencate esplicitamente nella lista consentita.
-
-          Se questa policy non viene configurata, l'utente può installare qualsiasi estensione in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1392703142209771447">Espressione regolare per trovare corrispondenze con l'ID stampante.</translation>
 <translation id="1393485621820363363">Stampanti aziendali associate ai dispositivi attive</translation>
 <translation id="1395505489889158859">Viene attivato l'invio di nome utente e nome file alle stampanti native</translation>

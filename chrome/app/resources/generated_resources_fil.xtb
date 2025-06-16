@@ -2234,6 +2234,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2514326558286966059">Mas mabilis na mag-unlock gamit ang iyong fingerprint</translation>
 <translation id="2514465118223423406">Kapag nakakonekta ang mouse</translation>
 <translation id="2514938842036917377">Ide-delete nito ang <ph name="TOTAL_USAGE" /> na data na sino-store ng <ph name="SITE_NAME" />, magkakaugnay na site, at mga naka-install na app</translation>
+<translation id="2515489088825102986">Higit pa tungkol sa feature na ito at ang iyong privacy</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Kumpirmahin ang iyong username</translation>
 <translation id="2517472476991765520">I-scan</translation>
@@ -3437,6 +3438,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3387829698079331264">Hindi pinapayagang makaalam kung aktibo mong ginagamit ang iyong device</translation>
 <translation id="3388094447051599208">Malapit nang mapuno ang tray para sa output</translation>
 <translation id="3388788256054548012">Naka-encrypt ang file na ito. Hilingin sa may-ari nitong i-decrypt ito.</translation>
+<translation id="3389326266972418853">Higit pa tungkol sa naka-automate na pagpapalit ng password</translation>
 <translation id="3390013585654699824">Mga detalye ng app</translation>
 <translation id="3390442085511866400">I-save ang Video &amp;Frame Bilang...</translation>
 <translation id="3390530051434634135">Tandaan: <ph name="NOTE" /></translation>
@@ -5385,6 +5387,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4744268813103118742">Pumunta Sa Site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{I-unmute ang site}one{I-unmute ang mga site}other{I-unmute ang mga site}}</translation>
+<translation id="4745096442457817087">Nakita sa isang pampublikong breach sa data ang iyong password</translation>
 <translation id="4745500401920035244">Gumawa ang iyong administrator ng pagbabago sa buong system na nagdi-disable sa ilang lumang profile. Hindi mo na maa-access ang profile na ito pero puwede mo pa rin itong alisin</translation>
 <translation id="474609389162964566">I-access ang iyong Assistant gamit ang "Hey Google"</translation>
 <translation id="4746757725581505837">Ide-delete mo ang iyong data sa <ph name="BRAND" /> na naka-save sa device na ito</translation>
@@ -6481,6 +6484,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5533343601674003130">Serbisyo sa PDF</translation>
 <translation id="5537725057119320332">I-cast</translation>
 <translation id="5539070192556911367">Hindi maabot ang Google</translation>
+<translation id="5541091577812545428">Hindi nabago ang password</translation>
 <translation id="5542132724887566711">Profile</translation>
 <translation id="5542750926112347543">Na-block ang cookies mula sa <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Kumokonekta sa <ph name="CARRIER_NAME" /></translation>
@@ -8285,6 +8289,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6841186874966388268">Mga error</translation>
 <translation id="6842135459748401207">Mga device lang na naka-sign in sa <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Para matiyak na maa-access mo anumang oras ang iyong mga naka-save na password, i-verify na ikaw ito</translation>
+<translation id="6842670680297285750">Bagong split view sa kasalukuyang tab</translation>
 <translation id="6842749380892715807">Huling na-download ang mga sitelist ng XML noong <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Karaniwang nade-detect ng mga site kung aktibo mong ginagamit ang iyong device para maitakda ang iyong availability sa mga chat app</translation>
 <translation id="6843264316370513305">Pag-debug sa Network</translation>
@@ -9304,6 +9309,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7585106857920830898">Sinusuri gamit ang mga patakaran sa seguridad ng iyong organisasyon...</translation>
 <translation id="7586498138629385861">Patuloy na tatakbo ang Chrome habang nakabukas ang Chrome Apps.</translation>
 <translation id="7587806318633605613">History ng suhestyon</translation>
+<translation id="7589448773774086276">Bagong Split View sa Kasalukuyang Tab</translation>
 <translation id="7589461650300748890">Naku. Mag-ingat.</translation>
 <translation id="7590883480672980941">Mga setting ng input</translation>
 <translation id="7592060599656252486">Ilan</translation>
@@ -10041,6 +10047,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8077579734294125741">Iba pang Profile sa Chrome</translation>
 <translation id="8077749280021225629">I-delete din ang data mula sa pag-browse (<ph name="URL" />) na posibleng mag-sign out sa iyo sa <ph name="DOMAIN" />.<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Paghahanap ng Larawan</translation>
+<translation id="8079606020824373126">Puwedeng i-update ng Google Password Manager ang iyong account para magkaroon ng malakas na password at i-save ito sa <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Puwedeng magtanong ang mga site na pamahalaan ang mga window sa lahat ng iyong display</translation>
 <translation id="8080028325999236607">Isara ang Lahat ng Tab</translation>
 <translation id="8081989000209387414">I-disable ang pag-debug ng ADB?</translation>
@@ -10252,6 +10259,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8230134520748321204">I-save ang password para sa <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">I-delete ang <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Huwag payagan ang mga site na magpakita ng mga imahe</translation>
+<translation id="8231438895476693774">Magdagdag ng Tab sa Bagong Split View</translation>
 <translation id="823226567613548870">i-delete ang iyong data sa <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">Buksan na Ngayon</translation>
 <translation id="8234795456569844941">Pakitulungan ang aming mga engineer na ayusin ang problemang ito. Sabihin sa amin kung ano ang nangyari bago mo nakuha ang mensahe ng error sa profile:</translation>
@@ -10264,6 +10272,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8239932336306009582">Hindi pinapayagang magpadala ng mga notification</translation>
 <translation id="8241040075392580210">Makulimlim</translation>
 <translation id="8241338426526905580">Walang certificate</translation>
+<translation id="8241650983304689286">Magdagdag ng tab sa bagong split view</translation>
 <translation id="8241806945692107836">Tinutukoy ang configuration ng device...</translation>
 <translation id="8241868517363889229">Basahin at baguhin ang iyong mga bookmark</translation>
 <translation id="8242273718576931540">Hindi makakonekta ang iyong device sa network na ito. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>

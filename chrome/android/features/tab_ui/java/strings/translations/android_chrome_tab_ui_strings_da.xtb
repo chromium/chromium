@@ -86,7 +86,7 @@
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Luk efter 1 dag}one{Luk efter <ph name="DAY_COUNT_MANY" /> dag}other{Luk efter <ph name="DAY_COUNT_MANY" /> dage}}</translation>
 <translation id="4783638485675352219">Del titler og webadresser på åbne faner fra denne enhed med operativsystemet</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}one{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
-<translation id="4850886885716139402">Vis</translation>
+<translation id="4850886885716139402">Se</translation>
 <translation id="4852605713297257667">{TABS_COUNT,plural, =1{Føj <ph name="TABS_COUNT_ONE" /> valgt fane til gruppen}one{Føj <ph name="TABS_COUNT_MANY" /> valgt fane til gruppen}other{Føj <ph name="TABS_COUNT_MANY" /> valgte faner til gruppen}}</translation>
 <translation id="4861611890274104875">Luk kortet.</translation>
 <translation id="4861953997778766866">Alle kan ændre dine delte fanegrupper</translation>

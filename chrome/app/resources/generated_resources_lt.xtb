@@ -2236,6 +2236,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2514326558286966059">Atrakinkite greičiau kontroliniu kodu</translation>
 <translation id="2514465118223423406">Kai prijungta pelė</translation>
 <translation id="2514938842036917377">Bus ištrinta <ph name="TOTAL_USAGE" /> duomenų, kuriuos saugo <ph name="SITE_NAME" />, susijusios svetainės ir įdiegtos programos</translation>
+<translation id="2515489088825102986">Daugiau apie šią funkciją ir jūsų privatumą</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Naudotojo vardo patvirtinimas</translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
@@ -3439,6 +3440,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3387829698079331264">Neleidžiama sužinoti, kada aktyviai naudojate įrenginį</translation>
 <translation id="3388094447051599208">Išvesties dėklas beveik pilnas</translation>
 <translation id="3388788256054548012">Šis failas šifruotas. Paprašykite jo savininko iššifruoti.</translation>
+<translation id="3389326266972418853">Daugiau apie automatinį slaptažodžio keitimą</translation>
 <translation id="3390013585654699824">Išsami programos informacija</translation>
 <translation id="3390442085511866400">Išsaugoti vaizdo įrašo &amp;rėmelį kaip...</translation>
 <translation id="3390530051434634135">Pastaba: <ph name="NOTE" /></translation>
@@ -5387,6 +5389,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4744268813103118742">Eiti į svetainę</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Įjungti svetainės garsą}one{Įjungti svetainių garsą}few{Įjungti svetainių garsą}many{Įjungti svetainių garsą}other{Įjungti svetainių garsą}}</translation>
+<translation id="4745096442457817087">Jūsų slaptažodis rastas viešajame duomenų saugos pažeidime</translation>
 <translation id="4745500401920035244">Administratorius atliko visos sistemos pakeitimą, dėl kurio buvo išjungti kai kurie seni profiliai. Nebegalite pasiekti šio profilio, bet vis tiek galite jį pašalinti</translation>
 <translation id="474609389162964566">Galimybė pasiekti Padėjėją pasakius „Ok Google“</translation>
 <translation id="4746757725581505837">Ketinate ištrinti <ph name="BRAND" /> duomenis, išsaugotus šiame įrenginyje</translation>
@@ -10048,6 +10051,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8077579734294125741">Kiti „Chrome“ profiliai</translation>
 <translation id="8077749280021225629">Taip pat ištrinti naršymo duomenis (<ph name="URL" />). Tai padarius būsite atjungti nuo <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Vaizdų paieška</translation>
+<translation id="8079606020824373126">„Google“ slaptažodžių tvarkyklė gali atnaujinti paskyrą taikydama sudėtingą slaptažodį ir išsaugoti jį adresu <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Svetainėse gali būti prašoma tvarkyti langus visuose ekranuose</translation>
 <translation id="8080028325999236607">Uždaryti visus skirtukus</translation>
 <translation id="8081989000209387414">Išjungti ADB derinimą?</translation>

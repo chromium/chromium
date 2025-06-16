@@ -2171,6 +2171,7 @@
 <translation id="24786041351753425">تفعيل خدمة استرداد البيانات</translation>
 <translation id="2479541499757560845">إعدادات لوحة مفاتيح تسهيل الاستخدام</translation>
 <translation id="2480868415629598489">تعديل البيانات التي يتم نسخها ولصقها</translation>
+<translation id="2480881140544300950">محرّك البحث الحالي الذي يدير صفحة علامة التبويب الجديدة</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2482895651873876648">تم نقل علامة التبويب إلى المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="2483627560139625913">‏ضبط محرك البحث في إعدادات متصفّح Chrome</translation>
@@ -5370,6 +5371,7 @@
 <translation id="4742970037960872810">إزالة التمييز</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />التعرّف على كيفية تحديث التطبيقات<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">تم منح إذن الوصول إلى الميكروفون: <ph name="PERMISSION_DETAILS" />. فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى ميكروفون النظام<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">يراجع فريق من المراجعين صفحات كلمات المرور والمعلومات ذات الصلة لتحسين هذه الميزة، على الرغم من أنّ كلمة مرورك مشفَّرة ولا يمكن لأي شخص الاطّلاع عليها.</translation>
 <translation id="4744260496658845719">مستوى سطوع الإضاءة الخلفية للوحة المفاتيح</translation>
 <translation id="4744268813103118742">زيارة الموقع الإلكتروني</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6329,6 +6331,7 @@
 <translation id="5434065355175441495">‏ترميز PKCS #1 RSA</translation>
 <translation id="5435274640623994081">تفعيل ميزة تسجيل الرمز الصوتي</translation>
 <translation id="5435779377906857208">السماح دائمًا للنطاق <ph name="HOST" /> بالوصول إلى موقعك الجغرافي</translation>
+<translation id="5436211819997237281">الإضافة الحالية التي تدير صفحة علامة التبويب الجديدة</translation>
 <translation id="5436492226391861498">في انتظار قناة الخادم...</translation>
 <translation id="5436510242972373446">البحث في الموقع <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">‏النافذة <ph name="WINDOW_SIDE" /> أصبحت الآن بعرض ‎<ph name="WINDOW_SIZE_PERCENT" /> من الشاشة، واللوحة <ph name="PANE_SIDE" /> أصبحت الآن بعرض ‎<ph name="PANE_SIZE_PERCENT" /> من الشاشة.</translation>
@@ -9227,6 +9230,7 @@
 <translation id="7529411698175791732">تحقق من اتصالك بالإنترنت. وإذا استمرت المشكلة، فحاول الخروج ثم تسجيل الدخول مرة أخرى.</translation>
 <translation id="7529865045818406536">سيتم استخدام الشبكات المفضَّلة في حال توفُّر أكثر من شبكة معروفة سابقًا.</translation>
 <translation id="7530016656428373557">معدل التفريغ بوحدة الوات</translation>
+<translation id="7530215951451994972">إنشاء صورة</translation>
 <translation id="7531771599742723865">الجهاز قيد الاستخدام</translation>
 <translation id="7531779363494549572">يُرجى الانتقال إلى "الإعدادات" &gt; "التطبيقات والإشعارات" &gt; "الإشعارات".</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> لا يستجيب. اختَر "فرض الإغلاق" لإغلاق التطبيق.</translation>

@@ -203,7 +203,7 @@
 <translation id="1819374301217551116">価格のトラッキングと分析情報</translation>
 <translation id="1820195936249950412">有効なアカウントでログインしてください</translation>
 <translation id="1820259098641718022">リーディング リストに追加しました</translation>
-<translation id="1824490729233982311">他のデバイスからタブを受け取ったときに通知します。</translation>
+<translation id="1824490729233982311">他のデバイスからタブを受け取ったときに通知。</translation>
 <translation id="1827529786398596735">ホーム画面を長押し</translation>
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="1836891464494477513">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました}other{Google アカウント（{email}）にブックマークを保存しました}}</translation>
@@ -983,7 +983,7 @@
 <translation id="5067540696062462445">ダウンロード</translation>
 <translation id="507187271399539513">{count,plural, =1{{count} 件中 {position} 件目のお支払い方法}other{{count} 件中 {position} 件目のお支払い方法}}</translation>
 <translation id="5075939510584558547">暗号化せずに保存</translation>
-<translation id="5076534614343816664">価格を追跡する</translation>
+<translation id="5076534614343816664">価格の追跡</translation>
 <translation id="5078303485429639424">「<ph name="FEATURE_NAME" />」の通知をオンにする</translation>
 <translation id="5079950360618752063">提案されたパスワードを使用</translation>
 <translation id="5083464117946352670">ファイルサイズが不明です。</translation>

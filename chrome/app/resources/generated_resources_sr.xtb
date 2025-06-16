@@ -2164,6 +2164,7 @@
 <translation id="24786041351753425">Омогућите услугу враћања података.</translation>
 <translation id="2479541499757560845">Подешавања тастатуре за приступност</translation>
 <translation id="2480868415629598489">Мењање података које прекопирате</translation>
+<translation id="2480881140544300950">Актуелни претраживач који управља страницом нове картице</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2482895651873876648">Картица је премештена у групу <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Подесите претраживач у подешавањима Chrome прегледача</translation>
@@ -5365,6 +5366,7 @@
 <translation id="4742970037960872810">Уклони истицање</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Сазнајте како да ажурирате апликације<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Дозвољено је – <ph name="PERMISSION_DETAILS" />. Укључите <ph name="LINK_BEGIN" />приступ системском микрофону<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">Људи прегледају странице са лозинкама и повезане информације да би побољшали ову функцију, иако је лозинка шифрована и нико не може да је види.</translation>
 <translation id="4744260496658845719">Позадинско осветљење тастатуре</translation>
 <translation id="4744268813103118742">Иди на сајт</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6322,6 +6324,7 @@
 <translation id="5434065355175441495">PKCS #1 RSA шифровање</translation>
 <translation id="5435274640623994081">Омогући евидентирање аудио икона</translation>
 <translation id="5435779377906857208">Увек дозволи да <ph name="HOST" /> приступа микрофону</translation>
+<translation id="5436211819997237281">Актуелни додатак који управља страницом нове картице</translation>
 <translation id="5436492226391861498">Чекање на прокси тунел...</translation>
 <translation id="5436510242972373446">Претражи сајт <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Прозор <ph name="WINDOW_SIDE" /> је сада широк <ph name="WINDOW_SIZE_PERCENT" />, а окно <ph name="PANE_SIDE" /> је сада широко <ph name="PANE_SIZE_PERCENT" />.</translation>
@@ -9217,6 +9220,7 @@
 <translation id="7529411698175791732">Проверите интернет везу. Ако се проблем и даље јавља, пробајте да се одјавите и поново пријавите.</translation>
 <translation id="7529865045818406536">Жељене мреже ће се користити ако је доступно више од једне претходне мреже</translation>
 <translation id="7530016656428373557">Ниво потрошње у ватима</translation>
+<translation id="7530215951451994972">Направите слику</translation>
 <translation id="7531771599742723865">Уређај се користи</translation>
 <translation id="7531779363494549572">Идите у Подешавања &gt; Апликације и обавештења &gt; Обавештења.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> не реагује. Изаберите „Принудно затвори“ да бисте затворили апликацију.</translation>

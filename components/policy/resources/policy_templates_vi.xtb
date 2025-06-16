@@ -510,11 +510,6 @@ Nếu bạn đặt chính sách này thành PromptInTab, thì khi phiên xác th
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể in bằng <ph name="CLOUD_PRINT_NAME" /> từ hộp thoại in trên <ph name="PRODUCT_NAME" />.
 
       Để mọi người luôn tìm thấy các máy in đích <ph name="CLOUD_PRINT_NAME" />, bạn phải đặt chính sách này thành Bật và xóa <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> khỏi chính sách <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" />.</translation>
-<translation id="1390901586107713894">Cho phép bạn chỉ định những tiện ích mà người dùng KHÔNG THỂ cài đặt. Những tiện ích đã cài đặt sẽ tắt nếu bị chặn. Người dùng không có cách nào để bật những tiện ích đó. Sau khi bạn xóa một tiện ích (bị tắt do thuộc danh sách chặn) khỏi danh sách chặn, thì tiện ích này sẽ tự động được bật lại.
-
-          Giá trị danh sách chặn là "*" có nghĩa là tất cả tiện ích đều bị chặn trừ phi những tiện ích đó được liệt kê rõ ràng trong danh sách cho phép.
-
-          Nếu bạn không đặt chính sách này, thì người dùng có thể cài đặt bất kỳ tiện ích nào trong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1392703142209771447">Biểu thức chính quy để so khớp với mã máy in.</translation>
 <translation id="1393485621820363363">Đã bật máy in kết nối với thiết bị dành cho doanh nghiệp</translation>
 <translation id="1395505489889158859">Cho phép gửi tên người dùng và tên tệp đến máy in gốc</translation>

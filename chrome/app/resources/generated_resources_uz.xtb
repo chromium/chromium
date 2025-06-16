@@ -6466,6 +6466,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5533343601674003130">PDF xizmati</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539070192556911367">Googlega ulanmadi</translation>
+<translation id="5541091577812545428">Parol yangilanmadi</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> saytidan cookie fayllar bloklandi</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> nomli tarmoqqa ulanmoqda</translation>
@@ -8268,6 +8269,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6841186874966388268">Xatoliklar</translation>
 <translation id="6842135459748401207">Faqat <ph name="USER_EMAIL" /> hisobiga kirilgan qurilmalar</translation>
 <translation id="6842136130964845393">Parollarni istalgan vaqt ochish uchun shaxsingizni tasdiqlang</translation>
+<translation id="6842670680297285750">Joriy varaqni yangi ajratilgan rejimga olish</translation>
 <translation id="6842749380892715807">XML saytlar roʻyxati oxirgi marta <ph name="LAST_DATE_DOWNLOAD" />sanasida yuklab olingan.</translation>
 <translation id="6842868554183332230">Chat ilovalarida onlayn ekaningizni aniqlash uchun saytlarga qurilmalardan foydalanish axboroti kerak.</translation>
 <translation id="6843264316370513305">Tarmoq xatolarini aniqlash</translation>
@@ -9286,6 +9288,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7585106857920830898">Tashkilotingizning xavfsizlik siyosati asosida tekshirilmoqda...</translation>
 <translation id="7586498138629385861">Chrome ilovalari yopilmaguncha brauzer ishlashda davom etadi.</translation>
 <translation id="7587806318633605613">Tavsiyalar tarixi</translation>
+<translation id="7589448773774086276">Joriy varaqni yangi ajratilgan rejimga olish</translation>
 <translation id="7589461650300748890">Ehtiyot bo‘ling.</translation>
 <translation id="7590883480672980941">Kiritish sozlamalari</translation>
 <translation id="7592060599656252486">Ayrimlar</translation>
@@ -10232,6 +10235,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8230134520748321204"><ph name="ORIGIN" /> uchun parol saqlansinmi?</translation>
 <translation id="8230326817897075865">Oʻchirish: <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Bu saytga rasmlarni chiqarishni taqiqlash</translation>
+<translation id="8231438895476693774">Yangi ajratilgan rejimga varaq kiritish</translation>
 <translation id="823226567613548870"><ph name="BRAND" /> maʼlumotlaringizni oʻchirmoqchi</translation>
 <translation id="8233028084277069927">Hozir ochish</translation>
 <translation id="8234795456569844941">Profil xatolik xabaridan oldin nima bo‘lganligi haqida ma’lumot bering:</translation>
@@ -10244,6 +10248,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8239932336306009582">Bildirishnomalar yuborishga ruxsat berilmagan</translation>
 <translation id="8241040075392580210">Bulutcha</translation>
 <translation id="8241338426526905580">Sertifikatlar topilmadi</translation>
+<translation id="8241650983304689286">Yangi ajratilgan rejimga varaq kiritish</translation>
 <translation id="8241806945692107836">Qurilma sozlamalari aniqlanmoqda...</translation>
 <translation id="8241868517363889229">Xatcho‘plarni ko‘rish va o‘zgartirish</translation>
 <translation id="8242273718576931540">Qurilma bu tarmoqqa ulanmadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>

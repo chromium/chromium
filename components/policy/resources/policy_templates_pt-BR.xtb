@@ -522,11 +522,6 @@ Se definida como PromptInTab, quando a autenticação do usuário expirar, uma n
       Se a política for definida como "Desativada", os usuários não poderão imprimir no <ph name="CLOUD_PRINT_NAME" /> pela caixa de diálogo de impressão do <ph name="PRODUCT_NAME" />.
 
       Para que os destinos do <ph name="CLOUD_PRINT_NAME" /> continuem detectáveis, é necessário que esta política seja definida como "Ativada" e que <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> não seja incluída na política <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" />.</translation>
-<translation id="1390901586107713894">Permite especificar quais extensões os usuários NÃO podem instalar. As extensões já instaladas serão desativadas se estiverem bloqueadas, sem a opção de o usuário ativá-las novamente. Quando uma extensão que tiver sido desativada devido à lista de bloqueios for removida da lista, ela será reativada automaticamente.
-
-          Um valor "*" da lista de bloqueio significa que todas as extensões estão bloqueadas, exceto se estiverem explicitamente presentes na lista de permissões.
-
-          Se esta política não for definida, o usuário poderá instalar qualquer extensão no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1392703142209771447">Expressão regular para correspondência do ID da impressora.</translation>
 <translation id="1393485621820363363">Impressoras empresariais ativadas</translation>
 <translation id="1395505489889158859">Ativar o envio do nome de usuário e do nome de arquivo para impressoras nativas</translation>

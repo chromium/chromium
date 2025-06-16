@@ -3050,6 +3050,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6177531123306197852">Sobre C2</translation>
 <translation id="6180316780098470077">Intervalo de reintentos</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184099524311454384">Realiza buscas nas pestanas</translation>
 <translation id="6184868291074982484">Chrome limita automaticamente as cookies de terceiros</translation>
 <translation id="6190518157737269631">Ignora algunhas teclas do teclado, como Escape</translation>
 <translation id="6194209731893739467">Aquí podes ver todos os produtos dos que fagas un seguimento</translation>
@@ -3608,6 +3609,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7130775116821607281">Bloqueouse a carga</translation>
 <translation id="7132939140423847331">O teu administrador prohibiu que copiases estes datos.</translation>
 <translation id="7135130955892390533">Mostrar estado</translation>
+<translation id="7135814714616751706">Busca atallos</translation>
 <translation id="7136009930065337683">Máis información sobre o modo de incógnito</translation>
 <translation id="7138472120740807366">Método de entrega</translation>
 <translation id="7138678301420049075">Outros</translation>
@@ -4180,6 +4182,7 @@ Detalles adicionais:
 <translation id="8092254339843485299">6 x 8 polgadas</translation>
 <translation id="8092774999298748321">Púrpura intenso</translation>
 <translation id="8094917007353911263">É posible que a rede que utilizas requira o acceso a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="809543534949702122">Historial de busca</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Método de pago</translation>
