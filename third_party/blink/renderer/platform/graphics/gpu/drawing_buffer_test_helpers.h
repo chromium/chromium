@@ -362,8 +362,8 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
               saved_state_.pixel_pack_buffer_binding);
   }
 
-  gpu::Mailbox* last_imported_shared_image() {
-    return &last_imported_shared_image_;
+  const gpu::Mailbox& last_imported_shared_image() {
+    return last_imported_shared_image_;
   }
 
  private:
