@@ -31,11 +31,6 @@ class ReminderNotificationClient : public PushNotificationClient {
   std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
-  void OnSceneActiveForegroundBrowserReady() override;
-
-  // Called when the scene becomes "active foreground" and the browser is
-  // ready. The closure will be called when all async operations are done.
-  void OnSceneActiveForegroundBrowserReady(base::OnceClosure closure);
 
  private:
   // Returns true if the client is permitted to schedule notifications.

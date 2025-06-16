@@ -52,15 +52,39 @@ ReminderNotificationClient::~ReminderNotificationClient() = default;
 
 bool ReminderNotificationClient::CanHandleNotification(
     UNNotification* notification) {
-  // TODO(crbug.com/390432325): Handle reminder notification interactions.
-  return false;
+  return [notification.request.identifier
+      hasPrefix:kReminderNotificationsIdentifierPrefix];
 }
 
 bool ReminderNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/390432325): Handle reminder notification interactions.
-  return false;
+
+  if (!CanHandleNotification(response.notification)) {
+    return false;
+  }
+
+  NSDictionary* user_info = response.notification.request.content.userInfo;
+  NSString* url_string = user_info[@"url"];
+
+  if (!url_string || url_string.length == 0) {
+    // TODO(crbug.com/390432325): Consider adding UMA logs for missing URL.
+    return false;
+  }
+
+  GURL url(base::SysNSStringToUTF8(url_string));
+
+  if (!url.is_valid()) {
+    // TODO(crbug.com/390432325): Consider adding UMA logs for invalid URL.
+    return false;
+  }
+
+  // TODO(crbug.com/422449238): Consider adding UMA logs for interaction
+  // handling.
+
+  LoadUrlInNewTab(url);
+
+  return true;
 }
 
 std::optional<UIBackgroundFetchResult>
@@ -73,18 +97,6 @@ ReminderNotificationClient::HandleNotificationReception(
 NSArray<UNNotificationCategory*>*
 ReminderNotificationClient::RegisterActionableNotifications() {
   return @[];
-}
-
-void ReminderNotificationClient::OnSceneActiveForegroundBrowserReady() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnSceneActiveForegroundBrowserReady(base::DoNothing());
-}
-
-void ReminderNotificationClient::OnSceneActiveForegroundBrowserReady(
-    base::OnceClosure closure) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/390432325): Handle reminder notification interactions.
-  std::move(closure).Run();
 }
 
 bool ReminderNotificationClient::IsPermitted() {
