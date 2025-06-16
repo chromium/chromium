@@ -761,11 +761,15 @@ const FeatureEntry::FeatureParam kReaderModeImprovementsAlwaysOnEntryPoint[] = {
 const FeatureEntry::FeatureParam kReaderModeImprovementsCustomCPATimeout[] = {
     {"custom_cpa_timeout_enabled", "true"},
     {"custom_cpa_timeout", "300"}};
+const FeatureEntry::FeatureParam
+    kReaderModeImprovementsShowReadingModeInRegularTab[] = {
+        {"show_in_regular_tab", "true"}};
 const FeatureEntry::FeatureParam kReaderModeImprovementsAllOn[] = {
     {"trigger_on_mobile_friendly_pages", "true"},
     {"always_on_entry_point", "true"},
     {"custom_cpa_timeout_enabled", "true"},
-    {"custom_cpa_timeout", "300"}};
+    {"custom_cpa_timeout", "300"},
+    {"show_in_regular_tab", "true"}};
 
 const FeatureEntry::FeatureVariation kReaderModeImprovementsChoices[] = {
     {"trigger on mobile-friendly pages",
@@ -775,6 +779,10 @@ const FeatureEntry::FeatureVariation kReaderModeImprovementsChoices[] = {
      std::size(kReaderModeImprovementsAlwaysOnEntryPoint), nullptr},
     {"increased cpa timeout", kReaderModeImprovementsCustomCPATimeout,
      std::size(kReaderModeImprovementsCustomCPATimeout), nullptr},
+    {"reading mode in regular tab",
+     kReaderModeImprovementsShowReadingModeInRegularTab,
+     std::size(kReaderModeImprovementsShowReadingModeInRegularTab), nullptr},
+
     {"all", kReaderModeImprovementsAllOn,
      std::size(kReaderModeImprovementsAllOn), nullptr}};
 
@@ -5513,6 +5521,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"reader-mode-auto-distill", flag_descriptions::kReaderModeAutoDistillName,
      flag_descriptions::kReaderModeAutoDistillDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(dom_distiller::kReaderModeAutoDistill)},
+    {"reader-mode-distill-in-app",
+     flag_descriptions::kReaderModeDistillInAppName,
+     flag_descriptions::kReaderModeDistillInAppDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(dom_distiller::kReaderModeDistillInApp)},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},

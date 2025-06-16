@@ -41,6 +41,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -61,6 +62,7 @@ import org.chromium.chrome.test.transit.dom_distiller.ReaderModePreferencesDialo
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.messages.MessageDispatcher;
@@ -148,7 +150,24 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/423966068")
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
+    public void testReaderModeInRegularTab() throws TimeoutException {
+        mDownloadTestRule.loadUrl(mURL);
+
+        Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    originalTab
+                            .getUserDataHost()
+                            .getUserData(ReaderModeManager.USER_DATA_KEY)
+                            .activateReaderMode();
+                });
+        waitForDistillation(PAGE_TITLE, originalTab);
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "https://crbug.com/423646543")
     public void testReaderModeInCct_Downloaded() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();

@@ -8357,6 +8357,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "reader-mode-distill-in-app",
+    "owners": ["wylieb@google.com", "chrome-reader-mode-team@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "reader-mode-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 145

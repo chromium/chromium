@@ -5300,6 +5300,9 @@ const char kReadLaterDescription[] =
 const char kReaderModeAutoDistillName[] = "Reader Mode auto distillation";
 const char kReaderModeAutoDistillDescription[] =
     "Automatically distills web contents on every page.";
+const char kReaderModeDistillInAppName[] = "Reader Mode distillation in app";
+const char kReaderModeDistillInAppDescription[] =
+    "Distills the web page in brapp instead of a custom tab.";
 const char kReaderModeHeuristicsName[] = "Reader Mode triggering";
 const char kReaderModeHeuristicsDescription[] =
     "Determines what pages the Reader Mode infobar is shown on.";

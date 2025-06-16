@@ -32,11 +32,14 @@ public class DomDistillerFeatures {
 
     // Feature names -- alphabetical ordering.
     public static final String READER_MODE_AUTO_DISTILL = "ReaderModeAutoDistill";
+    public static final String READER_MODE_DISTILL_IN_APP = "ReaderModeDistillInApp";
     public static final String READER_MODE_IMPROVEMENTS = "ReaderModeImprovements";
 
     // Feature flags -- alphabetical ordering.
     public static final MutableFlagWithSafeDefault sReaderModeAutoDistill =
             newMutableFlagWithSafeDefault(READER_MODE_AUTO_DISTILL, /* defaultValue= */ false);
+    public static final MutableFlagWithSafeDefault sReaderModeDistillInApp =
+            newMutableFlagWithSafeDefault(READER_MODE_DISTILL_IN_APP, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeImprovements =
             newMutableFlagWithSafeDefault(READER_MODE_IMPROVEMENTS, /* defaultValue= */ false);
 

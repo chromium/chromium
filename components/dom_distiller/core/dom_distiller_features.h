@@ -22,6 +22,7 @@ bool ShouldUseReadabilityHeuristic();
 #if BUILDFLAG(IS_ANDROID)
 // Feature declarations below -- alphabetical order.
 BASE_DECLARE_FEATURE(kReaderModeAutoDistill);
+BASE_DECLARE_FEATURE(kReaderModeDistillInApp);
 BASE_DECLARE_FEATURE(kReaderModeImprovements);
 #endif
 
