@@ -190,6 +190,7 @@ public class TabBuilder {
 
         // Initializes Tab. Its user data objects are also initialized through the event
         // |onInitialized| of TabObserver they register.
+        assert mDelegateFactory != null;
         tab.initialize(
                 parent,
                 mCreationType,

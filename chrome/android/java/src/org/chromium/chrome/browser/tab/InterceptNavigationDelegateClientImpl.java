@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 
@@ -76,13 +78,15 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mTab.getWebContents();
     }
 
     @Override
     public @Nullable ExternalNavigationHandler createExternalNavigationHandler() {
-        return mTab.getDelegateFactory().createExternalNavigationHandler(mTab);
+        TabDelegateFactory delegateFactory = mTab.getDelegateFactory();
+        if (delegateFactory == null) return null;
+        return delegateFactory.createExternalNavigationHandler(mTab);
     }
 
     @Override
@@ -96,7 +100,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public Activity getActivity() {
+    public @Nullable Activity getActivity() {
         return mTab.getActivity();
     }
 
@@ -113,7 +117,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     @Override
     public void closeTab() {
         if (mTab.isClosing()) return;
-        mTab.getActivity()
+        assumeNonNull(mTab.getActivity())
                 .getTabModelSelector()
                 .tryCloseTab(
                         TabClosureParams.closeTab(mTab).allowUndo(false).build(),
@@ -184,10 +188,11 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                 PostTask.postTask(
                         TaskTraits.UI_DEFAULT,
                         () -> {
+                            Activity activity = assumeNonNull(getActivity());
                             if (!isChromeTabbedActivityRunning) {
-                                getActivity().finishAndRemoveTask();
+                                activity.finishAndRemoveTask();
                             } else {
-                                getActivity().moveTaskToBack(false);
+                                activity.moveTaskToBack(false);
                             }
                             closeTab();
                         });

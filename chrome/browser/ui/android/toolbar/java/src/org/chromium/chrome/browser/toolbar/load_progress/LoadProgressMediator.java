@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.load_progress;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -83,7 +85,8 @@ public class LoadProgressMediator {
                                                 tab.getUrl(),
                                                 tab.isIncognito(),
                                                 tab.isNativePage()
-                                                        && tab.getNativePage().isPdf())) {
+                                                        && assumeNonNull(tab.getNativePage())
+                                                                .isPdf())) {
                                     return;
                                 }
 
@@ -135,7 +138,7 @@ public class LoadProgressMediator {
             if (NativePage.isNativePageUrl(
                     tab.getUrl(),
                     tab.isIncognito(),
-                    tab.isNativePage() && tab.getNativePage().isPdf())) {
+                    tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf())) {
                 finishLoadProgress(false);
             } else {
                 startLoadProgress();

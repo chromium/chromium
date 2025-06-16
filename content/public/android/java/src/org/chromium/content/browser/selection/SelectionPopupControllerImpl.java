@@ -383,7 +383,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     // ViewAndroidDelegate.ContainerViewObserver
 
     @Override
-    public void onUpdateContainerView(ViewGroup containerView) {
+    public void onUpdateContainerView(@Nullable ViewGroup containerView) {
         // Cleans up action mode before switching to a new container view.
         if (isActionModeValid()) finishActionMode();
         mUnselectAllOnDismiss = true;

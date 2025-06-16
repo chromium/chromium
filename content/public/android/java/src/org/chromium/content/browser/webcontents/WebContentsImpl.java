@@ -223,7 +223,7 @@ public class WebContentsImpl
     public void setDelegates(
             String productVersion,
             ViewAndroidDelegate viewDelegate,
-            InternalAccessDelegate accessDelegate,
+            @Nullable InternalAccessDelegate accessDelegate,
             @Nullable WindowAndroid windowAndroid,
             InternalsHolder internalsHolder) {
         assert internalsHolder != null;

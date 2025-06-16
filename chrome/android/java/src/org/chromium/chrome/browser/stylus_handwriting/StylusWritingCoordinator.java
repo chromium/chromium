@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.stylus_handwriting;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -49,7 +51,7 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
                             public void onContentChanged(Tab tab) {
                                 if (tab.getWebContents() == null) return;
                                 mStylusWritingController.onWebContentsChanged(tab.getWebContents());
-                                tab.getContentView()
+                                assumeNonNull(tab.getContentView())
                                         .setStylusWritingIconSupplier(
                                                 mStylusWritingController::resolvePointerIcon);
                             }
@@ -58,7 +60,7 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
                         tab -> {
                             if (tab == null || tab.getWebContents() == null) return;
                             mStylusWritingController.onWebContentsChanged(tab.getWebContents());
-                            tab.getContentView()
+                            assumeNonNull(tab.getContentView())
                                     .setStylusWritingIconSupplier(
                                             mStylusWritingController::resolvePointerIcon);
                         });

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import static java.lang.Math.min;
 
 import android.content.Context;
@@ -239,6 +241,7 @@ public class TabContentManager {
         if (nativePage == null && !isNativeViewShowing) {
             return null;
         }
+        assumeNonNull(nativePage);
 
         View viewToDraw = null;
         if (isNativeViewShowing) {

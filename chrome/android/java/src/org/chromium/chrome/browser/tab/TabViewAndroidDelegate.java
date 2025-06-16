@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.SparseArray;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
@@ -57,7 +59,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         }
 
-        mCurrentInsetSupplier = tab.getWindowAndroid().getApplicationBottomInsetSupplier();
+        mCurrentInsetSupplier = tab.getWindowAndroidChecked().getApplicationBottomInsetSupplier();
         mCurrentInsetSupplier.addObserver(mInsetObserver);
 
         mTab.addObserver(
@@ -71,7 +73,8 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
                         }
                         if (window != null) {
                             mCurrentInsetSupplier =
-                                    tab.getWindowAndroid().getApplicationBottomInsetSupplier();
+                                    tab.getWindowAndroidChecked()
+                                            .getApplicationBottomInsetSupplier();
                             mCurrentInsetSupplier.addObserver(mInsetObserver);
                         }
                         updateVisualViewportBottomInset();
@@ -144,8 +147,9 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     }
 
     @Override
-    public void updateAnchorViews(ViewGroup oldContainerView) {
+    public void updateAnchorViews(@Nullable ViewGroup oldContainerView) {
         super.updateAnchorViews(oldContainerView);
+        assumeNonNull(oldContainerView);
 
         assert oldContainerView instanceof ContentView
                 : "TabViewAndroidDelegate does not host container views other than ContentView.";

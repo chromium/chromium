@@ -45,7 +45,7 @@ public abstract class TabWebContentsUserData implements UserData {
 
     @Override
     public final void destroy() {
-        cleanupWebContents(mWebContents);
+        if (mWebContents != null) cleanupWebContents(mWebContents);
         destroyInternal();
     }
 
@@ -64,7 +64,8 @@ public abstract class TabWebContentsUserData implements UserData {
 
     /**
      * Called when {@link WebContents} gets swapped out.
+     *
      * @param webContents WebContents object that just became inactive.
      */
-    public abstract void cleanupWebContents(@Nullable WebContents webContents);
+    public abstract void cleanupWebContents(WebContents webContents);
 }

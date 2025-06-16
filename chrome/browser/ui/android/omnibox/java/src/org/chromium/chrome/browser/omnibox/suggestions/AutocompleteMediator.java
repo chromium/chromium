@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -639,8 +640,9 @@ class AutocompleteMediator
         // When invoked directly from a browser, we want to trigger switch to tab animation.
         // If invoked from other activities, ex. searchActivity, we do not need to trigger the
         // animation since Android will show the animation for switching apps.
-        if (tab.getWindowAndroid().getActivityState() == ActivityState.STOPPED
-                || tab.getWindowAndroid().getActivityState() == ActivityState.DESTROYED) {
+        WindowAndroid windowAndroid = tab.getWindowAndroidChecked();
+        if (windowAndroid.getActivityState() == ActivityState.STOPPED
+                || windowAndroid.getActivityState() == ActivityState.DESTROYED) {
             mBringTabToFrontCallback.onResult(tab);
             return true;
         }

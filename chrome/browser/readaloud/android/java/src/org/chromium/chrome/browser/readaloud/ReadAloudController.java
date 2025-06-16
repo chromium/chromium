@@ -925,7 +925,7 @@ public class ReadAloudController
                 || DeviceConditions.getCurrentNetConnectionType(mActivity.getApplicationContext())
                         == ConnectionType.CONNECTION_NONE
                 // TODO(crbug.com/363326024): Remove once feature is supported for PDF.
-                || (tab.isNativePage() && tab.getNativePage().isPdf())) {
+                || (tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf())) {
             return false;
         }
 

@@ -29,7 +29,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public class EmptyTabObserver implements TabObserver {
     @Override
-    public void onInitialized(Tab tab, String appId) {}
+    public void onInitialized(Tab tab, @Nullable String appId) {}
 
     @Override
     public void onShown(Tab tab, @TabSelectionType int type) {}
@@ -65,7 +65,7 @@ public class EmptyTabObserver implements TabObserver {
     public void onRestoreFailed(Tab tab) {}
 
     @Override
-    public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {}
+    public void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {}
 
     @Override
     public void onTitleUpdated(Tab tab) {}

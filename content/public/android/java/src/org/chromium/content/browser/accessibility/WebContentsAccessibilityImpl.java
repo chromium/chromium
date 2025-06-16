@@ -760,7 +760,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @Override
-    public void onUpdateContainerView(ViewGroup view) {
+    public void onUpdateContainerView(@Nullable ViewGroup view) {
         // When the ContainerView is updated, we must update the |mView| variable and remove all
         // previous references to it. We clear the AccessibilityEventDispatcher queue, which may
         // have posted Runnable(s) to the old view. We also clear the AccessibilityNodeInfo cache
@@ -768,6 +768,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // do not want to delete |this| because the object is (largely) not ContainerView dependent.
         mEventDispatcher.clearQueue();
         mNodeInfoCache.clear();
+        assumeNonNull(view);
         mView = view;
     }
 
@@ -1444,13 +1445,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @Override
     public void restoreFocus() {
         if (isAccessibilityEnabled() && mLastAccessibilityFocusId != View.NO_ID) {
-            if (ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheOptimizeScroll.getValue()) {
-                scrollToMakeNodeVisible(mLastAccessibilityFocusId);
-                moveAccessibilityFocusToId(mLastAccessibilityFocusId);
-            } else {
-                moveAccessibilityFocusToId(mLastAccessibilityFocusId);
-                scrollToMakeNodeVisible(mLastAccessibilityFocusId);
-            }
+            moveAccessibilityFocusToId(mLastAccessibilityFocusId);
+            scrollToMakeNodeVisible(mLastAccessibilityFocusId);
         }
     }
 
@@ -1501,13 +1497,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             WebContentsAccessibilityImplJni.get().setSequentialFocusStartingPoint(mNativeObj, id);
         }
 
-        if (ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheOptimizeScroll.getValue()) {
-            scrollToMakeNodeVisible(mAccessibilityFocusId);
-            moveAccessibilityFocusToId(id);
-        } else {
-            moveAccessibilityFocusToId(id);
-            scrollToMakeNodeVisible(mAccessibilityFocusId);
-        }
+        moveAccessibilityFocusToId(id);
+        scrollToMakeNodeVisible(mAccessibilityFocusId);
         return true;
     }
 
@@ -1699,7 +1690,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mDelegate.scrollToMakeNodeVisible(getAbsolutePositionForNode(virtualViewId));
         } else {
             mPendingScrollToMakeNodeVisible = true;
-            mHistogramRecorder.updateTimeOfScrollToMakeVisible();
             WebContentsAccessibilityImplJni.get()
                     .scrollToMakeNodeVisible(mNativeObj, virtualViewId);
         }
@@ -2028,7 +2018,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_SCROLLED);
         if (mPendingScrollToMakeNodeVisible) {
             sendAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            mHistogramRecorder.recordTimeOfScrollToMakeVisible();
             mPendingScrollToMakeNodeVisible = false;
         }
     }

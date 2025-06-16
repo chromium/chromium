@@ -605,7 +605,7 @@ public class LoadUrlParams {
      * @param additionalNavigationParams Additional navigation params associated with the load.
      */
     public void setAdditionalNavigationParams(
-            AdditionalNavigationParams additionalNavigationParams) {
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         mAdditionalNavigationParams = additionalNavigationParams;
     }
 

@@ -82,10 +82,9 @@ public interface WebContents extends Parcelable {
     }
 
     /**
-     *
      * Initialize various content objects of {@link WebContents} lifetime.
      *
-     * Note: This method is more of to set the {@link ViewAndroidDelegate} and {@link
+     * <p>Note: This method is more of to set the {@link ViewAndroidDelegate} and {@link
      * ViewEventSink.InternalAccessDelegate}, most of the embedder should only call this once during
      * the whole lifecycle of the {@link WebContents}, but it is safe to call it multiple times.
      *
@@ -98,7 +97,7 @@ public interface WebContents extends Parcelable {
     void setDelegates(
             String productVersion,
             ViewAndroidDelegate viewDelegate,
-            ViewEventSink.InternalAccessDelegate accessDelegate,
+            ViewEventSink.@Nullable InternalAccessDelegate accessDelegate,
             @Nullable WindowAndroid windowAndroid,
             InternalsHolder internalsHolder);
 

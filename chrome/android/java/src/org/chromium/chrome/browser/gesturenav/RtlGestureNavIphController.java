@@ -24,6 +24,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
@@ -118,7 +119,8 @@ public class RtlGestureNavIphController implements Destroyable {
     private void show() {
         Tab tab = mActivityTabProvider.get();
         assumeNonNull(tab);
-        ModalDialogManager modalDialogManager = tab.getWindowAndroid().getModalDialogManager();
+        WindowAndroid windowAndroid = tab.getWindowAndroidChecked();
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         assumeNonNull(modalDialogManager);
         RtlGestureNavIphDialog dialog =
                 new RtlGestureNavIphDialog(

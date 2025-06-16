@@ -25,10 +25,11 @@ public class TaskTabHelper {
 
     /**
      * Creates the {@link TaskTabHelper} for the given {@link Tab}.
+     *
      * @param tab the Tab to attach the helper to.
      * @param parentTab corresponding parent Tab for the Tab
      */
-    public static void createForTab(Tab tab, Tab parentTab) {
+    public static void createForTab(Tab tab, @Nullable Tab parentTab) {
         if (parentTab == null) return;
         TabAttributes.from(tab)
                 .set(

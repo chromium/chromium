@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.view.View;
 
@@ -99,9 +101,18 @@ public interface Tab extends TabLifecycle {
     Context getContext();
 
     /**
-     * @return The {@link WindowAndroid} associated with this {@link Tab}.
+     * Returns the {@link WindowAndroid} associated with this {@link Tab}. May be null if the tab is
+     * detached.
      */
-    WindowAndroid getWindowAndroid();
+    @Nullable WindowAndroid getWindowAndroid();
+
+    /**
+     * Returns the {@link WindowAndroid} associated with this {@link Tab}. Asserts that the {@link
+     * WindowAndroid} is not null.
+     */
+    default WindowAndroid getWindowAndroidChecked() {
+        return assertNonNull(getWindowAndroid());
+    }
 
     /**
      * Update the attachment state to Window(Activity).
@@ -115,16 +126,15 @@ public interface Tab extends TabLifecycle {
             @Nullable WindowAndroid window, @Nullable TabDelegateFactory tabDelegateFactory);
 
     /**
-     * @return Content view used for rendered web contents. Can be null
-     *    if web contents is null.
+     * @return Content view used for rendered web contents. Can be null if web contents is null.
      */
-    ContentView getContentView();
+    @Nullable ContentView getContentView();
 
     /**
      * @return The {@link View} displaying the current page in the tab. This can be {@code null}, if
-     *         the tab is frozen or being initialized or destroyed.
+     *     the tab is frozen or being initialized or destroyed.
      */
-    View getView();
+    @Nullable View getView();
 
     /**
      * @return The {@link TabViewManager} that is responsible for managing custom {@link View}s
@@ -139,7 +149,7 @@ public interface Tab extends TabLifecycle {
     /**
      * @return Parameters that should be used for a lazily loaded Tab. May be null.
      */
-    LoadUrlParams getPendingLoadParams();
+    @Nullable LoadUrlParams getPendingLoadParams();
 
     /**
      * @return The URL that is loaded in the current tab. This may not be the same as
@@ -160,10 +170,10 @@ public interface Tab extends TabLifecycle {
 
     /**
      * @return The {@link NativePage} associated with the current page, or {@code null} if there is
-     *         no current page or the current page is displayed using something besides
-     *         {@link NativePage}.
+     *     no current page or the current page is displayed using something besides {@link
+     *     NativePage}.
      */
-    NativePage getNativePage();
+    @Nullable NativePage getNativePage();
 
     /**
      * @return Whether or not the {@link Tab} represents a {@link NativePage}.
@@ -418,7 +428,7 @@ public interface Tab extends TabLifecycle {
     /**
      * @return content state bytes for the {@link Tab}
      */
-    WebContentsState getWebContentsState();
+    @Nullable WebContentsState getWebContentsState();
 
     /**
      * @return timestamp in milliseconds when the tab was last interacted.

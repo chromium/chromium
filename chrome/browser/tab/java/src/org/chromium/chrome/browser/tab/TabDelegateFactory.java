@@ -61,5 +61,5 @@ public interface TabDelegateFactory {
      * @return A NativePage showing the specified url or null.
      */
     @Nullable NativePage createNativePage(
-            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo);
+            String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo);
 }

@@ -388,7 +388,7 @@ public class RequestDesktopUtils {
      * Determine whether RDS window setting should be applied. When returning 'true' the mobile user
      * agent should be used for the current window size.
      */
-    static boolean shouldApplyWindowSetting(Profile profile, GURL url, Context context) {
+    static boolean shouldApplyWindowSetting(Profile profile, @Nullable GURL url, Context context) {
         // Skip window setting on Automotive and revisit if / when they add split screen.
         if (BuildInfo.getInstance().isAutomotive) {
             return false;

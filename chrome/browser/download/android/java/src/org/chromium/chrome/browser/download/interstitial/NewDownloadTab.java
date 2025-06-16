@@ -150,7 +150,7 @@ public class NewDownloadTab extends EmptyTabObserver
         mTab = tab;
         mActivity = activity;
         mCoordinator = coordinator;
-        NewDownloadTabProvider.attach(tab.getWindowAndroid(), this);
+        NewDownloadTabProvider.attach(tab.getWindowAndroidChecked(), this);
     }
 
     private boolean isViewAttached() {

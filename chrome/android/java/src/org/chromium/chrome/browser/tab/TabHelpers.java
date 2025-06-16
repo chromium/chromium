@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.AccessibilityTabHelper;
 import org.chromium.chrome.browser.complex_tasks.TaskTabHelper;
@@ -21,15 +23,17 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 
 /** Helper class that initializes various tab UserData objects. */
+@NullMarked
 public final class TabHelpers {
     private TabHelpers() {}
 
     /**
      * Creates Tab helper objects upon Tab creation.
+     *
      * @param tab {@link Tab} to create helpers for.
      * @param parentTab {@link Tab} parent tab
      */
-    static void initTabHelpers(Tab tab, Tab parentTab) {
+    static void initTabHelpers(Tab tab, @Nullable Tab parentTab) {
         TabUma.createForTab(tab);
         TabStateAttributes.createForTab(tab, ((TabImpl) tab).getCreationState());
         TabDistillabilityProvider.createForTab(tab);

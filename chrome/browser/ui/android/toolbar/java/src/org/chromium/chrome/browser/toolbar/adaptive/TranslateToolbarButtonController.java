@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -80,7 +82,7 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
     protected boolean shouldShowButton(@Nullable Tab tab) {
         if (tab == null) return false;
         if (!super.shouldShowButton(tab)) return false;
-        if (tab.isNativePage() && tab.getNativePage().isPdf()) return false;
+        if (tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf()) return false;
         return UrlUtilities.isHttpOrHttps(tab.getUrl());
     }
 }

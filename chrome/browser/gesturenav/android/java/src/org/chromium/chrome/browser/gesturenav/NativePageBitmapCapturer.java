@@ -66,7 +66,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
             return true;
         }
 
-        UnownedUserDataHost host = tab.getWindowAndroid().getUnownedUserDataHost();
+        UnownedUserDataHost host = tab.getWindowAndroidChecked().getUnownedUserDataHost();
         if (CAPTURER_KEY.retrieveDataFromHost(host) == null) {
             CAPTURER_KEY.attachToHost(host, new NativePageBitmapCapturer());
         }
@@ -87,6 +87,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
                     new CaptureObserver() {
                         @Override
                         public void onCaptureStart(Canvas canvas, @Nullable Rect dirtyRect) {
+                            assumeNonNull(tab.getNativePage());
                             canvas.drawColor(tab.getNativePage().getBackgroundColor());
                             canvas.translate(
                                     0, -tab.getNativePage().getHeightOverlappedWithTopControls());
@@ -138,7 +139,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
             return CaptureNativeViewResult.NULL_WINDOW_ANDROID;
         }
 
-        View view = tab.getView();
+        View view = assumeNonNull(tab.getView());
         // The view is not laid out yet.
         if (view.getWidth() == 0 || view.getHeight() == 0) {
             return CaptureNativeViewResult.VIEW_NOT_LAID_OUT;
@@ -168,7 +169,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
 
     private static Bitmap capture(Tab tab, boolean fullscreen, int topControlsHeight) {
         try (TraceEvent e = TraceEvent.scoped("NativePageBitmapCapturer::capture")) {
-            View view = tab.getView();
+            View view = assumeNonNull(tab.getView());
             // The size of the webpage might be different from that of native pages.
             // The former may also capture the area underneath the navigation bar while
             // the latter sometimes does not. If their sizes don't match, a fallback screenshot will
@@ -184,7 +185,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
                                     .getContainerView()
                                     .getHeight());
 
-            bitmap.eraseColor(tab.getNativePage().getBackgroundColor());
+            bitmap.eraseColor(assumeNonNull(tab.getNativePage()).getBackgroundColor());
 
             Canvas canvas = new Canvas(bitmap);
             float scale = getScale();

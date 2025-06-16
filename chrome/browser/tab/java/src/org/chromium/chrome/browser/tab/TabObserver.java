@@ -25,12 +25,13 @@ import org.chromium.url.GURL;
 @NullMarked
 public interface TabObserver {
     /**
-     * Called when a {@link Tab} finished initialization. The {@link TabState} contains,
-     * if not {@code null}, various states that a Tab should restore itself from.
+     * Called when a {@link Tab} finished initialization. The {@link TabState} contains, if not
+     * {@code null}, various states that a Tab should restore itself from.
+     *
      * @param tab The notifying {@link Tab}.
      * @param appId ID of the external app that opened this tab.
      */
-    void onInitialized(Tab tab, String appId);
+    void onInitialized(Tab tab, @Nullable String appId);
 
     /**
      * Called when a {@link Tab} is shown.
@@ -106,11 +107,12 @@ public interface TabObserver {
 
     /**
      * Called when the favicon of a {@link Tab} has been updated.
+     *
      * @param tab The notifying {@link Tab}.
      * @param icon The favicon that was received.
      * @param iconUrl The URL that the icon was fetched from.
      */
-    void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl);
+    void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl);
 
     /**
      * Called when the title of a {@link Tab} changes.

@@ -4,6 +4,8 @@
 
 package org.chromium.ui.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -44,18 +46,15 @@ public class ViewAndroidDelegate {
     private static @Nullable DragAndDropDelegate sDragAndDropDelegateForTesting;
     private final DragAndDropDelegateImpl mDragAndDropDelegateImpl;
 
-    /**
-     * The current container view. This view can be updated with
-     * {@link #setContainerView()}.
-     */
-    protected ViewGroup mContainerView;
+    /** The current container view. This view can be updated with {@link #setContainerView()}. */
+    protected @Nullable ViewGroup mContainerView;
 
     // Temporary storage for use as a parameter of getLocationOnScreen().
     private final int[] mTemporaryContainerLocation = new int[2];
 
     /** Notifies the observer when container view is updated. */
     public interface ContainerViewObserver {
-        void onUpdateContainerView(ViewGroup view);
+        void onUpdateContainerView(@Nullable ViewGroup view);
     }
 
     private final ObserverList<ContainerViewObserver> mContainerViewObservers =
@@ -87,14 +86,15 @@ public class ViewAndroidDelegate {
 
     /**
      * Create and return a basic implementation of {@link ViewAndroidDelegate}.
+     *
      * @param containerView {@link ViewGroup} to be used as a container view.
      * @return a new instance of {@link ViewAndroidDelegate}.
      */
-    public static ViewAndroidDelegate createBasicDelegate(ViewGroup containerView) {
+    public static ViewAndroidDelegate createBasicDelegate(@Nullable ViewGroup containerView) {
         return new ViewAndroidDelegate(containerView);
     }
 
-    protected ViewAndroidDelegate(ViewGroup containerView) {
+    protected ViewAndroidDelegate(@Nullable ViewGroup containerView) {
         mContainerView = containerView;
         mDragAndDropDelegateImpl = new DragAndDropDelegateImpl();
     }
@@ -134,22 +134,23 @@ public class ViewAndroidDelegate {
     /**
      * Updates the current container view to which this class delegates.
      *
-     * <p>WARNING: This method can also be used to replace the existing container view,
-     * but you should only do it if you have a very good reason to. Replacing the
-     * container view has been designed to support fullscreen in the Webview so it
-     * might not be appropriate for other use cases.
+     * <p>WARNING: This method can also be used to replace the existing container view, but you
+     * should only do it if you have a very good reason to. Replacing the container view has been
+     * designed to support fullscreen in the Webview so it might not be appropriate for other use
+     * cases.
      *
-     * <p>This method only performs a small part of replacing the container view and
-     * embedders are responsible for:
+     * <p>This method only performs a small part of replacing the container view and embedders are
+     * responsible for:
+     *
      * <ul>
-     *     <li>Disconnecting the old container view from all the references</li>
-     *     <li>Updating the InternalAccessDelegate</li>
-     *     <li>Reconciling the state with the new container view</li>
-     *     <li>Tearing down and recreating the native GL rendering where appropriate</li>
-     *     <li>etc.</li>
+     *   <li>Disconnecting the old container view from all the references
+     *   <li>Updating the InternalAccessDelegate
+     *   <li>Reconciling the state with the new container view
+     *   <li>Tearing down and recreating the native GL rendering where appropriate
+     *   <li>etc.
      * </ul>
      */
-    public final void setContainerView(ViewGroup containerView) {
+    public final void setContainerView(@Nullable ViewGroup containerView) {
         ViewGroup oldContainerView = mContainerView;
         mContainerView = containerView;
         updateAnchorViews(oldContainerView);
@@ -183,7 +184,7 @@ public class ViewAndroidDelegate {
      *
      * @param oldContainerView Old container view just replaced by a new one.
      */
-    public void updateAnchorViews(ViewGroup oldContainerView) {}
+    public void updateAnchorViews(@Nullable ViewGroup oldContainerView) {}
 
     /**
      * @return An anchor view that can be used to anchor decoration views like Autofill popup.
@@ -296,7 +297,7 @@ public class ViewAndroidDelegate {
     public void onCursorChangedToCustom(Bitmap customCursorBitmap, int hotspotX, int hotspotY) {
         PointerIcon icon = PointerIcon.create(customCursorBitmap, hotspotX, hotspotY);
 
-        getContainerViewGroup().setPointerIcon(icon);
+        assumeNonNull(getContainerViewGroup()).setPointerIcon(icon);
     }
 
     @VisibleForTesting
@@ -423,6 +424,7 @@ public class ViewAndroidDelegate {
                 break;
         }
         ViewGroup containerView = getContainerViewGroup();
+        assumeNonNull(containerView);
         PointerIcon icon = PointerIcon.getSystemIcon(containerView.getContext(), pointerIconType);
 
         containerView.setPointerIcon(icon);
@@ -492,12 +494,11 @@ public class ViewAndroidDelegate {
      * @return container view that the anchor views are added to. May be null.
      */
     @CalledByNative
-    @Nullable
-    public final View getContainerView() {
+    public final @Nullable View getContainerView() {
         return mContainerView;
     }
 
-    protected final ViewGroup getContainerViewGroup() {
+    protected final @Nullable ViewGroup getContainerViewGroup() {
         return mContainerView;
     }
 

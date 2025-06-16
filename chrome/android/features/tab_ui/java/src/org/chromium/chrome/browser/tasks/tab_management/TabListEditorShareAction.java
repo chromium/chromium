@@ -168,7 +168,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
                         : TabListEditorActionMetricGroups.SHARE_TABS;
 
         ShareParams shareParams =
-                new ShareParams.Builder(tab.getWindowAndroid(), tabTitle, tabUrl)
+                new ShareParams.Builder(assumeNonNull(tab.getWindowAndroid()), tabTitle, tabUrl)
                         .setText(tabText)
                         .build();
 

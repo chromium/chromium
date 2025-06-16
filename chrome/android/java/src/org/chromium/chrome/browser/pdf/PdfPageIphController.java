@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -103,7 +105,9 @@ public class PdfPageIphController {
                 new ActivityTabTabObserver(mActivityTabProvider) {
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
-                        if (tab == null || !tab.isNativePage() || !tab.getNativePage().isPdf()) {
+                        if (tab == null
+                                || !tab.isNativePage()
+                                || !assumeNonNull(tab.getNativePage()).isPdf()) {
                             return;
                         }
                         showDownloadIph(profile);

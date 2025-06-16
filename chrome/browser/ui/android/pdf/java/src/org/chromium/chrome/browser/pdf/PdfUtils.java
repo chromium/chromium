@@ -176,7 +176,7 @@ public class PdfUtils {
      * @param nativePage The NativePage being used to retrieve pdf information.
      * @return Pdf information including filename, filepath etc.
      */
-    public static @Nullable PdfInfo getPdfInfo(NativePage nativePage) {
+    public static @Nullable PdfInfo getPdfInfo(@Nullable NativePage nativePage) {
         if (nativePage == null || !nativePage.isPdf()) {
             return null;
         }
@@ -223,7 +223,7 @@ public class PdfUtils {
     }
 
     /** Return the type of the pdf page. */
-    public static @PdfPageType int getPdfPageType(NativePage pdfPage) {
+    public static @PdfPageType int getPdfPageType(@Nullable NativePage pdfPage) {
         if (pdfPage == null || !pdfPage.isPdf()) {
             return PdfPageType.NONE;
         }
@@ -281,7 +281,7 @@ public class PdfUtils {
      * @param nativePage When the native page is a pdf page, record whether it is frozen before the
      *     tab is displayed.
      */
-    public static void recordIsPdfFrozen(NativePage nativePage) {
+    public static void recordIsPdfFrozen(@Nullable NativePage nativePage) {
         if (nativePage == null) {
             return;
         }

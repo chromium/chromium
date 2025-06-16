@@ -43,7 +43,7 @@ public class HeadlessTabDelegateFactory implements TabDelegateFactory {
 
     @Override
     public @Nullable NativePage createNativePage(
-            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
+            String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo) {
         return null;
     }
 }

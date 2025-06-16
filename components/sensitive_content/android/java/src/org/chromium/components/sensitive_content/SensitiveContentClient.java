@@ -20,6 +20,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
@@ -167,7 +168,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
      * @param view The new container view.
      */
     @Override
-    public void onUpdateContainerView(ViewGroup view) {
+    public void onUpdateContainerView(@Nullable ViewGroup view) {
         assert view == assumeNonNull(mViewAndroidDelegate.get()).getContainerView();
         setContentSensitivity(mContentIsSensitive);
     }

@@ -22,6 +22,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -320,7 +321,7 @@ class NavigationHandler implements TouchEventObserver {
                 BackPressMetrics.recordNavStatusOnGestureStart(
                         assumeNonNull(mTab.getWebContents())
                                 .hasUncommittedNavigationInPrimaryMainFrame(),
-                        assumeNonNull(mTab.getWindowAndroid().getActivity().get()).getWindow());
+                        getWindow(mTab));
                 mStartNavDuringOngoingGesture = false;
                 mBackGestureForTabHistoryInProgress = true;
             }
@@ -425,8 +426,7 @@ class NavigationHandler implements TouchEventObserver {
         if (mBackGestureForTabHistoryInProgress) {
             assumeNonNull(mTab);
             BackPressMetrics.recordNavStatusDuringGesture(
-                    mStartNavDuringOngoingGesture,
-                    assumeNonNull(mTab.getWindowAndroid().getActivity().get()).getWindow());
+                    mStartNavDuringOngoingGesture, getWindow(mTab));
         }
         mBackGestureForTabHistoryInProgress = false;
         mStartNavDuringOngoingGesture = false;
@@ -494,7 +494,7 @@ class NavigationHandler implements TouchEventObserver {
      */
     private float getProgress() {
         assert mTab != null;
-        Activity activity = mTab.getWindowAndroid().getActivity().get();
+        Activity activity = mTab.getWindowAndroidChecked().getActivity().get();
         assert activity != null;
         int width;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -536,5 +536,9 @@ class NavigationHandler implements TouchEventObserver {
             forward = !forward;
         }
         return forward;
+    }
+
+    private static final Window getWindow(Tab tab) {
+        return assumeNonNull(tab.getWindowAndroidChecked().getActivity().get()).getWindow();
     }
 }

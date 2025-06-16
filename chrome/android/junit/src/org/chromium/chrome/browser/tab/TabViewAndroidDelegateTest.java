@@ -75,7 +75,7 @@ public class TabViewAndroidDelegateTest {
 
         when(mWindowAndroid.getApplicationBottomInsetSupplier())
                 .thenReturn(mApplicationInsetSupplier);
-        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        when(mTab.getWindowAndroidChecked()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);
 
         mViewAndroidDelegate = new TabViewAndroidDelegate(mTab, mContentView);

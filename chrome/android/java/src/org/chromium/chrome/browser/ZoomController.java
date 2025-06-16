@@ -8,6 +8,7 @@ package org.chromium.chrome.browser;
 import android.os.SystemClock;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.zoom.ZoomConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.EventForwarder;
@@ -21,24 +22,24 @@ import org.chromium.ui.base.GestureEventType;
 @NullMarked
 public class ZoomController {
     /**
-     * Zooms in the WebContents by 25% (or less if that would result in
-     * zooming in more than possible).
+     * Zooms in the WebContents by 25% (or less if that would result in zooming in more than
+     * possible).
      *
      * @param webContents {@link WebContents} to zoom in.
      * @return True if there was a zoom change, false otherwise.
      */
-    public static boolean zoomIn(WebContents webContents) {
+    public static boolean zoomIn(@Nullable WebContents webContents) {
         return pinchByDelta(webContents, ZoomConstants.ZOOM_IN_DELTA);
     }
 
     /**
-     * Zooms out the WebContents by 20% (or less if that would result in
-     * zooming out more than possible).
+     * Zooms out the WebContents by 20% (or less if that would result in zooming out more than
+     * possible).
      *
      * @param webContents {@link WebContents} to zoom out.
      * @return True if there was a zoom change, false otherwise.
      */
-    public static boolean zoomOut(WebContents webContents) {
+    public static boolean zoomOut(@Nullable WebContents webContents) {
         return pinchByDelta(webContents, ZoomConstants.ZOOM_OUT_DELTA);
     }
 
@@ -48,12 +49,12 @@ public class ZoomController {
      * @param webContents {@link WebContents} to reset the zoom of.
      * @return True if there was a zoom change, false otherwise.
      */
-    public static boolean zoomReset(WebContents webContents) {
+    public static boolean zoomReset(@Nullable WebContents webContents) {
         // Negative value to reset zoom level.
         return pinchByDelta(webContents, ZoomConstants.ZOOM_RESET_DELTA);
     }
 
-    private static boolean pinchByDelta(WebContents webContents, float delta) {
+    private static boolean pinchByDelta(@Nullable WebContents webContents, float delta) {
         if (webContents == null) return false;
         EventForwarder eventForwarder = webContents.getEventForwarder();
         long timeMs = SystemClock.uptimeMillis();

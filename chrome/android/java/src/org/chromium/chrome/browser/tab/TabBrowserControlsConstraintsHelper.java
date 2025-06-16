@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -115,7 +117,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         mTab.addObserver(
                 new EmptyTabObserver() {
                     @Override
-                    public void onInitialized(Tab tab, String appId) {
+                    public void onInitialized(Tab tab, @Nullable String appId) {
                         updateVisibilityDelegate();
                     }
 
@@ -198,7 +200,8 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
             mVisibilityDelegate.removeObserver(mConstraintsChangedCallback);
         }
         mVisibilityDelegate =
-                mTab.getDelegateFactory().createBrowserControlsVisibilityDelegate(mTab);
+                assumeNonNull(mTab.getDelegateFactory())
+                        .createBrowserControlsVisibilityDelegate(mTab);
         if (mVisibilityDelegate != null) {
             mVisibilityDelegate.addObserver(mConstraintsChangedCallback);
         }

@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.input;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.view.View;
@@ -53,7 +52,7 @@ public class SelectPopup
     }
 
     private final WebContentsImpl mWebContents;
-    private View mContainerView;
+    private @Nullable View mContainerView;
     private @Nullable Ui mPopupView;
     private long mNativeSelectPopup;
     private long mNativeSelectPopupSourceFrame;
@@ -90,7 +89,7 @@ public class SelectPopup
         mWebContents = (WebContentsImpl) webContents;
         ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
         assert viewDelegate != null;
-        mContainerView = assumeNonNull(viewDelegate.getContainerView());
+        mContainerView = viewDelegate.getContainerView();
         viewDelegate.addObserver(this);
         PopupController.register(mWebContents, this);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
@@ -113,7 +112,7 @@ public class SelectPopup
     // ViewAndroidDelegate.ContainerViewObserver
 
     @Override
-    public void onUpdateContainerView(ViewGroup view) {
+    public void onUpdateContainerView(@Nullable ViewGroup view) {
         mContainerView = view;
         hide();
     }
@@ -144,7 +143,9 @@ public class SelectPopup
             boolean multiple,
             int[] selectedIndices,
             boolean rightAligned) {
-        if (mContainerView.getParent() == null || mContainerView.getVisibility() != View.VISIBLE) {
+        if (mContainerView == null
+                || mContainerView.getParent() == null
+                || mContainerView.getVisibility() != View.VISIBLE) {
             mNativeSelectPopupSourceFrame = nativeSelectPopupSourceFrame;
             selectMenuItems(null);
             return;

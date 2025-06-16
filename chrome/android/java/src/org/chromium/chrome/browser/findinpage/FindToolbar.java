@@ -748,7 +748,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
             mResultBar =
                     new FindResultBar(
                             getContext(),
-                            mCurrentTab.getContentView(),
+                            assumeNonNull(mCurrentTab.getContentView()),
                             mWindowAndroid,
                             mFindInPageBridge);
         } else if (!visibility) {

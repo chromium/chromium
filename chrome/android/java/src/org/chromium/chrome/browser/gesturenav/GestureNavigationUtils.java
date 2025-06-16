@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.view.Window;
 
 import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -35,9 +36,10 @@ public class GestureNavigationUtils {
         if (tab == null) return false;
         if (!areBackForwardTransitionsEnabled()) return false;
         // If in gesture mode, only U and above support transition.
-        if (tab.getWindowAndroid().getWindow() == null) return false;
+        Window window = tab.getWindowAndroidChecked().getWindow();
+        if (window == null) return false;
         if (VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE
-                && UiUtils.isGestureNavigationMode(tab.getWindowAndroid().getWindow())) {
+                && UiUtils.isGestureNavigationMode(window)) {
             return false;
         }
         if (!allowTransitionFromNativePages() && tab.isNativePage()) return false;
