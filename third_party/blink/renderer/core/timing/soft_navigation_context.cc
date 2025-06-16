@@ -25,8 +25,6 @@ SoftNavigationContext::SoftNavigationContext(
           DOMWindowPerformance::performance(window))) {}
 
 void SoftNavigationContext::AddModifiedNode(Node* node) {
-  node->SetIsModifiedBySoftNavigation();
-
   auto add_result = modified_nodes_.insert(node);
   if (add_result.is_new_entry) {
     // If this is the first mod this animation frame, trace it.

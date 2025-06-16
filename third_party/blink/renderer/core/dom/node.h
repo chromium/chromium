@@ -1084,11 +1084,6 @@ class CORE_EXPORT Node : public EventTarget {
 
   void Trace(Visitor*) const override;
 
-  bool IsModifiedBySoftNavigation() const {
-    return GetFlag(kModifiedBySoftNavigation);
-  }
-  void SetIsModifiedBySoftNavigation() { SetFlag(kModifiedBySoftNavigation); }
-
   bool HasNodePart() const { return GetFlag(kHasNodePart); }
   void SetHasNodePart() { SetFlag(kHasNodePart); }
   void ClearHasNodePart() { ClearFlag(kHasNodePart); }
@@ -1151,16 +1146,12 @@ class CORE_EXPORT Node : public EventTarget {
     kSelfOrAncestorHasDirAutoAttribute = 1u << 27,
     kCachedDirectionalityIsRtl = 1u << 28,
 
-    // Indicates that the node was added in a task descendant of a potential
-    // soft navigation.
-    kModifiedBySoftNavigation = 1u << 29,
-
     // Bits indicating this Node is a NodePart or a ChildNodePart endpoint.
-    kHasNodePart = 1u << 30,
+    kHasNodePart = 1u << 29,
 
     // Indicate the node is in a hierarchy that needs to be considered for
     // ContainerTiming events.
-    kSelfOrAncestorHasContainerTiming = 1u << 31,
+    kSelfOrAncestorHasContainerTiming = 1u << 30,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
