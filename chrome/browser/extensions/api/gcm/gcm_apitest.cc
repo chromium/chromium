@@ -10,12 +10,11 @@
 #include "chrome/browser/extensions/extension_gcm_app_handler.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/sync/base/command_line_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/test/result_catcher.h"
 
 using extensions::ResultCatcher;
@@ -70,7 +69,7 @@ class GcmApiTest : public ExtensionApiTest {
 
   const Extension* LoadTestExtension(const std::string& extension_path,
                                      const std::string& page_name);
-  gcm::FakeGCMProfileService* service() const;
+  gcm::FakeGCMProfileService* service();
 };
 
 void GcmApiTest::SetUpCommandLine(base::CommandLine* command_line) {
@@ -94,10 +93,9 @@ void GcmApiTest::StartCollecting() {
   service()->set_collect(true);
 }
 
-gcm::FakeGCMProfileService* GcmApiTest::service() const {
+gcm::FakeGCMProfileService* GcmApiTest::service() {
   return static_cast<gcm::FakeGCMProfileService*>(
-      gcm::GCMProfileServiceFactory::GetInstance()->GetForProfile(
-          browser()->profile()));
+      gcm::GCMProfileServiceFactory::GetInstance()->GetForProfile(profile()));
 }
 
 const Extension* GcmApiTest::LoadTestExtension(
@@ -108,11 +106,15 @@ const Extension* GcmApiTest::LoadTestExtension(
   if (extension) {
     const GURL extension_url = extension->ResolveExtensionURL(page_name);
     EXPECT_TRUE(extension_url.is_valid());
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
+    EXPECT_TRUE(NavigateToURL(extension_url));
+    EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   }
   return extension;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Register and unregister are deprecated on the server. Don't test them.
+// TODO(crbug.com/421235963): Consider deprecating on other platforms.
 IN_PROC_BROWSER_TEST_F(GcmApiTest, RegisterValidation) {
   ASSERT_TRUE(RunExtensionTest("gcm/functions/register_validation"));
 }
@@ -133,6 +135,7 @@ IN_PROC_BROWSER_TEST_F(GcmApiTest, Unregister) {
 
   ASSERT_TRUE(RunExtensionTest("gcm/functions/unregister"));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(GcmApiTest, SendValidation) {
   ASSERT_TRUE(RunExtensionTest("gcm/functions/send"));
@@ -250,6 +253,9 @@ IN_PROC_BROWSER_TEST_F(GcmApiTest, OnSendError) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Register and unregister are deprecated on the server. Don't test them.
+// TODO(crbug.com/421235963): Consider deprecating on other platforms.
 IN_PROC_BROWSER_TEST_F(GcmApiTest, Incognito) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(profile());
@@ -263,5 +269,6 @@ IN_PROC_BROWSER_TEST_F(GcmApiTest, Incognito) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(incognito_catcher.GetNextResult()) << incognito_catcher.message();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
