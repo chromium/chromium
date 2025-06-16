@@ -22,6 +22,7 @@
 class GoogleServiceAuthError;
 
 namespace network {
+struct ResourceRequest;
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network

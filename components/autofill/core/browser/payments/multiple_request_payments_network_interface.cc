@@ -4,11 +4,15 @@
 
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 
+#include <string>
+#include <vector>
+
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/payments_requests/create_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace autofill::payments {
 

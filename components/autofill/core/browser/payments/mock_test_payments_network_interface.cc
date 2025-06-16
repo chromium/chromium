@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/mock_test_payments_network_interface.h"
 
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
 namespace autofill {
 
 MockTestPaymentsNetworkInterface::MockTestPaymentsNetworkInterface()

@@ -21,7 +21,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
@@ -43,7 +42,6 @@
 #include "components/security_state/core/security_state.h"
 #include "components/translate/core/browser/language_state.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
@@ -53,6 +51,10 @@
 class GoogleGroupsManager;
 class PrefService;
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 namespace signin {
 class IdentityManager;
 }
@@ -61,16 +63,16 @@ namespace syncer {
 class SyncService;
 }
 
-namespace ukm {
-class UkmRecorder;
-}
-
 namespace optimization_guide {
 class ModelQualityLogsUploaderService;
 }
 
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
+}
+
+namespace ukm {
+class UkmRecorder;
 }
 
 namespace version_info {
@@ -95,6 +97,7 @@ class AutofillAiDelegate;
 class AutofillAiModelCache;
 class AutofillAiModelExecutor;
 class AutofillProfile;
+class EntityDataManager;
 class FieldClassificationModelHandler;
 class FormDataImporter;
 class LogManager;

@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace autofill::payments {
 namespace {
