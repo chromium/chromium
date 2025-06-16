@@ -79,6 +79,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckStringResourceEllipsisPunctuations(input_api, output_api))
   result.extend(_CheckImportantForAccessibility(input_api, output_api))
   result.extend(_CheckBadStyleReference(input_api, output_api))
+  result.extend(_CheckThemeColorAttributes(input_api, output_api))
   # Add more checks here
   return result
 
@@ -701,3 +702,48 @@ def _checkStringResourcePunctuations(regex, warning, input_api, output_api):
   if warnings:
     result += [output_api.PresubmitPromptWarning(warning, warnings)]
   return result
+
+
+def _CheckThemeColorAttributes(input_api, output_api):
+  """
+  Checks whether direct theme color attributes are used in xml files in layout.
+  Encourages the usage of Chrome's semantically named colors.
+  """
+  warnings = []
+
+  # Find the attributes whose value is a theme reference that contains the
+  # word "color" or "Color".
+  color_theme_attr_pattern = re.compile(
+      r'\b(android|app):(\S*)\s*=\s*"\?attr\/.*([Cc]olor)')
+
+  # Split the file path into a list of strings and check whether that list
+  # contains the string "layout".
+  def is_layout_file(f):
+    # Split path string (on either a forward or backslash) into a list of strings
+    # and check whether that list contains the string "layout".
+    path_components = re.split(r'[\\/]', f.LocalPath())
+    return 'layout' in path_components
+
+  for f in IncludedFiles(input_api):
+    if not is_layout_file(f):
+      continue
+    for line_number, line in f.ChangedContents():
+      if color_theme_attr_pattern.search(line):
+        warnings.append('  %s:%d\n    \t%s' %
+                        (f.LocalPath(), line_number, line.strip()))
+
+  if warnings:
+    return [
+      output_api.PresubmitPromptWarning(
+      '''
+      Android Direct Theme Color Attribute Usage:
+      Your new code is using a direct theme attribute (?attr/...) for a color
+      in a layout file.
+
+      Please use a semantic color macro (e.g., "@macro/default_bg_color")
+      to ensure that colors are consistent and support all themes correctly.
+
+      If a suitable semantic color does not exist, you may need to define one.
+      ''', warnings)
+    ]
+  return []
