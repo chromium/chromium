@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -134,6 +135,45 @@ bool NumberInputType::TypeMismatch() const {
   return false;
 }
 
+String NumberInputType::NormalizeFullWidthNumberChars(const String& input) {
+  StringBuilder result;
+  const wtf_size_t len = input.length();
+  result.ReserveCapacity(len);
+  for (wtf_size_t i = 0; i < len; ++i) {
+    UChar c = input[i];
+    if (c >= kFullwidthDigitZero && c <= kFullwidthDigitNine) {
+      // Convert full-width digits (０-９, U+FF10-U+FF19) to ASCII digits (0-9)
+      result.Append(c - kFullwidthDigitZero + kDigitZeroCharacter);
+    } else if (c == kKatakanaHiraganaProlongedSoundMark ||
+               c == kFullwidthHyphenMinus) {
+      // Convert full-width minus signs and the Japanese IME long sound symbol
+      // ("ー", U+30FC) to ASCII '-'.
+      // Note: On Japanese IMEs, typing a minus sign in full-width mode can
+      // produce either 'ー' (U+30FC) or '－' (U+FF0D), depending on the input
+      // mode.
+      //
+      // There are two common full-width input modes:
+      // - Full-width alphanumeric mode: typing '-' usually results in '－'.
+      // - Full-width Japanese kana mode: typing '-' may yield 'ー'.
+      //
+      // Especially, when **only the symbol is typed**, IMEs tend to insert 'ー'
+      // as a long sound mark. If digits follow, the symbol remains unchanged.
+      // For example, entering "ー2" instead of "-2" is a typical case.
+      //
+      // Since users generally intend to input negative numbers in such cases,
+      // we normalize both 'ー' and '－' to ASCII minus '-'.
+      result.Append(kHyphenMinusCharacter);
+    } else if (c == kFullwidthFullStop) {
+      // Convert full-width period (．, U+FF0E) to ASCII dot (.)
+      result.Append(kFullstopCharacter);
+    } else {
+      // Preserve other characters
+      result.Append(c);
+    }
+  }
+  return result.ReleaseString();
+}
+
 StepRange NumberInputType::CreateStepRange(
     AnyStepHandling any_step_handling) const {
   DEFINE_STATIC_LOCAL(
@@ -192,10 +232,16 @@ void NumberInputType::HandleBeforeTextInsertedEvent(
     BeforeTextInsertedEvent& event) {
   Locale& locale = GetLocale();
 
+  String normalized_input = event.GetText();
+  if (RuntimeEnabledFeatures::NumberInputFullWidthCharsEnabled()) {
+    // Normalize full-width digits and minus sign to ASCII
+    normalized_input = NormalizeFullWidthNumberChars(normalized_input);
+  }
+
   // If the cleaned up text doesn't match input text, don't insert partial input
   // since it could be an incorrect paste.
   String updated_event_text =
-      locale.StripInvalidNumberCharacters(event.GetText(), "0123456789.Ee-+");
+      locale.StripInvalidNumberCharacters(normalized_input, "0123456789.Ee-+");
 
   // Check if locale supports more cleanup rules
   if (!locale.UsesSingleCharNumberFiltering()) {
@@ -265,7 +311,7 @@ void NumberInputType::HandleBeforeTextInsertedEvent(
     left_half = left_half + c;
     final_event_text.Append(c);
   }
-  event.SetText(final_event_text.ToString());
+  event.SetText(final_event_text.ReleaseString());
 }
 
 Decimal NumberInputType::ParseToNumber(const String& src,

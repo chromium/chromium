@@ -3315,6 +3315,10 @@
       base_feature: "none",
     },
     {
+      name: "NumberInputFullWidthChars",
+      status: "stable",
+    },
+    {
       name: "ObservableAPI",
       status: "stable",
       public: true,

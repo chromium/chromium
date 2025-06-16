@@ -42,6 +42,7 @@ class NumberInputType final : public TextFieldInputType {
   explicit NumberInputType(HTMLInputElement& element)
       : TextFieldInputType(Type::kNumber, element) {}
   bool TypeMismatchFor(const String&) const;
+  CORE_EXPORT static String NormalizeFullWidthNumberChars(const String& input);
 
  private:
   void CountUsage() override;
