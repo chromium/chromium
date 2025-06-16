@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TRANSFORM_UTILS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TRANSFORM_UTILS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TRANSFORM_UTILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TRANSFORM_UTILS_H_
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 
@@ -19,4 +19,4 @@ PhysicalRect ComputeReferenceBox(const LayoutBox&);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TRANSFORM_UTILS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TRANSFORM_UTILS_H_

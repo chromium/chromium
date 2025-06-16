@@ -659,6 +659,8 @@ blink_core_sources_layout = [
   "text_utils.h",
   "traced_layout_object.cc",
   "traced_layout_object.h",
+  "transform_utils.cc",
+  "transform_utils.h",
   "tree_traversal_utils.cc",
   "tree_traversal_utils.h",
   "unpositioned_float.h",
