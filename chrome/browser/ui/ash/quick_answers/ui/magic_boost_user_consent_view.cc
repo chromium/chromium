@@ -145,6 +145,7 @@ MagicBoostUserConsentView::MagicBoostUserConsentView(
               views::Builder<views::ImageButton>()
                   .SetTooltipText(l10n_util::GetStringUTF16(
                       IDS_RICH_ANSWERS_VIEW_SETTINGS_BUTTON_A11Y_NAME_TEXT))
+                  .CopyAddressTo(&settings_button_)
                   .SetImageModel(
                       views::Button::ButtonState::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(
@@ -186,6 +187,11 @@ std::vector<views::View*> MagicBoostUserConsentView::GetFocusableViews() {
   }
   focusable_views.push_back(intent_chip_);
   return focusable_views;
+}
+
+void MagicBoostUserConsentView::SetSettingsButtonPressed(
+    views::Button::PressedCallback callback) {
+  settings_button_->SetCallback(std::move(callback));
 }
 
 BEGIN_METADATA(MagicBoostUserConsentView)

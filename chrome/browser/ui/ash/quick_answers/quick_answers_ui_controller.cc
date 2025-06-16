@@ -254,11 +254,12 @@ void QuickAnswersUiController::ShowRetry() {
 }
 
 void QuickAnswersUiController::CreateUserConsentView(
+    Profile* profile,
     const gfx::Rect& anchor_bounds,
     quick_answers::IntentType intent_type,
     const std::u16string& intent_text) {
   CreateUserConsentViewInternal(
-      anchor_bounds, intent_type, intent_text,
+      profile, anchor_bounds, intent_type, intent_text,
       /*use_refreshed_design=*/
       chromeos::features::IsQuickAnswersMaterialNextUIEnabled());
 }
@@ -269,11 +270,12 @@ void QuickAnswersUiController::CreateUserConsentViewForPixelTest(
     const std::u16string& intent_text,
     bool use_refreshed_design) {
   CHECK_IS_TEST();
-  CreateUserConsentViewInternal(anchor_bounds, intent_type, intent_text,
-                                use_refreshed_design);
+  CreateUserConsentViewInternal(/*profile=*/nullptr, anchor_bounds, intent_type,
+                                intent_text, use_refreshed_design);
 }
 
 void QuickAnswersUiController::CreateUserConsentViewInternal(
+    Profile* profile,
     const gfx::Rect& anchor_bounds,
     quick_answers::IntentType intent_type,
     const std::u16string& intent_text,
@@ -284,6 +286,8 @@ void QuickAnswersUiController::CreateUserConsentViewInternal(
   if (chromeos::features::IsMagicBoostRevampForQuickAnswersEnabled() &&
       QuickAnswersState::GetFeatureType() ==
           QuickAnswersState::FeatureType::kHmr) {
+    // Directing to the right settings toggle requires an active profile.
+    profile_ = profile;
     user_consent_view_.SetView(
         GetReadWriteCardsUiController().SetQuickAnswersUi(
             views::Builder<quick_answers::MagicBoostUserConsentView>(
@@ -291,6 +295,9 @@ void QuickAnswersUiController::CreateUserConsentViewInternal(
                     // TODO: crbug.com/414391121 - Populate the button label
                     // with the correct text.
                     intent_text, GetReadWriteCardsUiController()))
+                .SetSettingsButtonPressed(base::BindRepeating(
+                    &QuickAnswersUiController::OnSettingsButtonPressed,
+                    base::Unretained(this)))
                 .Build()));
   } else {
     user_consent_view_.SetView(

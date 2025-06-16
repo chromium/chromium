@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -24,8 +25,6 @@
 namespace views {
 class LabelButton;
 }  // namespace views
-
-class QuickAnswersUiController;
 
 namespace quick_answers {
 
@@ -37,7 +36,7 @@ class MagicBoostUserConsentView : public chromeos::ReadWriteCardsView {
 
   // TODO: crbug.com/340628664 - remove `read_write_cards_ui_controller` arg
   // once we stop extending `ReadWriteCardsView`.
-  explicit MagicBoostUserConsentView(
+  MagicBoostUserConsentView(
       const std::u16string& chip_label,
       chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
 
@@ -53,20 +52,24 @@ class MagicBoostUserConsentView : public chromeos::ReadWriteCardsView {
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void UpdateBoundsForQuickAnswers() override;
 
+  void SetSettingsButtonPressed(views::Button::PressedCallback callback);
+
   std::u16string chip_label_for_testing();
+  views::ImageButton* settings_button_for_testing() { return settings_button_; }
 
  private:
   // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();
 
-  base::WeakPtr<QuickAnswersUiController> controller_;
   chromeos::editor_menu::FocusSearch focus_search_;
   raw_ptr<views::LabelButton> intent_chip_ = nullptr;
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
                    MagicBoostUserConsentView,
                    chromeos::ReadWriteCardsView)
+VIEW_BUILDER_PROPERTY(views::Button::PressedCallback, SettingsButtonPressed)
 END_VIEW_BUILDER
 
 }  // namespace quick_answers

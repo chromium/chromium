@@ -585,7 +585,7 @@ bool QuickAnswersControllerImpl::MaybeShowUserConsent(
     return false;
   }
 
-  quick_answers_ui_controller_->CreateUserConsentView(anchor_bounds_,
+  quick_answers_ui_controller_->CreateUserConsentView(profile_, anchor_bounds_,
                                                       intent_type, intent_text);
 
   consent_ui_shown_ = GetTimeTicksNow();
