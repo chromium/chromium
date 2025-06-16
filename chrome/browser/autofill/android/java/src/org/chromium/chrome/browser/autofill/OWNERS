@@ -1,0 +1,4 @@
+# Payments-relevant files
+per-file AutofillImageFetcher*.java=file://components/autofill/core/browser/payments/ANDROID_OWNERS
+per-file AutofillUiUtils.java=file://components/autofill/core/browser/payments/ANDROID_OWNERS
+per-file PersonalDataManager*.java=file://components/autofill/core/browser/payments/ANDROID_OWNERS

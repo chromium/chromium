@@ -1,1 +1,5 @@
 file://chrome/android/java/src/org/chromium/chrome/browser/autofill/OWNERS
+
+# Payments-relevant files
+per-file AutofillImageFetcher*Test.java=file://components/autofill/core/browser/payments/ANDROID_OWNERS
+per-file AutofillUiUtilsTest.java=file://components/autofill/core/browser/payments/ANDROID_OWNERS
