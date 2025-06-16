@@ -724,6 +724,7 @@ source_set("unit_tests") {
     ":filters_unit_tests",
     ":hints_unit_tests",
     ":model_execution_unit_tests",
+    ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
