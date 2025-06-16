@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
