@@ -54,7 +54,9 @@ class RenderingContextDescriptionCodec {
   explicit RenderingContextDescriptionCodec(const uint32_t& key);
 
   bool IsOffscreen() const { return key_.get<IsOffscreenField>(); }
-  bool IsAccelerated() const { return key_.get<IsAcceleratedField>(); }
+  bool IsAcceleratedCanvas2D() const {
+    return key_.get<IsAcceleratedCanvas2DField>();
+  }
   CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI() const;
   uint32_t GetKey() const { return key_.bits(); }
   bool IsValid() const { return is_valid_; }
@@ -65,8 +67,9 @@ class RenderingContextDescriptionCodec {
  private:
   using Key = WTF::SingleThreadedBitField<uint32_t>;
   using IsOffscreenField = Key::DefineFirstValue<bool, 1>;
-  using IsAcceleratedField = IsOffscreenField::DefineNextValue<bool, 1>;
-  using RenderingAPIField = IsAcceleratedField::DefineNextValue<uint32_t, 8>;
+  using IsAcceleratedCanvas2DField = IsOffscreenField::DefineNextValue<bool, 1>;
+  using RenderingAPIField =
+      IsAcceleratedCanvas2DField::DefineNextValue<uint32_t, 8>;
   using PaddingField = RenderingAPIField::DefineNextValue<bool, 1>;
 
   Key key_;
@@ -80,8 +83,11 @@ RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
     return;
 
   key_.set<IsOffscreenField>(context->Host()->IsOffscreenCanvas());
-  key_.set<IsAcceleratedField>(context->Host()->GetRasterMode() ==
-                               blink::RasterMode::kGPU);
+  if (context->GetRenderingAPI() ==
+      CanvasRenderingContext::CanvasRenderingAPI::k2D) {
+    key_.set<IsAcceleratedCanvas2DField>(context->Host()->GetRasterMode() ==
+                                         blink::RasterMode::kGPU);
+  }
   key_.set<RenderingAPIField>(
       static_cast<uint32_t>(context->GetRenderingAPI()));
   // The padding field ensures at least one bit is set in the key in order
@@ -106,8 +112,8 @@ const char* RenderingContextDescriptionCodec::GetHostTypeName() const {
 const char* RenderingContextDescriptionCodec::GetRenderingAPIName() const {
   switch (GetRenderingAPI()) {
     case CanvasRenderingContext::CanvasRenderingAPI::k2D:
-      return IsAccelerated() ? kRenderingAPIName_2D_Accelerated
-                             : kRenderingAPIName_2D_Unaccelerated;
+      return IsAcceleratedCanvas2D() ? kRenderingAPIName_2D_Accelerated
+                                     : kRenderingAPIName_2D_Unaccelerated;
     case CanvasRenderingContext::CanvasRenderingAPI::kWebgl:
       return kRenderingAPIName_WebGL;
     case CanvasRenderingContext::CanvasRenderingAPI::kWebgl2:
