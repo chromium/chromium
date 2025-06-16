@@ -45,7 +45,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     private final ModalDialogManager mModalDialogManager;
 
     // The short name of the app the user is uninstalling.
-    private final String mAppShortName;
+    private final @Nullable String mAppShortName;
 
     // The package name for the app the user is uninstalling.
     private final String mAppPackageName;
@@ -63,7 +63,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
             Context activityContext,
             ModalDialogManager manager,
             String appPackageName,
-            String appShortName,
+            @Nullable String appShortName,
             boolean showAbuseCheckbox,
             Callback callback) {
         mActivityContext = activityContext;

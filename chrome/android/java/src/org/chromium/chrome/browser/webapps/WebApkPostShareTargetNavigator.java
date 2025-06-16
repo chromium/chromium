@@ -9,10 +9,12 @@ import androidx.browser.trusted.sharing.ShareData;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.content_public.browser.WebContents;
 
 /** Perform navigation for share target with POST request. */
+@NullMarked
 public class WebApkPostShareTargetNavigator {
     public static boolean navigateIfPostShareTarget(
             String url, WebApkShareTarget target, ShareData data, WebContents webContents) {
