@@ -37,8 +37,8 @@
 
 namespace blink {
 
-// TODO(mustaq): Unify WebTouchPoint & WebMouseEvent into WebPointerEvent.
-// crbug.com/508283
+// TODO(crbug.com/41371756): Unify WebTouchPoint & WebMouseEvent into
+// WebPointerEvent.
 class BLINK_COMMON_EXPORT WebTouchPoint : public WebPointerProperties {
  public:
   WebTouchPoint() : WebTouchPoint(WebPointerProperties(0)) {}

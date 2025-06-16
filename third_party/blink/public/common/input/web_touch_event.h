@@ -14,7 +14,7 @@ namespace blink {
 
 // WebTouchEvent --------------------------------------------------------------
 
-// TODO(e_hakkinen): Replace with WebPointerEvent. crbug.com/508283
+// TODO(crbug.com/41371756): Replace with WebPointerEvent.
 class BLINK_COMMON_EXPORT WebTouchEvent : public WebInputEvent {
  public:
   // Maximum number of simultaneous touches supported on
