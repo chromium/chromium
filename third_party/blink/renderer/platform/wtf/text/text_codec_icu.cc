@@ -46,22 +46,23 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
-namespace WTF {
+namespace blink {
 
 const size_t kConversionBufferSize = 16384;
 
-ICUConverterWrapper::~ICUConverterWrapper() {
+IcuConverterWrapper::~IcuConverterWrapper() {
   if (converter)
     ucnv_close(converter);
 }
 
-static UConverter*& CachedConverterICU() {
-  return WtfThreading().CachedConverterICU().converter;
+static UConverter*& CachedConverterIcu() {
+  return WtfThreading().CachedConverterIcu().converter;
 }
 
-std::unique_ptr<TextCodec> TextCodecICU::Create(const TextEncoding& encoding,
-                                                const void*) {
-  return base::WrapUnique(new TextCodecICU(encoding));
+std::unique_ptr<TextCodec> TextCodecIcu::Create(
+    const WTF::TextEncoding& encoding,
+    const void*) {
+  return base::WrapUnique(new TextCodecIcu(encoding));
 }
 
 namespace {
@@ -81,7 +82,7 @@ bool IncludeAlias(const char* alias) {
 }
 }  // namespace
 
-void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
+void TextCodecIcu::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   // We register Hebrew with logical ordering using a separate name.
   // Otherwise, this would share the same canonical name as the
   // visual ordering case, and then TextEncoding could not tell them
@@ -120,7 +121,7 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
     }
 #endif
     // Avoid codecs supported by `TextCodecCJK`.
-    if (TextCodecCJK::IsSupported(standard_name)) {
+    if (WTF::TextCodecCJK::IsSupported(standard_name)) {
       continue;
     }
 
@@ -153,7 +154,7 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
 
     // Avoid registering codecs registered by
     // `TextCodecCJK::RegisterEncodingNames`.
-    if (!TextCodecCJK::IsSupported(standard_name)) {
+    if (!WTF::TextCodecCJK::IsSupported(standard_name)) {
       registrar(standard_name, standard_name);
     }
 
@@ -270,7 +271,7 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
 #endif
 }
 
-void TextCodecICU::RegisterCodecs(TextCodecRegistrar registrar) {
+void TextCodecIcu::RegisterCodecs(TextCodecRegistrar registrar) {
   // See comment above in registerEncodingNames.
   registrar("ISO-8859-8-I", Create, nullptr);
 
@@ -295,23 +296,23 @@ void TextCodecICU::RegisterCodecs(TextCodecRegistrar registrar) {
     }
 #endif
     // Avoid codecs supported by `TextCodecCJK`.
-    if (TextCodecCJK::IsSupported(standard_name)) {
+    if (WTF::TextCodecCJK::IsSupported(standard_name)) {
       continue;
     }
     registrar(standard_name, Create, nullptr);
   }
 }
 
-TextCodecICU::TextCodecICU(const TextEncoding& encoding)
+TextCodecIcu::TextCodecIcu(const WTF::TextEncoding& encoding)
     : encoding_(encoding) {}
 
-TextCodecICU::~TextCodecICU() {
-  ReleaseICUConverter();
+TextCodecIcu::~TextCodecIcu() {
+  ReleaseIcuConverter();
 }
 
-void TextCodecICU::ReleaseICUConverter() const {
+void TextCodecIcu::ReleaseIcuConverter() const {
   if (converter_icu_) {
-    UConverter*& cached_converter = CachedConverterICU();
+    UConverter*& cached_converter = CachedConverterIcu();
     if (cached_converter)
       ucnv_close(cached_converter);
     cached_converter = converter_icu_;
@@ -319,7 +320,7 @@ void TextCodecICU::ReleaseICUConverter() const {
   }
 }
 
-void TextCodecICU::CreateICUConverter() const {
+void TextCodecIcu::CreateIcuConverter() const {
   DCHECK(!converter_icu_);
 
 #if defined(USING_SYSTEM_ICU)
@@ -330,11 +331,11 @@ void TextCodecICU::CreateICUConverter() const {
 
   UErrorCode err;
 
-  UConverter*& cached_converter = CachedConverterICU();
+  UConverter*& cached_converter = CachedConverterIcu();
   if (cached_converter) {
     err = U_ZERO_ERROR;
     const char* cached_name = ucnv_getName(cached_converter, &err);
-    if (U_SUCCESS(err) && encoding_ == TextEncoding(cached_name)) {
+    if (U_SUCCESS(err) && encoding_ == WTF::TextEncoding(cached_name)) {
       converter_icu_ = cached_converter;
       cached_converter = nullptr;
       return;
@@ -349,7 +350,7 @@ void TextCodecICU::CreateICUConverter() const {
     ucnv_setFallback(converter_icu_, true);
 }
 
-int TextCodecICU::DecodeToBuffer(UChar* target,
+int TextCodecIcu::DecodeToBuffer(UChar* target,
                                  UChar* target_limit,
                                  const char*& source,
                                  const char* source_limit,
@@ -396,13 +397,13 @@ class ErrorCallbackSetter final {
   UConverterToUCallback saved_action_;
 };
 
-String TextCodecICU::Decode(base::span<const uint8_t> data,
+String TextCodecIcu::Decode(base::span<const uint8_t> data,
                             FlushBehavior flush,
                             bool stop_on_error,
                             bool& saw_error) {
   // Get a converter for the passed-in encoding.
   if (!converter_icu_) {
-    CreateICUConverter();
+    CreateIcuConverter();
     DCHECK(converter_icu_);
     if (!converter_icu_) {
       DLOG(ERROR)
@@ -511,7 +512,7 @@ static void NumericEntityCallback(const void* context,
                                   UErrorCode* err) {
   FormatEscapedEntityCallback(context, from_u_args, code_units, length,
                               code_point, reason, err,
-                              kEntitiesForUnencodables);
+                              UnencodableHandling::kEntitiesForUnencodables);
 }
 
 // Invalid character handler when writing escaped entities in CSS encoding for
@@ -524,9 +525,9 @@ static void CssEscapedEntityCallback(const void* context,
                                      UChar32 code_point,
                                      UConverterCallbackReason reason,
                                      UErrorCode* err) {
-  FormatEscapedEntityCallback(context, from_u_args, code_units, length,
-                              code_point, reason, err,
-                              kCSSEncodedEntitiesForUnencodables);
+  FormatEscapedEntityCallback(
+      context, from_u_args, code_units, length, code_point, reason, err,
+      UnencodableHandling::kCSSEncodedEntitiesForUnencodables);
 }
 
 // Invalid character handler when writing escaped entities in HTML/XML encoding
@@ -539,9 +540,9 @@ static void UrlEscapedEntityCallback(const void* context,
                                      UChar32 code_point,
                                      UConverterCallbackReason reason,
                                      UErrorCode* err) {
-  FormatEscapedEntityCallback(context, from_u_args, code_units, length,
-                              code_point, reason, err,
-                              kURLEncodedEntitiesForUnencodables);
+  FormatEscapedEntityCallback(
+      context, from_u_args, code_units, length, code_point, reason, err,
+      UnencodableHandling::kURLEncodedEntitiesForUnencodables);
 }
 
 #if defined(USING_SYSTEM_ICU)
@@ -645,12 +646,12 @@ class TextCodecInput final {
   STACK_ALLOCATED();
 
  public:
-  TextCodecInput(const TextEncoding& encoding,
+  TextCodecInput(const WTF::TextEncoding& encoding,
                  base::span<const UChar> characters)
       : begin_(characters.data()),
         end_(characters.data() + characters.size()) {}
 
-  TextCodecInput(const TextEncoding& encoding,
+  TextCodecInput(const WTF::TextEncoding& encoding,
                  base::span<const LChar> characters) {
     buffer_.ReserveInitialCapacity(
         base::checked_cast<wtf_size_t>(characters.size()));
@@ -668,7 +669,7 @@ class TextCodecInput final {
   Vector<UChar> buffer_;
 };
 
-std::string TextCodecICU::EncodeInternal(const TextCodecInput& input,
+std::string TextCodecIcu::EncodeInternal(const TextCodecInput& input,
                                          UnencodableHandling handling) {
   const UChar* source = input.begin();
   const UChar* end = input.end();
@@ -676,7 +677,7 @@ std::string TextCodecICU::EncodeInternal(const TextCodecInput& input,
   UErrorCode err = U_ZERO_ERROR;
 
   switch (handling) {
-    case kEntitiesForUnencodables:
+    case UnencodableHandling::kEntitiesForUnencodables:
 #if !defined(USING_SYSTEM_ICU)
       ucnv_setFromUCallBack(converter_icu_, NumericEntityCallback, nullptr,
                             nullptr, nullptr, &err);
@@ -687,7 +688,7 @@ std::string TextCodecICU::EncodeInternal(const TextCodecInput& input,
           0, 0, &err);
 #endif
       break;
-    case kURLEncodedEntitiesForUnencodables:
+    case UnencodableHandling::kURLEncodedEntitiesForUnencodables:
 #if !defined(USING_SYSTEM_ICU)
       ucnv_setFromUCallBack(converter_icu_, UrlEscapedEntityCallback, nullptr,
                             nullptr, nullptr, &err);
@@ -698,7 +699,7 @@ std::string TextCodecICU::EncodeInternal(const TextCodecInput& input,
                             0, 0, 0, &err);
 #endif
       break;
-    case kCSSEncodedEntitiesForUnencodables:
+    case UnencodableHandling::kCSSEncodedEntitiesForUnencodables:
 #if !defined(USING_SYSTEM_ICU)
       ucnv_setFromUCallBack(converter_icu_, CssEscapedEntityCallback, nullptr,
                             nullptr, nullptr, &err);
@@ -709,7 +710,7 @@ std::string TextCodecICU::EncodeInternal(const TextCodecInput& input,
                             0, 0, 0, &err);
 #endif
       break;
-    case kNoUnencodables:
+    case UnencodableHandling::kNoUnencodables:
       DCHECK(encoding_ == UTF16BigEndianEncoding() ||
              encoding_ == UTF16LittleEndianEncoding() ||
              encoding_ == UTF8Encoding());
@@ -741,14 +742,14 @@ std::string TextCodecICU::EncodeInternal(const TextCodecInput& input,
 }
 
 template <typename CharType>
-std::string TextCodecICU::EncodeCommon(base::span<const CharType> characters,
+std::string TextCodecIcu::EncodeCommon(base::span<const CharType> characters,
                                        UnencodableHandling handling) {
   if (characters.empty()) {
     return "";
   }
 
   if (!converter_icu_)
-    CreateICUConverter();
+    CreateIcuConverter();
   if (!converter_icu_)
     return std::string();
 
@@ -756,14 +757,14 @@ std::string TextCodecICU::EncodeCommon(base::span<const CharType> characters,
   return EncodeInternal(input, handling);
 }
 
-std::string TextCodecICU::Encode(base::span<const UChar> characters,
+std::string TextCodecIcu::Encode(base::span<const UChar> characters,
                                  UnencodableHandling handling) {
   return EncodeCommon(characters, handling);
 }
 
-std::string TextCodecICU::Encode(base::span<const LChar> characters,
+std::string TextCodecIcu::Encode(base::span<const LChar> characters,
                                  UnencodableHandling handling) {
   return EncodeCommon(characters, handling);
 }
 
-}  // namespace WTF
+}  // namespace blink

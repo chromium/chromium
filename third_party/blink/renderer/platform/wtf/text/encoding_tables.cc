@@ -156,7 +156,7 @@ const Jis0208EncodeIndex& EnsureJis0208EncodeIndexForDecode() {
     size_t array_index = 0;
 
     UErrorCode error = U_ZERO_ERROR;
-    ICUConverterWrapper icu_converter;
+    blink::IcuConverterWrapper icu_converter;
     icu_converter.converter = ucnv_open("EUC-JP", &error);
     DCHECK(U_SUCCESS(error));
 
@@ -214,7 +214,7 @@ const Jis0212EncodeIndex& EnsureJis0212EncodeIndexForDecode() {
     size_t array_index = 0;
 
     UErrorCode error = U_ZERO_ERROR;
-    ICUConverterWrapper icu_converter;
+    blink::IcuConverterWrapper icu_converter;
     icu_converter.converter = ucnv_open("EUC-JP", &error);
     DCHECK(U_SUCCESS(error));
 
@@ -256,7 +256,7 @@ const EucKrEncodeIndex& EnsureEucKrEncodeIndexForDecode() {
   std::call_once(flag, [] {
     array = new EucKrEncodeIndex;
     UErrorCode error = U_ZERO_ERROR;
-    ICUConverterWrapper icu_converter;
+    blink::IcuConverterWrapper icu_converter;
     icu_converter.converter = ucnv_open("windows-949", &error);
     DCHECK(U_SUCCESS(error));
     auto get_pair =
@@ -316,7 +316,7 @@ const Gb18030EncodeTable& EnsureGb18030EncodeTable() {
   std::call_once(flag, [] {
     array = new Gb18030EncodeTable;
     UErrorCode error = U_ZERO_ERROR;
-    ICUConverterWrapper icu_converter;
+    blink::IcuConverterWrapper icu_converter;
     icu_converter.converter = ucnv_open("gb18030", &error);
     DCHECK(U_SUCCESS(error));
     for (size_t pointer = 0; pointer < 23940; pointer++) {

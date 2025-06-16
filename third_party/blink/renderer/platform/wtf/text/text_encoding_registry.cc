@@ -181,8 +181,8 @@ static void ExtendTextCodecMaps() {
   TextCodecCJK::RegisterEncodingNames(AddToTextEncodingNameMap);
   TextCodecCJK::RegisterCodecs(AddToTextCodecMap);
 
-  TextCodecICU::RegisterEncodingNames(AddToTextEncodingNameMap);
-  TextCodecICU::RegisterCodecs(AddToTextCodecMap);
+  blink::TextCodecIcu::RegisterEncodingNames(AddToTextEncodingNameMap);
+  blink::TextCodecIcu::RegisterCodecs(AddToTextCodecMap);
 }
 
 std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding& encoding) {

@@ -41,6 +41,10 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
+namespace blink {
+struct IcuConverterWrapper;
+}
+
 namespace WTF {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
@@ -59,8 +63,6 @@ WTF_EXPORT void WillCreateThread();
 WTF_EXPORT void SetIsBeforeThreadCreatedForTest();
 #endif
 
-struct ICUConverterWrapper;
-
 class WTF_EXPORT Threading {
   DISALLOW_NEW();
 
@@ -70,7 +72,9 @@ class WTF_EXPORT Threading {
   Threading& operator=(const Threading&) = delete;
   ~Threading();
 
-  ICUConverterWrapper& CachedConverterICU() { return *cached_converter_icu_; }
+  blink::IcuConverterWrapper& CachedConverterIcu() {
+    return *cached_converter_icu_;
+  }
 
   base::PlatformThreadId ThreadId() const { return thread_id_; }
 
@@ -82,7 +86,7 @@ class WTF_EXPORT Threading {
 #endif
 
  private:
-  std::unique_ptr<ICUConverterWrapper> cached_converter_icu_;
+  std::unique_ptr<blink::IcuConverterWrapper> cached_converter_icu_;
 
   base::PlatformThreadId thread_id_;
 
