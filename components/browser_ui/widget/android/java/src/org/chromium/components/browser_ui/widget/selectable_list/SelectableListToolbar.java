@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -328,7 +329,11 @@ public class SelectableListToolbar<E> extends Toolbar
                 });
 
         mClearTextButton = findViewById(R.id.clear_text_button);
-        mClearTextButton.setOnClickListener(v -> mSearchEditText.setText(""));
+        mClearTextButton.setOnClickListener(
+                v -> {
+                    mSearchEditText.setText("");
+                    mSearchEditText.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                });
     }
 
     @Override
