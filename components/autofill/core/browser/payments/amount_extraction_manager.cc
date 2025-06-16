@@ -109,7 +109,7 @@ AmountExtractionManager::GetEligibleFeatures(const SuggestionsContext& context,
   }
 
   const DenseSet<EligibleFeature> eligible_features =
-      CheckEligiblilityForFeaturesRequiringAmountExtraction();
+      CheckEligibilityForFeaturesRequiringAmountExtraction();
 
   // Run after all other feature eligibilities are checked to only check feature
   // flag for eligible users.
@@ -213,7 +213,7 @@ void AmountExtractionManager::OnTimeoutReached() {
 }
 
 DenseSet<AmountExtractionManager::EligibleFeature>
-AmountExtractionManager::CheckEligiblilityForFeaturesRequiringAmountExtraction()
+AmountExtractionManager::CheckEligibilityForFeaturesRequiringAmountExtraction()
     const {
   DenseSet<EligibleFeature> eligible_features;
 

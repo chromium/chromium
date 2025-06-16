@@ -106,7 +106,7 @@ class AmountExtractionManager {
   // Checks eligibility of features depending on amount extraction result, and
   // returns the eligible features.
   DenseSet<EligibleFeature>
-  CheckEligiblilityForFeaturesRequiringAmountExtraction() const;
+  CheckEligibilityForFeaturesRequiringAmountExtraction() const;
 
   // Gets the driver associated with the main frame as the final checkout
   // amount is on the main frame.
