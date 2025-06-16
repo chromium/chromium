@@ -1504,7 +1504,7 @@ targets.bundle(
         "cast_receiver_gtests",
     ],
     mixins = [
-        "chromium_pixel_2_pie",
+        "chromium_pixel_2_q",
     ],
 )
 
