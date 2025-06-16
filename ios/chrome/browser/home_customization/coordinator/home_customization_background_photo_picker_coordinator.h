@@ -10,11 +10,32 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class HomeCustomizationBackgroundPhotoPickerCoordinator;
+
+// Protocol for handling selected images from the photo picker.
+@protocol HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate <NSObject>
+
+// Called when the user successfully selects and frames an image.
+- (void)photoPickerCoordinator:
+            (HomeCustomizationBackgroundPhotoPickerCoordinator*)coordinator
+                didSelectImage:(UIImage*)image;
+
+// Called when the user cancels the photo selection process.
+- (void)photoPickerCoordinatorDidCancel:
+    (HomeCustomizationBackgroundPhotoPickerCoordinator*)coordinator;
+
+@end
+
 // Coordinator that handles photo selection from the device's photo library.
 // This coordinator manages the PHPickerViewController and handles selected
 // images.
-@interface PHPickerCoordinator
+@interface HomeCustomizationBackgroundPhotoPickerCoordinator
     : ChromeCoordinator <PHPickerViewControllerDelegate>
+
+// Delegate to handle the final selected and framed image.
+@property(nonatomic, weak)
+    id<HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate>
+        delegate;
 
 @end
 

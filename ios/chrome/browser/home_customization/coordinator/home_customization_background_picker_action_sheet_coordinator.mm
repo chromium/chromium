@@ -52,7 +52,7 @@ CGFloat const kSheetCornerRadius = 30;
       _backgroundPresetGalleryPickerMediator;
 
   // The coordinator for the photo picker.
-  PHPickerCoordinator* _photoPickerCoordinator;
+  HomeCustomizationBackgroundPhotoPickerCoordinator* _photoPickerCoordinator;
 
   // The main view controller presented by the base view controller.
   UIViewController* _mainViewController;
@@ -251,9 +251,10 @@ CGFloat const kSheetCornerRadius = 30;
 // from the device's photo library.
 - (void)presentPhotoLibraryPicker {
   // Create and start the photo picker coordinator
-  _photoPickerCoordinator = [[PHPickerCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
+  _photoPickerCoordinator =
+      [[HomeCustomizationBackgroundPhotoPickerCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser];
   [_photoPickerCoordinator start];
 }
 
