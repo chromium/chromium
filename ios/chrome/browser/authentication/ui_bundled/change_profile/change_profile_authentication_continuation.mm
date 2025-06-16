@@ -54,7 +54,8 @@ void SignoutAndOpenContexts(Browser* browser,
 void SigninForContext(WidgetContext* context,
                       NSSet<UIOpenURLContext*>* contexts,
                       AuthenticationService* authentication_service,
-                      SceneState* scene_state) {
+                      SceneState* scene_state,
+                      base::OnceClosure closure) {
   // Iterate over all identities on device because the newGaia could
   // be in a different profile.
   id<SystemIdentity> newIdentity;
@@ -69,12 +70,14 @@ void SigninForContext(WidgetContext* context,
   }
   // Don't perform sign-in if the new identity is not found.
   if (!newIdentity) {
+    std::move(closure).Run();
     return;
   }
 
   authentication_service->SignIn(newIdentity,
                                  signin_metrics::AccessPoint::kWidget);
   scene_state.URLContextsToOpen = contexts;
+  std::move(closure).Run();
 }
 
 // Implementation of the continuation that starts the sign-in or sign-out flow.
@@ -101,12 +104,18 @@ void ChangeProfileAuthenticationContinuation(WidgetContext* context,
     }
   } else {
     if (!authentication_service->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin) ||
-        authentication_service
-                ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-                .gaiaID != context.gaiaID) {
-      SigninForContext(context, contexts, authentication_service, scene_state);
-      std::move(closure).Run();
+            signin::ConsentLevel::kSignin)) {
+      SigninForContext(context, contexts, authentication_service, scene_state,
+                       std::move(closure));
+    } else if (authentication_service
+                   ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                   .gaiaID != context.gaiaID) {
+      base::OnceClosure completion = base::BindOnce(
+          &SigninForContext, context, contexts, authentication_service,
+          scene_state, std::move(closure));
+      authentication_service->SignOut(
+          signin_metrics::ProfileSignout::kSignoutFromWidgets,
+          base::CallbackToBlock(std::move(completion)));
     } else {
       scene_state.URLContextsToOpen = contexts;
       std::move(closure).Run();
