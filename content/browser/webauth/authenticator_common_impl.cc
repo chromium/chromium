@@ -1398,6 +1398,8 @@ void AuthenticatorCommonImpl::GetCredential(
         base::UserMetricsAction("WebAuthn.GetAssertion.Conditional.Start"));
   } else if (options->mediation == Mediation::MODAL) {
     base::RecordAction(base::UserMetricsAction("WebAuthn.GetAssertion.Start"));
+  } else if (options->mediation == Mediation::IMMEDIATE) {
+    base::RecordAction(base::UserMetricsAction("WebAuthn.GetCredential.Start"));
   }
   callback = base::BindOnce(
       &AuthenticatorCommonImpl::GetMetricsWrappedGetCredentialCallback,
@@ -2072,8 +2074,13 @@ void AuthenticatorCommonImpl::GetMetricsWrappedMakeCredentialCallback(
 void AuthenticatorCommonImpl::GetMetricsWrappedGetCredentialCallback(
     blink::mojom::Authenticator::GetCredentialCallback callback,
     blink::mojom::GetCredentialResponsePtr response) {
-  if (response.is_null() || response->is_password_response()) {
-    // TODO(crbug.com/392549444): add metrics for passwords.
+  if (response.is_null()) {
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+  if (response->is_password_response()) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetCredential.SuccessWithPassword"));
     std::move(callback).Run(std::move(response));
     return;
   }

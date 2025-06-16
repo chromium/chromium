@@ -47298,6 +47298,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.Dialog.UserSelected.PasswordOnly">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    User selected a password option in the WebAuthn combined selector dialog.
+  </description>
+</action>
+
 <action name="WebAuthn.Dialog.UserSelected.ProfileOnly">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -47339,6 +47347,18 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user is displayed the system authentication UI to sign in
     with a passkey stored in the Chrome profile.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.CombinedSelectorShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed the combined selector sheet, which is a
+    dialog that lists available passkeys or passwords from different sources.
+    This UI is used for navigator.credentials.get() requests with mediation:
+    &quot;immediate&quot;
   </description>
 </action>
 
@@ -47661,6 +47681,25 @@ should be able to be added at any place in this file.
     Recorded when the user is displayed the Windows Hello UI to sign in with a
     credential in Windows Hello. In some Windows versions this UI may also
     display an option to use the Hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetCredential.Start" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when a GetCredential request with mediation = &quot;immediate&quot;
+    is started.
+  </description>
+</action>
+
+<action name="WebAuthn.GetCredential.SuccessWithPassword"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user selected a password credential in the immediate
+    mediation selection dialog.
   </description>
 </action>
 

@@ -2163,7 +2163,9 @@ void AuthenticatorGPMLockedPinSheetModel::OnAccept() {
 CombinedSelectorSheetModel::CombinedSelectorSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kHidden) {}
+                                  OtherMechanismButtonVisibility::kHidden) {
+  webauthn::user_actions::RecordCombinedSelectorShown();
+}
 
 CombinedSelectorSheetModel::SelectionStatus
 CombinedSelectorSheetModel::GetSelectionStatus(size_t index) const {
@@ -2217,5 +2219,6 @@ std::u16string CombinedSelectorSheetModel::GetAcceptButtonLabel() const {
 
 void CombinedSelectorSheetModel::OnAccept() {
   const auto& mech = dialog_model()->mechanisms.at(selection_index_);
+  webauthn::user_actions::RecordMechanismClick(mech);
   mech.callback.Run();
 }

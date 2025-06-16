@@ -24,6 +24,10 @@ void RecordMultipleOptionsShown(
 void RecordPriorityOptionShown(
     const AuthenticatorRequestDialogModel::Mechanism& mechanism);
 
+// Emits when the combined selector is shown. This is used for get() requests
+// with mediation "immediate".
+void RecordCombinedSelectorShown();
+
 void RecordHybridAndSecurityKeyDialogShown(
     device::FidoRequestType request_type);
 void RecordSecurityKeyDialogShown(device::FidoRequestType request_type);
