@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/common/extension_id.h"

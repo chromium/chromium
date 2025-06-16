@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_REGISTRY_TEST_HELPER_H_
 #define EXTENSIONS_BROWSER_EXTENSION_REGISTRY_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension.h"
 

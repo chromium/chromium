@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/frame_context_data.h"
 #include "url/gurl.h"
 #include "url/origin.h"

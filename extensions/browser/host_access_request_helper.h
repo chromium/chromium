@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_HOST_ACCESS_REQUEST_HELPER_H_
 #define EXTENSIONS_BROWSER_HOST_ACCESS_REQUEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
