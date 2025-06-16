@@ -205,11 +205,13 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_autofill_autofill_java") {
-    aar_path =
-        "../androidx/cipd/libs/androidx_autofill_autofill/autofill-1.3.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_autofill_autofill/autofill-1.4.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_autofill_autofill/androidx_autofill_autofill.info"
     enable_bytecode_checks = false
-    deps = [ ":androidx_core_core_java" ]
+    deps = [
+      ":androidx_core_core_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
