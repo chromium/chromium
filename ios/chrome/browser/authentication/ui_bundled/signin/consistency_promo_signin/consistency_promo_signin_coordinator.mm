@@ -350,6 +350,10 @@
 // If `hasAccounts == NO`, the added account will be used to sign in to Chrome
 // directly after the AddAccountSigninCoordinator finishes.
 - (void)openAddAccountCoordinatorWithHasAccounts:(BOOL)hasAccounts {
+  if (self.addAccountCoordinator) {
+    // This can occur in case of double tap.
+    return;
+  }
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED,
@@ -360,7 +364,6 @@
             ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT,
         self.accessPoint);
   }
-  DCHECK(!self.addAccountCoordinator);
   self.addAccountCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.navigationController
                                           browser:self.browser
