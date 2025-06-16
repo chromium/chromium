@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_allowlist_factory.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
+#include "chrome/browser/extensions/extension_gcm_app_handler.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
@@ -34,7 +35,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 #include "chrome/browser/extensions/extension_error_controller_factory.h"
-#include "chrome/browser/extensions/extension_gcm_app_handler.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -67,6 +67,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionActionDispatcher::GetFactoryInstance();
   extensions::ExtensionAllowlistFactory::GetInstance();
   extensions::ExtensionGarbageCollectorFactory::GetInstance();
+  extensions::ExtensionGCMAppHandler::GetFactoryInstance();
   extensions::ExtensionManagementFactory::GetInstance();
   extensions::ExtensionUpdaterFactory::GetInstance();
   extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
@@ -82,7 +83,6 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ChromeAppIconServiceFactory::GetInstance();
   extensions::ExtensionErrorControllerFactory::GetInstance();
-  extensions::ExtensionGCMAppHandler::GetFactoryInstance();
   extensions::MenuManagerFactory::GetInstance();
 #if BUILDFLAG(ENABLE_PLUGINS)
   extensions::PluginManager::GetFactoryInstance();

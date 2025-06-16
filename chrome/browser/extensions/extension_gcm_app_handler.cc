@@ -40,7 +40,6 @@ bool IsGCMPermissionEnabled(const Extension* extension) {
 
 }  // namespace
 
-
 // static
 BrowserContextKeyedAPIFactory<ExtensionGCMAppHandler>*
 ExtensionGCMAppHandler::GetFactoryInstance() {
@@ -180,10 +179,20 @@ void ExtensionGCMAppHandler::OnUnregisterCompleted(
 }
 
 void ExtensionGCMAppHandler::OnDeleteIDCompleted(
-    const std::string& app_id, instance_id::InstanceID::Result result) {
+    const std::string& app_id,
+    instance_id::InstanceID::Result result) {
+#if BUILDFLAG(IS_ANDROID)
+  // The server-side unregister API is deprecated, so don't try to unregister.
+  // TODO(crbug.com/421235963): Consider deprecating on other platforms.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ExtensionGCMAppHandler::OnUnregisterCompleted,
+                                weak_factory_.GetWeakPtr(), app_id,
+                                gcm::GCMClient::UNKNOWN_ERROR));
+#else
   GetGCMDriver()->Unregister(
       app_id, base::BindOnce(&ExtensionGCMAppHandler::OnUnregisterCompleted,
                              weak_factory_.GetWeakPtr(), app_id));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // InstanceIDDriver::RemoveInstanceID will delete the InstanceID itself.
   // Postpone to do it outside this calling context to avoid any risk to
