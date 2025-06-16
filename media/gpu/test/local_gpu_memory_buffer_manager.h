@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "base/synchronization/waitable_event.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"
 
 namespace gfx {
@@ -25,8 +27,7 @@ namespace media {
 // gfx::GpuMemoryBufferManager which interacts with the DRM render node device
 // directly. The LocalGpuMemoryBufferManager is only for testing purposes and
 // should not be used in production.
-class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager
-    : public gpu::GpuMemoryBufferManager {
+class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
  public:
   LocalGpuMemoryBufferManager();
 
@@ -34,15 +35,14 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager
   LocalGpuMemoryBufferManager& operator=(const LocalGpuMemoryBufferManager&) =
       delete;
 
-  ~LocalGpuMemoryBufferManager() override;
+  ~LocalGpuMemoryBufferManager();
 
-  // gpu::GpuMemoryBufferManager implementation
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
-      base::WaitableEvent* shutdown_event) override;
+      base::WaitableEvent* shutdown_event);
 
   // Imports a DmaBuf as a GpuMemoryBuffer to be able to map it. The
   // GBM_BO_USE_SW_READ_OFTEN usage is specified so that the user of the

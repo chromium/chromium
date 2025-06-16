@@ -357,7 +357,8 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   scoped_refptr<media::VideoFrame> hw_out_frame_;
 
   // Used to create Gpu memory buffer for DMA-buf encoding tests.
-  std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  std::unique_ptr<media::LocalGpuMemoryBufferManager>
+      gpu_memory_buffer_manager_;
 
   base::WeakPtrFactory<JpegClient> weak_factory_{this};
 };

@@ -322,6 +322,7 @@ if (is_chromeos) {
       "//base",
       "//build/config/linux/libdrm",
       "//gpu/command_buffer/client",
+      "//gpu/ipc/common:surface_handle_type",
       "//third_party/minigbm",
       "//ui/gfx:memory_buffer",
       "//ui/gfx/geometry",
