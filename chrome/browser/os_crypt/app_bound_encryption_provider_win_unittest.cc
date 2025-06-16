@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -91,9 +92,34 @@ HRESULT PermanentlyFailingDecrypt(const std::string& ciphertext,
   return elevation_service::Elevator::kErrorCouldNotDecryptWithUserContext;
 }
 
+// Chance of a false positive for a 256 bit random key at run_length 10
+// is 2.97e-15
+bool HasRepeatedCharacters(std::string_view data, size_t run_length = 10) {
+  size_t count = 1;
+  for (size_t i = 1; i < data.size(); ++i) {
+    if (data[i] == data[i - 1]) {
+      if (++count >= run_length) {
+        return true;
+      }
+    } else {
+      count = 1;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
-TEST(AppBoundEncryptionProvider, TestEncryptDecrypt) {
+class AppBoundEncryptionProviderTest : public ::testing::Test {
+ protected:
+  // Access the `GetKey` method via the class so it can be more easily friended.
+  void GetKey(os_crypt_async::KeyProvider& provider,
+              os_crypt_async::KeyProvider::KeyCallback callback) {
+    provider.GetKey(std::move(callback));
+  }
+};
+
+TEST_F(AppBoundEncryptionProviderTest, TestEncryptDecrypt) {
   std::string ciphertext;
   {
     DWORD last_error;
@@ -112,7 +138,66 @@ TEST(AppBoundEncryptionProvider, TestEncryptDecrypt) {
   }
 }
 
-TEST(AppBoundEncryptionProvider, Basic) {
+TEST_F(AppBoundEncryptionProviderTest, InvalidKeyRegenerated) {
+  base::test::TaskEnvironment env;
+  ::testing::StrictMock<MockAppBoundEncryptionOverrides> mock_app_bound;
+
+  SetOverridesForTesting(&mock_app_bound);
+
+  ON_CALL(mock_app_bound, EncryptAppBoundString)
+      .WillByDefault(::testing::Invoke(DefaultEncrypt));
+  ON_CALL(mock_app_bound, DecryptAppBoundString)
+      .WillByDefault(::testing::Invoke(DefaultDecrypt));
+  ON_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel)
+      .WillByDefault(::testing::Return(SupportLevel::kSupported));
+
+  const char* kPrefName = "os_crypt.app_bound_encrypted_key";
+
+  TestingPrefServiceSimple prefs;
+  MockPrefChangeCallback pref_observer(&prefs);
+  PrefChangeRegistrar registrar;
+  base::HistogramTester histograms;
+  registrar.Init(&prefs);
+  registrar.Add(kPrefName, pref_observer.GetCallback());
+  os_crypt_async::AppBoundEncryptionProviderWin::RegisterLocalPrefs(
+      prefs.registry());
+
+  // Pref is changed three times. Firstly by the test itself, then secondly to
+  // clear it and finally, to write the new encrypted value.
+  EXPECT_CALL(pref_observer, OnPreferenceChanged(_)).Times(3);
+  // Invalid key means decrypt is never called.
+  EXPECT_CALL(mock_app_bound, DecryptAppBoundString).Times(0);
+  // The new random key will be encrypted.
+  EXPECT_CALL(mock_app_bound, EncryptAppBoundString).Times(1);
+  EXPECT_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel).Times(1);
+
+  // base64 encoded "APPB" with a zero length key. This simulates the state
+  // users are in for https://crbug.com/415979068.
+  prefs.SetString(kPrefName, "QVBQQg==");
+  {
+    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
+    base::test::TestFuture<
+        const std::string&,
+        base::expected<os_crypt_async::Encryptor::Key,
+                       os_crypt_async::KeyProvider::KeyError>>
+        future;
+    GetKey(provider, future.GetCallback());
+    auto [tag, key] = future.Take();
+    EXPECT_EQ(tag, "v20");
+    EXPECT_TRUE(key.has_value());
+  }
+
+  const auto& pref = prefs.GetString(kPrefName);
+  // Very basic extra tests: Check key length and that it's not a sequence of
+  // nulls or poisoned memory.
+  EXPECT_GT(pref.size(), os_crypt_async::Encryptor::Key::kAES256GCMKeySize);
+  EXPECT_FALSE(HasRepeatedCharacters(pref));
+
+  histograms.ExpectUniqueSample("OSCrypt.AppBoundProvider.KeyRetrieval.Status",
+                                /*KeyRetrievalStatus::kKeyTooShort*/ 4, 1);
+}
+
+TEST_F(AppBoundEncryptionProviderTest, Basic) {
   base::test::ScopedFeatureList feature(
       os_crypt_async::features::kRegenerateKeyForCatastrophicFailures);
 
@@ -156,7 +241,7 @@ TEST(AppBoundEncryptionProvider, Basic) {
         base::expected<os_crypt_async::Encryptor::Key,
                        os_crypt_async::KeyProvider::KeyError>>
         future;
-    provider.GetKey(future.GetCallback());
+    GetKey(provider, future.GetCallback());
     auto [tag, key] = future.Take();
     EXPECT_EQ(tag, "v20");
     ASSERT_TRUE(key.has_value());
@@ -181,7 +266,7 @@ TEST(AppBoundEncryptionProvider, Basic) {
         base::expected<os_crypt_async::Encryptor::Key,
                        os_crypt_async::KeyProvider::KeyError>>
         future;
-    provider.GetKey(future.GetCallback());
+    GetKey(provider, future.GetCallback());
     const auto& [_, key] = future.Get();
     ASSERT_TRUE(key.has_value());
     // The key returned should be the same as before.
@@ -208,7 +293,7 @@ TEST(AppBoundEncryptionProvider, Basic) {
         base::expected<os_crypt_async::Encryptor::Key,
                        os_crypt_async::KeyProvider::KeyError>>
         future;
-    provider.GetKey(future.GetCallback());
+    GetKey(provider, future.GetCallback());
     const auto& [_, key] = future.Get();
 
     // A failure like E_FAIL is temporary, the key is not available but hasn't
@@ -242,7 +327,7 @@ TEST(AppBoundEncryptionProvider, Basic) {
         base::expected<os_crypt_async::Encryptor::Key,
                        os_crypt_async::KeyProvider::KeyError>>
         future;
-    provider.GetKey(future.GetCallback());
+    GetKey(provider, future.GetCallback());
     auto [_, key] = future.Take();
 
     ASSERT_TRUE(key.has_value());
@@ -272,7 +357,7 @@ TEST(AppBoundEncryptionProvider, Basic) {
         base::expected<os_crypt_async::Encryptor::Key,
                        os_crypt_async::KeyProvider::KeyError>>
         future;
-    provider.GetKey(future.GetCallback());
+    GetKey(provider, future.GetCallback());
     const auto& [_, key] = future.Get();
 
     ASSERT_TRUE(key.has_value());
@@ -301,7 +386,7 @@ TEST(AppBoundEncryptionProvider, Basic) {
           base::expected<os_crypt_async::Encryptor::Key,
                          os_crypt_async::KeyProvider::KeyError>>
           future;
-      provider.GetKey(future.GetCallback());
+      GetKey(provider, future.GetCallback());
       const auto& [_, key] = future.Get();
 
       // The failure is now temporary, the key is not available but hasn't been
@@ -331,7 +416,7 @@ TEST(AppBoundEncryptionProvider, Basic) {
         base::expected<os_crypt_async::Encryptor::Key,
                        os_crypt_async::KeyProvider::KeyError>>
         future;
-    provider.GetKey(future.GetCallback());
+    GetKey(provider, future.GetCallback());
     const auto& [_, key] = future.Get();
 
     ASSERT_TRUE(key.has_value());

@@ -21397,7 +21397,8 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Success"/>
   <int value="1" label="Key Not Found"/>
   <int value="2" label="Key Decode Failure"/>
-  <int value="4" label="Invalid Key Header"/>
+  <int value="3" label="Invalid Key Header"/>
+  <int value="4" label="Key Too Short"/>
 </enum>
 
 <enum name="OSCryptDPAPIKeyStatus">

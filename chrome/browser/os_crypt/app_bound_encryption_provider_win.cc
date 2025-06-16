@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -214,10 +215,24 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
     return;
   }
 
-  // There is no key, so generate a new one, but only on a fully supported
-  // system. In unsupported systems the provider will support decrypt of
-  // existing data (if App-Bound validation still passes) but not encrypt of any
-  // new data.
+  // Clean up bad keys.
+  switch (encrypted_key_data.error()) {
+    case KeyRetrievalStatus::kSuccess:
+      NOTREACHED();
+    case KeyRetrievalStatus::kKeyNotFound:
+      // Not found means nothing to do.
+      break;
+    case KeyRetrievalStatus::kKeyDecodeFailure:
+    case KeyRetrievalStatus::kInvalidKeyHeader:
+    case KeyRetrievalStatus::kKeyTooShort:
+      local_state_->ClearPref(kEncryptedKeyPrefName);
+      break;
+  }
+
+  // There is no key or the key was invalid, so generate a new one, but only on
+  // a fully supported system. In unsupported systems the provider will support
+  // decrypt of existing data (if App-Bound validation still passes) but not
+  // encrypt of any new data.
   if (support_level_ != os_crypt::SupportLevel::kSupported) {
     std::move(callback).Run(
         kAppBoundDataPrefix,
@@ -278,9 +293,19 @@ AppBoundEncryptionProviderWin::RetrieveEncryptedKey() {
   }
 
   // Trim off the key prefix.
-  return ReadWriteKeyData(
+  const auto key = ReadWriteKeyData(
       encrypted_key_with_header->cbegin() + sizeof(kCryptAppBoundKeyPrefix),
       encrypted_key_with_header->cend());
+
+  // This is an encrypted random key and encrypting N uniformly random bits
+  // requires >= N bits of ciphertext - follows from Shannon entropy theory and
+  // invertibility constraints. However the exact length is
+  // determined by the elevated service and might vary.
+  if (key.size() < os_crypt_async::Encryptor::Key::kAES256GCMKeySize) {
+    return base::unexpected(KeyRetrievalStatus::kKeyTooShort);
+  }
+
+  return key;
 }
 
 void AppBoundEncryptionProviderWin::StoreKey(
