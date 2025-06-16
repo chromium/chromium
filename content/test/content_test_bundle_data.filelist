@@ -1303,9 +1303,9 @@ data/accessibility/aria/aria-orientation-expected-mac.txt
 data/accessibility/aria/aria-orientation-expected-win.txt
 data/accessibility/aria/aria-orientation.html
 data/accessibility/aria/aria-owns-crash-2-expected-blink.txt
-data/accessibility/aria/aria-owns-crash-2.html
+data/accessibility/crash/aria-owns-crash-2.html
 data/accessibility/aria/aria-owns-crash-expected-blink.txt
-data/accessibility/aria/aria-owns-crash.html
+data/accessibility/crash/aria-owns-crash.html
 data/accessibility/aria/aria-owns-expected-android-assist-data.txt
 data/accessibility/aria/aria-owns-expected-android-external.txt
 data/accessibility/aria/aria-owns-expected-android.txt
@@ -2098,7 +2098,7 @@ data/accessibility/css/list-marker-styles-custom-expected-uia-win.txt
 data/accessibility/css/list-marker-styles-custom-expected-win.txt
 data/accessibility/css/list-marker-styles-custom.html
 data/accessibility/css/marker-crash-expected-blink.txt
-data/accessibility/css/marker-crash.html
+data/accessibility/crash/marker-crash.html
 data/accessibility/css/marker-hyphens-expected-blink.txt
 data/accessibility/css/marker-hyphens.html
 data/accessibility/css/next-on-line-check-failure-expected-blink.txt
@@ -3013,7 +3013,7 @@ data/accessibility/event/visibility-hidden-changed-expected-android.txt
 data/accessibility/event/visibility-hidden-changed-expected-auralinux.txt
 data/accessibility/event/visibility-hidden-changed-expected-uia-win.txt
 data/accessibility/event/visibility-hidden-changed.html
-data/accessibility/form-controls/aria-owns-child-and-hidden-descendant-crash.html
+data/accessibility/crash/aria-owns-child-and-hidden-descendant-crash.html
 data/accessibility/form-controls/bdo-table-cell.html
 data/accessibility/form-controls/contenteditable-descendants-expected-android.txt
 data/accessibility/form-controls/contenteditable-descendants-expected-blink.txt
@@ -3023,7 +3023,7 @@ data/accessibility/form-controls/img-form-expected-blink.txt
 data/accessibility/form-controls/img-form.html
 data/accessibility/form-controls/img-map-pseudo.html
 data/accessibility/form-controls/map-inside-map.html
-data/accessibility/form-controls/progress-meter-crash.html
+data/accessibility/crash/progress-meter-crash.html
 data/accessibility/form-controls/role-group-expected-android.txt
 data/accessibility/form-controls/role-group-expected-blink.txt
 data/accessibility/form-controls/role-group.html
@@ -3149,7 +3149,7 @@ data/accessibility/html/address.html
 data/accessibility/html/area-alone-expected-blink.txt
 data/accessibility/html/area-alone.html
 data/accessibility/html/area-crash-expected-blink.txt
-data/accessibility/html/area-crash.html
+data/accessibility/crash/area-crash.html
 data/accessibility/html/area-expected-android-assist-data.txt
 data/accessibility/html/area-expected-android-external.txt
 data/accessibility/html/area-expected-android.txt
@@ -3160,7 +3160,7 @@ data/accessibility/html/area-expected-mac.txt
 data/accessibility/html/area-expected-uia-win.txt
 data/accessibility/html/area-expected-win.txt
 data/accessibility/html/area-serialization-crash-expected-blink.txt
-data/accessibility/html/area-serialization-crash.html
+data/accessibility/crash/area-serialization-crash.html
 data/accessibility/html/area-with-aria-owns-expected-blink.txt
 data/accessibility/html/area-with-aria-owns.html
 data/accessibility/html/area.html
@@ -3664,7 +3664,7 @@ data/accessibility/html/del-expected-win.txt
 data/accessibility/html/del.html
 data/accessibility/html/delete-selection-crash-expected-blink.txt
 data/accessibility/html/delete-selection-crash-expected-win.txt
-data/accessibility/html/delete-selection-crash.html
+data/accessibility/crash/delete-selection-crash.html
 data/accessibility/html/design-mode-expected-blink.txt
 data/accessibility/html/design-mode.html
 data/accessibility/html/details-expected-android-assist-data.txt
@@ -3946,7 +3946,7 @@ data/accessibility/html/heading.html
 data/accessibility/html/hgroup-expected-blink.txt
 data/accessibility/html/hgroup.html
 data/accessibility/html/hidden-named-slot-no-subtree-crash-expected-blink.txt
-data/accessibility/html/hidden-named-slot-no-subtree-crash.html
+data/accessibility/crash/hidden-named-slot-no-subtree-crash.html
 data/accessibility/html/hr-expected-android-assist-data.txt
 data/accessibility/html/hr-expected-android-external.txt
 data/accessibility/html/hr-expected-android.txt
@@ -4922,7 +4922,7 @@ data/accessibility/html/node-changed-crash-in-editable-text-expected-fuchsia.txt
 data/accessibility/html/node-changed-crash-in-editable-text-expected-mac.txt
 data/accessibility/html/node-changed-crash-in-editable-text-expected-uia-win.txt
 data/accessibility/html/node-changed-crash-in-editable-text-expected-win.txt
-data/accessibility/html/node-changed-crash-in-editable-text.html
+data/accessibility/crash/node-changed-crash-in-editable-text.html
 data/accessibility/html/noscript-expected-android.txt
 data/accessibility/html/noscript-expected-auralinux.txt
 data/accessibility/html/noscript-expected-fuchsia.txt
@@ -5121,7 +5121,7 @@ data/accessibility/html/q.html
 data/accessibility/html/relevant-space-expected-blink.txt
 data/accessibility/html/relevant-space.html
 data/accessibility/html/reparent-crash-expected-blink.txt
-data/accessibility/html/reparent-crash.html
+data/accessibility/crash/reparent-crash.html
 data/accessibility/html/replace-data-expected-blink.txt
 data/accessibility/html/replace-data.html
 data/accessibility/html/replaced-node-across-trees-expected-android-assist-data.txt
@@ -6169,7 +6169,7 @@ data/accessibility/regression/aria-hidden-negative-tabindex-ignored-in-tree.html
 data/accessibility/regression/aria-hidden-tabindex-change-expected-blink.txt
 data/accessibility/regression/aria-hidden-tabindex-change.html
 data/accessibility/regression/aria-owns-from-textarea.html
-data/accessibility/regression/aria-owns-reparent-above-other-change-crash.html
+data/accessibility/crash/aria-owns-reparent-above-other-change-crash.html
 data/accessibility/regression/aria-pressed-changes-button-role-expected-blink.txt
 data/accessibility/regression/aria-pressed-changes-button-role.html
 data/accessibility/regression/clear-children-while-computing-name-expected-blink.txt
@@ -6192,7 +6192,7 @@ data/accessibility/regression/hidden-table-expected-blink.txt
 data/accessibility/regression/hidden-table.html
 data/accessibility/regression/iframe-navigation.html
 data/accessibility/regression/ignored-crash-expected-blink.txt
-data/accessibility/regression/ignored-crash.html
+data/accessibility/crash/ignored-crash.html
 data/accessibility/regression/inner1.html
 data/accessibility/regression/inner2.html
 data/accessibility/regression/language-changed-on-html-expected-blink.txt
@@ -6205,9 +6205,9 @@ data/accessibility/regression/progress-with-background-exposes-values-expected-b
 data/accessibility/regression/progress-with-background-exposes-values.html
 data/accessibility/regression/reentrant-add-children.html
 data/accessibility/regression/relation-points-to-invalid-nodes-crash-expected-blink.txt
-data/accessibility/regression/relation-points-to-invalid-nodes-crash.html
+data/accessibility/crash/relation-points-to-invalid-nodes-crash.html
 data/accessibility/regression/reload-selection-crash-expected-blink.txt
-data/accessibility/regression/reload-selection-crash.html
+data/accessibility/crash/reload-selection-crash.html
 data/accessibility/regression/remove-aria-owner-expected-auralinux.txt
 data/accessibility/regression/remove-aria-owner-expected-blink.txt
 data/accessibility/regression/remove-aria-owner.html
@@ -6226,13 +6226,13 @@ data/accessibility/regression/reused-map-move-image-to-top.html
 data/accessibility/regression/reused-map-move-image.html
 data/accessibility/regression/reused-map.html
 data/accessibility/regression/root-becomes-leaf.html
-data/accessibility/regression/select-expand-many-options-crash.html
+data/accessibility/crash/select-expand-many-options-crash.html
 data/accessibility/regression/slot-creation-crash-expected-blink.txt
-data/accessibility/regression/slot-creation-crash.html
+data/accessibility/crash/slot-creation-crash.html
 data/accessibility/regression/title-in-shadow-expected-blink.txt
 data/accessibility/regression/title-in-shadow.html
 data/accessibility/regression/workplace.jpg
-data/accessibility/regression/xml-in-iframe-crash.html
+data/accessibility/crash/xml-in-iframe-crash.html
 data/accessibility/relations/ignore-duplicate-relation-ids-expected-auralinux.txt
 data/accessibility/relations/ignore-duplicate-relation-ids-expected-win.txt
 data/accessibility/relations/ignore-duplicate-relation-ids.html

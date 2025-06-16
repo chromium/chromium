@@ -784,6 +784,75 @@ class CheckFrameHtmlFilesDontHaveExpectations(unittest.TestCase):
         results = PRESUBMIT.CheckFrameHtmlFilesDontHaveExpectations(mock_input_api, MockOutputApi())
         self.assertEqual(0, len(results))
 
+class CheckAccessibilityCrashRelatedTest(unittest.TestCase):
+
+    # Test no warning if crash related test HTML is placed in the crash folder
+    def testCrashHtmlCorrectlyHandled(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/crash/page-crash.html", [])
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    # Test warning raised if crash related test HTML is placed in the wrong folder
+    def testCrashHtmlWrongFolder(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/html/page-crash.html", [])
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results),
+            "Expected one PresubmitError object for crash related warning." +
+            f"Found {len(results)}: {results}")
+        self.assertEqual(1, len(results[0].items),
+            "Expected 1 warning item for crash related warning." +
+            f"Found {len(results[0].items)}: {results[0].items}")
+        self.assertIn("page-crash.html", results[0].items[0])
+        self.assertIn("has the name suggesting crash test but is not in", results[0].items[0])
+        self.assertIn("'content/test/data/accessibility/crash/' directory)", results[0].items[0])
+
+    # Test warning raised if non-crash related test HTML is placed in the crash folder
+    def testNonCrashHtmlInCrashFolder(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/crash/normal-test.html", [])
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results),
+            "Expected one PresubmitError object for crash related warning." +
+            f"Found {len(results)}: {results}")
+        self.assertEqual(1, len(results[0].items),
+            "Expected 1 warning item for crash related warning." +
+            f"Found {len(results[0].items)}: {results[0].items}")
+        self.assertIn("normal-test.html", results[0].items[0])
+        self.assertIn("is in 'content/test/data/accessibility/crash/' directory", results[0].items[0])
+        self.assertIn("but the name suggests it is not a crash test)", results[0].items[0])
+
+    # Test warning raised if crash expectation file is found
+    def testCrashTxtFileFound(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/crash/page-crash-expected-android.txt", [])
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results),
+            "Expected one PresubmitError object for crash related warning." +
+            f"Found {len(results)}: {results}")
+        self.assertEqual(1, len(results[0].items),
+            "Expected 1 warning item for crash related warning." +
+            f"Found {len(results[0].items)}: {results[0].items}")
+        self.assertIn("page-crash-expected-android.txt", results[0].items[0])
+        self.assertIn("Unexpected crash related expectation file found:", results[0].items[0])
+
+    # Test crash files outside the //content/test/data/accessibility directory are not relevant
+    def testCrashNonMatchingFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/crash/page-crash.html", [])
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
 
 if __name__ == '__main__':
     unittest.main()

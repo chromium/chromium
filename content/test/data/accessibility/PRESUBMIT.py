@@ -10,13 +10,15 @@ for more details about the presubmit API built into depot_tools.
 When adding/modify an accessibility test, the following rules apply:
 
 1.  If [name].html file exists, then at least one [name]-expected*.txt file must also exist,
-    and vice-versa.
+    and vice-versa, excluding crash related tests.
 
     This is not enforced for the /html/frame/ and /aria/frames/ directories, which
     contain .html files referenced by other .html files and don't have their own expectations.
 
     Note: This is not enforced for the /mac/ and /win/ directories (see TODOs).
     Note: This looks for files within a CL, not in the repo, which may cause false positives (see TODOs).
+    Note: Crash related tests have "crash" in the html file name and should be placed under /crash/ folder
+    without any corresponding expectations.
     See: CheckAccessibilityHtmlExpectationsPair
 
 2.  Every txt file must be suffixed with one of the following:
@@ -134,7 +136,6 @@ When adding/modify an accessibility test, the following rules apply:
 #                      as the other expectation file requirements are met.
 # TODO(accessibility): Fix Test #7 - [Maybe] This test should consider matching against more platforms.
 #
-# TODO(accessibility): Create rules (and sub-directory) for crash tests, or add expectations for them.
 # TODO(accessibility): Create rules (and sub-directory) for android-only tests, or add expectations for them.
 # TODO(accessibility): Combine the /frame(s)/ directories, and/or give them consistent naming.
 # TODO(accessibility): Investigate and determine rules for remaining folders (e.g. /mathml/, /form-controls/)
@@ -557,6 +558,25 @@ def CheckAccessibilityHtmlExpectationsPair(input_api, output_api):
 
     # Check HTML files for corresponding expectations
     for name, html_path in html_files.items():
+        # Crash related HTMLs do not have expectations files but need to be placed in the right folder
+        is_crash_test = "-crash" in name
+        is_in_crash_dir = "content/test/data/accessibility/crash/" in html_path
+
+        if is_crash_test:
+            if not is_in_crash_dir:
+                problems.append(
+                    f"{html_path} (has the name suggesting crash test but is not in "
+                    f"'content/test/data/accessibility/crash/' directory)"
+                )
+            # We skip the expectation file check for crash related tests
+            continue
+        elif is_in_crash_dir:
+            # Non-crash tests should not be placed in crash folder
+            problems.append(
+                f"{html_path} (is in 'content/test/data/accessibility/crash/' directory "
+                f"but the name suggests it is not a crash test)"
+            )
+            continue
         hasMatch = False
         for key, _ in txt_files.items():
             if name in key:
@@ -567,6 +587,15 @@ def CheckAccessibilityHtmlExpectationsPair(input_api, output_api):
 
     # Check expectation files for corresponding HTML
     for name, txt_path in txt_files.items():
+        # Crash related HTMLs do not have expectations files and should raise warning if they are found
+        is_crash_test = "-crash" in name
+        is_in_crash_dir = "content/test/data/accessibility/crash/" in txt_path
+
+        if is_crash_test and is_in_crash_dir:
+            problems.append(
+                f"Unexpected crash related expectation file found: {txt_path}"
+            )
+            continue
         hasMatch = False
         for key, _ in html_files.items():
             if key in name:
@@ -578,8 +607,10 @@ def CheckAccessibilityHtmlExpectationsPair(input_api, output_api):
     if problems:
         return [
             output_api.PresubmitPromptWarning(
-                "HTML accessibility test files must have a corresponding"
-                "\nexpectation file (and vice-versa). Note this may be a"
+                "HTML accessibility test files, excluding crash related"
+                "\ntests, must have a corresponding expectation file"
+                "\n(and vice-versa). Crash tests should be placed in"
+                "\nthe separate crash folders. Note this may be a"
                 "\nfalse positive if the html file already existed."
                 "\nProblems found:\n",
                 problems,

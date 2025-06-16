@@ -17,6 +17,7 @@ namespace content {
 constexpr const char kAccName[]{"accname"};
 constexpr const char kAria[]{"aria"};
 constexpr const char kCSS[]{"css"};
+constexpr const char kCrash[]{"crash"};
 constexpr const char kFormControls[]{"form-controls"};
 constexpr const char kHtml[]{"html"};
 constexpr const char kMathML[]{"mathml"};
@@ -64,12 +65,18 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   TEST_TYPE(AccName)
   TEST_TYPE(Aria)
   TEST_TYPE(CSS)
+  TEST_TYPE(Crash)
   TEST_TYPE(Html)
   TEST_TYPE(MathML)
   TEST_TYPE(DisplayLocking)
   TEST_TYPE(Relations)
   TEST_TYPE(Regression)
   TEST_TYPE(TestHarness)
+
+  void RunCrashTest(const base::FilePath::CharType* file_path,
+                    ui::AXMode mode) {
+    RunTypedTest<kCrash>(file_path, mode);
+  }
 
   void RunFormControlsTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kFormControls>(file_path, ui::kAXModeFormControls);
