@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/rand_util.h"
 #include "base/strings/to_string.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"

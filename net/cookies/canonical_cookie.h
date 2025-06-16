@@ -12,7 +12,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/rand_util.h"
 #include "base/types/pass_key.h"
 #include "crypto/process_bound_string.h"
 #include "net/base/net_export.h"
