@@ -292,7 +292,6 @@ source_set("unit_tests") {
     ]
   } else {
     sources += [
-      "address_bubbles_controller_unittest.cc",
       "address_editor_controller_unittest.cc",
       "autofill_field_promo_controller_impl_unittest.cc",
       "autofill_popup_controller_impl_unittest.cc",
@@ -438,6 +437,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
+      "address_bubbles_controller_browsertest.cc",
       "autofill_ai/save_or_update_autofill_ai_data_controller_impl_browsertest.cc",
       "autofill_context_menu_manager_browsertest.cc",
     ]

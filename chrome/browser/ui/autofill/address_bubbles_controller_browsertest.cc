@@ -1,65 +1,45 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 
-#include <string>
-
-#include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/autofill/ui/ui_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "components/application_locale_storage/application_locale_storage.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/field_types.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/strings/grit/components_strings.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "content/public/test/browser_test.h"
 
 namespace autofill {
 
 using ::testing::Property;
 using profile_ref = base::optional_ref<const AutofillProfile>;
 
-// TODO(crbug.com/384547121): Unit test shouldn't use BrowserWithTestWindowTest
-// or TestWithBrowserView.
-class AddressBubblesControllerTest : public TestWithBrowserView {
+class AddressBubblesControllerBrowserTest : public InProcessBrowserTest {
  public:
-  AddressBubblesControllerTest() = default;
-  void SetUp() override {
-    TestWithBrowserView::SetUp();
-    AddTab(browser(), GURL("about:blank"));
-  }
-
-  AddressBubblesController* controller() {
-    return AddressBubblesController::FromWebContents(web_contents());
-  }
+  AddressBubblesControllerBrowserTest() = default;
+  AddressBubblesControllerBrowserTest(
+      const AddressBubblesControllerBrowserTest&) = delete;
+  AddressBubblesControllerBrowserTest& operator=(
+      const AddressBubblesControllerBrowserTest&) = delete;
+  ~AddressBubblesControllerBrowserTest() override = default;
 
  protected:
   raw_ptr<content::WebContents> web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  const std::string& app_locale() const {
-    return g_browser_process->GetFeatures()
-        ->application_locale_storage()
-        ->Get();
+  AddressBubblesController* controller() {
+    return AddressBubblesController::FromWebContents(web_contents());
   }
 };
 
-TEST_F(AddressBubblesControllerTest, DialogAcceptedInvokesCallback) {
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       DialogAcceptedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
       /*is_migration_to_account=*/{}, callback.Get());
@@ -71,7 +51,8 @@ TEST_F(AddressBubblesControllerTest, DialogAcceptedInvokesCallback) {
       AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt);
 }
 
-TEST_F(AddressBubblesControllerTest, DialogCancelledInvokesCallback) {
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       DialogCancelledInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
@@ -88,7 +69,8 @@ TEST_F(AddressBubblesControllerTest, DialogCancelledInvokesCallback) {
 // This is testing that closing all tabs (which effectively destroys the web
 // contents) will trigger the save callback with kIgnored decions if the users
 // hasn't interacted with the prompt already.
-TEST_F(AddressBubblesControllerTest, WebContentsDestroyedInvokesCallback) {
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       WebContentsDestroyedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
@@ -96,6 +78,7 @@ TEST_F(AddressBubblesControllerTest, WebContentsDestroyedInvokesCallback) {
       /*is_migration_to_account=*/{}, callback.Get());
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  CHECK_EQ(1, tab_strip_model->count());
   // There is only now tab open, so the active web contents, are the
   // controller's web contents.
   content::WebContents* controller_web_contents =
@@ -104,7 +87,8 @@ TEST_F(AddressBubblesControllerTest, WebContentsDestroyedInvokesCallback) {
   // Now add another tab, and close the controller tab to make sure the window
   // remains open. This should destroy the web contents of the controller and
   // invoke the callback with a decision kIgnored.
-  AddTab(browser(), GURL("http://foo.com/"));
+  GURL url(url::kAboutBlankURL);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
   EXPECT_EQ(2, tab_strip_model->count());
   EXPECT_CALL(callback, Run(AutofillClient::AddressPromptUserDecision::kIgnored,
                             Property(&profile_ref::has_value, false)));
@@ -117,7 +101,8 @@ TEST_F(AddressBubblesControllerTest, WebContentsDestroyedInvokesCallback) {
 }
 
 // This is testing that the bubble is visible and active when shown.
-TEST_F(AddressBubblesControllerTest, BubbleShouldBeVisibleByDefault) {
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       BubbleShouldBeVisibleByDefault) {
   AutofillProfile profile = test::GetFullProfile();
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
@@ -132,8 +117,8 @@ TEST_F(AddressBubblesControllerTest, BubbleShouldBeVisibleByDefault) {
 // This is testing that when a second prompt comes while another prompt is
 // shown, the controller will ignore it, and inform the backend that the second
 // prompt has been auto declined.
-TEST_F(AddressBubblesControllerTest,
-       SecondPromptWillBeAutoDeclinedWhileFirstIsVisible) {
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       SecondPromptWillBeAutoDeclinedWhileFirstIsVisible) {
   AutofillProfile profile = test::GetFullProfile();
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
@@ -154,8 +139,8 @@ TEST_F(AddressBubblesControllerTest,
 // This is testing that when a second prompt comes while another prompt is in
 // progress but not shown, the controller will inform the backend that the first
 // process is ignored.
-TEST_F(AddressBubblesControllerTest,
-       FirstHiddenPromptWillBeIgnoredWhenSecondPromptArrives) {
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       FirstHiddenPromptWillBeIgnoredWhenSecondPromptArrives) {
   AutofillProfile profile = test::GetFullProfile();
 
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
