@@ -84,4 +84,5 @@ found in the LICENSE file.
     <color name="tab_group_card_placeholder_color_yellow">@color/tab_group_card_secondary_color_yellow_light_gm3</color>
     <color name="tab_group_card_placeholder_color_yellow_incognito">@color/tab_group_card_secondary_color_yellow_dark_gm3</color>
 
+    <color name="tab_group_color_picker_incognito_ripple_color">@color/baseline_neutral_90</color>
 </resources>

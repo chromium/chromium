@@ -20,7 +20,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewOverlay;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
@@ -82,8 +81,11 @@ public class ColorPickerItemViewBinder {
 
         // Update the color icon with the indicated color id.
         if (isAndroidThemeModuleEnabled()) {
-            Button colorIcon = view.findViewById(R.id.color_picker_icon);
+            MaterialButton colorIcon = view.findViewById(R.id.color_picker_icon);
             colorIcon.setBackgroundTintList(ColorStateList.valueOf(color));
+            colorIcon.setRippleColor(
+                    TabGroupColorPickerUtils.buildTabGroupColorPickerRippleColorStateList(
+                            context, isIncognito));
         } else {
             final @ColorInt int selectionBackgroundColor =
                     getColorPickerDialogBackgroundColor(context, isIncognito);

@@ -5,10 +5,13 @@
 package org.chromium.components.tab_groups;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
@@ -16,10 +19,20 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.util.ValueUtils;
 
 /** Helper class to handle tab group color picker related utilities. */
 @NullMarked
 public class TabGroupColorPickerUtils {
+
+    private static final int[][] HOVERED_FOCUSED_PRESSED_AND_NORMAL_STATES =
+            new int[][] {
+                new int[] {android.R.attr.state_hovered},
+                new int[] {android.R.attr.state_focused},
+                new int[] {android.R.attr.state_pressed},
+                new int[] {}
+            };
+
     /**
      * Get the color corresponding to the color id that is passed in. Adjust the color depending on
      * light/dark/incognito mode as well as dynamic color themes. This function should only be used
@@ -33,6 +46,35 @@ public class TabGroupColorPickerUtils {
             Context context, @TabGroupColorId int colorId, boolean isIncognito) {
         @ColorRes int colorRes = getTabGroupColorPickerItemColorResource(colorId, isIncognito);
         return resolveGroupRelatedColor(context, colorRes, isIncognito);
+    }
+
+    /**
+     * Builds a {@link ColorStateList} for the ripple effect in the tab group color picker. The
+     * ripple color adapts based on whether the current context is incognito or not, and applies
+     * different alpha values for hovered, focused, and pressed states.
+     *
+     * @param context The {@link Context} used to retrieve colors and dimensions.
+     * @param isIncognito A boolean indicating whether the current mode is incognito.
+     * @return A {@link ColorStateList} configured for the ripple effect.
+     */
+    public static ColorStateList buildTabGroupColorPickerRippleColorStateList(
+            Context context, boolean isIncognito) {
+        @DimenRes int hoveredAlpha = R.dimen.tab_group_color_picker_hovered_alpha;
+        @DimenRes int focusedAlpha = R.dimen.tab_group_color_picker_focused_alpha;
+        @DimenRes int pressedAlpha = R.dimen.tab_group_color_picker_pressed_alpha;
+        @ColorInt
+        int onSurfaceColor =
+                isIncognito
+                        ? ContextCompat.getColor(
+                                context, R.color.tab_group_color_picker_incognito_ripple_color)
+                        : SemanticColorUtils.getColorOnSurface(context);
+
+        int hoveredColor = getColorWithAlphaApplied(context, onSurfaceColor, hoveredAlpha);
+        int focusedColor = getColorWithAlphaApplied(context, onSurfaceColor, focusedAlpha);
+        int pressedColor = getColorWithAlphaApplied(context, onSurfaceColor, pressedAlpha);
+
+        int[] colors = new int[] {hoveredColor, focusedColor, pressedColor, Color.TRANSPARENT};
+        return new ColorStateList(HOVERED_FOCUSED_PRESSED_AND_NORMAL_STATES, colors);
     }
 
     /**
@@ -297,5 +339,14 @@ public class TabGroupColorPickerUtils {
             // no-op and return the passed in color if dynamic colors are not enabled.
             return MaterialColors.harmonizeWithPrimary(context, color);
         }
+    }
+
+    private static @ColorInt int getColorWithAlphaApplied(
+            Context context, int color, @DimenRes int alphaRes) {
+        Resources resources = context.getResources();
+        float alpha = ValueUtils.getFloat(resources, alphaRes);
+        int alphaScaled = Math.round(alpha * 255);
+
+        return ColorUtils.setAlphaComponent(color, alphaScaled);
     }
 }

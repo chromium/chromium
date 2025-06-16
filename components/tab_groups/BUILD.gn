@@ -54,6 +54,7 @@ if (is_android) {
     sources = [
       "android/java/res/values-night/colors.xml",
       "android/java/res/values/colors.xml",
+      "android/java/res/values/dimens.xml",
     ]
   }
 }
