@@ -45,27 +45,4 @@ bool ECSignatureCreatorImpl::Sign(base::span<const uint8_t> data,
   return true;
 }
 
-bool ECSignatureCreatorImpl::DecodeSignature(
-    const std::vector<uint8_t>& der_sig,
-    std::vector<uint8_t>* out_raw_sig) {
-  OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  // Create ECDSA_SIG object from DER-encoded data.
-  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(
-      ECDSA_SIG_from_bytes(der_sig.data(), der_sig.size()));
-  if (!ecdsa_sig.get())
-    return false;
-
-  // The result is made of two 32-byte vectors.
-  const size_t kMaxBytesPerBN = 32;
-  std::vector<uint8_t> result(2 * kMaxBytesPerBN);
-
-  if (!BN_bn2bin_padded(&result[0], kMaxBytesPerBN, ecdsa_sig->r) ||
-      !BN_bn2bin_padded(&result[kMaxBytesPerBN], kMaxBytesPerBN,
-                        ecdsa_sig->s)) {
-    return false;
-  }
-  out_raw_sig->swap(result);
-  return true;
-}
-
 }  // namespace crypto

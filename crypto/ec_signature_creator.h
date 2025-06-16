@@ -40,14 +40,6 @@ class CRYPTO_EXPORT ECSignatureCreator {
   //    s     INTEGER }
   virtual bool Sign(base::span<const uint8_t> data,
                     std::vector<uint8_t>* signature) = 0;
-
-  // DecodeSignature converts from a DER encoded ECDSA-Sig-Value (as produced
-  // by Sign) to a `raw' ECDSA signature which consists of a pair of
-  // big-endian, zero-padded, 256-bit integers, r and s. On success it returns
-  // true and puts the raw signature into |out_raw_sig|.
-  // (Only P-256 signatures are supported.)
-  virtual bool DecodeSignature(const std::vector<uint8_t>& signature,
-                               std::vector<uint8_t>* out_raw_sig) = 0;
 };
 
 }  // namespace crypto

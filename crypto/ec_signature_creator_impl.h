@@ -28,9 +28,6 @@ class ECSignatureCreatorImpl : public ECSignatureCreator {
   bool Sign(base::span<const uint8_t> data,
             std::vector<uint8_t>* signature) override;
 
-  bool DecodeSignature(const std::vector<uint8_t>& der_sig,
-                       std::vector<uint8_t>* out_raw_sig) override;
-
  private:
   raw_ptr<ECPrivateKey> key_;
 };
