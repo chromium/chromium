@@ -82,6 +82,7 @@ if (is_linux || is_chromeos) {
     deps = [
       "//base",
       "//components/component_updater",
+      "//components/crash/core/common:crash_key",
       "//sandbox/linux:sandbox_services",
       "//services/screen_ai/buildflags",
       "//services/screen_ai/public/cpp:utilities",

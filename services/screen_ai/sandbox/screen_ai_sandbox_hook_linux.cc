@@ -6,11 +6,15 @@
 
 #include <dlfcn.h>
 
+#include "base/cpu.h"
+#include "base/debug/alias.h"
 #include "base/files/file_util.h"
+#include "components/crash/core/common/crash_key.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/public/cpp/utilities.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 using sandbox::syscall_broker::BrokerFilePermission;
 using sandbox::syscall_broker::MakeBrokerCommandSet;
@@ -35,6 +39,14 @@ bool ScreenAIPreSandboxHook(base::FilePath binary_path,
   if (binary_path.empty()) {
     VLOG(0) << "Screen AI component binary not found.";
   } else {
+    // TODO(crbug.com/418199684): Remove after the crash is fixed.
+    // Add CPU brand name as crash key and the entire CPU info in minidump in
+    // case details are needed.
+    base::CPU cpu;
+    base::debug::Alias(&cpu);
+    static crash_reporter::CrashKeyString<50> cpu_brand("cpu-brand");
+    cpu_brand.Set(absl::StrFormat("%.50s", cpu.cpu_brand()));
+
     void* screen_ai_library = dlopen(binary_path.value().c_str(),
                                      RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
     // The library is delivered by the component updater or DLC. If it is not
