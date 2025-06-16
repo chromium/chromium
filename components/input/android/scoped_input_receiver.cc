@@ -4,6 +4,7 @@
 
 #include "components/input/android/scoped_input_receiver.h"
 
+#include "base/android/android_info.h"
 #include "base/android/android_input_receiver_compat.h"
 
 namespace input {
@@ -34,10 +35,12 @@ void ScopedInputReceiver::DestroyIfNeeded() {
   if (a_input_receiver_ == nullptr) {
     return;
   }
-  // Not calling release due to AOSP crash on calling the API -
-  // b/368251173.
-  // base::AndroidInputReceiverCompat::GetInstance()
-  //   .AInputReceiver_releaseFn(a_input_receiver_);
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
+    // Calling AInputReceiver_release on Android V, results in app crash.
+    base::AndroidInputReceiverCompat::GetInstance().AInputReceiver_releaseFn(
+        a_input_receiver_);
+  }
   a_input_receiver_ = nullptr;
 }
 

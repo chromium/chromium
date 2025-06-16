@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
 #include "components/input/android/input_receiver_data.h"
 #include "components/viz/service/input/android_state_transfer_handler.h"
 #include "components/viz/service/input/render_input_router_support_android.h"

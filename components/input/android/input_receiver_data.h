@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(INPUT) InputReceiverData {
 
   ~InputReceiverData();
 
-  void OnDestroyedCompositorFrameSink(const viz::FrameSinkId& frame_sink_id);
+  void OnDestroyedCompositorFrameSink();
 
   const viz::FrameSinkId& root_frame_sink_id() {
     return android_input_callback_->root_frame_sink_id();

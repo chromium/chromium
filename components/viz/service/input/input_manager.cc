@@ -56,6 +56,11 @@ void ForwardVizInputTransferToken(
       surface_handle, viz_input_token_java);
 }
 
+void DestroyReceiverData(
+    std::unique_ptr<input::InputReceiverData> receiver_data) {
+  receiver_data.reset();
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsFrameMetadataAvailable(CompositorFrameSinkSupport* support) {
@@ -249,8 +254,14 @@ void InputManager::OnDestroyedCompositorFrameSink(
   TRACE_EVENT("viz", "InputManager::OnDestroyedCompositorFrameSink",
               "frame_sink_id", frame_sink_id);
 #if BUILDFLAG(IS_ANDROID)
-  if (receiver_data_) {
-    receiver_data_->OnDestroyedCompositorFrameSink(frame_sink_id);
+  if (receiver_data_ && receiver_data_->root_frame_sink_id() == frame_sink_id) {
+    receiver_data_->OnDestroyedCompositorFrameSink();
+    if (base::android::android_info::sdk_int() >=
+        base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&DestroyReceiverData, std::move(receiver_data_)));
+    }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 

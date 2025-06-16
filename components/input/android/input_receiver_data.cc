@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/android/android_info.h"
+
 namespace input {
 
 InputReceiverData::InputReceiverData(
@@ -26,9 +28,9 @@ InputReceiverData::InputReceiverData(
 
 InputReceiverData::~InputReceiverData() = default;
 
-void InputReceiverData::OnDestroyedCompositorFrameSink(
-    const viz::FrameSinkId& frame_sink_id) {
-  if (root_frame_sink_id() != frame_sink_id) {
+void InputReceiverData::OnDestroyedCompositorFrameSink() {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
     return;
   }
   pending_destruction_ = true;
