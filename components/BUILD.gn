@@ -65,6 +65,7 @@ if (is_ios) {
         "dom_distiller/core/javascript/dom_distiller_viewer.js",
         "dom_distiller/core/javascript/domdistiller.js",
         "dom_distiller/core/javascript/extract_features.js",
+        "dom_distiller/core/javascript/readability_distiller.js",
       ]
       outputs = [ "{{bundle_resources_dir}}/" +
                   "{{source_root_relative_dir}}/{{source_file_part}}" ]

@@ -38,4 +38,12 @@ std::string GetDistillerScriptWithOptions(
                         options_json);
 }
 
+std::string GetReadabilityDistillerScript() {
+  std::string script =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_READABILITY_DISTILLER_JS);
+  CHECK(!script.empty());
+  return script;
+}
+
 }  // namespace dom_distiller

@@ -38,7 +38,7 @@ constexpr base::FeatureParam<bool> kReaderModeUseReadabilityUseDisiller{
     &kReaderModeUseReadability, /*name=*/"use_distiller",
     /*default_value=*/false};
 
-bool ShouldReadabilityDistiller() {
+bool ShouldUseReadabilityDistiller() {
   return base::FeatureList::IsEnabled(kReaderModeUseReadability) &&
          kReaderModeUseReadabilityUseDisiller.Get();
 }
