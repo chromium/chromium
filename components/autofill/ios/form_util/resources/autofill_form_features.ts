@@ -63,6 +63,13 @@ Dedupes form submission by only allowing one submission per form.
 let autofillDedupeFormSubmission: boolean = false;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_dedupe_form_submission)
 
+// LINT.IfChange(autofill_report_form_submission_errors)
+/**
+ * Reports JS errors that occur upon handling form submission in the renderer.
+ */
+let autofillReportFormSubmissionErrors: boolean = false;
+// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_report_form_submission_errors)
+
 /**
  * @see autofillAcrossIframes
  */
@@ -162,6 +169,20 @@ function isAutofillDedupeFormSubmissionEnabled(): boolean {
   return autofillDedupeFormSubmission;
 }
 
+/**
+ * @see autofillReportFormSubmissionErrors
+ */
+function setAutofillReportFormSubmissionErrors(enabled: boolean): void {
+  autofillReportFormSubmissionErrors = enabled;
+}
+
+/**
+ * @see autofillReportFormSubmissionErrors
+ */
+function isAutofillReportFormSubmissionErrorsEnabled(): boolean {
+  return autofillReportFormSubmissionErrors;
+}
+
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
 gCrWebLegacy.autofill_form_features = {
@@ -179,4 +200,6 @@ gCrWebLegacy.autofill_form_features = {
   isAutofillAllowDefaultPreventedSubmission,
   setAutofillDedupeFormSubmission,
   isAutofillDedupeFormSubmissionEnabled,
+  setAutofillReportFormSubmissionErrors,
+  isAutofillReportFormSubmissionErrorsEnabled,
 };

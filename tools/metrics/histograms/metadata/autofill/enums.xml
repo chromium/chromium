@@ -3602,6 +3602,8 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Missing href"/>
   <int value="6" label="Missing form data"/>
   <int value="7" label="Form extraction failure"/>
+  <int value="8" label="Renderer error"/>
+  <int value="9" label="Unparsed renderer error"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/autofill/ios/form_util/form_activity_tab_helper.mm:FormSubmissionOutcomeIOS) -->

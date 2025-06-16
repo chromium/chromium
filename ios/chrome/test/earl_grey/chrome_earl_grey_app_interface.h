@@ -499,6 +499,12 @@ enum class TipsNotificationType;
 // otherwise returns object representing execution result.
 + (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript;
 
+// Same as -executeJavaScript but executes the script in the isolated world
+// instead of the page content world. This allows interacting with the gcrweb
+// objects that are injected there.
++ (JavaScriptExecutionResult*)executeJavaScriptInIsolatedWorld:
+    (NSString*)javaScript;
+
 // Returns the user agent that should be used for the mobile version.
 + (NSString*)mobileUserAgentString;
 

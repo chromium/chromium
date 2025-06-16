@@ -72,7 +72,13 @@ enum class FormSubmissionOutcome {
   // Autofill.iOS.FormSubmission.Outcome.InvalidFormReason to investigate the
   // cause.
   kFormExtractionFailure = 7,
-  kMaxValue = kFormExtractionFailure,
+  // There was an error while handling the form submission event in the
+  // renderer.
+  kRendererError = 8,
+  // There was an error while handling the form submission event in the renderer
+  // but the error couldn't be parsed.
+  kUnparsedRendererError = 9,
+  kMaxValue = kUnparsedRendererError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:FormSubmissionOutcomeIOS)
 
@@ -219,6 +225,25 @@ void FormActivityTabHelper::RemoveObserver(FormActivityObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void HandleSubmissionError(const base::Value::Dict& message) {
+  const std::string* error_stack = message.FindString("errorStack");
+  const std::string* error_message = message.FindString("errorMessage");
+  std::optional<bool> is_programmatic =
+      message.FindBool("programmaticSubmission");
+
+  if (!error_stack || !error_message || !is_programmatic) {
+    RecordFormSubmissionOutcome(FormSubmissionOutcome::kUnparsedRendererError);
+    return;
+  }
+
+  SCOPED_CRASH_KEY_STRING256("FormSubmissionError", "msg", *error_message);
+  SCOPED_CRASH_KEY_STRING1024("FormSubmissionError", "stack", *error_stack);
+
+  base::debug::DumpWithoutCrashing();
+
+  RecordFormSubmissionOutcome(FormSubmissionOutcome::kRendererError);
+}
+
 void FormActivityTabHelper::OnFormMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
@@ -227,9 +252,11 @@ void FormActivityTabHelper::OnFormMessageReceived(
     return;
   }
 
-  RecordMetrics(message.body()->GetDict());
+  const auto& message_body = message.body()->GetDict();
 
-  const std::string* command = message.body()->GetDict().FindString("command");
+  RecordMetrics(message_body);
+
+  const std::string* command = message_body.FindString("command");
   if (!command) {
     DLOG(WARNING) << "JS message parameter not found: command";
   } else if (*command == "form.submit") {
@@ -238,6 +265,8 @@ void FormActivityTabHelper::OnFormMessageReceived(
     HandleFormActivity(web_state, message);
   } else if (*command == "form.removal") {
     HandleFormRemoval(web_state, message);
+  } else if (*command == "form.submit.error") {
+    HandleSubmissionError(message_body);
   }
 }
 

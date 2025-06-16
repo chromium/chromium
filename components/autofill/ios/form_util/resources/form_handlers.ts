@@ -207,6 +207,26 @@ function submitHandler(evt: Event): void {
 }
 
 /**
+ * A wrapper around `submitHandler()` that catches and reports errors that
+ * happen before calling gCrWebLegacy.form.formSubmitted().
+ */
+function submitHandlerWithErrorWrapper(evt: Event): void {
+  try {
+    submitHandler(evt);
+  } catch (error) {
+    if (gCrWebLegacy.autofill_form_features
+            .isAutofillReportFormSubmissionErrorsEnabled()) {
+      gCrWebLegacy.form.reportFormSubmissionError(
+          error, /*programmaticSubmission=*/ false,
+          /*handler=*/ NATIVE_MESSAGE_HANDLER);
+    } else {
+      // Just let the error go through if not reported.
+      throw error;
+    }
+  }
+}
+
+/**
  * Schedules `messages` to be sent back-to-back after `delay` and with a `delay`
  * between them.
  *
@@ -279,7 +299,7 @@ function attachListeners(): void {
    */
   document.addEventListener('keyup', formActivity, false);
   document.addEventListener(
-      'submit', submitHandler,
+      'submit', submitHandlerWithErrorWrapper,
       shouldListenToFormSubmissionEventsInCaptureMode());
 
   /**

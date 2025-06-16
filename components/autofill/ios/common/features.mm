@@ -64,6 +64,12 @@ BASE_FEATURE(kAutofillRefillForFormsIos,
              "AutofillRefillForFormsIos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// LINT.IfChange(autofill_report_form_submission_errors)
+BASE_FEATURE(kAutofillReportFormSubmissionErrors,
+             "AutofillReportFormSubmissionErrors",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_report_form_submission_errors)
+
 BASE_FEATURE(kAutofillStickyInfobarIos,
              "AutofillStickyInfobarIos",
              base::FEATURE_ENABLED_BY_DEFAULT);
