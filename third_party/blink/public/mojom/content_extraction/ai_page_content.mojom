@@ -4,9 +4,9 @@
 
 module blink.mojom;
 
-import "ui/accessibility/ax_enums.mojom";
 import "third_party/blink/public/mojom/forms/form_control_type.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "ui/accessibility/ax_enums.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -34,6 +34,7 @@ enum AIPageContentAttributeType {
   kImage,
   kSVG,
   kCanvas,
+  kVideo,
 
   // Structured chunks.
   kForm,
@@ -138,7 +139,7 @@ enum AIPageContentClickabilityReason {
   kCursorPointer,
 
   // The node has a clickable aria role.
-  kAriaRole
+  kAriaRole,
 };
 
 struct AIPageContentNodeInteractionInfo {
@@ -266,6 +267,18 @@ struct AIPageContentCanvasData {
   gfx.mojom.Size layout_size;
 };
 
+struct AIPageContentVideoData {
+  // The URL of the video.
+  url.mojom.Url url;
+
+  // The source origin for the video. This ensures the security origin for the
+  // video's content is accurately tracked. For example:
+  // 1. data URLs use an opaque origin
+  // 2. about:blank inherits its origin from the initiator while the URL doesn't
+  //    convey that.
+  url.mojom.Origin? source_origin;
+};
+
 // Represents meta tags on the page.
 struct AIPageContentMeta {
   string name;
@@ -387,6 +400,9 @@ struct AIPageContentAttributes {
 
   // Only set if attribute_type is kCanvas.
   AIPageContentCanvasData? canvas_data;
+
+  // Only set if attribute_type is kVideo.
+  AIPageContentVideoData? video_data;
 
   // Only set if attribute_type is kAnchor.
   AIPageContentAnchorData? anchor_data;

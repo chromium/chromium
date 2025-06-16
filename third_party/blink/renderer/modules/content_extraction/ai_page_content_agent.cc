@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/core/layout/layout_media.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
+#include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
@@ -314,10 +316,10 @@ void ProcessImageNode(const LayoutImage& layout_image,
                       mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kImage;
   CHECK(IsVisible(layout_image));
-
-  if (DynamicTo<LayoutMedia>(layout_image)) {
-    return;
-  }
+  // LayoutImage is a superclass of LayoutMedia, which is a superclass of
+  // LayoutVideo and LayoutAudio. We only want to process images here, so
+  // we enforce that the object is not a media object.
+  CHECK(!layout_image.IsMedia());
 
   auto image_info = mojom::blink::AIPageContentImageInfo::New();
 
@@ -355,6 +357,19 @@ void ProcessCanvasNode(const LayoutHTMLCanvas& layout_canvas,
   auto canvas_data = mojom::blink::AIPageContentCanvasData::New();
   canvas_data->layout_size = ToRoundedSize(layout_canvas.Size());
   attributes.canvas_data = std::move(canvas_data);
+}
+
+void ProcessVideoNode(const HTMLVideoElement& video_element,
+                      mojom::blink::AIPageContentAttributes& attributes) {
+  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kVideo;
+  if (!IsVisible(*video_element.GetLayoutObject())) {
+    return;
+  }
+
+  auto video_data = mojom::blink::AIPageContentVideoData::New();
+  video_data->url = video_element.SourceURL();
+  // TODO(crbug.com/382558422): Include video source origin.
+  attributes.video_data = std::move(video_data);
 }
 
 void ProcessAnchorNode(const HTMLAnchorElement& anchor_element,
@@ -706,13 +721,13 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   // Running lifecycle beyond layout is expensive and the information is only
   // needed to compute geometry. Limit the update to layout if we don't need
   // the geometry.
-    if (actionable_mode()) {
-      document.View()->UpdateAllLifecyclePhasesExceptPaint(
-          DocumentUpdateReason::kUnknown);
-    } else {
-      document.View()->UpdateLifecycleToLayoutClean(
-          DocumentUpdateReason::kUnknown);
-    }
+  if (actionable_mode()) {
+    document.View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kUnknown);
+  } else {
+    document.View()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kUnknown);
+  }
 
   auto* layout_view = document.GetLayoutView();
   auto* document_style = layout_view->Style();
@@ -1001,7 +1016,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     }
     ProcessTextNode(To<LayoutText>(object), attributes,
                     recursion_data.document_style);
-  } else if (object.IsLayoutImage()) {
+  } else if (object.IsImage()) {
     // Since image is a leaf node, do not create a content node if should skip
     // content.
     if (!IsVisible(object)) {
@@ -1021,6 +1036,9 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
       return nullptr;
     }
     ProcessCanvasNode(To<LayoutHTMLCanvas>(object), attributes);
+  } else if (const auto* video_element =
+                 DynamicTo<HTMLVideoElement>(object.GetNode())) {
+    ProcessVideoNode(*video_element, attributes);
   } else if (const auto* anchor_element =
                  DynamicTo<HTMLAnchorElement>(object.GetNode())) {
     ProcessAnchorNode(*anchor_element, attributes);

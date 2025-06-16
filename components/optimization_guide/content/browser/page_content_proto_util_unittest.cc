@@ -316,6 +316,50 @@ TEST(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Image) {
   EXPECT_FALSE(ConvertAIPageContentToProto(root_content, page_content));
 }
 
+TEST(PageContentProtoUtilTest, ConvertVideoData) {
+  auto root_content = CreatePageContent();
+  auto video_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kVideo);
+  video_node->content_attributes->video_data =
+      blink::mojom::AIPageContentVideoData::New();
+  const auto expected_origin = url::Origin::Create(GURL("https://example.com"));
+  const auto expected_url = GURL("https://example.com/video.mp4");
+  video_node->content_attributes->video_data->source_origin = expected_origin;
+  video_node->content_attributes->video_data->url = expected_url;
+  root_content->root_node->children_nodes.emplace_back(std::move(video_node));
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, page_content));
+
+  EXPECT_EQ(page_content.proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
+
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_VIDEO);
+  const auto& video_data = page_content.proto.root_node()
+                               .children_nodes(0)
+                               .content_attributes()
+                               .video_data();
+  EXPECT_EQ(video_data.url(), expected_url.spec());
+  AssertValidOrigin(video_data.security_origin(), expected_origin);
+}
+
+TEST(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Video) {
+  auto root_content = CreatePageContent();
+  auto video_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kVideo);
+  video_node->content_attributes->text_info =
+      blink::mojom::AIPageContentTextInfo::New();
+  root_content->root_node->children_nodes.emplace_back(std::move(video_node));
+
+  AIPageContentResult page_content;
+  EXPECT_FALSE(ConvertAIPageContentToProto(root_content, page_content));
+}
+
 TEST(PageContentProtoUtilTest, ConvertAnchorData) {
   auto root_content = CreatePageContent();
   auto anchor_node =

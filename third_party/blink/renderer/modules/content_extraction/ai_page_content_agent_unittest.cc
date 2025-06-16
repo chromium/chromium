@@ -438,6 +438,37 @@ TEST_F(AIPageContentAgentTest, ImageNoAltText) {
   GetAIPageContent();
 }
 
+TEST_F(AIPageContentAgentTest, Video) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <video src='https://example.com/video.mp4'></video>"
+      "  <video "
+      "src='https://example.com/video.mp4?param1=value1&param2=value2'></video>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  EXPECT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& video1 = *root.children_nodes[0];
+  EXPECT_EQ(video1.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kVideo);
+  ASSERT_TRUE(video1.content_attributes->video_data);
+  EXPECT_EQ(video1.content_attributes->video_data->url,
+            blink::KURL("https://example.com/video.mp4"));
+
+  const auto& video2 = *root.children_nodes[1];
+  EXPECT_EQ(video2.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kVideo);
+  ASSERT_TRUE(video2.content_attributes->video_data);
+  EXPECT_EQ(
+      video2.content_attributes->video_data->url,
+      blink::KURL("https://example.com/video.mp4?param1=value1&param2=value2"));
+}
+
 TEST_F(AIPageContentAgentTest, Headings) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

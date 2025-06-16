@@ -63,6 +63,8 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_SVG;
     case blink::mojom::AIPageContentAttributeType::kCanvas:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_CANVAS;
+    case blink::mojom::AIPageContentAttributeType::kVideo:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_VIDEO;
     case blink::mojom::AIPageContentAttributeType::kForm:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_FORM;
     case blink::mojom::AIPageContentAttributeType::kFormControl:
@@ -296,6 +298,17 @@ void ConvertCanvasData(
   proto_canvas_data->set_layout_height(mojom_canvas_data.layout_size.height());
 }
 
+void ConvertVideoData(
+    const blink::mojom::AIPageContentVideoData& mojom_video_data,
+    optimization_guide::proto::VideoData* proto_video_data) {
+  proto_video_data->set_url(mojom_video_data.url.spec());
+  if (mojom_video_data.source_origin) {
+    SecurityOriginSerializer::Serialize(
+        *mojom_video_data.source_origin,
+        proto_video_data->mutable_security_origin());
+  }
+}
+
 optimization_guide::proto::AnchorRel ConvertAnchorRel(
     blink::mojom::AIPageContentAnchorRel rel) {
   switch (rel) {
@@ -507,6 +520,13 @@ bool ConvertAttributes(
     }
     ConvertCanvasData(*mojom_attributes.canvas_data,
                       proto_attributes->mutable_canvas_data());
+  } else if (mojom_attributes.video_data) {
+    if (mojom_attributes.attribute_type !=
+        blink::mojom::AIPageContentAttributeType::kVideo) {
+      return false;
+    }
+    ConvertVideoData(*mojom_attributes.video_data,
+                     proto_attributes->mutable_video_data());
   } else if (mojom_attributes.anchor_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kAnchor) {
@@ -567,7 +587,6 @@ void ConvertFrameMetadata(
     GURL url,
     const blink::mojom::AIPageContentFrameData& mojom_frame_data,
     optimization_guide::mojom::PageMetadata& metadata) {
-
   auto frame_metadata = optimization_guide::mojom::FrameMetadata::New();
   frame_metadata->url = url;
 

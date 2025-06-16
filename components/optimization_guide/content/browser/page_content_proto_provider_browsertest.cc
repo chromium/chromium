@@ -496,6 +496,19 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Canvas) {
   EXPECT_EQ(canvas.content_attributes().canvas_data().layout_height(), 300);
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Video) {
+  LoadPage(https_server()->GetURL("/video.html"));
+
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+
+  const auto& video_node = page_content().root_node().children_nodes().at(0);
+  ASSERT_TRUE(video_node.content_attributes().has_video_data());
+  EXPECT_EQ(video_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_VIDEO);
+  EXPECT_EQ(video_node.content_attributes().video_data().url(),
+            https_server()->GetURL("/video.mp4").spec());
+}
+
 namespace {
 
 std::string GetFilePathWithHostAndPortReplacement(
@@ -630,7 +643,6 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
   request->on_critical_path = false;
   LoadData(std::move(request));
   content::FetchHistogramsFromChildProcesses();
-
 
   ASSERT_EQ(page_content().root_node().children_nodes().size(), 1);
 
@@ -1039,10 +1051,11 @@ bool ContainsRole(const optimization_guide::proto::ContentNode& node,
 class PageContentProtoProviderBrowserTestPaidContentDisabled
     : public PageContentProtoProviderBrowserTest {
  public:
- PageContentProtoProviderBrowserTestPaidContentDisabled() {
+  PageContentProtoProviderBrowserTestPaidContentDisabled() {
     features_.InitAndDisableFeature(
         blink::features::kAIPageContentPaidContentAnnotation);
   }
+
  private:
   base::test::ScopedFeatureList features_;
 };
