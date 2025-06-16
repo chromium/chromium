@@ -5,6 +5,7 @@
 #import "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_delegate_views_mac.h"
 
 #include <memory>
+#include <optional>
 
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_delegate.h"
 #include "chrome/browser/ui/browser.h"
@@ -67,7 +68,9 @@ void ChromeWebContentsViewDelegateViewsMac::ShowContextMenu(
   // manually configured. This is tied to the `kSideBySide` experiment because
   // it is common to right click an inactive `WebContents` in split view.
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    if (!tabs::TabInterface::GetFromContents(web_contents_)->IsActivated()) {
+    std::optional<tabs::TabInterface*> tab_interface =
+        tabs::TabInterface::MaybeGetFromContents(web_contents_);
+    if (tab_interface.has_value() && !tab_interface.value()->IsActivated()) {
       web_contents_->Focus();
     }
   }
