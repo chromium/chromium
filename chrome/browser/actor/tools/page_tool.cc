@@ -322,9 +322,13 @@ void PageTool::Invoke(InvokeCallback callback) {
 
   // `this` Unretained because this class owns the mojo pipe that invokes the
   // callbacks.
-  chrome_render_frame_.set_disconnect_handler(
-      base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this),
-                     MakeResult(mojom::ActionResultCode::kExecutorDestroyed)));
+  // TODO(crbug.com/423932492): It's not clear why but it appears that sometimes
+  // the frame goes away before the RenderFrameChangeObserver fires. It should
+  // be ok to assume this happens as a result of a navigation and treat the tool
+  // invocation as successful but might be worth better understanding how this
+  // can happen.
+  chrome_render_frame_.set_disconnect_handler(base::BindOnce(
+      &PageTool::FinishInvoke, base::Unretained(this), MakeOkResult()));
   chrome_render_frame_->InvokeTool(
       std::move(request),
       base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this)));
