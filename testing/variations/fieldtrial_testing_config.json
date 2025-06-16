@@ -13394,7 +13394,19 @@
                     "enable_features": [
                         "KeepDefaultSearchEngineRendererAlive",
                         "TrackEmptyRendererProcessesForReuse"
+                    ],
+                    "disable_features": [
+                        "ProcessPerSiteForDSE"
                     ]
+                },
+                {
+                    "name": "EnabledDSEKeepAliveWithProcessSharing",
+                    "enable_features": [
+                        "KeepDefaultSearchEngineRendererAlive",
+                        "ProcessPerSiteForDSE",
+                        "TrackEmptyRendererProcessesForReuse"
+                    ],
+                    "disable_features": []
                 }
             ]
         }
