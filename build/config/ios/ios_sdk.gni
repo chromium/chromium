@@ -32,6 +32,10 @@ declare_args() {
 
   # Set to true if building an app extension.
   ios_is_app_extension = false
+
+  # Set to `target_platform` to generate Xcode project with the
+  # corresponding platform SDK.
+  target_xcode_platform = target_platform
 }
 
 # Building XCTests requires copying XCTRunner.app which is part of the iOS
