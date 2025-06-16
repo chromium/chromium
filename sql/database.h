@@ -1006,6 +1006,10 @@ class COMPONENT_EXPORT(SQL) Database {
                      Statement* statement,
                      const char* sql_statement);
 
+  // Raze the database to the ground. This is the internal version called by
+  // Raze(...).
+  bool RazeInternal();
+
   // Like Execute(), but returns a SQLite result code.
   //
   // This method returns SqliteResultCode::kOk or a SQLite error code. In other

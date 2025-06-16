@@ -46,6 +46,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//sql/database.cc) -->
 
+<!-- LINT.IfChange(RazeDatabaseFailedReason) -->
+
+<enum name="RazeDatabaseFailedReason">
+  <summary>The reason the call to Database::Raze(...) failed.</summary>
+  <int value="0" label="kPoisoned"/>
+  <int value="1" label="kPendingTransaction"/>
+  <int value="2" label="kCantOpenInMemory"/>
+  <int value="3" label="kAutoVacuumFailed"/>
+  <int value="4" label="kSchemaFailed"/>
+  <int value="5" label="kLocked"/>
+  <int value="6" label="kTruncateFailed"/>
+  <int value="7" label="kBackupFailed"/>
+  <int value="8" label="kPageSizeFailed"/>
+  <int value="9" label="kUnknownError"/>
+  <int value="10" label="kCheckpointFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(//sql/database.cc) -->
+
 </enums>
 
 </histogram-configuration>

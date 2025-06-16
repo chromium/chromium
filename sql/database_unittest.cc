@@ -1009,6 +1009,15 @@ TEST_P(SQLDatabaseTest, Raze) {
   }
 }
 
+TEST_P(SQLDatabaseTest, RazeFailedOnPoisoned) {
+  // Poison the database.
+  db_->Poison();
+
+  base::HistogramTester tester;
+  EXPECT_FALSE(db_->Raze());
+  tester.ExpectTotalCount("Sql.Database.Raze.FailureReason.Test", 1);
+}
+
 TEST_P(SQLDatabaseTest, RazeDuringSelect) {
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
@@ -1270,9 +1279,13 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   // callback will call RazeAndPoison().  Open() will then fail and be
   // retried.  The second Open() on the empty database will succeed
   // cleanly.
-  ASSERT_TRUE(db_->Open(db_path_));
-  ASSERT_TRUE(db_->Execute("PRAGMA auto_vacuum"));
-  EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
+  {
+    base::HistogramTester tester;
+    ASSERT_TRUE(db_->Open(db_path_));
+    tester.ExpectTotalCount("Sql.Database.RazeTime.Test", 1);
+    ASSERT_TRUE(db_->Execute("PRAGMA auto_vacuum"));
+    EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
+  }
 }
 
 TEST_P(SQLDatabaseTest, RazeAndPoison_DeletesData) {
@@ -2560,6 +2573,20 @@ TEST_P(SQLDatabaseTest, SchemaFailsAfterCorruptSizeInHeader) {
     EXPECT_TRUE(expecter.SawExpectedErrors())
         << "Database::DoesTableExist() did not encounter SQLITE_CORRUPT";
   }
+}
+
+TEST_P(SQLDatabaseTest, StatementErrorHistogram) {
+  static constexpr char kCreateSql[] = "CREATE TABLE foo (id INTEGER UNIQUE)";
+  ASSERT_TRUE(db_->Execute(kCreateSql));
+
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_ERROR);
+
+  base::HistogramTester tester;
+  EXPECT_FALSE(db_->Execute("SELECT invalid_column from foo"));
+  tester.ExpectUniqueSample("Sql.Database.Statement.Error.Test",
+                            SqliteResultCode::kError, 1);
+  EXPECT_TRUE(expecter.SawExpectedErrors());
 }
 
 TEST(SQLEmptyPathDatabaseTest, EmptyPathTest) {
