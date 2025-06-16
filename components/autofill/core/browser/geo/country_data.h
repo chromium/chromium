@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_COUNTRY_DATA_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_COUNTRY_DATA_H_
 
-#include <map>
 #include <string>
 #include <vector>
+
+#include "base/containers/flat_map.h"
 
 namespace base {
 template <typename T>
@@ -62,22 +63,23 @@ class CountryDataMap {
   CountryDataMap(const CountryDataMap&) = delete;
   CountryDataMap& operator=(const CountryDataMap&) = delete;
 
-  // Returns true if a |CountryData| entry for the supplied |country_code|
+  // Returns true if a `CountryData` entry for the supplied `country_code`
   // exists.
-  bool HasRequiredFieldsForAddressImport(const std::string& country_code) const;
+  bool HasRequiredFieldsForAddressImport(std::string_view country_code) const;
 
-  // Returns true if there is a country code alias for |country_code|.
-  bool HasCountryCodeAlias(const std::string& country_code_alias) const;
+  // Returns true if there is a country code alias for `country_code`.
+  bool HasCountryCodeAlias(std::string_view country_code_alias) const;
 
-  // Returns the country code for a country code alias. If no alias definition
-  // is present return an empty string.
-  const std::string GetCountryCodeForAlias(
-      const std::string& country_code_alias) const;
+  // Returns the country code for a country code alias or an empty string if no
+  // alias definition is present.
+  std::string_view GetCountryCodeForAlias(
+      std::string_view country_code_alias) const;
 
-  // Lookup the |RequiredFieldForAddressImport| for the supplied |country_code|.
-  // If no entry exists, return requirements for the US as a best guess.
+  // Looks up the `RequiredFieldForAddressImport` for the supplied
+  // `country_code`. Returns requirements for the US as a best guess if no entry
+  // exists.
   RequiredFieldsForAddressImport GetRequiredFieldsForAddressImport(
-      const std::string& country_code) const;
+      std::string_view country_code) const;
 
   // Return a constant reference to a vector of all country codes.
   const std::vector<std::string>& country_codes() const {
@@ -89,9 +91,8 @@ class CountryDataMap {
   ~CountryDataMap();
   friend struct base::DefaultSingletonTraits<CountryDataMap>;
 
-  const std::map<std::string, RequiredFieldsForAddressImport>
+  const base::flat_map<std::string, RequiredFieldsForAddressImport>
       required_fields_for_address_import_map_;
-  const std::map<std::string, std::string> country_code_aliases_;
   const std::vector<std::string> country_codes_;
 };
 

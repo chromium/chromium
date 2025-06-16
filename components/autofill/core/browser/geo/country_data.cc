@@ -7,37 +7,29 @@
 #include <array>
 #include <utility>
 
+#include "base/containers/extend.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace autofill {
 namespace {
 
-struct StaticCountryAddressImportRequirementsData {
-  char country_code[3];
-  RequiredFieldsForAddressImport address_import_field_requirements;
-};
-
-// Alias definitions record for CountryData requests.  A request for
-// |country_code_alias| is served with the |CountryData| for
-// |country_code_target|.
-struct StaticCountryCodeAliasData {
-  char country_code_alias[3];
-  char country_code_target[3];
-};
-
-// Alias definitions.
+// Alias definitions. A request for the key is served with the `CountryData` for
+// the target.
 constexpr auto kCountryCodeAliases =
-    std::to_array<StaticCountryCodeAliasData>({{"UK", "GB"}});
+    base::MakeFixedFlatMap<std::string_view, std::string_view>({{"UK", "GB"}});
 
-// Maps country codes to address import requirements. Keep this sorted
-// by country code.
+// Maps country codes to address import requirements.
 // This list is comprized of countries appearing in both
 // //third_party/icu/source/data/region/en.txt and
 // //third_party/libaddressinput/src/cpp/src/region_data_constants.cc.
 constexpr auto kCountryAddressImportRequirementsData =
-    std::to_array<StaticCountryAddressImportRequirementsData>(
+    base::MakeFixedFlatMap<std::string_view, RequiredFieldsForAddressImport>(
         {{"AC", ADDRESS_REQUIRES_LINE1_CITY},
          {"AD", ADDRESS_REQUIRES_LINE1},
          {"AE", ADDRESS_REQUIRES_LINE1_STATE},
@@ -292,52 +284,36 @@ constexpr auto kCountryAddressImportRequirementsData =
          {"ZW", ADDRESS_REQUIRES_LINE1_CITY}});
 
 // GetCountryCodes and GetCountryData compute the data for CountryDataMap
-// based on |kCountryAddressImportRequirementsData|.
+// based on `kCountryAddressImportRequirementsData`.
 std::vector<std::string> GetCountryCodes() {
-  std::vector<std::string> country_codes;
-  country_codes.reserve(std::size(kCountryAddressImportRequirementsData));
-  for (const auto& static_data : kCountryAddressImportRequirementsData) {
-    country_codes.push_back(static_data.country_code);
-  }
-  return country_codes;
+  return base::ToVector(
+      kCountryAddressImportRequirementsData,
+      [](const auto& static_data) { return std::string(static_data.first); });
 }
 
-std::map<std::string, RequiredFieldsForAddressImport> GetCountryDataMap() {
-  std::map<std::string, RequiredFieldsForAddressImport> import_requirements;
-  // Add all the countries we have explicit data for.
-  for (const auto& static_data : kCountryAddressImportRequirementsData) {
-    import_requirements.insert(
-        import_requirements.end(),
-        std::make_pair(static_data.country_code,
-                       static_data.address_import_field_requirements));
-  }
-
-  // Add any other countries that ICU knows about, falling back to default data
-  // values.
+base::flat_map<std::string, RequiredFieldsForAddressImport>
+GetCountryDataMap() {
+  // Collect other countries that ICU knows about but for which we have no
+  // manually specified requirements.
+  std::vector<std::pair<std::string, RequiredFieldsForAddressImport>>
+      other_countries;
   // SAFETY: `icu::Locale::getISOCountries` returns a C-style array whose last
   // entry is a nullptr.
   for (const char* const* country_pointer = icu::Locale::getISOCountries();
        *country_pointer; UNSAFE_BUFFERS(++country_pointer)) {
-    std::string country_code = *country_pointer;
-    if (!import_requirements.count(country_code)) {
-      import_requirements.insert(std::make_pair(
-          std::move(country_code),
-          RequiredFieldsForAddressImport::ADDRESS_REQUIREMENTS_UNKNOWN));
+    if (!kCountryAddressImportRequirementsData.contains(*country_pointer)) {
+      other_countries.emplace_back(
+          *country_pointer,
+          RequiredFieldsForAddressImport::ADDRESS_REQUIREMENTS_UNKNOWN);
     }
   }
-  return import_requirements;
-}
 
-std::map<std::string, std::string> GetCountryCodeAliasMap() {
-  std::map<std::string, std::string> country_code_aliases;
-  // Create mappings for the aliases defined in |kCountryCodeAliases|.
-  for (const auto& static_alias_data : kCountryCodeAliases) {
-    // Insert the alias.
-    country_code_aliases.insert(
-        std::make_pair(std::string(static_alias_data.country_code_alias),
-                       std::string(static_alias_data.country_code_target)));
-  }
-  return country_code_aliases;
+  // Combine the other countries with those with explicit data.
+  other_countries.insert(other_countries.end(),
+                         kCountryAddressImportRequirementsData.begin(),
+                         kCountryAddressImportRequirementsData.end());
+  return base::MakeFlatMap<std::string, RequiredFieldsForAddressImport>(
+      std::move(other_countries));
 }
 
 }  // namespace
@@ -349,19 +325,18 @@ CountryDataMap* CountryDataMap::GetInstance() {
 
 CountryDataMap::CountryDataMap()
     : required_fields_for_address_import_map_(GetCountryDataMap()),
-      country_code_aliases_(GetCountryCodeAliasMap()),
       country_codes_(GetCountryCodes()) {}
 
 CountryDataMap::~CountryDataMap() = default;
 
 bool CountryDataMap::HasRequiredFieldsForAddressImport(
-    const std::string& country_code) const {
-  return required_fields_for_address_import_map_.count(country_code) > 0;
+    std::string_view country_code) const {
+  return required_fields_for_address_import_map_.contains(country_code);
 }
 
 RequiredFieldsForAddressImport
 CountryDataMap::GetRequiredFieldsForAddressImport(
-    const std::string& country_code) const {
+    std::string_view country_code) const {
   auto lookup = required_fields_for_address_import_map_.find(country_code);
   if (lookup != required_fields_for_address_import_map_.end())
     return lookup->second;
@@ -370,18 +345,18 @@ CountryDataMap::GetRequiredFieldsForAddressImport(
 }
 
 bool CountryDataMap::HasCountryCodeAlias(
-    const std::string& country_code_alias) const {
-  return country_code_aliases_.count(country_code_alias) > 0;
+    std::string_view country_code_alias) const {
+  return kCountryCodeAliases.contains(country_code_alias);
 }
 
-const std::string CountryDataMap::GetCountryCodeForAlias(
-    const std::string& country_code_alias) const {
-  auto lookup = country_code_aliases_.find(country_code_alias);
-  if (lookup != country_code_aliases_.end()) {
+std::string_view CountryDataMap::GetCountryCodeForAlias(
+    std::string_view country_code_alias) const {
+  auto lookup = kCountryCodeAliases.find(country_code_alias);
+  if (lookup != kCountryCodeAliases.end()) {
     DCHECK(HasRequiredFieldsForAddressImport(lookup->second));
     return lookup->second;
   }
-  return std::string();
+  return {};
 }
 
 }  // namespace autofill
