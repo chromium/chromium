@@ -42,11 +42,11 @@ AndroidVideoImageBacking::AndroidVideoImageBacking(
           alpha_type,
           // This SI will be used to back a VideoFrame. As such, it
           // will potentially be sent to the display compositor and read by the
-          // GL interface for WebGL, and read by raster interface.
+          // GL interface for WebGL.
           // TODO: crbug.com/354856448 - add a parameter to the constructor that
           // allows to specify whether SCANOUT is needed.
           {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_GLES2_READ,
-           SHARED_IMAGE_USAGE_RASTER_READ, SHARED_IMAGE_USAGE_SCANOUT},
+           SHARED_IMAGE_USAGE_SCANOUT},
           std::move(debug_label),
           viz::SinglePlaneFormat::kRGBA_8888.EstimatedSizeInBytes(size),
           is_thread_safe,

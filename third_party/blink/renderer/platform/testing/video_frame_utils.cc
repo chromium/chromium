@@ -45,8 +45,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
                            << media::VideoPixelFormatToString(pixel_format)
                            << " has no corresponding gfx::BufferFormat";
       const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
-                            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                            gpu::SHARED_IMAGE_USAGE_RASTER_READ;
+                            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
       auto shared_image = test_sii->CreateSharedImage(
           {viz::GetSharedImageFormat(*buffer_format), coded_size,
            gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
