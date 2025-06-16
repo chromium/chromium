@@ -12,6 +12,11 @@ class InfoBarIOS;
 
 // Consumer protocol for the view controller that displays badges.
 @protocol BadgeConsumer <NSObject>
+
+// Whether the badge view controller is in force disable mode. While force
+// disabled, the displayed badge remains hidden.
+@property(nonatomic, assign) BOOL forceDisabled;
+
 // Notifies the consumer to reset with `displayedBadgeItem` and
 // `fullscreenBadgeItem`.
 - (void)setupWithDisplayedBadge:(id<BadgeItem>)displayedBadgeItem

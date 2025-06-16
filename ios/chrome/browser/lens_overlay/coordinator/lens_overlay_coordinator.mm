@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -174,6 +175,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   // The view controller that serves as the base of the presentation.
   __weak UIViewController* _presentationBaseViewController;
+
+  // Accumulates the callbacks that are to be run once the overlay is destroyed.
+  NSMutableArray<ProceduralBlock>* _runOnDestroy;
 }
 
 #pragma mark - public
@@ -500,6 +504,18 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 - (void)destroyLensUI:(BOOL)animated
                reason:(lens::LensOverlayDismissalSource)dismissalSource {
+  [self destroyLensUI:animated reason:dismissalSource completion:nil];
+}
+
+- (void)destroyLensUI:(BOOL)animated
+               reason:(lens::LensOverlayDismissalSource)dismissalSource
+           completion:(ProceduralBlock)completion {
+  // All completions are stored and ran toghether once the overlay is fully
+  // dismissed.
+  if (completion) {
+    [_runOnDestroy addObject:completion];
+  }
+
   if (_isExiting) {
     return;
   }
@@ -1023,6 +1039,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return NO;
   }
 
+  _runOnDestroy = [[NSMutableArray alloc] init];
   if (self.isUICreated) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
@@ -1264,6 +1281,18 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
          !lens::IsImageContextMenuEntrypoint(_entrypoint);
 }
 
+// Invokes all the completions that are meant to run once the overlay is
+// destroyed.
+- (void)notifyDestoryComplete {
+  NSMutableArray<ProceduralBlock>* blocks = _runOnDestroy;
+  CHECK(blocks, kLensOverlayNotFatalUntil);
+  _runOnDestroy = [[NSMutableArray alloc] init];
+
+  for (ProceduralBlock block in blocks) {
+    block();
+  }
+}
+
 // Disconnect and destroy all of the owned view controllers.
 - (void)destroyViewControllersAndMediators {
   [self stopResultPage];
@@ -1272,13 +1301,15 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _selectionViewController = nil;
   _mediator = nil;
   _consentViewController = nil;
-  _isExiting = NO;
   _associatedTabHelper = nullptr;
   _metricsRecorder = nil;
   _containerPresenter = nil;
   _resultsPagePresenter = nil;
   _lensOverlayConsentPresenter = nil;
   _networkIssuePresenter = nil;
+
+  [self notifyDestoryComplete];
+  _isExiting = NO;
 }
 
 // The tab helper for the active web state.

@@ -2680,11 +2680,36 @@ enum class ToolbarKind {
     return;
   }
 
-  if (IsNativeFindInPageAvailable()) {
-    [self showSystemFindPanel];
-  } else {
-    [self showFindBar];
+  __weak __typeof(self) weakSelf = self;
+
+  auto startFindInPage = ^{
+    if (IsNativeFindInPageAvailable()) {
+      [weakSelf showSystemFindPanel];
+    } else {
+      [weakSelf showFindBar];
+    }
+  };
+
+  BOOL lensOverlayAvailable = IsLensOverlayAvailable(self.profile->GetPrefs());
+  web::WebState* activeWebState = self.activeWebState;
+  if (lensOverlayAvailable && activeWebState) {
+    LensOverlayTabHelper* lensOverlayTabHelper =
+        LensOverlayTabHelper::FromWebState(activeWebState);
+    BOOL lensOverlayVisible =
+        lensOverlayTabHelper &&
+        lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+    if (lensOverlayVisible) {
+      id<LensOverlayCommands> lensOverlayHandler =
+          HandlerForProtocol(_dispatcher, LensOverlayCommands);
+      [lensOverlayHandler
+          destroyLensUI:YES
+                 reason:lens::LensOverlayDismissalSource::kFindInPageInvoked
+             completion:startFindInPage];
+      return;
+    }
   }
+
+  startFindInPage();
 }
 
 - (void)closeFindInPage {
