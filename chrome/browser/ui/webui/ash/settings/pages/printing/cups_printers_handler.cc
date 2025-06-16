@@ -400,7 +400,7 @@ void CupsPrintersHandler::HandleGetCupsEnterprisePrintersList(
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   std::vector<Printer> printers =
       printers_manager_->GetPrinters(PrinterClass::kEnterprise);
@@ -832,7 +832,7 @@ void CupsPrintersHandler::HandleReconfigureCupsPrinter(
 void CupsPrintersHandler::AddOrReconfigurePrinter(const base::Value::List& args,
                                                   bool is_printer_edit) {
   CHECK_EQ(2U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   const base::Value& printer_value = args[1];
   CHECK(printer_value.is_dict());
   const base::Value::Dict& printer_dict = printer_value.GetDict();

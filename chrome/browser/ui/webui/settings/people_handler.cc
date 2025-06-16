@@ -1407,7 +1407,7 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
   CHECK_NE(user_choice, ChromeSigninUserChoice::kNoChoice);
 
   CHECK(args[1].is_string());
-  std::string signed_in_email = args[1].GetString();
+  const std::string& signed_in_email = args[1].GetString();
   CHECK(!signed_in_email.empty());
 
   AccountInfo account =

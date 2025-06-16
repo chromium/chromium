@@ -303,7 +303,7 @@ void BookmarksMessageHandler::HandleGetCanUploadBookmarkToAccountStorage(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
-  std::string id = args[1].GetString();
+  const std::string& id = args[1].GetString();
 
   AllowJavascript();
 
@@ -314,7 +314,7 @@ void BookmarksMessageHandler::HandleGetCanUploadBookmarkToAccountStorage(
 void BookmarksMessageHandler::HandleSingleUploadClicked(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  std::string id_string = args[0].GetString();
+  const std::string& id_string = args[0].GetString();
   int64_t id;
   base::StringToInt64(id_string, &id);
 

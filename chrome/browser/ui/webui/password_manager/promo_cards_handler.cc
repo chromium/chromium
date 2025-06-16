@@ -130,7 +130,7 @@ void PromoCardsHandler::HandleRecordPromoDismissed(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
-  std::string promo_id = args[0].GetString();
+  const std::string& promo_id = args[0].GetString();
 
   for (auto& promo_card : promo_cards_) {
     if (promo_card->GetPromoID() == promo_id) {

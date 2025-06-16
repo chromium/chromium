@@ -106,7 +106,7 @@ void FloatingWorkspaceDialogHandler::ShowErrorScreen() {
 void FloatingWorkspaceDialogHandler::ShowNetworkDetails(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string guid = args[0].GetString();
+  const std::string& guid = args[0].GetString();
 
   // We need to pass NativeWindow to the network dialog here, because otherwise
   // the network dialog would be shown behind our main modal dialog.
@@ -119,7 +119,7 @@ void FloatingWorkspaceDialogHandler::ShowNetworkDetails(
 void FloatingWorkspaceDialogHandler::ShowNetworkConfig(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string guid = args[0].GetString();
+  const std::string& guid = args[0].GetString();
 
   // We need to pass NativeWindow to the network dialog here, because otherwise
   // the network dialog would be shown behind our main modal dialog.
@@ -131,7 +131,7 @@ void FloatingWorkspaceDialogHandler::ShowNetworkConfig(
 
 void FloatingWorkspaceDialogHandler::AddNetwork(const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string onc_type = args[0].GetString();
+  const std::string& onc_type = args[0].GetString();
 
   // We need to pass NativeWindow to the network dialog here, because otherwise
   // the network dialog would be shown behind our main modal dialog.
@@ -145,7 +145,7 @@ void FloatingWorkspaceDialogHandler::AddNetwork(const base::Value::List& args) {
 void FloatingWorkspaceDialogHandler::GetHostname(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   std::string hostname =
       NetworkHandler::Get()->network_state_handler()->hostname();
 

@@ -71,7 +71,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
   AllowJavascript();
 
   DCHECK(!args.empty());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(Profile::FromWebUI(web_ui()));

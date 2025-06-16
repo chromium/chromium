@@ -1001,9 +1001,9 @@ void SiteSettingsHandler::HandleGetRwsMembershipLabel(
   AllowJavascript();
   CHECK_EQ(3U, args.size());
 
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   int num_members = args[1].GetInt();
-  std::string rws_owner = args[2].GetString();
+  const std::string& rws_owner = args[2].GetString();
 
   const std::string label =
       base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
@@ -1136,7 +1136,7 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   all_sites_map_.clear();
   origin_permission_set_.clear();
@@ -1240,7 +1240,7 @@ void SiteSettingsHandler::HandleGetCategoryList(const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(2U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   const std::string& origin_string = args[1].GetString();
 
   base::Value::List result;
@@ -1257,7 +1257,7 @@ void SiteSettingsHandler::HandleGetRecentSitePermissions(
   AllowJavascript();
 
   CHECK_EQ(2U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   size_t max_sources = base::checked_cast<size_t>(args[1].GetInt());
 
   const std::vector<ContentSettingsType>& content_types =
@@ -1454,7 +1454,7 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
 
   CHECK_EQ(3U, args.size());
   const base::Value& callback_id = args[0];
-  std::string origin = args[1].GetString();
+  const std::string& origin = args[1].GetString();
   const base::Value::List& types = args[2].GetList();
 
   // Note: Invalid URLs will just result in default settings being shown.
@@ -1564,7 +1564,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
   CHECK_EQ(3U, args.size());
   const std::string& origin_string = args[0].GetString();
   const std::string* type_string = args[1].GetIfString();
-  std::string value = args[2].GetString();
+  const std::string& value = args[2].GetString();
 
   const GURL origin(origin_string);
   if (!origin.is_valid()) {
@@ -2058,7 +2058,7 @@ void SiteSettingsHandler::SendZoomLevels() {
 void SiteSettingsHandler::HandleRemoveZoomLevel(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
 
-  std::string host_or_spec = args[0].GetString();
+  const std::string& host_or_spec = args[0].GetString();
 
   GURL url(host_or_spec);
   if (url.is_valid() && url.scheme() == chrome::kIsolatedAppScheme) {

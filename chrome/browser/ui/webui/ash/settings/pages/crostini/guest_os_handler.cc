@@ -83,7 +83,7 @@ void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   base::Value::List texts;
   for (const auto& path : args[1].GetList()) {
@@ -96,9 +96,9 @@ void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
 void GuestOsHandler::HandleRemoveGuestOsSharedPath(
     const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
-  std::string callback_id = args[0].GetString();
-  std::string vm_name = args[1].GetString();
-  std::string path = args[2].GetString();
+  const std::string& callback_id = args[0].GetString();
+  const std::string& vm_name = args[1].GetString();
+  const std::string& path = args[2].GetString();
 
   guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->UnsharePath(
       vm_name, base::FilePath(path),

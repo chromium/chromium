@@ -163,7 +163,7 @@ void SecureDnsHandler::SetProvidersForTesting(
 void SecureDnsHandler::HandleGetSecureDnsResolverList(
     const base::Value::List& args) {
   AllowJavascript();
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   ResolveJavascriptCallback(base::Value(callback_id),
                             GetSecureDnsResolverList());

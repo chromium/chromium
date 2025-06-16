@@ -93,7 +93,7 @@ void ProfileInternalsHandler::RegisterMessages() {
 void ProfileInternalsHandler::HandleGetProfilesList(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   web_ui()->ResolveJavascriptCallback(callback_id, GetProfilesList(profile));

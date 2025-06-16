@@ -75,11 +75,11 @@ smb_client::SmbService* SmbHandler::GetLocalSmbService() {
 void SmbHandler::HandleSmbMount(const base::Value::List& args) {
   CHECK_EQ(8U, args.size());
 
-  std::string callback_id = args[0].GetString();
-  std::string mount_url = args[1].GetString();
-  std::string mount_name = args[2].GetString();
-  std::string username = args[3].GetString();
-  std::string password = args[4].GetString();
+  const std::string& callback_id = args[0].GetString();
+  const std::string& mount_url = args[1].GetString();
+  const std::string& mount_name = args[2].GetString();
+  const std::string& username = args[3].GetString();
+  const std::string& password = args[4].GetString();
   bool use_kerberos = args[5].GetBool();
   bool should_open_file_manager_after_mount = args[6].GetBool();
   bool save_credentials = args[7].GetBool();
@@ -136,7 +136,7 @@ void SmbHandler::HandleDiscoveryDone() {
 
 void SmbHandler::HandleHasAnySmbMountedBefore(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   smb_client::SmbService* const service = GetLocalSmbService();
 
   AllowJavascript();

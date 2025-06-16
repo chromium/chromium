@@ -235,7 +235,7 @@ void FingerprintHandler::HandleGetEnrollmentLabel(
     const base::Value::List& args) {
   const auto& list = args;
   CHECK_EQ(2U, list.size());
-  std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
   int index = list[1].GetInt();
   CHECK_GE(index, 0);
   CHECK_LT(index, static_cast<int>(fingerprints_paths_.size()));
@@ -256,7 +256,7 @@ void FingerprintHandler::HandleRemoveEnrollment(const base::Value::List& args) {
   const auto& list = args;
   // TODO(b/261412646): add unit tests to this class
   CHECK_EQ(3U, list.size());
-  std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
   const std::string& auth_token = list[2].GetString();
   int index = list[1].GetInt();
   CHECK_GE(index, 0);
@@ -287,12 +287,12 @@ void FingerprintHandler::HandleChangeEnrollmentLabel(
   const auto& list = args;
   CHECK_EQ(3U, list.size());
 
-  std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
   int index = list[1].GetInt();
   CHECK_GE(index, 0);
   CHECK_LT(index, static_cast<int>(fingerprints_paths_.size()));
 
-  std::string new_label = list[2].GetString();
+  const std::string& new_label = list[2].GetString();
 
   AllowJavascript();
   fp_service_->SetRecordLabel(

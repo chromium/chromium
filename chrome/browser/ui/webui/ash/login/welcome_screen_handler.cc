@@ -321,8 +321,8 @@ base::Value::List WelcomeScreenHandler::GetTimezoneList() {
     CHECK(value.is_list());
     const base::Value::List& timezone = value.GetList();
 
-    std::string timezone_id = timezone[0].GetString();
-    std::string timezone_name = timezone[1].GetString();
+    const std::string& timezone_id = timezone[0].GetString();
+    const std::string& timezone_name = timezone[1].GetString();
 
     base::Value::Dict timezone_option;
     timezone_option.Set("value", timezone_id);

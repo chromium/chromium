@@ -145,7 +145,7 @@ void ResetSettingsHandler::HandleResetProfileSettings(
   CHECK_EQ(3U, args.size());
   const std::string& callback_id = args[0].GetString();
   const bool& send_settings = args[1].GetBool();
-  std::string request_origin_string = args[2].GetString();
+  const std::string& request_origin_string = args[2].GetString();
   reset_report::ChromeResetReport::ResetRequestOrigin request_origin =
       ResetRequestOriginFromString(request_origin_string);
 

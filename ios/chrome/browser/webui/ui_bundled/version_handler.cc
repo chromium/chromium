@@ -26,7 +26,7 @@ void VersionHandler::RegisterMessages() {
 void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
   // Respond with the variations info immediately.
   CHECK_EQ(2U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   const bool return_raw_variations_cmd = args[1].GetBool();
 
   base::Value::Dict response;

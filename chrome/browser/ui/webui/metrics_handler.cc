@@ -49,7 +49,7 @@ void MetricsHandler::RegisterMessages() {
 
 void MetricsHandler::HandleRecordAction(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  std::string string_action = args[0].GetString();
+  const std::string& string_action = args[0].GetString();
   base::RecordComputedAction(string_action);
 }
 

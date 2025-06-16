@@ -116,7 +116,7 @@ void StartupPagesHandler::HandleAddStartupPage(const base::Value::List& args) {
     NOTREACHED();
   }
 
-  std::string url_string = args[1].GetString();
+  const std::string& url_string = args[1].GetString();
 
   GURL url;
   if (!settings_utils::FixupAndValidateStartupPage(url_string, &url)) {
@@ -141,7 +141,7 @@ void StartupPagesHandler::HandleEditStartupPage(const base::Value::List& args) {
     NOTREACHED();
   }
 
-  std::string url_string = args[2].GetString();
+  const std::string& url_string = args[2].GetString();
 
   GURL fixed_url;
   if (settings_utils::FixupAndValidateStartupPage(url_string, &fixed_url)) {

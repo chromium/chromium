@@ -72,8 +72,8 @@ void OncImportMessageHandler::Respond(const std::string& callback_id,
 
 void OncImportMessageHandler::OnImportONC(const base::Value::List& list) {
   CHECK_EQ(2u, list.size());
-  std::string callback_id = list[0].GetString();
-  std::string onc_blob = list[1].GetString();
+  const std::string& callback_id = list[0].GetString();
+  const std::string& onc_blob = list[1].GetString();
   AllowJavascript();
 
   // TODO(crbug.com/40753707): Pass the `NssCertDatabaseGetter` to

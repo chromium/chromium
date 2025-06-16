@@ -351,7 +351,7 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
 
 void PolicyUIHandler::HandleSetLocalTestPolicies(
     const base::Value::List& args) {
-  std::string policies = args[1].GetString();
+  const std::string& policies = args[1].GetString();
   AllowJavascript();
 
   if (!PolicyUI::ShouldLoadTestPage(Profile::FromWebUI(web_ui()))) {
@@ -367,7 +367,7 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
   CHECK(local_test_provider);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  std::string profile_separation_policy_response = args[2].GetString();
+  const std::string& profile_separation_policy_response = args[2].GetString();
   Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
   Profile::FromWebUI(web_ui())->GetPrefs()->SetDefaultPrefValue(
@@ -402,7 +402,7 @@ void PolicyUIHandler::HandleRevertLocalTestPolicies(
 
 void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
   CHECK(args.size() == 2);
-  std::string policies = args[1].GetString();
+  const std::string& policies = args[1].GetString();
 
   // Set policies to preference
   PrefService* prefs = g_browser_process->local_state();
@@ -447,7 +447,7 @@ void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
 void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
   upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   auto* report_scheduler = g_browser_process->browser_policy_connector()
                                ->chrome_browser_cloud_management_controller()
                                ->report_scheduler();
@@ -513,7 +513,7 @@ void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
   AllowJavascript();
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = Profile::FromWebUI(web_ui());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   if (!base::FeatureList::IsEnabled(features::kEnablePolicyPromotionBanner) ||
       profile->IsIncognitoProfile() || profile->IsGuestSession() ||

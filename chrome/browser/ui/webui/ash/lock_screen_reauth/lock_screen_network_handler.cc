@@ -85,7 +85,7 @@ void NetworkConfigMessageHandler::Initialize(const base::Value::List& args) {
 void NetworkConfigMessageHandler::ShowNetworkDetails(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string guid = args[0].GetString();
+  const std::string& guid = args[0].GetString();
 
   InternetDetailDialog::ShowDialog(guid);
 }
@@ -93,21 +93,21 @@ void NetworkConfigMessageHandler::ShowNetworkDetails(
 void NetworkConfigMessageHandler::ShowNetworkConfig(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string guid = args[0].GetString();
+  const std::string& guid = args[0].GetString();
 
   InternetConfigDialog::ShowDialogForNetworkId(guid);
 }
 
 void NetworkConfigMessageHandler::AddNetwork(const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string onc_type = args[0].GetString();
+  const std::string& onc_type = args[0].GetString();
 
   InternetConfigDialog::ShowDialogForNetworkType(onc_type);
 }
 
 void NetworkConfigMessageHandler::GetHostname(const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   std::string hostname =
       NetworkHandler::Get()->network_state_handler()->hostname();
   Respond(callback_id, hostname);

@@ -245,8 +245,8 @@ custom_handlers::ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
   if (!ok) {
     return custom_handlers::ProtocolHandler::EmptyProtocolHandler();
   }
-  std::string protocol = args[0].GetString();
-  std::string url = args[1].GetString();
+  const std::string& protocol = args[0].GetString();
+  const std::string& url = args[1].GetString();
   return custom_handlers::ProtocolHandler::CreateProtocolHandler(protocol,
                                                                  GURL(url));
 }

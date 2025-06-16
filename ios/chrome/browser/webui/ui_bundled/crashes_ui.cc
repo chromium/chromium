@@ -131,7 +131,7 @@ void CrashesDOMHandler::HandleRequestSingleCrashUpload(
     return;
   }
 
-  std::string local_id = args[0].GetString();
+  const std::string& local_id = args[0].GetString();
   upload_list_->RequestSingleUploadAsync(local_id);
 }
 

@@ -73,7 +73,7 @@ void OmahaDOMHandler::RegisterMessages() {
 void OmahaDOMHandler::HandleRequestDebugInformation(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   OmahaService::GetDebugInformation(
       base::BindOnce(&OmahaDOMHandler::OnDebugInformationAvailable,

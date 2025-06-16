@@ -208,7 +208,7 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
 void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
   upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   auto* report_scheduler = GetApplicationContext()
                                ->GetBrowserPolicyConnector()
                                ->chrome_browser_cloud_management_controller()
@@ -224,7 +224,7 @@ void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
 
 void PolicyUIHandler::HandleSetLocalTestPolicies(
     const base::Value::List& args) {
-  std::string json_policies_string = args[1].GetString();
+  const std::string& json_policies_string = args[1].GetString();
 
   if (!PolicyUI::ShouldLoadTestPage(ProfileIOS::FromWebUIIOS(web_ui()))) {
     web_ui()->ResolveJavascriptCallback(args[0], true);
@@ -260,7 +260,7 @@ void PolicyUIHandler::HandleRevertLocalTestPolicies(
 
 void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
   CHECK(args.size() == 2);
-  std::string policies = args[1].GetString();
+  const std::string& policies = args[1].GetString();
 
   // Set policies to preference
   PrefService* prefs = GetApplicationContext()->GetLocalState();

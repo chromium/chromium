@@ -90,7 +90,7 @@ void NetworkLogsMessageHandler::Respond(const std::string& callback_id,
 
 void NetworkLogsMessageHandler::OnStoreLogs(const base::Value::List& list) {
   CHECK_EQ(2u, list.size());
-  std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
   const base::Value::Dict& options = list[1].GetDict();
   AllowJavascript();
 
@@ -185,8 +185,8 @@ void NetworkLogsMessageHandler::OnWriteSystemLogsCompleted(
 void NetworkLogsMessageHandler::OnSetShillDebugging(
     const base::Value::List& list) {
   CHECK_EQ(2u, list.size());
-  std::string callback_id = list[0].GetString();
-  std::string subsystem = list[1].GetString();
+  const std::string& callback_id = list[0].GetString();
+  const std::string& subsystem = list[1].GetString();
   AllowJavascript();
   DebugDaemonClient::Get()->SetDebugMode(
       subsystem,

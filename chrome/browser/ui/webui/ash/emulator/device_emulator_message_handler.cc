@@ -226,7 +226,7 @@ void DeviceEmulatorMessageHandler::RequestPowerInfo(
 void DeviceEmulatorMessageHandler::HandleRemoveBluetoothDevice(
     const base::Value::List& args) {
   CHECK(!args.empty());
-  std::string path = args[0].GetString();
+  const std::string& path = args[0].GetString();
   fake_bluetooth_device_client_->RemoveDevice(
       dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),
       dbus::ObjectPath(path));
@@ -327,7 +327,7 @@ void DeviceEmulatorMessageHandler::HandleInsertAudioNode(
 void DeviceEmulatorMessageHandler::HandleRemoveAudioNode(
     const base::Value::List& args) {
   CHECK(!args.empty());
-  std::string tmp_id = args[0].GetString();
+  const std::string& tmp_id = args[0].GetString();
   uint64_t id;
   CHECK(base::StringToUint64(tmp_id, &id));
 
@@ -462,7 +462,7 @@ void DeviceEmulatorMessageHandler::UpdatePowerSources(
 void DeviceEmulatorMessageHandler::UpdatePowerSourceId(
     const base::Value::List& args) {
   CHECK(!args.empty() && args[0].is_string());
-  std::string id = args[0].GetString();
+  const std::string& id = args[0].GetString();
   fake_power_manager_client_->SetPowerSource(id);
 }
 

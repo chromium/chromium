@@ -125,7 +125,7 @@ void OnDeviceLlmInternalsHandler::InitAndGenerateResponse(
     return;
   }
 
-  std::string input = args[0].GetString();
+  const std::string& input = args[0].GetString();
   VLOG(1) << "Init LLM and generate response...";
   VLOG(1) << "query: " << input;
 
