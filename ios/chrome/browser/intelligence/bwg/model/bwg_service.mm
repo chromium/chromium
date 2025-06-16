@@ -6,7 +6,9 @@
 
 #import <memory>
 
+#import "base/metrics/histogram_functions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
@@ -34,6 +36,10 @@ bool BwgService::IsEligibleForBWG() {
               signin::ConsentLevel::kSignin))
           .capabilities;
 
-  return capabilities.can_use_model_execution_features() ==
-         signin::Tribool::kTrue;
+  bool is_eligible =
+      capabilities.can_use_model_execution_features() == signin::Tribool::kTrue;
+
+  base::UmaHistogramBoolean(kEligibilityHistogram, is_eligible);
+
+  return is_eligible;
 }

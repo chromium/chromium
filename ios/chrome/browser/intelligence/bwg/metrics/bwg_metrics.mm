@@ -3,3 +3,5 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+
+const char kEligibilityHistogram[] = "IOS.BWG.Eligibility";

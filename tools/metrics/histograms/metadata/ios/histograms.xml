@@ -376,6 +376,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.BWG.Eligibility" enum="Boolean" expires_after="2026-02-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records whether the user is eligible for BWG. Logged when eligibility is
+    checked prior to showing entry points, promos, etc.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CaptivePortal.SecureConnectionFailed"
     enum="CaptivePortalStatus" expires_after="2023-09-07">
   <owner>michaeldo@chromium.org</owner>

@@ -10,6 +10,7 @@ source_set("model") {
   deps = [
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
@@ -33,5 +34,31 @@ source_set("bwg_service_factory") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bwg_service_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/shared/model/application_context:application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/web/public/test",
+    "//testing/gtest",
   ]
 }
