@@ -1977,7 +1977,7 @@ bool RuleInvalidationDataVisitor<VisitorType>::
         return false;
       } else {
         rule_invalidation_data_.names_with_self_invalidation =
-            std::make_unique<WTF::BloomFilter<14>>();
+            std::make_unique<BloomFilter<14>>();
       }
     }
     rule_invalidation_data_.names_with_self_invalidation->Add(value.Hash() *

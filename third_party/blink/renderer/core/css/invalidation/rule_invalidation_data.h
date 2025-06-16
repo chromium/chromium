@@ -263,7 +263,7 @@ class CORE_EXPORT RuleInvalidationData {
   // seems a bit narrow in practice.
   InvalidationSetMap class_invalidation_sets;
 
-  std::unique_ptr<WTF::BloomFilter<14>> names_with_self_invalidation;
+  std::unique_ptr<BloomFilter<14>> names_with_self_invalidation;
   static constexpr int kClassSalt = 13;
   static constexpr int kIdSalt = 29;
 

@@ -37,7 +37,7 @@ namespace blink {
 // doesn't contain the hash for '.b'.
 class CORE_EXPORT CheckPseudoHasFastRejectFilter {
  public:
-  using FastRejectFilter = WTF::BloomFilter<12>;
+  using FastRejectFilter = BloomFilter<12>;
 
   CheckPseudoHasFastRejectFilter() = default;
   CheckPseudoHasFastRejectFilter(CheckPseudoHasFastRejectFilter&) = delete;

@@ -43,7 +43,7 @@ class CORE_EXPORT V8CrowdsourcedCompileHintsConsumer
 
    private:
     friend class V8CrowdsourcedCompileHintsConsumer;
-    WTF::BloomFilter<kBloomFilterKeySize> bloom_;
+    BloomFilter<kBloomFilterKeySize> bloom_;
   };
 
   class DataAndScriptNameHash {

@@ -18,7 +18,7 @@ void RuleInvalidationDataBuilder::Merge(const RuleInvalidationData& other) {
   if (other.names_with_self_invalidation) {
     if (rule_invalidation_data_.names_with_self_invalidation == nullptr) {
       rule_invalidation_data_.names_with_self_invalidation =
-          std::make_unique<WTF::BloomFilter<14>>();
+          std::make_unique<BloomFilter<14>>();
     }
     rule_invalidation_data_.names_with_self_invalidation->Merge(
         *other.names_with_self_invalidation);

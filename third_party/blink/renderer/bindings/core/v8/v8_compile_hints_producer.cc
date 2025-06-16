@@ -192,7 +192,7 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
   // containing 2 ^ 16 bits, which equals to 1024 64-bit ints.
   static_assert((1 << kBloomFilterKeySize) / (sizeof(int32_t) * 8) ==
                 kBloomFilterInt32Count);
-  WTF::BloomFilter<kBloomFilterKeySize> bloom;
+  BloomFilter<kBloomFilterKeySize> bloom;
 
   for (wtf_size_t script_ix = 0; script_ix < compile_hints_collectors_.size();
        ++script_ix) {

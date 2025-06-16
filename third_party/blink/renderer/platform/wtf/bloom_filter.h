@@ -36,7 +36,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-namespace WTF {
+namespace blink {
 
 // Bloom filter with k=2. Uses 2^keyBits/8 bytes of memory.
 // False positive rate is approximately (1-e^(-2n/m))^2, where n is the number
@@ -140,6 +140,6 @@ void BloomFilter<keyBits>::SetBit(unsigned key) {
   bit_array_[BitArrayIndex(key)] |= BitMask(key);
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BLOOM_FILTER_H_
