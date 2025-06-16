@@ -63,6 +63,14 @@ HICON BrowserFrameViewWin::throbber_icons_
 
 namespace {
 
+// When enabled, a call to BrowserFrame::GetMinimizeButtonOffset() is avoided
+// when not needed. Behind a feature to assess impact
+// (go/chrome-performance-work-should-be-finched).
+// TODO(crbug.com/40897031): Clean up when experiment is complete.
+BASE_FEATURE(kAvoidUnnecessaryGetMinimizeButtonOffset,
+             "AvoidUnnecessaryGetMinimizeButtonOffset",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Converts the |image| to a Windows icon and returns the corresponding HICON
 // handle. |image| is resized to desired |width| and |height| if needed.
 base::win::ScopedGDIObject<HICON> CreateHICONFromSkBitmapSizedTo(
@@ -612,12 +620,18 @@ int BrowserFrameViewWin::WindowTopY() const {
 }
 
 int BrowserFrameViewWin::CaptionButtonsRegionWidth() const {
-  int system_caption_buttons_width =
-      width() - frame()->GetMinimizeButtonOffset();
+  std::optional<int> system_caption_buttons_width;
+  if (!base::FeatureList::IsEnabled(kAvoidUnnecessaryGetMinimizeButtonOffset)) {
+    system_caption_buttons_width = width() - frame()->GetMinimizeButtonOffset();
+  }
 
   int total_width = caption_button_container_->size().width();
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
-    total_width += system_caption_buttons_width;
+    if (!system_caption_buttons_width.has_value()) {
+      system_caption_buttons_width =
+          width() - frame()->GetMinimizeButtonOffset();
+    }
+    total_width += system_caption_buttons_width.value();
   }
 
   return total_width;
