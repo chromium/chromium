@@ -171,9 +171,14 @@ class UrlRuleFlatBufferConverter {
     if (!base::IsStringASCII(rule_->url_pattern()))
       return UrlRuleOffset();
 
-    // TODO(crbug.com/41413799): Lower case case-insensitive patterns here if we
-    // want to support case-insensitive rules for subresource filter.
-    auto url_pattern_offset = builder->CreateSharedString(rule_->url_pattern());
+    // Lower case case-insensitive patterns.
+    flatbuffers::Offset<flatbuffers::String> url_pattern_offset;
+    if (rule_->match_case() || HasNoUpperAscii(rule_->url_pattern())) {
+      url_pattern_offset = builder->CreateSharedString(rule_->url_pattern());
+    } else {
+      url_pattern_offset =
+          builder->CreateSharedString(base::ToLowerASCII(rule_->url_pattern()));
+    }
 
     return flat::CreateUrlRule(
         *builder, options_, element_types_, flat::RequestMethod_ANY,
@@ -301,8 +306,10 @@ class UrlRuleFlatBufferConverter {
         return false;  // Unsupported source type.
     }
 
-    // TODO(crbug.com/41413799): Consider setting IS_CASE_INSENSITIVE here if we
-    // want to support case insensitive rules for subresource_filter.
+    if (rule_->match_case()) {
+      options_ |= flat::OptionFlag_IS_MATCH_CASE;
+    }
+
     return true;
   }
 
@@ -476,8 +483,9 @@ void UrlPatternIndexBuilder::IndexUrlRule(UrlRuleOffset offset) {
   }
 
   // Case-insensitive patterns should be lower-cased.
-  if (rule->options() & flat::OptionFlag_IS_CASE_INSENSITIVE)
+  if (!(rule->options() & flat::OptionFlag_IS_MATCH_CASE)) {
     DCHECK(HasNoUpperAscii(ToStringView(rule->url_pattern())));
+  }
 #endif
 
   NGram ngram = GetMostDistinctiveNGram(ToStringView(rule->url_pattern()));

@@ -342,9 +342,9 @@ UrlPattern::UrlPattern(const flat::UrlRule& rule)
       url_pattern_(ConvertString(rule.url_pattern())),
       anchor_left_(ConvertAnchorType(rule.anchor_left())),
       anchor_right_(ConvertAnchorType(rule.anchor_right())),
-      match_case_(rule.options() & flat::OptionFlag_IS_CASE_INSENSITIVE
-                      ? MatchCase::kFalse
-                      : MatchCase::kTrue) {}
+      match_case_(rule.options() & flat::OptionFlag_IS_MATCH_CASE
+                      ? MatchCase::kTrue
+                      : MatchCase::kFalse) {}
 
 UrlPattern::~UrlPattern() = default;
 

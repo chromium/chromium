@@ -160,15 +160,14 @@ TEST_F(IndexedRuleTest, OptionsParsing) {
       {dnr_api::DomainType::kNone, dnr_api::RuleActionType::kBlock,
        std::nullopt,
        flat_rule::OptionFlag_APPLIES_TO_THIRD_PARTY |
-           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY |
-           flat_rule::OptionFlag_IS_CASE_INSENSITIVE},
+           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
       {dnr_api::DomainType::kFirstParty, dnr_api::RuleActionType::kAllow, true,
        flat_rule::OptionFlag_IS_ALLOWLIST |
-           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
+           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY |
+           flat_rule::OptionFlag_IS_MATCH_CASE},
       {dnr_api::DomainType::kFirstParty, dnr_api::RuleActionType::kAllow, false,
        flat_rule::OptionFlag_IS_ALLOWLIST |
-           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY |
-           flat_rule::OptionFlag_IS_CASE_INSENSITIVE},
+           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
   });
 
   for (size_t i = 0; i < std::size(cases); ++i) {

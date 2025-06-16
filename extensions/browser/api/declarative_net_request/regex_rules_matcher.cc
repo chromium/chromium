@@ -276,7 +276,7 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
     const flat_rule::UrlRule* rule = regex_rule->url_rule();
 
     const bool is_case_sensitive =
-        !(rule->options() & flat_rule::OptionFlag_IS_CASE_INSENSITIVE);
+        rule->options() & flat_rule::OptionFlag_IS_MATCH_CASE;
 
     const bool require_capturing = !!regex_rule->regex_substitution();
 

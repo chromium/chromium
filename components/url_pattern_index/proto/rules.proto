@@ -163,8 +163,7 @@ message UrlRule {
 
   // When set, the rule applies only to URLs that match |url_pattern| in a
   // case-sensitive way.
-  // Not currently implemented.
-  optional bool match_case = 9 [deprecated = true];
+  optional bool match_case = 9;
 
   // The URL pattern of the format prescribed by |url_pattern_type|.
   optional string url_pattern = 10;

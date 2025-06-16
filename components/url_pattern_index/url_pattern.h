@@ -101,7 +101,7 @@ class UrlPattern {
   proto::AnchorType anchor_left_ = proto::ANCHOR_TYPE_NONE;
   proto::AnchorType anchor_right_ = proto::ANCHOR_TYPE_NONE;
 
-  MatchCase match_case_ = MatchCase::kTrue;
+  MatchCase match_case_ = MatchCase::kFalse;
 };
 
 // Allow pretty-printing URLPatterns when they are used in GTest assertions.

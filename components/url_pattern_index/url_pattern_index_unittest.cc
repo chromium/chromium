@@ -220,29 +220,32 @@ TEST_F(UrlPatternIndexTest, NoRuleApplies) {
 }
 
 TEST_F(UrlPatternIndexTest, ProtoCaseSensitivity) {
-  ASSERT_TRUE(
-      AddUrlRule(MakeUrlRule(UrlPattern("case-sensitive", kSubstring))));
+  // By default rules are case insensitive.
   proto::UrlRule rule = MakeUrlRule(UrlPattern("case-INSENsitive"));
-  rule.set_match_case(false);
   ASSERT_TRUE(AddUrlRule(rule));
+
+  proto::UrlRule case_sensitive_rule =
+      MakeUrlRule(UrlPattern("CASE-sensitive"));
+  case_sensitive_rule.set_match_case(true);
+  ASSERT_TRUE(AddUrlRule(case_sensitive_rule));
+
   Finish();
 
-  // We don't currently read case sensitivity from proto rules.
-  EXPECT_FALSE(FindMatch("http://abc.com/type=CASE-insEnsitIVe"));
-  EXPECT_FALSE(FindMatch("http://abc.com/type=case-INSENSITIVE"));
-  EXPECT_FALSE(FindMatch("http://abc.com?type=CASE-sensitive"));
-  EXPECT_TRUE(FindMatch("http://abc.com?type=case-sensitive"));
+  EXPECT_TRUE(FindMatch("http://abc.com?type=CASE-insEnsitIVe"));
+  EXPECT_TRUE(FindMatch("http://abc.com?type=case-INSENSITIVE"));
+  EXPECT_FALSE(FindMatch("http://abc.com?type=case-sensitive"));
+  EXPECT_TRUE(FindMatch("http://abc.com?type=CASE-sensitive"));
 }
 
 TEST_F(UrlPatternIndexTest, CaseSensitivity) {
   uint8_t common_options = flat::OptionFlag_APPLIES_TO_FIRST_PARTY |
                            flat::OptionFlag_APPLIES_TO_THIRD_PARTY;
   AddSimpleUrlRule("case-insensitive", 0 /* id */, 0 /* priority */,
-                   common_options | flat::OptionFlag_IS_CASE_INSENSITIVE,
-                   flat::ElementType_ANY, flat::RequestMethod_ANY);
-  AddSimpleUrlRule("case-sensitive", 0 /* id */, 0 /* priority */,
                    common_options, flat::ElementType_ANY,
                    flat::RequestMethod_ANY);
+  AddSimpleUrlRule("case-sensitive", 0 /* id */, 0 /* priority */,
+                   common_options | flat::OptionFlag_IS_MATCH_CASE,
+                   flat::ElementType_ANY, flat::RequestMethod_ANY);
   Finish();
 
   EXPECT_TRUE(FindMatch("http://abc.com/type=CASE-insEnsitIVe"));

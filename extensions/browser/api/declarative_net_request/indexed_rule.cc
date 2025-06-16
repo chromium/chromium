@@ -151,8 +151,8 @@ uint8_t GetOptionsMask(const dnr_api::Rule& parsed_rule) {
     mask |= flat_rule::OptionFlag_IS_ALLOWLIST;
   }
 
-  if (!IsCaseSensitive(parsed_rule)) {
-    mask |= flat_rule::OptionFlag_IS_CASE_INSENSITIVE;
+  if (IsCaseSensitive(parsed_rule)) {
+    mask |= flat_rule::OptionFlag_IS_MATCH_CASE;
   }
 
   switch (parsed_rule.condition.domain_type) {
@@ -887,7 +887,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
   }
 
   // Lower-case case-insensitive patterns as required by url pattern index.
-  if (indexed_rule->options & flat_rule::OptionFlag_IS_CASE_INSENSITIVE) {
+  if (!(indexed_rule->options & flat_rule::OptionFlag_IS_MATCH_CASE)) {
     indexed_rule->url_pattern = base::ToLowerASCII(indexed_rule->url_pattern);
   }
 
