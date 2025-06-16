@@ -149,7 +149,7 @@ void PasswordChangeUIController::UpdateState(
   }
 
   // Close the toast before attempting to open any dialog.
-  CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
+  CloseToastWidget(views::Widget::ClosedReason::kUnspecified);
   ShowDialog(
       std::move(std::get<std::unique_ptr<ui::DialogModel>>(configuration)));
 }

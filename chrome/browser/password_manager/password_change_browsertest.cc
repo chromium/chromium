@@ -869,3 +869,31 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewDetailsFromToast) {
   EXPECT_EQ(url::Origin::Create(GURL("chrome://password-manager/")),
             url::Origin::Create(tab_strip->GetActiveWebContents()->GetURL()));
 }
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       ToastHiddenWhenDialogDisplayed) {
+  SetPrivacyNoticeAcceptedPref();
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
+                                                   u"pa$$word", WebContents());
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  delegate->StartPasswordChangeFlow();
+  MockPasswordChangeOutcome(
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME);
+
+  ASSERT_TRUE(base::test::RunUntil([delegate]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordChangeFailed;
+  }));
+
+  PasswordChangeUIController* ui_controller =
+      static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
+  EXPECT_TRUE(ui_controller->dialog_widget()->IsVisible());
+  EXPECT_FALSE(ui_controller->toast_view());
+}
