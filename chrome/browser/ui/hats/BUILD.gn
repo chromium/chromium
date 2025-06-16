@@ -31,6 +31,7 @@ source_set("hats") {
       "hats_service_desktop.h",
       "trust_safety_sentiment_service.h",
       "trust_safety_sentiment_service_factory.h",
+      "trust_safety_sentiment_service_interface.h",
     ]
     public_deps += [ "//chrome/browser/metrics/desktop_session_duration" ]
   } else {

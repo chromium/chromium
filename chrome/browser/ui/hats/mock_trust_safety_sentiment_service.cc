@@ -13,9 +13,7 @@
 using ::testing::NiceMock;
 
 MockTrustSafetySentimentService::MockTrustSafetySentimentService(
-    Profile* profile)
-    : TrustSafetySentimentService(profile) {}
-
+    Profile* profile) {}
 MockTrustSafetySentimentService::~MockTrustSafetySentimentService() = default;
 
 std::unique_ptr<KeyedService> BuildMockTrustSafetySentimentService(
