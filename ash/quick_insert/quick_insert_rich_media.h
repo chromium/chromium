@@ -5,11 +5,13 @@
 #ifndef ASH_QUICK_INSERT_QUICK_INSERT_RICH_MEDIA_H_
 #define ASH_QUICK_INSERT_QUICK_INSERT_RICH_MEDIA_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <variant>
 
 #include "ash/ash_export.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
