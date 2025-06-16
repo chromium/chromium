@@ -171,10 +171,6 @@ std::string PrintMsgPrintParamsErrorDetails(const mojom::PrintParams& params) {
 
 }  // namespace
 
-BASE_FEATURE(kCheckPrintRfhIsActive,
-             "CheckPrintRfhIsActive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 PrintViewManagerBase::PrintViewManagerBase(content::WebContents* web_contents)
     : PrintManager(web_contents),
       queue_(g_browser_process->print_job_manager()->queue()) {
@@ -636,8 +632,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
   }
 
   content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
-  if (base::FeatureList::IsEnabled(kCheckPrintRfhIsActive) &&
-      !render_frame_host->IsActive()) {
+  if (!render_frame_host->IsActive()) {
     // Only active RFHs should show UI elements.
     GetDefaultPrintSettingsReply(std::move(callback), nullptr);
     return;

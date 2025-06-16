@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -46,10 +45,6 @@ namespace printing {
 
 class PrintQueriesQueue;
 class PrinterQuery;
-
-// TODO(crbug.com/41487419): Remove this emergency off switch after a safe
-// rollout.
-BASE_DECLARE_FEATURE(kCheckPrintRfhIsActive);
 
 // Base class for managing the print commands for a WebContents.
 class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
