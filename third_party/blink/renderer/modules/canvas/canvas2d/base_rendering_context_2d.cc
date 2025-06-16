@@ -293,7 +293,7 @@ void BaseRenderingContext2D::RestoreFromInvalidSizeIfNeeded() {
       !host) {
     return;
   }
-  DCHECK(!host->ResourceProviderDEPRECATED());
+  DCHECK(!host->GetResourceProviderForCanvas2D());
 
   if (host->IsValidImageSize()) {
     if (dispatch_context_lost_event_timer_.IsActive()) {
@@ -797,7 +797,7 @@ scoped_refptr<StaticBitmapImage>
 BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
-  CanvasResourceProvider* provider = Host()->ResourceProviderDEPRECATED();
+  CanvasResourceProvider* provider = Host()->GetResourceProviderForCanvas2D();
   return provider ? provider->Snapshot(reason) : nullptr;
 }
 
@@ -1504,7 +1504,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   gpu::SyncToken canvas_access_sync_token;
   bool performed_copy = false;
   scoped_refptr<gpu::ClientSharedImage> client_si =
-      host->ResourceProviderDEPRECATED()
+      host->GetResourceProviderForCanvas2D()
           ->GetBackingClientSharedImageForExternalWrite(
               &canvas_access_sync_token,
               gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
@@ -1587,7 +1587,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
   // If this canvas already has a resource provider, this means that drawing has
   // occurred after `transferToWebGPU`. We disallow transferring back in this
   // case, and raise an exception instead.
-  if (host->ResourceProviderDEPRECATED()) {
+  if (host->GetResourceProviderForCanvas2D()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The canvas was touched after transferToGPUTexture.");

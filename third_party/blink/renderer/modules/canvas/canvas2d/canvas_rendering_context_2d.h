@@ -158,7 +158,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   // CanvasRenderingContext implementation
   int AllocatedBufferCountPerPixel() override {
-    return (Host() && Host()->ResourceProviderDEPRECATED()) ? 1 : 0;
+    return (Host() && Host()->GetResourceProviderForCanvas2D()) ? 1 : 0;
   }
 
   int Width() const final;
