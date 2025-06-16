@@ -8,7 +8,16 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/chrome_activity_item_thumbnail_generator.h"
+
+namespace {
+// Feature flag to restore sharing just the data instead of an Extension Item.
+// To be used as a kill switch.
+BASE_FEATURE(kShareNSExtensionItemKillSwitch,
+             "ShareNSExtensionItemKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace
 
 @interface ChromeActivityURLSource () {
   NSString* _subject;
@@ -57,7 +66,34 @@
 
 - (id)activityViewController:(UIActivityViewController*)activityViewController
          itemForActivityType:(NSString*)activityType {
-  return self.shareURL;
+  if (base::FeatureList::IsEnabled(kShareNSExtensionItemKillSwitch)) {
+    return _shareURL;
+  }
+  if ([activityType isEqualToString:UIActivityTypeMessage]) {
+    // Message does not seem to support NSItemProvider.
+    return _shareURL;
+  }
+  NSItemProvider* provider =
+      [[NSItemProvider alloc] initWithItem:_shareURL
+                            typeIdentifier:UTTypeURL.identifier];
+  __weak __typeof(self) weakSelf = self;
+  provider.previewImageHandler = ^(
+      NSItemProviderCompletionHandler completionHandler,
+      Class expectedValueClass, NSDictionary* options) {
+    CGSize preferredImageSize = [[options
+        objectForKey:NSItemProviderPreferredImageSizeKey] CGSizeValue];
+    if (CGSizeEqualToSize(preferredImageSize, CGSizeZero)) {
+      preferredImageSize = CGSizeMake(256, 256);
+    }
+    completionHandler([weakSelf activityViewController:activityViewController
+                          thumbnailImageForActivityType:activityType
+                                          suggestedSize:preferredImageSize],
+                      nil);
+  };
+  NSExtensionItem* item = [[NSExtensionItem alloc] init];
+  item.attachments = @[ provider ];
+  item.attributedTitle = [[NSAttributedString alloc] initWithString:_subject];
+  return item;
 }
 
 - (NSString*)activityViewController:

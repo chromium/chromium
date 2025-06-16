@@ -96,7 +96,7 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
   return [[ShareToData alloc] initWithShareURL:final_url_to_share
                                     visibleURL:web_state->GetVisibleURL()
                                          title:tab_title
-                                additionalText:tab_title
+                                additionalText:nil
                                isOriginalTitle:is_original_title
                                isPagePrintable:is_page_printable
                               isPageSearchable:is_page_searchable

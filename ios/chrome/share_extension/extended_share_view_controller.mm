@@ -347,7 +347,10 @@ const NSUInteger kSearchCharacterLimit = 1000;
   }
   self.shareItem = item;
   self.shareURL = URL;
-  self.shareTitle = [[item attributedContentText] string];
+  self.shareTitle = [[item attributedTitle] string];
+  if ([self.shareTitle length] == 0) {
+    self.shareTitle = [[item attributedContentText] string];
+  }
   if ([self.shareTitle length] == 0) {
     self.shareTitle = [URL host];
   }
