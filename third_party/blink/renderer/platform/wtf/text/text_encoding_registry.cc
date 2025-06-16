@@ -178,8 +178,8 @@ static void ExtendTextCodecMaps() {
   blink::TextCodecReplacement::RegisterEncodingNames(AddToTextEncodingNameMap);
   blink::TextCodecReplacement::RegisterCodecs(AddToTextCodecMap);
 
-  TextCodecCJK::RegisterEncodingNames(AddToTextEncodingNameMap);
-  TextCodecCJK::RegisterCodecs(AddToTextCodecMap);
+  blink::TextCodecCjk::RegisterEncodingNames(AddToTextEncodingNameMap);
+  blink::TextCodecCjk::RegisterCodecs(AddToTextCodecMap);
 
   blink::TextCodecIcu::RegisterEncodingNames(AddToTextEncodingNameMap);
   blink::TextCodecIcu::RegisterCodecs(AddToTextCodecMap);

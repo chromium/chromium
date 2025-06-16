@@ -42,7 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
 
-namespace WTF {
+namespace blink {
 
 // These are values from https://encoding.spec.whatwg.org/index-jis0208.txt that
 // are not in ICU.
@@ -380,4 +380,4 @@ const Gb18030EncodeIndex& EnsureGb18030EncodeIndexForEncode() {
   return *table;
 }
 
-}  // namespace WTF
+}  // namespace blink

@@ -37,9 +37,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
+namespace blink {
 
-class TextCodecCJK::Decoder {
+class TextCodecCjk::Decoder {
  public:
   virtual ~Decoder() = default;
   virtual String Decode(base::span<const uint8_t> bytes,
@@ -531,7 +531,7 @@ Vector<uint8_t> EncodeGbk(StringView string, UnencodableHandling handling) {
 }
 
 // https://encoding.spec.whatwg.org/#euc-jp-decoder
-class EucJpDecoder : public TextCodecCJK::Decoder {
+class EucJpDecoder : public TextCodecCjk::Decoder {
  public:
   EucJpDecoder() = default;
 
@@ -576,7 +576,7 @@ class EucJpDecoder : public TextCodecCJK::Decoder {
 };
 
 // https://encoding.spec.whatwg.org/#iso-2022-jp-decoder
-class Iso2022JpDecoder : public TextCodecCJK::Decoder {
+class Iso2022JpDecoder : public TextCodecCjk::Decoder {
  public:
   Iso2022JpDecoder() = default;
 
@@ -803,7 +803,7 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
 };
 
 // https://encoding.spec.whatwg.org/#shift_jis-decoder
-class ShiftJisDecoder : public TextCodecCJK::Decoder {
+class ShiftJisDecoder : public TextCodecCjk::Decoder {
  public:
   ShiftJisDecoder() = default;
 
@@ -844,7 +844,7 @@ class ShiftJisDecoder : public TextCodecCJK::Decoder {
 };
 
 // https://encoding.spec.whatwg.org/#euc-kr-decoder
-class EucKrDecoder : public TextCodecCJK::Decoder {
+class EucKrDecoder : public TextCodecCjk::Decoder {
  public:
   EucKrDecoder() = default;
 
@@ -878,7 +878,7 @@ class EucKrDecoder : public TextCodecCJK::Decoder {
 // https://encoding.spec.whatwg.org/#gb18030-decoder
 // https://encoding.spec.whatwg.org/#gbk-decoder
 // Note that the same decoder is used for GB18030 and GBK.
-class Gb18030Decoder : public TextCodecCJK::Decoder {
+class Gb18030Decoder : public TextCodecCjk::Decoder {
  public:
   Gb18030Decoder() = default;
 
@@ -888,7 +888,7 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
                 bool& saw_error) override {
     saw_error_ = &saw_error;
     String result =
-        TextCodecCJK::Decoder::Decode(bytes, flush, stop_on_error, saw_error);
+        TextCodecCjk::Decoder::Decode(bytes, flush, stop_on_error, saw_error);
     // Ensures that `saw_error_` won't be used for the next run.
     saw_error_ = nullptr;
     return result;
@@ -987,17 +987,17 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
   uint8_t second_ = 0x00;
   uint8_t third_ = 0x00;
 
-  // To share a reference to `saw_error` with `TextCodecCJK::Decoder::Decode`
+  // To share a reference to `saw_error` with `TextCodecCjk::Decoder::Decode`
   // we should keep a pointer to `saw_error`, and use it in `ParseByte` and
-  // `Finalize`. Since `saw_error` is given as `TextCodecCJK::Decode` argument,
+  // `Finalize`. Since `saw_error` is given as `TextCodecCjk::Decode` argument,
   // I do not think it is safe to keep the reference after
-  // `TextCodecCJK::Decode` finishes.
+  // `TextCodecCjk::Decode` finishes.
   bool* saw_error_;
 };
 
 }  // namespace
 
-enum class TextCodecCJK::Encoding : uint8_t {
+enum class TextCodecCjk::Encoding : uint8_t {
   kEucJp,
   kIso2022Jp,
   kShiftJis,
@@ -1006,9 +1006,9 @@ enum class TextCodecCJK::Encoding : uint8_t {
   kGb18030,
 };
 
-TextCodecCJK::TextCodecCJK(Encoding encoding) : encoding_(encoding) {}
+TextCodecCjk::TextCodecCjk(Encoding encoding) : encoding_(encoding) {}
 
-void TextCodecCJK::RegisterEncodingNames(EncodingNameRegistrar registrar) {
+void TextCodecCjk::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   // https://encoding.spec.whatwg.org/#names-and-labels
   auto registerAliases = [&](std::initializer_list<const char*> list) {
     for (auto* alias : list)
@@ -1041,41 +1041,42 @@ void TextCodecCJK::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   registerAliases({kCanonicalNameGb18030});
 }
 
-void TextCodecCJK::RegisterCodecs(TextCodecRegistrar registrar) {
+void TextCodecCjk::RegisterCodecs(TextCodecRegistrar registrar) {
   for (auto* name : kSupportedCanonicalNames) {
     registrar(name, Create, nullptr);
   }
 }
 
-std::unique_ptr<TextCodec> TextCodecCJK::Create(const TextEncoding& encoding,
-                                                const void*) {
+std::unique_ptr<TextCodec> TextCodecCjk::Create(
+    const WTF::TextEncoding& encoding,
+    const void*) {
   const AtomicString& name = encoding.GetName();
 
-  // To keep the `TextCodecCJK` constructor private, we intend to `new`
+  // To keep the `TextCodecCjk` constructor private, we intend to `new`
   // it and use `base::WrapUnique`. Note that we cannot use `std::make_unique`
   // for a private constructor.
   if (name == kCanonicalNameEucJp) {
-    return base::WrapUnique(new TextCodecCJK(Encoding::kEucJp));
+    return base::WrapUnique(new TextCodecCjk(Encoding::kEucJp));
   }
   if (name == kCanonicalNameShiftJis) {
-    return base::WrapUnique(new TextCodecCJK(Encoding::kShiftJis));
+    return base::WrapUnique(new TextCodecCjk(Encoding::kShiftJis));
   }
   if (name == kCanonicalNameEucKr) {
-    return base::WrapUnique(new TextCodecCJK(Encoding::kEucKr));
+    return base::WrapUnique(new TextCodecCjk(Encoding::kEucKr));
   }
   if (name == kCanonicalNameIso2022Jp) {
-    return base::WrapUnique(new TextCodecCJK(Encoding::kIso2022Jp));
+    return base::WrapUnique(new TextCodecCjk(Encoding::kIso2022Jp));
   }
   if (name == kCanonicalNameGbk) {
-    return base::WrapUnique(new TextCodecCJK(Encoding::kGbk));
+    return base::WrapUnique(new TextCodecCjk(Encoding::kGbk));
   }
   if (name == kCanonicalNameGb18030) {
-    return base::WrapUnique(new TextCodecCJK(Encoding::kGb18030));
+    return base::WrapUnique(new TextCodecCjk(Encoding::kGb18030));
   }
   NOTREACHED();
 }
 
-String TextCodecCJK::Decoder::Decode(base::span<const uint8_t> bytes,
+String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
                                      bool flush,
                                      bool stop_on_error,
                                      bool& saw_error) {
@@ -1123,7 +1124,7 @@ String TextCodecCJK::Decoder::Decode(base::span<const uint8_t> bytes,
   return result.ToString();
 }
 
-String TextCodecCJK::Decode(base::span<const uint8_t> data,
+String TextCodecCjk::Decode(base::span<const uint8_t> data,
                             FlushBehavior flush_behavior,
                             bool stop_on_error,
                             bool& saw_error) {
@@ -1153,7 +1154,7 @@ String TextCodecCJK::Decode(base::span<const uint8_t> data,
   return decoder_->Decode(data, flush, stop_on_error, saw_error);
 }
 
-Vector<uint8_t> TextCodecCJK::EncodeCommon(StringView string,
+Vector<uint8_t> TextCodecCjk::EncodeCommon(StringView string,
                                            UnencodableHandling handling) const {
   switch (encoding_) {
     case Encoding::kEucJp:
@@ -1172,20 +1173,20 @@ Vector<uint8_t> TextCodecCJK::EncodeCommon(StringView string,
   NOTREACHED();
 }
 
-std::string TextCodecCJK::Encode(base::span<const UChar> characters,
+std::string TextCodecCjk::Encode(base::span<const UChar> characters,
                                  UnencodableHandling handling) {
   Vector<uint8_t> v = EncodeCommon(StringView(characters), handling);
   return std::string(v.begin(), v.end());
 }
 
-std::string TextCodecCJK::Encode(base::span<const LChar> characters,
+std::string TextCodecCjk::Encode(base::span<const LChar> characters,
                                  UnencodableHandling handling) {
   Vector<uint8_t> v = EncodeCommon(StringView(characters), handling);
   return std::string(v.begin(), v.end());
 }
 
 // static
-bool TextCodecCJK::IsSupported(StringView name) {
+bool TextCodecCjk::IsSupported(StringView name) {
   for (auto* e : kSupportedCanonicalNames) {
     if (e == name) {
       return true;
@@ -1194,4 +1195,4 @@ bool TextCodecCJK::IsSupported(StringView name) {
   return false;
 }
 
-}  // namespace WTF
+}  // namespace blink

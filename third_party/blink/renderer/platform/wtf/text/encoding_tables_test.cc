@@ -27,7 +27,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -10474,4 +10474,4 @@ TEST(EncodingTables, EnsureGb18030EncodeTable) {
 }
 
 }  // namespace
-}  // namespace WTF
+}  // namespace blink

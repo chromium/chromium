@@ -39,9 +39,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
-// Following functions are helpers for TextCodecCJK, and not intended to be used
+// Following functions are helpers for TextCodecCjk, and not intended to be used
 // by others.
 constexpr size_t kJis0208EncodeIndexSize = 7724;
 using Jis0208EncodeIndex =
@@ -145,6 +145,6 @@ static auto FindInSortedPairs(const CollectionType& collection,
                           MakeFirstAdapter(key), CompareFirst{});
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ENCODING_TABLES_H_

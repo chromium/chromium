@@ -120,8 +120,8 @@ void TextCodecIcu::RegisterEncodingNames(EncodingNameRegistrar registrar) {
       continue;
     }
 #endif
-    // Avoid codecs supported by `TextCodecCJK`.
-    if (WTF::TextCodecCJK::IsSupported(standard_name)) {
+    // Avoid codecs supported by `TextCodecCjk`.
+    if (TextCodecCjk::IsSupported(standard_name)) {
       continue;
     }
 
@@ -153,8 +153,8 @@ void TextCodecIcu::RegisterEncodingNames(EncodingNameRegistrar registrar) {
 #endif
 
     // Avoid registering codecs registered by
-    // `TextCodecCJK::RegisterEncodingNames`.
-    if (!WTF::TextCodecCJK::IsSupported(standard_name)) {
+    // `TextCodecCjk::RegisterEncodingNames`.
+    if (!TextCodecCjk::IsSupported(standard_name)) {
       registrar(standard_name, standard_name);
     }
 
@@ -295,8 +295,8 @@ void TextCodecIcu::RegisterCodecs(TextCodecRegistrar registrar) {
       continue;
     }
 #endif
-    // Avoid codecs supported by `TextCodecCJK`.
-    if (WTF::TextCodecCJK::IsSupported(standard_name)) {
+    // Avoid codecs supported by `TextCodecCjk`.
+    if (TextCodecCjk::IsSupported(standard_name)) {
       continue;
     }
     registrar(standard_name, Create, nullptr);
