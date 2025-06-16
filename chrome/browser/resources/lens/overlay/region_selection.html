@@ -28,6 +28,23 @@
     background: rgba(0, 0, 0, 0.1);
     opacity: 1;
   }
+
+  #keyboardSelection {
+    inset: 0px;
+    pointer-events: none;
+    position: absolute;
+    z-index: 6; /* Keep aligned with cursor and context menu. */
+  }
+
+  #keyboardSelection:focus-visible {
+    outline: 3px solid var(--cr-focus-outline-color);
+    outline-offset: -3px;
+  }
+
+  :host([has-selected]) #keyboardSelection,
+  :host(:not([enable-keyboard-selection])) #keyboardSelection {
+    display: none;
+  }
 </style>
 <canvas
   id="regionSelectionCanvas"
@@ -39,3 +56,6 @@
 <div id="highlightImgContainer">
   <canvas id="highlightImgCanvas"></canvas>
 </div>
+<div on-keyup="onKeyboardSelection"
+  id="keyboardSelection" tabindex="0" role="button"
+  aria-label="$i18n{searchScreenshot}"></div>

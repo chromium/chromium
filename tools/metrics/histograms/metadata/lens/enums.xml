@@ -178,6 +178,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Copy as image action"/>
   <int value="16" label="Save as image action"/>
   <int value="17" label="Math selection"/>
+  <int value="18" label="Full screenshot region selection"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/lens/core/mojom/lens.mojom:UserAction) -->

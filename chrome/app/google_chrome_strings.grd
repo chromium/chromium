@@ -1882,6 +1882,10 @@ Google Chrome is unable to recover your settings.
           desc="Accessibility label for the slider controlling the bottom left corner of the search area. Includes the coordinates of the left and bottom edges of the search area expressed as percentages of the image area.">
           bottom left corner of search area: left <ph name="LEFT"><ex>15</ex>$1</ph>%, bottom <ph name="BOTTOM"><ex>65</ex>$2</ph>%
         </message>
+        <message name="IDS_LENS_OVERLAY_SEARCH_SCREENSHOT_ACCESSIBILITY_LABEL"
+          desc="Spoken by screen readers when the screenshot gets focus, but not visually rendered. Informs the user that the screenshot will be searched when activated.">
+          Search this screenshot
+        </message>
 
         <!-- IPH Strings -->
         <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_IPH"

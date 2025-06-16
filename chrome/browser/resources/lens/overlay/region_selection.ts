@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,18 +31,43 @@ interface NormalizedRectangle {
   height: number;
 }
 
+function fullscreenNormalizedCenterRotatedBox(): CenterRotatedBox {
+  return {
+    box: {
+      x: 0.5,
+      y: 0.5,
+      width: 1,
+      height: 1,
+    },
+    rotation: 0,
+    coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+  };
+}
+
+function fullscreenPostSelectionRegion(): PostSelectionBoundingBox {
+  return {
+    top: 0,
+    left: 0,
+    width: 1,
+    height: 1,
+  };
+}
+
 export interface RegionSelectionElement {
   $: {
     highlightImgCanvas: HTMLCanvasElement,
+    keyboardSelection: HTMLDivElement,
     regionSelectionCanvas: HTMLCanvasElement,
   };
 }
+
+const RegionSelectionElementBase = I18nMixin(PolymerElement);
 
 /*
  * Element responsible for rendering the region being selected by the user. It
  * does not render any post-selection state.
  */
-export class RegionSelectionElement extends PolymerElement {
+export class RegionSelectionElement extends RegionSelectionElementBase {
   static get is() {
     return 'region-selection';
   }
@@ -61,6 +87,11 @@ export class RegionSelectionElement extends PolymerElement {
       canvasWidth: Number,
       canvasPhysicalHeight: Number,
       canvasPhysicalWidth: Number,
+      enableKeyboardSelection: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableKeyboardSelection'),
+        reflectToAttribute: true,
+      },
       hasSelected: {
         reflectToAttribute: true,
         type: Boolean,
@@ -104,6 +135,8 @@ export class RegionSelectionElement extends PolymerElement {
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect()
   declare private selectionOverlayRect: DOMRect;
+  // Whether keyboard selection is enabled.
+  declare private enableKeyboardSelection: boolean;
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
@@ -149,10 +182,34 @@ export class RegionSelectionElement extends PolymerElement {
   }
 
   handleGestureEnd(event: GestureEvent): boolean {
-    // Issue the Lens request.
     const isClick = event.state === GestureState.STARTING;
-    this.browserProxy.handler.issueLensRegionRequest(
-        this.getNormalizedCenterRotatedBoxFromGesture(event), isClick);
+    const box = this.getNormalizedCenterRotatedBoxFromGesture(event);
+    const region = this.getPostSelectionRegion(event);
+    const interaction =
+        isClick ? UserAction.kTapRegionSelection : UserAction.kRegionSelection;
+    this.issueRequest(isClick, box, region, interaction);
+    return true;
+  }
+
+  private onKeyboardSelection(event: Event): boolean {
+    if (event instanceof KeyboardEvent &&
+        !(event.key === 'Enter' || event.key === ' ')) {
+      return false;
+    }
+
+    this.issueRequest(/*isClick=*/ false,
+                      fullscreenNormalizedCenterRotatedBox(),
+                      fullscreenPostSelectionRegion(),
+                      UserAction.kFullScreenshotRegionSelection);
+    return true;
+  }
+
+  private issueRequest(
+      isClick: boolean, box: CenterRotatedBox, region: PostSelectionBoundingBox,
+      interaction: UserAction) {
+    recordLensOverlayInteraction(INVOCATION_SOURCE, interaction);
+    // Issue the Lens request.
+    this.browserProxy.handler.issueLensRegionRequest(box, isClick);
 
     // Relinquish control from the shimmer.
     unfocusShimmer(this, ShimmerControlRequester.MANUAL_REGION);
@@ -161,21 +218,20 @@ export class RegionSelectionElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('render-post-selection', {
       bubbles: true,
       composed: true,
-      detail: this.getPostSelectionRegion(event),
+      detail: region,
     }));
 
     // Check for selectable text
     this.dispatchEvent(new CustomEvent('detect-text-in-region', {
       bubbles: true,
       composed: true,
-      detail: this.getNormalizedCenterRotatedBoxFromGesture(event),
+      detail: box,
     }));
 
     this.clearCanvas();
 
     this.hasSelected = true;
     this.isSelecting = false;
-    return true;
   }
 
   // Fade out scrim after drag to resize selection in post selection renderer
@@ -390,15 +446,9 @@ export class RegionSelectionElement extends PolymerElement {
 
   private getPostSelectionRegion(gesture: GestureEvent):
       PostSelectionBoundingBox {
-    if (gesture.state === GestureState.STARTING) {
-      recordLensOverlayInteraction(
-          INVOCATION_SOURCE, UserAction.kTapRegionSelection);
-      return this.getPostSelectionRegionFromTap(gesture);
-    }
-
-    recordLensOverlayInteraction(
-        INVOCATION_SOURCE, UserAction.kRegionSelection);
-    return this.getPostSelectionRegionFromDrag(gesture);
+    return gesture.state === GestureState.STARTING ?
+        this.getPostSelectionRegionFromTap(gesture) :
+        this.getPostSelectionRegionFromDrag(gesture);
   }
 
   private getPostSelectionRegionFromTap(gesture: GestureEvent):

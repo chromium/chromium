@@ -74,6 +74,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("translate", IDS_LENS_OVERLAY_TRANSLATE);
   html_source->AddLocalizedString("translateButtonLabel",
                                   IDS_LENS_OVERLAY_TRANSLATE_BUTTON_LABEL);
+  html_source->AddLocalizedString(
+      "searchScreenshot",
+      IDS_LENS_OVERLAY_SEARCH_SCREENSHOT_ACCESSIBILITY_LABEL);
   html_source->AddLocalizedString("selectText", IDS_LENS_OVERLAY_SELECT_TEXT);
   html_source->AddLocalizedString(
       "networkErrorPageTopLine",
@@ -264,6 +267,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableSummarizeSuggestionHint",
       lens::features::ShouldEnableSummarizeHintForContextualSuggest());
+  html_source->AddBoolean(
+      "enableKeyboardSelection",
+      lens::features::IsLensOverlayKeyboardSelectionEnabled());
 
   LensOverlayController& controller = GetLensOverlayController();
   html_source->AddDouble("invocationTime",

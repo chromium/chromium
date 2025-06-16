@@ -123,6 +123,10 @@ BASE_DECLARE_FEATURE(kLensOverlayEduActionChip);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchSidePanelDefaultWidthChange);
 
+// Enables keyboard selection in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayKeyboardSelection);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -964,6 +968,10 @@ bool IsLensSearchSidePanelDefaultWidthChangeEnabled();
 // The default width for the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 int GetLensSearchSidePanelDefaultWidth();
+
+// Whether to enable keyboard selection in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayKeyboardSelectionEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

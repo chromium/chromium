@@ -262,6 +262,54 @@ suite('ManualRegionSelection', function() {
     await assertClickSendsRequest(pointInOverlay, expectedRect);
   });
 
+  test('KeyboardSelectsEntireRegion', async () => {
+    // Ensures the whenCalled method returns because of keypress, not a leftover
+    // call that already happened.
+    testBrowserProxy.handler.resetResolver('issueLensRegionRequest');
+
+    const keyUpEvent = new KeyboardEvent('keyup', {
+      key: 'Enter',
+      code: 'Enter',
+    });
+    selectionOverlayElement.$.regionSelectionLayer.$.keyboardSelection
+        .dispatchEvent(keyUpEvent);
+
+    await testBrowserProxy.handler.whenCalled('issueLensRegionRequest');
+    const requestRegion =
+        testBrowserProxy.handler.getArgs('issueLensRegionRequest')[0][0];
+    const isClick =
+        testBrowserProxy.handler.getArgs('issueLensRegionRequest')[0][1];
+
+    // The expected rect should be the entire canvas.
+    const expectedRect: CenterRotatedBox = {
+      box: {
+        x: 0.5,
+        y: 0.5,
+        width: 1,
+        height: 1,
+      },
+      rotation: 0,
+      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    };
+    assertEquivalentRectangles(
+        expectedRect, requestRegion, /*precision=*/ 0.001);
+    assertFalse(isClick);
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kFullScreenshotRegionSelection));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kFullScreenshotRegionSelection));
+    const action = await testBrowserProxy.handler.whenCalled(
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
+    assertEquals(UserAction.kFullScreenshotRegionSelection, action);
+  });
+
   test('ClickShowsRegionWithCenterClampedToRegionWidthTopLeft', async () => {
     const imageBounds = getImageBoundingRect(selectionOverlayElement);
     const pointInOverlay = {

@@ -41,6 +41,7 @@ enum UserAction {
   kCopyAsImage = 15,
   kSaveAsImage = 16,
   kMathSelection = 17,
+  kFullScreenshotRegionSelection = 18,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
