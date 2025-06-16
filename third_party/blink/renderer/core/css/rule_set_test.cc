@@ -264,8 +264,8 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Focus) {
   sheet.AddCSSRules(":focus { }");
   sheet.AddCSSRules("[attr]:focus { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(1u, rule_set.FocusPseudoClassRules().size());
-  ASSERT_EQ(1u, rule_set.AttrRules(AtomicString("attr")).size());
+  ASSERT_EQ(2u, rule_set.FocusPseudoClassRules().size());
+  ASSERT_EQ(0u, rule_set.AttrRules(AtomicString("attr")).size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_LinkVisited) {
@@ -312,7 +312,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
   test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
-  sheet.AddCSSRules("::part(dummy):focus, #id::part(dummy) { }");
+  sheet.AddCSSRules("::part(dummy):disabled, #id::part(dummy) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   const base::span<const RuleData> rules = rule_set.PartPseudoRules();
   ASSERT_EQ(2u, rules.size());

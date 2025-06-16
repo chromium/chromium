@@ -574,6 +574,34 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
       picker_name, pseudo_type);
 
   // Prefer rule sets in order of most likely to apply infrequently.
+
+  // NOTE: For ::part:focus and similar, we need to go into the ::part bucket
+  // (see below). This isn't a problem for #id::part and similar, since there is
+  // a hidden combinator that stops ExtractBestSelectorValues() before it finds
+  // the #id.
+  if (part_name.empty()) {
+    if (pseudo_type == CSSSelector::kPseudoFocus) {
+      if (bucket_coverage == BucketCoverage::kCompute) {
+        MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
+          return selector.Match() == CSSSelector::kPseudoClass &&
+                 selector.GetPseudoType() == CSSSelector::kPseudoFocus;
+        });
+      }
+      AddToRuleSet(focus_pseudo_class_rules_, rule_data);
+      return;
+    }
+    if (pseudo_type == CSSSelector::kPseudoFocusVisible) {
+      if (bucket_coverage == BucketCoverage::kCompute) {
+        MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
+          return selector.Match() == CSSSelector::kPseudoClass &&
+                 selector.GetPseudoType() == CSSSelector::kPseudoFocusVisible;
+        });
+      }
+      AddToRuleSet(focus_visible_pseudo_class_rules_, rule_data);
+      return;
+    }
+  }
+
   if (!id.empty()) {
     if (bucket_coverage == BucketCoverage::kCompute) {
       MarkAsCoveredByBucketing(component, [&id](const CSSSelector& selector) {
@@ -714,25 +742,12 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
       AddToRuleSet(link_pseudo_class_rules_, rule_data);
       return;
     case CSSSelector::kPseudoFocus:
-      if (bucket_coverage == BucketCoverage::kCompute) {
-        MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
-          return selector.Match() == CSSSelector::kPseudoClass &&
-                 selector.GetPseudoType() == CSSSelector::kPseudoFocus;
-        });
-      }
-      AddToRuleSet(focus_pseudo_class_rules_, rule_data);
+    case CSSSelector::kPseudoFocusVisible:
+      // Was handled above.
+      NOTREACHED();
       return;
     case CSSSelector::kPseudoSelectorFragmentAnchor:
       AddToRuleSet(selector_fragment_anchor_rules_, rule_data);
-      return;
-    case CSSSelector::kPseudoFocusVisible:
-      if (bucket_coverage == BucketCoverage::kCompute) {
-        MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
-          return selector.Match() == CSSSelector::kPseudoClass &&
-                 selector.GetPseudoType() == CSSSelector::kPseudoFocusVisible;
-        });
-      }
-      AddToRuleSet(focus_visible_pseudo_class_rules_, rule_data);
       return;
     case CSSSelector::kPseudoHost:
     case CSSSelector::kPseudoHostContext:
