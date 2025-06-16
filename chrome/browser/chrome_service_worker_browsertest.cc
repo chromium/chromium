@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1588,6 +1589,29 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
   EXPECT_FALSE(
       HasHeader(received_request(), "Service-Worker-Navigation-Preload"));
   EXPECT_FALSE(HasHeader(received_request(), "Cookie"));
+}
+
+class ChromeServiceWorkerPrewarmForDSETest : public InProcessBrowserTest {
+ public:
+  void SetUp() override {
+    ChromeContentBrowserClient::
+        PrewarmServiceWorkerRegistrationForDSECalledCountForTesting() = 0;
+    // The following step starts the browser, and prewarms the registration of
+    // ServiceWorker for DSE.
+    InProcessBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    ChromeContentBrowserClient::
+        PrewarmServiceWorkerRegistrationForDSECalledCountForTesting() =
+            std::nullopt;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerPrewarmForDSETest, PrewarmIsCalled) {
+  EXPECT_GE(*ChromeContentBrowserClient::
+                PrewarmServiceWorkerRegistrationForDSECalledCountForTesting(),
+            1);
 }
 
 }  // namespace chrome_service_worker_browser_test

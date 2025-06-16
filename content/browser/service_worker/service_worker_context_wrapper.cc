@@ -314,6 +314,9 @@ void ServiceWorkerContextWrapper::InitInternal(
       quota_manager_proxy, special_storage_policy,
       std::move(non_network_pending_loader_factory_bundle_for_update_check),
       core_observer_list_.get(), core_sync_observer_list_.get(), this);
+
+  GetContentClient()->browser()->PrewarmServiceWorkerRegistrationForDSE(
+      browser_context, *this);
 }
 
 void ServiceWorkerContextWrapper::Shutdown() {
