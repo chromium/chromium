@@ -174,85 +174,6 @@ s! {
         pub rt_irtt: c_ushort,
     }
 
-    pub struct timex {
-        pub modes: c_uint,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub offset: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub offset: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub freq: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub freq: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub maxerror: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub maxerror: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub esterror: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub esterror: c_long,
-        pub status: c_int,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub constant: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub constant: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub precision: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub precision: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub tolerance: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub tolerance: c_long,
-        pub time: crate::timeval,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub tick: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub tick: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub ppsfreq: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub ppsfreq: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub jitter: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub jitter: c_long,
-        pub shift: c_int,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub stabil: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub stabil: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub jitcnt: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub jitcnt: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub calcnt: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub calcnt: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub errcnt: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub errcnt: c_long,
-        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pub stbcnt: i64,
-        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pub stbcnt: c_long,
-        pub tai: c_int,
-        pub __unused1: i32,
-        pub __unused2: i32,
-        pub __unused3: i32,
-        pub __unused4: i32,
-        pub __unused5: i32,
-        pub __unused6: i32,
-        pub __unused7: i32,
-        pub __unused8: i32,
-        pub __unused9: i32,
-        pub __unused10: i32,
-        pub __unused11: i32,
-    }
-
     pub struct ntptimeval {
         pub time: crate::timeval,
         pub maxerror: c_long,
@@ -436,6 +357,18 @@ s! {
         __pos: off64_t,
         __state: crate::mbstate_t,
     }
+
+    // linux x32 compatibility
+    // See https://sourceware.org/bugzilla/show_bug.cgi?id=16437
+    pub struct timespec {
+        pub tv_sec: time_t,
+        #[cfg(all(gnu_time_bits64, target_endian = "big"))]
+        __pad: i32,
+        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
+        pub tv_nsec: c_long,
+        #[cfg(all(gnu_time_bits64, target_endian = "little"))]
+        __pad: i32,
+    }
 }
 
 impl siginfo_t {
@@ -447,7 +380,7 @@ impl siginfo_t {
             _si_code: c_int,
             si_addr: *mut c_void,
         }
-        (*(self as *const siginfo_t as *const siginfo_sigfault)).si_addr
+        (*(self as *const siginfo_t).cast::<siginfo_sigfault>()).si_addr
     }
 
     pub unsafe fn si_value(&self) -> crate::sigval {
@@ -460,7 +393,7 @@ impl siginfo_t {
             _si_overrun: c_int,
             si_sigval: crate::sigval,
         }
-        (*(self as *const siginfo_t as *const siginfo_timer)).si_sigval
+        (*(self as *const siginfo_t).cast::<siginfo_timer>()).si_sigval
     }
 }
 
@@ -498,7 +431,7 @@ struct siginfo_f {
 
 impl siginfo_t {
     unsafe fn sifields(&self) -> &sifields {
-        &(*(self as *const siginfo_t as *const siginfo_f)).sifields
+        &(*(self as *const siginfo_t).cast::<siginfo_f>()).sifields
     }
 
     pub unsafe fn si_pid(&self) -> crate::pid_t {
@@ -522,19 +455,13 @@ impl siginfo_t {
     }
 }
 
-pub union __c_anonymous_ptrace_syscall_info_data {
-    pub entry: __c_anonymous_ptrace_syscall_info_entry,
-    pub exit: __c_anonymous_ptrace_syscall_info_exit,
-    pub seccomp: __c_anonymous_ptrace_syscall_info_seccomp,
-}
-impl Copy for __c_anonymous_ptrace_syscall_info_data {}
-impl Clone for __c_anonymous_ptrace_syscall_info_data {
-    fn clone(&self) -> __c_anonymous_ptrace_syscall_info_data {
-        *self
-    }
-}
-
 s_no_extra_traits! {
+    pub union __c_anonymous_ptrace_syscall_info_data {
+        pub entry: __c_anonymous_ptrace_syscall_info_entry,
+        pub exit: __c_anonymous_ptrace_syscall_info_exit,
+        pub seccomp: __c_anonymous_ptrace_syscall_info_seccomp,
+    }
+
     pub struct utmpx {
         pub ut_type: c_short,
         pub ut_pid: crate::pid_t,
@@ -604,24 +531,6 @@ cfg_if! {
 
         impl Eq for utmpx {}
 
-        impl fmt::Debug for utmpx {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("utmpx")
-                    .field("ut_type", &self.ut_type)
-                    .field("ut_pid", &self.ut_pid)
-                    .field("ut_line", &self.ut_line)
-                    .field("ut_id", &self.ut_id)
-                    .field("ut_user", &self.ut_user)
-                    // FIXME(debug): .field("ut_host", &self.ut_host)
-                    .field("ut_exit", &self.ut_exit)
-                    .field("ut_session", &self.ut_session)
-                    .field("ut_tv", &self.ut_tv)
-                    .field("ut_addr_v6", &self.ut_addr_v6)
-                    .field("__glibc_reserved", &self.__glibc_reserved)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for utmpx {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.ut_type.hash(state);
@@ -649,18 +558,6 @@ cfg_if! {
         }
 
         impl Eq for __c_anonymous_ptrace_syscall_info_data {}
-
-        impl fmt::Debug for __c_anonymous_ptrace_syscall_info_data {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                unsafe {
-                    f.debug_struct("__c_anonymous_ptrace_syscall_info_data")
-                        .field("entry", &self.entry)
-                        .field("exit", &self.exit)
-                        .field("seccomp", &self.seccomp)
-                        .finish()
-                }
-            }
-        }
 
         impl hash::Hash for __c_anonymous_ptrace_syscall_info_data {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -751,7 +648,6 @@ pub const RTLD_DI_TLS_MODID: c_int = 9;
 pub const RTLD_DI_TLS_DATA: c_int = 10;
 
 pub const SOCK_NONBLOCK: c_int = O_NONBLOCK;
-pub const PIDFD_NONBLOCK: c_uint = O_NONBLOCK as c_uint;
 
 pub const SOL_RXRPC: c_int = 272;
 pub const SOL_PPPOL2TP: c_int = 273;
@@ -942,15 +838,6 @@ pub const PTRACE_SYSCALL_INFO_EXIT: crate::__u8 = 2;
 pub const PTRACE_SYSCALL_INFO_SECCOMP: crate::__u8 = 3;
 pub const PTRACE_SET_SYSCALL_USER_DISPATCH_CONFIG: crate::__u8 = 0x4210;
 pub const PTRACE_GET_SYSCALL_USER_DISPATCH_CONFIG: crate::__u8 = 0x4211;
-
-// linux/fs.h
-
-// Flags for preadv2/pwritev2
-pub const RWF_HIPRI: c_int = 0x00000001;
-pub const RWF_DSYNC: c_int = 0x00000002;
-pub const RWF_SYNC: c_int = 0x00000004;
-pub const RWF_NOWAIT: c_int = 0x00000008;
-pub const RWF_APPEND: c_int = 0x00000010;
 
 // linux/rtnetlink.h
 pub const TCA_PAD: c_ushort = 9;
@@ -1159,33 +1046,6 @@ pub const REG_EEND: c_int = 14;
 pub const REG_ESIZE: c_int = 15;
 pub const REG_ERPAREN: c_int = 16;
 
-cfg_if! {
-    if #[cfg(any(
-        target_arch = "x86",
-        target_arch = "x86_64",
-        target_arch = "arm",
-        target_arch = "aarch64",
-        target_arch = "loongarch64",
-        target_arch = "riscv64",
-        target_arch = "s390x"
-    ))] {
-        pub const TUNSETCARRIER: Ioctl = 0x400454e2;
-        pub const TUNGETDEVNETNS: Ioctl = 0x54e3;
-    } else if #[cfg(any(
-        target_arch = "mips",
-        target_arch = "mips64",
-        target_arch = "powerpc",
-        target_arch = "powerpc64",
-        target_arch = "sparc",
-        target_arch = "sparc64"
-    ))] {
-        pub const TUNSETCARRIER: Ioctl = 0x800454e2;
-        pub const TUNGETDEVNETNS: Ioctl = 0x200054e3;
-    } else {
-        // Unknown target_arch
-    }
-}
-
 extern "C" {
     pub fn fgetspent_r(
         fp: *mut crate::FILE,
@@ -1214,12 +1074,14 @@ extern "C" {
         compar: Option<unsafe extern "C" fn(*const c_void, *const c_void, *mut c_void) -> c_int>,
         arg: *mut c_void,
     );
+    #[cfg_attr(gnu_time_bits64, link_name = "__sendmmsg64")]
     pub fn sendmmsg(
         sockfd: c_int,
         msgvec: *mut crate::mmsghdr,
         vlen: c_uint,
         flags: c_int,
     ) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__recvmmsg64")]
     pub fn recvmmsg(
         sockfd: c_int,
         msgvec: *mut crate::mmsghdr,
@@ -1258,15 +1120,20 @@ extern "C" {
     pub fn endutxent();
     pub fn getpt() -> c_int;
     pub fn mallopt(param: c_int, value: c_int) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__gettimeofday64")]
     pub fn gettimeofday(tp: *mut crate::timeval, tz: *mut crate::timezone) -> c_int;
     pub fn getentropy(buf: *mut c_void, buflen: size_t) -> c_int;
     pub fn getrandom(buf: *mut c_void, buflen: size_t, flags: c_uint) -> ssize_t;
     pub fn getauxval(type_: c_ulong) -> c_ulong;
 
+    #[cfg_attr(gnu_time_bits64, link_name = "___adjtimex64")]
     pub fn adjtimex(buf: *mut timex) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "___adjtimex64")]
     pub fn ntp_adjtime(buf: *mut timex) -> c_int;
-    #[link_name = "ntp_gettimex"]
+    #[cfg_attr(not(gnu_time_bits64), link_name = "ntp_gettimex")]
+    #[cfg_attr(gnu_time_bits64, link_name = "__ntp_gettime64")]
     pub fn ntp_gettime(buf: *mut ntptimeval) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__clock_adjtime64")]
     pub fn clock_adjtime(clk_id: crate::clockid_t, buf: *mut crate::timex) -> c_int;
 
     pub fn fanotify_mark(
@@ -1321,12 +1188,14 @@ extern "C" {
 
     pub fn ctermid(s: *mut c_char) -> *mut c_char;
     pub fn backtrace(buf: *mut *mut c_void, sz: c_int) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__glob64_time64")]
     pub fn glob64(
         pattern: *const c_char,
         flags: c_int,
         errfunc: Option<extern "C" fn(epath: *const c_char, errno: c_int) -> c_int>,
         pglob: *mut glob64_t,
     ) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__globfree64_time64")]
     pub fn globfree64(pglob: *mut glob64_t);
     pub fn ptrace(request: c_uint, ...) -> c_long;
     pub fn pthread_attr_getaffinity_np(
@@ -1394,6 +1263,7 @@ extern "C" {
     pub fn eaccess(pathname: *const c_char, mode: c_int) -> c_int;
 
     pub fn asctime_r(tm: *const crate::tm, buf: *mut c_char) -> *mut c_char;
+    #[cfg_attr(gnu_time_bits64, link_name = "__ctime64_r")]
     pub fn ctime_r(timep: *const time_t, buf: *mut c_char) -> *mut c_char;
 
     pub fn dirname(path: *mut c_char) -> *mut c_char;
@@ -1458,6 +1328,7 @@ extern "C" {
 
     pub fn mq_notify(mqdes: crate::mqd_t, sevp: *const crate::sigevent) -> c_int;
 
+    #[cfg_attr(gnu_time_bits64, link_name = "__epoll_pwait2_time64")]
     pub fn epoll_pwait2(
         epfd: c_int,
         events: *mut crate::epoll_event,

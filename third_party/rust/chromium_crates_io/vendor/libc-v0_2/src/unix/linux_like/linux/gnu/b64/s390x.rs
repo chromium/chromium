@@ -227,15 +227,9 @@ cfg_if! {
 
         impl Eq for fpreg_t {}
 
-        impl fmt::Debug for fpreg_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("fpreg_t").field("d", &self.d).finish()
-            }
-        }
-
         impl hash::Hash for fpreg_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let d: u64 = unsafe { mem::transmute(self.d) };
+                let d: u64 = self.d.to_bits();
                 d.hash(state);
             }
         }

@@ -432,7 +432,7 @@ pub const SYS_landlock_restrict_self: c_long = 446;
 pub const O_APPEND: c_int = 1024;
 pub const O_DIRECT: c_int = 0x4000;
 pub const O_DIRECTORY: c_int = 0x10000;
-pub const O_LARGEFILE: c_int = 0;
+pub const O_LARGEFILE: c_int = 0o100000;
 pub const O_NOFOLLOW: c_int = 0x20000;
 pub const O_CREAT: c_int = 64;
 pub const O_EXCL: c_int = 128;
@@ -572,6 +572,7 @@ pub const POLLWRBAND: c_short = 0x200;
 pub const SOCK_STREAM: c_int = 1;
 pub const SOCK_DGRAM: c_int = 2;
 
+pub const MADV_SOFT_OFFLINE: c_int = 101;
 pub const MAP_ANON: c_int = 0x0020;
 pub const MAP_GROWSDOWN: c_int = 0x0100;
 pub const MAP_DENYWRITE: c_int = 0x0800;

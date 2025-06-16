@@ -91,7 +91,9 @@ s_no_extra_traits! {
         #[cfg(target_os = "solaris")]
         pub uc_xrs: solaris::xrs_t,
         #[cfg(target_os = "solaris")]
-        pub uc_filler: [c_long; 3],
+        pub uc_lwpid: c_uint,
+        #[cfg(target_os = "solaris")]
+        pub uc_filler: [c_long; 2],
     }
 }
 
@@ -116,27 +118,12 @@ cfg_if! {
             }
         }
         impl Eq for fpregset_t {}
-        impl fmt::Debug for fpregset_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("fpregset_t")
-                    .field("fp_reg_set", &self.fp_reg_set)
-                    .finish()
-            }
-        }
         impl PartialEq for mcontext_t {
             fn eq(&self, other: &mcontext_t) -> bool {
                 self.gregs == other.gregs && self.fpregs == other.fpregs
             }
         }
         impl Eq for mcontext_t {}
-        impl fmt::Debug for mcontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("mcontext_t")
-                    .field("gregs", &self.gregs)
-                    .field("fpregs", &self.fpregs)
-                    .finish()
-            }
-        }
         impl PartialEq for ucontext_t {
             fn eq(&self, other: &ucontext_t) -> bool {
                 self.uc_flags == other.uc_flags
@@ -148,18 +135,6 @@ cfg_if! {
             }
         }
         impl Eq for ucontext_t {}
-        impl fmt::Debug for ucontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ucontext_t")
-                    .field("uc_flags", &self.uc_flags)
-                    .field("uc_link", &self.uc_link)
-                    .field("uc_sigmask", &self.uc_sigmask)
-                    .field("uc_stack", &self.uc_stack)
-                    .field("uc_mcontext", &self.uc_mcontext)
-                    .field("uc_filler", &self.uc_filler)
-                    .finish()
-            }
-        }
     }
 }
 

@@ -382,12 +382,30 @@ extern "C" {
     pub fn signal(signum: c_int, handler: sighandler_t) -> sighandler_t;
     pub fn raise(signum: c_int) -> c_int;
 
+    pub fn clock() -> clock_t;
+    pub fn ctime(sourceTime: *const time_t) -> *mut c_char;
+    pub fn difftime(timeEnd: time_t, timeStart: time_t) -> c_double;
     #[link_name = "_gmtime64_s"]
     pub fn gmtime_s(destTime: *mut tm, srcTime: *const time_t) -> c_int;
+    #[link_name = "_get_daylight"]
+    pub fn get_daylight(hours: *mut c_int) -> errno_t;
+    #[link_name = "_get_dstbias"]
+    pub fn get_dstbias(seconds: *mut c_long) -> errno_t;
+    #[link_name = "_get_timezone"]
+    pub fn get_timezone(seconds: *mut c_long) -> errno_t;
+    #[link_name = "_get_tzname"]
+    pub fn get_tzname(
+        p_return_value: *mut size_t,
+        time_zone_name: *mut c_char,
+        size_in_bytes: size_t,
+        index: c_int,
+    ) -> errno_t;
     #[link_name = "_localtime64_s"]
     pub fn localtime_s(tmDest: *mut tm, sourceTime: *const time_t) -> crate::errno_t;
     #[link_name = "_time64"]
     pub fn time(destTime: *mut time_t) -> time_t;
+    #[link_name = "_tzset"]
+    pub fn tzset();
     #[link_name = "_chmod"]
     pub fn chmod(path: *const c_char, mode: c_int) -> c_int;
     #[link_name = "_wchmod"]

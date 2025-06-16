@@ -199,35 +199,6 @@ pub const BLKPBSZGET: Ioctl = 0x2000127B;
 //pub const TIOCGRS485: Ioctl = 0x40205441;
 //pub const TIOCSRS485: Ioctl = 0xc0205442;
 
-// linux/if_tun.h
-pub const TUNSETNOCSUM: Ioctl = 0x800454c8;
-pub const TUNSETDEBUG: Ioctl = 0x800454c9;
-pub const TUNSETIFF: Ioctl = 0x800454ca;
-pub const TUNSETPERSIST: Ioctl = 0x800454cb;
-pub const TUNSETOWNER: Ioctl = 0x800454cc;
-pub const TUNSETLINK: Ioctl = 0x800454cd;
-pub const TUNSETGROUP: Ioctl = 0x800454ce;
-pub const TUNGETFEATURES: Ioctl = 0x400454cf;
-pub const TUNSETOFFLOAD: Ioctl = 0x800454d0;
-pub const TUNSETTXFILTER: Ioctl = 0x800454d1;
-pub const TUNGETIFF: Ioctl = 0x400454d2;
-pub const TUNGETSNDBUF: Ioctl = 0x400454d3;
-pub const TUNSETSNDBUF: Ioctl = 0x800454d4;
-pub const TUNGETVNETHDRSZ: Ioctl = 0x400454d7;
-pub const TUNSETVNETHDRSZ: Ioctl = 0x800454d8;
-pub const TUNSETQUEUE: Ioctl = 0x800454d9;
-pub const TUNSETIFINDEX: Ioctl = 0x800454da;
-pub const TUNSETVNETLE: Ioctl = 0x800454dc;
-pub const TUNGETVNETLE: Ioctl = 0x400454dd;
-/* The TUNSETVNETBE and TUNGETVNETBE ioctls are for cross-endian support on
- * little-endian hosts. Not all kernel configurations support them, but all
- * configurations that support SET also support GET.
- */
-pub const TUNSETVNETBE: Ioctl = 0x800454de;
-pub const TUNGETVNETBE: Ioctl = 0x400454df;
-pub const TUNSETSTEERINGEBPF: Ioctl = 0x400454e0;
-pub const TUNSETFILTEREBPF: Ioctl = 0x400454e1;
-
 pub const TIOCM_LE: c_int = 0x001;
 pub const TIOCM_DTR: c_int = 0x002;
 pub const TIOCM_RTS: c_int = 0x004;
@@ -272,39 +243,5 @@ cfg_if! {
         pub const RLIM_INFINITY: crate::rlim_t = !0;
     } else if #[cfg(target_arch = "sparc")] {
         pub const RLIM_INFINITY: crate::rlim_t = 0x7fffffff;
-    }
-}
-
-cfg_if! {
-    // Those type are constructed using the _IOC macro
-    // DD-SS_SSSS_SSSS_SSSS-TTTT_TTTT-NNNN_NNNN
-    // where D stands for direction (either None (00), Read (01) or Write (11))
-    // where S stands for size (int, long, struct...)
-    // where T stands for type ('f','v','X'...)
-    // where N stands for NR (NumbeR)
-    if #[cfg(target_arch = "sparc")] {
-        pub const FS_IOC_GETFLAGS: Ioctl = 0x40046601;
-        pub const FS_IOC_SETFLAGS: Ioctl = 0x80046602;
-        pub const FS_IOC_GETVERSION: Ioctl = 0x40047601;
-        pub const FS_IOC_SETVERSION: Ioctl = 0x80047602;
-        pub const FS_IOC32_GETFLAGS: Ioctl = 0x40046601;
-        pub const FS_IOC32_SETFLAGS: Ioctl = 0x80046602;
-        pub const FS_IOC32_GETVERSION: Ioctl = 0x40047601;
-        pub const FS_IOC32_SETVERSION: Ioctl = 0x80047602;
-        pub const TUNATTACHFILTER: Ioctl = 0x800854d5;
-        pub const TUNDETACHFILTER: Ioctl = 0x800854d6;
-        pub const TUNGETFILTER: Ioctl = 0x400854db;
-    } else if #[cfg(target_arch = "sparc64")] {
-        pub const FS_IOC_GETFLAGS: Ioctl = 0x40086601;
-        pub const FS_IOC_SETFLAGS: Ioctl = 0x80086602;
-        pub const FS_IOC_GETVERSION: Ioctl = 0x40087601;
-        pub const FS_IOC_SETVERSION: Ioctl = 0x80087602;
-        pub const FS_IOC32_GETFLAGS: Ioctl = 0x40046601;
-        pub const FS_IOC32_SETFLAGS: Ioctl = 0x80046602;
-        pub const FS_IOC32_GETVERSION: Ioctl = 0x40047601;
-        pub const FS_IOC32_SETVERSION: Ioctl = 0x80047602;
-        pub const TUNATTACHFILTER: Ioctl = 0x801054d5;
-        pub const TUNDETACHFILTER: Ioctl = 0x801054d6;
-        pub const TUNGETFILTER: Ioctl = 0x401054db;
     }
 }

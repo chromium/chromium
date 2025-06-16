@@ -87,42 +87,6 @@ cfg_if! {
             }
         }
         impl Eq for mcontext_t {}
-        impl fmt::Debug for mcontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("mcontext_t")
-                    .field("mc_onstack", &self.mc_onstack)
-                    .field("mc_gs", &self.mc_gs)
-                    .field("mc_fs", &self.mc_fs)
-                    .field("mc_es", &self.mc_es)
-                    .field("mc_ds", &self.mc_ds)
-                    .field("mc_edi", &self.mc_edi)
-                    .field("mc_esi", &self.mc_esi)
-                    .field("mc_ebp", &self.mc_ebp)
-                    .field("mc_isp", &self.mc_isp)
-                    .field("mc_ebx", &self.mc_ebx)
-                    .field("mc_edx", &self.mc_edx)
-                    .field("mc_ecx", &self.mc_ecx)
-                    .field("mc_eax", &self.mc_eax)
-                    .field("mc_trapno", &self.mc_trapno)
-                    .field("mc_err", &self.mc_err)
-                    .field("mc_eip", &self.mc_eip)
-                    .field("mc_cs", &self.mc_cs)
-                    .field("mc_eflags", &self.mc_eflags)
-                    .field("mc_esp", &self.mc_esp)
-                    .field("mc_ss", &self.mc_ss)
-                    .field("mc_len", &self.mc_len)
-                    .field("mc_fpformat", &self.mc_fpformat)
-                    .field("mc_ownedfp", &self.mc_ownedfp)
-                    .field("mc_flags", &self.mc_flags)
-                    .field("mc_fpstate", &self.mc_fpstate)
-                    .field("mc_fsbase", &self.mc_fsbase)
-                    .field("mc_gsbase", &self.mc_gsbase)
-                    .field("mc_xfpustate", &self.mc_xfpustate)
-                    .field("mc_xfpustate_len", &self.mc_xfpustate_len)
-                    .field("mc_spare2", &self.mc_spare2)
-                    .finish()
-            }
-        }
         impl hash::Hash for mcontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.mc_onstack.hash(state);

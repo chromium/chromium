@@ -83,23 +83,6 @@ cfg_if! {
             }
         }
         impl Eq for fpu_state {}
-        impl fmt::Debug for fpu_state {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("fpu_state")
-                    .field("control", &self.control)
-                    .field("status", &self.status)
-                    .field("tag", &self.tag)
-                    .field("opcode", &self.opcode)
-                    .field("rip", &self.rip)
-                    .field("rdp", &self.rdp)
-                    .field("mxcsr", &self.mxcsr)
-                    .field("mscsr_mask", &self.mscsr_mask)
-                    // FIXME(debug): .field("_fpreg", &self._fpreg)
-                    // FIXME(debug): .field("_xmm", &self._xmm)
-                    // FIXME(debug): .field("_reserved_416_511", &self._reserved_416_511)
-                    .finish()
-            }
-        }
         impl hash::Hash for fpu_state {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.control.hash(state);
@@ -128,15 +111,6 @@ cfg_if! {
             }
         }
         impl Eq for xstate_hdr {}
-        impl fmt::Debug for xstate_hdr {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("xstate_hdr")
-                    .field("bv", &self.bv)
-                    .field("xcomp_bv", &self.xcomp_bv)
-                    // FIXME(debug): .field("_reserved", &field._reserved)
-                    .finish()
-            }
-        }
         impl hash::Hash for xstate_hdr {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.bv.hash(state);
@@ -157,15 +131,6 @@ cfg_if! {
             }
         }
         impl Eq for savefpu {}
-        impl fmt::Debug for savefpu {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("savefpu")
-                    .field("fp_fxsave", &self.fp_fxsave)
-                    .field("fp_xstate", &self.fp_xstate)
-                    // FIXME(debug): .field("_fp_ymm", &field._fp_ymm)
-                    .finish()
-            }
-        }
         impl hash::Hash for savefpu {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.fp_fxsave.hash(state);
@@ -198,31 +163,6 @@ cfg_if! {
             }
         }
         impl Eq for mcontext_t {}
-        impl fmt::Debug for mcontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("mcontext_t")
-                    .field("rax", &self.rax)
-                    .field("rbx", &self.rbx)
-                    .field("rcx", &self.rcx)
-                    .field("rdx", &self.rdx)
-                    .field("rdi", &self.rdi)
-                    .field("rsi", &self.rsi)
-                    .field("rbp", &self.rbp)
-                    .field("r8", &self.r8)
-                    .field("r9", &self.r9)
-                    .field("r10", &self.r10)
-                    .field("r11", &self.r11)
-                    .field("r12", &self.r12)
-                    .field("r13", &self.r13)
-                    .field("r14", &self.r14)
-                    .field("r15", &self.r15)
-                    .field("rsp", &self.rsp)
-                    .field("rip", &self.rip)
-                    .field("rflags", &self.rflags)
-                    .field("fpu", &self.fpu)
-                    .finish()
-            }
-        }
         impl hash::Hash for mcontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.rax.hash(state);
@@ -256,16 +196,6 @@ cfg_if! {
             }
         }
         impl Eq for ucontext_t {}
-        impl fmt::Debug for ucontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ucontext_t")
-                    .field("uc_link", &self.uc_link)
-                    .field("uc_sigmask", &self.uc_sigmask)
-                    .field("uc_stack", &self.uc_stack)
-                    .field("uc_mcontext", &self.uc_mcontext)
-                    .finish()
-            }
-        }
         impl hash::Hash for ucontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.uc_link.hash(state);

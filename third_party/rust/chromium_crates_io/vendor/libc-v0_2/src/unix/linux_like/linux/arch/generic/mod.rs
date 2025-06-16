@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use crate::{Ioctl, _IOR, _IOW};
+use crate::Ioctl;
 
 s! {
     pub struct termios2 {
@@ -40,8 +40,6 @@ pub const SO_PASSCRED: c_int = 16;
 pub const SO_PEERCRED: c_int = 17;
 pub const SO_RCVLOWAT: c_int = 18;
 pub const SO_SNDLOWAT: c_int = 19;
-const SO_RCVTIMEO_OLD: c_int = 20;
-const SO_SNDTIMEO_OLD: c_int = 21;
 pub const SO_SECURITY_AUTHENTICATION: c_int = 22;
 pub const SO_SECURITY_ENCRYPTION_TRANSPORT: c_int = 23;
 pub const SO_SECURITY_ENCRYPTION_NETWORK: c_int = 24;
@@ -50,9 +48,6 @@ pub const SO_ATTACH_FILTER: c_int = 26;
 pub const SO_DETACH_FILTER: c_int = 27;
 pub const SO_GET_FILTER: c_int = SO_ATTACH_FILTER;
 pub const SO_PEERNAME: c_int = 28;
-const SO_TIMESTAMP_OLD: c_int = 29;
-const SO_TIMESTAMPNS_OLD: c_int = 35;
-const SO_TIMESTAMPING_OLD: c_int = 37;
 
 cfg_if! {
     if #[cfg(all(
@@ -76,6 +71,12 @@ cfg_if! {
         pub const SO_RCVTIMEO: c_int = 66;
         pub const SO_SNDTIMEO: c_int = 67;
     } else {
+        const SO_TIMESTAMP_OLD: c_int = 29;
+        const SO_TIMESTAMPNS_OLD: c_int = 35;
+        const SO_TIMESTAMPING_OLD: c_int = 37;
+        const SO_RCVTIMEO_OLD: c_int = 20;
+        const SO_SNDTIMEO_OLD: c_int = 21;
+
         pub const SO_TIMESTAMP: c_int = SO_TIMESTAMP_OLD;
         pub const SO_TIMESTAMPNS: c_int = SO_TIMESTAMPNS_OLD;
         pub const SO_TIMESTAMPING: c_int = SO_TIMESTAMPING_OLD;
@@ -157,9 +158,6 @@ pub const SO_PEERPIDFD: c_int = 77;
 pub const SO_DEVMEM_LINEAR: c_int = 78;
 pub const SO_DEVMEM_DMABUF: c_int = 79;
 pub const SO_DEVMEM_DONTNEED: c_int = 80;
-
-pub const FICLONE: Ioctl = _IOW::<c_int>(0x94, 9) as Ioctl;
-pub const FICLONERANGE: Ioctl = _IOW::<crate::file_clone_range>(0x94, 13) as Ioctl;
 
 // Defined in unix/linux_like/mod.rs
 // pub const SCM_TIMESTAMP: c_int = SO_TIMESTAMP;
@@ -251,47 +249,6 @@ pub const BLKIOMIN: Ioctl = 0x1278;
 pub const BLKIOOPT: Ioctl = 0x1279;
 pub const BLKSSZGET: Ioctl = 0x1268;
 pub const BLKPBSZGET: Ioctl = 0x127B;
-// linux/if_tun.h
-pub const TUNSETNOCSUM: Ioctl = 0x400454c8;
-pub const TUNSETDEBUG: Ioctl = 0x400454c9;
-pub const TUNSETIFF: Ioctl = 0x400454ca;
-pub const TUNSETPERSIST: Ioctl = 0x400454cb;
-pub const TUNSETOWNER: Ioctl = 0x400454cc;
-pub const TUNSETLINK: Ioctl = 0x400454cd;
-pub const TUNSETGROUP: Ioctl = 0x400454ce;
-pub const TUNGETFEATURES: Ioctl = 0x800454cf;
-pub const TUNSETOFFLOAD: Ioctl = 0x400454d0;
-pub const TUNSETTXFILTER: Ioctl = 0x400454d1;
-pub const TUNGETIFF: Ioctl = 0x800454d2;
-pub const TUNGETSNDBUF: Ioctl = 0x800454d3;
-pub const TUNSETSNDBUF: Ioctl = 0x400454d4;
-pub const TUNGETVNETHDRSZ: Ioctl = 0x800454d7;
-pub const TUNSETVNETHDRSZ: Ioctl = 0x400454d8;
-pub const TUNSETQUEUE: Ioctl = 0x400454d9;
-pub const TUNSETIFINDEX: Ioctl = 0x400454da;
-pub const TUNSETVNETLE: Ioctl = 0x400454dc;
-pub const TUNGETVNETLE: Ioctl = 0x800454dd;
-/* The TUNSETVNETBE and TUNGETVNETBE ioctls are for cross-endian support on
- * little-endian hosts. Not all kernel configurations support them, but all
- * configurations that support SET also support GET.
- */
-pub const TUNSETVNETBE: Ioctl = 0x400454de;
-pub const TUNGETVNETBE: Ioctl = 0x800454df;
-pub const TUNSETSTEERINGEBPF: Ioctl = 0x800454e0;
-pub const TUNSETFILTEREBPF: Ioctl = 0x800454e1;
-
-pub const FS_IOC_GETFLAGS: Ioctl = _IOR::<c_long>('f' as u32, 1) as Ioctl;
-pub const FS_IOC_SETFLAGS: Ioctl = _IOW::<c_long>('f' as u32, 2) as Ioctl;
-pub const FS_IOC_GETVERSION: Ioctl = _IOR::<c_long>('v' as u32, 1) as Ioctl;
-pub const FS_IOC_SETVERSION: Ioctl = _IOW::<c_long>('v' as u32, 2) as Ioctl;
-pub const FS_IOC32_GETFLAGS: Ioctl = _IOR::<c_int>('f' as u32, 1) as Ioctl;
-pub const FS_IOC32_SETFLAGS: Ioctl = _IOW::<c_int>('f' as u32, 2) as Ioctl;
-pub const FS_IOC32_GETVERSION: Ioctl = _IOR::<c_int>('v' as u32, 1) as Ioctl;
-pub const FS_IOC32_SETVERSION: Ioctl = _IOW::<c_int>('v' as u32, 2) as Ioctl;
-
-pub const TUNATTACHFILTER: Ioctl = _IOW::<crate::sock_fprog>('T' as u32, 213) as Ioctl;
-pub const TUNDETACHFILTER: Ioctl = _IOW::<crate::sock_fprog>('T' as u32, 214) as Ioctl;
-pub const TUNGETFILTER: Ioctl = _IOR::<crate::sock_fprog>('T' as u32, 219) as Ioctl;
 
 cfg_if! {
     if #[cfg(any(target_arch = "arm", target_arch = "s390x"))] {
@@ -357,9 +314,6 @@ cfg_if! {
         pub const RLIMIT_RTPRIO: c_int = 14;
         pub const RLIMIT_RTTIME: c_int = 15;
         #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
-        #[cfg(not(target_arch = "loongarch64"))]
-        pub const RLIM_NLIMITS: c_int = 15;
-        #[cfg(target_arch = "loongarch64")]
         pub const RLIM_NLIMITS: c_int = 16;
         #[allow(deprecated)]
         #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]

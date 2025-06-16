@@ -1,3 +1,6 @@
+// FIXME(ulibc): this module has definitions that are redundant with the parent
+#![allow(dead_code)]
+
 use crate::off64_t;
 use crate::prelude::*;
 

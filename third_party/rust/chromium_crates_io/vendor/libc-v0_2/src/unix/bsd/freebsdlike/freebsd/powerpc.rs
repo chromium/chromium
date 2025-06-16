@@ -37,21 +37,6 @@ cfg_if! {
             }
         }
         impl Eq for mcontext_t {}
-        impl fmt::Debug for mcontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("mcontext_t")
-                    .field("mc_vers", &self.mc_vers)
-                    .field("mc_flags", &self.mc_flags)
-                    .field("mc_onstack", &self.mc_onstack)
-                    .field("mc_len", &self.mc_len)
-                    .field("mc_avec", &self.mc_avec)
-                    .field("mc_av", &self.mc_av)
-                    .field("mc_frame", &self.mc_frame)
-                    .field("mc_fpreg", &self.mc_fpreg)
-                    .field("mc_vsxfpreg", &self.mc_vsxfpreg)
-                    .finish()
-            }
-        }
         impl hash::Hash for mcontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.mc_vers.hash(state);

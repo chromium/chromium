@@ -48,18 +48,6 @@ cfg_if! {
             }
         }
         impl Eq for gpregs {}
-        impl fmt::Debug for gpregs {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("gpregs")
-                    .field("gp_x", &self.gp_x)
-                    .field("gp_lr", &self.gp_lr)
-                    .field("gp_sp", &self.gp_sp)
-                    .field("gp_elr", &self.gp_elr)
-                    .field("gp_spsr", &self.gp_spsr)
-                    .field("gp_pad", &self.gp_pad)
-                    .finish()
-            }
-        }
         impl hash::Hash for gpregs {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.gp_x.hash(state);
@@ -80,17 +68,6 @@ cfg_if! {
             }
         }
         impl Eq for fpregs {}
-        impl fmt::Debug for fpregs {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("fpregs")
-                    .field("fp_q", &self.fp_q)
-                    .field("fp_sr", &self.fp_sr)
-                    .field("fp_cr", &self.fp_cr)
-                    .field("fp_flags", &self.fp_flags)
-                    .field("fp_pad", &self.fp_pad)
-                    .finish()
-            }
-        }
         impl hash::Hash for fpregs {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.fp_q.hash(state);
@@ -114,17 +91,6 @@ cfg_if! {
             }
         }
         impl Eq for mcontext_t {}
-        impl fmt::Debug for mcontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("mcontext_t")
-                    .field("mc_gpregs", &self.mc_gpregs)
-                    .field("mc_fpregs", &self.mc_fpregs)
-                    .field("mc_flags", &self.mc_flags)
-                    .field("mc_pad", &self.mc_pad)
-                    .field("mc_spare", &self.mc_spare)
-                    .finish()
-            }
-        }
         impl hash::Hash for mcontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.mc_gpregs.hash(state);

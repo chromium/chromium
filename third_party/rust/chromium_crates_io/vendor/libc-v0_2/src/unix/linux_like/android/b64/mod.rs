@@ -155,15 +155,6 @@ cfg_if! {
 
         impl Eq for pthread_mutex_t {}
 
-        impl fmt::Debug for pthread_mutex_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("pthread_mutex_t")
-                    .field("value", &self.value)
-                    // FIXME(debug): .field("__reserved", &self.__reserved)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for pthread_mutex_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.value.hash(state);
@@ -183,15 +174,6 @@ cfg_if! {
         }
 
         impl Eq for pthread_cond_t {}
-
-        impl fmt::Debug for pthread_cond_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("pthread_cond_t")
-                    .field("value", &self.value)
-                    // FIXME(debug): .field("__reserved", &self.__reserved)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for pthread_cond_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -217,19 +199,6 @@ cfg_if! {
 
         impl Eq for pthread_rwlock_t {}
 
-        impl fmt::Debug for pthread_rwlock_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("pthread_rwlock_t")
-                    .field("numLocks", &self.numLocks)
-                    .field("writerThreadId", &self.writerThreadId)
-                    .field("pendingReaders", &self.pendingReaders)
-                    .field("pendingWriters", &self.pendingWriters)
-                    .field("attr", &self.attr)
-                    // FIXME(debug): .field("__reserved", &self.__reserved)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for pthread_rwlock_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.numLocks.hash(state);
@@ -238,14 +207,6 @@ cfg_if! {
                 self.pendingWriters.hash(state);
                 self.attr.hash(state);
                 self.__reserved.hash(state);
-            }
-        }
-
-        impl fmt::Debug for sigset64_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sigset64_t")
-                    .field("__bits", &self.__bits)
-                    .finish()
             }
         }
     }

@@ -208,6 +208,32 @@ s! {
 }
 
 cfg_if! {
+    if #[cfg(not(target_os = "emscripten"))] {
+        s! {
+            pub struct file_clone_range {
+                pub src_fd: crate::__s64,
+                pub src_offset: crate::__u64,
+                pub src_length: crate::__u64,
+                pub dest_offset: crate::__u64,
+            }
+
+            // linux/filter.h
+            pub struct sock_filter {
+                pub code: __u16,
+                pub jt: __u8,
+                pub jf: __u8,
+                pub k: __u32,
+            }
+
+            pub struct sock_fprog {
+                pub len: c_ushort,
+                pub filter: *mut sock_filter,
+            }
+        }
+    }
+}
+
+cfg_if! {
     if #[cfg(any(target_env = "gnu", target_os = "android"))] {
         s! {
             pub struct statx {
@@ -308,16 +334,6 @@ cfg_if! {
             }
         }
         impl Eq for epoll_event {}
-        impl fmt::Debug for epoll_event {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let events = self.events;
-                let u64 = self.u64;
-                f.debug_struct("epoll_event")
-                    .field("events", &events)
-                    .field("u64", &u64)
-                    .finish()
-            }
-        }
         impl hash::Hash for epoll_event {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let events = self.events;
@@ -338,14 +354,6 @@ cfg_if! {
             }
         }
         impl Eq for sockaddr_un {}
-        impl fmt::Debug for sockaddr_un {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sockaddr_un")
-                    .field("sun_family", &self.sun_family)
-                    // FIXME(debug): .field("sun_path", &self.sun_path)
-                    .finish()
-            }
-        }
         impl hash::Hash for sockaddr_un {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.sun_family.hash(state);
@@ -365,16 +373,6 @@ cfg_if! {
         }
 
         impl Eq for sockaddr_storage {}
-
-        impl fmt::Debug for sockaddr_storage {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sockaddr_storage")
-                    .field("ss_family", &self.ss_family)
-                    .field("__ss_align", &self.__ss_align)
-                    // FIXME(debug): .field("__ss_pad2", &self.__ss_pad2)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for sockaddr_storage {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -419,19 +417,6 @@ cfg_if! {
 
         impl Eq for utsname {}
 
-        impl fmt::Debug for utsname {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("utsname")
-                    // FIXME(debug): .field("sysname", &self.sysname)
-                    // FIXME(debug): .field("nodename", &self.nodename)
-                    // FIXME(debug): .field("release", &self.release)
-                    // FIXME(debug): .field("version", &self.version)
-                    // FIXME(debug): .field("machine", &self.machine)
-                    // FIXME(debug): .field("domainname", &self.domainname)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for utsname {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.sysname.hash(state);
@@ -452,16 +437,6 @@ cfg_if! {
             }
         }
         impl Eq for sigevent {}
-        impl fmt::Debug for sigevent {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sigevent")
-                    .field("sigev_value", &self.sigev_value)
-                    .field("sigev_signo", &self.sigev_signo)
-                    .field("sigev_notify", &self.sigev_notify)
-                    .field("sigev_notify_thread_id", &self.sigev_notify_thread_id)
-                    .finish()
-            }
-        }
         impl hash::Hash for sigevent {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.sigev_value.hash(state);
@@ -545,26 +520,26 @@ pub const O_RDWR: c_int = 2;
 
 pub const SOCK_CLOEXEC: c_int = O_CLOEXEC;
 
-pub const S_IFIFO: crate::mode_t = 0o1_0000;
-pub const S_IFCHR: crate::mode_t = 0o2_0000;
-pub const S_IFBLK: crate::mode_t = 0o6_0000;
-pub const S_IFDIR: crate::mode_t = 0o4_0000;
-pub const S_IFREG: crate::mode_t = 0o10_0000;
-pub const S_IFLNK: crate::mode_t = 0o12_0000;
-pub const S_IFSOCK: crate::mode_t = 0o14_0000;
-pub const S_IFMT: crate::mode_t = 0o17_0000;
-pub const S_IRWXU: crate::mode_t = 0o0700;
-pub const S_IXUSR: crate::mode_t = 0o0100;
-pub const S_IWUSR: crate::mode_t = 0o0200;
-pub const S_IRUSR: crate::mode_t = 0o0400;
-pub const S_IRWXG: crate::mode_t = 0o0070;
-pub const S_IXGRP: crate::mode_t = 0o0010;
-pub const S_IWGRP: crate::mode_t = 0o0020;
-pub const S_IRGRP: crate::mode_t = 0o0040;
-pub const S_IRWXO: crate::mode_t = 0o0007;
-pub const S_IXOTH: crate::mode_t = 0o0001;
-pub const S_IWOTH: crate::mode_t = 0o0002;
-pub const S_IROTH: crate::mode_t = 0o0004;
+pub const S_IFIFO: mode_t = 0o1_0000;
+pub const S_IFCHR: mode_t = 0o2_0000;
+pub const S_IFBLK: mode_t = 0o6_0000;
+pub const S_IFDIR: mode_t = 0o4_0000;
+pub const S_IFREG: mode_t = 0o10_0000;
+pub const S_IFLNK: mode_t = 0o12_0000;
+pub const S_IFSOCK: mode_t = 0o14_0000;
+pub const S_IFMT: mode_t = 0o17_0000;
+pub const S_IRWXU: mode_t = 0o0700;
+pub const S_IXUSR: mode_t = 0o0100;
+pub const S_IWUSR: mode_t = 0o0200;
+pub const S_IRUSR: mode_t = 0o0400;
+pub const S_IRWXG: mode_t = 0o0070;
+pub const S_IXGRP: mode_t = 0o0010;
+pub const S_IWGRP: mode_t = 0o0020;
+pub const S_IRGRP: mode_t = 0o0040;
+pub const S_IRWXO: mode_t = 0o0007;
+pub const S_IXOTH: mode_t = 0o0001;
+pub const S_IWOTH: mode_t = 0o0002;
+pub const S_IROTH: mode_t = 0o0004;
 pub const F_OK: c_int = 0;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;
@@ -1483,6 +1458,93 @@ pub const ARPHRD_VOID: u16 = 0xFFFF;
 pub const ARPHRD_NONE: u16 = 0xFFFE;
 
 cfg_if! {
+    if #[cfg(not(target_os = "emscripten"))] {
+        // linux/if_tun.h
+        /* TUNSETIFF ifr flags */
+        pub const IFF_TUN: c_int = 0x0001;
+        pub const IFF_TAP: c_int = 0x0002;
+        pub const IFF_NAPI: c_int = 0x0010;
+        pub const IFF_NAPI_FRAGS: c_int = 0x0020;
+        // Used in TUNSETIFF to bring up tun/tap without carrier
+        pub const IFF_NO_CARRIER: c_int = 0x0040;
+        pub const IFF_NO_PI: c_int = 0x1000;
+        // Read queue size
+        pub const TUN_READQ_SIZE: c_short = 500;
+        // TUN device type flags: deprecated. Use IFF_TUN/IFF_TAP instead.
+        pub const TUN_TUN_DEV: c_short = crate::IFF_TUN as c_short;
+        pub const TUN_TAP_DEV: c_short = crate::IFF_TAP as c_short;
+        pub const TUN_TYPE_MASK: c_short = 0x000f;
+        // This flag has no real effect
+        pub const IFF_ONE_QUEUE: c_int = 0x2000;
+        pub const IFF_VNET_HDR: c_int = 0x4000;
+        pub const IFF_TUN_EXCL: c_int = 0x8000;
+        pub const IFF_MULTI_QUEUE: c_int = 0x0100;
+        pub const IFF_ATTACH_QUEUE: c_int = 0x0200;
+        pub const IFF_DETACH_QUEUE: c_int = 0x0400;
+        // read-only flag
+        pub const IFF_PERSIST: c_int = 0x0800;
+        pub const IFF_NOFILTER: c_int = 0x1000;
+        // Socket options
+        pub const TUN_TX_TIMESTAMP: c_int = 1;
+        // Features for GSO (TUNSETOFFLOAD)
+        pub const TUN_F_CSUM: c_uint = 0x01;
+        pub const TUN_F_TSO4: c_uint = 0x02;
+        pub const TUN_F_TSO6: c_uint = 0x04;
+        pub const TUN_F_TSO_ECN: c_uint = 0x08;
+        pub const TUN_F_UFO: c_uint = 0x10;
+        pub const TUN_F_USO4: c_uint = 0x20;
+        pub const TUN_F_USO6: c_uint = 0x40;
+        // Protocol info prepended to the packets (when IFF_NO_PI is not set)
+        pub const TUN_PKT_STRIP: c_int = 0x0001;
+        // Accept all multicast packets
+        pub const TUN_FLT_ALLMULTI: c_int = 0x0001;
+        // Ioctl operation codes
+        const T_TYPE: u32 = b'T' as u32;
+        pub const TUNSETNOCSUM: Ioctl = _IOW::<c_int>(T_TYPE, 200);
+        pub const TUNSETDEBUG: Ioctl = _IOW::<c_int>(T_TYPE, 201);
+        pub const TUNSETIFF: Ioctl = _IOW::<c_int>(T_TYPE, 202);
+        pub const TUNSETPERSIST: Ioctl = _IOW::<c_int>(T_TYPE, 203);
+        pub const TUNSETOWNER: Ioctl = _IOW::<c_int>(T_TYPE, 204);
+        pub const TUNSETLINK: Ioctl = _IOW::<c_int>(T_TYPE, 205);
+        pub const TUNSETGROUP: Ioctl = _IOW::<c_int>(T_TYPE, 206);
+        pub const TUNGETFEATURES: Ioctl = _IOR::<c_int>(T_TYPE, 207);
+        pub const TUNSETOFFLOAD: Ioctl = _IOW::<c_int>(T_TYPE, 208);
+        pub const TUNSETTXFILTER: Ioctl = _IOW::<c_int>(T_TYPE, 209);
+        pub const TUNGETIFF: Ioctl = _IOR::<c_int>(T_TYPE, 210);
+        pub const TUNGETSNDBUF: Ioctl = _IOR::<c_int>(T_TYPE, 211);
+        pub const TUNSETSNDBUF: Ioctl = _IOW::<c_int>(T_TYPE, 212);
+        pub const TUNATTACHFILTER: Ioctl = _IOW::<sock_fprog>(T_TYPE, 213);
+        pub const TUNDETACHFILTER: Ioctl = _IOW::<sock_fprog>(T_TYPE, 214);
+        pub const TUNGETVNETHDRSZ: Ioctl = _IOR::<c_int>(T_TYPE, 215);
+        pub const TUNSETVNETHDRSZ: Ioctl = _IOW::<c_int>(T_TYPE, 216);
+        pub const TUNSETQUEUE: Ioctl = _IOW::<c_int>(T_TYPE, 217);
+        pub const TUNSETIFINDEX: Ioctl = _IOW::<c_int>(T_TYPE, 218);
+        pub const TUNGETFILTER: Ioctl = _IOR::<sock_fprog>(T_TYPE, 219);
+        pub const TUNSETVNETLE: Ioctl = _IOW::<c_int>(T_TYPE, 220);
+        pub const TUNGETVNETLE: Ioctl = _IOR::<c_int>(T_TYPE, 221);
+        pub const TUNSETVNETBE: Ioctl = _IOW::<c_int>(T_TYPE, 222);
+        pub const TUNGETVNETBE: Ioctl = _IOR::<c_int>(T_TYPE, 223);
+        pub const TUNSETSTEERINGEBPF: Ioctl = _IOR::<c_int>(T_TYPE, 224);
+        pub const TUNSETFILTEREBPF: Ioctl = _IOR::<c_int>(T_TYPE, 225);
+        pub const TUNSETCARRIER: Ioctl = _IOW::<c_int>(T_TYPE, 226);
+        pub const TUNGETDEVNETNS: Ioctl = _IO(T_TYPE, 227);
+
+        // linux/fs.h
+        pub const FS_IOC_GETFLAGS: Ioctl = _IOR::<c_long>('f' as u32, 1);
+        pub const FS_IOC_SETFLAGS: Ioctl = _IOW::<c_long>('f' as u32, 2);
+        pub const FS_IOC_GETVERSION: Ioctl = _IOR::<c_long>('v' as u32, 1);
+        pub const FS_IOC_SETVERSION: Ioctl = _IOW::<c_long>('v' as u32, 2);
+        pub const FS_IOC32_GETFLAGS: Ioctl = _IOR::<c_int>('f' as u32, 1);
+        pub const FS_IOC32_SETFLAGS: Ioctl = _IOW::<c_int>('f' as u32, 2);
+        pub const FS_IOC32_GETVERSION: Ioctl = _IOR::<c_int>('v' as u32, 1);
+        pub const FS_IOC32_SETVERSION: Ioctl = _IOW::<c_int>('v' as u32, 2);
+
+        pub const FICLONE: Ioctl = _IOW::<c_int>(0x94, 9);
+        pub const FICLONERANGE: Ioctl = _IOW::<crate::file_clone_range>(0x94, 13);
+    }
+}
+
+cfg_if! {
     if #[cfg(target_os = "emscripten")] {
         // Emscripten does not define any `*_SUPER_MAGIC` constants.
     } else if #[cfg(not(target_arch = "s390x"))] {
@@ -1633,11 +1695,7 @@ cfg_if! {
 
 // https://github.com/search?q=repo%3Atorvalds%2Flinux+%22%23define+_IOC_NONE%22&type=code
 cfg_if! {
-    if #[cfg(any(
-        target_os = "linux",
-        target_os = "android",
-        target_os = "l4re"
-    ))] {
+    if #[cfg(not(target_os = "emscripten"))] {
         const _IOC_NRBITS: u32 = 8;
         const _IOC_TYPEBITS: u32 = 8;
 
@@ -1681,7 +1739,7 @@ cfg_if! {
         // adapted from https://github.com/torvalds/linux/blob/8a696a29c6905594e4abf78eaafcb62165ac61f1/rust/kernel/ioctl.rs
 
         /// Build an ioctl number, analogous to the C macro of the same name.
-        const fn _IOC(dir: u32, ty: u32, nr: u32, size: usize) -> u32 {
+        const fn _IOC(dir: u32, ty: u32, nr: u32, size: usize) -> Ioctl {
             // FIXME(ctest) the `garando_syntax` crate (used by ctest in the CI test suite)
             // cannot currently parse these `debug_assert!`s
             //
@@ -1690,26 +1748,51 @@ cfg_if! {
             // debug_assert!(nr <= _IOC_NRMASK);
             // debug_assert!(size <= (_IOC_SIZEMASK as usize));
 
-            (dir << _IOC_DIRSHIFT)
+            ((dir << _IOC_DIRSHIFT)
                 | (ty << _IOC_TYPESHIFT)
                 | (nr << _IOC_NRSHIFT)
-                | ((size as u32) << _IOC_SIZESHIFT)
+                | ((size as u32) << _IOC_SIZESHIFT)) as Ioctl
+        }
+
+        /// Build an ioctl number for an argumentless ioctl.
+        pub const fn _IO(ty: u32, nr: u32) -> Ioctl {
+            _IOC(_IOC_NONE, ty, nr, 0)
+        }
+
+        /// Build an ioctl number for an read-only ioctl.
+        pub const fn _IOR<T>(ty: u32, nr: u32) -> Ioctl {
+            _IOC(_IOC_READ, ty, nr, mem::size_of::<T>())
+        }
+
+        /// Build an ioctl number for an write-only ioctl.
+        pub const fn _IOW<T>(ty: u32, nr: u32) -> Ioctl {
+            _IOC(_IOC_WRITE, ty, nr, mem::size_of::<T>())
+        }
+
+        /// Build an ioctl number for a read-write ioctl.
+        pub const fn _IOWR<T>(ty: u32, nr: u32) -> Ioctl {
+            _IOC(_IOC_READ | _IOC_WRITE, ty, nr, mem::size_of::<T>())
+        }
+
+        extern "C" {
+            #[cfg_attr(gnu_time_bits64, link_name = "__ioctl_time64")]
+            pub fn ioctl(fd: c_int, request: Ioctl, ...) -> c_int;
         }
     }
 }
 
 const_fn! {
     {const} fn CMSG_ALIGN(len: usize) -> usize {
-        len + mem::size_of::<usize>() - 1 & !(mem::size_of::<usize>() - 1)
+        (len + mem::size_of::<usize>() - 1) & !(mem::size_of::<usize>() - 1)
     }
 }
 
 f! {
     pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
         if (*mhdr).msg_controllen as usize >= mem::size_of::<cmsghdr>() {
-            (*mhdr).msg_control as *mut cmsghdr
+            (*mhdr).msg_control.cast::<cmsghdr>()
         } else {
-            0 as *mut cmsghdr
+            core::ptr::null_mut::<cmsghdr>()
         }
     }
 
@@ -1746,7 +1829,7 @@ f! {
     }
 
     pub fn FD_ZERO(set: *mut fd_set) -> () {
-        for slot in (*set).fds_bits.iter_mut() {
+        for slot in &mut (*set).fds_bits {
             *slot = 0;
         }
     }
@@ -1838,8 +1921,11 @@ extern "C" {
     pub fn fdatasync(fd: c_int) -> c_int;
     pub fn mincore(addr: *mut c_void, len: size_t, vec: *mut c_uchar) -> c_int;
 
+    #[cfg_attr(gnu_time_bits64, link_name = "__clock_getres64")]
     pub fn clock_getres(clk_id: crate::clockid_t, tp: *mut crate::timespec) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__clock_gettime64")]
     pub fn clock_gettime(clk_id: crate::clockid_t, tp: *mut crate::timespec) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__clock_settime64")]
     pub fn clock_settime(clk_id: crate::clockid_t, tp: *const crate::timespec) -> c_int;
     pub fn clock_getcpuclockid(pid: crate::pid_t, clk_id: *mut crate::clockid_t) -> c_int;
 
@@ -1866,7 +1952,9 @@ extern "C" {
     pub fn memrchr(cx: *const c_void, c: c_int, n: size_t) -> *mut c_void;
     #[cfg_attr(gnu_file_offset_bits64, link_name = "posix_fadvise64")]
     pub fn posix_fadvise(fd: c_int, offset: off_t, len: off_t, advise: c_int) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__futimens64")]
     pub fn futimens(fd: c_int, times: *const crate::timespec) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__utimensat64")]
     pub fn utimensat(
         dirfd: c_int,
         path: *const c_char,
@@ -1877,8 +1965,7 @@ extern "C" {
     pub fn freelocale(loc: crate::locale_t);
     pub fn newlocale(mask: c_int, locale: *const c_char, base: crate::locale_t) -> crate::locale_t;
     pub fn uselocale(loc: crate::locale_t) -> crate::locale_t;
-    pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: crate::mode_t, dev: dev_t)
-        -> c_int;
+    pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: mode_t, dev: dev_t) -> c_int;
     pub fn pthread_condattr_getclock(
         attr: *const pthread_condattr_t,
         clock_id: *mut clockid_t,
@@ -1922,6 +2009,7 @@ extern "C" {
     pub fn vfork() -> crate::pid_t;
     pub fn setresgid(rgid: crate::gid_t, egid: crate::gid_t, sgid: crate::gid_t) -> c_int;
     pub fn setresuid(ruid: crate::uid_t, euid: crate::uid_t, suid: crate::uid_t) -> c_int;
+    #[cfg_attr(gnu_time_bits64, link_name = "__wait4_time64")]
     pub fn wait4(
         pid: crate::pid_t,
         status: *mut c_int,
@@ -1949,7 +2037,9 @@ extern "C" {
     pub fn writev(fd: c_int, iov: *const crate::iovec, iovcnt: c_int) -> ssize_t;
     pub fn readv(fd: c_int, iov: *const crate::iovec, iovcnt: c_int) -> ssize_t;
 
+    #[cfg_attr(gnu_time_bits64, link_name = "__sendmsg64")]
     pub fn sendmsg(fd: c_int, msg: *const crate::msghdr, flags: c_int) -> ssize_t;
+    #[cfg_attr(gnu_time_bits64, link_name = "__recvmsg64")]
     pub fn recvmsg(fd: c_int, msg: *mut crate::msghdr, flags: c_int) -> ssize_t;
     pub fn uname(buf: *mut crate::utsname) -> c_int;
 
@@ -1991,7 +2081,9 @@ cfg_if! {
             pub fn fstatvfs64(fd: c_int, buf: *mut statvfs64) -> c_int;
             pub fn statfs64(path: *const c_char, buf: *mut statfs64) -> c_int;
             pub fn creat64(path: *const c_char, mode: mode_t) -> c_int;
+            #[cfg_attr(gnu_time_bits64, link_name = "__fstat64_time64")]
             pub fn fstat64(fildes: c_int, buf: *mut stat64) -> c_int;
+            #[cfg_attr(gnu_time_bits64, link_name = "__fstatat64_time64")]
             pub fn fstatat64(
                 dirfd: c_int,
                 pathname: *const c_char,
@@ -2000,6 +2092,7 @@ cfg_if! {
             ) -> c_int;
             pub fn ftruncate64(fd: c_int, length: off64_t) -> c_int;
             pub fn lseek64(fd: c_int, offset: off64_t, whence: c_int) -> off64_t;
+            #[cfg_attr(gnu_time_bits64, link_name = "__lstat64_time64")]
             pub fn lstat64(path: *const c_char, buf: *mut stat64) -> c_int;
             pub fn mmap64(
                 addr: *mut c_void,
@@ -2030,6 +2123,7 @@ cfg_if! {
                 entry: *mut crate::dirent64,
                 result: *mut *mut crate::dirent64,
             ) -> c_int;
+            #[cfg_attr(gnu_time_bits64, link_name = "__stat64_time64")]
             pub fn stat64(path: *const c_char, buf: *mut stat64) -> c_int;
             pub fn truncate64(path: *const c_char, length: off64_t) -> c_int;
         }

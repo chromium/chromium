@@ -134,23 +134,35 @@ s! {
 
     pub struct stat64 {
         pub st_dev: crate::dev_t,
+        #[cfg(not(gnu_time_bits64))]
         __pad1: c_uint,
+        #[cfg(not(gnu_time_bits64))]
         __st_ino: c_ulong,
+        #[cfg(gnu_time_bits64)]
+        pub st_ino: crate::ino_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
+        #[cfg(not(gnu_time_bits64))]
         __pad2: c_uint,
         pub st_size: off64_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt64_t,
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
+        #[cfg(gnu_time_bits64)]
+        _atime_pad: c_int,
         pub st_mtime: crate::time_t,
         pub st_mtime_nsec: c_long,
+        #[cfg(gnu_time_bits64)]
+        _mtime_pad: c_int,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
+        #[cfg(gnu_time_bits64)]
+        _ctime_pad: c_int,
+        #[cfg(not(gnu_time_bits64))]
         pub st_ino: crate::ino64_t,
     }
 
@@ -189,10 +201,13 @@ s! {
         pub shm_perm: crate::ipc_perm,
         pub shm_segsz: size_t,
         pub shm_atime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __unused1: c_ulong,
         pub shm_dtime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __unused2: c_ulong,
         pub shm_ctime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __unused3: c_ulong,
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
@@ -204,10 +219,13 @@ s! {
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
         pub msg_stime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved1: c_ulong,
         pub msg_rtime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved2: c_ulong,
         pub msg_ctime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved3: c_ulong,
         pub __msg_cbytes: c_ulong,
         pub msg_qnum: crate::msgqnum_t,
@@ -296,26 +314,6 @@ cfg_if! {
 
         impl Eq for user_fpxregs_struct {}
 
-        impl fmt::Debug for user_fpxregs_struct {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("user_fpxregs_struct")
-                    .field("cwd", &self.cwd)
-                    .field("swd", &self.swd)
-                    .field("twd", &self.twd)
-                    .field("fop", &self.fop)
-                    .field("fip", &self.fip)
-                    .field("fcs", &self.fcs)
-                    .field("foo", &self.foo)
-                    .field("fos", &self.fos)
-                    .field("mxcsr", &self.mxcsr)
-                    // Ignore __reserved field
-                    .field("st_space", &self.st_space)
-                    .field("xmm_space", &self.xmm_space)
-                    // Ignore padding field
-                    .finish()
-            }
-        }
-
         impl hash::Hash for user_fpxregs_struct {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.cwd.hash(state);
@@ -346,19 +344,6 @@ cfg_if! {
         }
 
         impl Eq for ucontext_t {}
-
-        impl fmt::Debug for ucontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ucontext_t")
-                    .field("uc_flags", &self.uc_flags)
-                    .field("uc_link", &self.uc_link)
-                    .field("uc_stack", &self.uc_stack)
-                    .field("uc_mcontext", &self.uc_mcontext)
-                    .field("uc_sigmask", &self.uc_sigmask)
-                    // Ignore __private field
-                    .finish()
-            }
-        }
 
         impl hash::Hash for ucontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {

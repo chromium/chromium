@@ -196,7 +196,7 @@ s! {
         pub st_dev: crate::dev_t,
         pub st_ino: crate::ino_t,
         pub st_nlink: crate::nlink_t,
-        pub st_mode: crate::mode_t,
+        pub st_mode: mode_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
@@ -661,14 +661,14 @@ pub const SIGPWR: c_int = 30;
 pub const SIGSYS: c_int = 31;
 pub const NSIG: c_int = 32;
 
-pub const SA_NOCLDSTOP: c_ulong = 0x00000001;
-pub const SA_NOCLDWAIT: c_ulong = 0x00000002;
-pub const SA_SIGINFO: c_ulong = 0x00000004;
-pub const SA_RESTORER: c_ulong = 0x04000000;
-pub const SA_ONSTACK: c_ulong = 0x08000000;
-pub const SA_RESTART: c_ulong = 0x10000000;
-pub const SA_NODEFER: c_ulong = 0x40000000;
-pub const SA_RESETHAND: c_ulong = 0x80000000;
+pub const SA_NOCLDWAIT: c_ulong = 0x0000_0002;
+pub const SA_RESTORER: c_ulong = 0x0000_0004; // FIXME(redox): remove after relibc removes it
+pub const SA_SIGINFO: c_ulong = 0x0200_0000;
+pub const SA_ONSTACK: c_ulong = 0x0400_0000;
+pub const SA_RESTART: c_ulong = 0x0800_0000;
+pub const SA_NODEFER: c_ulong = 0x1000_0000;
+pub const SA_RESETHAND: c_ulong = 0x2000_0000;
+pub const SA_NOCLDSTOP: c_ulong = 0x4000_0000;
 
 // sys/file.h
 pub const LOCK_SH: c_int = 1;
@@ -782,6 +782,7 @@ pub const MSG_PEEK: c_int = 2;
 pub const MSG_TRUNC: c_int = 32;
 pub const MSG_DONTWAIT: c_int = 64;
 pub const MSG_WAITALL: c_int = 256;
+pub const SCM_RIGHTS: c_int = 1;
 pub const SHUT_RD: c_int = 0;
 pub const SHUT_WR: c_int = 1;
 pub const SHUT_RDWR: c_int = 2;
@@ -1014,8 +1015,19 @@ pub const PRIO_PROCESS: c_int = 0;
 pub const PRIO_PGRP: c_int = 1;
 pub const PRIO_USER: c_int = 2;
 
-// wait.h
 f! {
+    //sys/socket.h
+    pub {const} fn CMSG_ALIGN(len: size_t) -> size_t {
+        (len + mem::size_of::<size_t>() - 1) & !(mem::size_of::<size_t>() - 1)
+    }
+    pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
+        (CMSG_ALIGN(mem::size_of::<cmsghdr>()) + length as usize) as c_uint
+    }
+    pub {const} fn CMSG_SPACE(len: c_uint) -> c_uint {
+        (CMSG_ALIGN(len as size_t) + CMSG_ALIGN(mem::size_of::<cmsghdr>())) as c_uint
+    }
+
+    // wait.h
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
@@ -1228,12 +1240,9 @@ extern "C" {
     pub fn setrlimit(resource: c_int, rlim: *const crate::rlimit) -> c_int;
 
     // sys/socket.h
-    pub fn CMSG_ALIGN(len: size_t) -> size_t;
     pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar;
     pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr;
-    pub fn CMSG_LEN(len: c_uint) -> c_uint;
     pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr;
-    pub fn CMSG_SPACE(len: c_uint) -> c_uint;
     pub fn bind(
         socket: c_int,
         address: *const crate::sockaddr,
@@ -1249,31 +1258,13 @@ extern "C" {
     ) -> ssize_t;
     pub fn recvmsg(socket: c_int, msg: *mut msghdr, flags: c_int) -> ssize_t;
     pub fn sendmsg(socket: c_int, msg: *const msghdr, flags: c_int) -> ssize_t;
-    pub fn sendto(
-        socket: c_int,
-        buf: *const c_void,
-        len: size_t,
-        flags: c_int,
-        addr: *const crate::sockaddr,
-        addrlen: crate::socklen_t,
-    ) -> ssize_t;
 
     // sys/stat.h
     pub fn futimens(fd: c_int, times: *const crate::timespec) -> c_int;
 
     // sys/uio.h
-    pub fn preadv(
-        fd: c_int,
-        iov: *const crate::iovec,
-        iovcnt: c_int,
-        offset: off_t,
-    ) -> ssize_t;
-    pub fn pwritev(
-        fd: c_int,
-        iov: *const crate::iovec,
-        iovcnt: c_int,
-        offset: off_t,
-    ) -> ssize_t;
+    pub fn preadv(fd: c_int, iov: *const crate::iovec, iovcnt: c_int, offset: off_t) -> ssize_t;
+    pub fn pwritev(fd: c_int, iov: *const crate::iovec, iovcnt: c_int, offset: off_t) -> ssize_t;
     pub fn readv(fd: c_int, iov: *const crate::iovec, iovcnt: c_int) -> ssize_t;
     pub fn writev(fd: c_int, iov: *const crate::iovec, iovcnt: c_int) -> ssize_t;
 
@@ -1306,18 +1297,6 @@ cfg_if! {
 
         impl Eq for dirent {}
 
-        impl fmt::Debug for dirent {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("dirent")
-                    .field("d_ino", &self.d_ino)
-                    .field("d_off", &self.d_off)
-                    .field("d_reclen", &self.d_reclen)
-                    .field("d_type", &self.d_type)
-                    // FIXME(debug): .field("d_name", &self.d_name)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for dirent {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.d_ino.hash(state);
@@ -1341,15 +1320,6 @@ cfg_if! {
 
         impl Eq for sockaddr_un {}
 
-        impl fmt::Debug for sockaddr_un {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sockaddr_un")
-                    .field("sun_family", &self.sun_family)
-                    // FIXME(debug): .field("sun_path", &self.sun_path)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for sockaddr_un {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.sun_family.hash(state);
@@ -1370,16 +1340,6 @@ cfg_if! {
         }
 
         impl Eq for sockaddr_storage {}
-
-        impl fmt::Debug for sockaddr_storage {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sockaddr_storage")
-                    .field("ss_family", &self.ss_family)
-                    .field("__ss_align", &self.__ss_align)
-                    // FIXME(debug): .field("__ss_padding", &self.__ss_padding)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for sockaddr_storage {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -1424,19 +1384,6 @@ cfg_if! {
         }
 
         impl Eq for utsname {}
-
-        impl fmt::Debug for utsname {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("utsname")
-                    // FIXME(debug): .field("sysname", &self.sysname)
-                    // FIXME(debug): .field("nodename", &self.nodename)
-                    // FIXME(debug): .field("release", &self.release)
-                    // FIXME(debug): .field("version", &self.version)
-                    // FIXME(debug): .field("machine", &self.machine)
-                    // FIXME(debug): .field("domainname", &self.domainname)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for utsname {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {

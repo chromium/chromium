@@ -81,22 +81,6 @@ cfg_if! {
             }
         }
         impl Eq for fxsave64 {}
-        impl fmt::Debug for fxsave64 {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("fxsave64")
-                    .field("fx_fcw", &{ self.fx_fcw })
-                    .field("fx_fsw", &{ self.fx_fsw })
-                    .field("fx_ftw", &{ self.fx_ftw })
-                    .field("fx_fop", &{ self.fx_fop })
-                    .field("fx_rip", &{ self.fx_rip })
-                    .field("fx_rdp", &{ self.fx_rdp })
-                    .field("fx_mxcsr", &{ self.fx_mxcsr })
-                    .field("fx_mxcsr_mask", &{ self.fx_mxcsr_mask })
-                    // FIXME(debug): .field("fx_st", &{self.fx_st})
-                    // FIXME(debug): .field("fx_xmm", &{self.fx_xmm})
-                    .finish()
-            }
-        }
         impl hash::Hash for fxsave64 {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 { self.fx_fcw }.hash(state);

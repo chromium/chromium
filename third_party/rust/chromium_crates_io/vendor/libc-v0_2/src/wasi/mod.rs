@@ -653,7 +653,7 @@ extern "C" {
         newpath: *const c_char,
         flags: c_int,
     ) -> c_int;
-    pub fn mkdirat(dirfd: c_int, pathname: *const c_char, mode: crate::mode_t) -> c_int;
+    pub fn mkdirat(dirfd: c_int, pathname: *const c_char, mode: mode_t) -> c_int;
     pub fn readlinkat(
         dirfd: c_int,
         pathname: *const c_char,

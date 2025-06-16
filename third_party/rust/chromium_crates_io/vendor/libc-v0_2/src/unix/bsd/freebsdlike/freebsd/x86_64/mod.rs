@@ -156,16 +156,6 @@ cfg_if! {
             }
         }
         impl Eq for fpreg32 {}
-        impl fmt::Debug for fpreg32 {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("fpreg32")
-                    .field("fpr_env", &&self.fpr_env[..])
-                    .field("fpr_acc", &self.fpr_acc)
-                    .field("fpr_ex_sw", &self.fpr_ex_sw)
-                    .field("fpr_pad", &&self.fpr_pad[..])
-                    .finish()
-            }
-        }
         impl hash::Hash for fpreg32 {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.fpr_env.hash(state);
@@ -184,16 +174,6 @@ cfg_if! {
             }
         }
         impl Eq for fpreg {}
-        impl fmt::Debug for fpreg {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("fpreg")
-                    .field("fpr_env", &self.fpr_env)
-                    .field("fpr_acc", &self.fpr_acc)
-                    .field("fpr_xacc", &self.fpr_xacc)
-                    .field("fpr_spare", &self.fpr_spare)
-                    .finish()
-            }
-        }
         impl hash::Hash for fpreg {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.fpr_env.hash(state);
@@ -216,16 +196,6 @@ cfg_if! {
             }
         }
         impl Eq for xmmreg {}
-        impl fmt::Debug for xmmreg {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("xmmreg")
-                    .field("xmm_env", &self.xmm_env)
-                    .field("xmm_acc", &self.xmm_acc)
-                    .field("xmm_reg", &self.xmm_reg)
-                    .field("xmm_pad", &&self.xmm_pad[..])
-                    .finish()
-            }
-        }
         impl hash::Hash for xmmreg {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.xmm_env.hash(state);
@@ -253,14 +223,6 @@ cfg_if! {
             }
         }
         impl Eq for Elf64_Auxinfo {}
-        impl fmt::Debug for Elf64_Auxinfo {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("Elf64_Auxinfo")
-                    .field("a_type", &self.a_type)
-                    .field("a_un", &self.a_un)
-                    .finish()
-            }
-        }
 
         impl PartialEq for mcontext_t {
             fn eq(&self, other: &mcontext_t) -> bool {
@@ -309,50 +271,6 @@ cfg_if! {
             }
         }
         impl Eq for mcontext_t {}
-        impl fmt::Debug for mcontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("mcontext_t")
-                    .field("mc_onstack", &self.mc_onstack)
-                    .field("mc_rdi", &self.mc_rdi)
-                    .field("mc_rsi", &self.mc_rsi)
-                    .field("mc_rdx", &self.mc_rdx)
-                    .field("mc_rcx", &self.mc_rcx)
-                    .field("mc_r8", &self.mc_r8)
-                    .field("mc_r9", &self.mc_r9)
-                    .field("mc_rax", &self.mc_rax)
-                    .field("mc_rbx", &self.mc_rbx)
-                    .field("mc_rbp", &self.mc_rbp)
-                    .field("mc_r10", &self.mc_r10)
-                    .field("mc_r11", &self.mc_r11)
-                    .field("mc_r12", &self.mc_r12)
-                    .field("mc_r13", &self.mc_r13)
-                    .field("mc_r14", &self.mc_r14)
-                    .field("mc_r15", &self.mc_r15)
-                    .field("mc_trapno", &self.mc_trapno)
-                    .field("mc_fs", &self.mc_fs)
-                    .field("mc_gs", &self.mc_gs)
-                    .field("mc_addr", &self.mc_addr)
-                    .field("mc_flags", &self.mc_flags)
-                    .field("mc_es", &self.mc_es)
-                    .field("mc_ds", &self.mc_ds)
-                    .field("mc_err", &self.mc_err)
-                    .field("mc_rip", &self.mc_rip)
-                    .field("mc_cs", &self.mc_cs)
-                    .field("mc_rflags", &self.mc_rflags)
-                    .field("mc_rsp", &self.mc_rsp)
-                    .field("mc_ss", &self.mc_ss)
-                    .field("mc_len", &self.mc_len)
-                    .field("mc_fpformat", &self.mc_fpformat)
-                    .field("mc_ownedfp", &self.mc_ownedfp)
-                    // FIXME(debug): .field("mc_fpstate", &self.mc_fpstate)
-                    .field("mc_fsbase", &self.mc_fsbase)
-                    .field("mc_gsbase", &self.mc_gsbase)
-                    .field("mc_xfpustate", &self.mc_xfpustate)
-                    .field("mc_xfpustate_len", &self.mc_xfpustate_len)
-                    .field("mc_spare", &self.mc_spare)
-                    .finish()
-            }
-        }
         impl hash::Hash for mcontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.mc_onstack.hash(state);

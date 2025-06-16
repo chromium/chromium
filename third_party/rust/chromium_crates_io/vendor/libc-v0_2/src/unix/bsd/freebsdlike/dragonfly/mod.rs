@@ -554,24 +554,6 @@ cfg_if! {
             }
         }
         impl Eq for utmpx {}
-        impl fmt::Debug for utmpx {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("utmpx")
-                    .field("ut_name", &self.ut_name)
-                    .field("ut_id", &self.ut_id)
-                    .field("ut_line", &self.ut_line)
-                    // FIXME(debug): .field("ut_host", &self.ut_host)
-                    .field("ut_unused", &self.ut_unused)
-                    .field("ut_session", &self.ut_session)
-                    .field("ut_type", &self.ut_type)
-                    .field("ut_pid", &self.ut_pid)
-                    .field("ut_exit", &self.ut_exit)
-                    .field("ut_ss", &self.ut_ss)
-                    .field("ut_tv", &self.ut_tv)
-                    .field("ut_unused2", &self.ut_unused2)
-                    .finish()
-            }
-        }
         impl hash::Hash for utmpx {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.ut_name.hash(state);
@@ -597,16 +579,6 @@ cfg_if! {
             }
         }
         impl Eq for lastlogx {}
-        impl fmt::Debug for lastlogx {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("lastlogx")
-                    .field("ll_tv", &self.ll_tv)
-                    .field("ll_line", &self.ll_line)
-                    .field("ll_host", &self.ll_host)
-                    .field("ll_ss", &self.ll_ss)
-                    .finish()
-            }
-        }
         impl hash::Hash for lastlogx {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.ll_tv.hash(state);
@@ -631,18 +603,6 @@ cfg_if! {
             }
         }
         impl Eq for dirent {}
-        impl fmt::Debug for dirent {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("dirent")
-                    .field("d_fileno", &self.d_fileno)
-                    .field("d_namlen", &self.d_namlen)
-                    .field("d_type", &self.d_type)
-                    // Ignore __unused1
-                    // Ignore __unused2
-                    // FIXME(debug): .field("d_name", &self.d_name)
-                    .finish()
-            }
-        }
         impl hash::Hash for dirent {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.d_fileno.hash(state);
@@ -685,29 +645,6 @@ cfg_if! {
             }
         }
         impl Eq for statfs {}
-        impl fmt::Debug for statfs {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("statfs")
-                    .field("f_bsize", &self.f_bsize)
-                    .field("f_iosize", &self.f_iosize)
-                    .field("f_blocks", &self.f_blocks)
-                    .field("f_bfree", &self.f_bfree)
-                    .field("f_bavail", &self.f_bavail)
-                    .field("f_files", &self.f_files)
-                    .field("f_ffree", &self.f_ffree)
-                    .field("f_fsid", &self.f_fsid)
-                    .field("f_owner", &self.f_owner)
-                    .field("f_type", &self.f_type)
-                    .field("f_flags", &self.f_flags)
-                    .field("f_syncwrites", &self.f_syncwrites)
-                    .field("f_asyncwrites", &self.f_asyncwrites)
-                    // FIXME(debug): .field("f_mntonname", &self.f_mntonname)
-                    .field("f_syncreads", &self.f_syncreads)
-                    .field("f_asyncreads", &self.f_asyncreads)
-                    // FIXME(debug): .field("f_mntfromname", &self.f_mntfromname)
-                    .finish()
-            }
-        }
         impl hash::Hash for statfs {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.f_bsize.hash(state);
@@ -739,15 +676,6 @@ cfg_if! {
             }
         }
         impl Eq for sigevent {}
-        impl fmt::Debug for sigevent {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sigevent")
-                    .field("sigev_notify", &self.sigev_notify)
-                    .field("sigev_signo", &self.sigev_signo)
-                    .field("sigev_value", &self.sigev_value)
-                    .finish()
-            }
-        }
         impl hash::Hash for sigevent {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.sigev_notify.hash(state);
@@ -790,42 +718,6 @@ cfg_if! {
             }
         }
         impl Eq for mcontext_t {}
-        impl fmt::Debug for mcontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("mcontext_t")
-                    .field("mc_onstack", &self.mc_onstack)
-                    .field("mc_rdi", &self.mc_rdi)
-                    .field("mc_rsi", &self.mc_rsi)
-                    .field("mc_rdx", &self.mc_rdx)
-                    .field("mc_rcx", &self.mc_rcx)
-                    .field("mc_r8", &self.mc_r8)
-                    .field("mc_r9", &self.mc_r9)
-                    .field("mc_rax", &self.mc_rax)
-                    .field("mc_rbx", &self.mc_rbx)
-                    .field("mc_rbp", &self.mc_rbp)
-                    .field("mc_r10", &self.mc_r10)
-                    .field("mc_r11", &self.mc_r11)
-                    .field("mc_r12", &self.mc_r12)
-                    .field("mc_r13", &self.mc_r13)
-                    .field("mc_r14", &self.mc_r14)
-                    .field("mc_r15", &self.mc_r15)
-                    .field("mc_xflags", &self.mc_xflags)
-                    .field("mc_trapno", &self.mc_trapno)
-                    .field("mc_addr", &self.mc_addr)
-                    .field("mc_flags", &self.mc_flags)
-                    .field("mc_err", &self.mc_err)
-                    .field("mc_rip", &self.mc_rip)
-                    .field("mc_cs", &self.mc_cs)
-                    .field("mc_rflags", &self.mc_rflags)
-                    .field("mc_rsp", &self.mc_rsp)
-                    .field("mc_ss", &self.mc_ss)
-                    .field("mc_len", &self.mc_len)
-                    .field("mc_fpformat", &self.mc_fpformat)
-                    .field("mc_ownedfp", &self.mc_ownedfp)
-                    .field("mc_fpregs", &self.mc_fpregs)
-                    .finish()
-            }
-        }
         impl hash::Hash for mcontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.mc_onstack.hash(state);
@@ -875,18 +767,6 @@ cfg_if! {
             }
         }
         impl Eq for ucontext_t {}
-        impl fmt::Debug for ucontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ucontext_t")
-                    .field("uc_sigmask", &self.uc_sigmask)
-                    .field("uc_mcontext", &self.uc_mcontext)
-                    .field("uc_link", &self.uc_link)
-                    .field("uc_stack", &self.uc_stack)
-                    .field("uc_cofunc", &self.uc_cofunc)
-                    .field("uc_arg", &self.uc_arg)
-                    .finish()
-            }
-        }
         impl hash::Hash for ucontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.uc_sigmask.hash(state);
@@ -1560,7 +1440,7 @@ f! {
         if next <= max {
             (cmsg as usize + _CMSG_ALIGN((*cmsg).cmsg_len as usize)) as *mut cmsghdr
         } else {
-            0 as *mut cmsghdr
+            core::ptr::null_mut::<cmsghdr>()
         }
     }
 

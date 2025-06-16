@@ -89,24 +89,6 @@ cfg_if! {
 
         impl Eq for utmpx {}
 
-        impl fmt::Debug for utmpx {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("utmpx")
-                    .field("ut_user", &self.ut_user)
-                    .field("ut_id", &self.ut_id)
-                    .field("ut_line", &self.ut_line)
-                    .field("ut_pid", &self.ut_pid)
-                    .field("ut_type", &self.ut_type)
-                    .field("ut_exit", &self.ut_exit)
-                    .field("ut_tv", &self.ut_tv)
-                    .field("ut_session", &self.ut_session)
-                    .field("ut_pad", &self.ut_pad)
-                    .field("ut_syslen", &self.ut_syslen)
-                    .field("ut_host", &&self.ut_host[..])
-                    .finish()
-            }
-        }
-
         impl hash::Hash for utmpx {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.ut_user.hash(state);
@@ -129,16 +111,6 @@ cfg_if! {
             }
         }
         impl Eq for epoll_event {}
-        impl fmt::Debug for epoll_event {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let events = self.events;
-                let u64 = self.u64;
-                f.debug_struct("epoll_event")
-                    .field("events", &events)
-                    .field("u64", &u64)
-                    .finish()
-            }
-        }
         impl hash::Hash for epoll_event {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let events = self.events;

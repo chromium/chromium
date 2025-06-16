@@ -2,6 +2,15 @@
 
 use crate::prelude::*;
 
+cfg_if! {
+    if #[cfg(doc)] {
+        pub(crate) type Ioctl = c_int;
+    } else {
+        #[doc(hidden)]
+        pub type Ioctl = c_int;
+    }
+}
+
 pub type clock_t = c_long;
 pub type time_t = c_long;
 pub type suseconds_t = c_long;
@@ -337,19 +346,6 @@ s! {
         pub dlpi_tls_data: *mut c_void,
     }
 
-    // linux/filter.h
-    pub struct sock_filter {
-        pub code: crate::__u16,
-        pub jt: crate::__u8,
-        pub jf: crate::__u8,
-        pub k: crate::__u32,
-    }
-
-    pub struct sock_fprog {
-        pub len: c_ushort,
-        pub filter: *mut sock_filter,
-    }
-
     // linux/seccomp.h
     pub struct seccomp_data {
         pub nr: c_int,
@@ -664,15 +660,6 @@ cfg_if! {
             }
         }
         impl Eq for sockaddr_nl {}
-        impl fmt::Debug for sockaddr_nl {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sockaddr_nl")
-                    .field("nl_family", &self.nl_family)
-                    .field("nl_pid", &self.nl_pid)
-                    .field("nl_groups", &self.nl_groups)
-                    .finish()
-            }
-        }
         impl hash::Hash for sockaddr_nl {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.nl_family.hash(state);
@@ -696,18 +683,6 @@ cfg_if! {
         }
 
         impl Eq for dirent {}
-
-        impl fmt::Debug for dirent {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("dirent")
-                    .field("d_ino", &self.d_ino)
-                    .field("d_off", &self.d_off)
-                    .field("d_reclen", &self.d_reclen)
-                    .field("d_type", &self.d_type)
-                    // FIXME(debug): .field("d_name", &self.d_name)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for dirent {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -735,18 +710,6 @@ cfg_if! {
 
         impl Eq for dirent64 {}
 
-        impl fmt::Debug for dirent64 {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("dirent64")
-                    .field("d_ino", &self.d_ino)
-                    .field("d_off", &self.d_off)
-                    .field("d_reclen", &self.d_reclen)
-                    .field("d_type", &self.d_type)
-                    // FIXME(debug): .field("d_name", &self.d_name)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for dirent64 {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.d_ino.hash(state);
@@ -768,18 +731,6 @@ cfg_if! {
         }
 
         impl Eq for siginfo_t {}
-
-        impl fmt::Debug for siginfo_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("siginfo_t")
-                    .field("si_signo", &self.si_signo)
-                    .field("si_errno", &self.si_errno)
-                    .field("si_code", &self.si_code)
-                    // Ignore _pad
-                    // Ignore _align
-                    .finish()
-            }
-        }
 
         impl hash::Hash for siginfo_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -808,16 +759,6 @@ cfg_if! {
         }
 
         impl Eq for lastlog {}
-
-        impl fmt::Debug for lastlog {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("lastlog")
-                    .field("ll_time", &self.ll_time)
-                    .field("ll_line", &self.ll_line)
-                    // FIXME(debug): .field("ll_host", &self.ll_host)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for lastlog {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -857,24 +798,6 @@ cfg_if! {
 
         impl Eq for utmp {}
 
-        impl fmt::Debug for utmp {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("utmp")
-                    .field("ut_type", &self.ut_type)
-                    .field("ut_pid", &self.ut_pid)
-                    .field("ut_line", &self.ut_line)
-                    .field("ut_id", &self.ut_id)
-                    .field("ut_user", &self.ut_user)
-                    // FIXME(debug): .field("ut_host", &self.ut_host)
-                    .field("ut_exit", &self.ut_exit)
-                    .field("ut_session", &self.ut_session)
-                    .field("ut_tv", &self.ut_tv)
-                    .field("ut_addr_v6", &self.ut_addr_v6)
-                    .field("unused", &self.unused)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for utmp {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.ut_type.hash(state);
@@ -911,18 +834,6 @@ cfg_if! {
 
         impl Eq for sockaddr_alg {}
 
-        impl fmt::Debug for sockaddr_alg {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sockaddr_alg")
-                    .field("salg_family", &self.salg_family)
-                    .field("salg_type", &self.salg_type)
-                    .field("salg_feat", &self.salg_feat)
-                    .field("salg_mask", &self.salg_mask)
-                    .field("salg_name", &&self.salg_name[..])
-                    .finish()
-            }
-        }
-
         impl hash::Hash for sockaddr_alg {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.salg_family.hash(state);
@@ -941,16 +852,6 @@ cfg_if! {
             }
         }
         impl Eq for uinput_setup {}
-
-        impl fmt::Debug for uinput_setup {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("uinput_setup")
-                    .field("id", &self.id)
-                    .field("name", &&self.name[..])
-                    .field("ff_effects_max", &self.ff_effects_max)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for uinput_setup {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -973,20 +874,6 @@ cfg_if! {
         }
         impl Eq for uinput_user_dev {}
 
-        impl fmt::Debug for uinput_user_dev {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("uinput_setup")
-                    .field("name", &&self.name[..])
-                    .field("id", &self.id)
-                    .field("ff_effects_max", &self.ff_effects_max)
-                    .field("absmax", &&self.absmax[..])
-                    .field("absmin", &&self.absmin[..])
-                    .field("absfuzz", &&self.absfuzz[..])
-                    .field("absflat", &&self.absflat[..])
-                    .finish()
-            }
-        }
-
         impl hash::Hash for uinput_user_dev {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.name.hash(state);
@@ -996,24 +883,6 @@ cfg_if! {
                 self.absmin.hash(state);
                 self.absfuzz.hash(state);
                 self.absflat.hash(state);
-            }
-        }
-
-        impl fmt::Debug for ifreq {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ifreq")
-                    .field("ifr_name", &self.ifr_name)
-                    .field("ifr_ifru", &self.ifr_ifru)
-                    .finish()
-            }
-        }
-
-        impl fmt::Debug for ifconf {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ifconf")
-                    .field("ifc_len", &self.ifc_len)
-                    .field("ifc_ifcu", &self.ifc_ifcu)
-                    .finish()
             }
         }
 
@@ -1035,15 +904,6 @@ cfg_if! {
         impl Eq for af_alg_iv {}
 
         #[allow(deprecated)]
-        impl fmt::Debug for af_alg_iv {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("af_alg_iv")
-                    .field("ivlen", &self.ivlen)
-                    .finish()
-            }
-        }
-
-        #[allow(deprecated)]
         impl hash::Hash for af_alg_iv {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.as_slice().hash(state);
@@ -1058,15 +918,6 @@ cfg_if! {
             }
         }
         impl Eq for prop_info {}
-        impl fmt::Debug for prop_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("prop_info")
-                    .field("__name", &self.__name)
-                    .field("__serial", &self.__serial)
-                    .field("__value", &self.__value)
-                    .finish()
-            }
-        }
     }
 }
 
@@ -1698,27 +1549,6 @@ pub const FIONREAD: c_int = 0x541B;
 pub const TIOCCONS: c_int = 0x541D;
 pub const TIOCSBRK: c_int = 0x5427;
 pub const TIOCCBRK: c_int = 0x5428;
-cfg_if! {
-    if #[cfg(any(
-        target_arch = "x86",
-        target_arch = "x86_64",
-        target_arch = "arm",
-        target_arch = "aarch64",
-        target_arch = "riscv64",
-        target_arch = "s390x"
-    ))] {
-        pub const FICLONE: c_int = 0x40049409;
-        pub const FICLONERANGE: c_int = 0x4020940D;
-    } else if #[cfg(any(
-        target_arch = "mips",
-        target_arch = "mips64",
-        target_arch = "powerpc",
-        target_arch = "powerpc64"
-    ))] {
-        pub const FICLONE: c_int = 0x80049409;
-        pub const FICLONERANGE: c_int = 0x8020940D;
-    }
-}
 
 pub const ST_RDONLY: c_ulong = 1;
 pub const ST_NOSUID: c_ulong = 2;
@@ -1899,38 +1729,6 @@ pub const BLKIOMIN: c_int = 0x1278;
 pub const BLKIOOPT: c_int = 0x1279;
 pub const BLKSSZGET: c_int = 0x1268;
 pub const BLKPBSZGET: c_int = 0x127B;
-
-cfg_if! {
-    // Those type are constructed using the _IOC macro
-    // DD-SS_SSSS_SSSS_SSSS-TTTT_TTTT-NNNN_NNNN
-    // where D stands for direction (either None (00), Read (01) or Write (11))
-    // where S stands for size (int, long, struct...)
-    // where T stands for type ('f','v','X'...)
-    // where N stands for NR (NumbeR)
-    if #[cfg(any(target_arch = "x86", target_arch = "arm"))] {
-        pub const FS_IOC_GETFLAGS: c_int = 0x80046601;
-        pub const FS_IOC_SETFLAGS: c_int = 0x40046602;
-        pub const FS_IOC_GETVERSION: c_int = 0x80047601;
-        pub const FS_IOC_SETVERSION: c_int = 0x40047602;
-        pub const FS_IOC32_GETFLAGS: c_int = 0x80046601;
-        pub const FS_IOC32_SETFLAGS: c_int = 0x40046602;
-        pub const FS_IOC32_GETVERSION: c_int = 0x80047601;
-        pub const FS_IOC32_SETVERSION: c_int = 0x40047602;
-    } else if #[cfg(any(
-        target_arch = "x86_64",
-        target_arch = "riscv64",
-        target_arch = "aarch64"
-    ))] {
-        pub const FS_IOC_GETFLAGS: c_int = 0x80086601;
-        pub const FS_IOC_SETFLAGS: c_int = 0x40086602;
-        pub const FS_IOC_GETVERSION: c_int = 0x80087601;
-        pub const FS_IOC_SETVERSION: c_int = 0x40087602;
-        pub const FS_IOC32_GETFLAGS: c_int = 0x80046601;
-        pub const FS_IOC32_SETFLAGS: c_int = 0x40046602;
-        pub const FS_IOC32_GETVERSION: c_int = 0x80047601;
-        pub const FS_IOC32_SETVERSION: c_int = 0x40047602;
-    }
-}
 
 pub const EAI_AGAIN: c_int = 2;
 pub const EAI_BADFLAGS: c_int = 3;
@@ -2665,65 +2463,6 @@ pub const SND_CNT: usize = SND_MAX as usize + 1;
 // linux/uinput.h
 pub const UINPUT_VERSION: c_uint = 5;
 pub const UINPUT_MAX_NAME_SIZE: usize = 80;
-
-// bionic/libc/kernel/uapi/linux/if_tun.h
-pub const IFF_TUN: c_int = 0x0001;
-pub const IFF_TAP: c_int = 0x0002;
-pub const IFF_NAPI: c_int = 0x0010;
-pub const IFF_NAPI_FRAGS: c_int = 0x0020;
-pub const IFF_NO_CARRIER: c_int = 0x0040;
-pub const IFF_NO_PI: c_int = 0x1000;
-pub const IFF_ONE_QUEUE: c_int = 0x2000;
-pub const IFF_VNET_HDR: c_int = 0x4000;
-pub const IFF_TUN_EXCL: c_int = 0x8000;
-pub const IFF_MULTI_QUEUE: c_int = 0x0100;
-pub const IFF_ATTACH_QUEUE: c_int = 0x0200;
-pub const IFF_DETACH_QUEUE: c_int = 0x0400;
-pub const IFF_PERSIST: c_int = 0x0800;
-pub const IFF_NOFILTER: c_int = 0x1000;
-pub const TUN_TX_TIMESTAMP: c_int = 1;
-// Features for GSO (TUNSETOFFLOAD)
-pub const TUN_F_CSUM: c_uint = 0x01;
-pub const TUN_F_TSO4: c_uint = 0x02;
-pub const TUN_F_TSO6: c_uint = 0x04;
-pub const TUN_F_TSO_ECN: c_uint = 0x08;
-pub const TUN_F_UFO: c_uint = 0x10;
-pub const TUN_F_USO4: c_uint = 0x20;
-pub const TUN_F_USO6: c_uint = 0x40;
-// Protocol info prepended to the packets (when IFF_NO_PI is not set)
-pub const TUN_PKT_STRIP: c_int = 0x0001;
-// Accept all multicast packets
-pub const TUN_FLT_ALLMULTI: c_int = 0x0001;
-// Ioctl operation codes
-const T_TYPE: u32 = b'T' as u32;
-pub const TUNSETNOCSUM: c_int = _IOW::<c_int>(T_TYPE, 200);
-pub const TUNSETDEBUG: c_int = _IOW::<c_int>(T_TYPE, 201);
-pub const TUNSETIFF: c_int = _IOW::<c_int>(T_TYPE, 202);
-pub const TUNSETPERSIST: c_int = _IOW::<c_int>(T_TYPE, 203);
-pub const TUNSETOWNER: c_int = _IOW::<c_int>(T_TYPE, 204);
-pub const TUNSETLINK: c_int = _IOW::<c_int>(T_TYPE, 205);
-pub const TUNSETGROUP: c_int = _IOW::<c_int>(T_TYPE, 206);
-pub const TUNGETFEATURES: c_int = _IOR::<c_int>(T_TYPE, 207);
-pub const TUNSETOFFLOAD: c_int = _IOW::<c_int>(T_TYPE, 208);
-pub const TUNSETTXFILTER: c_int = _IOW::<c_int>(T_TYPE, 209);
-pub const TUNGETIFF: c_int = _IOR::<c_int>(T_TYPE, 210);
-pub const TUNGETSNDBUF: c_int = _IOR::<c_int>(T_TYPE, 211);
-pub const TUNSETSNDBUF: c_int = _IOW::<c_int>(T_TYPE, 212);
-pub const TUNATTACHFILTER: c_int =  _IOW::<sock_fprog>(T_TYPE, 213);
-pub const TUNDETACHFILTER: c_int = _IOW::<sock_fprog>(T_TYPE, 214);
-pub const TUNGETVNETHDRSZ: c_int = _IOR::<c_int>(T_TYPE, 215);
-pub const TUNSETVNETHDRSZ: c_int = _IOW::<c_int>(T_TYPE, 216);
-pub const TUNSETQUEUE: c_int = _IOW::<c_int>(T_TYPE, 217);
-pub const TUNSETIFINDEX: c_int = _IOW::<c_int>(T_TYPE, 218);
-pub const TUNGETFILTER: c_int = _IOR::<sock_fprog>(T_TYPE, 219);
-pub const TUNSETVNETLE: c_int = _IOW::<c_int>(T_TYPE, 220);
-pub const TUNGETVNETLE: c_int = _IOR::<c_int>(T_TYPE, 221);
-pub const TUNSETVNETBE: c_int = _IOW::<c_int>(T_TYPE, 222);
-pub const TUNGETVNETBE: c_int = _IOR::<c_int>(T_TYPE, 223);
-pub const TUNSETSTEERINGEBPF: c_int = _IOR::<c_int>(T_TYPE, 224);
-pub const TUNSETFILTEREBPF: c_int = _IOR::<c_int>(T_TYPE, 225);
-pub const TUNSETCARRIER: c_int = _IOW::<c_int>(T_TYPE, 226);
-pub const TUNGETDEVNETNS: c_int = _IO(T_TYPE, 227);
 
 // start android/platform/bionic/libc/kernel/uapi/linux/if_ether.h
 // from https://android.googlesource.com/platform/bionic/+/HEAD/libc/kernel/uapi/linux/if_ether.h
@@ -3653,7 +3392,7 @@ f! {
         let next = (cmsg as usize + super::CMSG_ALIGN((*cmsg).cmsg_len as usize)) as *mut cmsghdr;
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if (next.offset(1)) as usize > max {
-            0 as *mut cmsghdr
+            core::ptr::null_mut::<cmsghdr>()
         } else {
             next as *mut cmsghdr
         }
@@ -3758,7 +3497,6 @@ extern "C" {
     pub fn gettimeofday(tp: *mut crate::timeval, tz: *mut crate::timezone) -> c_int;
     pub fn mlock2(addr: *const c_void, len: size_t, flags: c_int) -> c_int;
     pub fn madvise(addr: *mut c_void, len: size_t, advice: c_int) -> c_int;
-    pub fn ioctl(fd: c_int, request: c_int, ...) -> c_int;
     pub fn msync(addr: *mut c_void, len: size_t, flags: c_int) -> c_int;
     pub fn mprotect(addr: *mut c_void, len: size_t, prot: c_int) -> c_int;
     pub fn recvfrom(
@@ -4298,24 +4036,4 @@ impl siginfo_t {
     pub unsafe fn si_stime(&self) -> c_long {
         self.sifields().sigchld.si_stime
     }
-}
-
-/// Build an ioctl number for an argumentless ioctl.
-pub const fn _IO(ty: u32, nr: u32) -> c_int {
-    super::_IOC(super::_IOC_NONE, ty, nr, 0) as c_int
-}
-
-/// Build an ioctl number for an read-only ioctl.
-pub const fn _IOR<T>(ty: u32, nr: u32) -> c_int {
-    super::_IOC(super::_IOC_READ, ty, nr, mem::size_of::<T>())  as c_int
-}
-
-/// Build an ioctl number for an write-only ioctl.
-pub const fn _IOW<T>(ty: u32, nr: u32) -> c_int {
-    super::_IOC(super::_IOC_WRITE, ty, nr, mem::size_of::<T>())  as c_int
-}
-
-/// Build an ioctl number for a read-write ioctl.
-pub const fn _IOWR<T>(ty: u32, nr: u32) -> c_int {
-    super::_IOC(super::_IOC_READ | super::_IOC_WRITE, ty, nr, mem::size_of::<T>())  as c_int
 }

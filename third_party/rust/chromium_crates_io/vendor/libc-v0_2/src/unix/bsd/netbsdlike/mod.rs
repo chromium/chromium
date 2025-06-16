@@ -78,7 +78,7 @@ s! {
         pub cgid: crate::gid_t,
         pub uid: crate::uid_t,
         pub gid: crate::gid_t,
-        pub mode: crate::mode_t,
+        pub mode: mode_t,
         #[cfg(target_os = "openbsd")]
         pub seq: c_ushort,
         #[cfg(target_os = "netbsd")]
@@ -689,7 +689,7 @@ extern "C" {
     #[cfg_attr(target_os = "netbsd", link_name = "__clock_settime50")]
     pub fn clock_settime(clk_id: crate::clockid_t, tp: *const crate::timespec) -> c_int;
     pub fn __errno() -> *mut c_int;
-    pub fn shm_open(name: *const c_char, oflag: c_int, mode: crate::mode_t) -> c_int;
+    pub fn shm_open(name: *const c_char, oflag: c_int, mode: mode_t) -> c_int;
     pub fn memrchr(cx: *const c_void, c: c_int, n: size_t) -> *mut c_void;
     pub fn mkostemp(template: *mut c_char, flags: c_int) -> c_int;
     pub fn mkostemps(template: *mut c_char, suffixlen: c_int, flags: c_int) -> c_int;
@@ -707,9 +707,8 @@ extern "C" {
     pub fn getpriority(which: c_int, who: crate::id_t) -> c_int;
     pub fn setpriority(which: c_int, who: crate::id_t, prio: c_int) -> c_int;
 
-    pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: crate::mode_t, dev: dev_t)
-        -> c_int;
-    pub fn mkfifoat(dirfd: c_int, pathname: *const c_char, mode: crate::mode_t) -> c_int;
+    pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: mode_t, dev: dev_t) -> c_int;
+    pub fn mkfifoat(dirfd: c_int, pathname: *const c_char, mode: mode_t) -> c_int;
     pub fn sem_timedwait(sem: *mut sem_t, abstime: *const crate::timespec) -> c_int;
     pub fn sem_getvalue(sem: *mut sem_t, sval: *mut c_int) -> c_int;
     pub fn pthread_condattr_setclock(
@@ -830,7 +829,7 @@ extern "C" {
         fd: c_int,
         path: *const c_char,
         oflag: c_int,
-        mode: crate::mode_t,
+        mode: mode_t,
     ) -> c_int;
     pub fn posix_spawn_file_actions_addclose(
         actions: *mut posix_spawn_file_actions_t,

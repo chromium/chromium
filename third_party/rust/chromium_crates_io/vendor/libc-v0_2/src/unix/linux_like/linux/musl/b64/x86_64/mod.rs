@@ -112,6 +112,14 @@ s! {
     }
 
     pub struct ipc_perm {
+        #[cfg(musl_v1_2_3)]
+        pub __key: crate::key_t,
+        #[cfg(not(musl_v1_2_3))]
+        #[deprecated(
+            since = "0.2.173",
+            note = "This field is incorrectly named and will be changed
+                to __key in a future release."
+        )]
         pub __ipc_perm_key: crate::key_t,
         pub uid: crate::uid_t,
         pub gid: crate::gid_t,
@@ -194,23 +202,6 @@ cfg_if! {
 
         impl Eq for user_fpregs_struct {}
 
-        impl fmt::Debug for user_fpregs_struct {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("user_fpregs_struct")
-                    .field("cwd", &self.cwd)
-                    .field("ftw", &self.ftw)
-                    .field("fop", &self.fop)
-                    .field("rip", &self.rip)
-                    .field("rdp", &self.rdp)
-                    .field("mxcsr", &self.mxcsr)
-                    .field("mxcr_mask", &self.mxcr_mask)
-                    .field("st_space", &self.st_space)
-                    // FIXME(debug): .field("xmm_space", &self.xmm_space)
-                    // Ignore padding field
-                    .finish()
-            }
-        }
-
         impl hash::Hash for user_fpregs_struct {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.cwd.hash(state);
@@ -242,19 +233,6 @@ cfg_if! {
         }
 
         impl Eq for ucontext_t {}
-
-        impl fmt::Debug for ucontext_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ucontext_t")
-                    .field("uc_flags", &self.uc_flags)
-                    .field("uc_link", &self.uc_link)
-                    .field("uc_stack", &self.uc_stack)
-                    .field("uc_mcontext", &self.uc_mcontext)
-                    .field("uc_sigmask", &self.uc_sigmask)
-                    // Ignore __private field
-                    .finish()
-            }
-        }
 
         impl hash::Hash for ucontext_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -701,7 +679,7 @@ pub const MAP_32BIT: c_int = 0x0040;
 pub const O_APPEND: c_int = 1024;
 pub const O_DIRECT: c_int = 0x4000;
 pub const O_DIRECTORY: c_int = 0x10000;
-pub const O_LARGEFILE: c_int = 0;
+pub const O_LARGEFILE: c_int = 0o0100000;
 pub const O_NOFOLLOW: c_int = 0x20000;
 pub const O_CREAT: c_int = 64;
 pub const O_EXCL: c_int = 128;

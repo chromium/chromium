@@ -67,17 +67,26 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
+        #[cfg(not(gnu_time_bits64))]
         __pad2: c_ushort,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
         pub st_atime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _atime_pad: c_int,
         pub st_atime_nsec: c_long,
         pub st_mtime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _mtime_pad: c_int,
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _ctime_pad: c_int,
         pub st_ctime_nsec: c_long,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved4: c_ulong,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved5: c_ulong,
     }
 
@@ -89,17 +98,26 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
+        #[cfg(not(gnu_time_bits64))]
         __pad2: c_ushort,
         pub st_size: off64_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt64_t,
         pub st_atime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _atime_pad: c_int,
         pub st_atime_nsec: c_long,
         pub st_mtime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _mtime_pad: c_int,
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _ctime_pad: c_int,
         pub st_ctime_nsec: c_long,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved4: c_ulong,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved5: c_ulong,
     }
 
@@ -136,13 +154,20 @@ s! {
 
     pub struct shmid_ds {
         pub shm_perm: crate::ipc_perm,
+        #[cfg(gnu_time_bits64)]
+        pub shm_segsz: size_t,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved1: c_uint,
         pub shm_atime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved2: c_uint,
         pub shm_dtime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved3: c_uint,
         pub shm_ctime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved4: c_uint,
+        #[cfg(not(gnu_time_bits64))]
         pub shm_segsz: size_t,
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
@@ -153,10 +178,13 @@ s! {
 
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved1: c_uint,
         pub msg_stime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved2: c_uint,
         pub msg_rtime: crate::time_t,
+        #[cfg(not(gnu_time_bits64))]
         __glibc_reserved3: c_uint,
         pub msg_ctime: crate::time_t,
         pub __msg_cbytes: c_ulong,

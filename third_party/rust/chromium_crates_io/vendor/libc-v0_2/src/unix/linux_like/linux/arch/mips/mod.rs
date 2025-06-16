@@ -33,16 +33,17 @@ pub const SO_SNDBUF: c_int = 0x1001;
 pub const SO_RCVBUF: c_int = 0x1002;
 pub const SO_SNDLOWAT: c_int = 0x1003;
 pub const SO_RCVLOWAT: c_int = 0x1004;
-// NOTE: These definitions are now being renamed with _OLD postfix,
-// but CI haven't support them yet.
-// Some related consts could be found in b32.rs and b64.rs
-const SO_SNDTIMEO_OLD: c_int = 0x1005;
-const SO_RCVTIMEO_OLD: c_int = 0x1006;
 cfg_if! {
     if #[cfg(linux_time_bits64)] {
+        const SO_RCVTIMEO_NEW: c_int = 66;
+        const SO_SNDTIMEO_NEW: c_int = 67;
+
         pub const SO_SNDTIMEO: c_int = SO_SNDTIMEO_NEW;
         pub const SO_RCVTIMEO: c_int = SO_RCVTIMEO_NEW;
     } else {
+        const SO_SNDTIMEO_OLD: c_int = 0x1005;
+        const SO_RCVTIMEO_OLD: c_int = 0x1006;
+
         pub const SO_SNDTIMEO: c_int = SO_SNDTIMEO_OLD;
         pub const SO_RCVTIMEO: c_int = SO_RCVTIMEO_OLD;
     }
@@ -95,28 +96,27 @@ pub const SO_ZEROCOPY: c_int = 60;
 pub const SO_TXTIME: c_int = 61;
 pub const SCM_TXTIME: c_int = SO_TXTIME;
 pub const SO_BINDTOIFINDEX: c_int = 62;
-// NOTE: These definitions are now being renamed with _OLD postfix,
-// but CI haven't support them yet.
-// Some related consts could be found in b32.rs and b64.rs
-const SO_TIMESTAMP_OLD: c_int = 29;
-const SO_RCVTIMEO_NEW: c_int = 66;
-const SO_SNDTIMEO_NEW: c_int = 67;
-const SO_TIMESTAMPNS_OLD: c_int = 35;
-const SO_TIMESTAMPING_OLD: c_int = 37;
-const SO_TIMESTAMP_NEW: c_int = 63;
-const SO_TIMESTAMPNS_NEW: c_int = 64;
-const SO_TIMESTAMPING_NEW: c_int = 65;
+
 cfg_if! {
     if #[cfg(linux_time_bits64)] {
+        const SO_TIMESTAMP_NEW: c_int = 63;
+        const SO_TIMESTAMPNS_NEW: c_int = 64;
+        const SO_TIMESTAMPING_NEW: c_int = 65;
+
         pub const SO_TIMESTAMP: c_int = SO_TIMESTAMP_NEW;
         pub const SO_TIMESTAMPNS: c_int = SO_TIMESTAMPNS_NEW;
         pub const SO_TIMESTAMPING: c_int = SO_TIMESTAMPING_NEW;
     } else {
+        const SO_TIMESTAMP_OLD: c_int = 29;
+        const SO_TIMESTAMPNS_OLD: c_int = 35;
+        const SO_TIMESTAMPING_OLD: c_int = 37;
+
         pub const SO_TIMESTAMP: c_int = SO_TIMESTAMP_OLD;
         pub const SO_TIMESTAMPNS: c_int = SO_TIMESTAMPNS_OLD;
         pub const SO_TIMESTAMPING: c_int = SO_TIMESTAMPING_OLD;
     }
 }
+
 // pub const SO_DETACH_REUSEPORT_BPF: c_int = 68;
 pub const SO_PREFER_BUSY_POLL: c_int = 69;
 pub const SO_BUSY_POLL_BUDGET: c_int = 70;
@@ -130,9 +130,6 @@ pub const SO_PEERPIDFD: c_int = 77;
 pub const SO_DEVMEM_LINEAR: c_int = 78;
 pub const SO_DEVMEM_DMABUF: c_int = 79;
 pub const SO_DEVMEM_DONTNEED: c_int = 80;
-
-pub const FICLONE: c_ulong = 0x80049409;
-pub const FICLONERANGE: c_ulong = 0x8020940D;
 
 // Defined in unix/linux_like/mod.rs
 // pub const SCM_TIMESTAMP: c_int = SO_TIMESTAMP;
@@ -223,68 +220,6 @@ pub const BLKIOMIN: Ioctl = 0x20001278;
 pub const BLKIOOPT: Ioctl = 0x20001279;
 pub const BLKSSZGET: Ioctl = 0x20001268;
 pub const BLKPBSZGET: Ioctl = 0x2000127B;
-// linux/if_tun.h
-pub const TUNSETNOCSUM: Ioctl = 0x800454c8;
-pub const TUNSETDEBUG: Ioctl = 0x800454c9;
-pub const TUNSETIFF: Ioctl = 0x800454ca;
-pub const TUNSETPERSIST: Ioctl = 0x800454cb;
-pub const TUNSETOWNER: Ioctl = 0x800454cc;
-pub const TUNSETLINK: Ioctl = 0x800454cd;
-pub const TUNSETGROUP: Ioctl = 0x800454ce;
-pub const TUNGETFEATURES: Ioctl = 0x400454cf;
-pub const TUNSETOFFLOAD: Ioctl = 0x800454d0;
-pub const TUNSETTXFILTER: Ioctl = 0x800454d1;
-pub const TUNGETIFF: Ioctl = 0x400454d2;
-pub const TUNGETSNDBUF: Ioctl = 0x400454d3;
-pub const TUNSETSNDBUF: Ioctl = 0x800454d4;
-pub const TUNGETVNETHDRSZ: Ioctl = 0x400454d7;
-pub const TUNSETVNETHDRSZ: Ioctl = 0x800454d8;
-pub const TUNSETQUEUE: Ioctl = 0x800454d9;
-pub const TUNSETIFINDEX: Ioctl = 0x800454da;
-pub const TUNSETVNETLE: Ioctl = 0x800454dc;
-pub const TUNGETVNETLE: Ioctl = 0x400454dd;
-/* The TUNSETVNETBE and TUNGETVNETBE ioctls are for cross-endian support on
- * little-endian hosts. Not all kernel configurations support them, but all
- * configurations that support SET also support GET.
- */
-pub const TUNSETVNETBE: Ioctl = 0x800454de;
-pub const TUNGETVNETBE: Ioctl = 0x400454df;
-pub const TUNSETSTEERINGEBPF: Ioctl = 0x400454e0;
-pub const TUNSETFILTEREBPF: Ioctl = 0x400454e1;
-
-cfg_if! {
-    // Those type are constructed using the _IOC macro
-    // DD-SS_SSSS_SSSS_SSSS-TTTT_TTTT-NNNN_NNNN
-    // where D stands for direction (either None (00), Read (01) or Write (11))
-    // where S stands for size (int, long, struct...)
-    // where T stands for type ('f','v','X'...)
-    // where N stands for NR (NumbeR)
-    if #[cfg(any(target_arch = "mips", target_arch = "mips32r6"))] {
-        pub const FS_IOC_GETFLAGS: Ioctl = 0x40046601;
-        pub const FS_IOC_SETFLAGS: Ioctl = 0x80046602;
-        pub const FS_IOC_GETVERSION: Ioctl = 0x40047601;
-        pub const FS_IOC_SETVERSION: Ioctl = 0x80047602;
-        pub const FS_IOC32_GETFLAGS: Ioctl = 0x40046601;
-        pub const FS_IOC32_SETFLAGS: Ioctl = 0x80046602;
-        pub const FS_IOC32_GETVERSION: Ioctl = 0x40047601;
-        pub const FS_IOC32_SETVERSION: Ioctl = 0x80047602;
-        pub const TUNATTACHFILTER: Ioctl = 0x800854d5;
-        pub const TUNDETACHFILTER: Ioctl = 0x800854d6;
-        pub const TUNGETFILTER: Ioctl = 0x400854db;
-    } else if #[cfg(any(target_arch = "mips64", target_arch = "mips64r6"))] {
-        pub const FS_IOC_GETFLAGS: Ioctl = 0x40086601;
-        pub const FS_IOC_SETFLAGS: Ioctl = 0x80086602;
-        pub const FS_IOC_GETVERSION: Ioctl = 0x40087601;
-        pub const FS_IOC_SETVERSION: Ioctl = 0x80087602;
-        pub const FS_IOC32_GETFLAGS: Ioctl = 0x40046601;
-        pub const FS_IOC32_SETFLAGS: Ioctl = 0x80046602;
-        pub const FS_IOC32_GETVERSION: Ioctl = 0x40047601;
-        pub const FS_IOC32_SETVERSION: Ioctl = 0x80047602;
-        pub const TUNATTACHFILTER: Ioctl = 0x801054d5;
-        pub const TUNDETACHFILTER: Ioctl = 0x801054d6;
-        pub const TUNGETFILTER: Ioctl = 0x401054db;
-    }
-}
 
 cfg_if! {
     if #[cfg(target_env = "musl")] {
@@ -349,7 +284,7 @@ cfg_if! {
         pub const RLIMIT_RTPRIO: c_int = 14;
         pub const RLIMIT_RTTIME: c_int = 15;
         #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
-        pub const RLIM_NLIMITS: c_int = 15;
+        pub const RLIM_NLIMITS: c_int = 16;
         #[allow(deprecated)]
         #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
         pub const RLIMIT_NLIMITS: c_int = RLIM_NLIMITS;

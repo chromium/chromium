@@ -5,8 +5,12 @@ pub type wchar_t = i32;
 
 s! {
     pub struct stat {
+        #[cfg(not(gnu_time_bits64))]
         pub st_dev: c_ulong,
+        #[cfg(gnu_time_bits64)]
+        pub st_dev: crate::dev_t,
 
+        #[cfg(not(gnu_time_bits64))]
         st_pad1: [c_long; 3],
 
         pub st_ino: crate::ino_t,
@@ -16,11 +20,14 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
 
+        #[cfg(not(gnu_time_bits64))]
         pub st_rdev: c_ulong,
+        #[cfg(gnu_time_bits64)]
+        pub st_rdev: crate::dev_t,
 
         #[cfg(not(gnu_file_offset_bits64))]
         st_pad2: [c_long; 2],
-        #[cfg(gnu_file_offset_bits64)]
+        #[cfg(all(not(gnu_time_bits64), gnu_file_offset_bits64))]
         st_pad2: [c_long; 3],
 
         pub st_size: off_t,
@@ -28,40 +35,84 @@ s! {
         #[cfg(not(gnu_file_offset_bits64))]
         st_pad3: c_long,
 
+        #[cfg(gnu_time_bits64)]
+        pub st_blksize: crate::blksize_t,
+        #[cfg(gnu_time_bits64)]
+        pub st_blocks: crate::blkcnt_t,
+
         pub st_atime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _atime_pad: c_int,
         pub st_atime_nsec: c_long,
         pub st_mtime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _mtime_pad: c_int,
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _ctime_pad: c_int,
         pub st_ctime_nsec: c_long,
 
+        #[cfg(not(gnu_time_bits64))]
         pub st_blksize: crate::blksize_t,
-        #[cfg(gnu_file_offset_bits64)]
+        #[cfg(all(not(gnu_time_bits64), gnu_file_offset_bits64))]
         st_pad4: c_long,
+        #[cfg(not(gnu_time_bits64))]
         pub st_blocks: crate::blkcnt_t,
+        #[cfg(not(gnu_time_bits64))]
         st_pad5: [c_long; 14],
     }
 
     pub struct stat64 {
+        #[cfg(not(gnu_time_bits64))]
         pub st_dev: c_ulong,
+        #[cfg(gnu_time_bits64)]
+        pub st_dev: crate::dev_t,
+
+        #[cfg(not(gnu_time_bits64))]
         st_pad1: [c_long; 3],
+
         pub st_ino: crate::ino64_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
+
+        #[cfg(not(gnu_time_bits64))]
         pub st_rdev: c_ulong,
+        #[cfg(gnu_time_bits64)]
+        pub st_rdev: crate::dev_t,
+
+        #[cfg(not(gnu_time_bits64))]
         st_pad2: [c_long; 3],
+
         pub st_size: off64_t,
+
+        #[cfg(gnu_time_bits64)]
+        pub st_blksize: crate::blksize_t,
+        #[cfg(gnu_time_bits64)]
+        pub st_blocks: crate::blkcnt_t,
+
         pub st_atime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _atime_pad: c_int,
         pub st_atime_nsec: c_long,
         pub st_mtime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _mtime_pad: c_int,
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
+        #[cfg(gnu_time_bits64)]
+        _ctime_pad: c_int,
         pub st_ctime_nsec: c_long,
+
+        #[cfg(not(gnu_time_bits64))]
         pub st_blksize: crate::blksize_t,
+        #[cfg(not(gnu_time_bits64))]
         st_pad3: c_long,
+        #[cfg(not(gnu_time_bits64))]
         pub st_blocks: crate::blkcnt64_t,
+        #[cfg(not(gnu_time_bits64))]
         st_pad5: [c_long; 14],
     }
 
@@ -161,22 +212,22 @@ s! {
 
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
-        #[cfg(target_endian = "big")]
+        #[cfg(all(not(gnu_time_bits64), target_endian = "big"))]
         __glibc_reserved1: c_ulong,
         pub msg_stime: crate::time_t,
-        #[cfg(target_endian = "little")]
+        #[cfg(all(not(gnu_time_bits64), target_endian = "little"))]
         __glibc_reserved1: c_ulong,
-        #[cfg(target_endian = "big")]
+        #[cfg(all(not(gnu_time_bits64), target_endian = "big"))]
         __glibc_reserved2: c_ulong,
         pub msg_rtime: crate::time_t,
-        #[cfg(target_endian = "little")]
+        #[cfg(all(not(gnu_time_bits64), target_endian = "little"))]
         __glibc_reserved2: c_ulong,
-        #[cfg(target_endian = "big")]
+        #[cfg(all(not(gnu_time_bits64), target_endian = "big"))]
         __glibc_reserved3: c_ulong,
         pub msg_ctime: crate::time_t,
         #[cfg(target_endian = "little")]
         __glibc_reserved3: c_ulong,
-        pub __msg_cbytes: c_ulong,
+        __msg_cbytes: c_ulong,
         pub msg_qnum: crate::msgqnum_t,
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,

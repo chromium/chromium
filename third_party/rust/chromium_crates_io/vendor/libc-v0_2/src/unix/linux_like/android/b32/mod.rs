@@ -181,18 +181,6 @@ s_no_extra_traits! {
     }
 }
 
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl fmt::Debug for sigset64_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sigset64_t")
-                    .field("__bits", &self.__bits)
-                    .finish()
-            }
-        }
-    }
-}
-
 // These constants must be of the same type of sigaction.sa_flags
 pub const SA_NOCLDSTOP: c_int = 0x00000001;
 pub const SA_NOCLDWAIT: c_int = 0x00000002;

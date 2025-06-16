@@ -57,7 +57,6 @@ pub const O_LARGEFILE: c_int = 0x2000;
 pub const O_NDELAY: c_int = 0x80;
 
 pub const SOCK_NONBLOCK: c_int = 128;
-pub const PIDFD_NONBLOCK: c_int = 128;
 
 pub const EDEADLK: c_int = 45;
 pub const ENAMETOOLONG: c_int = 78;

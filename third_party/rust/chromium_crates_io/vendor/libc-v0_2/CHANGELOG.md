@@ -1,5 +1,42 @@
 # Changelog
 
+
+## [0.2.173](https://github.com/rust-lang/libc/compare/0.2.172...0.2.173) - 2025-06-09
+
+### Added
+
+- AIX: Add an AIX triple to Cargo.toml for doc ([#4475](https://github.com/rust-lang/libc/pull/4475))
+- FreeBSD: Add the `SO_SPLICE` socket option support for FreeBSD >= 14.2 ([#4451](https://github.com/rust-lang/libc/pull/4451))
+- Linux GNU: Prepare for supporting `_TIME_BITS=64` ([#4433](https://github.com/rust-lang/libc/pull/4433))
+- Linux: Add constant PACKET_IGNORE_OUTGOING ([#4319](https://github.com/rust-lang/libc/pull/4319))
+- Linux: Add constants and types for `nsfs` ioctls ([#4436](https://github.com/rust-lang/libc/pull/4436))
+- Linux: Add constants for Memory-Deny-Write-Execute `prctls` ([#4400](https://github.com/rust-lang/libc/pull/4400))
+- Linux: Add constants from `linux/cn_proc.h` and `linux/connector.h` ([#4434](https://github.com/rust-lang/libc/pull/4434))
+- Linux: Add new flags for `pwritev2` and `preadv2` ([#4452](https://github.com/rust-lang/libc/pull/4452))
+- Linux: Add pid_type enum values ([#4403](https://github.com/rust-lang/libc/pull/4403))
+- Linux: Update pidfd constants and types (Linux 6.9-6.15) ([#4402](https://github.com/rust-lang/libc/pull/4402))
+- Loongarch64 musl: Define the `MADV_SOFT_OFFLINE` constant ([#4448](https://github.com/rust-lang/libc/pull/4448))
+- Musl: Add new fields since 1.2.0/1.2.2 to `struct tcp_info` ([#4443](https://github.com/rust-lang/libc/pull/4443))
+- Musl: Prepare for supporting v1.2.3 ([#4443](https://github.com/rust-lang/libc/pull/4443))
+- NuttX: Add `arc4random` and `arc4random_buf` ([#4464](https://github.com/rust-lang/libc/pull/4464))
+- RISC-V Musl: Add `MADV_SOFT_OFFLINE` definition ([#4447](https://github.com/rust-lang/libc/pull/4447))
+- Redox: Define SCM_RIGHTS ([#4440](https://github.com/rust-lang/libc/pull/4440))
+- VxWorks: Add missing UTIME defines and TASK_RENAME_LENGTH ([#4407](https://github.com/rust-lang/libc/pull/4407))
+- Windows: Add more `time.h` functions ([#4427](https://github.com/rust-lang/libc/pull/4427))
+
+### Changed
+
+- Redox: Update `SA_` constants. ([#4426](https://github.com/rust-lang/libc/pull/4426))
+- Redox: make `CMSG_ALIGN`, `CMSG_LEN`, and `CMSG_SPACE` const functions ([#4441](https://github.com/rust-lang/libc/pull/4441))
+
+### Fixed
+
+- AIX: Enable libc-test and fix definitions/declarations. ([#4450](https://github.com/rust-lang/libc/pull/4450))
+- Emscripten: Fix querying emcc on windows (use emcc.bat) ([#4248](https://github.com/rust-lang/libc/pull/4248))
+- Hurd: Fix build from missing `fpos_t` ([#4472](https://github.com/rust-lang/libc/pull/4472))
+- Loongarch64 Musl: Fix the `struct ipc_perm` bindings ([#4384](https://github.com/rust-lang/libc/pull/4384))
+- Musl: Fix the `O_LARGEFILE` constant value. ([#4443](https://github.com/rust-lang/libc/pull/4443))
+
 ## [0.2.172](https://github.com/rust-lang/libc/compare/0.2.171...0.2.172) - 2025-04-14
 
 ### Added

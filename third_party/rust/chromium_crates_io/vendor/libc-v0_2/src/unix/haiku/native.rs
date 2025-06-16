@@ -520,15 +520,6 @@ cfg_if! {
         }
 
         impl Eq for cpu_topology_node_info {}
-        impl fmt::Debug for cpu_topology_node_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("cpu_topology_node_info")
-                    .field("id", &self.id)
-                    .field("type", &self.type_)
-                    .field("level", &self.level)
-                    .finish()
-            }
-        }
     }
 }
 

@@ -15,6 +15,7 @@ pub type __fsword_t = i32;
 pub type fsblkcnt64_t = u64;
 pub type fsfilcnt64_t = u64;
 pub type __syscall_ulong_t = c_ulong;
+pub type __suseconds64_t = i64;
 
 cfg_if! {
     if #[cfg(target_arch = "riscv32")] {
@@ -29,6 +30,18 @@ cfg_if! {
         pub type fsfilcnt_t = u64;
         pub type rlim_t = u64;
         pub type blksize_t = i64;
+    } else if #[cfg(gnu_time_bits64)] {
+        pub type time_t = i64;
+        pub type suseconds_t = i32;
+        type __ino_t = c_ulong;
+        type __ino64_t = u64;
+        pub type ino_t = __ino64_t;
+        pub type off_t = i64;
+        pub type blkcnt_t = i64;
+        pub type fsblkcnt_t = u64;
+        pub type fsfilcnt_t = u64;
+        pub type rlim_t = u64;
+        pub type blksize_t = i32;
     } else if #[cfg(gnu_file_offset_bits64)] {
         pub type time_t = i32;
         pub type suseconds_t = i32;
@@ -67,11 +80,12 @@ cfg_if! {
             pub struct stat {
                 pub st_dev: crate::dev_t,
 
+                #[cfg(not(gnu_time_bits64))]
                 __pad1: c_uint,
 
-                #[cfg(not(gnu_file_offset_bits64))]
+                #[cfg(any(gnu_time_bits64, not(gnu_file_offset_bits64)))]
                 pub st_ino: crate::ino_t,
-                #[cfg(all(gnu_file_offset_bits64))]
+                #[cfg(all(not(gnu_time_bits64), gnu_file_offset_bits64))]
                 __st_ino: __ino_t,
 
                 pub st_mode: crate::mode_t,
@@ -81,6 +95,7 @@ cfg_if! {
 
                 pub st_rdev: crate::dev_t,
 
+                #[cfg(not(gnu_time_bits64))]
                 __pad2: c_uint,
 
                 pub st_size: off_t,
@@ -90,16 +105,22 @@ cfg_if! {
 
                 pub st_atime: crate::time_t,
                 pub st_atime_nsec: c_long,
+                #[cfg(gnu_time_bits64)]
+                _atime_pad: c_int,
                 pub st_mtime: crate::time_t,
                 pub st_mtime_nsec: c_long,
+                #[cfg(gnu_time_bits64)]
+                _mtime_pad: c_int,
                 pub st_ctime: crate::time_t,
                 pub st_ctime_nsec: c_long,
+                #[cfg(gnu_time_bits64)]
+                _ctime_pad: c_int,
 
                 #[cfg(not(gnu_file_offset_bits64))]
                 __glibc_reserved4: c_long,
                 #[cfg(not(gnu_file_offset_bits64))]
                 __glibc_reserved5: c_long,
-                #[cfg(gnu_file_offset_bits64)]
+                #[cfg(all(not(gnu_time_bits64), gnu_file_offset_bits64))]
                 pub st_ino: crate::ino_t,
             }
         }
@@ -154,27 +175,113 @@ s! {
 
     pub struct semid_ds {
         pub sem_perm: ipc_perm,
-        #[cfg(target_arch = "powerpc")]
+        #[cfg(all(not(gnu_time_bits64), target_arch = "powerpc"))]
         __reserved: crate::__syscall_ulong_t,
         pub sem_otime: crate::time_t,
         #[cfg(not(any(
+            gnu_time_bits64,
             target_arch = "mips",
             target_arch = "mips32r6",
             target_arch = "powerpc"
         )))]
         __reserved: crate::__syscall_ulong_t,
-        #[cfg(target_arch = "powerpc")]
+        #[cfg(all(not(gnu_time_bits64), target_arch = "powerpc"))]
         __reserved2: crate::__syscall_ulong_t,
         pub sem_ctime: crate::time_t,
         #[cfg(not(any(
+            gnu_time_bits64,
             target_arch = "mips",
             target_arch = "mips32r6",
             target_arch = "powerpc"
         )))]
         __reserved2: crate::__syscall_ulong_t,
         pub sem_nsems: crate::__syscall_ulong_t,
+        #[cfg(all(
+            gnu_time_bits64,
+            not(any(
+                target_arch = "mips",
+                target_arch = "mips32r6",
+                target_arch = "powerpc",
+                target_arch = "arm",
+                target_arch = "x86"
+            ))
+        ))]
+        __reserved2: crate::__syscall_ulong_t,
         __glibc_reserved3: crate::__syscall_ulong_t,
         __glibc_reserved4: crate::__syscall_ulong_t,
+    }
+
+    #[cfg(gnu_time_bits64)]
+    pub struct timex {
+        pub modes: c_uint,
+        _pad1: c_int,
+        pub offset: c_longlong,
+        pub freq: c_longlong,
+        pub maxerror: c_longlong,
+        pub esterror: c_longlong,
+        pub status: c_int,
+        _pad2: c_int,
+        pub constant: c_longlong,
+        pub precision: c_longlong,
+        pub tolerance: c_longlong,
+        pub time: crate::timeval,
+        pub tick: c_longlong,
+        pub ppsfreq: c_longlong,
+        pub jitter: c_longlong,
+        pub shift: c_int,
+        _pad3: c_int,
+        pub stabil: c_longlong,
+        pub jitcnt: c_longlong,
+        pub calcnt: c_longlong,
+        pub errcnt: c_longlong,
+        pub stbcnt: c_longlong,
+        pub tai: c_int,
+        pub __unused1: i32,
+        pub __unused2: i32,
+        pub __unused3: i32,
+        pub __unused4: i32,
+        pub __unused5: i32,
+        pub __unused6: i32,
+        pub __unused7: i32,
+        pub __unused8: i32,
+        pub __unused9: i32,
+        pub __unused10: i32,
+        pub __unused11: i32,
+    }
+
+    #[cfg(not(gnu_time_bits64))]
+    pub struct timex {
+        pub modes: c_uint,
+        pub offset: c_long,
+        pub freq: c_long,
+        pub maxerror: c_long,
+        pub esterror: c_long,
+        pub status: c_int,
+        pub constant: c_long,
+        pub precision: c_long,
+        pub tolerance: c_long,
+        pub time: crate::timeval,
+        pub tick: c_long,
+        pub ppsfreq: c_long,
+        pub jitter: c_long,
+        pub shift: c_int,
+        pub stabil: c_long,
+        pub jitcnt: c_long,
+        pub calcnt: c_long,
+        pub errcnt: c_long,
+        pub stbcnt: c_long,
+        pub tai: c_int,
+        pub __unused1: i32,
+        pub __unused2: i32,
+        pub __unused3: i32,
+        pub __unused4: i32,
+        pub __unused5: i32,
+        pub __unused6: i32,
+        pub __unused7: i32,
+        pub __unused8: i32,
+        pub __unused9: i32,
+        pub __unused10: i32,
+        pub __unused11: i32,
     }
 }
 

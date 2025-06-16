@@ -246,6 +246,7 @@ pub const O_DIRECT: c_int = 16384;
 pub const O_DIRECTORY: c_int = 65536;
 pub const O_LARGEFILE: c_int = 0o0100000;
 pub const O_NOFOLLOW: c_int = 131072;
+pub const MADV_SOFT_OFFLINE: c_int = 101;
 pub const MAP_HUGETLB: c_int = 262144;
 pub const MAP_LOCKED: c_int = 8192;
 pub const MAP_NORESERVE: c_int = 16384;

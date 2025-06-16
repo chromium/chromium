@@ -29,7 +29,7 @@ s! {
         pub f_files: crate::fsfilcnt_t,
         pub f_ffree: crate::fsfilcnt_t,
         pub f_favail: crate::fsfilcnt_t,
-        pub f_fsid: c_ulong,
+        pub f_fsid: crate::fsid_t,
         pub f_basetype: [c_char; 16],
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
@@ -49,6 +49,10 @@ s! {
         __mt_word: [c_long; 8],
     }
 
+    pub struct pthread_once_t {
+        __on_word: [c_long; 9],
+    }
+
     pub struct stat {
         pub st_dev: crate::dev_t,
         pub st_ino: crate::ino_t,
@@ -59,9 +63,9 @@ s! {
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
         pub st_ssize: c_int,
-        pub st_atime: crate::st_timespec,
-        pub st_mtime: crate::st_timespec,
-        pub st_ctime: crate::st_timespec,
+        pub st_atim: crate::st_timespec,
+        pub st_mtim: crate::st_timespec,
+        pub st_ctim: crate::st_timespec,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
         pub st_vfstype: c_int,
@@ -112,20 +116,47 @@ s! {
         pub aio_sigev_tid: c_long,
     }
 
-    pub struct ucontext_t {
-        pub __sc_onstack: c_int,
-        pub uc_sigmask: crate::sigset_t,
-        pub __sc_uerror: c_int,
-        pub uc_mcontext: crate::mcontext_t,
-        pub uc_link: *mut ucontext_t,
-        pub uc_stack: crate::stack_t,
-        // Should be pointer to __extctx_t
-        pub __extctx: *mut c_void,
-        pub __extctx_magic: c_int,
-        pub __pad: [c_int; 1],
+    pub struct __vmxreg_t {
+        __v: [c_uint; 4],
     }
 
-    pub struct mcontext_t {
+    pub struct __vmx_context_t {
+        pub __vr: [crate::__vmxreg_t; 32],
+        pub __pad1: [c_uint; 3],
+        pub __vscr: c_uint,
+        pub __vrsave: c_uint,
+        pub __pad2: [c_uint; 3],
+    }
+
+    pub struct __vsx_context_t {
+        pub __vsr_dw1: [c_ulonglong; 32],
+    }
+
+    pub struct __tm_context_t {
+        pub vmx: crate::__vmx_context_t,
+        pub vsx: crate::__vsx_context_t,
+        pub gpr: [c_ulonglong; 32],
+        pub lr: c_ulonglong,
+        pub ctr: c_ulonglong,
+        pub cr: c_uint,
+        pub xer: c_uint,
+        pub amr: c_ulonglong,
+        pub texasr: c_ulonglong,
+        pub tfiar: c_ulonglong,
+        pub tfhar: c_ulonglong,
+        pub ppr: c_ulonglong,
+        pub dscr: c_ulonglong,
+        pub tar: c_ulonglong,
+        pub fpscr: c_uint,
+        pub fpscrx: c_uint,
+        pub fpr: [fpreg_t; 32],
+        pub tmcontext: c_char,
+        pub tmstate: c_char,
+        pub prevowner: c_char,
+        pub pad: [c_char; 5],
+    }
+
+    pub struct __context64 {
         pub gpr: [c_ulonglong; 32],
         pub msr: c_ulonglong,
         pub iar: c_ulonglong,
@@ -136,13 +167,39 @@ s! {
         pub fpscr: c_uint,
         pub fpscrx: c_uint,
         pub except: [c_ulonglong; 1],
-        // Should be array of double type
-        pub fpr: [crate::uint64_t; 32],
+        pub fpr: [fpreg_t; 32],
         pub fpeu: c_char,
         pub fpinfo: c_char,
         pub fpscr24_31: c_char,
         pub pad: [c_char; 1],
         pub excp_type: c_int,
+    }
+
+    pub struct mcontext_t {
+        pub jmp_context: __context64,
+    }
+
+    pub struct __extctx_t {
+        pub __flags: c_uint,
+        pub __rsvd1: [c_uint; 3],
+        pub __vmx: crate::__vmx_context_t,
+        pub __ukeys: [c_uint; 2],
+        pub __vsx: crate::__vsx_context_t,
+        pub __tm: crate::__tm_context_t,
+        pub __reserved: [c_char; 1860],
+        pub __extctx_magic: c_int,
+    }
+
+    pub struct ucontext_t {
+        pub __sc_onstack: c_int,
+        pub uc_sigmask: crate::sigset_t,
+        pub __sc_uerror: c_int,
+        pub uc_mcontext: crate::mcontext_t,
+        pub uc_link: *mut ucontext_t,
+        pub uc_stack: crate::stack_t,
+        pub __extctx: *mut crate::__extctx_t,
+        pub __extctx_magic: c_int,
+        pub __pad: [c_int; 1],
     }
 
     pub struct utmpx {
@@ -199,70 +256,6 @@ s_no_extra_traits! {
         pub __pad: [c_int; 3],
     }
 
-    pub union _kernel_simple_lock {
-        pub _slock: c_long,
-        // Should be pointer to 'lock_data_instrumented'
-        pub _slockp: *mut c_void,
-    }
-
-    pub struct fileops_t {
-        pub fo_rw: extern "C" fn(
-            file: *mut file,
-            rw: crate::uio_rw,
-            io: *mut c_void,
-            ext: c_long,
-            secattr: *mut c_void,
-        ) -> c_int,
-        pub fo_ioctl: extern "C" fn(
-            file: *mut file,
-            a: c_long,
-            b: crate::caddr_t,
-            c: c_long,
-            d: c_long,
-        ) -> c_int,
-        pub fo_select:
-            extern "C" fn(file: *mut file, a: c_int, b: *mut c_ushort, c: extern "C" fn()) -> c_int,
-        pub fo_close: extern "C" fn(file: *mut file) -> c_int,
-        pub fo_fstat: extern "C" fn(file: *mut file, sstat: *mut crate::stat) -> c_int,
-    }
-
-    pub struct file {
-        pub f_flag: c_long,
-        pub f_count: c_int,
-        pub f_options: c_short,
-        pub f_type: c_short,
-        // Should be pointer to 'vnode'
-        pub f_data: *mut c_void,
-        pub f_offset: c_longlong,
-        pub f_dir_off: c_long,
-        // Should be pointer to 'cred'
-        pub f_cred: *mut c_void,
-        pub f_lock: _kernel_simple_lock,
-        pub f_offset_lock: _kernel_simple_lock,
-        pub f_vinfo: crate::caddr_t,
-        pub f_ops: *mut fileops_t,
-        pub f_parentp: crate::caddr_t,
-        pub f_fnamep: crate::caddr_t,
-        pub f_fdata: [c_char; 160],
-    }
-
-    pub union __ld_info_file {
-        pub _ldinfo_fd: c_int,
-        pub _ldinfo_fp: *mut file,
-        pub _core_offset: c_long,
-    }
-
-    pub struct ld_info {
-        pub ldinfo_next: c_uint,
-        pub ldinfo_flags: c_uint,
-        pub _file: __ld_info_file,
-        pub ldinfo_textorg: *mut c_void,
-        pub ldinfo_textsize: c_ulong,
-        pub ldinfo_dataorg: *mut c_void,
-        pub ldinfo_datasize: c_ulong,
-        pub ldinfo_filename: [c_char; 2],
-    }
-
     pub union __pollfd_ext_u {
         pub addr: *mut c_void,
         pub data32: u32,
@@ -271,9 +264,13 @@ s_no_extra_traits! {
 
     pub struct pollfd_ext {
         pub fd: c_int,
-        pub events: c_ushort,
-        pub revents: c_ushort,
+        pub events: c_short,
+        pub revents: c_short,
         pub data: __pollfd_ext_u,
+    }
+
+    pub struct fpreg_t {
+        pub d: c_double,
     }
 }
 
@@ -316,22 +313,6 @@ cfg_if! {
             }
         }
         impl Eq for siginfo_t {}
-        impl fmt::Debug for siginfo_t {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                f.debug_struct("siginfo_t")
-                    .field("si_signo", &self.si_signo)
-                    .field("si_errno", &self.si_errno)
-                    .field("si_code", &self.si_code)
-                    .field("si_pid", &self.si_pid)
-                    .field("si_uid", &self.si_uid)
-                    .field("si_status", &self.si_status)
-                    .field("si_addr", &self.si_addr)
-                    .field("si_band", &self.si_band)
-                    .field("si_value", &self.si_value)
-                    .field("__si_flags", &self.__si_flags)
-                    .finish()
-            }
-        }
         impl hash::Hash for siginfo_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.si_signo.hash(state);
@@ -346,174 +327,6 @@ cfg_if! {
                 self.__si_flags.hash(state);
             }
         }
-
-        impl PartialEq for _kernel_simple_lock {
-            fn eq(&self, other: &_kernel_simple_lock) -> bool {
-                unsafe { self._slock == other._slock && self._slockp == other._slockp }
-            }
-        }
-        impl Eq for _kernel_simple_lock {}
-        impl hash::Hash for _kernel_simple_lock {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                unsafe {
-                    self._slock.hash(state);
-                    self._slockp.hash(state);
-                }
-            }
-        }
-
-        impl PartialEq for fileops_t {
-            fn eq(&self, other: &fileops_t) -> bool {
-                self.fo_rw == other.fo_rw
-                    && self.fo_ioctl == other.fo_ioctl
-                    && self.fo_select == other.fo_select
-                    && self.fo_close == other.fo_close
-                    && self.fo_fstat == other.fo_fstat
-            }
-        }
-        impl Eq for fileops_t {}
-        impl fmt::Debug for fileops_t {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                f.debug_struct("fileops_t")
-                    .field("fo_rw", &self.fo_rw)
-                    .field("fo_ioctl", &self.fo_ioctl)
-                    .field("fo_select", &self.fo_select)
-                    .field("fo_close", &self.fo_close)
-                    .field("fo_fstat", &self.fo_fstat)
-                    .finish()
-            }
-        }
-        impl hash::Hash for fileops_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.fo_rw.hash(state);
-                self.fo_ioctl.hash(state);
-                self.fo_select.hash(state);
-                self.fo_close.hash(state);
-                self.fo_fstat.hash(state);
-            }
-        }
-
-        impl PartialEq for file {
-            fn eq(&self, other: &file) -> bool {
-                self.f_flag == other.f_flag
-                    && self.f_count == other.f_count
-                    && self.f_options == other.f_options
-                    && self.f_type == other.f_type
-                    && self.f_data == other.f_data
-                    && self.f_offset == other.f_offset
-                    && self.f_dir_off == other.f_dir_off
-                    && self.f_cred == other.f_cred
-                    && self.f_vinfo == other.f_vinfo
-                    && self.f_ops == other.f_ops
-                    && self.f_parentp == other.f_parentp
-                    && self.f_fnamep == other.f_fnamep
-                    && self.f_fdata == other.f_fdata
-                    && self.f_lock == other.f_lock
-                    && self.f_offset_lock == other.f_offset_lock
-            }
-        }
-        impl Eq for file {}
-        impl fmt::Debug for file {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                f.debug_struct("file")
-                    .field("f_flag", &self.f_flag)
-                    .field("f_count", &self.f_count)
-                    .field("f_options", &self.f_options)
-                    .field("f_type", &self.f_type)
-                    .field("f_data", &self.f_data)
-                    .field("f_offset", &self.f_offset)
-                    .field("f_dir_off", &self.f_dir_off)
-                    .field("f_cred", &self.f_cred)
-                    .field("f_lock", &self.f_lock)
-                    .field("f_offset_lock", &self.f_offset_lock)
-                    .field("f_vinfo", &self.f_vinfo)
-                    .field("f_ops", &self.f_ops)
-                    .field("f_parentp", &self.f_parentp)
-                    .field("f_fnamep", &self.f_fnamep)
-                    .field("f_fdata", &self.f_fdata)
-                    .finish()
-            }
-        }
-        impl hash::Hash for file {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.f_flag.hash(state);
-                self.f_count.hash(state);
-                self.f_options.hash(state);
-                self.f_type.hash(state);
-                self.f_data.hash(state);
-                self.f_offset.hash(state);
-                self.f_dir_off.hash(state);
-                self.f_cred.hash(state);
-                self.f_lock.hash(state);
-                self.f_offset_lock.hash(state);
-                self.f_vinfo.hash(state);
-                self.f_ops.hash(state);
-                self.f_parentp.hash(state);
-                self.f_fnamep.hash(state);
-                self.f_fdata.hash(state);
-            }
-        }
-
-        impl PartialEq for __ld_info_file {
-            fn eq(&self, other: &__ld_info_file) -> bool {
-                unsafe {
-                    self._ldinfo_fd == other._ldinfo_fd
-                        && self._ldinfo_fp == other._ldinfo_fp
-                        && self._core_offset == other._core_offset
-                }
-            }
-        }
-        impl Eq for __ld_info_file {}
-        impl hash::Hash for __ld_info_file {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                unsafe {
-                    self._ldinfo_fd.hash(state);
-                    self._ldinfo_fp.hash(state);
-                    self._core_offset.hash(state);
-                }
-            }
-        }
-
-        impl PartialEq for ld_info {
-            fn eq(&self, other: &ld_info) -> bool {
-                self.ldinfo_next == other.ldinfo_next
-                    && self.ldinfo_flags == other.ldinfo_flags
-                    && self.ldinfo_textorg == other.ldinfo_textorg
-                    && self.ldinfo_textsize == other.ldinfo_textsize
-                    && self.ldinfo_dataorg == other.ldinfo_dataorg
-                    && self.ldinfo_datasize == other.ldinfo_datasize
-                    && self.ldinfo_filename == other.ldinfo_filename
-                    && self._file == other._file
-            }
-        }
-        impl Eq for ld_info {}
-        impl fmt::Debug for ld_info {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                f.debug_struct("ld_info")
-                    .field("ldinfo_next", &self.ldinfo_next)
-                    .field("ldinfo_flags", &self.ldinfo_flags)
-                    .field("ldinfo_textorg", &self.ldinfo_textorg)
-                    .field("ldinfo_textsize", &self.ldinfo_textsize)
-                    .field("ldinfo_dataorg", &self.ldinfo_dataorg)
-                    .field("ldinfo_datasize", &self.ldinfo_datasize)
-                    .field("ldinfo_filename", &self.ldinfo_filename)
-                    .field("_file", &self._file)
-                    .finish()
-            }
-        }
-        impl hash::Hash for ld_info {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ldinfo_next.hash(state);
-                self.ldinfo_flags.hash(state);
-                self.ldinfo_textorg.hash(state);
-                self.ldinfo_textsize.hash(state);
-                self.ldinfo_dataorg.hash(state);
-                self.ldinfo_datasize.hash(state);
-                self.ldinfo_filename.hash(state);
-                self._file.hash(state);
-            }
-        }
-
         impl PartialEq for __pollfd_ext_u {
             fn eq(&self, other: &__pollfd_ext_u) -> bool {
                 unsafe {
@@ -543,22 +356,26 @@ cfg_if! {
             }
         }
         impl Eq for pollfd_ext {}
-        impl fmt::Debug for pollfd_ext {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                f.debug_struct("pollfd_ext")
-                    .field("fd", &self.fd)
-                    .field("events", &self.events)
-                    .field("revents", &self.revents)
-                    .field("data", &self.data)
-                    .finish()
-            }
-        }
         impl hash::Hash for pollfd_ext {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.fd.hash(state);
                 self.events.hash(state);
                 self.revents.hash(state);
                 self.data.hash(state);
+            }
+        }
+        impl PartialEq for fpreg_t {
+            fn eq(&self, other: &fpreg_t) -> bool {
+                self.d == other.d
+            }
+        }
+
+        impl Eq for fpreg_t {}
+
+        impl hash::Hash for fpreg_t {
+            fn hash<H: hash::Hasher>(&self, state: &mut H) {
+                let d: u64 = unsafe { mem::transmute(self.d) };
+                d.hash(state);
             }
         }
     }
@@ -573,6 +390,11 @@ pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = pthread_cond_t {
 pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
     __rw_word: [2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 };
+
+pub const PTHREAD_ONCE_INIT: pthread_once_t = pthread_once_t {
+    __on_word: [0, 0, 0, 0, 0, 2, 0, 0, 0],
+};
+
 pub const RLIM_INFINITY: c_ulong = 0x7fffffffffffffff;
 
 extern "C" {

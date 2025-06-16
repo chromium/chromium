@@ -1,21 +1,15 @@
 [package]
 name = "libc"
-version = "0.2.172"
-authors = ["The Rust Project Developers"]
-license = "MIT OR Apache-2.0"
-readme = "README.md"
-edition = "2021"
-repository = "https://github.com/rust-lang/libc"
-homepage = "https://github.com/rust-lang/libc"
-documentation = "https://docs.rs/libc/"
+version = "0.2.173"
 keywords = ["libc", "ffi", "bindings", "operating", "system"]
 categories = ["external-ffi-bindings", "no-std", "os"]
-build = "build.rs"
 exclude = ["/ci/*", "/.github/*", "/.cirrus.yml", "/triagebot.toml"]
+description = "Raw FFI bindings to platform libraries like libc."
+authors = ["The Rust Project Developers"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/rust-lang/libc"
 rust-version = "1.63"
-description = """
-Raw FFI bindings to platform libraries like libc.
-"""
 
 [package.metadata.docs.rs]
 features = ["extra_traits"]
@@ -78,6 +72,7 @@ targets = [
     "powerpc-unknown-netbsd",
     "powerpc-wrs-vxworks",
     "powerpc-wrs-vxworks-spe",
+    "powerpc64-ibm-aix",
     "powerpc64-unknown-freebsd",
     "powerpc64-unknown-linux-gnu",
     "powerpc64-wrs-vxworks",
@@ -153,5 +148,33 @@ use_std = ['std']
 [workspace]
 members = [
     "ctest",
+    "ctest-next",
     "libc-test",
 ]
+
+# FIXME(msrv): These should be renamed as `[workspace.lints.*]` once MSRV is above 1.64
+#       This way all crates can use it with `[lints] workspace=true` section
+
+[lints.rust]
+# FIXME(cleanup): make ident usage consistent in each file
+unused_qualifications = "allow"
+
+[lints.clippy]
+# Enable pedantic lints - use this manually once in a while, but don't enable by default
+# pedantic = { level = "warn", priority = -1 }
+
+# We are okay with the current state of these lints
+explicit_iter_loop = "warn"
+identity_op = "allow"  # some expressions like `0 | x` are clearer for bit ops
+manual_assert = "warn"
+map_unwrap_or = "warn"
+missing_safety_doc = "allow"  # safety? in libc? seriously?
+non_minimal_cfg = "allow"  # for some reason cfg_if! sometimes trigger this
+ptr_as_ptr = "warn"
+unnecessary_semicolon = "warn"
+
+# FIXME(clippy): these should be fixed if possible
+expl_impl_clone_on_copy = "allow"
+uninlined_format_args = "allow"
+unnecessary_cast = "allow"  # some casts like `as usize` are only needed for some targets
+used_underscore_binding = "allow"

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "libc"
-version = "0.2.172"
+version = "0.2.173"
 authors = ["The Rust Project Developers"]
 build = "build.rs"
 exclude = [
@@ -27,11 +27,7 @@ autobins = false
 autoexamples = false
 autotests = false
 autobenches = false
-description = """
-Raw FFI bindings to platform libraries like libc.
-"""
-homepage = "https://github.com/rust-lang/libc"
-documentation = "https://docs.rs/libc/"
+description = "Raw FFI bindings to platform libraries like libc."
 readme = "README.md"
 keywords = [
     "libc",
@@ -108,6 +104,7 @@ targets = [
     "powerpc-unknown-netbsd",
     "powerpc-wrs-vxworks",
     "powerpc-wrs-vxworks-spe",
+    "powerpc64-ibm-aix",
     "powerpc64-unknown-freebsd",
     "powerpc64-unknown-linux-gnu",
     "powerpc64-wrs-vxworks",
@@ -184,3 +181,20 @@ path = "tests/const_fn.rs"
 [dependencies.rustc-std-workspace-core]
 version = "1.0.0"
 optional = true
+
+[lints.clippy]
+expl_impl_clone_on_copy = "allow"
+explicit_iter_loop = "warn"
+identity_op = "allow"
+manual_assert = "warn"
+map_unwrap_or = "warn"
+missing_safety_doc = "allow"
+non_minimal_cfg = "allow"
+ptr_as_ptr = "warn"
+uninlined_format_args = "allow"
+unnecessary_cast = "allow"
+unnecessary_semicolon = "warn"
+used_underscore_binding = "allow"
+
+[lints.rust]
+unused_qualifications = "allow"

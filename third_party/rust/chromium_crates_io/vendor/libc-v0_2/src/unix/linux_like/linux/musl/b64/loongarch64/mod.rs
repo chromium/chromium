@@ -7,8 +7,6 @@ pub type wchar_t = c_int;
 
 pub type nlink_t = c_uint;
 pub type blksize_t = c_int;
-pub type fsblkcnt64_t = c_ulong;
-pub type fsfilcnt64_t = c_ulong;
 pub type __u64 = c_ulonglong;
 pub type __s64 = c_longlong;
 
@@ -65,7 +63,6 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: c_uint,
         pub __seq: c_int,
-        __pad2: c_ushort,
         __unused1: c_ulong,
         __unused2: c_ulong,
     }
@@ -532,6 +529,8 @@ pub const EOWNERDEAD: c_int = 130;
 pub const ENOTRECOVERABLE: c_int = 131;
 pub const EHWPOISON: c_int = 133;
 pub const ERFKILL: c_int = 132;
+
+pub const MADV_SOFT_OFFLINE: c_int = 101;
 
 pub const SA_ONSTACK: c_int = 0x08000000;
 pub const SA_SIGINFO: c_int = 0x00000004;

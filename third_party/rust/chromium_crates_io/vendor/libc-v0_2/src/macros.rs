@@ -141,7 +141,8 @@ macro_rules! s_paren {
     )*);
 }
 
-/// Implement `Clone` and `Copy` for a struct with no `extra_traits` feature.
+/// Implement `Clone` and `Copy` for a struct with no `extra_traits` feature, as well as `Debug`
+/// with `extra_traits` since that can always be derived.
 ///
 /// Most items will prefer to use [`s`].
 macro_rules! s_no_extra_traits {
@@ -172,6 +173,7 @@ macro_rules! s_no_extra_traits {
         __item! {
             #[repr(C)]
             #[::core::prelude::v1::derive(::core::clone::Clone, ::core::marker::Copy)]
+            #[cfg_attr(feature = "extra_traits", ::core::prelude::v1::derive(Debug))]
             $(#[$attr])*
             pub struct $i { $($field)* }
         }
@@ -193,6 +195,7 @@ macro_rules! missing {
 
 /// Implement `Clone` and `Copy` for an enum, as well as `Debug`, `Eq`, `Hash`, and
 /// `PartialEq` if the `extra_traits` feature is enabled.
+// FIXME(#4419): Replace all uses of `e!` with `c_enum!`
 macro_rules! e {
     ($(
         $(#[$attr:meta])*
@@ -208,6 +211,48 @@ macro_rules! e {
             pub enum $i { $($field)* }
         }
     )*);
+}
+
+/// Represent a C enum as Rust constants and a type.
+///
+/// C enums can't soundly be mapped to Rust enums since C enums are allowed to have duplicates or
+/// unlisted values, but this is UB in Rust. This enum doesn't implement any traits, its main
+/// purpose is to calculate the correct enum values.
+///
+/// See <https://github.com/rust-lang/libc/issues/4419> for more.
+macro_rules! c_enum {
+    (
+        $(#[repr($repr:ty)])?
+        $ty_name:ident {
+            $($variant:ident $(= $value:literal)?,)+
+        }
+    ) => {
+        pub type $ty_name = c_enum!(@ty $($repr)?);
+        c_enum!(@one; $ty_name; 0; $($variant $(= $value)?,)+);
+    };
+
+    // Matcher for a single variant
+    (@one; $_ty_name:ident; $_idx:expr;) => {};
+    (
+        @one; $ty_name:ident; $default_val:expr;
+        $variant:ident $(= $value:literal)?,
+        $($tail:tt)*
+    ) => {
+        pub const $variant: $ty_name = {
+            #[allow(unused_variables)]
+            let r = $default_val;
+            $(let r = $value;)?
+            r
+        };
+
+        // The next value is always one more than the previous value, unless
+        // set explicitly.
+        c_enum!(@one; $ty_name; $variant + 1; $($tail)*);
+    };
+
+    // Use a specific type if provided, otherwise default to `c_uint`
+    (@ty $repr:ty) => { $repr };
+    (@ty) => { $crate::c_uint };
 }
 
 // This is a pretty horrible hack to allow us to conditionally mark some functions as 'const',
@@ -357,5 +402,78 @@ macro_rules! deprecated_mach {
                 pub type $id = $ty;
             );
         )*
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn c_enumbasic() {
+        // By default, variants get sequential values.
+        c_enum! {
+            e {
+                VAR0,
+                VAR1,
+                VAR2,
+            }
+        }
+
+        assert_eq!(VAR0, 0_u32);
+        assert_eq!(VAR1, 1_u32);
+        assert_eq!(VAR2, 2_u32);
+    }
+
+    #[test]
+    fn c_enumrepr() {
+        // By default, variants get sequential values.
+        c_enum! {
+            #[repr(u16)]
+            e {
+                VAR0,
+            }
+        }
+
+        assert_eq!(VAR0, 0_u16);
+    }
+
+    #[test]
+    fn c_enumset_value() {
+        // Setting an explicit value resets the count.
+        c_enum! {
+            e {
+                VAR2 = 2,
+                VAR3,
+                VAR4,
+            }
+        }
+
+        assert_eq!(VAR2, 2_u32);
+        assert_eq!(VAR3, 3_u32);
+        assert_eq!(VAR4, 4_u32);
+    }
+
+    #[test]
+    fn c_enummultiple_set_value() {
+        // C enums always take one more than the previous value, unless set to a specific
+        // value. Duplicates are allowed.
+        c_enum! {
+            e {
+                VAR0,
+                VAR2_0 = 2,
+                VAR3_0,
+                VAR4_0,
+                VAR2_1 = 2,
+                VAR3_1,
+                VAR4_1,
+            }
+        }
+
+        assert_eq!(VAR0, 0_u32);
+        assert_eq!(VAR2_0, 2_u32);
+        assert_eq!(VAR3_0, 3_u32);
+        assert_eq!(VAR4_0, 4_u32);
+        assert_eq!(VAR2_1, 2_u32);
+        assert_eq!(VAR3_1, 3_u32);
+        assert_eq!(VAR4_1, 4_u32);
     }
 }

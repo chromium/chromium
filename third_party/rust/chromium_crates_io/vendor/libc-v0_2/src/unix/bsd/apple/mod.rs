@@ -775,7 +775,7 @@ s! {
         pub gid: crate::gid_t,
         pub cuid: crate::uid_t,
         pub cgid: crate::gid_t,
-        pub mode: crate::mode_t,
+        pub mode: mode_t,
         pub _seq: c_ushort,
         pub _key: crate::key_t,
     }
@@ -1691,7 +1691,7 @@ impl siginfo_t {
             si_value: crate::sigval,
         }
 
-        (*(self as *const siginfo_t as *const siginfo_timer)).si_value
+        (*(self as *const siginfo_t).cast::<siginfo_timer>()).si_value
     }
 
     pub unsafe fn si_pid(&self) -> crate::pid_t {
@@ -1753,11 +1753,6 @@ cfg_if! {
             }
         }
         impl Eq for ifconf {}
-        impl fmt::Debug for ifconf {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ifconf").finish_non_exhaustive()
-            }
-        }
 
         impl PartialEq for kevent {
             fn eq(&self, other: &kevent) -> bool {
@@ -1770,24 +1765,6 @@ cfg_if! {
             }
         }
         impl Eq for kevent {}
-        impl fmt::Debug for kevent {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let ident = self.ident;
-                let filter = self.filter;
-                let flags = self.flags;
-                let fflags = self.fflags;
-                let data = self.data;
-                let udata = self.udata;
-                f.debug_struct("kevent")
-                    .field("ident", &ident)
-                    .field("filter", &filter)
-                    .field("flags", &flags)
-                    .field("fflags", &fflags)
-                    .field("data", &data)
-                    .field("udata", &udata)
-                    .finish()
-            }
-        }
         impl hash::Hash for kevent {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let ident = self.ident;
@@ -1822,28 +1799,6 @@ cfg_if! {
             }
         }
         impl Eq for semid_ds {}
-        impl fmt::Debug for semid_ds {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let sem_perm = self.sem_perm;
-                let sem_base = self.sem_base;
-                let sem_nsems = self.sem_nsems;
-                let sem_otime = self.sem_otime;
-                let sem_pad1 = self.sem_pad1;
-                let sem_ctime = self.sem_ctime;
-                let sem_pad2 = self.sem_pad2;
-                let sem_pad3 = self.sem_pad3;
-                f.debug_struct("semid_ds")
-                    .field("sem_perm", &sem_perm)
-                    .field("sem_base", &sem_base)
-                    .field("sem_nsems", &sem_nsems)
-                    .field("sem_otime", &sem_otime)
-                    .field("sem_pad1", &sem_pad1)
-                    .field("sem_ctime", &sem_ctime)
-                    .field("sem_pad2", &sem_pad2)
-                    .field("sem_pad3", &sem_pad3)
-                    .finish()
-            }
-        }
         impl hash::Hash for semid_ds {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let sem_perm = self.sem_perm;
@@ -1881,30 +1836,6 @@ cfg_if! {
             }
         }
         impl Eq for shmid_ds {}
-        impl fmt::Debug for shmid_ds {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let shm_perm = self.shm_perm;
-                let shm_segsz = self.shm_segsz;
-                let shm_lpid = self.shm_lpid;
-                let shm_cpid = self.shm_cpid;
-                let shm_nattch = self.shm_nattch;
-                let shm_atime = self.shm_atime;
-                let shm_dtime = self.shm_dtime;
-                let shm_ctime = self.shm_ctime;
-                let shm_internal = self.shm_internal;
-                f.debug_struct("shmid_ds")
-                    .field("shm_perm", &shm_perm)
-                    .field("shm_segsz", &shm_segsz)
-                    .field("shm_lpid", &shm_lpid)
-                    .field("shm_cpid", &shm_cpid)
-                    .field("shm_nattch", &shm_nattch)
-                    .field("shm_atime", &shm_atime)
-                    .field("shm_dtime", &shm_dtime)
-                    .field("shm_ctime", &shm_ctime)
-                    .field("shm_internal", &shm_internal)
-                    .finish()
-            }
-        }
         impl hash::Hash for shmid_ds {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let shm_perm = self.shm_perm;
@@ -1948,23 +1879,6 @@ cfg_if! {
             }
         }
         impl Eq for proc_threadinfo {}
-        impl fmt::Debug for proc_threadinfo {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("proc_threadinfo")
-                    .field("pth_user_time", &self.pth_user_time)
-                    .field("pth_system_time", &self.pth_system_time)
-                    .field("pth_cpu_usage", &self.pth_cpu_usage)
-                    .field("pth_policy", &self.pth_policy)
-                    .field("pth_run_state", &self.pth_run_state)
-                    .field("pth_flags", &self.pth_flags)
-                    .field("pth_sleep_time", &self.pth_sleep_time)
-                    .field("pth_curpri", &self.pth_curpri)
-                    .field("pth_priority", &self.pth_priority)
-                    .field("pth_maxpriority", &self.pth_maxpriority)
-                    // FIXME(debug): .field("pth_name", &self.pth_name)
-                    .finish()
-            }
-        }
         impl hash::Hash for proc_threadinfo {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.pth_user_time.hash(state);
@@ -2011,28 +1925,6 @@ cfg_if! {
         }
 
         impl Eq for statfs {}
-        impl fmt::Debug for statfs {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("statfs")
-                    .field("f_bsize", &self.f_bsize)
-                    .field("f_iosize", &self.f_iosize)
-                    .field("f_blocks", &self.f_blocks)
-                    .field("f_bfree", &self.f_bfree)
-                    .field("f_bavail", &self.f_bavail)
-                    .field("f_files", &self.f_files)
-                    .field("f_ffree", &self.f_ffree)
-                    .field("f_fsid", &self.f_fsid)
-                    .field("f_owner", &self.f_owner)
-                    .field("f_flags", &self.f_flags)
-                    .field("f_fssubtype", &self.f_fssubtype)
-                    .field("f_fstypename", &self.f_fstypename)
-                    .field("f_type", &self.f_type)
-                    // FIXME(debug): .field("f_mntonname", &self.f_mntonname)
-                    // FIXME(debug): .field("f_mntfromname", &self.f_mntfromname)
-                    .field("f_reserved", &self.f_reserved)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for statfs {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -2070,18 +1962,6 @@ cfg_if! {
             }
         }
         impl Eq for dirent {}
-        impl fmt::Debug for dirent {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("dirent")
-                    .field("d_ino", &self.d_ino)
-                    .field("d_seekoff", &self.d_seekoff)
-                    .field("d_reclen", &self.d_reclen)
-                    .field("d_namlen", &self.d_namlen)
-                    .field("d_type", &self.d_type)
-                    // FIXME(debug): .field("d_name", &self.d_name)
-                    .finish()
-            }
-        }
         impl hash::Hash for dirent {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.d_ino.hash(state);
@@ -2103,14 +1983,6 @@ cfg_if! {
             }
         }
         impl Eq for pthread_rwlock_t {}
-        impl fmt::Debug for pthread_rwlock_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("pthread_rwlock_t")
-                    .field("__sig", &self.__sig)
-                    // FIXME(debug): .field("__opaque", &self.__opaque)
-                    .finish()
-            }
-        }
         impl hash::Hash for pthread_rwlock_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.__sig.hash(state);
@@ -2131,15 +2003,6 @@ cfg_if! {
 
         impl Eq for pthread_mutex_t {}
 
-        impl fmt::Debug for pthread_mutex_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("pthread_mutex_t")
-                    .field("__sig", &self.__sig)
-                    // FIXME(debug): .field("__opaque", &self.__opaque)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for pthread_mutex_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.__sig.hash(state);
@@ -2159,15 +2022,6 @@ cfg_if! {
         }
 
         impl Eq for pthread_cond_t {}
-
-        impl fmt::Debug for pthread_cond_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("pthread_cond_t")
-                    .field("__sig", &self.__sig)
-                    // FIXME(debug): .field("__opaque", &self.__opaque)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for pthread_cond_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -2195,18 +2049,6 @@ cfg_if! {
         }
 
         impl Eq for sockaddr_storage {}
-
-        impl fmt::Debug for sockaddr_storage {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sockaddr_storage")
-                    .field("ss_len", &self.ss_len)
-                    .field("ss_family", &self.ss_family)
-                    .field("__ss_pad1", &self.__ss_pad1)
-                    .field("__ss_align", &self.__ss_align)
-                    // FIXME(debug): .field("__ss_pad2", &self.__ss_pad2)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for sockaddr_storage {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -2240,21 +2082,6 @@ cfg_if! {
 
         impl Eq for utmpx {}
 
-        impl fmt::Debug for utmpx {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("utmpx")
-                    // FIXME(debug): .field("ut_user", &self.ut_user)
-                    .field("ut_id", &self.ut_id)
-                    .field("ut_line", &self.ut_line)
-                    .field("ut_pid", &self.ut_pid)
-                    .field("ut_type", &self.ut_type)
-                    .field("ut_tv", &self.ut_tv)
-                    // FIXME(debug): .field("ut_host", &self.ut_host)
-                    .field("ut_pad", &self.ut_pad)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for utmpx {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.ut_user.hash(state);
@@ -2279,17 +2106,6 @@ cfg_if! {
 
         impl Eq for sigevent {}
 
-        impl fmt::Debug for sigevent {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("sigevent")
-                    .field("sigev_notify", &self.sigev_notify)
-                    .field("sigev_signo", &self.sigev_signo)
-                    .field("sigev_value", &self.sigev_value)
-                    .field("sigev_notify_attributes", &self.sigev_notify_attributes)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for sigevent {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.sigev_notify.hash(state);
@@ -2305,13 +2121,6 @@ cfg_if! {
             }
         }
         impl Eq for processor_cpu_load_info {}
-        impl fmt::Debug for processor_cpu_load_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("processor_cpu_load_info")
-                    .field("cpu_ticks", &self.cpu_ticks)
-                    .finish()
-            }
-        }
         impl hash::Hash for processor_cpu_load_info {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.cpu_ticks.hash(state);
@@ -2328,17 +2137,6 @@ cfg_if! {
             }
         }
         impl Eq for processor_basic_info {}
-        impl fmt::Debug for processor_basic_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("processor_basic_info")
-                    .field("cpu_type", &self.cpu_type)
-                    .field("cpu_subtype", &self.cpu_subtype)
-                    .field("running", &self.running)
-                    .field("slot_num", &self.slot_num)
-                    .field("is_master", &self.is_master)
-                    .finish()
-            }
-        }
         impl hash::Hash for processor_basic_info {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.cpu_type.hash(state);
@@ -2356,14 +2154,6 @@ cfg_if! {
             }
         }
         impl Eq for processor_set_basic_info {}
-        impl fmt::Debug for processor_set_basic_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("processor_set_basic_info")
-                    .field("processor_count", &self.processor_count)
-                    .field("default_policy", &self.default_policy)
-                    .finish()
-            }
-        }
         impl hash::Hash for processor_set_basic_info {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.processor_count.hash(state);
@@ -2380,16 +2170,6 @@ cfg_if! {
             }
         }
         impl Eq for processor_set_load_info {}
-        impl fmt::Debug for processor_set_load_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("processor_set_load_info")
-                    .field("task_count", &self.task_count)
-                    .field("thread_count", &self.thread_count)
-                    .field("load_average", &self.load_average)
-                    .field("mach_factor", &self.mach_factor)
-                    .finish()
-            }
-        }
         impl hash::Hash for processor_set_load_info {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.task_count.hash(state);
@@ -2405,14 +2185,6 @@ cfg_if! {
             }
         }
         impl Eq for time_value_t {}
-        impl fmt::Debug for time_value_t {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("time_value_t")
-                    .field("seconds", &self.seconds)
-                    .field("microseconds", &self.microseconds)
-                    .finish()
-            }
-        }
         impl hash::Hash for time_value_t {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.seconds.hash(state);
@@ -2432,20 +2204,6 @@ cfg_if! {
             }
         }
         impl Eq for thread_basic_info {}
-        impl fmt::Debug for thread_basic_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("thread_basic_info")
-                    .field("user_time", &self.user_time)
-                    .field("system_time", &self.system_time)
-                    .field("cpu_usage", &self.cpu_usage)
-                    .field("policy", &self.policy)
-                    .field("run_state", &self.run_state)
-                    .field("flags", &self.flags)
-                    .field("suspend_count", &self.suspend_count)
-                    .field("sleep_time", &self.sleep_time)
-                    .finish()
-            }
-        }
         impl hash::Hash for thread_basic_info {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.user_time.hash(state);
@@ -2478,23 +2236,6 @@ cfg_if! {
             }
         }
         impl Eq for thread_extended_info {}
-        impl fmt::Debug for thread_extended_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("proc_threadinfo")
-                    .field("pth_user_time", &self.pth_user_time)
-                    .field("pth_system_time", &self.pth_system_time)
-                    .field("pth_cpu_usage", &self.pth_cpu_usage)
-                    .field("pth_policy", &self.pth_policy)
-                    .field("pth_run_state", &self.pth_run_state)
-                    .field("pth_flags", &self.pth_flags)
-                    .field("pth_sleep_time", &self.pth_sleep_time)
-                    .field("pth_curpri", &self.pth_curpri)
-                    .field("pth_priority", &self.pth_priority)
-                    .field("pth_maxpriority", &self.pth_maxpriority)
-                    // FIXME(debug): .field("pth_name", &self.pth_name)
-                    .finish()
-            }
-        }
         impl hash::Hash for thread_extended_info {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.pth_user_time.hash(state);
@@ -2518,15 +2259,6 @@ cfg_if! {
             }
         }
         impl Eq for thread_identifier_info {}
-        impl fmt::Debug for thread_identifier_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("thread_identifier_info")
-                    .field("thread_id", &self.thread_id)
-                    .field("thread_handle", &self.thread_handle)
-                    .field("dispatch_qaddr", &self.dispatch_qaddr)
-                    .finish()
-            }
-        }
         impl hash::Hash for thread_identifier_info {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.thread_id.hash(state);
@@ -2564,62 +2296,6 @@ cfg_if! {
             }
         }
         impl Eq for if_data64 {}
-        impl fmt::Debug for if_data64 {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let ifi_type = self.ifi_type;
-                let ifi_typelen = self.ifi_typelen;
-                let ifi_physical = self.ifi_physical;
-                let ifi_addrlen = self.ifi_addrlen;
-                let ifi_hdrlen = self.ifi_hdrlen;
-                let ifi_recvquota = self.ifi_recvquota;
-                let ifi_xmitquota = self.ifi_xmitquota;
-                let ifi_unused1 = self.ifi_unused1;
-                let ifi_mtu = self.ifi_mtu;
-                let ifi_metric = self.ifi_metric;
-                let ifi_baudrate = self.ifi_baudrate;
-                let ifi_ipackets = self.ifi_ipackets;
-                let ifi_ierrors = self.ifi_ierrors;
-                let ifi_opackets = self.ifi_opackets;
-                let ifi_oerrors = self.ifi_oerrors;
-                let ifi_collisions = self.ifi_collisions;
-                let ifi_ibytes = self.ifi_ibytes;
-                let ifi_obytes = self.ifi_obytes;
-                let ifi_imcasts = self.ifi_imcasts;
-                let ifi_omcasts = self.ifi_omcasts;
-                let ifi_iqdrops = self.ifi_iqdrops;
-                let ifi_noproto = self.ifi_noproto;
-                let ifi_recvtiming = self.ifi_recvtiming;
-                let ifi_xmittiming = self.ifi_xmittiming;
-                let ifi_lastchange = self.ifi_lastchange;
-                f.debug_struct("if_data64")
-                    .field("ifi_type", &ifi_type)
-                    .field("ifi_typelen", &ifi_typelen)
-                    .field("ifi_physical", &ifi_physical)
-                    .field("ifi_addrlen", &ifi_addrlen)
-                    .field("ifi_hdrlen", &ifi_hdrlen)
-                    .field("ifi_recvquota", &ifi_recvquota)
-                    .field("ifi_xmitquota", &ifi_xmitquota)
-                    .field("ifi_unused1", &ifi_unused1)
-                    .field("ifi_mtu", &ifi_mtu)
-                    .field("ifi_metric", &ifi_metric)
-                    .field("ifi_baudrate", &ifi_baudrate)
-                    .field("ifi_ipackets", &ifi_ipackets)
-                    .field("ifi_ierrors", &ifi_ierrors)
-                    .field("ifi_opackets", &ifi_opackets)
-                    .field("ifi_oerrors", &ifi_oerrors)
-                    .field("ifi_collisions", &ifi_collisions)
-                    .field("ifi_ibytes", &ifi_ibytes)
-                    .field("ifi_obytes", &ifi_obytes)
-                    .field("ifi_imcasts", &ifi_imcasts)
-                    .field("ifi_omcasts", &ifi_omcasts)
-                    .field("ifi_iqdrops", &ifi_iqdrops)
-                    .field("ifi_noproto", &ifi_noproto)
-                    .field("ifi_recvtiming", &ifi_recvtiming)
-                    .field("ifi_xmittiming", &ifi_xmittiming)
-                    .field("ifi_lastchange", &ifi_lastchange)
-                    .finish()
-            }
-        }
         impl hash::Hash for if_data64 {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let ifi_type = self.ifi_type;
@@ -2690,34 +2366,6 @@ cfg_if! {
             }
         }
         impl Eq for if_msghdr2 {}
-        impl fmt::Debug for if_msghdr2 {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let ifm_msglen = self.ifm_msglen;
-                let ifm_version = self.ifm_version;
-                let ifm_type = self.ifm_type;
-                let ifm_addrs = self.ifm_addrs;
-                let ifm_flags = self.ifm_flags;
-                let ifm_index = self.ifm_index;
-                let ifm_snd_len = self.ifm_snd_len;
-                let ifm_snd_maxlen = self.ifm_snd_maxlen;
-                let ifm_snd_drops = self.ifm_snd_drops;
-                let ifm_timer = self.ifm_timer;
-                let ifm_data = self.ifm_data;
-                f.debug_struct("if_msghdr2")
-                    .field("ifm_msglen", &ifm_msglen)
-                    .field("ifm_version", &ifm_version)
-                    .field("ifm_type", &ifm_type)
-                    .field("ifm_addrs", &ifm_addrs)
-                    .field("ifm_flags", &ifm_flags)
-                    .field("ifm_index", &ifm_index)
-                    .field("ifm_snd_len", &ifm_snd_len)
-                    .field("ifm_snd_maxlen", &ifm_snd_maxlen)
-                    .field("ifm_snd_drops", &ifm_snd_drops)
-                    .field("ifm_timer", &ifm_timer)
-                    .field("ifm_data", &ifm_data)
-                    .finish()
-            }
-        }
         impl hash::Hash for if_msghdr2 {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let ifm_msglen = self.ifm_msglen;
@@ -2775,64 +2423,6 @@ cfg_if! {
             }
         }
         impl Eq for vm_statistics64 {}
-        impl fmt::Debug for vm_statistics64 {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let free_count = self.free_count;
-                let active_count = self.active_count;
-                let inactive_count = self.inactive_count;
-                let wire_count = self.wire_count;
-                let zero_fill_count = self.zero_fill_count;
-                let reactivations = self.reactivations;
-                let pageins = self.pageins;
-                let pageouts = self.pageouts;
-                let faults = self.faults;
-                let cow_faults = self.cow_faults;
-                let lookups = self.lookups;
-                let hits = self.hits;
-                let purges = self.purges;
-                let purgeable_count = self.purgeable_count;
-                let speculative_count = self.speculative_count;
-                let decompressions = self.decompressions;
-                let compressions = self.compressions;
-                let swapins = self.swapins;
-                let swapouts = self.swapouts;
-                let compressor_page_count = self.compressor_page_count;
-                let throttled_count = self.throttled_count;
-                let external_page_count = self.external_page_count;
-                let internal_page_count = self.internal_page_count;
-                // Otherwise rustfmt crashes...
-                let total_uncompressed = self.total_uncompressed_pages_in_compressor;
-                f.debug_struct("vm_statistics64")
-                    .field("free_count", &free_count)
-                    .field("active_count", &active_count)
-                    .field("inactive_count", &inactive_count)
-                    .field("wire_count", &wire_count)
-                    .field("zero_fill_count", &zero_fill_count)
-                    .field("reactivations", &reactivations)
-                    .field("pageins", &pageins)
-                    .field("pageouts", &pageouts)
-                    .field("faults", &faults)
-                    .field("cow_faults", &cow_faults)
-                    .field("lookups", &lookups)
-                    .field("hits", &hits)
-                    .field("purges", &purges)
-                    .field("purgeable_count", &purgeable_count)
-                    .field("speculative_count", &speculative_count)
-                    .field("decompressions", &decompressions)
-                    .field("compressions", &compressions)
-                    .field("swapins", &swapins)
-                    .field("swapouts", &swapouts)
-                    .field("compressor_page_count", &compressor_page_count)
-                    .field("throttled_count", &throttled_count)
-                    .field("external_page_count", &external_page_count)
-                    .field("internal_page_count", &internal_page_count)
-                    .field(
-                        "total_uncompressed_pages_in_compressor",
-                        &total_uncompressed,
-                    )
-                    .finish()
-            }
-        }
         impl hash::Hash for vm_statistics64 {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let free_count = self.free_count;
@@ -2899,26 +2489,6 @@ cfg_if! {
             }
         }
         impl Eq for mach_task_basic_info {}
-        impl fmt::Debug for mach_task_basic_info {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let virtual_size = self.virtual_size;
-                let resident_size = self.resident_size;
-                let resident_size_max = self.resident_size_max;
-                let user_time = self.user_time;
-                let system_time = self.system_time;
-                let policy = self.policy;
-                let suspend_count = self.suspend_count;
-                f.debug_struct("mach_task_basic_info")
-                    .field("virtual_size", &virtual_size)
-                    .field("resident_size", &resident_size)
-                    .field("resident_size_max", &resident_size_max)
-                    .field("user_time", &user_time)
-                    .field("system_time", &system_time)
-                    .field("policy", &policy)
-                    .field("suspend_count", &suspend_count)
-                    .finish()
-            }
-        }
         impl hash::Hash for mach_task_basic_info {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let virtual_size = self.virtual_size;
@@ -2946,18 +2516,6 @@ cfg_if! {
             }
         }
         impl Eq for log2phys {}
-        impl fmt::Debug for log2phys {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let l2p_flags = self.l2p_flags;
-                let l2p_contigbytes = self.l2p_contigbytes;
-                let l2p_devoffset = self.l2p_devoffset;
-                f.debug_struct("log2phys")
-                    .field("l2p_flags", &l2p_flags)
-                    .field("l2p_contigbytes", &l2p_contigbytes)
-                    .field("l2p_devoffset", &l2p_devoffset)
-                    .finish()
-            }
-        }
         impl hash::Hash for log2phys {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 let l2p_flags = self.l2p_flags;
@@ -2976,14 +2534,6 @@ cfg_if! {
 
         impl Eq for os_unfair_lock {}
 
-        impl fmt::Debug for os_unfair_lock {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("os_unfair_lock")
-                    .field("_os_unfair_lock_opaque", &self._os_unfair_lock_opaque)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for os_unfair_lock {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self._os_unfair_lock_opaque.hash(state);
@@ -3001,24 +2551,6 @@ cfg_if! {
         }
 
         impl Eq for sockaddr_vm {}
-
-        impl fmt::Debug for sockaddr_vm {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let svm_len = self.svm_len;
-                let svm_family = self.svm_family;
-                let svm_reserved1 = self.svm_reserved1;
-                let svm_port = self.svm_port;
-                let svm_cid = self.svm_cid;
-
-                f.debug_struct("sockaddr_vm")
-                    .field("svm_len", &svm_len)
-                    .field("svm_family", &svm_family)
-                    .field("svm_reserved1", &svm_reserved1)
-                    .field("svm_port", &svm_port)
-                    .field("svm_cid", &svm_cid)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for sockaddr_vm {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -3045,16 +2577,6 @@ cfg_if! {
         }
 
         impl Eq for ifdevmtu {}
-
-        impl fmt::Debug for ifdevmtu {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ifdevmtu")
-                    .field("ifdm_current", &self.ifdm_current)
-                    .field("ifdm_min", &self.ifdm_min)
-                    .field("ifdm_max", &self.ifdm_max)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for ifdevmtu {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -3087,15 +2609,6 @@ cfg_if! {
         }
 
         impl Eq for ifkpi {}
-
-        impl fmt::Debug for ifkpi {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ifkpi")
-                    .field("ifk_module_id", &self.ifk_module_id)
-                    .field("ifk_type", &self.ifk_type)
-                    .finish()
-            }
-        }
 
         impl hash::Hash for ifkpi {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -3164,15 +2677,6 @@ cfg_if! {
 
         impl Eq for ifreq {}
 
-        impl fmt::Debug for ifreq {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("ifreq")
-                    .field("ifr_name", &self.ifr_name)
-                    .field("ifr_ifru", &self.ifr_ifru)
-                    .finish()
-            }
-        }
-
         impl hash::Hash for ifreq {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 self.ifr_name.hash(state);
@@ -3238,15 +2742,6 @@ cfg_if! {
         }
 
         impl Eq for in6_ifreq {}
-
-        impl fmt::Debug for in6_ifreq {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.debug_struct("in6_ifreq")
-                    .field("ifr_name", &self.ifr_name)
-                    .field("ifr_ifru", &self.ifr_ifru)
-                    .finish()
-            }
-        }
     }
 }
 
@@ -5635,7 +5130,7 @@ pub const VMADDR_PORT_ANY: c_uint = 0xFFFFFFFF;
 
 const fn __DARWIN_ALIGN32(p: usize) -> usize {
     const __DARWIN_ALIGNBYTES32: usize = mem::size_of::<u32>() - 1;
-    p + __DARWIN_ALIGNBYTES32 & !__DARWIN_ALIGNBYTES32
+    (p + __DARWIN_ALIGNBYTES32) & !__DARWIN_ALIGNBYTES32
 }
 
 pub const THREAD_EXTENDED_POLICY_COUNT: mach_msg_type_number_t =
@@ -5710,7 +5205,7 @@ f! {
     pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             return crate::CMSG_FIRSTHDR(mhdr);
-        };
+        }
         let cmsg_len = (*cmsg).cmsg_len as usize;
         let next = cmsg as usize + __DARWIN_ALIGN32(cmsg_len);
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
@@ -6341,7 +5836,7 @@ extern "C" {
         fd: c_int,
         path: *const c_char,
         oflag: c_int,
-        mode: crate::mode_t,
+        mode: mode_t,
     ) -> c_int;
     pub fn posix_spawn_file_actions_addclose(
         actions: *mut posix_spawn_file_actions_t,
@@ -6660,9 +6155,8 @@ extern "C" {
     pub fn dirname(path: *mut c_char) -> *mut c_char;
     pub fn basename(path: *mut c_char) -> *mut c_char;
 
-    pub fn mkfifoat(dirfd: c_int, pathname: *const c_char, mode: crate::mode_t) -> c_int;
-    pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: crate::mode_t, dev: dev_t)
-        -> c_int;
+    pub fn mkfifoat(dirfd: c_int, pathname: *const c_char, mode: mode_t) -> c_int;
+    pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: mode_t, dev: dev_t) -> c_int;
     pub fn freadlink(fd: c_int, buf: *mut c_char, size: size_t) -> c_int;
     pub fn execvP(
         file: *const c_char,
