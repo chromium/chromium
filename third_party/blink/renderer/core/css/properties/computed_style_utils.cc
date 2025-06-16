@@ -2700,7 +2700,8 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunctionList(
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
-    const StyleTimeline& timeline) {
+    const StyleTimeline& timeline,
+    const ComputedStyle& style) {
   if (timeline.IsKeyword()) {
     DCHECK(timeline.GetKeyword() == CSSValueID::kAuto ||
            timeline.GetKeyword() == CSSValueID::kNone);
@@ -2722,13 +2723,14 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
     CSSValue* axis = view_data.HasDefaultAxis()
                          ? nullptr
                          : CSSIdentifierValue::Create(view_data.GetAxis());
-    auto* inset =
-        view_data.HasDefaultInset()
-            ? nullptr
-            : MakeGarbageCollected<CSSValuePair>(
-                  CSSValue::Create(view_data.GetInset().GetStart(), 1),
-                  CSSValue::Create(view_data.GetInset().GetEnd(), 1),
-                  CSSValuePair::kDropIdenticalValues);
+    auto* inset = view_data.HasDefaultInset()
+                      ? nullptr
+                      : MakeGarbageCollected<CSSValuePair>(
+                            CSSValue::Create(view_data.GetInset().GetStart(),
+                                             style.EffectiveZoom()),
+                            CSSValue::Create(view_data.GetInset().GetEnd(),
+                                             style.EffectiveZoom()),
+                            CSSValuePair::kDropIdenticalValues);
     return MakeGarbageCollected<cssvalue::CSSViewValue>(axis, inset);
   }
   DCHECK(timeline.IsScroll());
@@ -2745,12 +2747,13 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationTimelineList(
-    const CSSAnimationData* animation_data) {
+    const CSSAnimationData* animation_data,
+    const ComputedStyle& style) {
   return CreateAnimationValueList(
       animation_data
           ? animation_data->TimelineList()
           : Vector<StyleTimeline>{CSSAnimationData::InitialTimeline()},
-      &ValueForAnimationTimeline);
+      &ValueForAnimationTimeline, style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForTimelineInset(
@@ -2796,12 +2799,13 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTriggerTypeList(
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationTriggerTimelineList(
-    const CSSAnimationData* animation_data) {
+    const CSSAnimationData* animation_data,
+    const ComputedStyle& style) {
   return CreateAnimationValueList(
       animation_data
           ? animation_data->TriggerTimelineList()
           : Vector<StyleTimeline>{CSSAnimationData::InitialTriggerTimeline()},
-      &ValueForAnimationTimeline);
+      &ValueForAnimationTimeline, style);
 }
 
 CSSValueList* ComputedStyleUtils::ValuesForBorderRadiusCorner(

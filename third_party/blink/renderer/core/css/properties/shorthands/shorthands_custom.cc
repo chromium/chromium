@@ -427,7 +427,7 @@ const CSSValue* AnimationTrigger::CSSValueFromComputedStyleInternal(
     for (wtf_size_t i = 0; i < animation_data->NameList().size(); ++i) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
       list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
-          animation_data->TriggerTimelineList().at(i)));
+          animation_data->TriggerTimelineList().at(i), style));
       list->Append(*ComputedStyleUtils::ValueForAnimationTriggerType(
           animation_data->TriggerTypeList().at(i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationRange(
@@ -449,7 +449,7 @@ const CSSValue* AnimationTrigger::CSSValueFromComputedStyleInternal(
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
-      CSSAnimationData::InitialTriggerTimeline()));
+      CSSAnimationData::InitialTriggerTimeline(), style));
   list->Append(*ComputedStyleUtils::ValueForAnimationTriggerType(
       CSSAnimationData::InitialTriggerType()));
   list->Append(*ComputedStyleUtils::ValueForAnimationRange(

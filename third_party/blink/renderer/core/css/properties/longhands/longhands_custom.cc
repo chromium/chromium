@@ -604,7 +604,8 @@ const CSSValue* AnimationTimeline::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationTimelineList(style.Animations());
+  return ComputedStyleUtils::ValueForAnimationTimelineList(style.Animations(),
+                                                           style);
 }
 
 const CSSValue* AnimationTimeline::InitialValue() const {
@@ -760,7 +761,7 @@ const CSSValue* AnimationTriggerTimeline::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForAnimationTriggerTimelineList(
-      style.Animations());
+      style.Animations(), style);
 }
 
 const CSSValue* AnimationTriggerTimeline::InitialValue() const {
