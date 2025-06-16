@@ -10,7 +10,6 @@
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
-#include "third_party/freetype_buildflags.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkTypeface_fontations.h"
 

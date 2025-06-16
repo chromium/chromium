@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
-#include "third_party/freetype_buildflags.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMetrics.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -62,23 +61,14 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
-#if !BUILDFLAG(USE_SYSTEM_FREETYPE) && BUILDFLAG(ENABLE_FREETYPE)
-#include "third_party/freetype/src/src/autofit/afws-decl.h"
-#endif
-
 namespace blink {
 
 constexpr float kSmallCapsFontSizeMultiplier = 0.7f;
 constexpr float kEmphasisMarkFontSizeMultiplier = 0.5f;
 
-#if !BUILDFLAG(USE_SYSTEM_FREETYPE) && BUILDFLAG(ENABLE_FREETYPE)
-constexpr int32_t kFontObjectsMemoryConsumption =
-    std::max(sizeof(AF_LatinMetricsRec), sizeof(AF_CJKMetricsRec));
-#else
 // sizeof(AF_LatinMetricsRec) = 2128
 // TODO(drott): Measure a new number for Fontations.
 constexpr int32_t kFontObjectsMemoryConsumption = 2128;
-#endif
 
 SimpleFontData::SimpleFontData(const FontPlatformData* platform_data,
                                const CustomFontData* custom_data,
