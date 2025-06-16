@@ -30,7 +30,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager_test_api.h"
 #include "components/autofill_ai/core/browser/metrics/autofill_ai_ukm_logger.h"
-#include "components/autofill_ai/core/browser/mock_autofill_ai_client.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
@@ -106,23 +105,20 @@ class MockAutofillClient : public autofill::TestAutofillClient {
 class BaseAutofillAiTest : public testing::Test {
  public:
   BaseAutofillAiTest() {
-    ON_CALL(client_, GetAutofillClient)
-        .WillByDefault(ReturnRef(autofill_client()));
     autofill_client().set_entity_data_manager(
         std::make_unique<autofill::EntityDataManager>(
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));
-    manager_ = std::make_unique<AutofillAiManager>(&client_, &strike_database_);
+    manager_ = std::make_unique<AutofillAiManager>(&autofill_client_,
+                                                   &strike_database_);
   }
 
   AutofillAiManager& manager() { return *manager_; }
 
   void AddOrUpdateEntityInstance(autofill::EntityInstance entity) {
-    client()
-        .GetAutofillClient()
-        .GetEntityDataManager()
-        ->AddOrUpdateEntityInstance(std::move(entity));
+    autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(
+        std::move(entity));
     webdata_helper_.WaitUntilIdle();
   }
 
@@ -153,7 +149,6 @@ class BaseAutofillAiTest : public testing::Test {
   }
 
   MockAutofillClient& autofill_client() { return autofill_client_; }
-  MockAutofillAiClient& client() { return client_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -161,7 +156,6 @@ class BaseAutofillAiTest : public testing::Test {
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
-  NiceMock<MockAutofillAiClient> client_;
   std::unique_ptr<AutofillAiManager> manager_;
   autofill::TestStrikeDatabase strike_database_;
   autofill::AutofillWebDataServiceTestHelper webdata_helper_{

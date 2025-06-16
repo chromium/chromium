@@ -3651,8 +3651,6 @@ static_library("browser") {
       "apps/intent_helper/intent_chip_display_prefs.h",
       "autocomplete/tab_matcher_desktop.cc",
       "autocomplete/tab_matcher_desktop.h",
-      "autofill_ai/chrome_autofill_ai_client.cc",
-      "autofill_ai/chrome_autofill_ai_client.h",
       "badging/badge_manager.cc",
       "badging/badge_manager.h",
       "badging/badge_manager_delegate.h",
