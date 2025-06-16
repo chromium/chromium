@@ -88,7 +88,7 @@ inline constexpr base::FeatureParam<PreloadTopChromeWebUIMode>
     kPreloadTopChromeWebUIMode(
         &kPreloadTopChromeWebUI,
         kPreloadTopChromeWebUIModeName,
-        PreloadTopChromeWebUIMode::kPreloadOnMakeContents,
+        PreloadTopChromeWebUIMode::kPreloadOnWarmup,
         &kPreloadTopChromeWebUIModeOptions);
 
 // If smart preload is enabled, the preload WebUI is determined by historical
