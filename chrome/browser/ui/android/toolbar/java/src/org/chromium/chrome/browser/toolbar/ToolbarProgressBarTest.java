@@ -14,6 +14,7 @@ import android.animation.Animator;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
@@ -380,6 +381,10 @@ public class ToolbarProgressBarTest {
                 "Background color does not match expected color.",
                 SemanticColorUtils.getProgressBarTrackColor(mActivity),
                 mProgressBar.getBackgroundColor());
+
+        int gapBackgroundColor = ((ColorDrawable) mProgressBar.getBackground()).getColor();
+        assertEquals("Gap color doesn't match the toolbar color.", mThemeColor,
+                gapBackgroundColor);
     }
 
     @Test
