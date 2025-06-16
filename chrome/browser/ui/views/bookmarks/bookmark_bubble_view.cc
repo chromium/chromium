@@ -18,6 +18,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/signin/chrome_signin_client.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
@@ -471,6 +472,9 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
         web_contents, signin_metrics::AccessPoint::kBookmarkBubble,
         syncer::LocalDataItemModel::DataId(bookmark_node->id()),
         ui::ButtonStyle::kDefault));
+
+    ChromeSigninClient::
+        MaybeAddUserToBookmarksBubblePromoShownSyntheticFieldTrial();
 #endif
   }
 

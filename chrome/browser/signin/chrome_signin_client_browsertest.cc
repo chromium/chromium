@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/signin/chrome_signin_client.h"
+
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -11,6 +15,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -215,3 +220,77 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
               testing::ContainerEq(expected_signin_counts));
 }
 #endif
+
+class ChromeSigninClientWithBookmarksInTransportModeBrowserTest
+    : public ChromeSigninClientBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  // Equivalent to `kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref` that
+  // is defined in `chrome_signin_client.cc`.
+  static constexpr char
+      kSigninFromBookmarksBubbleSyntheticTrialGroupNamePrefForTesting[] =
+          "UnoDesktopBookmarksEnabledInAccountFromBubbleGroup";
+  // Equivalent to `kBookmarksBubblePromoShownSyntheticTrialGroupNamePref` that
+  // is defined in `chrome_signin_client.cc`.
+  static constexpr char
+      kBookmarksBubblePromoShownSyntheticTrialGroupNamePrefForTesting[] =
+          "UnoDesktopBookmarksBubblePromoShownGroup";
+
+  ChromeSigninClientWithBookmarksInTransportModeBrowserTest() {
+    // Enables feature and register field trial. Note: disabling a feature will
+    // not register the field trial for the equivalent control group in tests -
+    // so we cannot test the Synthetic field trial tags for disabled features.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{switches::kSyncEnableBookmarksInTransportMode, {}}}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeSigninClientWithBookmarksInTransportModeBrowserTest,
+    UnoDesktopSyntheticFieldTrialTags) {
+  PrefService* local_prefs = g_browser_process->local_state();
+  ASSERT_TRUE(
+      local_prefs
+          ->GetString(
+              kBookmarksBubblePromoShownSyntheticTrialGroupNamePrefForTesting)
+          .empty());
+  ASSERT_TRUE(
+      local_prefs
+          ->GetString(
+              kSigninFromBookmarksBubbleSyntheticTrialGroupNamePrefForTesting)
+          .empty());
+
+  // Simulates seeing the Signin Promo in the Bookmarks Saving bubble.
+  ChromeSigninClient::
+      MaybeAddUserToBookmarksBubblePromoShownSyntheticFieldTrial();
+
+  EXPECT_EQ(
+      local_prefs->GetString(
+          kBookmarksBubblePromoShownSyntheticTrialGroupNamePrefForTesting),
+      "scoped_feature_list_trial_group");
+  EXPECT_TRUE(
+      local_prefs
+          ->GetString(
+              kSigninFromBookmarksBubbleSyntheticTrialGroupNamePrefForTesting)
+          .empty());
+
+  // Simulates Signing in through the bookmarks bubble.
+  signin::MakeAccountAvailable(
+      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithAccessPoint(signin_metrics::AccessPoint::kBookmarkBubble)
+          .Build("test@gmail.com"));
+
+  EXPECT_EQ(
+      local_prefs->GetString(
+          kBookmarksBubblePromoShownSyntheticTrialGroupNamePrefForTesting),
+      "scoped_feature_list_trial_group");
+  EXPECT_EQ(
+      local_prefs->GetString(
+          kSigninFromBookmarksBubbleSyntheticTrialGroupNamePrefForTesting),
+      "scoped_feature_list_trial_group");
+}
