@@ -340,23 +340,28 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
 
   // Compute the |ComputedStyle| of the decorating box.
   const ComputedStyle* decorating_box_style;
-  if (use_decorating_box_ &&
-      // Fallback to no-decorating box mode if the sync is lost.
-      static_cast<wtf_size_t>(decoration_index_) <
-          inline_context_->DecoratingBoxes().size()) {
+  if (use_decorating_box_) {
     DCHECK(inline_context_);
     DCHECK_EQ(inline_context_->DecoratingBoxes().size(),
               AppliedDecorationCount());
-    decorating_box_ = &inline_context_->DecoratingBoxes()[decoration_index_];
-    decorating_box_style = &decorating_box_->Style();
+    bool disable_decorating_box;
+    if (static_cast<wtf_size_t>(decoration_index_) >=
+        inline_context_->DecoratingBoxes().size()) [[unlikely]] {
+      disable_decorating_box = true;
+    } else {
+      decorating_box_ = &inline_context_->DecoratingBoxes()[decoration_index_];
+      decorating_box_style = &decorating_box_->Style();
 
-    // Disable the decorating box when the baseline is central, because the
-    // decorating box doesn't produce the ideal position.
-    // https://drafts.csswg.org/css-text-decor-3/#:~:text=text%20is%20not%20aligned%20to%20the%20alphabetic%20baseline
-    // TODO(kojii): The vertical flow in alphabetic baseline may want to use the
-    // decorating box. It needs supporting the rotated coordinate system text
-    // painters use when painting vertical text.
-    if (!decorating_box_style->IsHorizontalWritingMode()) [[unlikely]] {
+      // Disable the decorating box when the baseline is central, because the
+      // decorating box doesn't produce the ideal position.
+      // https://drafts.csswg.org/css-text-decor-3/#:~:text=text%20is%20not%20aligned%20to%20the%20alphabetic%20baseline
+      // TODO(kojii): The vertical flow in alphabetic baseline may want to use
+      // the decorating box. It needs supporting the rotated coordinate system
+      // text painters use when painting vertical text.
+      disable_decorating_box = !decorating_box_style->IsHorizontalWritingMode();
+    }
+
+    if (disable_decorating_box) [[unlikely]] {
       use_decorating_box_ = false;
       decorating_box_ = nullptr;
       decorating_box_style = &target_style_;
