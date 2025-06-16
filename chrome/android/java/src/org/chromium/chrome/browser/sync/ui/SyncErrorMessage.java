@@ -276,6 +276,8 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                     return R.string.identity_error_message_button_verify;
                 case 2:
                     return R.string.identity_error_card_button_okay;
+                case 3:
+                    return R.string.identity_error_card_button_get;
                 default:
                     // This should never happen, as there are only two versions.
                     assert false

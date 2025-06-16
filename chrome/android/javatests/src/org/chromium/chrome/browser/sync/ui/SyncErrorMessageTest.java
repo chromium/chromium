@@ -287,6 +287,33 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
+    @EnableFeatures(
+            ChromeFeatureList.SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE + ":version/3")
+    public void testSyncErrorMessageForTrustedVaultKeyRequiredContent_alternativeThree()
+            throws Exception {
+        ArgumentCaptor<PropertyModel> mModelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+
+        // Sign in.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
+        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
+
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(mModelCaptor.capture(), anyBoolean());
+        PropertyModel mModel = mModelCaptor.getValue();
+        Assert.assertEquals(
+                mContext.getString(R.string.password_sync_trusted_vault_error_title),
+                mModel.get(MessageBannerProperties.TITLE));
+        Assert.assertEquals(
+                mContext.getString(R.string.password_sync_trusted_vault_error_hint),
+                mModel.get(MessageBannerProperties.DESCRIPTION));
+        Assert.assertEquals(
+                mContext.getString(R.string.identity_error_card_button_get),
+                mModel.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+    }
+
+    @Test
+    @LargeTest
     public void testSyncErrorMessageShownForTrustedVaultRecoverabilityDegradedForSignedInUsers()
             throws Exception {
         HistogramWatcher watchIdentityErrorMessageShownHistogram =
