@@ -513,6 +513,13 @@ crbug.com/421948893 [ android android-corsola ] Pixel_Video_MP4_FourColors_Rot_9
 crbug.com/421948893 [ android android-corsola ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 crbug.com/422226030 [ android android-corsola ] Pixel_Video_HEVC [ Failure ]
 
+# Flaky on Mac Intel
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
