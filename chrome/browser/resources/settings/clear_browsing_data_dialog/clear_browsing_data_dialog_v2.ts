@@ -59,6 +59,7 @@ export interface SettingsClearBrowsingDataDialogV2Element {
     deleteButton: CrButtonElement,
     deleteBrowsingDataDialog: CrDialogElement,
     manageOtherGoogleDataRow: HTMLElement,
+    moreOptionsList: HTMLElement,
     showMoreButton: CrButtonElement,
     spinner: HTMLElement,
     timePicker: SettingsClearBrowsingDataTimePicker,
@@ -370,6 +371,13 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   private onShowMoreClick_() {
     this.dataTypesExpanded_ = true;
+
+    // Set the focus to the first checkbox in the 'more' options list.
+    afterNextRender(this, () => {
+      const toFocus = this.$.moreOptionsList.querySelector('settings-checkbox');
+      assert(toFocus);
+      toFocus.focus();
+    });
   }
 
   private shouldHideShowMoreButton_() {

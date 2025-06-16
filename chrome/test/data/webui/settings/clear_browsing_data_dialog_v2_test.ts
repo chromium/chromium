@@ -148,7 +148,7 @@ suite('DeleteBrowsingDataDialog', function() {
     assertFalse(historyCheckbox.$.checkbox.disabled);
 
     dialog.$.showMoreButton.click();
-    await flushTasks();
+    await waitAfterNextRender(dialog);
 
     const formDataCheckbox = getCheckboxForDataType(BrowsingDataType.FORM_DATA);
     assertTrue(!!formDataCheckbox);
@@ -230,10 +230,15 @@ suite('DeleteBrowsingDataDialog', function() {
         dialog.$.deleteButton.innerText.trim());
   });
 
-  test('ShowMoreButton', function() {
+  test('ShowMoreButton', async function() {
     assertTrue(isVisible(dialog.$.showMoreButton));
 
     dialog.$.showMoreButton.click();
+    await waitAfterNextRender(dialog);
+    // Verify the focus is not lost after expanding the checkboxes.
+    assertEquals(
+        dialog.$.moreOptionsList.firstElementChild,
+        dialog.shadowRoot!.activeElement);
     assertFalse(isVisible(dialog.$.showMoreButton));
   });
 
@@ -247,7 +252,7 @@ suite('DeleteBrowsingDataDialog', function() {
     ]);
 
     dialog.$.showMoreButton.click();
-    await flushTasks();
+    await waitAfterNextRender(dialog);
     // On show more click, all checkboxes should be visible in default order.
     verifyCheckboxesVisibleForDataTypesInOrder([
       BrowsingDataType.HISTORY,
@@ -279,7 +284,7 @@ suite('DeleteBrowsingDataDialog', function() {
     ]);
 
     dialog.$.showMoreButton.click();
-    await flushTasks();
+    await waitAfterNextRender(dialog);
     // On show more click, all checkboxes should be visible with the unselected
     // checkboxes at the bottom.
     verifyCheckboxesVisibleForDataTypesInOrder([
@@ -346,7 +351,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
     // Case 2, selection from more checkboxes.
     dialog.$.showMoreButton.click();
-    await flushTasks();
+    await waitAfterNextRender(dialog);
 
     // All checkboxes should be visible.
     verifyCheckboxesVisibleForDataTypesInOrder([
@@ -407,7 +412,7 @@ suite('DeleteBrowsingDataDialog', function() {
     ]);
 
     dialog.$.showMoreButton.click();
-    await flushTasks();
+    await waitAfterNextRender(dialog);
 
     const formDataCheckbox = getCheckboxForDataType(BrowsingDataType.FORM_DATA);
     assertTrue(!!formDataCheckbox);
@@ -489,7 +494,7 @@ suite('DeleteBrowsingDataDialog', function() {
         'site settings result');
 
     dialog.$.showMoreButton.click();
-    await flushTasks();
+    await waitAfterNextRender(dialog);
 
     const siteSettingsCheckbox =
         getCheckboxForDataType(BrowsingDataType.SITE_SETTINGS);
@@ -503,7 +508,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
     // Select datatypes for deletion.
     dialog.$.showMoreButton.click();
-    await flushTasks();
+    await waitAfterNextRender(dialog);
     const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
     assertTrue(!!historyCheckbox);
     historyCheckbox.$.checkbox.click();

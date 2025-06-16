@@ -58,6 +58,11 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
     ];
   }
 
+  /** Focus on the inner cr-checkbox. */
+  override focus() {
+    this.$.checkbox.focus();
+  }
+
   private onSubLabelChanged_() {
     this.$.checkbox.ariaDescription = this.$.subLabel.textContent!;
   }
