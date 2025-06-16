@@ -147,17 +147,16 @@ public class CustomTabActivityNavigationController
 
                 @Override
                 public void onAllTabsClosed() {
-                    mBackPressStateSupplier.set(shouldInterceptBackPress());
-                    finish(mIsHandlingUserNavigation ? USER_NAVIGATION : OTHER);
+                    boolean shouldInterceptBackPress = shouldInterceptBackPress();
+                    mBackPressStateSupplier.set(shouldInterceptBackPress);
+
+                    if (shouldInterceptBackPress) {
+                        finish(mIsHandlingUserNavigation ? USER_NAVIGATION : OTHER);
+                    }
                 }
 
                 private boolean shouldInterceptBackPress() {
-                    // If this is the first tab created or when all other tabs are closed, we want
-                    // the OS to handle the back event then notify the registered observer that the
-                    // back event has happened.
-                    if (supportsPredictiveBackGesture()
-                            && mTabController.onlyOneTabRemaining()
-                            && !mIntentDataProvider.isPartialCustomTab()) {
+                    if (shouldDeferToOs()) {
                         return false;
                     }
                     return mTabProvider.getTab() != null
@@ -193,7 +192,8 @@ public class CustomTabActivityNavigationController
         ChromeBrowserInitializer.getInstance()
                 .runNowOrAfterFullBrowserStarted(
                         () -> {
-                            mBackPressStateSupplier.set(mTabProvider.getTab() != null);
+                            mBackPressStateSupplier.set(
+                                    mTabProvider.getTab() != null && !shouldDeferToOs());
                         });
     }
 
@@ -515,6 +515,21 @@ public class CustomTabActivityNavigationController
         String assertMsg = "URL used to open browser is null. " + tabInfo + intentDataProviderInfo;
         Log.e(TAG, assertMsg);
         assert false : assertMsg;
+    }
+
+    private boolean shouldDeferToOs() {
+        // If this is the first tab created or when all other tabs are closed, we want
+        // the OS to handle the back event. This allows the predictive back gesture to
+        // show the "back to home" animation. The registered observer will be notified
+        // that the back event has been handled by the OS.
+        // Additionally, we verify that an initial tab has been set and the tab count is either one
+        // or zero if it is a tab that is being initially set before updating the tab count.
+        // This behavior is not applicable to partial custom tabs.
+        return supportsPredictiveBackGesture()
+                && (mTabProvider.getInitialTabCreationMode() != TabCreationMode.NONE
+                        && (mTabController.onlyOneTabRemaining()
+                                || mTabController.getTabCount() == 0))
+                && !mIntentDataProvider.isPartialCustomTab();
     }
 
     public BrowserServicesIntentDataProvider getIntentDataProviderForTesting() {
