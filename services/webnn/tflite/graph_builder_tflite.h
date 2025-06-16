@@ -733,7 +733,8 @@ class GraphBuilderTflite final {
   // op specific fusion criteria required by TFLite, if so we can remove the
   // preceding `dequantizeLinear` and subsequent `quantizeLinear`.
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Clamp& clamp);
+      const mojom::Clamp& clamp,
+      bool is_emulated);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Conv2d& conv2d,
       std::optional<OperandId> activation_output_operand_id);

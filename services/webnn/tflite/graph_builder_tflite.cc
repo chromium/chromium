@@ -1451,7 +1451,8 @@ GraphBuilderTflite::CanFuseActivationAndGetOutput(OperandId output_operand_id) {
 }
 
 std::optional<GraphBuilderTflite::TensorInfo>
-GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Clamp& clamp) {
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Clamp& clamp,
+                                                bool is_emulated) {
   if (!IsDequantizeOutput(clamp.input_operand_id)) {
     return std::nullopt;
   }
@@ -1474,6 +1475,17 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Clamp& clamp) {
       IsNextOpQuantize(clamp.output_operand_id, {quantized_type});
   if (!next_op) {
     return std::nullopt;
+  }
+
+  // For emulated clamp, it is emulated with min and max operations, which
+  // requires the input and output to have the same scale and zero_point.
+  // https://ai.google.dev/edge/litert/models/quantization_spec#int8_quantized_operator_specifications
+  if (is_emulated) {
+    const mojom::QuantizeLinear& output_quantize =
+        GetQuantizeOp(next_op->first);
+    if (!IsSameScaleAndZeroPoint(input_dequantize, output_quantize)) {
+      return std::nullopt;
+    }
   }
 
   return SerializeQuantizedOutput(*next_op);
@@ -3485,25 +3497,61 @@ auto GraphBuilderTflite::SerializeSubGraphMaxMin(
     TensorIndex output_tensor_index,
     base::span<const DataType> min_values,
     base::span<const DataType> max_values) -> OperatorOffset {
+  const std::array<int32_t, 1> min_values_dimensions = {
+      base::checked_cast<int32_t>(min_values.size())};
   const TensorIndex min_value_tensor_index =
-      SerializeTensorWithBuffer<DataType>(
-          /*buffer=*/min_values,
-          /*dimensions=*/std::array<int32_t, 1>{
-              base::checked_cast<int32_t>(min_values.size())});
+      SerializeTensorWithBuffer<DataType>(min_values, min_values_dimensions);
+
+  // If `input_tensor_info.quantize_params` is not null, it means the
+  // `min_values` and `max_values` should be quantized to the same data type
+  // with input to meet the requirements of QDQ fusion.
+  TensorIndex maybe_quantized_min_value_tensor_index = min_value_tensor_index;
+  if (!input_tensor_info.quantize_params.IsNull()) {
+    maybe_quantized_min_value_tensor_index = SerializeTemporaryTensor(
+        min_values_dimensions, input_tensor_info.data_type,
+        input_tensor_info.quantize_params);
+    const OperatorCodeIndex operator_code_index =
+        GetOperatorCodeIndex(::tflite::BuiltinOperator_QUANTIZE);
+    const std::array<TensorIndex, 1> quantize_inputs = {min_value_tensor_index};
+    const std::array<TensorIndex, 1> quantize_outputs = {
+        maybe_quantized_min_value_tensor_index};
+    operators_.emplace_back(::tflite::CreateOperator(
+        builder_, operator_code_index,
+        builder_.CreateVector<TensorIndex>(quantize_inputs),
+        builder_.CreateVector<TensorIndex>(quantize_outputs)));
+  }
+
   const TensorIndex output_tensor_index_of_max = SerializeTemporaryTensor(
-      input_tensor_info.dimensions, input_tensor_info.data_type);
+      input_tensor_info.dimensions, input_tensor_info.data_type,
+      input_tensor_info.quantize_params);
   operators_.emplace_back(SerializeBinaryOperation(
       ::tflite::BuiltinOperator_MAXIMUM, input_tensor_info.index,
-      min_value_tensor_index, output_tensor_index_of_max));
+      maybe_quantized_min_value_tensor_index, output_tensor_index_of_max));
 
+  const std::array<int32_t, 1> max_values_dimensions = {
+      base::checked_cast<int32_t>(max_values.size())};
   const TensorIndex max_value_tensor_index =
-      SerializeTensorWithBuffer<DataType>(
-          /*buffer=*/max_values,
-          /*dimensions=*/std::array<int32_t, 1>{
-              base::checked_cast<int32_t>(max_values.size())});
-  return SerializeBinaryOperation(::tflite::BuiltinOperator_MINIMUM,
-                                  output_tensor_index_of_max,
-                                  max_value_tensor_index, output_tensor_index);
+      SerializeTensorWithBuffer<DataType>(max_values, max_values_dimensions);
+
+  TensorIndex maybe_quantized_max_value_tensor_index = max_value_tensor_index;
+  if (!input_tensor_info.quantize_params.IsNull()) {
+    maybe_quantized_max_value_tensor_index = SerializeTemporaryTensor(
+        max_values_dimensions, input_tensor_info.data_type,
+        input_tensor_info.quantize_params);
+    const OperatorCodeIndex operator_code_index =
+        GetOperatorCodeIndex(::tflite::BuiltinOperator_QUANTIZE);
+    const std::array<TensorIndex, 1> quantize_inputs = {max_value_tensor_index};
+    const std::array<TensorIndex, 1> quantize_outputs = {
+        maybe_quantized_max_value_tensor_index};
+    operators_.emplace_back(::tflite::CreateOperator(
+        builder_, operator_code_index,
+        builder_.CreateVector<TensorIndex>(quantize_inputs),
+        builder_.CreateVector<TensorIndex>(quantize_outputs)));
+  }
+
+  return SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_MINIMUM, output_tensor_index_of_max,
+      maybe_quantized_max_value_tensor_index, output_tensor_index);
 }
 
 auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
@@ -3517,7 +3565,7 @@ auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
       GetClampOperatorCode(min_value, max_value);
   const bool is_emulated = !operator_code.has_value();
   std::optional<TensorInfo> quantized_output =
-      is_emulated ? std::nullopt : CanFuseQuantizeAndGetOutput(clamp);
+      CanFuseQuantizeAndGetOutput(clamp, is_emulated);
   const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(
