@@ -882,11 +882,12 @@ void MakeCredentialRequestHandler::OnEnrollmentDone(
 
 void MakeCredentialRequestHandler::OnEnrollmentError(
     CtapDeviceResponseCode status) {
+  FidoAuthenticator* authenticator = bio_enroller_->authenticator();
   bio_enroller_.reset();
   state_ = State::kFinished;
   std::move(completion_callback_)
       .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt,
-           bio_enroller_->authenticator());
+           authenticator);
 }
 
 void MakeCredentialRequestHandler::OnEnrollmentDismissed() {

@@ -6610,6 +6610,34 @@ TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialInlineBioEnrollment) {
   EXPECT_TRUE(virtual_device_factory_->mutable_state()->fingerprints_enrolled);
 }
 
+// Test having an authenticator report an error during inline biometrics
+// enrollment. Regression test for crbug.com/410985009.
+TEST_F(InternalUVAuthenticatorImplTest,
+       MakeCredentialInlineBioEnrollmentError) {
+  device::VirtualCtap2Device::Config config;
+  config.internal_uv_support = true;
+  config.pin_support = true;
+  config.user_verification_succeeds = true;
+  config.bio_enrollment_support = true;
+  config.override_response_map
+      [device::CtapRequestCommand::kAuthenticatorBioEnrollment] =
+      device::CtapDeviceResponseCode::kCtap2ErrUserActionTimeout;
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  virtual_device_factory_->mutable_state()->pin_retries =
+      device::kMaxPinRetries;
+  virtual_device_factory_->mutable_state()->fingerprints_enrolled = false;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  MakeCredentialResult result = AuthenticatorMakeCredential(
+      make_credential_options(device::UserVerificationRequirement::kRequired));
+
+  EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, result.status);
+  EXPECT_TRUE(test_client_.collected_pin);
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
+  EXPECT_TRUE(test_client_.did_bio_enrollment);
+  EXPECT_FALSE(virtual_device_factory_->mutable_state()->fingerprints_enrolled);
+}
+
 // Test making a credential skipping biometric enrollment during credential
 // creation.
 TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialSkipInlineBioEnrollment) {
