@@ -233,9 +233,22 @@ void RecordChoiceScreenCompletionDate(PrefService& profile_prefs) {
   base::Time::Exploded exploded;
   timestamp->LocalExplode(&exploded);
 
+  // For reporting purposes, we want to keep the date in the range [2022-01,
+  // 2050-12]. Dates that are before 2022 are reported as `1000-01`, and dates
+  // after 2050 are reported as `3000-01`.
+  int year = exploded.year;
+  int month = exploded.month;
+  if (exploded.year < 2022) {
+    year = 1000;
+    month = 1;
+  } else if (exploded.year > 2050) {
+    year = 3000;
+    month = 1;
+  }
+
   // Expected value space is 12 samples / year.
   base::UmaHistogramSparse(kSearchEngineChoiceCompletedOnMonthHistogram,
-                           exploded.year * 100 + exploded.month);
+                           year * 100 + month);
 }
 
 }  // namespace
@@ -545,7 +558,8 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
             profile_prefs_.get(),
             SearchEngineChoiceWipeReason::kInvalidMetadataVersion);
         return;
-      case ChoiceCompletionMetadata::ParseError::kOther:
+      case ChoiceCompletionMetadata::ParseError::kMissingTimestamp:
+      case ChoiceCompletionMetadata::ParseError::kNullTimestamp:
         WipeSearchEngineChoicePrefs(
             profile_prefs_.get(),
             SearchEngineChoiceWipeReason::kInvalidMetadata);

@@ -325,11 +325,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ChoiceCompletedOnMonth.OnProfileLoad"
+<histogram name="Search.ChoiceCompletedOnMonth.OnProfileLoad2"
     enum="SearchEngineChoiceDate" expires_after="2026-05-01">
-<!-- When bumping expiry date, also update the enum (making the enumeration in sync with existing values). Escalate when data count
-exceeds 100 entries:
-https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#sustainability -->
+<!-- When bumping expiry date, also update the enum (making the enumeration in
+sync with existing values). Escalate when data count exceeds 1000 entries:
+https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#When-To-Use-Sparse-Histograms -->
 
   <owner>dgn@google.com</owner>
   <owner>tju@google.com</owner>
@@ -338,6 +338,10 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Recorded on each profile load (tied to service construction), indicates the
     last engine choice timestamp formatted as YYYYMM integer. For convenience,
     the enum maps these to user readable `YYYY-MM` labels.
+
+    To avoid the histogram exceeding 1000 buckets (limit for sparse histograms),
+    the range is capped to [`2022-01`, `2050-12`], dates prior to 2022 being
+    recorded as `1000-01`, and dates after 2050 being recorded as `3000-01`.
 
     The value is serialized as a sparse histogram with integer values. Since
     each client can record the same value multiple times, it might be more

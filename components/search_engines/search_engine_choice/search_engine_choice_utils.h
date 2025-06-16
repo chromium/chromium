@@ -58,7 +58,7 @@ inline constexpr char kSearchEngineChoiceRepromptWildcardHistogram[] =
 inline constexpr char kSearchEngineChoiceRepromptSpecificCountryHistogram[] =
     "Search.ChoiceReprompt.SpecificCountry";
 inline constexpr char kSearchEngineChoiceCompletedOnMonthHistogram[] =
-    "Search.ChoiceCompletedOnMonth.OnProfileLoad";
+    "Search.ChoiceCompletedOnMonth.OnProfileLoad2";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -295,7 +295,8 @@ struct ChoiceCompletionMetadata {
     kAbsent,
     kMissingVersion,
     kInvalidVersion,
-    kOther,
+    kMissingTimestamp,
+    kNullTimestamp,
   };
 
   base::Time timestamp;

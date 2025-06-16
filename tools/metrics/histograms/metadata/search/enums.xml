@@ -326,6 +326,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SearchEngineChoiceDate">
   <summary>Year-Month</summary>
+  <int value="100001" label="Before 2022"/>
   <int value="202201" label="2022-01"/>
   <int value="202202" label="2022-02"/>
   <int value="202203" label="2022-03"/>
@@ -386,6 +387,7 @@ chromium-metrics-reviews@google.com.
   <int value="202610" label="2026-10"/>
   <int value="202611" label="2026-11"/>
   <int value="202612" label="2026-12"/>
+  <int value="300001" label="After 2050"/>
 </enum>
 
 <enum name="SearchEngineChoiceReprompt">

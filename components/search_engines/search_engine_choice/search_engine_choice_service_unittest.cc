@@ -713,6 +713,46 @@ TEST_F(SearchEngineChoiceServiceTest,
       kSearchEngineChoiceCompletedOnMonthHistogram, 202504, 1);
 }
 
+// Tests if choice screen completion date is recorded.
+TEST_F(SearchEngineChoiceServiceTest,
+       RecordsChoiceScreenCompletionDateBefore2022Histogram) {
+  base::HistogramTester histogram_tester;
+
+  // July 1993. What is specific about this timestamp (in windows epoch seconds)
+  // is that it is before 2022.
+  int64_t windows_epoch_timestamp = 12388103000;
+
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion, "1.0.0.0");
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      windows_epoch_timestamp);
+
+  search_engine_choice_service();
+  histogram_tester.ExpectUniqueSample(
+      kSearchEngineChoiceCompletedOnMonthHistogram, 100001, 1);
+}
+
+// Tests if choice screen completion date is recorded.
+TEST_F(SearchEngineChoiceServiceTest,
+       RecordsChoiceScreenCompletionDateAfter2050Histogram) {
+  base::HistogramTester histogram_tester;
+
+  // December 2056. What is specific about this timestamp (in windows epoch
+  // seconds) is that it is after 2050.
+  int64_t windows_epoch_timestamp = 14388103000;
+
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion, "1.0.0.0");
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      windows_epoch_timestamp);
+
+  search_engine_choice_service();
+  histogram_tester.ExpectUniqueSample(
+      kSearchEngineChoiceCompletedOnMonthHistogram, 300001, 1);
+}
+
 // Test that the user is not reprompted if the reprompt parameter is not a valid
 // JSON string.
 TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
