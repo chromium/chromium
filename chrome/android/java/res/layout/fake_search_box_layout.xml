@@ -58,6 +58,7 @@ found in the LICENSE file.
         style="@style/LocationBarActionButtonForFakeSearchBox"
         android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
         android:src="@drawable/search_spark_black_24dp"
+        android:foreground="@drawable/oval_ripple"
         android:background="@drawable/search_spark_rainbow_background"
         android:visibility="gone"/>
     <org.chromium.ui.widget.ChromeImageView
