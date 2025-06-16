@@ -1670,20 +1670,49 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-// TODO(crbug.com/392931070): add netlogs
+namespace {
+void NetLog2QwacBindingError(const NetLogWithSource& net_log,
+                             std::string_view message) {
+  net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
+    base::Value::Dict dict;
+    // Including a net_error will cause the netlog-viewer to display this event
+    // as an error.
+    dict.Set("net_error", ERR_FAILED);
+    dict.Set("error_description", message);
+    return dict;
+  });
+}
+}  // namespace
+
 scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
     std::string_view binding,
     const std::string& hostname,
     base::span<const uint8_t> tls_cert,
     const NetLogWithSource& net_log) {
+  net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
+    base::Value::Dict dict;
+    dict.Set("binding", NetLogStringValue(binding));
+    dict.Set("host", NetLogStringValue(hostname));
+
+    std::string pem_encoded_tls_cert;
+    if (X509Certificate::GetPEMEncodedFromDER(base::as_string_view(tls_cert),
+                                              &pem_encoded_tls_cert)) {
+      dict.Set("tls_certificate", NetLogStringValue(pem_encoded_tls_cert));
+    }
+
+    return dict;
+  });
+
   auto parsed_binding = TwoQwacCertBinding::Parse(binding);
   if (!parsed_binding.has_value()) {
     HistogramVerify2QwacResult(Verify2QwacBindingResult::kBindingParsingError);
+    NetLog2QwacBindingError(net_log, "binding parsing error");
     return nullptr;
   }
   if (!parsed_binding->VerifySignature()) {
     HistogramVerify2QwacResult(
         Verify2QwacBindingResult::kBindingSignatureInvalid);
+    NetLog2QwacBindingError(net_log, "binding signature invalid");
     return nullptr;
   }
   CertVerifyResult verify_result;
@@ -1692,13 +1721,20 @@ scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
   if (verify_rv != OK) {
     // Verify2Qwac internally records a histogram result on all failure cases,
     // so no histogram result is recorded here.
+    NetLog2QwacBindingError(net_log, "2-QWAC cert verify failed");
     return nullptr;
   }
   if (!parsed_binding->BindsTlsCert(tls_cert)) {
     HistogramVerify2QwacResult(Verify2QwacBindingResult::kTlsCertNotBound);
+    NetLog2QwacBindingError(net_log, "TLS cert not bound");
     return nullptr;
   }
   HistogramVerify2QwacResult(Verify2QwacBindingResult::kValid2QwacBinding);
+  net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
+    base::Value::Dict dict;
+    dict.Set("is_valid_2qwac_binding", true);
+    return dict;
+  });
   return std::move(verify_result.verified_cert);
 }
 

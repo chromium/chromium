@@ -3840,6 +3840,24 @@ EVENT_TYPE(CERT_VERIFY_PROC)
 // The END phase event parameters are the same as for CERT_VERIFY_PROC event.
 EVENT_TYPE(CERT_VERIFY_PROC_2QWAC)
 
+// This event is created when CertVerifyProc is verifying a 2-QWAC binding.
+// The BEGIN phase event parameters are:
+// {
+//   "binding": <The 2-QWAC binding.>
+//   "host": <The hostname verification is being performed for.>
+//   "tls_certificate": <A PEM encoded certificate of the TLS certificate that
+//                       is expected to be in the list of certs bound by the
+//                       binding.>
+// }
+//
+// The END phase event parameters are:
+// {
+//   "net_error": <Present if verification failed.>
+//   "error_description": <String description of error if verification failed.>
+//   "is_valid_2qwac_binding": <True if verification succeeded.>
+// }
+EVENT_TYPE(CERT_VERIFY_PROC_2QWAC_BINDING)
+
 // This event is created for the target cert passed into CertVerifyProcBulitin.
 // The event parameters are:
 //   {
