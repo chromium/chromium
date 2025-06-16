@@ -112,6 +112,18 @@ template("define_autorolled_targets") {
   }
   if (!limit_android_deps) {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt("com_airbnb_android_lottie_java") {
+      aar_path =
+          "autorolled/cipd/libs/com_airbnb_android_lottie/lottie-6.6.6.aar"
+      info_path = "autorolled/committed/libs/com_airbnb_android_lottie/com_airbnb_android_lottie.info"
+      enable_bytecode_checks = false
+      deps = [
+        "//third_party/android_deps:com_squareup_okio_okio_java",
+        "//third_party/androidx:androidx_appcompat_appcompat_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt(
           "google_android_datatransport_transport_backend_cct_java") {

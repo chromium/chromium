@@ -1,0 +1,15 @@
+Name: Lottie
+Short Name: lottie
+URL: https://github.com/airbnb/lottie-android
+Version: 6.6.6
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Lottie is an animation library that renders Adobe After Effects animations natively in realtime.
+
+Local Modifications:
+No modifications.

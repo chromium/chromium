@@ -1,4 +1,5 @@
 [
+    "committed/libs/com_airbnb_android_lottie",
     "committed/libs/com_google_android_datatransport_transport_api",
     "committed/libs/com_google_android_datatransport_transport_backend_cct",
     "committed/libs/com_google_android_datatransport_transport_runtime",
