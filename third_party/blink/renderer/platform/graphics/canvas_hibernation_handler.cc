@@ -407,7 +407,7 @@ void CanvasHibernationHandler::Hibernate() {
   hibernation_scheduled_ = false;
 
   CanvasResourceProvider* provider =
-      resource_host_->ResourceProviderDEPRECATED();
+      resource_host_->GetResourceProviderForCanvas2D();
   if (!provider) {
     ReportHibernationEvent(
         HibernationEvent::kHibernationAbortedBecauseNoSurface);

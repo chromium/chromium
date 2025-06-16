@@ -34,11 +34,16 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   void SetIsHibernating(bool is_hibernating) {
     is_hibernating_ = is_hibernating;
   }
+
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
+    return ResourceProviderDEPRECATED();
+  }
+
   size_t GetMemoryUsage() const override { return 0; }
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D()
       override {
-    if (ResourceProviderDEPRECATED()) {
-      return ResourceProviderDEPRECATED();
+    if (GetResourceProviderForCanvas2D()) {
+      return GetResourceProviderForCanvas2D();
     }
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kCallClear;
@@ -65,7 +70,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
 
     ReplaceResourceProvider(std::move(provider));
 
-    return ResourceProviderDEPRECATED();
+    return GetResourceProviderForCanvas2D();
   }
 
   void SetPageVisible(bool visible) {

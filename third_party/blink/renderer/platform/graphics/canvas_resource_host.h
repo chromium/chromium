@@ -63,6 +63,8 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual bool LowLatencyEnabled() const { return false; }
 
+  virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
+
   // TODO(crbug.com/352263194): Transition all usages of this method to
   // context-specific variants and eliminate the method.
   CanvasResourceProvider* ResourceProviderDEPRECATED() const {
