@@ -311,6 +311,9 @@ TEST_F(PictureInPictureWindowManagerTest, CorrectTypesAreSupported) {
   EXPECT_TRUE(
       PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
           GURL("chrome://newtab")));
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("isolated-app://asdf")));
 }
 
 TEST_F(PictureInPictureWindowManagerTest, RecordsInitialSizeHistograms) {

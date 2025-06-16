@@ -9,6 +9,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_bounds_cache.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/common/url_constants.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -569,7 +570,8 @@ bool PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return url.SchemeIs(url::kHttpsScheme) || url.SchemeIsFile() ||
-         net::IsLocalhost(url) || url.SchemeIs(content::kChromeUIScheme);
+         net::IsLocalhost(url) || url.SchemeIs(content::kChromeUIScheme) ||
+         url.SchemeIs(chrome::kIsolatedAppScheme);
 #else
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID)

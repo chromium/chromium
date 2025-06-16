@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_bounds_change_animation.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
@@ -488,12 +489,17 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
                             ? gfx::ELIDE_TAIL
                             : gfx::ELIDE_HEAD;
 
-  // Similarly for extension URLs, the tail is more important to elide.
+  // Similarly for extension URLs and isolated-app URLs, the tail is more
+  // important to elide.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (location_bar_model_->GetURL().SchemeIs(extensions::kExtensionScheme)) {
+  if (location_bar_model_->GetURL().SchemeIs(extensions::kExtensionScheme) ||
+      location_bar_model_->GetURL().SchemeIs(chrome::kIsolatedAppScheme)) {
     elide_behavior = gfx::ELIDE_TAIL;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  // TODO(crbug.com/424715850): use IWA app name in title (plus why registrar
+  // based on browser_view->GetProfile doesn't know about the app).
 
   // Creates the window title.
   top_bar_container_view_->AddChildView(

@@ -690,9 +690,10 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
         NavigationCapturingInitialResult::kNavigationCanceled;
     return CancelInitialNavigation();
   }
-  // App popups are handled in the switch statement in
+  // App popups and picture-in-picture are handled in the switch statement in
   // `GetBrowserAndTabForDisposition()`.
-  if (disposition_ == WindowOpenDisposition::NEW_POPUP) {
+  if (disposition_ == WindowOpenDisposition::NEW_POPUP ||
+      disposition_ == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
     return CapturingDisabled();
   }
 
