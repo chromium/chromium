@@ -10,9 +10,12 @@ import android.view.View;
 
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -23,18 +26,46 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
 
     private final ListMenuButton mExtensionsMenuButton;
     private final ThemeColorProvider mThemeColorProvider;
-    private final ThemeColorProvider.TintObserver mTintObserver;
+    private final ObservableSupplier<Profile> mProfileSupplier;
+
+    private final ThemeColorProvider.TintObserver mTintObserver = this::onTintChanged;
+    private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
+
+    @Nullable private Profile mProfile;
 
     public ExtensionsMenuButtonCoordinator(
             Context context,
             ListMenuButton extensionsMenuButton,
-            ThemeColorProvider themeColorProvider) {
+            ThemeColorProvider themeColorProvider,
+            ObservableSupplier<Profile> profileSupplier) {
         mExtensionsMenuButton = extensionsMenuButton;
         mExtensionsMenuButton.setOnClickListener(this::onClick);
+        mProfileSupplier = profileSupplier;
 
         mThemeColorProvider = themeColorProvider;
-        mTintObserver = this::onTintChanged;
         mThemeColorProvider.addTintObserver(mTintObserver);
+
+        mProfileSupplier.addObserver(mProfileUpdatedCallback);
+    }
+
+    private void onProfileUpdated(@Nullable Profile profile) {
+        if (profile == mProfile) {
+            return;
+        }
+
+        mProfile = profile;
+
+        // TODO(crbug.com/422307625): Remove this check once extensions are ready for
+        // dogfooding.
+        int visibility = View.GONE;
+        if (mProfile != null) {
+            ExtensionActionsBridge extensionActionsBridge = ExtensionActionsBridge.get(mProfile);
+            if (extensionActionsBridge != null && extensionActionsBridge.extensionsEnabled()) {
+                visibility = View.VISIBLE;
+            }
+        }
+
+        mExtensionsMenuButton.setVisibility(visibility);
     }
 
     void onClick(View view) {
@@ -54,5 +85,7 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
     public void destroy() {
         mExtensionsMenuButton.setOnClickListener(null);
         mThemeColorProvider.removeTintObserver(mTintObserver);
+        mProfileSupplier.removeObserver(mProfileUpdatedCallback);
+        mProfile = null;
     }
 }

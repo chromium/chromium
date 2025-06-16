@@ -52,7 +52,4 @@ public interface ExtensionToolbarManager extends Destroyable {
                 themeColorProvider);
         return manager;
     }
-
-    /** Initialize the manager with the components that had native initialization dependencies. */
-    public void initializeWithNative();
 }

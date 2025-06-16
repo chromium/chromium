@@ -2272,10 +2272,6 @@ public class ToolbarManager
             mUpdateMenuItemHelper.registerObserver(mMenuStateObserver);
         }
 
-        if (mExtensionToolbarManager != null) {
-            mExtensionToolbarManager.initializeWithNative();
-        }
-
         mInitializedWithNative = true;
         mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
         refreshSelectedTab(mActivityTabProvider.get());
