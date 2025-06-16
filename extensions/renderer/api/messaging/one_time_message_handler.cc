@@ -151,8 +151,9 @@ bool CheckAndHandleAsyncListenerReply(
 
     // Check if any of the results is indicating it will reply async by
     // returning `true`.
-    if (listener_return->IsBoolean()) {
-      return listener_return.As<v8::Boolean>()->Value();
+    if (listener_return->IsBoolean() &&
+        listener_return.As<v8::Boolean>()->Value()) {
+      return true;
     }
 
     // Check if any of the returns are a promise -- indicating the listener

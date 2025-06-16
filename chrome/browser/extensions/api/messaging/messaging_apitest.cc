@@ -657,6 +657,86 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
   }
 }
 
+// Helps in testing that
+// extensions_features::kRuntimeOnMessagePromiseReturnSupport doesn't regress
+// asynchronous listener behavior when multiple listeners can return for a
+// single message.
+class OnMessageMultiListenerMessagingApiTest
+    : public MessagingApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OnMessageMultiListenerMessagingApiTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{extensions_features::
+                                    kRuntimeOnMessagePromiseReturnSupport},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, /*disabled_features=*/{
+              extensions_features::kRuntimeOnMessagePromiseReturnSupport});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that, when a synchronous onMessage listener is registered first (it's
+// return value is examined first) and an asynchronous listener is registered
+// second, it doesn't prevent the asynchronous listeners sendResponse() call
+// from getting to the message sender. Regression test for crbug.com/424560420.
+IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
+                       OnMessageSyncListenerReturnsFirst) {
+  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/on_message_multi_listener/sync_listener_called_first")));
+
+  // Open example.com where content script is injected and runtime.sendMessage()
+  // is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script response callback function is called with the
+  // expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender response callback to "
+        "receive response from background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
+
+// Tests that, when a asynchronous onMessage listener is registered first (it's
+// return value is examined first) and a synchronous listener is registered
+// second, it doesn't prevent the asynchronous listeners sendResponse() call
+// from getting to the message sender. Regression test for crbug.com/424560420.
+IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
+                       OnMessageAsyncListenerReturnsFirst) {
+  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/on_message_multi_listener/async_listener_called_first")));
+
+  // Open example.com where content script is injected and runtime.sendMessage()
+  // is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script response callback function is called with the
+  // expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender response callback to "
+        "receive response from background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OnMessageMultiListenerMessagingApiTest,
+                         // extensions_features::kUserScriptUserExtensionToggle
+                         testing::Bool());
+
 class ServiceWorkerMessagingApiTest : public MessagingApiTest {
  protected:
   ~ServiceWorkerMessagingApiTest() override = default;
