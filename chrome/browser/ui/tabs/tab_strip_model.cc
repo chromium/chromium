@@ -817,6 +817,10 @@ void TabStripModel::MoveSelectedTabsTo(
 
     for (const auto& group_id : groups_to_destroy) {
       delegate_->WillCloseGroup(group_id);
+
+      for (TabStripModelObserver& observer : observers_) {
+        observer.OnTabGroupWillBeRemoved(group_id);
+      }
     }
   }
 
