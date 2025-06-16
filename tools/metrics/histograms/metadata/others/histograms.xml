@@ -4544,7 +4544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.CanContactUser"
-    enum="FeedbackAppContactUserConsentType" expires_after="2025-07-30">
+    enum="FeedbackAppContactUserConsentType" expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4555,7 +4555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.DescriptionLength" units="characters"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4566,7 +4566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.Duration.GetBigFeedbackLogs" units="ms"
-    expires_after="2025-11-03">
+    expires_after="2026-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -4579,7 +4579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.ExitPath" enum="FeedbackAppExitPath"
-    expires_after="2026-05-25">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4596,7 +4596,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.EmptyCount"
-    units="logs" expires_after="2025-11-03">
+    units="logs" expires_after="2026-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -4608,7 +4608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.NotAvailableCount"
-    units="logs" expires_after="2025-11-03">
+    units="logs" expires_after="2026-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -4620,7 +4620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.OtherCount"
-    units="logs" expires_after="2025-11-03">
+    units="logs" expires_after="2026-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -4632,7 +4632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.Success"
-    enum="Boolean" expires_after="2025-11-03">
+    enum="Boolean" expires_after="2026-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -4644,7 +4644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.GetFeedbackLogsV2.DBusResult"
-    enum="GetFeedbackLogsV2DbusResult" expires_after="2025-11-03">
+    enum="GetFeedbackLogsV2DbusResult" expires_after="2026-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -4656,7 +4656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.HelpContentOutcome"
-    enum="FeedbackAppHelpContentOutcome" expires_after="2025-09-28">
+    enum="FeedbackAppHelpContentOutcome" expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4668,7 +4668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.HelpContentSearchResultCount"
-    units="numbers" expires_after="2025-07-30">
+    units="numbers" expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4679,7 +4679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedEmail" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4690,7 +4690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedFile" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4701,7 +4701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedScreenshot" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4712,7 +4712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedSystemInfo" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4723,7 +4723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedUrl" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4734,7 +4734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.Openduration" units="ms"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4745,7 +4745,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.PostSubmitAction"
-    enum="FeedbackAppPostSubmitAction" expires_after="2025-07-30">
+    enum="FeedbackAppPostSubmitAction" expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4757,7 +4757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.TimeOnPage.{FeedbackAppPage}" units="s"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4774,7 +4774,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.ViewedHelpContent" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4785,7 +4785,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.ViewedImage" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4796,7 +4796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.ViewedMetrics" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4807,7 +4807,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.ViewedScreenshot" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4818,7 +4818,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.ViewedSystemAndAppInfo" enum="Boolean"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4829,7 +4829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.Duration.FetchSystemInformation" units="ms"
-    expires_after="2025-11-03">
+    expires_after="2026-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>fernandex@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4841,7 +4841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.Duration.FormOpenToSubmit" units="ms"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>fernandex@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4866,7 +4866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.Duration.FormSubmitToSendQueue" units="ms"
-    expires_after="2025-07-30">
+    expires_after="2026-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
