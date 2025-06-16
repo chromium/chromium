@@ -72,7 +72,7 @@ void TwentyEightDayImpl::CheckMembershipOprf() {
 }
 
 void TwentyEightDayImpl::OnCheckMembershipOprfComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   NOTREACHED();
 }
 
@@ -82,7 +82,7 @@ void TwentyEightDayImpl::CheckMembershipQuery(
 }
 
 void TwentyEightDayImpl::OnCheckMembershipQueryComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   NOTREACHED();
 }
 
@@ -113,13 +113,13 @@ void TwentyEightDayImpl::CheckIn() {
 }
 
 void TwentyEightDayImpl::OnCheckInComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   NOTREACHED();
 }
 
 void TwentyEightDayImpl::OnCheckInCompleteCustom(
     const FresnelImportDataRequest import_request,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Use RAII to reset |url_loader_| after current function scope.
   auto url_loader = std::move(url_loader_);
 
@@ -421,7 +421,7 @@ void TwentyEightDayImpl::CheckMembershipOprfFirstPhase() {
 }
 
 void TwentyEightDayImpl::OnCheckMembershipOprfCompleteFirstPhase(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Use RAII to reset |url_loader_| after current function scope.
   auto url_loader = std::move(url_loader_);
 
@@ -431,14 +431,12 @@ void TwentyEightDayImpl::OnCheckMembershipOprfCompleteFirstPhase(
 
   // Convert serialized response body to oprf response protobuf.
   FresnelPsmRlweOprfResponse psm_oprf_response;
-  bool is_response_body_set = response_body.get() != nullptr;
-
-  if (!is_response_body_set ||
+  if (!response_body.has_value() ||
       !psm_oprf_response.ParseFromString(*response_body)) {
     LOG(ERROR) << "First phase OPRF response net code = " << net_code;
     LOG(ERROR) << "Response body was not set or could not be parsed into "
                << "FresnelPsmRlweOprfResponse proto. "
-               << "Is response body set = " << is_response_body_set;
+               << "Is response body set = " << response_body.has_value();
     std::move(callback_).Run();
     return;
   }
@@ -499,7 +497,7 @@ void TwentyEightDayImpl::CheckMembershipQueryFirstPhase(
 }
 
 void TwentyEightDayImpl::OnCheckMembershipQueryCompleteFirstPhase(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Use RAII to reset |url_loader_| after current function scope.
   auto url_loader = std::move(url_loader_);
 
@@ -509,14 +507,12 @@ void TwentyEightDayImpl::OnCheckMembershipQueryCompleteFirstPhase(
 
   // Convert serialized response body to fresnel query response protobuf.
   FresnelPsmRlweQueryResponse psm_query_response;
-  bool is_response_body_set = response_body.get() != nullptr;
-
-  if (!is_response_body_set ||
+  if (!response_body.has_value() ||
       !psm_query_response.ParseFromString(*response_body)) {
     LOG(ERROR) << "First phase query response net code = " << net_code;
     LOG(ERROR) << "Response body was not set or could not be parsed into "
                << "FresnelPsmRlweQueryResponse proto. "
-               << "Is response body set = " << is_response_body_set;
+               << "Is response body set = " << response_body.has_value();
     std::move(callback_).Run();
     return;
   }
@@ -756,7 +752,7 @@ void TwentyEightDayImpl::CheckMembershipOprfSecondPhase() {
 }
 
 void TwentyEightDayImpl::OnCheckMembershipOprfCompleteSecondPhase(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Use RAII to reset |url_loader_| after current function scope.
   auto url_loader = std::move(url_loader_);
 
@@ -766,14 +762,12 @@ void TwentyEightDayImpl::OnCheckMembershipOprfCompleteSecondPhase(
 
   // Convert serialized response body to oprf response protobuf.
   FresnelPsmRlweOprfResponse psm_oprf_response;
-  bool is_response_body_set = response_body.get() != nullptr;
-
-  if (!is_response_body_set ||
+  if (!response_body.has_value() ||
       !psm_oprf_response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Second phase OPRF response net code = " << net_code;
     LOG(ERROR) << "Response body was not set or could not be parsed into "
                << "FresnelPsmRlweOprfResponse proto. "
-               << "Is response body set = " << is_response_body_set;
+               << "Is response body set = " << response_body.has_value();
     std::move(callback_).Run();
     return;
   }
@@ -835,7 +829,7 @@ void TwentyEightDayImpl::CheckMembershipQuerySecondPhase(
 }
 
 void TwentyEightDayImpl::OnCheckMembershipQueryCompleteSecondPhase(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Use RAII to reset |url_loader_| after current function scope.
   auto url_loader = std::move(url_loader_);
 
@@ -845,14 +839,12 @@ void TwentyEightDayImpl::OnCheckMembershipQueryCompleteSecondPhase(
 
   // Convert serialized response body to fresnel query response protobuf.
   FresnelPsmRlweQueryResponse psm_query_response;
-  bool is_response_body_set = response_body.get() != nullptr;
-
-  if (!is_response_body_set ||
+  if (!response_body.has_value() ||
       !psm_query_response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Second phase query response net code = " << net_code;
     LOG(ERROR) << "Response body was not set or could not be parsed into "
                << "FresnelPsmRlweQueryResponse proto. "
-               << "Is response body set = " << is_response_body_set;
+               << "Is response body set = " << response_body.has_value();
     std::move(callback_).Run();
     return;
   }

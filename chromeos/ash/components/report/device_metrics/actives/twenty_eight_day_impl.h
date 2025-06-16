@@ -34,18 +34,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) TwentyEightDayImpl
   // UseCase:
   void CheckMembershipOprf() override;
   void OnCheckMembershipOprfComplete(
-      std::unique_ptr<std::string> response_body) override;
+      std::optional<std::string> response_body) override;
   void CheckMembershipQuery(
       const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
           oprf_response) override;
   void OnCheckMembershipQueryComplete(
-      std::unique_ptr<std::string> response_body) override;
+      std::optional<std::string> response_body) override;
   void CheckIn() override;
 
   // 28DA use case passes the import request back to callback completion.
-  void OnCheckInComplete(std::unique_ptr<std::string> response_body) override;
+  void OnCheckInComplete(std::optional<std::string> response_body) override;
   void OnCheckInCompleteCustom(const FresnelImportDataRequest import_request,
-                               std::unique_ptr<std::string> response_body);
+                               std::optional<std::string> response_body);
 
   base::Time GetLastPingTimestamp() override;
   void SetLastPingTimestamp(base::Time ts) override;
@@ -87,12 +87,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) TwentyEightDayImpl
   GetPsmIdentifiersToQueryPhaseOne();
   void CheckMembershipOprfFirstPhase();
   void OnCheckMembershipOprfCompleteFirstPhase(
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
   void CheckMembershipQueryFirstPhase(
       const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
           oprf_response);
   void OnCheckMembershipQueryCompleteFirstPhase(
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Second phase of check membership should binary search for a single
   // identifier between day 2 and 26.
@@ -101,12 +101,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) TwentyEightDayImpl
   GetPsmIdentifiersToQueryPhaseTwo();
   void CheckMembershipOprfSecondPhase();
   void OnCheckMembershipOprfCompleteSecondPhase(
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
   void CheckMembershipQuerySecondPhase(
       const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
           oprf_response);
   void OnCheckMembershipQueryCompleteSecondPhase(
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Maintains callback that is executed once this use case is done running.
   base::OnceCallback<void()> callback_;

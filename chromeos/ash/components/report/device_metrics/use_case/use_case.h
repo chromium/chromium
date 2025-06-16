@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCase {
 
   // Handle the response from the Oprf request.
   virtual void OnCheckMembershipOprfComplete(
-      std::unique_ptr<std::string> response_body) = 0;
+      std::optional<std::string> response_body) = 0;
 
   // Second phase of PSM check membership.
   // Get the result of whether the queried element(s) are in the set.
@@ -129,14 +129,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCase {
 
   // Handle the response from the Query request.
   virtual void OnCheckMembershipQueryComplete(
-      std::unique_ptr<std::string> response_body) = 0;
+      std::optional<std::string> response_body) = 0;
 
   // Import data to the Fresnel, and PSM database backend.
   virtual void CheckIn() = 0;
 
   // Handle the response from the Check-in request.
-  virtual void OnCheckInComplete(
-      std::unique_ptr<std::string> response_body) = 0;
+  virtual void OnCheckInComplete(std::optional<std::string> response_body) = 0;
 
   // Retrieve the last known ping timestamp for the use case from local state.
   virtual base::Time GetLastPingTimestamp() = 0;

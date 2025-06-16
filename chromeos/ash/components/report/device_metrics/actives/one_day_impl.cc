@@ -117,7 +117,7 @@ void OneDayImpl::CheckMembershipOprf() {
 }
 
 void OneDayImpl::OnCheckMembershipOprfComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Use RAII to reset |url_loader_| after current function scope.
   auto url_loader = std::move(url_loader_);
 
@@ -127,18 +127,17 @@ void OneDayImpl::OnCheckMembershipOprfComplete(
 
   // Convert serialized response body to oprf response protobuf.
   FresnelPsmRlweOprfResponse psm_oprf_response;
-  bool is_response_body_set = response_body.get() != nullptr;
   base::UmaHistogramBoolean(kHistogramsIsPsm1DAOprfResponseBodySet,
-                            is_response_body_set);
+                            response_body.has_value());
 
-  if (!is_response_body_set ||
+  if (!response_body.has_value() ||
       !psm_oprf_response.ParseFromString(*response_body)) {
     base::UmaHistogramBoolean(kHistogramsIsPsm1DAOprfResponseParsedCorrectly,
                               false);
     LOG(ERROR) << "Oprf response net code = " << net_code;
     LOG(ERROR) << "Response body was not set or could not be parsed into "
                << "FresnelPsmRlweOprfResponse proto. "
-               << "Is response body set = " << is_response_body_set;
+               << "Is response body set = " << response_body.has_value();
     utils::RecordCheckMembershipCases(
         utils::PsmUseCase::k1DA,
         utils::CheckMembershipResponseCases::kOprfResponseBodyFailed);
@@ -208,7 +207,7 @@ void OneDayImpl::CheckMembershipQuery(
 }
 
 void OneDayImpl::OnCheckMembershipQueryComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Use RAII to reset |url_loader_| after current function scope.
   auto url_loader = std::move(url_loader_);
 
@@ -218,14 +217,12 @@ void OneDayImpl::OnCheckMembershipQueryComplete(
 
   // Convert serialized response body to fresnel query response protobuf.
   FresnelPsmRlweQueryResponse psm_query_response;
-  bool is_response_body_set = response_body.get() != nullptr;
-
-  if (!is_response_body_set ||
+  if (!response_body.has_value() ||
       !psm_query_response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Query response net code = " << net_code;
     LOG(ERROR) << "Response body was not set or could not be parsed into "
                << "FresnelPsmRlweQueryResponse proto. "
-               << "Is response body set = " << is_response_body_set;
+               << "Is response body set = " << response_body.has_value();
     utils::RecordCheckMembershipCases(
         utils::PsmUseCase::k1DA,
         utils::CheckMembershipResponseCases::kQueryResponseBodyFailed);
@@ -318,7 +315,7 @@ void OneDayImpl::CheckIn() {
                                 utils::GetMaxFresnelResponseSizeBytes());
 }
 
-void OneDayImpl::OnCheckInComplete(std::unique_ptr<std::string> response_body) {
+void OneDayImpl::OnCheckInComplete(std::optional<std::string> response_body) {
   // Use RAII to reset |url_loader_| after current function scope.
   auto url_loader = std::move(url_loader_);
 
