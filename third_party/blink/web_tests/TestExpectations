@@ -9181,3 +9181,6 @@ crbug.com/423416578 [ Linux ] custom-elements/form-validation-bubble-appearance.
 
 # Gardener 2025-06-12
 crbug.com/422636456 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Pass Timeout ]
+
+# Gardener 2025-06-16
+crbug.com/424918655 [ Mac ] external/wpt/soft-navigation-heuristics/lcp/tentative/contracted-image.html [ Failure Pass ]
