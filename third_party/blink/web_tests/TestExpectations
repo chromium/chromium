@@ -9182,3 +9182,4 @@ crbug.com/422636456 [ Mac ] http/tests/inspector-protocol/network/navigate-ifram
 
 # Gardener 2025-06-16
 crbug.com/424918655 [ Mac ] external/wpt/soft-navigation-heuristics/lcp/tentative/contracted-image.html [ Failure Pass ]
+crbug.com/420596996 [ Win ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.serviceworker.html?gpu [ Failure Pass ]
