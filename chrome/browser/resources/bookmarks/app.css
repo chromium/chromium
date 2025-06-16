@@ -79,7 +79,7 @@ managed-footnote {
 
 bookmarks-list {
   flex: 1;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 #drop-shadow {

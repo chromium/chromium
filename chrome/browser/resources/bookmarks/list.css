@@ -11,7 +11,6 @@
 
 :host {
   color: var(--cr-secondary-text-color);
-  min-width: 300px;
   overflow-y: auto;
   padding-bottom: 24px;
   padding-inline-end: var(--card-padding-side);
@@ -25,6 +24,7 @@
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
   margin: 0 auto;
+  min-width: 300px;
   max-width: var(--card-max-width);
   padding: 8px 0;
 }
