@@ -11,6 +11,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/user_education/custom_webui_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/custom_webui_help_bubble_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -23,6 +24,7 @@
 #include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/common/user_education_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_ui.h"
@@ -44,6 +46,8 @@
 #include "ui/events/event_modifiers.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/webui/resources/cr_components/help_bubble/custom_help_bubble.mojom.h"
 #include "ui/webui/webui_util.h"
 
@@ -238,6 +242,25 @@ class CustomWebUIHelpBubbleUiTest : public InteractiveFeaturePromoTest {
         .SetDescription("CheckIsDismissed()");
   }
 
+  static auto CheckIsAnchor(ElementSpecifier el, bool is_anchor) {
+    return Steps(CheckView(
+                     kToolbarAppMenuButtonElementId,
+                     [](BrowserAppMenuButton* button) {
+                       return button->GetProperty(
+                           user_education::kHasInProductHelpPromoKey);
+                     },
+                     is_anchor)
+                     .SetDescription("Check IPH key property."),
+                 CheckView(
+                     kToolbarAppMenuButtonElementId,
+                     [](BrowserAppMenuButton* button) {
+                       return views::InkDrop::Get(button)
+                           ->in_attention_state_for_testing();
+                     },
+                     is_anchor)
+                     .SetDescription("Check in attention state."));
+  }
+
   const DeepQuery kCancelButton{"test-custom-help-bubble", "#cancel"};
   const DeepQuery kDismissButton{"test-custom-help-bubble", "#dismiss"};
   const DeepQuery kSnoozeButton{"test-custom-help-bubble", "#snooze"};
@@ -277,12 +300,14 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest,
             return help_bubble && help_bubble->is_open();
           }),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      CheckIsAnchor(kToolbarAppMenuButtonElementId, true),
       InstrumentNonTabWebView(kWebViewElementId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
       ClickElement(kWebViewElementId, kCancelButton),
       WaitForEvent(kToolbarAppMenuButtonElementId, kCallbackEvent),
       Do([&help_bubble]() { help_bubble->Close(); }),
-      WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting));
+      WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      CheckIsAnchor(kToolbarAppMenuButtonElementId, false));
 }
 
 IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromo_Cancel) {

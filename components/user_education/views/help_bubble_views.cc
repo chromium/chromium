@@ -260,6 +260,11 @@ CustomHelpBubbleViews::CustomHelpBubbleViews(
 
   bubble->GetWidget()->MakeCloseSynchronous(base::BindOnce(
       &CustomHelpBubbleViews::OnHelpBubbleClosing, base::Unretained(this)));
+
+  // Custom help bubble should always have an anchor view.
+  auto* const anchor_view = bubble->GetAnchorView();
+  anchor_view->SetProperty(user_education::kHasInProductHelpPromoKey, true);
+  user_education::MaybeApplyAttentionStateToTrackedElement(anchor_view);
 }
 
 CustomHelpBubbleViews::~CustomHelpBubbleViews() {
