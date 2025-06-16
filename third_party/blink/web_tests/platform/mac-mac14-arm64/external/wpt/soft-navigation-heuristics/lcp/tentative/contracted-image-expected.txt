@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Largest Contentful Paint: |size| attribute is bounded by display size after soft navigation.
+  promise_test: Unhandled rejection with value: object "Error: 2 entries of type largest-contentful-paint with soft navigation observations never arrived"
+Harness: the test ran to completion.
+

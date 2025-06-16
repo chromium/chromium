@@ -317298,6 +317298,19 @@
         {}
        ]
       ],
+      "text-context-fill.svg": [
+       "0262deef3b2f7a69bfa825730bb74e0c19a6f38a",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/text-context-fill-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-font-face-load-image.html": [
        "eb9a5fe4357373e3be74293c66f14f621a911405",
        [
@@ -431015,6 +431028,10 @@
       ],
       "text-complex-002-ref.svg": [
        "3d3968fa4923436e760dd80b05af292a615cffcb",
+       []
+      ],
+      "text-context-fill-ref.svg": [
+       "a8fbd1964ee492b9ac54648c14419daeb45b4840",
        []
       ],
       "text-font-face-load-image-ref.html": [
@@ -709272,6 +709289,15 @@
       ]
      ]
     },
+    "canvas-click.html": [
+     "a058a621a0e2ed048954417a77deb15a887bd6e0",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "caret": {
      "empty-elements.html": [
       "328188c957bd738af419d54e4cd5c741cecc827f",
