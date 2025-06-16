@@ -140,11 +140,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // Returns the aspect ratio of a replaced element.
   LogicalSize GetReplacedAspectRatio() const;
 
-  // Returns the transform to apply to a child (e.g. for scrollable-overflow).
-  std::optional<gfx::Transform> GetTransformForChildFragment(
-      const PhysicalBoxFragment& child_fragment,
-      PhysicalSize size) const;
-
   bool MayHaveAnchorQuery() const { return box_->MayHaveAnchorQuery(); }
 
   bool HasLeftOverflow() const { return box_->HasLeftOverflow(); }

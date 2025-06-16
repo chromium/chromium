@@ -46,4 +46,39 @@ PhysicalRect ComputeReferenceBox(const LayoutBox& box) {
                                      box.PhysicalBorderBoxRect());
 }
 
+std::optional<gfx::Transform> GetTransformForChildFragment(
+    const PhysicalBoxFragment& child_fragment,
+    const LayoutObject& container_object,
+    PhysicalSize container_size) {
+  const auto* child_layout_object = child_fragment.GetLayoutObject();
+  DCHECK(child_layout_object);
+
+  if (!child_layout_object->ShouldUseTransformFromContainer(
+          &container_object)) {
+    return std::nullopt;
+  }
+
+  std::optional<gfx::Transform> fragment_transform;
+  if (!child_fragment.IsOnlyForNode()) {
+    // If we're fragmented, there's no correct transform stored for
+    // us. Calculate it now.
+    fragment_transform.emplace();
+    fragment_transform->MakeIdentity();
+    const PhysicalRect reference_box = ComputeReferenceBox(child_fragment);
+    child_fragment.Style().ApplyTransform(
+        *fragment_transform, &To<LayoutBox>(container_object), reference_box,
+        ComputedStyle::kIncludeTransformOperations,
+        ComputedStyle::kIncludeTransformOrigin,
+        ComputedStyle::kIncludeMotionPath,
+        ComputedStyle::kIncludeIndependentTransformProperties);
+  }
+
+  gfx::Transform transform;
+  child_layout_object->GetTransformFromContainer(
+      &container_object, PhysicalOffset(), transform, &container_size,
+      base::OptionalToPtr(fragment_transform));
+
+  return transform;
+}
+
 }  // namespace blink
