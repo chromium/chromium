@@ -32,9 +32,10 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -44,16 +45,18 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 @Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherThumbnailTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private final ThumbnailFetcher mNullThumbnailFetcher =
             new ThumbnailFetcher(
                     (tabId, thumbnailSize, isSelected, callback) -> callback.onResult(null),
                     Tab.INVALID_TAB_ID);
+    private RegularNewTabPageStation mNtp;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        mNtp = mActivityTestRule.startOnNtp();
         TabGridViewBinder.setThumbnailFetcherForTesting(mNullThumbnailFetcher);
     }
 
@@ -63,7 +66,8 @@ public class TabSwitcherThumbnailTest {
         // With this flag bitmap aspect ratios are not applied. Check that the resultant image views
         // still display at the right size.
         int tabCounts = 11;
-        TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
+        TabUiTestHelper.prepareTabsWithThumbnail(
+                mActivityTestRule.getActivityTestRule(), tabCounts, 0, "about:blank");
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         verifyAllThumbnailHeightWithAspectRatio(tabCounts, 0.85f);
 
@@ -77,7 +81,8 @@ public class TabSwitcherThumbnailTest {
     @MediumTest
     public void testThumbnailAspectRatio_point85() {
         int tabCounts = 11;
-        TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
+        TabUiTestHelper.prepareTabsWithThumbnail(
+                mActivityTestRule.getActivityTestRule(), tabCounts, 0, "about:blank");
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         verifyAllThumbnailHeightWithAspectRatio(tabCounts, 0.85f);
     }
@@ -86,7 +91,8 @@ public class TabSwitcherThumbnailTest {
     @MediumTest
     public void testThumbnail_withSoftCleanup() {
         int tabCounts = 11;
-        TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
+        TabUiTestHelper.prepareTabsWithThumbnail(
+                mActivityTestRule.getActivityTestRule(), tabCounts, 0, "about:blank");
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         verifyAllThumbnailHeightWithAspectRatio(tabCounts, .85f);
 

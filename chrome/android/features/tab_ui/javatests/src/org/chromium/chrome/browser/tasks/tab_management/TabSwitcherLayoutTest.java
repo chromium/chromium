@@ -35,7 +35,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.g
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
-import static org.chromium.components.embedder_support.util.UrlConstants.NTP_URL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.res.ColorStateList;
@@ -94,8 +93,10 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -127,10 +128,9 @@ import java.util.concurrent.ExecutionException;
 @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
 @Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherLayoutTest {
-    private static final String TEST_URL = "/chrome/test/data/android/google.html";
-
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
@@ -141,13 +141,14 @@ public class TabSwitcherLayoutTest {
     private final Callback<Bitmap> mBitmapListener =
             (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
     private ModalDialogManager mModalDialogManager;
+    private RegularNewTabPageStation mNtp;
 
     @Before
     public void setUp() throws ExecutionException {
         mTestServer = mActivityTestRule.getTestServer();
 
         // After setUp, Chrome is launched and has one NTP.
-        mActivityTestRule.startMainActivityWithURL(NTP_URL);
+        mNtp = mActivityTestRule.startOnNtp();
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mUrl = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
@@ -177,7 +178,8 @@ public class TabSwitcherLayoutTest {
      * @param url The URL to load.
      */
     private void prepareTabs(int numTabs, int numIncognitoTabs, @Nullable String url) {
-        TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, numTabs, numIncognitoTabs, url);
+        TabUiTestHelper.prepareTabsWithThumbnail(
+                mActivityTestRule.getActivityTestRule(), numTabs, numIncognitoTabs, url);
     }
 
     @Test
