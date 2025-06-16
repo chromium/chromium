@@ -14,6 +14,12 @@ import {PanelMenuItem} from './panel_menu_item.js';
 
 type MenuCallback = () => Promise<any>;
 
+type MenuDataForTest = {
+  menuMsg?: string,
+  menuItemTitle?: string,
+  menuItemShortcut?: string
+};
+
 export class PanelMenu {
   menuBarItemElement: HTMLElement;
   menuContainerElement: HTMLElement;
@@ -276,6 +282,15 @@ export class PanelMenu {
       startIndex += delta;
     }
     return -1;
+  }
+
+  getMenuDataForTest(): MenuDataForTest {
+    const menuItem = this.items_[this.activeIndex_];
+    return {
+      menuMsg: this.menuMsg,
+          menuItemTitle: menuItem ? menuItem.menuItemTitle : undefined,
+          menuItemShortcut: menuItem ? menuItem.menuItemShortcut : undefined
+    }
   }
 }
 

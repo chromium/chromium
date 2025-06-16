@@ -15,7 +15,7 @@ import {BridgeConstants} from '../common/bridge_constants.js';
 import {Command} from '../common/command.js';
 import {Msgs} from '../common/msgs.js';
 import type {PanelCommand} from '../common/panel_command.js';
-import {PanelCommandType} from '../common/panel_command.js';
+import {PanelCommandType, TestPanelCommandType} from '../common/panel_command.js';
 import type {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 import {SettingsManager} from '../common/settings_manager.js';
 
@@ -171,12 +171,73 @@ export class Panel implements PanelInterface {
 
   private handleMessageFromServiceWorker_(
       message: any|undefined, sendResponse: SendResponse): boolean {
-    if (message.type == PanelCommandType.IS_PANEL_INITIALIZED) {
-      sendResponse(true);
-    } else {
-      this.exec_({type: message.type, data: message.data} as PanelCommand)
+    switch (message.command) {
+      // Messages for testing purposes.
+      case TestPanelCommandType.BRAILLE_PAN_LEFT:
+        this.onPanLeft_();
+        break;
+      case TestPanelCommandType.BRAILLE_PAN_RIGHT:
+        this.onPanRight_();
+        break;
+      case TestPanelCommandType.DISABLE_ERROR_MSG:
+        this.disableErrorMsgForTest_();
+        break;
+      case TestPanelCommandType.FIRE_MOCK_EVENT:
+        this.fireMockEventForTest_(message['key']);
+        break;
+      case TestPanelCommandType.FIRE_MOCK_QUERY:
+        this.fireMockQueryForTest_(message['query']);
+        break;
+      case TestPanelCommandType.GET_ACTIVE_MENU_DATA:
+        this.getActiveMenuDataForTest_(sendResponse);
+        break;
+      case TestPanelCommandType.GET_ACTIVE_SEARCH_MENU_DATA:
+        this.getActiveSearchMenuDataForTest_(sendResponse);
+        break;
+
+      // Messages from PanelCommand.
+      case PanelCommandType.IS_PANEL_INITIALIZED:
+        sendResponse(true);
+        break;
+      default:
+        this.exec_({type: message.type, data: message.data} as PanelCommand)
+        break;
     }
     return false;
+  }
+
+  private disableErrorMsgForTest_() {
+    MenuManager.disableMissingMsgsErrorsForTesting = true;
+  }
+
+  private fireMockEventForTest_(key: string): void {
+    // @ts-ignore: Mocked KeyboardEvent.
+    const obj: KeyboardEvent = {key};
+    obj.preventDefault = function() {};
+    obj.stopPropagation = function() {};
+    this.onKeyDown_(obj);
+  }
+
+  private fireMockQueryForTest_(query: string): void {
+    // @ts-ignore: Mocked InputEvent.
+    const evt: InputEvent = {target: {value: query}};
+    this.menuManager_.onSearchBarQuery(evt);
+  }
+
+  private getActiveMenuDataForTest_(sendResponse: SendResponse) {
+    const activeMenu = this.menuManager_.activeMenu;
+    if (activeMenu) {
+      sendResponse(activeMenu.getMenuDataForTest());
+    }
+    sendResponse({});
+  }
+
+  private getActiveSearchMenuDataForTest_(sendResponse: SendResponse) {
+    const searchMenu = this.menuManager_.searchMenu;
+    if (searchMenu) {
+      sendResponse(searchMenu.getMenuDataForTest());
+    }
+    sendResponse({});
   }
 
   /**
@@ -235,14 +296,6 @@ export class Panel implements PanelInterface {
         break;
       case PanelCommandType.CLOSE_CHROMEVOX:
         this.onClose();
-        break;
-      case PanelCommandType.ENABLE_TEST_HOOKS:
-        // @ts-ignore: Exports for testing.
-        window['MenuManager'] = MenuManager;
-        // @ts-ignore: Exports for testing.
-        window['Msgs'] = Msgs;
-        // @ts-ignore: Exports for testing.
-        window['Panel'] = Panel;
         break;
     }
   }
