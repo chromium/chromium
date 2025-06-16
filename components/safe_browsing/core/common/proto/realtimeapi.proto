@@ -297,6 +297,7 @@ message MatchedUrlNavigationRule {
   optional bool block_screenshot = 8;
 
   message DataMaskingAction {
+    // The display name of the data masking detector.
     optional string display_name = 1;
 
     // The type of masking to be applied. This is either "LIGHT", "HARD" or
@@ -307,6 +308,9 @@ message MatchedUrlNavigationRule {
 
     // This is a regex pattern that will be used to match the URL.
     optional string pattern = 3;
+
+    // The id of the data masking detector.
+    optional string detector_id = 4;
   }
 
   // The set of data masking actions that should be applied to the URL due to

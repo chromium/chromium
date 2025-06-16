@@ -14,19 +14,6 @@
 
 namespace extensions {
 
-namespace {
-
-api::enterprise_reporting_private::TriggeredRuleInfo GetTriggeredRuleInfo(
-    const safe_browsing::MatchedUrlNavigationRule& rule) {
-  api::enterprise_reporting_private::TriggeredRuleInfo rule_info;
-  rule_info.rule_id = rule.rule_id();
-  rule_info.rule_name = rule.rule_name();
-
-  return rule_info;
-}
-
-}  // namespace
-
 EnterpriseReportingPrivateEventRouter::EnterpriseReportingPrivateEventRouter(
     content::BrowserContext* context)
     : event_router_(EventRouter::Get(context)) {}
@@ -42,24 +29,35 @@ void EnterpriseReportingPrivateEventRouter::OnUrlFilteringVerdict(
     return;
   }
 
-  std::vector<api::enterprise_reporting_private::DataMaskingRule> rules_list;
+  api::enterprise_reporting_private::DataMaskingRules data_masking_rules;
+  data_masking_rules.url = url.spec();
+
   for (const auto& threat_info : response.threat_info()) {
     const auto& data_masking_actions =
         threat_info.matched_url_navigation_rule().data_masking_actions();
+    if (data_masking_actions.empty()) {
+      continue;
+    }
+
+    api::enterprise_reporting_private::TriggeredRuleInfo rule_info;
+    rule_info.rule_id = threat_info.matched_url_navigation_rule().rule_id();
+    rule_info.rule_name = threat_info.matched_url_navigation_rule().rule_name();
 
     for (const auto& data_masking_action : data_masking_actions) {
-      api::enterprise_reporting_private::DataMaskingRule rule;
-      rule.level = data_masking_action.mask_type();
-      rule.regex_pattern = data_masking_action.pattern();
-      rule.triggered_rule_info =
-          GetTriggeredRuleInfo(threat_info.matched_url_navigation_rule());
-      rule.url = url.spec();
+      api::enterprise_reporting_private::MatchedDetector detector;
 
-      rules_list.push_back(std::move(rule));
+      detector.detector_id = data_masking_action.detector_id();
+      detector.display_name = data_masking_action.display_name();
+      detector.mask_type = data_masking_action.mask_type();
+      detector.pattern = data_masking_action.pattern();
+
+      rule_info.matched_detectors.push_back(std::move(detector));
     }
+
+    data_masking_rules.triggered_rule_info.push_back(std::move(rule_info));
   }
 
-  if (rules_list.empty()) {
+  if (data_masking_rules.triggered_rule_info.empty()) {
     return;
   }
 
@@ -68,7 +66,7 @@ void EnterpriseReportingPrivateEventRouter::OnUrlFilteringVerdict(
       api::enterprise_reporting_private::OnDataMaskingRulesTriggered::
           kEventName,
       api::enterprise_reporting_private::OnDataMaskingRulesTriggered::Create(
-          std::move(rules_list))));
+          std::move(data_masking_rules))));
 }
 
 // static

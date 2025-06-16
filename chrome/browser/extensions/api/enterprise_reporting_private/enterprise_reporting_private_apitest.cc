@@ -1166,21 +1166,27 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest,
       async function asyncAssertions() {
         chrome.enterprise.reportingPrivate.onDataMaskingRulesTriggered.addListener(
           rules => {
-            if (rules.length === 0) {
+            if (rules.triggeredRuleInfo.length === 0) {
               chrome.test.fail(
                   'There should not be an event when no rules are triggered');
             } else {
-              chrome.test.assertEq(rules, [
-                {
-                  level:'mask_type',
-                  regex_pattern:'pattern',
-                  triggeredRuleInfo:{
-                    matchedDetectors:[],
-                    ruleId:'rule_id',
-                    ruleName:'rule_name'
-                  },
+              chrome.test.assertEq(rules, {
+                  triggeredRuleInfo: [
+                    {
+                      matchedDetectors:[
+                        {
+                          detectorId: "12345",
+                          displayName: "display_name",
+                          maskType:'mask_type',
+                          pattern:'pattern'
+                        }
+                      ],
+                      ruleId:'rule_id',
+                      ruleName:'rule_name'
+                    }
+                  ],
                   url:'https://foo.bar/'
-                }]);
+                });
               chrome.test.succeed();
             }
           }
@@ -1217,6 +1223,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest,
   data_masking->set_display_name("display_name");
   data_masking->set_mask_type("mask_type");
   data_masking->set_pattern("pattern");
+  data_masking->set_detector_id("12345");
 
   router->OnUrlFilteringVerdict(GURL(kTestUrl), response);
 
@@ -1229,37 +1236,41 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
       async function asyncAssertions() {
         chrome.enterprise.reportingPrivate.onDataMaskingRulesTriggered.addListener(
           rules => {
-            chrome.test.assertEq(rules, [
-              {
-                level:'mask_type_1',
-                regex_pattern:'pattern_1',
-                triggeredRuleInfo:{
-                  matchedDetectors:[],
+            chrome.test.assertEq(rules, {
+              triggeredRuleInfo: [
+                {
                   ruleId:'rule_id_1',
-                  ruleName:'rule_name_1'
+                  ruleName:'rule_name_1',
+                  matchedDetectors:[
+                    {
+                      displayName: "display_name_1",
+                      detectorId: "id_1",
+                      maskType:'mask_type_1',
+                      pattern:'pattern_1'
+                    },
+                    {
+                      displayName: "display_name_2",
+                      detectorId: "id_2",
+                      maskType:'mask_type_2',
+                      pattern:'pattern_2'
+                    }
+                  ],
                 },
-                url:'https://foo.bar/'
-              },
-              {
-                level:'mask_type_2',
-                regex_pattern:'pattern_2',
-                triggeredRuleInfo:{
-                  matchedDetectors:[],
-                  ruleId:'rule_id_1',
-                  ruleName:'rule_name_1'
-                },
-                url:'https://foo.bar/'
-              },
-              {
-                level:'mask_type_3',
-                regex_pattern:'pattern_3',
-                triggeredRuleInfo:{
-                  matchedDetectors:[],
+                {
                   ruleId:'rule_id_2',
-                  ruleName:'rule_name_2'
-                },
-                url:'https://foo.bar/'
-              }]);
+                  ruleName:'rule_name_2',
+                  matchedDetectors:[
+                    {
+                      displayName: "display_name_3",
+                      detectorId: "id_3",
+                      maskType:'mask_type_3',
+                      pattern:'pattern_3'
+                    }
+                  ]
+                }
+              ],
+              url:'https://foo.bar/'
+            });
             chrome.test.succeed();
           }
         );
@@ -1286,11 +1297,13 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
   data_masking_1->set_display_name("display_name_1");
   data_masking_1->set_mask_type("mask_type_1");
   data_masking_1->set_pattern("pattern_1");
+  data_masking_1->set_detector_id("id_1");
 
   auto* data_masking_2 = rule_1->add_data_masking_actions();
   data_masking_2->set_display_name("display_name_2");
   data_masking_2->set_mask_type("mask_type_2");
   data_masking_2->set_pattern("pattern_2");
+  data_masking_2->set_detector_id("id_2");
 
   auto* rule_2 =
       response.add_threat_info()->mutable_matched_url_navigation_rule();
@@ -1301,6 +1314,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
   data_masking_3->set_display_name("display_name_3");
   data_masking_3->set_mask_type("mask_type_3");
   data_masking_3->set_pattern("pattern_3");
+  data_masking_3->set_detector_id("id_3");
 
   EnterpriseReportingPrivateEventRouterFactory::GetInstance()
       ->GetForProfile(profile())

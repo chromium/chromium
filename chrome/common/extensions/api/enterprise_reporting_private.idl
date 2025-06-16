@@ -319,10 +319,14 @@ namespace enterprise.reportingPrivate {
   enum DetectorType { PREDEFINED_DLP, USER_DEFINED };
 
   // Information for a data detector used to apply data masking functionality.
+  // The fields of this dictionary correspond to the proto fields of
+  // `MatchedUrlNavigationRule::DataMaskingAction`.
   dictionary MatchedDetector {
     DOMString detectorId;
     DOMString displayName;
-    DetectorType detectorType;
+    DOMString? maskType;
+    DOMString? pattern;
+    DetectorType? detectorType;
   };
 
   // Information for a data leak prevention rule that was used to mask data.
@@ -437,21 +441,15 @@ namespace enterprise.reportingPrivate {
                                        DoneCallback callback);
   };
 
-  dictionary DataMaskingRule {
-    // Corresponds to `MatchedUrlNavigationRule::DataMaskingAction::mask_type`.
-    DOMString level;
-
-    // Corresponds to `MatchedUrlNavigationRule::DataMaskingAction::pattern`.
-    DOMString regex_pattern;
-
-    // The URL being navigated to that triggered the rule.
+  dictionary DataMaskingRules {
+    // The URL being navigated to that triggered the rules.
     DOMString url;
 
-    TriggeredRuleInfo triggeredRuleInfo;
+    TriggeredRuleInfo[] triggeredRuleInfo;
   };
 
   interface Events {
-    static void onDataMaskingRulesTriggered(DataMaskingRule[] rules);
+    static void onDataMaskingRulesTriggered(DataMaskingRules rules);
   };
 
 };
