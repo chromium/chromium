@@ -20292,6 +20292,22 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledAllFramesWithQueueing",
+                    "params": {
+                        "level": "all-frames",
+                        "queueing_level": "full"
+                    },
+                    "enable_features": [
+                        "QueueNavigationsWhileWaitingForCommit",
+                        "RenderDocument",
+                        "WebViewRenderDocument"
+                    ],
+                    "disable_features": [
+                        "DelayLayerTreeViewDeletionOnLocalSwap",
+                        "RenderDocumentCompositorReuse"
+                    ]
+                },
+                {
                     "name": "EnabledSubframeWithQueueing",
                     "params": {
                         "level": "subframe",
@@ -20299,9 +20315,11 @@
                     },
                     "enable_features": [
                         "QueueNavigationsWhileWaitingForCommit",
-                        "RenderDocument"
+                        "RenderDocument",
+                        "WebViewRenderDocument"
                     ],
                     "disable_features": [
+                        "DelayLayerTreeViewDeletionOnLocalSwap",
                         "RenderDocumentCompositorReuse"
                     ]
                 },
@@ -20313,23 +20331,11 @@
                     },
                     "enable_features": [
                         "QueueNavigationsWhileWaitingForCommit",
-                        "RenderDocument"
+                        "RenderDocument",
+                        "WebViewRenderDocument"
                     ],
                     "disable_features": [
-                        "RenderDocumentCompositorReuse"
-                    ]
-                },
-                {
-                    "name": "EnabledAllFramesWithQueueing",
-                    "params": {
-                        "level": "all-frames",
-                        "queueing_level": "full"
-                    },
-                    "enable_features": [
-                        "QueueNavigationsWhileWaitingForCommit",
-                        "RenderDocument"
-                    ],
-                    "disable_features": [
+                        "DelayLayerTreeViewDeletionOnLocalSwap",
                         "RenderDocumentCompositorReuse"
                     ]
                 }
