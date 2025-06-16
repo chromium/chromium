@@ -7,13 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/search_engines/template_url_id.h"
 #import "components/search_engines/template_url_service_observer.h"
 
 class FaviconLoader;
+class TemplateURL;
 class TemplateURLService;
 
 #include "base/observer_list_types.h"
@@ -59,7 +62,15 @@ class PlaceholderService : public KeyedService,
   void AddObserver(PlaceholderServiceObserver* observer);
   void RemoveObserver(PlaceholderServiceObserver* observer);
 
-  UIImage* GetCurrentDefaultSearchEngineFavicon();
+  using PlaceholderImageCallback = base::RepeatingCallback<void(UIImage*)>;
+  // Requests the icon for the current default search engine at the given
+  // `icon_point_size`. If the icon is available synchronously, the callback
+  // will be called immediately with the cached icon. Otherwise, the callback
+  // will be called with a placeholder icon first, and then updated with the
+  // real icon once it's available. The callback will not be updated if the
+  // default search engine changes during the fetch.
+  void FetchDefaultSearchEngineIcon(CGFloat icon_point_size,
+                                    PlaceholderImageCallback callback);
   NSString* GetCurrentPlaceholderText();
   NSString* GetCurrentSearchOnlyPlaceholderText();
 
@@ -67,9 +78,31 @@ class PlaceholderService : public KeyedService,
   void OnTemplateURLServiceChanged() override;
 
  private:
+  // Retrieves a bundled icon (e.g., Google icon) for the given `template_url`
+  // and `icon_point_size`, if available. Returns nil otherwise.
+  UIImage* GetBundledIconForTemplateURL(const TemplateURL* template_url,
+                                        CGFloat icon_point_size);
+
+  // Called when an icon has been successfully fetched or retrieved for a
+  // `template_url_id` at a specific `icon_point_size`. Caches the icon and
+  // notifies relevant callbacks.
+  void OnIconReceivedForTemplateURL(TemplateURLID template_url_id,
+                                    CGFloat icon_point_size,
+                                    UIImage* icon);
+
+  // Initiates a fetch for the icon of the given `template_url` at the specified
+  // `icon_point_size`.
+  void PerformIconFetch(const TemplateURL* template_url,
+                        CGFloat icon_point_size);
+
   raw_ptr<FaviconLoader> favicon_loader_;
   raw_ptr<TemplateURLService> template_url_service_;
   base::ObserverList<PlaceholderServiceObserver> model_observers_;
+  // Cache for fetched/bundled icons. Keyed by icon size.
+  NSCache<NSNumber*, UIImage*>* icon_cache_;
+  // Map of icon sizes to a list of callbacks awaiting an icon of that size.
+  // This is cleared when default search engine changes.
+  std::map<CGFloat, std::vector<PlaceholderImageCallback>> icon_callbacks_;
 
   base::WeakPtrFactory<PlaceholderService> weak_ptr_factory_{this};
 };
