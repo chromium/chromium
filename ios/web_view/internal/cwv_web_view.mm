@@ -555,6 +555,21 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
       allowsBackForwardNavigationGestures;
 }
 
+- (BOOL)allowsLinkPreview {
+  if (![self isWebStateSafeToUse]) {
+    return NO;
+  }
+
+  return _webState->GetWebViewProxy().allowsLinkPreview;
+}
+
+- (void)setAllowsLinkPreview:(BOOL)allowsLinkPreview {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
+  _webState->GetWebViewProxy().allowsLinkPreview = allowsLinkPreview;
+}
+
 - (void)dealloc {
   if (_webState) {
     if (_webStateObserver) {
@@ -1089,6 +1104,7 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 
   BOOL allowsBackForwardNavigationGestures =
       self.allowsBackForwardNavigationGestures;
+  BOOL allowsLinkPreview = self.allowsLinkPreview;
 
   // CWVWebView does not support unrealized WebState, so ignore the
   // over-realization check (this simply reset the recent realization
@@ -1149,6 +1165,7 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 
   _webState->GetWebViewProxy().allowsBackForwardNavigationGestures =
       allowsBackForwardNavigationGestures;
+  _webState->GetWebViewProxy().allowsLinkPreview = allowsLinkPreview;
 
   if (_translationController) {
     id<CWVTranslationControllerDelegate> delegate =

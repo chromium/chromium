@@ -119,6 +119,9 @@ CWV_EXPORT
 // back-forward list navigations.
 @property(nonatomic) BOOL allowsBackForwardNavigationGestures;
 
+// Whether or not long pressing a link in the web view renders a link preview.
+@property(nonatomic) BOOL allowsLinkPreview;
+
 // The web view's autofill controller.
 @property(nonatomic, readonly) CWVAutofillController* autofillController;
 

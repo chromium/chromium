@@ -80,6 +80,9 @@ class WebStateImpl;
 // back-forward list navigations.
 @property(nonatomic) BOOL allowsBackForwardNavigationGestures;
 
+// Whether or not long pressing a link in the web view renders a link preview.
+@property(nonatomic) BOOL allowsLinkPreview;
+
 // Whether the WebController should attempt to keep the render process alive.
 @property(nonatomic, assign, getter=shouldKeepRenderProcessAlive)
     BOOL keepsRenderProcessAlive;

@@ -101,6 +101,14 @@ UIView* GetFirstResponderSubview(UIView* view) {
       allowsBackForwardNavigationGestures;
 }
 
+- (BOOL)allowsLinkPreview {
+  return _webController.allowsLinkPreview;
+}
+
+- (void)setAllowsLinkPreview:(BOOL)allowsLinkPreview {
+  _webController.allowsLinkPreview = allowsLinkPreview;
+}
+
 - (CGRect)bounds {
   return [_contentView bounds];
 }
