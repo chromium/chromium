@@ -327,6 +327,15 @@ BASE_DECLARE_FEATURE(kLensOverlayForceShowOnboardingScreen);
 // Feature flag to add lens overlay navigation to history.
 BASE_DECLARE_FEATURE(kLensOverlayNavigationHistory);
 
+// Variations of MIA NTP entrypoint.
+extern const char kNTPMIAEntrypointParam[];
+extern const char kNTPMIAEntrypointParamOmniboxContainedSingleButton[];
+extern const char kNTPMIAEntrypointParamOmniboxContainedInline[];
+extern const char kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox[];
+
+// Feature flag to change the MIA entrypoint in NTP.
+BASE_DECLARE_FEATURE(kNTPMIAEntrypoint);
+
 // Feature flag to enable UITraitCollection workaround for fixing incorrect
 // trait propagation.
 BASE_DECLARE_FEATURE(kEnableTraitCollectionWorkAround);

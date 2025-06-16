@@ -255,6 +255,20 @@ BASE_FEATURE(kLensOverlayNavigationHistory,
              "LensOverlayNavigationHistory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Variations of MIA NTP entrypoint.
+const char kNTPMIAEntrypointParam[] = "kNTPMIAEntrypointParam";
+const char kNTPMIAEntrypointParamOmniboxContainedSingleButton[] =
+    "kNTPMIAEntrypointParamOmniboxContainedSingleButton";
+const char kNTPMIAEntrypointParamOmniboxContainedInline[] =
+    "kNTPMIAEntrypointParamOmniboxContainedInline";
+const char kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox[] =
+    "kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox";
+
+// Feature flag to change the MIA entrypoint in NTP.
+BASE_FEATURE(kNTPMIAEntrypoint,
+             "kNTPMIAEntrypoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableTraitCollectionWorkAround,
              "EnableTraitCollectionWorkAround",
              base::FEATURE_ENABLED_BY_DEFAULT);

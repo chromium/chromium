@@ -143,6 +143,29 @@ const FeatureEntry::Choice
         {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
 };
 
+const FeatureEntry::FeatureParam
+    kNTPMIAEntrypointOmniboxContainedSingleButton[] = {
+        {kNTPMIAEntrypointParam,
+         kNTPMIAEntrypointParamOmniboxContainedSingleButton}};
+const FeatureEntry::FeatureParam kNTPMIAEntrypointOmniboxContainedInline[] = {
+    {kNTPMIAEntrypointParam, kNTPMIAEntrypointParamOmniboxContainedInline}};
+const FeatureEntry::FeatureParam
+    kNTPMIAEntrypointOmniboxContainedEnlargedFakebox[] = {
+        {kNTPMIAEntrypointParam,
+         kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
+
+const FeatureEntry::FeatureVariation kNTPMIAEntrypointVariations[] = {
+    {"A: Contained in Omnibox, single button",
+     kNTPMIAEntrypointOmniboxContainedSingleButton,
+     std::size(kNTPMIAEntrypointOmniboxContainedSingleButton), nullptr},
+    {"B: Contained in Omnibox, inline with Voice and Lens",
+     kNTPMIAEntrypointOmniboxContainedInline,
+     std::size(kNTPMIAEntrypointOmniboxContainedInline), nullptr},
+    {"C: Contained in Omnibox, enlarged fakebox",
+     kNTPMIAEntrypointOmniboxContainedEnlargedFakebox,
+     std::size(kNTPMIAEntrypointOmniboxContainedEnlargedFakebox), nullptr},
+};
+
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -2540,6 +2563,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotificationCollisionManagementName,
      flag_descriptions::kNotificationCollisionManagementDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kNotificationCollisionManagement)},
+    {"ntp-mia-entrypoint", flag_descriptions::kNTPMIAEntrypointName,
+     flag_descriptions::kNTPMIAEntrypointDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kNTPMIAEntrypoint,
+                                    kNTPMIAEntrypointVariations,
+                                    "kNTPMIAEntrypoint")},
     {"ios-one-tap-mini-map-remove-section-breaks",
      flag_descriptions::kIOSOneTapMiniMapRemoveSectionBreaksName,
      flag_descriptions::kIOSOneTapMiniMapRemoveSectionBreaksDescription,

@@ -768,6 +768,10 @@ const char kNotificationCollisionManagementName[] =
 const char kNotificationCollisionManagementDescription[] =
     "Enables delays to notifications to space them out more";
 
+const char kNTPMIAEntrypointName[] = "Entrypoint for MIA in the new tab page";
+const char kNTPMIAEntrypointDescription[] =
+    "Selects which variant of the MIA entrypoint is used in the new tab page";
+
 const char kIOSSharedHighlightingColorChangeName[] =
     "IOS Shared Highlighting color change";
 const char kIOSSharedHighlightingColorChangeDescription[] =
