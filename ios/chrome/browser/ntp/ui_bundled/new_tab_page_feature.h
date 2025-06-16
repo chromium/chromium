@@ -17,6 +17,20 @@ enum class FeedSwipeIPHVariation {
   kAnimated,
 };
 
+// Represents the possible onboarding treatments of Lens Overlay.
+enum class NTPMIAEntrypointVariation {
+  // The default experience.
+  kDisabled = 0,
+  // The entrypoint is shown in the omnibox as a single button.
+  kOmniboxContainedSingleButton = 1,
+  // The entrypoint is shown in the omnibox as a button inline with Lens and
+  // Voice.
+  kOmniboxContainedInline = 2,
+  // The entrypoint is shown inside the enlarged fake omnibox.
+  kOmniboxContainedEnlargedFakebox = 3,
+  kMaxValue = kOmniboxContainedEnlargedFakebox,
+};
+
 #pragma mark - Feature declarations
 
 // Feature flag to enable static resource serving for the Discover feed.
@@ -137,6 +151,9 @@ double GetDeprecateFeedHeaderParameterValueAsDouble(
 
 // Returns the enabled variation of feature kFeedSwipeInProductHelp.
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation();
+
+// Returns the enabled variation of feature kNTPMIAEntrypoint;
+NTPMIAEntrypointVariation GetNTPMIAEntrypointVariation();
 
 // YES if the feed visibility is handled by the eligibility service instead of
 // the new tab page mediator.
