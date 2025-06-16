@@ -1317,7 +1317,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_espresso_espresso_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_core/espresso-core-3.7.0-alpha03.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_core/espresso-core-3.7.0-alpha04.aar"
     info_path = "../androidx/committed/libs/androidx_test_espresso_espresso_core/androidx_test_espresso_espresso_core.info"
     enable_bytecode_checks = false
     testonly = true
@@ -3441,7 +3441,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_test_espresso_espresso_idling_resource_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_idling_resource/espresso-idling-resource-3.7.0-alpha03.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_idling_resource/espresso-idling-resource-3.7.0-alpha04.aar"
     info_path = "../androidx/committed/libs/androidx_test_espresso_espresso_idling_resource/androidx_test_espresso_espresso_idling_resource.info"
     enable_bytecode_checks = false
 

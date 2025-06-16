@@ -962,12 +962,12 @@
     {
         "name": "espresso-core",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-alpha03"
+        "version": "3.7.0-alpha04"
     },
     {
         "name": "espresso-idling-resource",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-alpha03"
+        "version": "3.7.0-alpha04"
     },
     {
         "name": "espresso-intents",
