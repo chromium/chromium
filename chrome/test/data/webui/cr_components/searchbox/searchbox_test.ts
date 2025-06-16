@@ -25,6 +25,13 @@ enum Attributes {
   SELECTED = 'selected',
 }
 
+interface ComposeClickEventDetail {
+  button: number;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  shiftKey: boolean;
+}
+
 function createClipboardEvent(name: string): ClipboardEvent {
   return new ClipboardEvent(
       name, {cancelable: true, clipboardData: new DataTransfer()});
@@ -338,7 +345,22 @@ suite('NewTabPageRealboxTest', () => {
     const composeButton =
         realbox.shadowRoot!.querySelector<HTMLElement>('#composeButton');
     assertTrue(!!composeButton);
-    composeButton.click();
+
+    // Dispatch the 'compose-click' event directly, which cr-searchbox
+    // listens for. This simulates the `cr-searchbox-compose-button`
+    // child `cr-button` being clicked and its `onClick_` function being
+    // called.
+    const eventDetail: ComposeClickEventDetail = {
+      button: 0,
+      ctrlKey: false,
+      metaKey: false,
+      shiftKey: false,
+    };
+    composeButton.dispatchEvent(new CustomEvent('compose-click', {
+      detail: eventDetail,
+      bubbles: true,
+      composed: true,
+    }));
 
     // Assert.
     await whenOpenComposeBox;

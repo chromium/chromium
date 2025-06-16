@@ -1,0 +1,16 @@
+<div id="glowAnimationWrapper" class="glow-container play">
+  <div class="gradient-and-mask-wrapper outer-glow">
+    <div class="gradient"></div>
+    <div class="mask"></div>
+  </div>
+  <div class="gradient-and-mask-wrapper">
+    <div class="gradient"></div>
+    <div class="mask"></div>
+  </div>
+  <cr-button @click="${this.onClick_}" id="composeButton"
+      class="compose-container"
+      title="$i18n{searchboxComposeButtonText}">
+    <img slot="prefix-icon" src="${this.composeIcon_}" class="compose-icon">
+    $i18n{searchboxComposeButtonText}
+  </cr-button>
+</div>

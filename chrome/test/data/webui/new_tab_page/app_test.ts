@@ -1063,7 +1063,7 @@ suite('NewTabPageAppTest', () => {
         assertEquals(
             1, handler.getCallCount('incrementComposeButtonShownCount'));
       });
-      test('compose entry point emits histograms when clicked', () => {
+      test('compose entry point emits histograms when clicked', async () => {
         // Assert compose button is present.
         const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
         assertTrue(!!searchboxContainer);
@@ -1072,7 +1072,23 @@ suite('NewTabPageAppTest', () => {
                 '#composeButton');
         assertTrue(!!composeButton);
 
-        composeButton.click();
+        // Dispatch the 'compose-click' event directly, which cr-searchbox
+        // listens for. This simulates the `cr-searchbox-compose-button`
+        // child `cr-button` being clicked and its `onClick_` function being
+        // called.
+        composeButton.dispatchEvent(new CustomEvent('compose-click', {
+          detail: {
+            button: 0,
+            ctrlKey: false,
+            metaKey: false,
+            shiftKey: false,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+
+        await microtasksFinished();
+
         // Metric should be recorded without user text present.
         assertEquals(
             1,
@@ -1098,7 +1114,21 @@ suite('NewTabPageAppTest', () => {
             searchboxContainer.shadowRoot!
                 .querySelector<HTMLInputElement>('#input')!.value = 'hello';
 
-            composeButton.click();
+            // Dispatch the 'compose-click' event directly, which cr-searchbox
+            // listens for. This simulates the `cr-searchbox-compose-button`
+            // child `cr-button` being clicked and its `onClick_` function being
+            // called.
+            composeButton.dispatchEvent(new CustomEvent('compose-click', {
+              detail: {
+                button: 0,
+                ctrlKey: false,
+                metaKey: false,
+                shiftKey: false,
+              },
+              bubbles: true,
+              composed: true,
+            }));
+
             // Metric should be recorded with user text present.
             assertEquals(
                 1,
