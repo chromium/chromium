@@ -466,6 +466,7 @@ export class AppElement extends AppElementBase {
     if (this.composeButtonEnabled) {
       chrome.metricsPrivate.recordBoolean(
           'NewTabPage.ComposeEntrypoint.Shown', true);
+      this.pageHandler_.incrementComposeButtonShownCount();
     }
   }
 

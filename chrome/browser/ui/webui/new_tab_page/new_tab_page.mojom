@@ -293,6 +293,8 @@ interface PageHandler {
   UpdateModulesLoadable();
   // Attempts to trigger the specified in product help promo.
   MaybeShowFeaturePromo(IphFeature iph_feature);
+  // Increments count of times the compose button was shown.
+  IncrementComposeButtonShownCount();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
