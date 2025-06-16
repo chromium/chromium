@@ -14,7 +14,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 
 #if BUILDFLAG(PLATFORM_CFM)
-#include "components/invalidation/public/identity_provider.h"
+#include "chrome/browser/device_identity/device_identity_provider.h"
 #endif
 
 namespace content {

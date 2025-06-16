@@ -51,7 +51,6 @@ source_set("feedback") {
       "//chrome/browser/feedback:feedback_enum",
       "//components/feedback",
       "//components/feedback/content:factory",
-      "//components/invalidation/public",
       "//components/sessions:session_id",
       "//components/signin/public/identity_manager",
     ]
