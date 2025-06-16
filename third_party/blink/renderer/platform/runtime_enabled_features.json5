@@ -2774,7 +2774,7 @@
     },
     {
       name: "InstallOnDeviceSpeechRecognition",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "IntegrityPolicyScript",
@@ -3337,7 +3337,7 @@
     },
     {
       name: "OnDeviceWebSpeechAvailable",
-      status: "experimental",
+      status: "stable",
     },
     {
       // This flag makes the <option> element's label attribute render the

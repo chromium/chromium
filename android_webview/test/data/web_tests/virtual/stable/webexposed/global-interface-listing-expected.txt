@@ -8553,6 +8553,8 @@ interface SpeechGrammarList
     method constructor
     method item
 interface SpeechRecognition : EventTarget
+    static method available
+    static method install
     attribute @@toStringTag
     getter continuous
     getter grammars
@@ -8570,6 +8572,7 @@ interface SpeechRecognition : EventTarget
     getter onspeechend
     getter onspeechstart
     getter onstart
+    getter processLocally
     method abort
     method constructor
     method start
@@ -8590,6 +8593,7 @@ interface SpeechRecognition : EventTarget
     setter onspeechend
     setter onspeechstart
     setter onstart
+    setter processLocally
 interface SpeechRecognitionErrorEvent : Event
     attribute @@toStringTag
     getter error
@@ -10928,6 +10932,8 @@ interface webkitSpeechGrammarList
     method constructor
     method item
 interface webkitSpeechRecognition : EventTarget
+    static method available
+    static method install
     attribute @@toStringTag
     getter continuous
     getter grammars
@@ -10945,6 +10951,7 @@ interface webkitSpeechRecognition : EventTarget
     getter onspeechend
     getter onspeechstart
     getter onstart
+    getter processLocally
     method abort
     method constructor
     method start
@@ -10965,6 +10972,7 @@ interface webkitSpeechRecognition : EventTarget
     setter onspeechend
     setter onspeechstart
     setter onstart
+    setter processLocally
 interface webkitSpeechRecognitionError : Event
     attribute @@toStringTag
     getter error

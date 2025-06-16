@@ -86,8 +86,11 @@ media::mojom::AvailabilityStatus IsOnDeviceSpeechRecognitionAvailable(
     return media::mojom::AvailabilityStatus::kUnavailable;
   }
 
+  // The SODA installer might not be available in tests.
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  DCHECK(soda_installer);
+  if (!soda_installer) {
+    return media::mojom::AvailabilityStatus::kUnavailable;
+  }
 
   // Check whether the language supported.
   bool is_language_supported = false;

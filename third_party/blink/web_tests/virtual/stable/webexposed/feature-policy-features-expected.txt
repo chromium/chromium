@@ -53,6 +53,7 @@ local-fonts
 magnetometer
 microphone
 midi
+on-device-speech-recognition
 otp-credentials
 payment
 picture-in-picture
