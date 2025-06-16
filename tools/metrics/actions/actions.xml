@@ -24426,6 +24426,12 @@ should be able to be added at any place in this file.
   <description>Please enter the description of the metric.</description>
 </action>
 
+<action name="MobileMenuExtensions">
+  <owner>massan@google.com</owner>
+  <owner>nya@chromium.org</owner>
+  <description>User pressed 'Extensions' in the app menu.</description>
+</action>
+
 <action name="MobileMenuFeedback">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'Help and Feedback' in the app menu.</description>

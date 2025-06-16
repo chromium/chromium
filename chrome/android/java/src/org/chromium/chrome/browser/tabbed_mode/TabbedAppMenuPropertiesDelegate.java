@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsBuildflags;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
@@ -257,6 +258,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Recent Tabs
         if (shouldShowRecentTabsItem()) modelList.add(buildRecentTabsItem());
+
+        // Extensions
+        if (shouldShowExtensionsItem()) modelList.add(buildExtensionsItem());
 
         // Divider
         modelList.add(
@@ -583,6 +587,22 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.recent_tabs_menu_id,
                         R.string.menu_recent_tabs,
                         shouldShowIconBeforeItem() ? R.drawable.devices_black_24dp : 0));
+    }
+
+    private boolean shouldShowExtensionsItem() {
+        return ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.BLOCK_INSTALLING_EXTENSIONS_ON_DESKTOP_ANDROID);
+    }
+
+    private MVCListAdapter.ListItem buildExtensionsItem() {
+        assert shouldShowExtensionsItem();
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.extensions_menu_id,
+                        R.string.menu_extensions,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_extension_24dp : 0));
     }
 
     private boolean shouldShowPageZoomItem(Tab currentTab) {

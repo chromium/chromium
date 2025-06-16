@@ -191,6 +191,7 @@ if (is_android) {
       "//chrome/browser/ui/android/desktop_windowing:java",
       "//chrome/browser/ui/android/edge_to_edge:java",
       "//chrome/browser/ui/android/ephemeraltab:java",
+      "//chrome/browser/ui/android/extensions:java",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/google_bottom_bar:java",
       "//chrome/browser/ui/android/google_bottom_bar:proto_java",
