@@ -595,42 +595,9 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
   if (client_mode == LaunchHandler::ClientMode::kFocusExisting) {
     CHECK(client_mode_and_browser->browser);
     CHECK(client_mode_and_browser->tab_index.has_value());
-    CHECK_NE(*client_mode_and_browser->tab_index, -1);
-    content::WebContents* contents =
-        client_mode_and_browser->browser->tab_strip_model()->GetWebContentsAt(
-            *client_mode_and_browser->tab_index);
-    CHECK(contents);
-    FocusAppContainer(client_mode_and_browser->browser,
-                      *client_mode_and_browser->tab_index);
-
-    CHECK(!time_navigation_started_.is_null());
-    bool is_current_container_window =
-        WebAppBrowserController::IsWebApp(client_mode_and_browser->browser);
-
-    // Abort the navigation by returning a `nullptr`. Because this means
-    // `OnWebAppNavigationAfterWebContentsCreation` won't be called, enqueue
-    // the launch params instantly and record the debug data.
-    EnqueueLaunchParams(contents, app_id, params.url,
-                        /*wait_for_navigation_to_complete=*/false,
-                        time_navigation_started_);
-
-    MaybeShowNavigationCaptureIph(app_id, &*profile_,
-                                  client_mode_and_browser->browser);
-
-    // TODO(crbug.com/336371044): Update RecordLaunchMetrics() to also work
-    // with apps that open in a new browser tab.
-    RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
-                        apps::LaunchSource::kFromNavigationCapturing,
-                        params.url, contents);
-
-    RecordNavigationCapturingDisplayModeMetrics(app_id, contents,
-                                                !is_current_container_window);
-
-    initial_nav_handling_result_ =
-        is_current_container_window
-            ? NavigationCapturingInitialResult::kFocusExistingAppWindow
-            : NavigationCapturingInitialResult::kFocusExistingAppBrowserTab;
-    return CancelInitialNavigation();
+    return CapturedFocusExisting(client_mode_and_browser->browser,
+                                 *client_mode_and_browser->tab_index,
+                                 params.url);
   }
 
   // Navigate existing.
@@ -686,9 +653,8 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   CHECK(isolated_web_app_navigation_);
 
   if (!first_navigation_app_id_) {
-    initial_nav_handling_result_ =
-        NavigationCapturingInitialResult::kNavigationCanceled;
-    return CancelInitialNavigation();
+    return CancelInitialNavigation(
+        NavigationCapturingInitialResult::kNavigationCanceled);
   }
   // App popups and picture-in-picture are handled in the switch statement in
   // `GetBrowserAndTabForDisposition()`.
@@ -800,7 +766,7 @@ NavigationCapturingProcess::HandleRedirect() {
   // where the redirect does not result in an app being launched we don't
   // accidentally (try to) treat it as a launch. Any branch where an app launch
   // does happen will re-set the field to the correct value.
-  SetLaunchedAppId({});
+  SetLaunchedAppId(std::nullopt);
 
   // After this point:
   // - The browsing context is a top-level browsing context.
@@ -1338,10 +1304,12 @@ BrowserAndTabOverride NavigationCapturingProcess::CapturingDisabled() {
   return std::nullopt;
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::CancelInitialNavigation() {
+BrowserAndTabOverride NavigationCapturingProcess::CancelInitialNavigation(
+    NavigationCapturingInitialResult result) {
   debug_data_.Set("!result", "cancel navigation");
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
+  initial_nav_handling_result_ = result;
   return {{nullptr, -1}};
 }
 
@@ -1480,12 +1448,52 @@ BrowserAndTabOverride NavigationCapturingProcess::CapturedNavigateExisting(
   return {{app_browser, browser_tab}};
 }
 
-void NavigationCapturingProcess::SetLaunchedAppId(const webapps::AppId& app_id,
-                                                  bool force_iph_off) {
+BrowserAndTabOverride NavigationCapturingProcess::CapturedFocusExisting(
+    Browser* browser,
+    int browser_tab,
+    const GURL& url) {
+  CHECK(first_navigation_app_id_.has_value());
+  const auto& app_id = *first_navigation_app_id_;
+
+  content::WebContents* contents =
+      browser->tab_strip_model()->GetWebContentsAt(browser_tab);
+  CHECK(contents);
+  FocusAppContainer(browser, browser_tab);
+
+  CHECK(!time_navigation_started_.is_null());
+  bool is_current_container_window = WebAppBrowserController::IsWebApp(browser);
+
+  // Abort the navigation by returning a `nullptr`. Because this means
+  // `OnWebAppNavigationAfterWebContentsCreation` won't be called, enqueue
+  // the launch params instantly and record the debug data.
+  EnqueueLaunchParams(contents, app_id, url,
+                      /*wait_for_navigation_to_complete=*/false,
+                      time_navigation_started_);
+
+  MaybeShowNavigationCaptureIph(app_id, &*profile_, browser);
+
+  // TODO(crbug.com/336371044): Update RecordLaunchMetrics() to also work
+  // with apps that open in a new browser tab.
+  RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
+                      apps::LaunchSource::kFromNavigationCapturing, url,
+                      contents);
+
+  RecordNavigationCapturingDisplayModeMetrics(app_id, contents,
+                                              !is_current_container_window);
+
+  return CancelInitialNavigation(
+      is_current_container_window
+          ? NavigationCapturingInitialResult::kFocusExistingAppWindow
+          : NavigationCapturingInitialResult::kFocusExistingAppBrowserTab);
+}
+
+void NavigationCapturingProcess::SetLaunchedAppId(
+    std::optional<webapps::AppId> app_id,
+    bool force_iph_off) {
   CHECK(IsHandledByNavigationCapturing());
-  launched_app_id_ = app_id.empty() ? std::nullopt : std::optional(app_id);
+  launched_app_id_ = app_id;
   force_iph_off_ = force_iph_off;
-  debug_data_.Set("!result.launched_app_id", app_id);
+  debug_data_.Set("!result.launched_app_id", app_id.value_or("<none>"));
   debug_data_.Set("!result.force_iph_off", force_iph_off);
   if (!navigation_handle()) {
     return;
