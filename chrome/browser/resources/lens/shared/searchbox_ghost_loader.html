@@ -137,7 +137,6 @@
 
 .loading-bar {
   animation: 2s fadeInOut calc(0.1s * var(--loading-bar-animation-delay)) infinite;
-  background-color: #e0e0e0;
   border-radius: 4px;
   height: 20px;
   width: 100%;
@@ -149,15 +148,15 @@
 
 @keyframes fadeInOut {
   0% {
-    opacity: 1;
+    background-color: var(--color-searchbox-ghost-loader-loading-bar-1);
   }
 
   50% {
-    opacity: 0.25;
+    background-color: var(--color-searchbox-ghost-loader-loading-bar-2);
   }
 
   100% {
-    opacity: 1;
+    background-color: var(--color-searchbox-ghost-loader-loading-bar-1);
   }
 }
 
