@@ -26,6 +26,7 @@ include_rules = [
   "+ios/chrome/browser/settings/ui_bundled/elements",
   "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
   "+ios/chrome/browser/passwords/model/features.h",
+  "+ios/chrome/browser/bubble/ui_bundled",
 ]
 
 specific_include_rules = {

@@ -3071,6 +3071,21 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INTENTS_URL_PARAMETER" desc="The URL the user would like to pass as input parameter to Shortcuts that require a URL as input [iOS only].">
         URL
       </message>
+      <message name="IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_BUBBLE_TEXT" desc="The text for the IPH bubble in interactive lens overlay promo in the First Run Experience.">
+        Try circling or tapping the picture to search
+      </message>
+      <message name="IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_SKIP_BUTTON" desc="The text for the button that allows users to skip the interactive lens overlay promo in the First Run Experience.">
+        Skip
+      </message>
+      <message name="IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_START_BROWSING_BUTTON" desc="The text for the button that allows users to start browsing after the interactive lens overlay promo in the First Run Experience.">
+        Start browsing
+      </message>
+      <message name="IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_SUBTITLE" desc="The subtitle for the interactive lens overlay promo in the First Run Experience.">
+        You can now open Google Lens from your address bar and search anything you see
+      </message>
+      <message name="IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_TITLE" desc="The title for the interactive lens overlay promo in the First Run Experience.">
+        Search anything on your screen
+      </message>
       <message name="IDS_IOS_IPH_BUBBLE_GOT_IT" desc="Label of a button that appears in an in-product help Tip. Pressing this button will dismiss the last Tip.">
         Got it
       </message>
