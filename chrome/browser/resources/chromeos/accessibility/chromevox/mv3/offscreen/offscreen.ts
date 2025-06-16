@@ -66,6 +66,89 @@ class OffscreenBackgroundKeyboardHandler {
 }
 
 /**
+ * Handles keydown and keyup events when Learn Mode is initiated.
+ */
+class OffscreenLearnModeKeyboardHandler {
+  static instance?: OffscreenLearnModeKeyboardHandler;
+
+  constructor() {
+    // Add listeners to chrome.runtime
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: chrome.runtime.MessageSender,
+         _sendResponse: SendResponse) =>
+            this.handleMessageFromLearnMode_(message));
+  }
+
+  private handleMessageFromLearnMode_(message: any|undefined): boolean {
+    switch (message.command) {
+      case OffscreenCommandType.LEARN_MODE_REGISTER_LISTENERS:
+        this.registerListeners_();
+        break;
+      case OffscreenCommandType.LEARN_MODE_REMOVE_LISTENERS:
+        this.removeListeners_();
+        break;
+    }
+    // Returns false as the response is not asynchronous and the callback does
+    // not need to be kept alive.
+    return false;
+  }
+
+  static init(): void {
+    if (OffscreenLearnModeKeyboardHandler.instance) {
+      throw 'Error: trying to create two instances of singleton ' +
+          'OffscreenLearnModeKeyboardHandler.';
+    }
+    OffscreenLearnModeKeyboardHandler.instance =
+        new OffscreenLearnModeKeyboardHandler();
+  }
+
+  private registerListeners_(): void {
+    window.addEventListener('keydown', this.onKeyDown_, true);
+    window.addEventListener('keyup', this.onKeyUp_, true);
+    window.addEventListener('keypress', this.onKeyPress_, true);
+  }
+
+  private removeListeners_(): void {
+    window.removeEventListener('keydown', this.onKeyDown_, true);
+    window.removeEventListener('keyup', this.onKeyUp_, true);
+    window.removeEventListener('keypress', this.onKeyPress_, true);
+  }
+
+  private onKeyDown_(evt: KeyboardEvent): void {
+    const extensionId = undefined;
+    const message = {
+      command: OffscreenCommandType.LEARN_MODE_ON_KEY_DOWN,
+      internalEvent: new InternalKeyEvent(evt)
+    };
+    const options = undefined;
+    const callback = (value: any) => {
+      if (value as boolean) {
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
+    };
+    chrome.runtime.sendMessage(extensionId, message, options, callback);
+  }
+
+  private onKeyUp_(evt: KeyboardEvent): void {
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    const message = {command: OffscreenCommandType.LEARN_MODE_ON_KEY_UP};
+    chrome.runtime.sendMessage(undefined, message)
+  }
+
+  private onKeyPress_(evt: KeyboardEvent): void {
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    const message = {command: OffscreenCommandType.LEARN_MODE_ON_KEY_PRESS};
+    chrome.runtime.sendMessage(undefined, message)
+  }
+}
+
+
+/**
  * Handles DOM interactions when accessing and tracking access to the clipboard,
  * used by ClipboardHandler instance within the service worker.
  */
@@ -252,6 +335,7 @@ class OffscreenBrailleDisplayManager {
 
 
 OffscreenBackgroundKeyboardHandler.init();
+OffscreenLearnModeKeyboardHandler.init();
 OffscreenClipboardHandler.init();
 OffscreenSpeechSynthesis.init();
 OffscreenBrailleDisplayManager.init();

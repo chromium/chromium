@@ -1476,8 +1476,8 @@ export class CommandHandler implements CommandHandlerInterface {
 
   private showLearnModePage_(): void {
     const explorerPage = {
-      url: 'chromevox/mv2/learn_mode/learn_mode.html',
-      type: 'panel' as CreateType,
+      url: 'chromevox/mv3/learn_mode/learn_mode.html',
+      type: 'popup' as CreateType,
     };
     // Use chrome.windows API to ensure page is opened in Ash-chrome.
     chrome.windows.create(explorerPage);

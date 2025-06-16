@@ -45,10 +45,6 @@ ChromeVoxLearnModeTest = class extends ChromeVoxE2ETest {
   }
 
   makeMockKeyEvent(params) {
-    // Fake out these functions.
-    params.preventDefault = () => {};
-    params.stopPropagation = () => {};
-
     // Set defaults if not defined.
     params.repeat = params.repeat || false;
 
