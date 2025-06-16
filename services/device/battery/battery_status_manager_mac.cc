@@ -9,10 +9,17 @@
 #include <IOKit/ps/IOPowerSources.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/feature_list.h"
+#include "base/features.h"
+#include "base/functional/bind.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 
 namespace device {
@@ -106,8 +113,16 @@ void FetchBatteryStatus(CFDictionaryRef description,
   }
 }
 
-std::vector<mojom::BatteryStatus> GetInternalBatteriesStates() {
+std::vector<mojom::BatteryStatus> GetInternalBatteriesStates(bool may_block) {
   std::vector<mojom::BatteryStatus> internal_sources;
+
+  // This function is known to block but cannot always be tagged as such right
+  // now because it might run on the UI thread. When running on the ThreadPool
+  // though it should be appropriately tagged.
+  std::optional<base::ScopedBlockingCall> scoped_blocking_call;
+  if (may_block) {
+    scoped_blocking_call.emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
+  }
 
   base::apple::ScopedCFTypeRef<CFTypeRef> info(IOPSCopyPowerSourcesInfo());
   base::apple::ScopedCFTypeRef<CFArrayRef> power_sources_list(
@@ -140,9 +155,8 @@ std::vector<mojom::BatteryStatus> GetInternalBatteriesStates() {
   return internal_sources;
 }
 
-void OnBatteryStatusChanged(const BatteryCallback& callback) {
-  std::vector<mojom::BatteryStatus> batteries(GetInternalBatteriesStates());
-
+void HandleNewBatteryStatus(const BatteryCallback& callback,
+                            std::vector<mojom::BatteryStatus> batteries) {
   if (batteries.empty()) {
     callback.Run(mojom::BatteryStatus());
     return;
@@ -153,6 +167,17 @@ void OnBatteryStatusChanged(const BatteryCallback& callback) {
   // fail a DCHECK.
   DCHECK_EQ(1U, batteries.size());
   callback.Run(batteries.front());
+}
+
+void OnBatteryStatusChangedAsync(const BatteryCallback& callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&GetInternalBatteriesStates, true),
+      base::BindOnce(&HandleNewBatteryStatus, callback));
+}
+
+void OnBatteryStatusChanged(const BatteryCallback& callback) {
+  HandleNewBatteryStatus(callback, GetInternalBatteriesStates(false));
 }
 
 class BatteryStatusObserver {
@@ -195,7 +220,11 @@ class BatteryStatusObserver {
 
  private:
   static void CallOnBatteryStatusChanged(void* callback) {
-    OnBatteryStatusChanged(*static_cast<BatteryCallback*>(callback));
+    if (base::FeatureList::IsEnabled(base::features::kReducePPMs)) {
+      OnBatteryStatusChangedAsync(*static_cast<BatteryCallback*>(callback));
+    } else {
+      OnBatteryStatusChanged(*static_cast<BatteryCallback*>(callback));
+    }
   }
 
   BatteryCallback callback_;
