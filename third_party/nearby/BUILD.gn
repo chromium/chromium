@@ -1330,6 +1330,7 @@ proto_library("connections_metadata_proto") {
   proto_in_dir = "src"
   sources = [ "${proto_in_dir}/internal/proto/metadata.proto" ]
   proto_out_dir = "third_party/nearby"
+  deps = [ ":connections_credential_proto" ]
 }
 
 # src/connections/implementation/proto
