@@ -966,9 +966,13 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
     auto* dest_ptr = upload_pixels_[0].get() +
                      video_frame->visible_rect().y() * bytes_per_row +
                      video_frame->visible_rect().x() * sizeof(uint32_t);
+    // Alpha can be premul for videos that can be delegated/overlaid.
+    bool premultiply_alpha =
+        hardware_resource->shared_image()->alpha_type() == kPremul_SkAlphaType
+            ? true
+            : false;
     PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-        video_frame.get(), dest_ptr, bytes_per_row,
-        /*premultiply_alpha=*/false);
+        video_frame.get(), dest_ptr, bytes_per_row, premultiply_alpha);
     source_pixels = upload_pixels_[0].get();
   }
 
@@ -983,7 +987,8 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
       viz::ToClosestSkColorType(resource_format, /*plane_index=*/0);
   auto info = SkImageInfo::Make(
       gfx::SizeToSkISize(hardware_resource->size()), color_type,
-      hardware_resource->shared_image()->alpha_type());
+      hardware_resource->shared_image()->alpha_type(),
+      hardware_resource->shared_image()->color_space().ToSkColorSpace());
   SkPixmap pixmap(info, source_pixels, bytes_per_row);
   ri->WritePixels(
       hardware_resource->shared_image()->mailbox(), /*dst_x_offset=*/0,
@@ -1174,6 +1179,13 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
   gfx::ColorSpace output_color_space = video_frame->ColorSpace();
   SkAlphaType output_alpha_type =
       software_compositor() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
+  if (!software_compositor() && use_gpu_memory_buffer_resources_ &&
+      context_provider_->SharedImageInterface()
+          ->GetCapabilities()
+          .supports_scanout_shared_images) {
+    // Overlays can only work with Premul alpha types.
+    output_alpha_type = kPremul_SkAlphaType;
+  }
 
   // `output_si_format` can be single plane if we're using software compositor
   // or frame format is 32 bit RGB or we are unable to display frame format as
