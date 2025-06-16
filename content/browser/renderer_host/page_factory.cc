@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_factory.h"
-#include "content/browser/site_instance_group.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "base/check.h"
+#include "content/browser/renderer_host/page_impl.h"
 
 namespace content {
 
