@@ -156,7 +156,7 @@ BASE_FEATURE(kOverrideDefaultOzonePlatformHintToAuto,
 // See https://crbug.com/412608405 for context.
 BASE_FEATURE(kXInput2KeyEvents,
              "XInput2KeyEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
