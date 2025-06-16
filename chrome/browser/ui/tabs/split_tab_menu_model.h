@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -40,8 +41,9 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
   // Enum class denoting which close tab menu item the menu should show.
   enum class CloseTabMenuItem { kNone, kCloseStartEndTab, kCloseSpecifiedTab };
 
+  // Start command IDs at 1701 to avoid conflicts with other submenus.
   enum class CommandId {
-    kReversePosition,
+    kReversePosition = ExistingBaseSubMenuModel::kMinSplitTabMenuModelCommandId,
     kCloseSpecifiedTab,
     kCloseStartTab,
     kCloseEndTab,
