@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -21,13 +20,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
@@ -40,13 +40,15 @@ public class ToolbarProgressBarIntegrationTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/progressbar_test.html";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private ToolbarProgressBar mProgressBar;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mProgressBar =
                 mActivityTestRule.getActivity().getToolbarManager().getToolbar().getProgressBar();
 
@@ -60,10 +62,6 @@ public class ToolbarProgressBarIntegrationTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1269029")
     public void testProgressBarTraversesScreenOnce() throws TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
-
         final WebContents webContents = mActivityTestRule.getWebContents();
 
         TestWebContentsObserver observer =
@@ -77,7 +75,7 @@ public class ToolbarProgressBarIntegrationTest {
         assertEquals("Page load should not have started.", 0, startHelper.getCallCount());
         assertEquals("Page load should not have finished.", 0, finishHelper.getCallCount());
 
-        mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PAGE));
 
         // Wait for the initial page to be loaded if it hasn't already.
         if (finishHelper.getCallCount() == 0) {
