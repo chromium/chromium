@@ -462,6 +462,7 @@ def get_stories(benchmark: Benchmark, args: OptionsNamespace):
         '--print-only=stories',
         '--print-only-runnable',  # This is essential to skip filtered stories.
         f'--browser={args.android_browser}',
+        '-vv',
     ]
     _LOGGER.debug(f"Running command: {' '.join(print_stories_cmd)}")
 
