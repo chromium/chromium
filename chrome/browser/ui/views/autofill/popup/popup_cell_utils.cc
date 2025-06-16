@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,6 +72,7 @@ namespace {
 
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
+constexpr int kRecoveryPasswordIconSize = 20;
 constexpr int kChromeRefreshIconSize = 20;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr int kGooglePayLogoWidth = 40;
@@ -105,6 +107,10 @@ constexpr SkColor kMonochromeIconBgColor = SkColorSetARGB(255, 237, 242, 250);
 
 // The text color of the letter monochrome icons.
 constexpr SkColor kMonochromeIconTextColor = SkColorSetARGB(255, 71, 71, 71);
+
+constexpr auto kSuggestionTypesWithDoubleHeight =
+    DenseSet<SuggestionType>({SuggestionType::kBackupPasswordEntry,
+                              SuggestionType::kTroubleSigningInEntry});
 
 // Returns the name of the network for payment method icons, empty string
 // otherwise.
@@ -214,7 +220,8 @@ std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
     std::unique_ptr<views::Label> main_text_label,
     std::vector<std::unique_ptr<views::View>> minor_text_labels,
     std::unique_ptr<views::Label> description_label,
-    std::vector<std::unique_ptr<views::View>> subtext_views) {
+    std::vector<std::unique_ptr<views::View>> subtext_views,
+    bool align_description_label_to_right) {
   const bool has_two_columns = !!description_label;
   auto table =
       views::Builder<views::TableLayoutView>()
@@ -224,12 +231,17 @@ std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
                      views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
           .Build();
   if (has_two_columns) {
+    const views::LayoutAlignment kHorizontalAlignment =
+        align_description_label_to_right ? views::LayoutAlignment::kEnd
+                                         : views::LayoutAlignment::kStart;
+    const float kHorizontalResize = align_description_label_to_right
+                                        ? 1.0f
+                                        : views::TableLayout::kFixedSize;
     const int kDividerSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
     table->AddPaddingColumn(views::TableLayout::kFixedSize, kDividerSpacing);
-    table->AddColumn(views::LayoutAlignment::kStart,
-                     views::LayoutAlignment::kStretch,
-                     views::TableLayout::kFixedSize,
+    table->AddColumn(kHorizontalAlignment, views::LayoutAlignment::kStretch,
+                     kHorizontalResize,
                      views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   }
 
@@ -360,10 +372,10 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #endif
     case Suggestion::Icon::kQuestionMark:
       return ImageModelFromVectorIcon(vector_icons::kHelpOutlineIcon,
-                                      kIconSize);
+                                      kRecoveryPasswordIconSize);
     case Suggestion::Icon::kRecoveryPassword:
       return ImageModelFromVectorIcon(vector_icons::kHistoryChromeRefreshIcon,
-                                      kIconSize);
+                                      kRecoveryPasswordIconSize);
     case Suggestion::Icon::kSaveAndFill:
       return ImageModelFromVectorIcon(kCreditCardIcon, kIconSize);
     case Suggestion::Icon::kSettings:
@@ -548,7 +560,8 @@ void AddSuggestionContentToView(
     PopupRowContentView& content_view) {
   // Adjust the row height based on the number of subtexts (lines of text).
   int row_height = views::MenuConfig::instance().touchable_menu_height;
-  if (!subtext_views.empty()) {
+  if (!subtext_views.empty() ||
+      kSuggestionTypesWithDoubleHeight.contains(suggestion.type)) {
     row_height += kAutofillPopupAdditionalDoubleRowHeight;
   }
   content_view.SetMinimumCrossAxisSize(row_height);
@@ -588,7 +601,8 @@ void AddSuggestionContentToView(
   content_view.SetFlexForView(
       content_view.AddChildView(CreateSuggestionContentTable(
           std::move(main_text_label), std::move(minor_text_labels),
-          std::move(description_label), std::move(subtext_views))),
+          std::move(description_label), std::move(subtext_views),
+          suggestion.additional_label_alignment_right)),
       1);
 
   // The trailing icon.

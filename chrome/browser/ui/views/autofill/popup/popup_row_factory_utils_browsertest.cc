@@ -49,6 +49,39 @@ Suggestion CreatePasswordSuggestion(const std::u16string& main_text) {
   return suggestion;
 }
 
+Suggestion CreateTryThisRecoverySuggestion(const std::u16string& main_text) {
+  Suggestion suggestion(main_text, SuggestionType::kBackupPasswordEntry);
+  suggestion.icon = Suggestion::Icon::kRecoveryPassword;
+  suggestion.additional_label = u"******";
+  suggestion.additional_label_alignment_right = true;
+  return suggestion;
+}
+
+Suggestion CreateTroubleSigninInSuggestion(const std::u16string& main_text) {
+  Suggestion suggestion(main_text, SuggestionType::kBackupPasswordEntry);
+  suggestion.icon = Suggestion::Icon::kQuestionMark;
+  suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
+  return suggestion;
+}
+
+Suggestion CreateBackupPasswordSuggestion(const std::u16string& main_text) {
+  Suggestion suggestion(main_text, SuggestionType::kBackupPasswordEntry);
+  suggestion.icon = Suggestion::Icon::kRecoveryPassword;
+  suggestion.labels = {{Suggestion::Text(u"*****")}};
+  suggestion.additional_label = u"Recovery";
+  return suggestion;
+}
+
+Suggestion CreateFreeformFooter() {
+  const std::u16string kMainText =
+      u"You recently changed a password found in a public data breach. In case "
+      "of trouble, Google Password Manager can help you sign in.";
+  Suggestion suggestion(kMainText, SuggestionType::kFreeformFooter);
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  return suggestion;
+}
+
 Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
                                         std::vector<Suggestion> children) {
   Suggestion suggestion(main_text, SuggestionType::kAddressEntry);
@@ -65,6 +98,9 @@ const Suggestion kSuggestions[] = {
                Suggestion::Icon::kLocation,
                SuggestionType::kAddressEntry),
     CreatePasswordSuggestion(u"Password_entry"),
+    CreateTryThisRecoverySuggestion(u"Try_this_recovery_password"),
+    CreateTroubleSigninInSuggestion(u"Trouble_signing_in_entry"),
+    CreateBackupPasswordSuggestion(u"Backup_password_entry"),
     Suggestion("Autofill_options",
                minor_texts,
                "label",
@@ -237,6 +273,13 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FilterMatchHighlighting) {
       /*selected_cell=*/std::nullopt,
       AutofillPopupController::SuggestionFilterMatch{.main_text_match =
                                                          gfx::Range(1, 5)});
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FreeformFooter) {
+  CreateRowView(CreateFreeformFooter(),
+                /*selected_cell=*/std::nullopt,
+                /*filter_match=*/std::nullopt);
   ShowAndVerifyUi();
 }
 
