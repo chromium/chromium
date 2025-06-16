@@ -63,9 +63,16 @@ void AssertURLIs(const GURL& expectedURL) {
 }
 
 // A PDF itself can take a little longer to appear even after the page is
-// loaded.  Instead, do an additional wait for the internal PDF class to appear
+// loaded. Instead, do an additional wait for the internal PDF class to appear
 // in the view hierarchy.
 void WaitforPDFExtensionView() {
+  // TODO(crbug.com/424744794): Code below was added as a speculative fix. That
+  // code is now skipped on iOS26, consider adding a long term fix in case
+  // tests become flaky without that logic.
+  if (@available(iOS 26, *)) {
+    [ChromeEarlGrey waitForPageToFinishLoading];
+    return;
+  }
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:grey_kindOfClass(NSClassFromString(
