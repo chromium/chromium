@@ -1963,9 +1963,6 @@ config("treat_warnings_as_errors") {
   # Note we apply the actual lint flags in config("compiler"). All warnings
   # are suppressed in third-party crates.
   rustflags = [ "-Dwarnings" ]
-
-  # TODO(crbug.com/424424323): Clean up and enable.
-  rustflags += [ "-Amismatched_lifetime_syntaxes" ]
 }
 
 # tot_warnings ----------------------------------------------------------------
@@ -1986,6 +1983,14 @@ config("tot_warnings") {
   # Entries should generally require both is_clang and llvm_force_head_revision,
   # but may have additional constraints as well (e.g. only some OSes)
   if (is_clang && llvm_force_head_revision && !is_nacl) {
+    cflags_cc += [
+      # TODO(crbug.com/417996267): Fix and re-enable
+      "-Wno-character-conversion",
+    ]
+    cflags_objcc += [
+      # TODO(crbug.com/417996267): Fix and re-enable
+      "-Wno-character-conversion",
+    ]
   }
 }
 
@@ -2154,12 +2159,6 @@ config("default_warnings") {
 
         # New clang warnings usually go here during a roll
       ]
-
-      if (default_toolchain != "//build/toolchain/cros:target" &&
-          !llvm_android_mainline && !is_nacl_saigo) {
-        # TODO(crbug.com/417996267): Fix and re-enable
-        cflags += [ "-Wno-character-conversion" ]
-      }
     }
 
     if (is_component_build && use_clang_warning_suppression_file) {
