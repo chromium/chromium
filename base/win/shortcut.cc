@@ -317,7 +317,8 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
           break;
         }
         default: {
-          NOTREACHED() << "Unexpected variant type: " << pv_app_id.get().vt;
+          LOG(WARNING) << "Unexpected variant type: " << pv_app_id.get().vt;
+          break;
         }
       }
     }
@@ -336,7 +337,8 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
           properties->set_dual_mode(pv_dual_mode.get().boolVal == VARIANT_TRUE);
           break;
         default:
-          NOTREACHED() << "Unexpected variant type: " << pv_dual_mode.get().vt;
+          LOG(WARNING) << "Unexpected variant type: " << pv_dual_mode.get().vt;
+          break;
       }
     }
 
@@ -356,8 +358,9 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
               *(pv_toast_activator_clsid.get().puuid));
           break;
         default:
-          NOTREACHED() << "Unexpected variant type: "
+          LOG(WARNING) << "Unexpected variant type: "
                        << pv_toast_activator_clsid.get().vt;
+          break;
       }
     }
   }
