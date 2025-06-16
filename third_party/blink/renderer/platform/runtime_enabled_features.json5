@@ -4235,7 +4235,7 @@
     },
     {
       name: "ScrollAnchorPriorityCandidateSubtree",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ScrollbarColor",
