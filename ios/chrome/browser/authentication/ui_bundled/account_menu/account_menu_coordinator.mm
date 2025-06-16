@@ -110,7 +110,6 @@ void maybeShowSettingsIPH(Browser* browser) {
   // The coordinator for the action sheet to sign out.
   SignoutActionSheetCoordinator* _signoutActionSheetCoordinator;
   raw_ptr<syncer::SyncService> _syncService;
-  SyncEncryptionTableViewController* _syncEncryptionTableViewController;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
@@ -222,8 +221,6 @@ void maybeShowSettingsIPH(Browser* browser) {
   [self stopChildrenAndViewController];
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
-  [_syncEncryptionTableViewController settingsWillBeDismissed];
-  _syncEncryptionTableViewController = nil;
 
   // Sets to nil the account menu objects.
   [_mediator disconnect];
@@ -383,6 +380,8 @@ void maybeShowSettingsIPH(Browser* browser) {
     // simultaneous taps. See crbug.com/368310663.
     return;
   }
+  // In case of double tap, close the first view before opening a second one.
+  [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController =
       [[SyncEncryptionPassphraseTableViewController alloc]
           initWithBrowser:self.browser];
@@ -398,6 +397,11 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 - (void)openTrustedVaultReauthForFetchKeys {
+  if (_trustedVaultReauthenticationCoordinator) {
+    // The user double-tapped the button. Don’t open the coordinator a second
+    // time.
+    return;
+  }
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
@@ -417,6 +421,11 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 - (void)openTrustedVaultReauthForDegradedRecoverability {
+  if (_trustedVaultReauthenticationCoordinator) {
+    // The user double-tapped the button. Don’t open the coordinator a second
+    // time.
+    return;
+  }
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
@@ -440,6 +449,11 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 - (void)openPrimaryAccountReauthDialog {
+  if (_addAccountSigninCoordinator) {
+    // The user double-tapped the button. Don’t open the coordinator a second
+    // time.
+    return;
+  }
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kAccountMenu;
   signin_metrics::PromoAction promoAction =
