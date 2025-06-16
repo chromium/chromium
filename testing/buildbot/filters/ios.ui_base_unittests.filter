@@ -4,7 +4,7 @@
 -ClipboardTest/PlatformClipboardTest.BitmapWriteAndPngRead_N32_Premul_2x7
 
 # TODO(crbug.com/40276835): A timeout happens on these tests since
-# https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-rel-fyi/25367/overview
+# https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-dbg-fyi/25367/overview
 -ClipboardTest/PlatformClipboardTest.HTMLTest
 -ClipboardTest/PlatformClipboardTest.MultiFormatTest
 -ClipboardTest/PlatformClipboardTest.TrickyHTMLTest
