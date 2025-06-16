@@ -53,6 +53,9 @@ suite('SiteDetails', function() {
   let websiteUsageProxy: TestWebsiteUsageBrowserProxy;
 
   // Initialize a site-details before each test.
+  //
+  // It may also be required to add the ContentSettingsType in the constructor
+  // in test_site_settings_prefs_browser_proxy.ts.
   setup(function() {
     loadTimeData.overrideValues({
       enableWebPrintingContentSetting: true,
@@ -190,6 +193,9 @@ suite('SiteDetails', function() {
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.POINTER_LOCK,
+              [createRawSiteException('https://foo.com:443')]),
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.LOCAL_NETWORK_ACCESS,
               [createRawSiteException('https://foo.com:443')]),
         ],
         [

@@ -140,6 +140,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     }
     // </if>
 
+    if (loadTimeData.getBoolean('enableLocalNetworkAccessSetting')) {
+      this.categoryList_.push(ContentSettingsTypes.LOCAL_NETWORK_ACCESS);
+    }
+
     this.prefs_ = createSiteSettingsPrefs([], [], []);
   }
 
