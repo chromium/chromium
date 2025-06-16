@@ -52,6 +52,8 @@ dependencies {
     compileLatest "com.google.android.gms:play-services-tasks:+"
     compileLatest "com.google.android.gms:play-services-vision-common:+"
     compileLatest "com.google.android.gms:play-services-vision:+"
+
+    compileLatest 'com.airbnb.android:lottie:+'
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
