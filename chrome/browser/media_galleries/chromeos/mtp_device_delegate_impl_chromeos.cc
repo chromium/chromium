@@ -1781,6 +1781,10 @@ void MTPDeviceDelegateImplLinux::OnDidFillFileCache(
     storage::AsyncFileUtil::EntryList /* entries */,
     bool has_more) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  if (pending_tasks_.empty()) {
+    return;
+  }
+
   DCHECK(path.IsParent(pending_tasks_.front().path));
   if (has_more) {
     return;  // Wait until all entries have been read.
@@ -1791,6 +1795,10 @@ void MTPDeviceDelegateImplLinux::OnDidFillFileCache(
 void MTPDeviceDelegateImplLinux::OnFillFileCacheFailed(
     base::File::Error /* error */) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  if (pending_tasks_.empty()) {
+    return;
+  }
+
   // When filling the cache fails for the task at the front of the queue, clear
   // the path of the task so it will not try to do any more caching. Instead,
   // the task will just run and fail the CachedPathToId() lookup.
