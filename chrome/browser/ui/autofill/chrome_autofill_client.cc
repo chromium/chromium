@@ -157,7 +157,6 @@
 #include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
 #else  // !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/autofill_ai/chrome_autofill_ai_client.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
@@ -515,14 +514,10 @@ void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
 
 AutofillAiDelegate* ChromeAutofillClient::GetAutofillAiDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
-          web_contents()->GetOutermostWebContents())) {
-    ChromeAutofillAiClient* client =
-        tab->GetTabFeatures()->chrome_autofill_ai_client();
-    return client ? &client->GetManager() : nullptr;
-  }
-#endif
+  return &autofill_ai_manager_;
+#else
   return nullptr;
+#endif
 }
 
 AutofillAiModelCache* ChromeAutofillClient::GetAutofillAiModelCache() {
@@ -1089,6 +1084,12 @@ void ChromeAutofillClient::NotifyIphFeatureUsed(
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     : ContentAutofillClient(web_contents),
       content::WebContentsObserver(web_contents),
+#if !BUILDFLAG(IS_ANDROID)
+      autofill_ai_manager_(
+          this,
+          StrikeDatabaseFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
+#endif
       ablation_study_(g_browser_process->local_state()),
       identity_credential_delegate_(web_contents) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use

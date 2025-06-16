@@ -11,16 +11,18 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+namespace autofill {
+class AutofillClient;
+}
 namespace autofill_ai {
 
 // Utility to log URL keyed form interaction events for Autofill AI.
 // Owned by AutofillAiLogger.
 class AutofillAiUkmLogger {
  public:
-  explicit AutofillAiUkmLogger(AutofillAiClient* autofill_client);
+  explicit AutofillAiUkmLogger(autofill::AutofillClient* client);
   ~AutofillAiUkmLogger();
 
   void LogKeyMetrics(ukm::SourceId ukm_source_id,
@@ -56,7 +58,7 @@ class AutofillAiUkmLogger {
 
   // The top owning client. Note that the client owns the AutofillAiManager that
   // owns the AutofillAiLogger that owns this object.
-  const raw_ref<AutofillAiClient> autofill_client_;
+  const raw_ref<autofill::AutofillClient> client_;
 };
 
 }  // namespace autofill_ai
