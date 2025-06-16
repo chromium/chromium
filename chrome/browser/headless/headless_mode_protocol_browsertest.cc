@@ -409,4 +409,30 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     " workAreaLeft=10 workAreaRight=90"
     " workAreaTop=20 workAreaBottom=80}")
 
+// TODO(crbug.com/424797525): Fails Mac 13.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StartFullscreenSwitch DISABLED_StartFullscreenSwitch
+#else
+#define MAYBE_StartFullscreenSwitch StartFullscreenSwitch
+#endif
+
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MAYBE_StartFullscreenSwitch,
+    "sanity/start-fullscreen-switch.js",
+    "--screen-info={1600x1200}"
+    "--start-fullscreen")
+
+// TODO(crbug.com/423951863): Fails on Linux and Mac.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_StartFullscreenSwitchScaled DISABLED_StartFullscreenSwitchScaled
+#else
+#define MAYBE_StartFullscreenSwitchScaled StartFullscreenSwitchScaled
+#endif
+
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MAYBE_StartFullscreenSwitchScaled,
+    "sanity/start-fullscreen-switch-scaled.js",
+    "--screen-info={3000x2000 devicePixelRatio=2.0}"
+    "--start-fullscreen")
+
 }  // namespace headless
