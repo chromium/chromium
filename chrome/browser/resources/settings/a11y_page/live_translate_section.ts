@@ -52,10 +52,7 @@ export class SettingsLiveTranslateElement extends
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
        */
-      languages: {
-        type: Object,
-        notify: true,
-      },
+      languages: Object,
 
       languageHelper: Object,
 

@@ -55,11 +55,7 @@ export class SettingsAddLanguagesDialogElement extends
 
   static get properties() {
     return {
-      languages: {
-        type: Array,
-        notify: true,
-      },
-
+      languages: Object,
       languageHelper: Object,
 
       languagesToAdd_: {

@@ -192,8 +192,8 @@
 </if>
 <if expr="not chromeos_ash">
                 <settings-languages-page prefs="{{prefs}}"
-                    languages="{{languages}}"
-                    language-helper="{{languageHelper}}">
+                    languages="[[languages]]"
+                    language-helper="[[languageHelper]]">
                 </settings-languages-page>
 </if>
               </settings-section>
@@ -206,15 +206,15 @@
                   id="spellCheckSettingsSection">
                 <settings-spell-check-page prefs="{{prefs}}"
                     languages="{{languages}}"
-                    language-helper="{{languageHelper}}">
+                    language-helper="[[languageHelper]]">
                 </settings-spell-check-page>
               </settings-section>
             </template>
             <settings-section page-title="$i18n{translatePageTitle}"
                 section="translate" nest-under-section="languages">
               <settings-translate-page prefs="{{prefs}}"
-                  languages="{{languages}}"
-                  language-helper="{{languageHelper}}">
+                  languages="[[languages]]"
+                  language-helper="[[languageHelper]]">
               </settings-translate-page>
             </settings-section>
 </if>
@@ -231,8 +231,8 @@
               <settings-section page-title="$i18n{a11yPageTitle}"
                   section="a11y">
                 <settings-a11y-page prefs="{{prefs}}"
-                    languages="{{languages}}"
-                    language-helper="{{languageHelper}}">
+                    languages="[[languages]]"
+                    language-helper="[[languageHelper]]">
                 </settings-a11y-page>
               </settings-section>
             </template>

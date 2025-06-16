@@ -36,7 +36,6 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import type {Route} from '../router.js';
 import {Router} from '../router.js';
 
 import type {AccessibilityBrowserProxy} from './a11y_browser_proxy.js';
@@ -81,23 +80,12 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
 
   static get properties() {
     return {
-      /**
-       * The current active route.
-       */
-      currentRoute: {
-        type: Object,
-        notify: true,
-      },
-
       // <if expr="not is_chromeos">
       /**
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
        */
-      languages: {
-        type: Object,
-        notify: true,
-      },
+      languages: Object,
 
       languageHelper: Object,
 
@@ -197,7 +185,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private browserProxy_: AccessibilityBrowserProxy =
       AccessibilityBrowserProxyImpl.getInstance();
 
-  declare currentRoute: Route;
   // <if expr="not is_chromeos">
   declare languages: LanguagesModel;
   declare languageHelper: LanguageHelper;
