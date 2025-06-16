@@ -106,7 +106,7 @@ std::pair<ProxyChain, const ProxyServer&> ProxyChain::SplitLast() const {
   DCHECK_NE(length(), 0u);
   ProxyChain new_chain =
       ProxyChain({proxy_server_list_->begin(), proxy_server_list_->end() - 1},
-                 ip_protection_chain_id_);
+                 ip_protection_chain_id_, opaque_data_);
   return std::make_pair(new_chain, std::ref(proxy_server_list_->back()));
 }
 
@@ -115,7 +115,7 @@ ProxyChain ProxyChain::Prefix(size_t len) const {
   DCHECK_LE(len, length());
   return ProxyChain(
       {proxy_server_list_->begin(), proxy_server_list_->begin() + len},
-      ip_protection_chain_id_);
+      ip_protection_chain_id_, opaque_data_);
 }
 
 const ProxyServer& ProxyChain::First() const {
@@ -149,13 +149,19 @@ std::string ProxyChain::ToDebugString() const {
     debug_string += base::StringPrintf(" (IP Protection chain %d)",
                                        ip_protection_chain_id_);
   }
+
+  if (opaque_data_.has_value()) {
+    debug_string += base::StringPrintf(" (Opaque data %d)", *opaque_data_);
+  }
   return debug_string;
 }
 
 ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list,
-                       int ip_protection_chain_id)
+                       int ip_protection_chain_id,
+                       std::optional<int> opaque_data)
     : proxy_server_list_(std::move(proxy_server_list)),
-      ip_protection_chain_id_(ip_protection_chain_id) {
+      ip_protection_chain_id_(ip_protection_chain_id),
+      opaque_data_(opaque_data) {
   CHECK(IsValidInternal());
 }
 
