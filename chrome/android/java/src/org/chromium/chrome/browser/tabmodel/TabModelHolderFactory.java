@@ -42,7 +42,8 @@ public class TabModelHolderFactory {
                     activityType,
                     isArchivedTabModel,
                     regularTabCreator,
-                    incognitoTabCreator);
+                    incognitoTabCreator,
+                    modelDelegate);
         }
         return createLegacyTabModelHolder(
                 profile,
@@ -114,14 +115,16 @@ public class TabModelHolderFactory {
             @ActivityType int activityType,
             boolean isArchivedTabModel,
             TabCreator regularTabCreator,
-            TabCreator incognitoTabCreator) {
+            TabCreator incognitoTabCreator,
+            TabModelDelegate modelDelegate) {
         TabCollectionTabModelImpl regularTabModel =
                 new TabCollectionTabModelImpl(
                         profile,
                         activityType,
                         isArchivedTabModel,
                         regularTabCreator,
-                        incognitoTabCreator);
+                        incognitoTabCreator,
+                        modelDelegate);
 
         return new TabModelHolder(regularTabModel, regularTabModel);
     }

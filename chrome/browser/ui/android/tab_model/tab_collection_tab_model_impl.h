@@ -32,10 +32,20 @@ class TabCollectionTabModelImpl {
   TabCollectionTabModelImpl& operator=(const TabCollectionTabModelImpl&) =
       delete;
 
+  // Returns the total number of tabs in the collection, including
+  // sub-collections.
+  int GetTabCountRecursive(JNIEnv* env) const;
+
+  // Returns the recursive index of the given tab, or -1 if not found.
+  int GetIndexOfTabRecursive(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& j_tab_android) const;
+
  private:
   JavaObjectWeakGlobalRef java_object_;
   raw_ptr<Profile> profile_;
 
+  // Always valid until destroyed.
   std::unique_ptr<tabs::TabStripCollection> tab_strip_collection_;
 };
 

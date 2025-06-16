@@ -7,7 +7,10 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/numerics/safe_conversions.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -15,6 +18,10 @@
 #include "chrome/android/chrome_jni_headers/TabCollectionTabModelImpl_jni.h"
 
 namespace tabs {
+
+namespace {
+constexpr int kInvalidTabIndex = -1;
+}  // namespace
 
 TabCollectionTabModelImpl::TabCollectionTabModelImpl(
     JNIEnv* env,
@@ -28,6 +35,28 @@ TabCollectionTabModelImpl::~TabCollectionTabModelImpl() = default;
 
 void TabCollectionTabModelImpl::Destroy(JNIEnv* env) {
   delete this;
+}
+
+int TabCollectionTabModelImpl::GetTabCountRecursive(JNIEnv* env) const {
+  return base::checked_cast<int>(tab_strip_collection_->TabCountRecursive());
+}
+
+int TabCollectionTabModelImpl::GetIndexOfTabRecursive(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_tab_android) const {
+  TabAndroid* target_tab = TabAndroid::GetNativeTab(env, j_tab_android);
+  if (!target_tab) {
+    return kInvalidTabIndex;
+  }
+
+  int current_index = 0;
+  for (tabs::TabInterface* tab_in_collection : *tab_strip_collection_) {
+    if (tab_in_collection == target_tab) {
+      return current_index;
+    }
+    current_index++;
+  }
+  return kInvalidTabIndex;
 }
 
 static jlong JNI_TabCollectionTabModelImpl_Init(
