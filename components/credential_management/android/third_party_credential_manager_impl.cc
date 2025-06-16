@@ -11,16 +11,15 @@
 namespace credential_management {
 
 ThirdPartyCredentialManagerImpl::ThirdPartyCredentialManagerImpl(
-    content::RenderFrameHost* render_frame_host)
+    content::WebContents* web_contents)
     : bridge_(std::make_unique<ThirdPartyCredentialManagerBridge>()),
-      render_frame_host_(CHECK_DEREF(render_frame_host)) {}
+      web_contents_(CHECK_DEREF(web_contents)) {}
 
 ThirdPartyCredentialManagerImpl::ThirdPartyCredentialManagerImpl(
     base::PassKey<class ThirdPartyCredentialManagerImplTest>,
-    content::RenderFrameHost* render_frame_host,
+    content::WebContents* web_contents,
     std::unique_ptr<CredentialManagerBridge> bridge)
-    : bridge_(std::move(bridge)),
-      render_frame_host_(CHECK_DEREF(render_frame_host)) {}
+    : bridge_(std::move(bridge)), web_contents_(CHECK_DEREF(web_contents)) {}
 
 ThirdPartyCredentialManagerImpl::~ThirdPartyCredentialManagerImpl() = default;
 
@@ -30,7 +29,9 @@ void ThirdPartyCredentialManagerImpl::Store(
   std::u16string username = credential.id.value_or(u"");
   std::u16string password = credential.password.value_or(u"");
   bridge_->Store(username, password,
-                 render_frame_host_->GetLastCommittedOrigin().Serialize(),
+                 web_contents_->GetPrimaryMainFrame()
+                     ->GetLastCommittedOrigin()
+                     .Serialize(),
                  std::move(callback));
 }
 
@@ -93,7 +94,9 @@ void ThirdPartyCredentialManagerImpl::Get(
   }
 
   bridge_->Get(ShouldAllowAutoSelect(mediation), include_passwords, federations,
-               render_frame_host_->GetLastCommittedOrigin().Serialize(),
+               web_contents_->GetPrimaryMainFrame()
+                   ->GetLastCommittedOrigin()
+                   .Serialize(),
                std::move(callback));
 }
 

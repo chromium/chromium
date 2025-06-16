@@ -8,7 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "components/credential_management/android/third_party_credential_manager_bridge.h"
 #include "components/credential_management/credential_manager_interface.h"
-#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 
 namespace credential_management {
@@ -16,11 +16,10 @@ namespace credential_management {
 // Class implementing Credential Manager methods for Clank in 3P mode.
 class ThirdPartyCredentialManagerImpl : public CredentialManagerInterface {
  public:
-  explicit ThirdPartyCredentialManagerImpl(
-      content::RenderFrameHost* render_frame_host);
+  explicit ThirdPartyCredentialManagerImpl(content::WebContents* web_contents);
   ThirdPartyCredentialManagerImpl(
       base::PassKey<class ThirdPartyCredentialManagerImplTest>,
-      content::RenderFrameHost* render_frame_host,
+      content::WebContents* web_contents,
       std::unique_ptr<CredentialManagerBridge> bridge);
 
   ThirdPartyCredentialManagerImpl(const ThirdPartyCredentialManagerImpl&) =
@@ -41,7 +40,7 @@ class ThirdPartyCredentialManagerImpl : public CredentialManagerInterface {
 
  private:
   std::unique_ptr<CredentialManagerBridge> bridge_;
-  const raw_ref<content::RenderFrameHost> render_frame_host_;
+  const raw_ref<content::WebContents> web_contents_;
 };
 
 }  // namespace credential_management

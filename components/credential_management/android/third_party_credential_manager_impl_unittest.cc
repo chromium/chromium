@@ -60,8 +60,8 @@ class ThirdPartyCredentialManagerImplTest
     mock_bridge_ = mock_bridge.get();
 
     credential_manager_ = std::make_unique<ThirdPartyCredentialManagerImpl>(
-        base::PassKey<class ThirdPartyCredentialManagerImplTest>(), main_rfh(),
-        std::move(mock_bridge));
+        base::PassKey<class ThirdPartyCredentialManagerImplTest>(),
+        web_contents(), std::move(mock_bridge));
   }
 
   ThirdPartyCredentialManagerImpl* credential_manager() {

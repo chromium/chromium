@@ -52,7 +52,7 @@ AndroidAutofillClient::AndroidAutofillClient(content::WebContents* web_contents)
       content_credential_manager_(
           std::make_unique<
               credential_management::ThirdPartyCredentialManagerImpl>(
-              web_contents->GetPrimaryMainFrame())) {}
+              web_contents)) {}
 
 AndroidAutofillClient::~AndroidAutofillClient() {
   HideAutofillSuggestions(autofill::SuggestionHidingReason::kTabGone);
