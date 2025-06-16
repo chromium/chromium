@@ -36,6 +36,7 @@ class BackgroundModeManager;
 class NotificationPlatformBridge;
 class NotificationUIManager;
 class PrefService;
+class TestingPrefServiceSimple;
 class SystemNotificationHelper;
 
 namespace extensions {
@@ -177,9 +178,6 @@ class TestingBrowserProcess
   // TaskEnvironment::DestructionObserver:
   void WillDestroyCurrentTaskEnvironment() override;
 
-  // Set the local state for tests. Consumer is responsible for cleaning it up
-  // afterwards (using ScopedTestingLocalState, for example).
-  void SetLocalState(PrefService* local_state);
   void SetMetricsService(metrics::MetricsService* metrics_service);
   void SetProfileManager(std::unique_ptr<ProfileManager> profile_manager);
   void SetSafeBrowsingService(safe_browsing::SafeBrowsingService* sb_service);
@@ -210,6 +208,9 @@ class TestingBrowserProcess
       std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon);
 #endif
 
+  // Same as local_state() but provides TestingPrefServiceSimple interface.
+  TestingPrefServiceSimple* GetTestingLocalState();
+
  private:
   // See CreateInstance() and DestoryInstance() above.
   TestingBrowserProcess();
@@ -230,12 +231,13 @@ class TestingBrowserProcess
 
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
       browser_policy_connector_;
-  bool created_browser_policy_connector_ = false;
   std::unique_ptr<network::TestNetworkQualityTracker>
       test_network_quality_tracker_;
   raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;
   raw_ptr<variations::VariationsService> variations_service_ = nullptr;
   std::unique_ptr<ProfileManager> profile_manager_;
+
+  std::unique_ptr<TestingPrefServiceSimple> testing_local_state_;
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   std::unique_ptr<NotificationUIManager> notification_ui_manager_;
@@ -269,7 +271,6 @@ class TestingBrowserProcess
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 
   // The following objects are not owned by TestingBrowserProcess:
-  raw_ptr<PrefService> local_state_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   std::unique_ptr<TestingBrowserProcessPlatformPart> platform_part_;
@@ -311,7 +312,6 @@ class TestingBrowserProcess
 //  ...stuff...
 //  private:
 //   TestingBrowserProcessInitializer initializer_;
-//   LocalState local_state_;  // Needs a BrowserProcess to initialize.
 // };
 class TestingBrowserProcessInitializer {
  public:
