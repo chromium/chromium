@@ -127,7 +127,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public @Nullable Tab getTabAt(int index) {
-        return null;
+        if (mNativeTabCollectionTabModelImplPtr == 0) return null;
+        return TabCollectionTabModelImplJni.get()
+                .getTabAtIndexRecursive(mNativeTabCollectionTabModelImplPtr, index);
     }
 
     @Override
@@ -588,5 +590,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         int getTabCountRecursive(long nativeTabCollectionTabModelImpl);
 
         int getIndexOfTabRecursive(long nativeTabCollectionTabModelImpl, Tab tab);
+
+        Tab getTabAtIndexRecursive(long nativeTabCollectionTabModelImpl, int index);
     }
 }

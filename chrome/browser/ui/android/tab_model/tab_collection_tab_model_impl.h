@@ -41,6 +41,11 @@ class TabCollectionTabModelImpl {
       JNIEnv* env,
       const jni_zero::JavaParamRef<jobject>& j_tab_android) const;
 
+  // Recurses until reaching the given index. Returns null if not found.
+  base::android::ScopedJavaLocalRef<jobject> GetTabAtIndexRecursive(
+      JNIEnv* env,
+      size_t index) const;
+
  private:
   JavaObjectWeakGlobalRef java_object_;
   raw_ptr<Profile> profile_;
