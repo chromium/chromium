@@ -1506,7 +1506,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_HANDLE_CREATED)
 
-// Emitted when an HttpStreamPool::AttemptManager starts a stream. The event
+// Emitted when an HttpStreamPool::AttemptManager requests a stream. The event
 // parameters are:
 //   {
 //     "priority": <The priority of the erquest>,
@@ -1516,7 +1516,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_HANDLE_CREATED)
 //     "quic_version": <The QUIC version to attempt>,
 //     "source_dependency": <The source identifier of the request>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_REQUEST_STREAM)
 
 // Records on the caller's NetLog to indicate that an
 // HttpStreamPool::AttemptManager starts a Job.

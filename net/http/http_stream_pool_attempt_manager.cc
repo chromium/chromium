@@ -205,13 +205,14 @@ HttpStreamPool::AttemptManager::~AttemptManager() {
 }
 
 void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
-  CHECK(availability_state_ == AvailabilityState::kAvailable);
+  // JobController should check idle streams before starting a request Job.
+  CHECK_EQ(group_->IdleStreamSocketCount(), 0u);
 
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::RequestStream", track_,
                       NetLogWithSourceToFlow(job->request_net_log()));
 
   net_log_.AddEvent(
-      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB, [&] {
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_REQUEST_STREAM, [&] {
         base::Value::Dict dict;
         dict.Set("priority", job->priority());
         base::Value::List allowed_bad_certs_list;
@@ -235,40 +236,11 @@ void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND,
       net_log_.source());
 
-  if (job->respect_limits() == RespectLimits::kIgnore) {
-    limit_ignoring_jobs_.emplace(job);
-  }
-
-  if (!job->enable_ip_based_pooling()) {
-    ip_based_pooling_disabling_jobs_.emplace(job);
-  }
-
-  if (!job->enable_alternative_services()) {
-    alternative_service_disabling_jobs_.emplace(job);
-  }
-
-  // HttpStreamPool should check the existing QUIC/SPDY sessions and idle
-  // streams before calling this method.
-  DCHECK(!CanUseExistingQuicSession());
-  DCHECK(!HasAvailableSpdySession());
-  CHECK_EQ(group_->IdleStreamSocketCount(), 0u);
-
-  request_jobs_.Insert(job, job->priority());
-
-  MaybeChangeServiceEndpointRequestPriority();
-
-  if (base_ssl_config_.has_value()) {
-    base_ssl_config_->allowed_bad_certs = job->allowed_bad_certs();
-  }
-  quic_version_ = job->quic_version();
-
   StartInternal(job);
-
-  return;
 }
 
 void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
-  CHECK(availability_state_ == AvailabilityState::kAvailable);
+  // JobController should check active streams before starting a preconnect Job.
   CHECK_LT(group_->ActiveStreamSocketCount(), job->num_streams());
 
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::Preconnect", track_,
@@ -286,14 +258,6 @@ void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
   job->delegate_net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_PRECONNECT_BOUND,
       net_log_.source());
-
-  // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
-  // this method.
-  DCHECK(!CanUseExistingQuicSession());
-  DCHECK(!HasAvailableSpdySession());
-
-  preconnect_jobs_.emplace(job);
-  quic_version_ = job->quic_version();
 
   StartInternal(job);
 }
@@ -1027,6 +991,37 @@ void HttpStreamPool::AttemptManager::SetOnCompleteCallbackForTesting(
 }
 
 void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
+
+  if (job->IsPreconnect()) {
+    preconnect_jobs_.emplace(job);
+  } else {
+    request_jobs_.Insert(job, job->priority());
+    if (base_ssl_config_.has_value()) {
+      base_ssl_config_->allowed_bad_certs = job->allowed_bad_certs();
+    }
+  }
+
+  if (job->respect_limits() == RespectLimits::kIgnore) {
+    limit_ignoring_jobs_.emplace(job);
+  }
+
+  if (!job->enable_ip_based_pooling()) {
+    ip_based_pooling_disabling_jobs_.emplace(job);
+  }
+
+  if (!job->enable_alternative_services()) {
+    alternative_service_disabling_jobs_.emplace(job);
+  }
+
+  quic_version_ = job->quic_version();
+
+  // JobController should check the existing QUIC/SPDY sessions before starting
+  // a Job.
+  DCHECK(!CanUseExistingQuicSession());
+  DCHECK(!HasAvailableSpdySession());
+
+  MaybeChangeServiceEndpointRequestPriority();
   RestrictAllowedProtocols(job->allowed_alpns());
   UpdateTcpBasedAttemptState();
 
@@ -1082,7 +1077,6 @@ void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
   if (!CanUseQuic()) {
     // TODO(crbug.com/346835898): Use other error code?
     CancelQuicAttempt(ERR_ABORTED);
-    UpdateTcpBasedAttemptState();
   }
 }
 
