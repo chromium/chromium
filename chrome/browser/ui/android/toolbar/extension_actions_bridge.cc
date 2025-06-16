@@ -143,6 +143,13 @@ jint ExtensionActionsBridge::RunAction(
       runner->RunAction(extension, /*grant_tab_permissions=*/true));
 }
 
+jboolean ExtensionActionsBridge::ExtensionsEnabled(JNIEnv* env) {
+  extensions::ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+  return static_cast<jboolean>(
+      extension_management->ExtensionsEnabledForDesktopAndroid());
+}
+
 void ExtensionActionsBridge::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& id) {
   Java_ExtensionActionsBridge_onActionAdded(AttachCurrentThread(), java_object_,

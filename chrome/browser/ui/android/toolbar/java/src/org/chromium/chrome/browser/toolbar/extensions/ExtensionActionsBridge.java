@@ -92,6 +92,15 @@ public class ExtensionActionsBridge {
                 .runAction(mNativeExtensionActionsBridge, actionId, webContents);
     }
 
+    /**
+     * Returns whether the extensions are disabled on the profile for Desktop Android. This is
+     * temporary for until extensions are ready for dogfooding. TODO(crbug.com/422307625): Remove
+     * this check once extensions are ready for dogfooding.
+     */
+    public boolean extensionsEnabled() {
+        return ExtensionActionsBridgeJni.get().extensionsEnabled(mNativeExtensionActionsBridge);
+    }
+
     @CalledByNative
     @VisibleForTesting
     void onActionAdded(@JniType("std::string") String actionId) {
@@ -194,5 +203,7 @@ public class ExtensionActionsBridge {
                 long nativeExtensionActionsBridge,
                 @JniType("std::string") String actionId,
                 WebContents webContents);
+
+        boolean extensionsEnabled(long nativeExtensionActionsBridge);
     }
 }

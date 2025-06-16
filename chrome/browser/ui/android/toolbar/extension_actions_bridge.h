@@ -40,6 +40,7 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
   jint RunAction(JNIEnv* env,
                  const std::string& action_id,
                  const base::android::JavaParamRef<jobject>& web_contents_java);
+  jboolean ExtensionsEnabled(JNIEnv* env);
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override;

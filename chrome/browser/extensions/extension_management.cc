@@ -171,14 +171,8 @@ ManagedInstallationMode ExtensionManagement::GetInstallationMode(
                              update_url ? *update_url : std::string());
 }
 
-ManagedInstallationMode ExtensionManagement::GetInstallationMode(
-    const ExtensionId& extension_id,
-    const std::string& update_url) {
-// Block extensions for managed profiles on Desktop Android. This is
-// temporary until extensions are ready for dogfooding.
-// TODO(crbug.com/422307625): Remove this check once extensions are ready for
-// dogfooding.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+bool ExtensionManagement::ExtensionsEnabledForDesktopAndroid() const {
   if (enterprise_util::IsBrowserManaged(profile_)) {
     // Disable extensions only for specific managed accounts.
     // This check keeps many tests from failing.
@@ -187,11 +181,26 @@ ManagedInstallationMode ExtensionManagement::GetInstallationMode(
     if (base::Contains(user_name, "@")) {
       std::string domain = gaia::ExtractDomainName(user_name);
       if (domain == "google.com" || domain == "managedchrome.com") {
-        return ManagedInstallationMode::kRemoved;
+        return false;
       }
     }
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+  return true;
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+
+ManagedInstallationMode ExtensionManagement::GetInstallationMode(
+    const ExtensionId& extension_id,
+    const std::string& update_url) {
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // Block extensions for managed profiles on Desktop Android. This is
+  // temporary until extensions are ready for dogfooding.
+  // TODO(crbug.com/422307625): Remove this check once extensions are ready for
+  // dogfooding.
+  if (!ExtensionsEnabledForDesktopAndroid()) {
+    return ManagedInstallationMode::kRemoved;
+  }
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
   // Check per-extension installation mode setting first.
   auto* setting = GetSettingsForId(extension_id);

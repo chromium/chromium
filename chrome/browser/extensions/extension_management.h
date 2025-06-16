@@ -86,6 +86,14 @@ class ExtensionManagement : public KeyedService {
   // from the command line, or when loaded as an unpacked extension).
   bool BlocklistedByDefault() const;
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // Checks if extensions are enabled for Desktop Android for the current
+  // profile. This is temporary for until extensions are ready for dogfooding.
+  // TODO(crbug.com/422307625): Remove this check once extensions are ready for
+  // dogfooding.
+  bool ExtensionsEnabledForDesktopAndroid() const;
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+
   // Returns installation mode for an extension.
   ManagedInstallationMode GetInstallationMode(const Extension* extension);
 
