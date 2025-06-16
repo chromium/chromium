@@ -24,6 +24,9 @@ def CheckChange(input_api, output_api):
                 'data/dom_distiller/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
+                'data/autofill/label-doms/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
                 'data/feed/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,

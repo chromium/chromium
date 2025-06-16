@@ -144,4 +144,8 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//third_party/blink/public:blink",
   ]
+
+  if (is_ios) {
+    deps += [ "//components/test:dom_label_test_bundle_data" ]
+  }
 }
