@@ -207,6 +207,11 @@ class CORE_EXPORT OffscreenCanvas final
 
   void Trace(Visitor*) const override;
 
+  CanvasResourceProvider* GetResourceProviderForImageBitmap() {
+    CHECK(IsImageBitmapRenderingContext());
+    return ResourceProviderDEPRECATED();
+  }
+
   class ScopedInsideWorkerRAF {
     STACK_ALLOCATED();
 
@@ -260,11 +265,6 @@ class CORE_EXPORT OffscreenCanvas final
       Vector<std::unique_ptr<CanvasRenderingContextFactory>>;
   static ContextFactoryVector& RenderingContextFactories();
   static CanvasRenderingContextFactory* GetRenderingContextFactory(int);
-
-  CanvasResourceProvider* GetResourceProviderForImageBitmap() {
-    CHECK(IsImageBitmapRenderingContext());
-    return ResourceProviderDEPRECATED();
-  }
 
   void RecordIdentifiabilityMetric(const blink::IdentifiableSurface& surface,
                                    const IdentifiableToken& token) const;
