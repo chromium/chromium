@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -22,6 +24,21 @@ class InstanceSwitcherItemViewBinder {
         if (InstanceSwitcherItemProperties.FAVICON == propertyKey) {
             ((ImageView) view.findViewById(R.id.favicon))
                     .setImageDrawable(model.get(InstanceSwitcherItemProperties.FAVICON));
+
+        } else if (InstanceSwitcherItemProperties.IS_SELECTED == propertyKey) {
+            ImageView faviconView = view.findViewById(R.id.favicon);
+            boolean isSelected = model.get(InstanceSwitcherItemProperties.IS_SELECTED);
+
+            // Show check mark if selected, otherwise fallback to favicon.
+            if (isSelected) {
+                faviconView.setImageDrawable(
+                        ContextCompat.getDrawable(
+                                view.getContext(), R.drawable.checkmark_circle_24dp));
+                view.setSelected(true);
+            } else {
+                faviconView.setImageDrawable(model.get(InstanceSwitcherItemProperties.FAVICON));
+                view.setSelected(false);
+            }
 
         } else if (InstanceSwitcherItemProperties.TITLE == propertyKey) {
             TextView titleView = view.findViewById(R.id.title);
@@ -46,6 +63,7 @@ class InstanceSwitcherItemViewBinder {
             view.findViewById(R.id.current).setVisibility(current ? View.VISIBLE : View.INVISIBLE);
             // Do not show 3-dot submenu for the current instance.
             view.findViewById(R.id.more).setVisibility(current ? View.INVISIBLE : View.VISIBLE);
+
         } else if (InstanceSwitcherItemProperties.CLICK_LISTENER == propertyKey) {
             view.setOnClickListener(model.get(InstanceSwitcherItemProperties.CLICK_LISTENER));
 

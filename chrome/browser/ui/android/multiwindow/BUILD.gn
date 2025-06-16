@@ -56,6 +56,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/checkmark_24dp.xml",
+    "java/res/drawable/checkmark_circle_24dp.xml",
     "java/res/drawable/circle_green.xml",
     "java/res/drawable/list_item_background_bottom.xml",
     "java/res/drawable/list_item_background_middle.xml",
@@ -80,6 +81,7 @@ android_resources("java_resources") {
     "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+    "//components/strings:components_strings_grd",
   ]
 }
 

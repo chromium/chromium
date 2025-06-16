@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -160,9 +161,80 @@ public class InstanceSwitcherCoordinatorTest {
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
                 });
+
+        // Verify "Open" button is disabled before a selection is made.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Select the second item.
         onView(withId(R.id.active_instance_list))
                 .inRoot(isDialog())
                 .perform(actionOnItemAtPosition(1, click()));
+
+        // Verify "Open" button is now enabled and open the selected instance.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(isEnabled()))
+                .perform(click());
+        itemClickCallbackHelper.waitForCallback(itemClickCount);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testRestoreWindow_InstanceSwitcherV2() throws Exception {
+        // Initialize instance list with 2 active instances and 1 inactive instance.
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, -1, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false, 0)
+                };
+        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
+        final int itemClickCount = itemClickCallbackHelper.getCallCount();
+        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            openCallback,
+                            null,
+                            null,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+
+        // Verify active list is showing when the menu is initially displayed.
+        onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Switch to inactive list.
+        onView(allOf(withText("Inactive (1)"), isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
+
+        // Verify "Restore" button is disabled before a selection is made.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Select the first item.
+        onView(withId(R.id.inactive_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(0, click()));
+
+        // Verify "Restore" button is now enabled and restore the selected instance.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(isEnabled()))
+                .perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
 
@@ -191,6 +263,9 @@ public class InstanceSwitcherCoordinatorTest {
                 });
 
         onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
         onView(withId(R.id.inactive_instance_list))
                 .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
@@ -207,6 +282,12 @@ public class InstanceSwitcherCoordinatorTest {
         onView(withId(R.id.inactive_instance_list))
                 .inRoot(isDialog())
                 .perform(actionOnItemAtPosition(0, click()));
+
+        // Verify "Restore" button is enabled.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(isEnabled()))
+                .perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
 

@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,6 +54,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -92,6 +94,7 @@ public class InstanceSwitcherCoordinator {
     private @Nullable InstanceInfo mItemToDelete;
     private @Nullable PropertyModel mNewWindowModel;
     private @MonotonicNonNull TextView mMaxInfoView;
+    private @Nullable InstanceInfo mSelectedItem;
     private boolean mNewWindowEnabled;
     private boolean mIsInactiveListShowing;
 
@@ -180,8 +183,11 @@ public class InstanceSwitcherCoordinator {
                                     isActiveTab ? View.VISIBLE : View.GONE);
                             inactiveInstancesList.setVisibility(
                                     isActiveTab ? View.GONE : View.VISIBLE);
+
                             mIsInactiveListShowing = !isActiveTab;
                             updateMaxInfoTextView();
+                            unselectItems();
+                            updatePositiveButtonText();
                         }
 
                         @Override
@@ -275,22 +281,36 @@ public class InstanceSwitcherCoordinator {
                             case ModalDialogProperties.ButtonType.NEGATIVE:
                                 dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                                 break;
+                            case ModalDialogProperties.ButtonType.POSITIVE:
+                                assert mSelectedItem != null;
+                                switchToInstance(mSelectedItem);
                         }
                     }
                 };
         Resources resources = mContext.getResources();
         String title = resources.getString(R.string.instance_switcher_header);
-        return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                .with(ModalDialogProperties.CONTROLLER, controller)
-                .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                .with(ModalDialogProperties.CUSTOM_VIEW, dialogView)
-                .with(ModalDialogProperties.TITLE, title)
-                .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, null)
-                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
-                .with(
-                        ModalDialogProperties.DIALOG_STYLES,
-                        ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE)
-                .build();
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, dialogView)
+                        .with(ModalDialogProperties.TITLE, title)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
+                                R.string.cancel)
+                        .with(
+                                ModalDialogProperties.DIALOG_STYLES,
+                                ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE);
+
+        if (UiUtils.isInstanceSwitcherV2Enabled()) {
+            builder.with(
+                    ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                    resources,
+                    mIsInactiveListShowing ? R.string.restore : R.string.open);
+            builder.with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
+        }
+        return builder.build();
     }
 
     private PropertyModel generateListItem(InstanceInfo item) {
@@ -304,7 +324,13 @@ public class InstanceSwitcherCoordinator {
                         .with(InstanceSwitcherItemProperties.INSTANCE_ID, item.instanceId)
                         .with(
                                 InstanceSwitcherItemProperties.CLICK_LISTENER,
-                                (view) -> switchToInstance(item));
+                                (view) -> {
+                                    if (UiUtils.isInstanceSwitcherV2Enabled()) {
+                                        selectInstance(item);
+                                    } else {
+                                        switchToInstance(item);
+                                    }
+                                });
 
         if (!UiUtils.isInstanceSwitcherV2Enabled()) {
             builder.with(InstanceSwitcherItemProperties.CURRENT, isCurrentWindow);
@@ -321,6 +347,7 @@ public class InstanceSwitcherCoordinator {
                     .with(
                             InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER,
                             v -> closeWindow(item));
+            builder.with(InstanceSwitcherItemProperties.IS_SELECTED, false);
         }
         PropertyModel model = builder.build();
         mUiUtils.setFavicon(model, InstanceSwitcherItemProperties.FAVICON, item);
@@ -371,7 +398,7 @@ public class InstanceSwitcherCoordinator {
     }
 
     private void switchToInstance(InstanceInfo item) {
-        if (item.type == InstanceInfo.Type.CURRENT) {
+        if (!UiUtils.isInstanceSwitcherV2Enabled() && item.type == InstanceInfo.Type.CURRENT) {
             Toast.makeText(
                             mContext,
                             R.string.instance_switcher_already_running_foreground,
@@ -381,6 +408,60 @@ public class InstanceSwitcherCoordinator {
         }
         dismissDialog(DialogDismissalCause.ACTION_ON_CONTENT);
         mOpenCallback.onResult(item);
+    }
+
+    private void selectInstance(InstanceInfo clickedItem) {
+        int instanceId = clickedItem.instanceId;
+
+        // Skip selection if the instance is already selected or is the current instance.
+        if (mSelectedItem != null && mSelectedItem.instanceId == instanceId) return;
+
+        assumeNonNull(mDialog);
+        Iterator<ListItem> it =
+                (clickedItem.taskId == INVALID_TASK_ID)
+                        ? mInactiveModelList.iterator()
+                        : mActiveModelList.iterator();
+        while (it.hasNext()) {
+            ListItem li = it.next();
+            if (li.type == EntryType.COMMAND) continue;
+            int id = li.model.get(InstanceSwitcherItemProperties.INSTANCE_ID);
+            if (mSelectedItem != null && id == mSelectedItem.instanceId) {
+                // Unselect the previous selected item.
+                li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, false);
+            } else if (id == instanceId) {
+                li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, true);
+                // Enables the positive button (e.g. "Open" or "Restore") once a valid selection is
+                // made.
+                mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, false);
+            }
+        }
+        mSelectedItem = clickedItem;
+    }
+
+    private void updatePositiveButtonText() {
+        if (!UiUtils.isInstanceSwitcherV2Enabled()) return;
+        @StringRes int buttonLabelResId = mIsInactiveListShowing ? R.string.restore : R.string.open;
+        assumeNonNull(mDialog);
+        mDialog.set(
+                ModalDialogProperties.POSITIVE_BUTTON_TEXT, mContext.getString(buttonLabelResId));
+    }
+
+    private void unselectItems() {
+        Iterator<ListItem> it =
+                mIsInactiveListShowing
+                        ? mInactiveModelList.iterator()
+                        : mActiveModelList.iterator();
+        while (it.hasNext()) {
+            ListItem li = it.next();
+            if (li.model.get(InstanceSwitcherItemProperties.IS_SELECTED)) {
+                li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, false);
+                break;
+            }
+        }
+        assumeNonNull(mDialog);
+
+        // Disable positive button as all items are now unselected.
+        mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
     }
 
     void dismissDialog(@DialogDismissalCause int cause) {

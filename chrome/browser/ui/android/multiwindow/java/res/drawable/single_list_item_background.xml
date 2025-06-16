@@ -9,5 +9,5 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <corners android:radius="@dimen/card_rounded_corner_radius"/>
-    <solid android:color="?attr/colorSurfaceContainer"/>
+    <solid android:color="@color/dialog_selected_item_bg_color_list"/>
 </shape>

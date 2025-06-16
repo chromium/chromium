@@ -382,6 +382,12 @@
       <message name="IDS_REMOVE" desc="Used for Remove on buttons">
         Remove
       </message>
+      <message name="IDS_OPEN" desc="Used for Open on buttons" formatter_data="android_java">
+        Open
+      </message>
+      <message name="IDS_RESTORE" desc="Used for Restore on buttons" formatter_data="android_java">
+        Restore
+      </message>
       <message name="IDS_SAVE" desc="Used on a button to save information you are editing.">
         Save
       </message>

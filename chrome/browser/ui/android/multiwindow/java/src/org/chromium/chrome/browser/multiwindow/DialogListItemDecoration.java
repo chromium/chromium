@@ -59,7 +59,8 @@ public class DialogListItemDecoration extends RecyclerView.ItemDecoration {
             child.setBackground(
                     AppCompatResources.getDrawable(
                             parent.getContext(),
-                            getBackgroundDrawable(positionInAdapter, itemCount)));
+                            getBackgroundDrawable(
+                                    positionInAdapter, itemCount, child.isSelected())));
         }
     }
 
@@ -71,9 +72,15 @@ public class DialogListItemDecoration extends RecyclerView.ItemDecoration {
      *
      * @param position The zero-indexed position in the adapter.
      * @param itemCount The number of items in the adapter.
+     * @param isSelected Whether the current item is selected.
      * @return The resource ID of the item background.
      */
-    private static @DrawableRes int getBackgroundDrawable(int position, int itemCount) {
+    private static @DrawableRes int getBackgroundDrawable(
+            int position, int itemCount, boolean isSelected) {
+        if (isSelected) {
+            return R.drawable.single_list_item_background;
+        }
+
         if (itemCount == 1) {
             return R.drawable.single_list_item_background;
         }
