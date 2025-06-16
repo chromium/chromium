@@ -555,9 +555,8 @@ struct PasswordForm {
   void SetNoteWithEmptyUniqueDisplayName(const std::u16string& new_note_value);
 
   // Returns the value of the note with a password change backup specific
-  // `unique_display_name`.
-  // returns an empty string if none exists.
-  std::u16string GetPasswordBackupNote() const;
+  // `unique_display_name` if it exists and is not empty.
+  std::optional<std::u16string> GetPasswordBackup() const;
 
   // Updates the note with a password change backup specific
   // `unique_display_name`.

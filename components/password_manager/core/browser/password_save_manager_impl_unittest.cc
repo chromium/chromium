@@ -1687,7 +1687,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, AutomaticSaveInBothStores) {
   expected_profile_update_form.in_store =
       password_save_manager_impl()->GetPendingCredentials().in_store;
   expected_profile_update_form.SetPasswordBackupNote(
-      parsed_submitted_form_.GetPasswordBackupNote());
+      parsed_submitted_form_.GetPasswordBackup().value());
   expected_profile_update_form.notes[0].date_created =
       password_save_manager_impl()
           ->GetPendingCredentials()
@@ -1701,7 +1701,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, AutomaticSaveInBothStores) {
   expected_account_update_form.in_store =
       password_save_manager_impl()->GetPendingCredentials().in_store;
   expected_account_update_form.SetPasswordBackupNote(
-      parsed_submitted_form_.GetPasswordBackupNote());
+      parsed_submitted_form_.GetPasswordBackup().value());
   expected_account_update_form.notes[0].date_created =
       password_save_manager_impl()
           ->GetPendingCredentials()

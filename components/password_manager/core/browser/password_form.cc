@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 
 #include <algorithm>
+#include <optional>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -426,8 +427,10 @@ void PasswordForm::SetNoteWithEmptyUniqueDisplayName(
   SetNote(notes, std::u16string(), new_note_value);
 }
 
-std::u16string PasswordForm::GetPasswordBackupNote() const {
-  return GetNote(notes, PasswordNote::kPasswordChangeBackupNoteName);
+std::optional<std::u16string> PasswordForm::GetPasswordBackup() const {
+  std::u16string note =
+      GetNote(notes, PasswordNote::kPasswordChangeBackupNoteName);
+  return note.empty() ? std::nullopt : std::make_optional(note);
 }
 
 void PasswordForm::SetPasswordBackupNote(const std::u16string& new_note_value) {

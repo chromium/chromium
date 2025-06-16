@@ -73,9 +73,9 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
       note(form.GetNoteWithEmptyUniqueDisplayName()),
       blocked_by_user(form.blocked_by_user),
       last_used_time(form.date_last_used) {
-  if (!form.GetPasswordBackupNote().empty() &&
+  if (form.GetPasswordBackup() &&
       base::FeatureList::IsEnabled(features::kShowRecoveryPassword)) {
-    backup_password = form.GetPasswordBackupNote();
+    backup_password = form.GetPasswordBackup();
   }
   CredentialFacet facet;
   facet.display_name = form.app_display_name;
@@ -132,9 +132,9 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
     // TODO(crbug.com/407501259): instead of saving the last non-empty backup,
     // consider storing all backups in the credential UI entry and create a
     // separate card for each of them.
-    if (!form.GetPasswordBackupNote().empty() &&
+    if (form.GetPasswordBackup() &&
         base::FeatureList::IsEnabled(features::kShowRecoveryPassword)) {
-      backup_password = form.GetPasswordBackupNote();
+      backup_password = form.GetPasswordBackup();
     }
   }
 }

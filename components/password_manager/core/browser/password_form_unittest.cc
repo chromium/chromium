@@ -15,7 +15,15 @@ TEST(PasswordFormTest, PasswordBackupNote) {
   form.SetPasswordBackupNote(u"backuppassword");
   EXPECT_EQ(form.notes[0].unique_display_name,
             PasswordNote::kPasswordChangeBackupNoteName);
-  EXPECT_EQ(form.GetPasswordBackupNote(), u"backuppassword");
+  EXPECT_EQ(form.GetPasswordBackup(), u"backuppassword");
+}
+
+TEST(PasswordFormTest, EmptyPasswordBackupNote) {
+  PasswordForm form;
+  form.SetPasswordBackupNote(u"");
+  EXPECT_EQ(form.notes[0].unique_display_name,
+            PasswordNote::kPasswordChangeBackupNoteName);
+  EXPECT_FALSE(form.GetPasswordBackup().has_value());
 }
 
 TEST(PasswordFormTest, RegularNote) {
@@ -31,7 +39,7 @@ TEST(PasswordFormTest, MixedNotes) {
   form.SetPasswordBackupNote(u"backuppassword");
 
   EXPECT_EQ(form.GetNoteWithEmptyUniqueDisplayName(), u"test note");
-  EXPECT_EQ(form.GetPasswordBackupNote(), u"backuppassword");
+  EXPECT_EQ(form.GetPasswordBackup(), u"backuppassword");
 }
 
 TEST(PasswordFormTest, UpdatesExistingNote) {

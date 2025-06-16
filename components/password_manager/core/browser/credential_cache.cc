@@ -30,13 +30,13 @@ std::optional<UiCredential> GetBackupCredential(const PasswordForm& form,
 #if !BUILDFLAG(IS_ANDROID)
   return std::nullopt;
 #else
-  std::u16string backup_password = form.GetPasswordBackupNote();
-  if (backup_password.empty() ||
+  std::optional<std::u16string> backup_password = form.GetPasswordBackup();
+  if (!backup_password ||
       !base::FeatureList::IsEnabled(features::kFillRecoveryPassword)) {
     return std::nullopt;
   }
   PasswordForm backup_form = form;
-  backup_form.password_value = backup_password;
+  backup_form.password_value = backup_password.value();
   UiCredential credential{backup_form, origin, IsBackupCredential(true)};
   return credential;
 #endif  // !BUILDFLAG(IS_ANDROID)

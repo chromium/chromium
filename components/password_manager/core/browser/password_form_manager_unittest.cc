@@ -2102,8 +2102,7 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordAsBackup) {
 
   EXPECT_EQ(expected_form.username_value, saved_form.username_value);
   EXPECT_EQ(expected_form.password_value, saved_form.password_value);
-  EXPECT_EQ(expected_form.GetPasswordBackupNote(),
-            saved_form.GetPasswordBackupNote());
+  EXPECT_EQ(expected_form.GetPasswordBackup(), saved_form.GetPasswordBackup());
   EXPECT_EQ(expected_form.url, saved_form.url);
   EXPECT_EQ(expected_form.signon_realm, saved_form.signon_realm);
 }

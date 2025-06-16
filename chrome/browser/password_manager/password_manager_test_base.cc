@@ -486,7 +486,7 @@ void PasswordManagerBrowserTestBase::CheckThatCredentialsStored(
   EXPECT_EQ(base::ASCIIToUTF16(password), form.password_value);
   if (backup_password.has_value()) {
     EXPECT_EQ(base::ASCIIToUTF16(backup_password.value()),
-              form.GetPasswordBackupNote());
+              form.GetPasswordBackup());
   }
   if (type.has_value()) {
     EXPECT_EQ(type.value(), form.type);

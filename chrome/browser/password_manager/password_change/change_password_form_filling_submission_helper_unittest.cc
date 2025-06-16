@@ -318,8 +318,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   EXPECT_EQ(presaved_generated_password_form.url, existing_credential()->url);
   EXPECT_EQ(presaved_generated_password_form.signon_realm,
             existing_credential()->signon_realm);
-  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackupNote(),
-            kNewPassword);
+  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 }
 
 // If the password being changed was not stored, we will add a new credential.
@@ -370,8 +369,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SucceededNewCredential) {
   EXPECT_EQ(presaved_generated_password_form.password_value, kOldPassword);
   EXPECT_EQ(presaved_generated_password_form.url, url());
   EXPECT_EQ(presaved_generated_password_form.signon_realm, kUrlString);
-  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackupNote(),
-            kNewPassword);
+  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 }
 
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Failed) {
@@ -417,8 +415,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Failed) {
   EXPECT_EQ(presaved_generated_password_form.url, existing_credential()->url);
   EXPECT_EQ(presaved_generated_password_form.signon_realm,
             existing_credential()->signon_realm);
-  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackupNote(),
-            kNewPassword);
+  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 }
 
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest, OnTimeout) {
@@ -472,8 +469,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, OnTimeout) {
   EXPECT_EQ(presaved_generated_password_form.url, existing_credential()->url);
   EXPECT_EQ(presaved_generated_password_form.signon_realm,
             existing_credential()->signon_realm);
-  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackupNote(),
-            kNewPassword);
+  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeVerificationTriggeredAutomatically", false,
       1);
@@ -508,8 +504,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
   EXPECT_EQ(presaved_generated_password_form.url, existing_credential()->url);
   EXPECT_EQ(presaved_generated_password_form.signon_realm,
             existing_credential()->signon_realm);
-  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackupNote(),
-            kNewPassword);
+  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 }
 
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
