@@ -13,12 +13,14 @@ export function getHtml(this: BookmarksFolderNodeElement) {
     class="cr-vertical-tab cr-nav-menu-item ${this.getContainerClass_()}"
     ?hidden="${this.isRootFolder_()}"
     role="treeitem"
+    aria-level="${this.getAriaLevel_()}"
     aria-owns="descendants"
     tabindex="${this.getTabIndex_()}"
     @click="${this.selectFolder_}"
     @dblclick="${this.toggleFolder_}"
     @contextmenu="${this.onContextMenu_}"
-    ?selected="${this.isSelectedFolder_}">
+    ?selected="${this.isSelectedFolder_}"
+    aria-selected="${this.isSelectedFolder_}">
   <div id="inner-container">
     ${this.hasChildFolder_ ? html`
       <cr-icon-button id="arrow" iron-icon="cr:arrow-drop-down"

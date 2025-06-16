@@ -376,6 +376,11 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     return this.selectedFolder_ === this.itemId ? '0' : '-1';
   }
 
+  protected getAriaLevel_(): number {
+    // Converts (-1)-indexed depth to 1-based ARIA level.
+    return this.depth + 2;
+  }
+
   /**
    * Sets the 'aria-expanded' accessibility on nodes which need it. Note that
    * aria-expanded="false" is different to having the attribute be undefined.
