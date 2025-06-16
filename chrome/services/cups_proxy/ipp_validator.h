@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSAGE_EMBEDDINGS_EMBEDDER_TAB_OBSERVER_H_
 #define CHROME_BROWSER_PASSAGE_EMBEDDINGS_EMBEDDER_TAB_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/web_contents_observer.h"

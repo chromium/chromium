@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/service_worker_context_observer.h"

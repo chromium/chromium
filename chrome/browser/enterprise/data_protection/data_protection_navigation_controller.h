@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 #include "components/enterprise/buildflags/buildflags.h"

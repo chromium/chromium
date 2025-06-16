@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_IMPL_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"

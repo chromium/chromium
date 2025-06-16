@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TPCD_SUPPORT_TOP_LEVEL_TRIAL_SERVICE_H_
 #define CHROME_BROWSER_TPCD_SUPPORT_TOP_LEVEL_TRIAL_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/origin_trial_status_change_details.h"

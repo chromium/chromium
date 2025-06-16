@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_TEST_UTIL_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_TEST_UTIL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"

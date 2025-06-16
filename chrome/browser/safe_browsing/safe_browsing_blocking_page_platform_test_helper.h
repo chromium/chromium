@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_BLOCKING_PAGE_PLATFORM_TEST_HELPER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_BLOCKING_PAGE_PLATFORM_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"

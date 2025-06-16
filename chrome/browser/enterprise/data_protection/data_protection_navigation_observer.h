@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"

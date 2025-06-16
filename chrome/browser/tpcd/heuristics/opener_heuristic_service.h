@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_SERVICE_H_
 #define CHROME_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"

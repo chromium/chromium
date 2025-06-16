@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"

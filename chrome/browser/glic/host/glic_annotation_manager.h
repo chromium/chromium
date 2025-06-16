@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"

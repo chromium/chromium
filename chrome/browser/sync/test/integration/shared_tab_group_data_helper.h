@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"

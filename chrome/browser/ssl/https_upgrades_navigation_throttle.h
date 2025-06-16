@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/security_interstitials/content/security_blocking_page_factory.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/navigation_throttle.h"

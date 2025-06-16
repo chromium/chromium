@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"

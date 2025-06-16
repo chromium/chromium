@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 

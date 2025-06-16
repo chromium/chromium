@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_CHANGE_PASSWORD_FORM_WAITER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_CHANGE_PASSWORD_FORM_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "content/public/browser/web_contents_observer.h"

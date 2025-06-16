@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_REPORT_SCHEDULER_ANDROID_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_REPORT_SCHEDULER_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
 class Profile;

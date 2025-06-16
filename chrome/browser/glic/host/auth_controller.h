@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_AUTH_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_HOST_AUTH_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"

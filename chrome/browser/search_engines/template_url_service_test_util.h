@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/test/base/scoped_testing_local_state.h"

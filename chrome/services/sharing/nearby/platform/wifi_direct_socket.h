@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 #include "mojo/public/cpp/platform/platform_handle.h"

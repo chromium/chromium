@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_MODEL_QUALITY_LOGS_UPLOADER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_MODEL_QUALITY_LOGS_UPLOADER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 

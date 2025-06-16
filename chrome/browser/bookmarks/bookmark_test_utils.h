@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 
 #ifndef CHROME_BROWSER_BOOKMARKS_BOOKMARK_TEST_UTILS_H_

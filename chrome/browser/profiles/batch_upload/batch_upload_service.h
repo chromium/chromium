@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"

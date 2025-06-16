@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"

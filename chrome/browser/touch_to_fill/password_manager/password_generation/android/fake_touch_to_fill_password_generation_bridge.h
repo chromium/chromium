@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "content/public/browser/web_contents.h"
 

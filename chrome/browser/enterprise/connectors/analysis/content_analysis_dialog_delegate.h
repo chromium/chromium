@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_DELEGATE_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"

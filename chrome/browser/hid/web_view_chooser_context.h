@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "services/device/public/mojom/hid.mojom.h"

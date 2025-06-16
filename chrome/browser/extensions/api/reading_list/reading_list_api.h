@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"

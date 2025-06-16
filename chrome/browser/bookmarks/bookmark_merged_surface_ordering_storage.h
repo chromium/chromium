@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"

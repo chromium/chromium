@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_SUPERVISED_USER_EXTENSIONS_METRICS_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_SUPERVISED_USER_EXTENSIONS_METRICS_DELEGATE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "extensions/browser/extension_registry.h"

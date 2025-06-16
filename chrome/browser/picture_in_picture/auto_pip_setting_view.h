@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PIP_SETTING_VIEW_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 // Creates and manages the content setting |BubbleDialogDelegate| for

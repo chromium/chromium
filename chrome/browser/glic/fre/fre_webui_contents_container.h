@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_FRE_FRE_WEBUI_CONTENTS_CONTAINER_H_
 #define CHROME_BROWSER_GLIC_FRE_FRE_WEBUI_CONTENTS_CONTAINER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/webview.h"

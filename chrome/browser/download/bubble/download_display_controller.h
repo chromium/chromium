@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/offline_item_model.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_RESTORE_TASK_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/webapps/browser/android/add_to_homescreen_data_fetcher.h"

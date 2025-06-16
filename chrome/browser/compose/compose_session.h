@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"

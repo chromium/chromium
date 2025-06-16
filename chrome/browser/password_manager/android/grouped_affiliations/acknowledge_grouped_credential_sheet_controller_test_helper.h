@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"

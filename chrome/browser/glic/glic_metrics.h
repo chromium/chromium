@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"

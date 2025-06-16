@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_MANAGER_H_
 
 #include <jni.h>
-
 #include <stddef.h>
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/contextual_search/core/browser/contextual_search_delegate.h"
 

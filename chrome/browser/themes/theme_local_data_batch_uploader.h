@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_THEMES_THEME_LOCAL_DATA_BATCH_UPLOADER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
 #include "components/sync/service/local_data_description.h"
 

@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"

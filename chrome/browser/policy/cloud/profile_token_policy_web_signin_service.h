@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor.h"
 #include "chrome/browser/policy/client_data_delegate_desktop.h"

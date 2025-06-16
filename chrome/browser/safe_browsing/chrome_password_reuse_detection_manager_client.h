@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/phishy_interaction_tracker.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"

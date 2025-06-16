@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/json/json_value_converter.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"

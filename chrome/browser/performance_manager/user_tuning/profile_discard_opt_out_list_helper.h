@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;

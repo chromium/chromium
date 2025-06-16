@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"

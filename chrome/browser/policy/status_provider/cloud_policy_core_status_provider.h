@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_STATUS_PROVIDER_CLOUD_POLICY_CORE_STATUS_PROVIDER_H_
 #define CHROME_BROWSER_POLICY_STATUS_PROVIDER_CLOUD_POLICY_CORE_STATUS_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 

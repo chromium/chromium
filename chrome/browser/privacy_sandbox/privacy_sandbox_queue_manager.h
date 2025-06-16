@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_QUEUE_MANAGER_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_QUEUE_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"

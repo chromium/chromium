@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"

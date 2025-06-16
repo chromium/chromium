@@ -9,6 +9,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"

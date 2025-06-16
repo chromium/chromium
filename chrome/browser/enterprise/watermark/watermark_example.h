@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_EXAMPLE_H_
 #define CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_EXAMPLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/controls/textarea/textarea.h"

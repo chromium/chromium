@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_TRUSTED_CDN_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents.h"
 
 // Native part of Trusted CDN publisher URL provider. Managed by Java layer.

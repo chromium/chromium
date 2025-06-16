@@ -7,6 +7,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 

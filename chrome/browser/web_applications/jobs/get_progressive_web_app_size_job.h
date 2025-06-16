@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_GET_PROGRESSIVE_WEB_APP_SIZE_JOB_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_GET_PROGRESSIVE_WEB_APP_SIZE_JOB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browsing_data/site_data_size_collector.h"
 #include "chrome/browser/web_applications/web_app.h"

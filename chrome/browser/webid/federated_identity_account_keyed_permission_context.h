@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/webid/federated_identity_data_model.h"

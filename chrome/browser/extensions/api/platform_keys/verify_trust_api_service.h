@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api_base.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api_v1.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DATA_SHARING_DATA_SHARING_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_DATA_SHARING_DATA_SHARING_NAVIGATION_THROTTLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "content/public/browser/navigation_throttle.h"
 

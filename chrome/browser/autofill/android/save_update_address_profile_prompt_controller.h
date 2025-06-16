@@ -12,6 +12,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"

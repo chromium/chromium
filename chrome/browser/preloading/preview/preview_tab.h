@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/accelerators/accelerator.h"

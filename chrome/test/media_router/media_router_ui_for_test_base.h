@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"

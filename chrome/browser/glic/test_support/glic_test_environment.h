@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"

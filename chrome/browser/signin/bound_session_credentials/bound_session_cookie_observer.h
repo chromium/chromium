@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cookies/cookie_change_dispatcher.h"

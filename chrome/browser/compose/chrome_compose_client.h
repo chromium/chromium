@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/token.h"
 #include "chrome/browser/compose/compose_session.h"
 #include "chrome/browser/compose/proactive_nudge_tracker.h"

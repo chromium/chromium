@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_SSL_HTTPS_UPGRADES_INTERCEPTOR_H_
 
 #include <memory>
-
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
-// #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/url_loader_request_interceptor.h"

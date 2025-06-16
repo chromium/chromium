@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_ALMANAC_FETCHER_H_
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_ALMANAC_FETCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/almanac_api_client/proto_file_manager.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_ANIMATOR_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"

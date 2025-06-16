@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_AUTOFILL_UI_AUTOFILL_IMAGE_FETCHER_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_UI_AUTOFILL_IMAGE_FETCHER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
-
 #include "components/keyed_service/core/keyed_service.h"
 
 class ProfileKey;

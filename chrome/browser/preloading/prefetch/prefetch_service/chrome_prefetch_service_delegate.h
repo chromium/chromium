@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "url/gurl.h"

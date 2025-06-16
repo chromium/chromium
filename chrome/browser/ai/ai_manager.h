@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"

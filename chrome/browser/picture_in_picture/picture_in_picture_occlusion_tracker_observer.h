@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_OCCLUSION_TRACKER_OBSERVER_H_
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_OCCLUSION_TRACKER_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 
 namespace views {

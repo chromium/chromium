@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AI_AI_CREATE_ON_DEVICE_SESSION_TASK_H_
 #define CHROME_BROWSER_AI_AI_CREATE_ON_DEVICE_SESSION_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/state_transitions.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"

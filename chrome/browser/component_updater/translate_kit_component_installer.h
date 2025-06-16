@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/prefs/pref_service.h"

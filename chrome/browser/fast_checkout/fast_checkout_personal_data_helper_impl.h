@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_PERSONAL_DATA_HELPER_IMPL_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_PERSONAL_DATA_HELPER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/computed_app_size.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"

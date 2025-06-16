@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_MANAGEMENT_MIXIN_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_MANAGEMENT_MIXIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"

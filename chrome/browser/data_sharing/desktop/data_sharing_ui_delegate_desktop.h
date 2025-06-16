@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DATA_SHARING_DESKTOP_DATA_SHARING_UI_DELEGATE_DESKTOP_H_
 #define CHROME_BROWSER_DATA_SHARING_DESKTOP_DATA_SHARING_UI_DELEGATE_DESKTOP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 

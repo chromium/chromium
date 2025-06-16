@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TPCD_SUPPORT_TPCD_SUPPORT_SERVICE_H_
 #define CHROME_BROWSER_TPCD_SUPPORT_TPCD_SUPPORT_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/origin_trial_status_change_details.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"

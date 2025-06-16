@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_TAB_INDICATOR_HELPER_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "components/tabs/public/tab_interface.h"

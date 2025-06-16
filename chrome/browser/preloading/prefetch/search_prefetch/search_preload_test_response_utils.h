@@ -8,6 +8,7 @@
 #include <queue>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/thread_annotations.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 

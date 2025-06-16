@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/scoped_observation.h"

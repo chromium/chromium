@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_WEB_REQUEST_REPORTER_IMPL_H_
 #define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_WEB_REQUEST_REPORTER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"

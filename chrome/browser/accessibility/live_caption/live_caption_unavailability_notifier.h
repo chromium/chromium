@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "content/public/browser/document_service.h"

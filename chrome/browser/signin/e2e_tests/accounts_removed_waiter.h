@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_E2E_TESTS_ACCOUNTS_REMOVED_WAITER_H_
 #define CHROME_BROWSER_SIGNIN_E2E_TESTS_ACCOUNTS_REMOVED_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
