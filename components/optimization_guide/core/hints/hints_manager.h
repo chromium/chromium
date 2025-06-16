@@ -280,6 +280,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // fetch attempt was made.
   void ScheduleActiveTabsHintsFetch();
 
+  bool HasPersonalizableTypesRegistered();
+
   // Called to make a request to fetch hints from the remote Optimization Guide
   // Service. Used to fetch hints for origins frequently visited by the user and
   // URLs open in the active tab model.
@@ -592,6 +594,17 @@ class HintsManager : public OptimizationHintsComponentObserver,
 
   // Used to get |weak_ptr_| to self.
   base::WeakPtrFactory<HintsManager> weak_ptr_factory_{this};
+
+  // Wrapper that immediately invokes HintsFetcher for the purposes of fetching
+  // hints for active tabs.
+  void FetchHintsForActiveTabsInternal(
+      const std::vector<std::string>& top_hosts,
+      const std::vector<GURL>& active_tab_urls_to_refresh,
+      optimization_guide::proto::RequestContext request_context,
+      bool skip_cache,
+      HintsFetchedCallback hints_fetched_callback,
+      std::optional<proto::RequestContextMetadata> request_context_metadata,
+      const std::string& access_token);
 };
 
 }  // namespace optimization_guide

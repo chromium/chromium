@@ -1865,6 +1865,8 @@ class ProactivePersonalizationHintsFetcherBrowserTest
       identity_test_env_adaptor_;
 };
 
+// Verify access token is attached during navigation fetching if a
+// personalizable optimization type is requested.
 IN_PROC_BROWSER_TEST_F(ProactivePersonalizationHintsFetcherBrowserTest,
                        OnNavigationFetchesWithAccessToken) {
   SetNetworkConnectionOnline();
@@ -1885,7 +1887,25 @@ IN_PROC_BROWSER_TEST_F(ProactivePersonalizationHintsFetcherBrowserTest,
   EXPECT_EQ(1u, count_hints_requests_received());
 }
 
-class ProactivePersonalizationHintsWrongOptimizationTypeFetcherBrowserTest
+// Verify access token is attached during active tab fetching if a
+// personalizable optimization type is requested.
+IN_PROC_BROWSER_TEST_F(ProactivePersonalizationHintsFetcherBrowserTest,
+                       ActiveTabFetchesWithAccessToken) {
+  const base::HistogramTester* histogram_tester = GetHistogramTester();
+  EnableSignin();
+  SetExpectedBearerAccessToken("Bearer access_token");
+
+  SetUpComponentUpdateHints(https_url());
+
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+                "BatchUpdateActiveTabs",
+                1),
+            1);
+}
+
+class ProactivePersonalizationNoAllowedTypesHintsFetcherBrowserTest
     : public ProactivePersonalizationHintsFetcherBrowserTest {
  public:
   base::FieldTrialParams GetFieldTrialParams() override {
@@ -1895,8 +1915,10 @@ class ProactivePersonalizationHintsWrongOptimizationTypeFetcherBrowserTest
   }
 };
 
+// Verify access token is not attached during navigation fetching if no
+// personalizable optimization type is requested.
 IN_PROC_BROWSER_TEST_F(
-    ProactivePersonalizationHintsWrongOptimizationTypeFetcherBrowserTest,
+    ProactivePersonalizationNoAllowedTypesHintsFetcherBrowserTest,
     OnNavigationDoesNotFetchAccessToken) {
   SetNetworkConnectionOnline();
   SetResponseType(
@@ -1914,4 +1936,23 @@ IN_PROC_BROWSER_TEST_F(
   expected_request.insert(full_url.spec());
   SetExpectedHintsRequestForHostsAndUrls(expected_request);
   EXPECT_EQ(1u, count_hints_requests_received());
+}
+
+// Verify access token is not attached during active tab fetching if no
+// personalizable optimization type is requested.
+IN_PROC_BROWSER_TEST_F(
+    ProactivePersonalizationNoAllowedTypesHintsFetcherBrowserTest,
+    ActiveTabDoesNotFetchWithAccessToken) {
+  const base::HistogramTester* histogram_tester = GetHistogramTester();
+  EnableSignin();
+  SetExpectedBearerAccessToken(std::string());
+
+  SetUpComponentUpdateHints(https_url());
+
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+                "BatchUpdateActiveTabs",
+                1),
+            1);
 }

@@ -388,7 +388,6 @@ HintsManager::HintsManager(
       base::BindOnce(&HintsManager::OnHintCacheInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
 }
-
 HintsManager::~HintsManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -761,6 +760,17 @@ const std::vector<GURL> HintsManager::GetActiveTabURLsToRefresh() {
   return std::vector<GURL>(urls_to_refresh.begin(), urls_to_refresh.end());
 }
 
+// Helper method to check if any registered optimization type is allowed for
+// proactive personalization
+bool HintsManager::HasPersonalizableTypesRegistered() {
+  return std::any_of(
+      registered_optimization_types_.begin(),
+      registered_optimization_types_.end(), [this](auto opt_type) {
+        return allowed_optimization_types_for_proactive_personalization_.Has(
+            opt_type);
+      });
+}
+
 void HintsManager::FetchHintsForActiveTabs() {
   active_tabs_hints_fetch_timer_.Stop();
   active_tabs_hints_fetch_timer_.Start(
@@ -811,6 +821,35 @@ void HintsManager::FetchHintsForActiveTabs() {
       proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS, registered_optimization_types_,
       active_tab_urls_to_refresh, top_hosts, optimization_guide_logger_);
 
+  auto hints_fetched_callback =
+      base::BindOnce(&HintsManager::OnHintsForActiveTabsFetched,
+                     weak_ptr_factory_.GetWeakPtr(), top_hosts_set,
+                     base::flat_set<GURL>(active_tab_urls_to_refresh.begin(),
+                                          active_tab_urls_to_refresh.end()));
+  auto do_fetch_callback = base::BindOnce(
+      &HintsManager::FetchHintsForActiveTabsInternal,
+      weak_ptr_factory_.GetWeakPtr(), top_hosts, active_tab_urls_to_refresh,
+      proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
+      /*skip_cache=*/false, std::move(hints_fetched_callback),
+      /*request_context_metadata=*/std::nullopt);
+  if (HasPersonalizableTypesRegistered()) {
+    RequestAccessToken(
+        identity_manager_,
+        {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
+        std::move(do_fetch_callback));
+  } else {
+    std::move(do_fetch_callback).Run(/*access_token=*/std::string());
+  }
+}
+
+void HintsManager::FetchHintsForActiveTabsInternal(
+    const std::vector<std::string>& top_hosts,
+    const std::vector<GURL>& active_tab_urls_to_refresh,
+    optimization_guide::proto::RequestContext request_context,
+    bool skip_cache,
+    HintsFetchedCallback hints_fetched_callback,
+    std::optional<proto::RequestContextMetadata> request_context_metadata,
+    const std::string& access_token) {
   if (!active_tabs_batch_update_hints_fetcher_) {
     DCHECK(hints_fetcher_factory_);
     active_tabs_batch_update_hints_fetcher_ =
@@ -819,13 +858,9 @@ void HintsManager::FetchHintsForActiveTabs() {
   active_tabs_batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
       top_hosts, active_tab_urls_to_refresh, registered_optimization_types_,
       proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS, application_locale_,
-      /*access_token=*/std::string(),
-      /*skip_cache=*/false,
-      base::BindOnce(&HintsManager::OnHintsForActiveTabsFetched,
-                     weak_ptr_factory_.GetWeakPtr(), top_hosts_set,
-                     base::flat_set<GURL>(active_tab_urls_to_refresh.begin(),
-                                          active_tab_urls_to_refresh.end())),
-      std::nullopt);
+      access_token,
+      /*skip_cache=*/false, std::move(hints_fetched_callback),
+      /*request_context_metadata=*/std::nullopt);
 }
 
 void HintsManager::OnHintsForActiveTabsFetched(
@@ -1695,12 +1730,7 @@ void HintsManager::OnNavigationStartOrRedirect(
     return;
   }
 
-  if (std::any_of(
-          registered_optimization_types_.begin(),
-          registered_optimization_types_.end(), [&](auto opt_type) {
-            return allowed_optimization_types_for_proactive_personalization_
-                .Has(opt_type);
-          })) {
+  if (HasPersonalizableTypesRegistered()) {
     // Request access token before fetching hints.
     RequestAccessToken(
         identity_manager_,

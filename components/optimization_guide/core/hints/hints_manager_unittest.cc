@@ -3759,9 +3759,10 @@ TEST_F(HintsManagerPersonalizedFetchingTest, NoUserSignIn) {
       OptimizationGuideAccessTokenResult::kUserNotSignedIn, 1);
 }
 
-class HintsManagerProactivePersonalizedFetchingTest : public HintsManagerTest {
+class HintsManagerProactivePersonalizationFetchingTest
+    : public HintsManagerTest {
  public:
-  HintsManagerProactivePersonalizedFetchingTest() {
+  HintsManagerProactivePersonalizationFetchingTest() {
     scoped_list_.InitWithFeaturesAndParameters(
         {
             {
@@ -3799,7 +3800,7 @@ class HintsManagerProactivePersonalizedFetchingTest : public HintsManagerTest {
   base::test::ScopedFeatureList scoped_list_;
 };
 
-TEST_F(HintsManagerProactivePersonalizedFetchingTest,
+TEST_F(HintsManagerProactivePersonalizationFetchingTest,
        NotAnAllowedOptimizationTypeHintsFetchedAtNavigationTime) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableCheckingUserPermissionsForTesting);
@@ -3821,7 +3822,7 @@ TEST_F(HintsManagerProactivePersonalizedFetchingTest,
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
 }
 
-TEST_F(HintsManagerProactivePersonalizedFetchingTest,
+TEST_F(HintsManagerProactivePersonalizationFetchingTest,
        AllowedOptimizationTypeHintsFetchedAtNavigationTime) {
   ASSERT_TRUE(identity_test_env()->identity_manager());
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -3848,7 +3849,7 @@ TEST_F(HintsManagerProactivePersonalizedFetchingTest,
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
 }
 
-TEST_F(HintsManagerProactivePersonalizedFetchingTest, TokenFailure) {
+TEST_F(HintsManagerProactivePersonalizationFetchingTest, TokenFailure) {
   ASSERT_TRUE(identity_test_env()->identity_manager());
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
@@ -3868,6 +3869,144 @@ TEST_F(HintsManagerProactivePersonalizedFetchingTest, TokenFailure) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.AccessTokenHelper.Result",
       OptimizationGuideAccessTokenResult::kTransientError, 1);
+}
+
+TEST_F(HintsManagerProactivePersonalizationFetchingTest,
+       FetchHintsForActiveTabsWithoutPersonalizableTypes) {
+  auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(true);
+  base::HistogramTester histogram_tester;
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableCheckingUserPermissionsForTesting);
+
+  ASSERT_TRUE(identity_test_env()->identity_manager());
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+
+  CreateHintsManager(
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})),
+      identity_test_env()->identity_manager());
+  hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithHostHints}));
+  InitializeWithDefaultConfig("1.0.0");
+
+  tab_url_provider()->SetUrls(
+      {GURL("https://a.com"), GURL("https://b.com"), GURL("chrome://new-tab")});
+
+  // No hints fetch should happen on startup.
+  RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0);
+  EXPECT_EQ(0, tab_url_provider()->get_num_urls_called());
+
+  // Hints fetch should be triggered on deferred startup.
+  hints_manager()->OnDeferredStartup();
+
+  // No access token request is expected when there are no personalized types.
+
+  RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
+  EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
+  EXPECT_EQ(1,
+            active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ(
+      proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
+      active_tabs_batch_update_hints_fetcher()->request_context_requested());
+}
+
+TEST_F(HintsManagerProactivePersonalizationFetchingTest,
+       FetchHintsForActiveTabsWithPersonalizableTypes) {
+  auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(true);
+  base::HistogramTester histogram_tester;
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableCheckingUserPermissionsForTesting);
+
+  ASSERT_TRUE(identity_test_env()->identity_manager());
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+
+  CreateHintsManager(
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})),
+      identity_test_env()->identity_manager());
+  hints_manager()->RegisterOptimizationTypes({proto::SHOPPING_DISCOUNTS});
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithHostHints}));
+  InitializeWithDefaultConfig("1.0.0");
+
+  tab_url_provider()->SetUrls(
+      {GURL("https://a.com"), GURL("https://b.com"), GURL("chrome://new-tab")});
+
+  // No hints fetch should happen on startup.
+  RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0);
+  EXPECT_EQ(0, tab_url_provider()->get_num_urls_called());
+
+  // Hints fetch should be triggered on deferred startup.
+  hints_manager()->OnDeferredStartup();
+  RunUntilIdle();
+  // An access token request is expected with personalized types.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
+  EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
+  EXPECT_EQ(1,
+            active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ(
+      proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
+      active_tabs_batch_update_hints_fetcher()->request_context_requested());
+}
+
+TEST_F(HintsManagerProactivePersonalizationFetchingTest,
+       FetchHintsForActiveTabsWithPersonalizableTypesWithTokenFailure) {
+  auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(true);
+  base::HistogramTester histogram_tester;
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableCheckingUserPermissionsForTesting);
+
+  ASSERT_TRUE(identity_test_env()->identity_manager());
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+
+  CreateHintsManager(
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})),
+      identity_test_env()->identity_manager());
+  hints_manager()->RegisterOptimizationTypes({proto::SHOPPING_DISCOUNTS});
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithHostHints}));
+  InitializeWithDefaultConfig("1.0.0");
+
+  tab_url_provider()->SetUrls(
+      {GURL("https://a.com"), GURL("https://b.com"), GURL("chrome://new-tab")});
+
+  // No hints fetch should happen on startup.
+  RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0);
+  EXPECT_EQ(0, tab_url_provider()->get_num_urls_called());
+
+  // Hints fetch should be triggered on deferred startup.
+  hints_manager()->OnDeferredStartup();
+  RunUntilIdle();
+  // An access token request is expected with personalized types.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.AccessTokenHelper.Result",
+      OptimizationGuideAccessTokenResult::kTransientError, 1);
+  EXPECT_EQ(1,
+            active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ(
+      proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
+      active_tabs_batch_update_hints_fetcher()->request_context_requested());
 }
 
 }  // namespace optimization_guide
