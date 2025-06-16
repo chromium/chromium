@@ -31,6 +31,8 @@
 #include "base/ios/ios_util.h"
 #endif
 
+namespace base::i18n {
+
 namespace {
 
 // Extract language, country and variant, but ignore keywords.  For example,
@@ -64,19 +66,19 @@ std::string GetLocaleString(const icu::Locale& locale) {
 // Returns LEFT_TO_RIGHT or RIGHT_TO_LEFT if |character| has strong
 // directionality, returns UNKNOWN_DIRECTION if it doesn't. Please refer to
 // http://unicode.org/reports/tr9/ for more information.
-base::i18n::TextDirection GetCharacterDirection(UChar32 character) {
-  static bool has_switch = base::CommandLine::ForCurrentProcess()->HasSwitch(
+TextDirection GetCharacterDirection(UChar32 character) {
+  static bool has_switch = CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kForceTextDirection);
   if (has_switch) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    CommandLine* command_line = CommandLine::ForCurrentProcess();
     std::string force_flag =
         command_line->GetSwitchValueASCII(switches::kForceTextDirection);
 
     if (force_flag == switches::kForceDirectionRTL) {
-      return base::i18n::RIGHT_TO_LEFT;
+      return RIGHT_TO_LEFT;
     }
     if (force_flag == switches::kForceDirectionLTR) {
-      return base::i18n::LEFT_TO_RIGHT;
+      return LEFT_TO_RIGHT;
     }
   }
   // Now that we have the character, we use ICU in order to query for the
@@ -87,37 +89,20 @@ base::i18n::TextDirection GetCharacterDirection(UChar32 character) {
     case U_RIGHT_TO_LEFT_ARABIC:
     case U_RIGHT_TO_LEFT_EMBEDDING:
     case U_RIGHT_TO_LEFT_OVERRIDE:
-      return base::i18n::RIGHT_TO_LEFT;
+      return RIGHT_TO_LEFT;
     case U_LEFT_TO_RIGHT:
     case U_LEFT_TO_RIGHT_EMBEDDING:
     case U_LEFT_TO_RIGHT_OVERRIDE:
-      return base::i18n::LEFT_TO_RIGHT;
+      return LEFT_TO_RIGHT;
   }
-  return base::i18n::UNKNOWN_DIRECTION;
-}
-
-}  // namespace
-
-namespace base::i18n {
-
-// Represents the locale-specific ICU text direction.
-static TextDirection g_icu_text_direction = UNKNOWN_DIRECTION;
-
-// Convert the ICU default locale to a string.
-std::string GetConfiguredLocale() {
-  return GetLocaleString(icu::Locale::getDefault());
-}
-
-// Convert the ICU canonicalized locale to a string.
-std::string GetCanonicalLocale(const std::string& locale) {
-  return GetLocaleString(icu::Locale::createCanonical(locale.c_str()));
+  return UNKNOWN_DIRECTION;
 }
 
 // Convert Chrome locale name to ICU locale name
-std::string ICULocaleName(const std::string& locale_string) {
+std::string ICULocaleName(std::string_view locale_string) {
   // If not Spanish, just return it.
   if (locale_string.substr(0, 2) != "es") {
-    return locale_string;
+    return std::string(locale_string);
   }
   // Expand es to es-ES.
   if (EqualsCaseInsensitiveASCII(locale_string, "es")) {
@@ -140,10 +125,25 @@ std::string ICULocaleName(const std::string& locale_string) {
   }
   // Currently, Chrome has only "es" and "es-419", but later we may have
   // more specific "es-RR".
-  return locale_string;
+  return std::string(locale_string);
 }
 
-void SetICUDefaultLocale(const std::string& locale_string) {
+}  // namespace
+
+// Represents the locale-specific ICU text direction.
+static TextDirection g_icu_text_direction = UNKNOWN_DIRECTION;
+
+// Convert the ICU default locale to a string.
+std::string GetConfiguredLocale() {
+  return GetLocaleString(icu::Locale::getDefault());
+}
+
+// Convert the ICU canonicalized locale to a string.
+std::string GetCanonicalLocale(const std::string& locale) {
+  return GetLocaleString(icu::Locale::createCanonical(locale.c_str()));
+}
+
+void SetICUDefaultLocale(std::string_view locale_string) {
 #if BUILDFLAG(IS_IOS)
   static base::debug::CrashKeyString* crash_key_locale =
       base::debug::AllocateCrashKeyString("icu_locale_input",

@@ -48,7 +48,7 @@ BASE_I18N_EXPORT std::string GetCanonicalLocale(const std::string& locale);
 // This is handy in that we don't have to call GetApplicationLocale()
 // everytime we call locale-dependent ICU APIs as long as we make sure
 // that this is called before any locale-dependent API is called.
-BASE_I18N_EXPORT void SetICUDefaultLocale(const std::string& locale_string);
+BASE_I18N_EXPORT void SetICUDefaultLocale(std::string_view locale_string);
 
 // Returns true if the application text direction is right-to-left.
 BASE_I18N_EXPORT bool IsRTL();
