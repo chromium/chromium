@@ -181,7 +181,7 @@ gfx::PointF ContouredRect::Corner::QuadraticControlPoint() const {
 // The resulting "aligned" corner has its coordinates and curvature adjusted
 // in such a way that it would have consistent thickness along its entire path.
 Corner ContouredRect::Corner::AlignedToOrigin(const Corner& origin) const {
-  if (origin.IsZero() || *this == origin) {
+  if (origin.IsEmpty() || *this == origin) {
     return *this;
   }
 

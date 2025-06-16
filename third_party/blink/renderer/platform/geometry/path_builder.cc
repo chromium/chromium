@@ -71,7 +71,7 @@ void AddCurvedCorner(SkPath& path, const Corner& corner) {
   // Start the path from the beginning of the curve.
   path.lineTo(gfx::PointFToSkPoint(corner.Start()));
 
-  if (corner.IsStraight()) {
+  if (corner.IsStraight() || corner.IsEmpty()) {
     // Straight or very close to it, draw two lines.
     path.lineTo(gfx::PointFToSkPoint(corner.Outer()));
     path.lineTo(gfx::PointFToSkPoint(corner.End()));
@@ -336,7 +336,7 @@ PathBuilder& PathBuilder::AddContouredRect(
   ContouredRect origin_contoured_rect(origin_rect,
                                       contoured_rect.GetCornerCurvature());
 
-  if (!origin_rect.GetRadii().TopRight().IsZero()) {
+  if (!origin_rect.GetRadii().TopRight().IsEmpty()) {
     SkPath path;
     path.moveTo(infinite_rect.left(), infinite_rect.top());
     AddCurvedCorner(path, contoured_rect.TopRightCorner());
@@ -346,7 +346,7 @@ PathBuilder& PathBuilder::AddContouredRect(
     op_builder.add(path, kIntersect_SkPathOp);
   }
 
-  if (!origin_rect.GetRadii().BottomRight().IsZero()) {
+  if (!origin_rect.GetRadii().BottomRight().IsEmpty()) {
     SkPath path;
     path.moveTo(infinite_rect.right(), infinite_rect.top());
     AddCurvedCorner(path, contoured_rect.BottomRightCorner());
@@ -356,7 +356,7 @@ PathBuilder& PathBuilder::AddContouredRect(
     op_builder.add(path, kIntersect_SkPathOp);
   }
 
-  if (!origin_rect.GetRadii().BottomLeft().IsZero()) {
+  if (!origin_rect.GetRadii().BottomLeft().IsEmpty()) {
     SkPath path;
     path.moveTo(infinite_rect.right(), infinite_rect.bottom());
     AddCurvedCorner(path, contoured_rect.BottomLeftCorner());
@@ -366,7 +366,7 @@ PathBuilder& PathBuilder::AddContouredRect(
     op_builder.add(path, kIntersect_SkPathOp);
   }
 
-  if (!origin_rect.GetRadii().TopLeft().IsZero()) {
+  if (!origin_rect.GetRadii().TopLeft().IsEmpty()) {
     SkPath path;
     path.moveTo(infinite_rect.left(), infinite_rect.bottom());
     AddCurvedCorner(path, contoured_rect.TopLeftCorner());
@@ -377,7 +377,8 @@ PathBuilder& PathBuilder::AddContouredRect(
   }
 
   SkPath result;
-  CHECK(op_builder.resolve(&result));
+  CHECK(op_builder.resolve(&result))
+      << contoured_rect.ToString() << " " << origin_rect.ToString();
   builder_.addPath(result);
   current_path_.reset();
   return *this;

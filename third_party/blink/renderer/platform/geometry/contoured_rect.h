@@ -139,6 +139,9 @@ class PLATFORM_EXPORT ContouredRect {
     }
     constexpr bool IsConcave() const { return curvature_ < 1; }
     constexpr bool IsZero() const { return Start() == End(); }
+    constexpr bool IsEmpty() const {
+      return v1().Length() == 0 || v2().Length() == 0;
+    }
     constexpr bool operator==(const Corner&) const = default;
 
     // Invert the curvature
