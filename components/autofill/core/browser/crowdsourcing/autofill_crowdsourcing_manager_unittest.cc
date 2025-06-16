@@ -1711,6 +1711,60 @@ TEST_P(AutofillUploadTest, Throttling) {
   }
 }
 
+TEST_P(AutofillUploadTest, ThrottlingAlternativeFormSignatures) {
+  ASSERT_NE(DISABLED, GetParam());
+
+  AutofillCrowdsourcingManager crowdsourcing_manager(
+      &client(), version_info::Channel::UNKNOWN);
+
+  const FormSignature kAlternativeFormSignature(42);
+
+  // Create two form structures with different signatures and submission sources
+  // but the same alternative signature.
+  FormStructure form_structure_1(
+      test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = EMAIL_ADDRESS}}}));
+  const FormSignature kMainFormSignature1(123);
+  form_structure_1.set_form_signature(kMainFormSignature1);
+  form_structure_1.set_alternative_form_signature(kAlternativeFormSignature);
+  form_structure_1.set_submission_source(SubmissionSource::FORM_SUBMISSION);
+
+  FormStructure form_structure_2(form_structure_1.ToFormData());
+  const FormSignature kMainFormSignature2(456);
+  form_structure_2.set_form_signature(kMainFormSignature2);
+  form_structure_2.set_alternative_form_signature(kAlternativeFormSignature);
+  form_structure_2.set_submission_source(SubmissionSource::XHR_SUCCEEDED);
+
+  std::optional<RandomizedEncoder> randomized_encoder =
+      RandomizedEncoder::Create(client().GetPrefs());
+
+  // The first attempt should succeed and include the alternative signature.
+  EXPECT_TRUE(SendUploadRequest(form_structure_1, *randomized_encoder,
+                                /*available_field_types=*/{},
+                                /*login_form_signature=*/std::nullopt,
+                                /*observed_submission=*/true,
+                                /*is_password_manager_upload=*/false));
+  ASSERT_THAT(payloads(), SizeIs(1));
+  AutofillUploadRequest request_1;
+  ASSERT_TRUE(request_1.ParseFromString(payloads()[0]));
+  EXPECT_EQ(request_1.upload().secondary_form_signature(),
+            kAlternativeFormSignature.value());
+
+  // The second attempt should succeed but NOT include the alternative
+  // signature, because it has been throttled.
+  EXPECT_TRUE(SendUploadRequest(form_structure_2, *randomized_encoder,
+                                /*available_field_types=*/{},
+                                /*login_form_signature=*/std::nullopt,
+                                /*observed_submission=*/true,
+                                /*is_password_manager_upload=*/false));
+  ASSERT_THAT(payloads(), SizeIs(2));
+  AutofillUploadRequest request_2;
+  ASSERT_TRUE(request_2.ParseFromString(payloads()[1]));
+  EXPECT_FALSE(request_2.upload().has_secondary_form_signature());
+  payloads().clear();
+}
+
 // Tests that votes are not throttled with
 // `features::test::kAutofillUploadThrottling` disabled, but metadata is
 // throttled regardless of the feature state.
