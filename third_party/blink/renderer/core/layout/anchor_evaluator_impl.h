@@ -207,23 +207,6 @@ class CORE_EXPORT PhysicalAnchorQuery
                     PhysicalOffset additional_offset,
                     SetOptions,
                     Element* element_for_display_lock);
-
-  // Evaluate the |anchor_value| for the given reference. Returns |nullopt| if
-  // the query is invalid (due to wrong axis).
-  std::optional<LayoutUnit> EvaluateAnchor(
-      const PhysicalAnchorReference& reference,
-      CSSAnchorValue anchor_value,
-      float percentage,
-      LayoutUnit available_size,
-      WritingDirectionMode container_writing_direction,
-      WritingDirectionMode self_writing_direction,
-      const PhysicalOffset& offset_to_padding_box,
-      bool is_y_axis,
-      bool is_right_or_bottom) const;
-  LayoutUnit EvaluateSize(const PhysicalAnchorReference& reference,
-                          CSSAnchorSizeValue anchor_size_value,
-                          WritingMode container_writing_mode,
-                          WritingMode self_writing_mode) const;
 };
 
 class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
