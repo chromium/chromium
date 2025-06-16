@@ -618,7 +618,7 @@ public class EdgeToEdgeUtils {
                             windowInsets == null
                                     ? "null"
                                     : windowInsets
-                                            .getInsets(WindowInsetsCompat.Type.systemBars())
+                                            .getInsets(WindowInsets.Type.systemBars())
                                             .toString();
                     windowMetricsInsetsState = " \nwindowMetricsInsets: " + insetsString;
 
@@ -626,7 +626,7 @@ public class EdgeToEdgeUtils {
                             windowInsets == null
                                     ? "null"
                                     : windowInsets
-                                            .getInsets(WindowInsetsCompat.Type.tappableElement())
+                                            .getInsets(WindowInsets.Type.tappableElement())
                                             .toString();
                     windowMetricsInsetsStateTappable =
                             " \nwindowMetricsInsetsTappable: " + insetsStringTappable;
@@ -635,7 +635,7 @@ public class EdgeToEdgeUtils {
                             windowInsets == null
                                     ? "null"
                                     : windowInsets
-                                            .getInsets(WindowInsetsCompat.Type.systemGestures())
+                                            .getInsets(WindowInsets.Type.systemGestures())
                                             .toString();
                     windowMetricsInsetsStateSystemGestures =
                             " \nwindowMetricsInsetsSystemGestures: " + insetsStringSystemGestures;

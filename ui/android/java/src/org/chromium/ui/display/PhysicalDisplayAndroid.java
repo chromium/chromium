@@ -18,11 +18,11 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.os.BuildCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -46,10 +46,6 @@ import java.util.function.Consumer;
 
     // The behavior of observing window configuration changes using ComponentCallbacks is new in S.
     private static final boolean USE_CONFIGURATION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
-
-    // Insets that define the area where content can't be displayed.
-    protected static final int WINDOW_INSETS_TYPE =
-            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
 
     // When this object exists, a positive value means that the forced DIP scale is set and
     // the zero means it is not. The non existing object (i.e. null reference) means that
@@ -220,7 +216,8 @@ import java.util.function.Consumer;
         return assumeNonNull(mWindowManager)
                 .getCurrentWindowMetrics()
                 .getWindowInsets()
-                .getInsetsIgnoringVisibility(WINDOW_INSETS_TYPE);
+                .getInsetsIgnoringVisibility(
+                        WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
     }
 
     @RequiresApi(VERSION_CODES.R)
