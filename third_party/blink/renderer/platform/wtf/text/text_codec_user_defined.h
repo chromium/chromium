@@ -28,8 +28,9 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 
-namespace WTF {
+namespace blink {
 
+// https://encoding.spec.whatwg.org/#x-user-defined
 class TextCodecUserDefined final : public TextCodec {
  public:
   static void RegisterEncodingNames(EncodingNameRegistrar);
@@ -47,6 +48,6 @@ class TextCodecUserDefined final : public TextCodec {
   std::string EncodeCommon(base::span<const CharType>, UnencodableHandling);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_USER_DEFINED_H_
