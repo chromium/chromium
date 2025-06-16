@@ -3481,6 +3481,19 @@
       "features": [
         "disable_dcomp_texture"
       ]
+    },
+    {
+      "id": 446,
+      "description": "Video jitter happens during letterboxing on old Qualcomm GPUs",
+      "cr_bugs": [406175378],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x4d4f4351",
+      "device_id": ["0x36333630"],
+      "features": [
+        "disable_direct_composition_letterbox_video_optimization"
+      ]
     }
   ]
 }

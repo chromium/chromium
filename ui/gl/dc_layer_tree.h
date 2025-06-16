@@ -170,6 +170,7 @@ class GL_EXPORT DCLayerTree {
               bool disable_vp_auto_hdr,
               bool disable_vp_scaling,
               bool disable_vp_super_resolution,
+              bool disable_dc_letterbox_video_optimization,
               bool force_dcomp_triple_buffer_video_swap_chain,
               bool no_downscaled_overlay_promotion);
 
@@ -206,6 +207,10 @@ class GL_EXPORT DCLayerTree {
 
   bool disable_vp_super_resolution() const {
     return disable_vp_super_resolution_;
+  }
+
+  bool disable_dc_letterbox_video_optimization() const {
+    return disable_dc_letterbox_video_optimization_;
   }
 
   bool force_dcomp_triple_buffer_video_swap_chain() const {
@@ -520,6 +525,7 @@ class GL_EXPORT DCLayerTree {
   const bool disable_vp_auto_hdr_;
   const bool disable_vp_scaling_;
   const bool disable_vp_super_resolution_;
+  const bool disable_dc_letterbox_video_optimization_;
   const bool force_dcomp_triple_buffer_video_swap_chain_;
   const bool no_downscaled_overlay_promotion_;
 
