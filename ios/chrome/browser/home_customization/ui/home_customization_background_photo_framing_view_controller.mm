@@ -281,10 +281,8 @@ const CGFloat kCenterStackSpacing = 4.0;
 
   // Pinch label.
   UILabel* pinchLabel = [[UILabel alloc] init];
-  // Temp string till UX confirms the final string to use here.
-  // TODO(crbug.com/415061276: remove temp string when final string is
-  // available.
-  pinchLabel.text = @"Foo: Pinch to crop";
+  pinchLabel.text = l10n_util::GetNSString(
+      IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_FRAMING_VIEW_PINCH_TO_RESIZE);
   pinchLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
   pinchLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   pinchLabel.translatesAutoresizingMaskIntoConstraints = NO;
