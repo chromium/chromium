@@ -601,7 +601,8 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
     payment_entities_logos.emplace_back(
         base::UTF8ToUTF16(
             request->mojo_request->payment_entities_logos[i]->label),
-        bitmap.drawsNothing() ? nullptr : std::make_unique<SkBitmap>(bitmap));
+        bitmap.drawsNothing() ? nullptr : std::make_unique<SkBitmap>(bitmap),
+        std::move(request->mojo_request->payment_entities_logos[i]->url));
   }
 
   if (!request->authenticator || !request->credential) {

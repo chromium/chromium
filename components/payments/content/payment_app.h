@@ -60,11 +60,14 @@ class PaymentApp {
   };
 
   // Describes a PaymentEntityLogo composed of the accessibility label, and the
-  // icon.
+  // icon and its url.
   struct PaymentEntityLogo {
     std::u16string label;
     std::unique_ptr<SkBitmap> icon;
-    PaymentEntityLogo(std::u16string string, std::unique_ptr<SkBitmap> icon);
+    GURL url;
+    PaymentEntityLogo(std::u16string string,
+                      std::unique_ptr<SkBitmap> icon,
+                      GURL url);
 
     // PaymentEntityLogo is a move-only type:
     PaymentEntityLogo(const PaymentEntityLogo&) = delete;

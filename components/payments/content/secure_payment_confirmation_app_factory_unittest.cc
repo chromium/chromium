@@ -691,11 +691,13 @@ Matcher<const SkBitmap*> IsSkBitmapWithHeight(int height) {
 
 Matcher<PaymentApp::PaymentEntityLogo*> IsPaymentEntityLogo(
     const std::u16string& label,
-    Matcher<const SkBitmap*> icon_matcher) {
+    Matcher<const SkBitmap*> icon_matcher,
+    GURL url) {
   return Pointer(
       AllOf(Field("label", &PaymentApp::PaymentEntityLogo::label, label),
             Field("icon", &PaymentApp::PaymentEntityLogo::icon,
-                  Pointer(icon_matcher))));
+                  Pointer(icon_matcher)),
+            Field("url", &PaymentApp::PaymentEntityLogo::url, url)));
 }
 
 // Tests that when neither the network nor issuer icons are specified, they are
@@ -755,8 +757,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
   EXPECT_TRUE(created_payment_app->network_bitmap());
   EXPECT_FALSE(created_payment_app->issuer_bitmap());
   EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
-              ElementsAre(IsPaymentEntityLogo(u"Network Name",
-                                              IsSkBitmapWithHeight(50))));
+              ElementsAre(IsPaymentEntityLogo(
+                  u"Network Name", IsSkBitmapWithHeight(50), kNetworkIconUrl)));
 }
 
 TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
@@ -789,8 +791,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
   EXPECT_FALSE(created_payment_app->network_bitmap());
   EXPECT_TRUE(created_payment_app->issuer_bitmap());
   EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
-              ElementsAre(IsPaymentEntityLogo(u"Issuer Name",
-                                              IsSkBitmapWithHeight(60))));
+              ElementsAre(IsPaymentEntityLogo(
+                  u"Issuer Name", IsSkBitmapWithHeight(60), kIssuerIconUrl)));
 }
 
 TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
@@ -828,9 +830,10 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
   EXPECT_TRUE(created_payment_app->issuer_bitmap());
   EXPECT_THAT(
       created_payment_app->GetPaymentEntitiesLogos(),
-      ElementsAre(
-          IsPaymentEntityLogo(u"Network Name", IsSkBitmapWithHeight(50)),
-          IsPaymentEntityLogo(u"Issuer Name", IsSkBitmapWithHeight(60))));
+      ElementsAre(IsPaymentEntityLogo(u"Network Name", IsSkBitmapWithHeight(50),
+                                      kNetworkIconUrl),
+                  IsPaymentEntityLogo(u"Issuer Name", IsSkBitmapWithHeight(60),
+                                      kIssuerIconUrl)));
 }
 
 TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
@@ -867,8 +870,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
   EXPECT_FALSE(created_payment_app->network_bitmap());
   EXPECT_TRUE(created_payment_app->issuer_bitmap());
   EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
-              ElementsAre(IsPaymentEntityLogo(u"Issuer Name",
-                                              IsSkBitmapWithHeight(60))));
+              ElementsAre(IsPaymentEntityLogo(
+                  u"Issuer Name", IsSkBitmapWithHeight(60), kIssuerIconUrl)));
 }
 
 // Class wrapping tests relating to payment entity logos support in
@@ -928,8 +931,10 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
   EXPECT_THAT(
       created_payment_app->GetPaymentEntitiesLogos(),
       ElementsAre(
-          IsPaymentEntityLogo(u"Payment Entity 1", IsSkBitmapWithHeight(50)),
-          IsPaymentEntityLogo(u"Payment Entity 2", IsSkBitmapWithHeight(60))));
+          IsPaymentEntityLogo(u"Payment Entity 1", IsSkBitmapWithHeight(50),
+                              kPaymentEntity1LogoUrl),
+          IsPaymentEntityLogo(u"Payment Entity 2", IsSkBitmapWithHeight(60),
+                              kPaymentEntity2LogoUrl)));
 }
 
 // Tests that the first entry in payment_entities_logos maps to the network
@@ -965,7 +970,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
   EXPECT_FALSE(created_payment_app->issuer_bitmap());
   EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
               ElementsAre(IsPaymentEntityLogo(u"Payment Entity 1",
-                                              IsSkBitmapWithHeight(50))));
+                                              IsSkBitmapWithHeight(50),
+                                              kPaymentEntity1LogoUrl)));
 }
 
 // Tests that at most two PaymentEntityLogos are accepted by
@@ -1008,8 +1014,10 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
   EXPECT_THAT(
       created_payment_app->GetPaymentEntitiesLogos(),
       ElementsAre(
-          IsPaymentEntityLogo(u"Payment Entity 1", IsSkBitmapWithHeight(50)),
-          IsPaymentEntityLogo(u"Payment Entity 2", IsSkBitmapWithHeight(60))));
+          IsPaymentEntityLogo(u"Payment Entity 1", IsSkBitmapWithHeight(50),
+                              kPaymentEntity1LogoUrl),
+          IsPaymentEntityLogo(u"Payment Entity 2", IsSkBitmapWithHeight(60),
+                              kPaymentEntity2LogoUrl)));
 }
 
 class SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest

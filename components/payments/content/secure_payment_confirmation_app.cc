@@ -18,6 +18,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
@@ -381,8 +382,13 @@ void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
   if (base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationUxRefresh)) {
     payment_entities_logos.emplace();
-    // TODO(crbug.com/416516304): Pass the icon urls (and labels) from the app
-    // factory, then include them in PaymentOptions.
+    for (const PaymentApp::PaymentEntityLogo& logo : payment_entities_logos_) {
+      if (logo.icon) {
+        payment_entities_logos->push_back(
+            blink::mojom::ShownPaymentEntityLogo::New(
+                logo.url, base::UTF16ToUTF8(logo.label)));
+      }
+    }
   }
   authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
       spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
