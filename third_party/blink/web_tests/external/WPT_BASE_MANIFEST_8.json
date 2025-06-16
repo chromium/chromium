@@ -7827,6 +7827,13 @@
           null,
           {}
          ]
+        ],
+        "offscreencanvas.transfercontrol.to.offscreen-crash.html": [
+         "949f49c1065cb949cc146d2246a0159c777cc272",
+         [
+          null,
+          {}
+         ]
         ]
        }
       },
