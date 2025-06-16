@@ -830,6 +830,11 @@ fn test_fixup() {
         quote! { (1 < 2) == (3 < 4) },
         quote! { { (let _ = ()) } },
         quote! { (#[attr] thing).field },
+        quote! { #[attr] (1 + 1) },
+        quote! { #[attr] (x = 1) },
+        quote! { #[attr] (x += 1) },
+        quote! { #[attr] (1 as T) },
+        quote! { (return #[attr] (x + ..)).field },
         quote! { (self.f)() },
         quote! { (return)..=return },
         quote! { 1 + (return)..=1 + return },
@@ -838,7 +843,7 @@ fn test_fixup() {
         let original: Expr = syn::parse2(tokens).unwrap();
 
         let mut flat = original.clone();
-        FlattenParens.visit_expr_mut(&mut flat);
+        FlattenParens::combine_attrs().visit_expr_mut(&mut flat);
         let reconstructed: Expr = match syn::parse2(flat.to_token_stream()) {
             Ok(reconstructed) => reconstructed,
             Err(err) => panic!("failed to parse `{}`: {}", flat.to_token_stream(), err),
@@ -1615,7 +1620,7 @@ fn test_permutations() -> ExitCode {
             );
         };
         AsIfPrinted.visit_expr_mut(&mut original);
-        FlattenParens.visit_expr_mut(&mut parsed);
+        FlattenParens::combine_attrs().visit_expr_mut(&mut parsed);
         if original != parsed {
             fail!(
                 "before: {}\n{:#?}\nafter: {}\n{:#?}",
@@ -1629,7 +1634,7 @@ fn test_permutations() -> ExitCode {
         FlattenParens::visit_token_stream_mut(&mut tokens_no_paren);
         if tokens.to_string() != tokens_no_paren.to_string() {
             if let Ok(mut parsed2) = syn::parse2::<Expr>(tokens_no_paren) {
-                FlattenParens.visit_expr_mut(&mut parsed2);
+                FlattenParens::combine_attrs().visit_expr_mut(&mut parsed2);
                 if original == parsed2 {
                     fail!("redundant parens: {}", tokens);
                 }

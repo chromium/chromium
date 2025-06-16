@@ -3287,17 +3287,35 @@ pub(crate) mod printing {
     }
 
     #[cfg(feature = "full")]
-    fn print_expr_assign(e: &ExprAssign, tokens: &mut TokenStream, fixup: FixupContext) {
+    fn print_expr_assign(e: &ExprAssign, tokens: &mut TokenStream, mut fixup: FixupContext) {
         outer_attrs_to_tokens(&e.attrs, tokens);
-        let (left_prec, left_fixup) =
-            fixup.leftmost_subexpression_with_operator(&e.left, false, false, Precedence::Assign);
-        print_subexpression(&e.left, left_prec <= Precedence::Range, tokens, left_fixup);
-        e.eq_token.to_tokens(tokens);
-        print_expr(
-            &e.right,
-            tokens,
-            fixup.rightmost_subexpression_fixup(false, false, Precedence::Assign),
-        );
+
+        let needs_group = !e.attrs.is_empty();
+        if needs_group {
+            fixup = FixupContext::NONE;
+        }
+
+        let do_print_expr = |tokens: &mut TokenStream| {
+            let (left_prec, left_fixup) = fixup.leftmost_subexpression_with_operator(
+                &e.left,
+                false,
+                false,
+                Precedence::Assign,
+            );
+            print_subexpression(&e.left, left_prec <= Precedence::Range, tokens, left_fixup);
+            e.eq_token.to_tokens(tokens);
+            print_expr(
+                &e.right,
+                tokens,
+                fixup.rightmost_subexpression_fixup(false, false, Precedence::Assign),
+            );
+        };
+
+        if needs_group {
+            token::Paren::default().surround(tokens, do_print_expr);
+        } else {
+            do_print_expr(tokens);
+        }
     }
 
     #[cfg(feature = "full")]
@@ -3340,51 +3358,64 @@ pub(crate) mod printing {
         }
     }
 
-    fn print_expr_binary(e: &ExprBinary, tokens: &mut TokenStream, fixup: FixupContext) {
+    fn print_expr_binary(e: &ExprBinary, tokens: &mut TokenStream, mut fixup: FixupContext) {
         outer_attrs_to_tokens(&e.attrs, tokens);
 
-        let binop_prec = Precedence::of_binop(&e.op);
-        let (left_prec, left_fixup) = fixup.leftmost_subexpression_with_operator(
-            &e.left,
-            #[cfg(feature = "full")]
-            match &e.op {
-                BinOp::Sub(_)
-                | BinOp::Mul(_)
-                | BinOp::And(_)
-                | BinOp::Or(_)
-                | BinOp::BitAnd(_)
-                | BinOp::BitOr(_)
-                | BinOp::Shl(_)
-                | BinOp::Lt(_) => true,
-                _ => false,
-            },
-            match &e.op {
-                BinOp::Shl(_) | BinOp::Lt(_) => true,
-                _ => false,
-            },
-            #[cfg(feature = "full")]
-            binop_prec,
-        );
-        let left_needs_group = match binop_prec {
-            Precedence::Assign => left_prec <= Precedence::Range,
-            Precedence::Compare => left_prec <= binop_prec,
-            _ => left_prec < binop_prec,
+        let needs_group = !e.attrs.is_empty();
+        if needs_group {
+            fixup = FixupContext::NONE;
+        }
+
+        let do_print_expr = |tokens: &mut TokenStream| {
+            let binop_prec = Precedence::of_binop(&e.op);
+            let (left_prec, left_fixup) = fixup.leftmost_subexpression_with_operator(
+                &e.left,
+                #[cfg(feature = "full")]
+                match &e.op {
+                    BinOp::Sub(_)
+                    | BinOp::Mul(_)
+                    | BinOp::And(_)
+                    | BinOp::Or(_)
+                    | BinOp::BitAnd(_)
+                    | BinOp::BitOr(_)
+                    | BinOp::Shl(_)
+                    | BinOp::Lt(_) => true,
+                    _ => false,
+                },
+                match &e.op {
+                    BinOp::Shl(_) | BinOp::Lt(_) => true,
+                    _ => false,
+                },
+                #[cfg(feature = "full")]
+                binop_prec,
+            );
+            let left_needs_group = match binop_prec {
+                Precedence::Assign => left_prec <= Precedence::Range,
+                Precedence::Compare => left_prec <= binop_prec,
+                _ => left_prec < binop_prec,
+            };
+
+            let right_fixup = fixup.rightmost_subexpression_fixup(
+                #[cfg(feature = "full")]
+                false,
+                #[cfg(feature = "full")]
+                false,
+                #[cfg(feature = "full")]
+                binop_prec,
+            );
+            let right_needs_group = binop_prec != Precedence::Assign
+                && right_fixup.rightmost_subexpression_precedence(&e.right) <= binop_prec;
+
+            print_subexpression(&e.left, left_needs_group, tokens, left_fixup);
+            e.op.to_tokens(tokens);
+            print_subexpression(&e.right, right_needs_group, tokens, right_fixup);
         };
 
-        let right_fixup = fixup.rightmost_subexpression_fixup(
-            #[cfg(feature = "full")]
-            false,
-            #[cfg(feature = "full")]
-            false,
-            #[cfg(feature = "full")]
-            binop_prec,
-        );
-        let right_needs_group = binop_prec != Precedence::Assign
-            && right_fixup.rightmost_subexpression_precedence(&e.right) <= binop_prec;
-
-        print_subexpression(&e.left, left_needs_group, tokens, left_fixup);
-        e.op.to_tokens(tokens);
-        print_subexpression(&e.right, right_needs_group, tokens, right_fixup);
+        if needs_group {
+            token::Paren::default().surround(tokens, do_print_expr);
+        } else {
+            do_print_expr(tokens);
+        }
     }
 
     #[cfg(feature = "full")]
@@ -3462,19 +3493,33 @@ pub(crate) mod printing {
         }
     }
 
-    fn print_expr_cast(e: &ExprCast, tokens: &mut TokenStream, fixup: FixupContext) {
+    fn print_expr_cast(e: &ExprCast, tokens: &mut TokenStream, mut fixup: FixupContext) {
         outer_attrs_to_tokens(&e.attrs, tokens);
-        let (left_prec, left_fixup) = fixup.leftmost_subexpression_with_operator(
-            &e.expr,
-            #[cfg(feature = "full")]
-            false,
-            false,
-            #[cfg(feature = "full")]
-            Precedence::Cast,
-        );
-        print_subexpression(&e.expr, left_prec < Precedence::Cast, tokens, left_fixup);
-        e.as_token.to_tokens(tokens);
-        e.ty.to_tokens(tokens);
+
+        let needs_group = !e.attrs.is_empty();
+        if needs_group {
+            fixup = FixupContext::NONE;
+        }
+
+        let do_print_expr = |tokens: &mut TokenStream| {
+            let (left_prec, left_fixup) = fixup.leftmost_subexpression_with_operator(
+                &e.expr,
+                #[cfg(feature = "full")]
+                false,
+                false,
+                #[cfg(feature = "full")]
+                Precedence::Cast,
+            );
+            print_subexpression(&e.expr, left_prec < Precedence::Cast, tokens, left_fixup);
+            e.as_token.to_tokens(tokens);
+            e.ty.to_tokens(tokens);
+        };
+
+        if needs_group {
+            token::Paren::default().surround(tokens, do_print_expr);
+        } else {
+            do_print_expr(tokens);
+        }
     }
 
     #[cfg(feature = "full")]

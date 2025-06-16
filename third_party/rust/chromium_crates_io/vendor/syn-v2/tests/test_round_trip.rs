@@ -27,10 +27,9 @@ extern crate rustc_span;
 use crate::common::eq::SpanlessEq;
 use quote::quote;
 use rustc_ast::ast::{
-    AngleBracketedArg, AngleBracketedArgs, Crate, GenericArg, GenericParamKind, Generics,
-    WhereClause,
+    AngleBracketedArg, Crate, GenericArg, GenericArgs, GenericParamKind, Generics,
 };
-use rustc_ast::mut_visit::MutVisitor;
+use rustc_ast::mut_visit::{self, MutVisitor};
 use rustc_ast_pretty::pprust;
 use rustc_data_structures::flat_map_in_place::FlatMapInPlace;
 use rustc_error_messages::{DiagMessage, LazyFallbackBundle};
@@ -207,28 +206,23 @@ fn normalize(krate: &mut Crate) {
     struct NormalizeVisitor;
 
     impl MutVisitor for NormalizeVisitor {
-        fn visit_angle_bracketed_parameter_data(&mut self, e: &mut AngleBracketedArgs) {
-            #[derive(Ord, PartialOrd, Eq, PartialEq)]
-            enum Group {
-                Lifetimes,
-                TypesAndConsts,
-                Constraints,
-            }
-            e.args.sort_by_key(|arg| match arg {
-                AngleBracketedArg::Arg(arg) => match arg {
-                    GenericArg::Lifetime(_) => Group::Lifetimes,
-                    GenericArg::Type(_) | GenericArg::Const(_) => Group::TypesAndConsts,
-                },
-                AngleBracketedArg::Constraint(_) => Group::Constraints,
-            });
-            for arg in &mut e.args {
-                match arg {
-                    AngleBracketedArg::Arg(arg) => self.visit_generic_arg(arg),
-                    AngleBracketedArg::Constraint(constraint) => {
-                        self.visit_assoc_item_constraint(constraint);
-                    }
+        fn visit_generic_args(&mut self, e: &mut GenericArgs) {
+            if let GenericArgs::AngleBracketed(e) = e {
+                #[derive(Ord, PartialOrd, Eq, PartialEq)]
+                enum Group {
+                    Lifetimes,
+                    TypesAndConsts,
+                    Constraints,
                 }
+                e.args.sort_by_key(|arg| match arg {
+                    AngleBracketedArg::Arg(arg) => match arg {
+                        GenericArg::Lifetime(_) => Group::Lifetimes,
+                        GenericArg::Type(_) | GenericArg::Const(_) => Group::TypesAndConsts,
+                    },
+                    AngleBracketedArg::Constraint(_) => Group::Constraints,
+                });
             }
+            mut_visit::walk_generic_args(self, e);
         }
 
         fn visit_generics(&mut self, e: &mut Generics) {
@@ -245,12 +239,8 @@ fn normalize(krate: &mut Crate) {
             });
             e.params
                 .flat_map_in_place(|param| self.flat_map_generic_param(param));
-            self.visit_where_clause(&mut e.where_clause);
-        }
-
-        fn visit_where_clause(&mut self, e: &mut WhereClause) {
-            if e.predicates.is_empty() {
-                e.has_where_token = false;
+            if e.where_clause.predicates.is_empty() {
+                e.where_clause.has_where_token = false;
             }
         }
     }

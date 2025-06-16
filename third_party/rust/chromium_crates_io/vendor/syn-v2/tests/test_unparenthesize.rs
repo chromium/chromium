@@ -43,10 +43,10 @@ fn test(path: &Path, failed: &AtomicUsize) {
 
     match panic::catch_unwind(|| -> syn::Result<()> {
         let mut before = syn::parse_file(&content)?;
-        FlattenParens.visit_file_mut(&mut before);
+        FlattenParens::discard_attrs().visit_file_mut(&mut before);
         let printed = before.to_token_stream();
         let mut after = syn::parse2::<syn::File>(printed.clone())?;
-        FlattenParens.visit_file_mut(&mut after);
+        FlattenParens::discard_attrs().visit_file_mut(&mut after);
         // Normalize features that we expect Syn not to print.
         AsIfPrinted.visit_file_mut(&mut before);
         if before != after {

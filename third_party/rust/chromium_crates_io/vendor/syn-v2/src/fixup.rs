@@ -510,7 +510,7 @@ fn scan_right(
         return consume_by_precedence;
     }
     match expr {
-        Expr::Assign(e) => {
+        Expr::Assign(e) if e.attrs.is_empty() => {
             if match fixup.next_operator {
                 Precedence::Unambiguous => fail_offset >= 2,
                 _ => bailout_offset >= 1,
@@ -536,7 +536,7 @@ fn scan_right(
                 Scan::Bailout
             }
         }
-        Expr::Binary(e) => {
+        Expr::Binary(e) if e.attrs.is_empty() => {
             if match fixup.next_operator {
                 Precedence::Unambiguous => {
                     fail_offset >= 2
@@ -732,8 +732,10 @@ fn scan_right(
             }
         }
         Expr::Array(_)
+        | Expr::Assign(_)
         | Expr::Async(_)
         | Expr::Await(_)
+        | Expr::Binary(_)
         | Expr::Block(_)
         | Expr::Call(_)
         | Expr::Cast(_)
