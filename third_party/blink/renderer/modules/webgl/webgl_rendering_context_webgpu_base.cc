@@ -3495,7 +3495,7 @@ int WebGLRenderingContextWebGPUBase::AllocatedBufferCountPerPixel() {
   // Front and back buffers.
   int buffer_count = 2;
 
-  if (Host()->ResourceProviderDEPRECATED()) {
+  if (Host()->GetResourceProviderForWebGL()) {
     buffer_count++;
   }
 
