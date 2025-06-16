@@ -81,8 +81,7 @@ void GlobalFeatures::Init() {
         std::make_unique<glic::GlicBackgroundModeManager>(
             g_browser_process->status_tray());
     synthetic_trial_manager_ =
-        std::make_unique<glic::GlicSyntheticTrialManager>(
-            g_browser_process->GetMetricsServicesManager());
+        std::make_unique<glic::GlicSyntheticTrialManager>();
   }
 #endif
 
