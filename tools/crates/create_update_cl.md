@@ -114,7 +114,7 @@ transitive dependencies with a new major version, you can use the command below
 updates):
 
 ```sh
-$ tools/crates/run_cargo.py -Zunstable-options -C third_party/rust/chromium_crates_io -Zbindeps update --dry-run --verbose
+$ tools/crates/run_gnrt.py update -- --verbose --dry-run
 ...
    Unchanged serde_json_lenient v0.1.8 (latest: v0.2.0)
    Unchanged syn v1.0.109 (latest: v2.0.53)
