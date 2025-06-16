@@ -96,7 +96,7 @@ const char kOfflinePreviewsMimeType[] = "multipart/related";
 static constexpr uint64_t kInstantPageLoadEventsTraceTrackId = 14878427190820;
 
 const char kHistogramSoftNavigationCount[] =
-    "PageLoad.Expermental.SoftNavigations.Count";
+    "PageLoad.Experimental.SoftNavigations.Count";
 
 template <size_t N>
 uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
