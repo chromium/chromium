@@ -143,6 +143,9 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
                                  forRequest:kGetSaveCardDetailsUrl
                               withErrorCode:net::HTTP_OK];
 
+  // Wait for the web view to appear.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::WebViewMatcher()];
   // Fill the form.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFillFormId)];
