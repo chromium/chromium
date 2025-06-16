@@ -109,19 +109,4 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactory::CreateNativeGmbHandle(
   return handle;
 }
 
-void GpuMemoryBufferFactory::CreateGpuMemoryBufferAsync(
-    gfx::GpuMemoryBufferId id,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    int client_id,
-    SurfaceHandle surface_handle,
-    CreateGpuMemoryBufferAsyncCallback callback) {
-  // By default, we assume it's ok to allocate GMBs synchronously on the IO
-  // thread. However, subclasses can override this assumption.
-  std::move(callback).Run(
-      CreateGpuMemoryBuffer(id, size, /*framebuffer_size=*/size, format, usage,
-                            client_id, surface_handle));
-}
-
 }  // namespace gpu

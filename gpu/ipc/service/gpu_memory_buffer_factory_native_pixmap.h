@@ -43,14 +43,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
       gfx::BufferUsage usage,
       int client_id,
       SurfaceHandle surface_handle) override;
-  void CreateGpuMemoryBufferAsync(
-      gfx::GpuMemoryBufferId id,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      int client_id,
-      SurfaceHandle surface_handle,
-      CreateGpuMemoryBufferAsyncCallback callback) override;
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                               int client_id) override;
   bool FillSharedMemoryRegionWithBufferContents(
@@ -63,16 +55,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
   using NativePixmapMap = std::unordered_map<NativePixmapMapKey,
                                              scoped_refptr<gfx::NativePixmap>,
                                              NativePixmapMapKeyHash>;
-
-  static void OnNativePixmapCreated(
-      gfx::GpuMemoryBufferId id,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      int client_id,
-      CreateGpuMemoryBufferAsyncCallback callback,
-      base::WeakPtr<GpuMemoryBufferFactoryNativePixmap> weak_ptr,
-      scoped_refptr<gfx::NativePixmap> pixmap);
 
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferFromNativePixmap(
       gfx::GpuMemoryBufferId id,
