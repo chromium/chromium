@@ -121,75 +121,6 @@ const std::string kGoodJsonResponse = base::StringPrintf(
         ]
       })");
 
-const std::string kQueryGoodJsonResponse = R"({
-    "querySuggestions": [
-      {
-        "suggestion": "John's Demise",
-        "score": 0.1,
-        "dataStore": []
-      }
-    ]
-  })";
-
-const std::string kPeopleGoodJsonResponse = R"({
-    "peopleSuggestions": [
-      {
-        "suggestion": "john@example.com",
-        "document": {
-          "name": "sundar",
-          "derivedStructData": {
-            "name": {
-              "display_name_lower": "john doe",
-              "familyName": "Doe",
-              "givenName": "John",
-              "given_name_lower": "john",
-              "family_name_lower": "doe",
-              "displayName": "John Doe",
-              "userName": "john"
-            },
-            "emails": [
-              {
-                "type": "primary",
-                "value": "john@example.com"
-              }
-            ],
-            "displayPhoto": {
-              "url": "https://example.com/image.png"
-            }
-          }
-        },
-        "destinationUri": "https://www.example.com/people/john",
-        "score": 0.8,
-        "dataStore": "project 1"
-      }
-    ]
-  })";
-
-const std::string kContentGoodJsonResponse = R"({
-    "contentSuggestions": [
-      {
-        "suggestion": "John's Document",
-        "contentType": "THIRD_PARTY",
-        "document": {
-          "name": "Document 2",
-          "structData": {
-            "title": "John's Document",
-            "uri": "www.example.com"
-          },
-          "derivedStructData": {
-            "source_type": "jira",
-            "entity_type": "issue",
-            "title": "John's Document",
-            "link": "https://www.example.co.uk"
-          }
-        },
-        "destinationUri": "https://www.example.com/",
-        "score": 0.4,
-        "dataStore": "project2"
-      }
-    ]
-  })";
-
 }  // namespace
 
 class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
@@ -404,12 +335,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
                        GoodJsonResponseMultipleRequests) {
-  net::test_server::ControllableHttpResponse search_aggregator_people_response(
-      embedded_test_server(), kSearchAggregatorPolicySuggestPath);
-  net::test_server::ControllableHttpResponse search_aggregator_content_response(
-      embedded_test_server(), kSearchAggregatorPolicySuggestPath);
-  net::test_server::ControllableHttpResponse search_aggregator_query_response(
-      embedded_test_server(), kSearchAggregatorPolicySuggestPath);
+  std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
+      requests = {};
+  for (size_t i = 0; i < 3; ++i) {
+    requests.push_back(
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), kSearchAggregatorPolicySuggestPath));
+  }
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::Value policy_value = CreateEnterpriseSearchAggregatorPolicyValue(
@@ -428,42 +360,30 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
   input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
   controller()->Start(input);
 
-  // Respond to the first SearchAggregator request (1 - query).
-  search_aggregator_people_response.WaitForRequest();
-  EXPECT_EQ(search_aggregator_people_response.http_request()->method,
-            net::test_server::METHOD_POST);
-  EXPECT_EQ(search_aggregator_people_response.http_request()->content,
-            base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[1]})",
-                               kEnterpriseSearchAggregatorExperimentId));
-  search_aggregator_people_response.Send(net::HTTP_OK, "application/json",
-                                         kQueryGoodJsonResponse);
-  search_aggregator_people_response.Done();
-
-  // Respond to the second SearchAggregator request (2 - people).
-  search_aggregator_content_response.WaitForRequest();
-  EXPECT_EQ(search_aggregator_content_response.http_request()->method,
-            net::test_server::METHOD_POST);
-  EXPECT_EQ(search_aggregator_content_response.http_request()->content,
-            base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[2]})",
-                               kEnterpriseSearchAggregatorExperimentId));
-  search_aggregator_content_response.Send(net::HTTP_OK, "application/json",
-                                          kPeopleGoodJsonResponse);
-  search_aggregator_content_response.Done();
-
-  // Respond to the third SearchAggregator request (3,5 - content/Google
-  // Workspace).
-  search_aggregator_query_response.WaitForRequest();
-  EXPECT_EQ(search_aggregator_query_response.http_request()->method,
-            net::test_server::METHOD_POST);
-  EXPECT_EQ(search_aggregator_query_response.http_request()->content,
-            base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[3,5]})",
-                               kEnterpriseSearchAggregatorExperimentId));
-  search_aggregator_query_response.Send(net::HTTP_OK, "application/json",
-                                        kContentGoodJsonResponse);
-  search_aggregator_query_response.Done();
+  std::vector<std::string> request_bodies = {};
+  for (auto& request : requests) {
+    request->WaitForRequest();
+    EXPECT_EQ(request->http_request()->method, net::test_server::METHOD_POST);
+    request_bodies.push_back(request->http_request()->content);
+  }
+  constexpr char expected_request[] =
+      R"({"experimentIds":["%s"],)"
+      R"("query":"john d","suggestionTypes":[%s]})";
+  // Expect unordered because there's no guarantee what order the service starts
+  // the requests.
+  EXPECT_THAT(
+      request_bodies,
+      testing::UnorderedElementsAre(
+          base::StringPrintf(expected_request,
+                             kEnterpriseSearchAggregatorExperimentId, "1"),
+          base::StringPrintf(expected_request,
+                             kEnterpriseSearchAggregatorExperimentId, "2"),
+          base::StringPrintf(expected_request,
+                             kEnterpriseSearchAggregatorExperimentId, "3,5")));
+  for (auto& request : requests) {
+    request->Send(net::HTTP_OK, "application/json", kGoodJsonResponse);
+    request->Done();
+  }
 
   // Wait for the autocomplete controller to finish.
   WaitForAutocompleteDone(browser());
