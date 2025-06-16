@@ -58,6 +58,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/data_sharing/public/features.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -65,6 +67,8 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/password_manager/core/browser/password_manager_buildflags.h"
+#include "components/plus_addresses/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -105,6 +109,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -1075,12 +1080,19 @@ void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
 syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   static_assert(55 == syncer::GetNumDataTypes(),
                 "Add new types below if they can run in transport mode");
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, `kReplaceSyncPromosWithSignInPromos` has been enabled by
+  // default for a long time, so it is not expected to be exercised in tests.
+  CHECK(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
   syncer::DataTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
                                        syncer::AUTOFILL_WALLET_DATA,
                                        syncer::AUTOFILL_WALLET_USAGE,
-                                       syncer::CONTACT_INFO,
                                        syncer::DEVICE_INFO,
                                        syncer::SECURITY_EVENTS,
                                        syncer::SEND_TAB_TO_SELF,
@@ -1088,12 +1100,20 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
                                        syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
 
-  allowed_types.Put(syncer::PLUS_ADDRESS);
-  allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
-  allowed_types.Put(syncer::PASSWORDS);
-  allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
-  allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
-  allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
+#if BUILDFLAG(IS_CHROMEOS)
+  // OS sync types run in transport mode.
+  allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
+                        syncer::OS_PREFERENCES,
+                        syncer::OS_PRIORITY_PREFERENCES});
+
+  // Some of the feature-guarded logic in the #else branch below could make
+  // sense for ChromeOS too. However, since there are no immediate plans to
+  // roll them out on ChromeOS, they are excluded in this test to avoid
+  // accidental rollouts on ChromeOS transport mode (which is somewhat special,
+  // and reachable only in advanced scenarios such as the user having cleared
+  // data via sync dashboard).
+#else  // BUILDFLAG(IS_CHROMEOS)
+  allowed_types.Put(syncer::CONTACT_INFO);
 
   if (base::FeatureList::IsEnabled(
           switches::kEnablePreferencesAccountStorage)) {
@@ -1111,37 +1131,44 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
-    allowed_types.Put(syncer::COLLABORATION_GROUP);
     allowed_types.Put(syncer::HISTORY);
     allowed_types.Put(syncer::HISTORY_DELETE_DIRECTIVES);
-    allowed_types.Put(syncer::PRODUCT_COMPARISON);
     allowed_types.Put(syncer::SAVED_TAB_GROUP);
     allowed_types.Put(syncer::SESSIONS);
-    allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
     allowed_types.Put(syncer::USER_EVENTS);
+
+    if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
+      allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
+      allowed_types.Put(syncer::COLLABORATION_GROUP);
+
+      if (base::FeatureList::IsEnabled(
+              syncer::kSyncSharedTabGroupAccountData)) {
+        allowed_types.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
+      }
+    }
+
+    if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+      allowed_types.Put(syncer::PRODUCT_COMPARISON);
+    }
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE);
   }
-  if (base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
-    allowed_types.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
+
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  // On Android, PASSWORDS require that Google Play Services is present.
+  password_manager_android_util::PasswordManagerUtilBridge util_bridge;
+  if (util_bridge.IsInternalBackendPresent()) {
+    allowed_types.Put(syncer::PASSWORDS);
   }
+#else   // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  allowed_types.Put(syncer::PASSWORDS);
+#endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
-    allowed_types.Put(syncer::WEB_APKS);
-  }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // OS sync types run in transport mode.
-  allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
-                        syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,
-                        syncer::PRINTERS,
-                        syncer::PRINTERS_AUTHORIZATION_SERVERS,
-                        syncer::WIFI_CONFIGURATIONS, syncer::WORKSPACE_DESK});
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/420912307): Allow `syncer::WEB_APKS` if
+  // `syncer::kWebApkBackupAndRestoreBackend` is enabled.
+#else   // BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
     allowed_types.Put(syncer::THEMES);
   }
@@ -1150,7 +1177,21 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kSeparateLocalAndAccountSearchEngines)) {
     allowed_types.Put(syncer::SEARCH_ENGINES);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // These types are excluded on Android as they run outside Chrome.
+  allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
+  allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
+  allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled) &&
+      !plus_addresses::features::kEnterprisePlusAddressServerUrl.Get()
+           .empty()) {
+    allowed_types.Put(syncer::PLUS_ADDRESS);
+    allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
+  }
 
   return allowed_types;
 }

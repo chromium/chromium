@@ -27,6 +27,7 @@ source_set("sync_integration_tests_impl") {
     "//chrome/test:sync_integration_test_support",
     "//chrome/test:test_support",
     "//components/bookmarks/browser",
+    "//components/commerce/core:feature_list",
     "//components/data_sharing/public",
     "//components/password_manager/core/browser/sharing",
     "//components/plus_addresses:test_support",
