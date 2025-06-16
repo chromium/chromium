@@ -700,6 +700,20 @@ public class CustomTabToolbarUnitTest {
         assertEquals(View.GONE, mToolbar.findViewById(R.id.menu_dot).getVisibility());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testOptionalButton_notEnabledForWidthConstraint() {
+        mToolbar.setToolbarWidthForTesting(48 + 68);
+        mToolbar.updateOptionalButton(getDataForPriceInsightsIconButton());
+
+        // For MTB hidden due to width constraint, |OptionButtonCoordinator| is instantiated
+        // since the button visibility rule needs to be applied after the MTB is added to
+        // the toolbar. If toolbar width changes dynamically later, it lets the optional button
+        // start showing.
+        assertNotNull(mToolbar.getOptionalButtonCoordinatorForTesting());
+        assertEquals(View.VISIBLE, mToolbar.findViewById(R.id.menu_dot).getVisibility());
+    }
+
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {
         int expectedTitleVisibility = titleVisible ? View.VISIBLE : View.GONE;
         int expectedUrlVisibility = urlVisible ? View.VISIBLE : View.GONE;

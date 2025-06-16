@@ -1505,12 +1505,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateOptionalButton(ButtonData buttonData) {
-            if (mOptionalButtonCoordinator == null && !initializeOptionalButton()) {
+            if ((mOptionalButtonCoordinator == null && !initializeOptionalButton())
+                    || mButtonVisibilityRule.isSuppressed(ButtonId.MTB)) {
                 // See if we should show an indicator if optional button cannot be shown. This check
                 // needs to be invoked _after_ optional button initialization is attempted, in order
                 // to determine its visibility in case it gets hidden due to toolbar width/button
-                // count
-                // constraints.
+                // count constraints.
                 maybeShowActionMenuIndicator(buttonData.getButtonSpec().getButtonVariant());
                 return;
             }

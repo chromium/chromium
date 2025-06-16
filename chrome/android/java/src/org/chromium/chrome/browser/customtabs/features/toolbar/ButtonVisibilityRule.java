@@ -186,6 +186,16 @@ public class ButtonVisibilityRule {
         }
     }
 
+    /**
+     * Return {@code true} if the given button was suppressed (hidden) by this rule checker.
+     *
+     * @param index Index of the button.
+     */
+    public boolean isSuppressed(int index) {
+        Button button = mButtons.get(index);
+        return button != null && !button.mVisible && button.mSuppressed;
+    }
+
     /** Refresh visibility of buttons with the state updated so far. */
     public void refresh() {
         if (!mActivated) return;
