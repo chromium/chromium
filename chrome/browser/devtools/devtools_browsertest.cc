@@ -1836,7 +1836,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 }
 
 // Disabled on Windows due to flakiness. http://crbug.com/183649
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/425268770): Flaky on Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestDevToolsExtensionMessaging \
   DISABLED_TestDevToolsExtensionMessaging
 #else
