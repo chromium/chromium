@@ -100,9 +100,17 @@ viz::TransferableResource MakeFakeResource() {
 }
 
 viz::TransferableResource MakeFakeSoftwareResource() {
+  // Generate verified tokens, as (a)
+  // ClientResourceProvider::PrepareSendToParent() does not verify tokens for
+  // software resources, and (b) when these tests are run with TreesInViz the
+  // tokens go through serialization, which enforces the invariant that they be
+  // verified.
+  auto sync_token = GenSyncToken();
+  sync_token.SetVerifyFlush();
+
   return viz::TransferableResource::Make(
       gpu::ClientSharedImage::CreateSoftwareForTesting(),
-      viz::TransferableResource::ResourceSource::kTest, GenSyncToken());
+      viz::TransferableResource::ResourceSource::kTest, sync_token);
 }
 
 class MockLayerTreeHost : public LayerTreeHost {
