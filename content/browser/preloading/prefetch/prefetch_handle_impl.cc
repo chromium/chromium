@@ -11,16 +11,28 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
 
-PrefetchContainerObserver::PrefetchContainerObserver(
-    base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
-        on_prefetch_head_received)
-    : on_prefetch_head_received_(std::move(on_prefetch_head_received)) {}
+PrefetchContainerObserver::PrefetchContainerObserver() = default;
 
 PrefetchContainerObserver::~PrefetchContainerObserver() = default;
+
+void PrefetchContainerObserver::SetOnPrefetchHeadReceivedCallback(
+    base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
+        on_prefetch_head_received) {
+  on_prefetch_head_received_ = std::move(on_prefetch_head_received);
+}
+
+void PrefetchContainerObserver::SetOnPrefetchCompletedOrFailedCallback(
+    base::RepeatingCallback<
+        void(const network::URLLoaderCompletionStatus& completion_status,
+             const std::optional<int>& response_code)>
+        on_prefetch_completed_or_failed) {
+  on_prefetch_completed_or_failed_ = std::move(on_prefetch_completed_or_failed);
+}
 
 void PrefetchContainerObserver::OnWillBeDestroyed(
     PrefetchContainer& prefetch_container) {}
@@ -31,15 +43,25 @@ void PrefetchContainerObserver::OnGotInitialEligibility(
 
 void PrefetchContainerObserver::OnDeterminedHead(
     PrefetchContainer& prefetch_container) {
-  // This condition will be used in a callback provided in the future.
-  // See
-  // https://chromium-review.googlesource.com/c/chromium/src/+/6615559/comment/3f439d19_8c9cf99a
-  //
-  // TODO(crbug.com/400761083): Use the callback.
-  if (prefetch_container.GetNonRedirectResponseReader() &&
-      prefetch_container.GetNonRedirectResponseReader()->load_state() ==
-          PrefetchResponseReader::LoadState::kResponseReceived) {
-    on_prefetch_head_received_.Run(*prefetch_container.GetNonRedirectHead());
+  if (on_prefetch_head_received_) {
+    // This condition will be used in a callback provided in the future.
+    // See
+    // https://chromium-review.googlesource.com/c/chromium/src/+/6615559/comment/3f439d19_8c9cf99a
+    //
+    // TODO(crbug.com/400761083): Use the callback.
+    if (prefetch_container.GetNonRedirectResponseReader() &&
+        prefetch_container.GetNonRedirectResponseReader()->load_state() ==
+            PrefetchResponseReader::LoadState::kResponseReceived) {
+      on_prefetch_head_received_.Run(*prefetch_container.GetNonRedirectHead());
+    }
+  }
+}
+
+void PrefetchContainerObserver::OnPrefetchCompletedOrFailed(
+    const network::URLLoaderCompletionStatus& completion_status,
+    const std::optional<int>& response_code) {
+  if (on_prefetch_completed_or_failed_) {
+    on_prefetch_completed_or_failed_.Run(completion_status, response_code);
   }
 }
 
@@ -47,9 +69,20 @@ PrefetchHandleImpl::PrefetchHandleImpl(
     base::WeakPtr<PrefetchService> prefetch_service,
     base::WeakPtr<PrefetchContainer> prefetch_container)
     : prefetch_service_(std::move(prefetch_service)),
-      prefetch_container_(std::move(prefetch_container)) {}
+      prefetch_container_(std::move(prefetch_container)) {
+  CHECK(prefetch_service_);
+  // Note that `prefetch_container_` can be nullptr.
+
+  if (prefetch_container_) {
+    prefetch_container_->AddObserver(&prefetch_container_observer_);
+  }
+}
 
 PrefetchHandleImpl::~PrefetchHandleImpl() {
+  if (prefetch_container_) {
+    prefetch_container_->RemoveObserver(&prefetch_container_observer_);
+  }
+
   // Notify `PrefetchService` that the corresponding `PrefetchContainer` is no
   // longer needed. `PrefetchService` might release the container and its
   // corresponding resources by its decision with best-effort.
@@ -73,14 +106,20 @@ PrefetchHandleImpl::~PrefetchHandleImpl() {
   }
 }
 
-void PrefetchHandleImpl::SetOnPrefetchHeadReceived(
+void PrefetchHandleImpl::SetOnPrefetchHeadReceivedCallback(
     base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
         on_prefetch_head_received) {
-  CHECK(!prefetch_container_observer_);
-
-  prefetch_container_observer_ = std::make_unique<PrefetchContainerObserver>(
+  prefetch_container_observer_.SetOnPrefetchHeadReceivedCallback(
       std::move(on_prefetch_head_received));
-  prefetch_container_->AddObserver(prefetch_container_observer_.get());
+}
+
+void PrefetchHandleImpl::SetOnPrefetchCompletedOrFailedCallback(
+    base::RepeatingCallback<
+        void(const network::URLLoaderCompletionStatus& completion_status,
+             const std::optional<int>& response_code)>
+        on_prefetch_completed_or_failed) {
+  prefetch_container_observer_.SetOnPrefetchCompletedOrFailedCallback(
+      std::move(on_prefetch_completed_or_failed));
 }
 
 bool PrefetchHandleImpl::IsAlive() const {

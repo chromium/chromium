@@ -91,7 +91,7 @@ bool SearchPreloadPipeline::StartPrefetch(
       /*holdback_status_override=*/std::nullopt,
       /*ttl=*/features::kDsePreload2PrefetchTtl.Get());
   CHECK(prefetch_handle_);
-  prefetch_handle_->SetOnPrefetchHeadReceived(base::BindRepeating(
+  prefetch_handle_->SetOnPrefetchHeadReceivedCallback(base::BindRepeating(
       &SearchPreloadService::OnPrefetchHeadReceived, search_preload_service));
 
   return true;

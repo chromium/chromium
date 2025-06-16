@@ -1438,6 +1438,15 @@ void PrefetchContainer::OnPrefetchComplete(
     }
   }
 
+  std::optional<int> response_code = std::nullopt;
+  if (net_error == net::OK && GetNonRedirectHead() &&
+      GetNonRedirectHead()->headers) {
+    response_code = GetNonRedirectHead()->headers->response_code();
+  }
+  for (auto& observer : observers_) {
+    observer.OnPrefetchCompletedOrFailed(completion_status, response_code);
+  }
+
   if (GetPrefetchResponseCompletedCallbackForTesting()) {
     GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST
         GetWeakPtr());

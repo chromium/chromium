@@ -248,6 +248,10 @@ class CONTENT_EXPORT PrefetchContainer {
     // successfully received or fetch requests including redirects failed.
     // Callers can check success/failure by `GetNonRedirectHead()`.
     virtual void OnDeterminedHead(PrefetchContainer& prefetch_container) = 0;
+    // Called when load of prefetch completed or failed.
+    virtual void OnPrefetchCompletedOrFailed(
+        const network::URLLoaderCompletionStatus& completion_status,
+        const std::optional<int>& response_code) = 0;
   };
 
   void OnWillBeDestroyed();
