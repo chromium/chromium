@@ -121,12 +121,6 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
           tabs::TabInterface::GetFromContents(web_contents));
   delegate->AddObserver(this);
   password_change_delegates_.push_back(std::move(delegate));
-
-  // Init only after `delegate` was added to the vector, so it can be
-  // immediately returned by GetPasswordChangeDelegate() when the flow starts.
-  static_cast<PasswordChangeDelegateImpl*>(
-      password_change_delegates_.back().get())
-      ->OfferPasswordChangeUi();
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)

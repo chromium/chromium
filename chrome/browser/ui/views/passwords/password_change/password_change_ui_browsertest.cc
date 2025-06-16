@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,14 +20,23 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using affiliations::AffiliationService;
-using affiliations::MockAffiliationService;
-
 namespace {
+
+using ::affiliations::AffiliationService;
+using ::affiliations::MockAffiliationService;
+using ::testing::NiceMock;
+using ::testing::Return;
+
 std::unique_ptr<KeyedService> CreateTestAffiliationService(
     content::BrowserContext* context) {
-  return std::make_unique<testing::NiceMock<MockAffiliationService>>();
+  return std::make_unique<NiceMock<MockAffiliationService>>();
 }
+
+std::unique_ptr<KeyedService> CreateMockOptimizationService(
+    content::BrowserContext* context) {
+  return std::make_unique<NiceMock<MockOptimizationGuideKeyedService>>();
+}
+
 }  // namespace
 
 class PasswordChangeUiBrowserTest : public DialogBrowserTest {
@@ -37,6 +49,10 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
                   AffiliationServiceFactory::GetInstance()->SetTestingFactory(
                       context,
                       base::BindRepeating(&CreateTestAffiliationService));
+                  OptimizationGuideKeyedServiceFactory::GetInstance()
+                      ->SetTestingFactory(
+                          context,
+                          base::BindRepeating(&CreateMockOptimizationService));
                 }));
   }
 
@@ -45,32 +61,36 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
         AffiliationServiceFactory::GetForProfile(browser()->profile()));
   }
 
+  MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service() {
+    return static_cast<MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile()));
+  }
+
  private:
   void ShowUi(const std::string& name) override {
     GURL main_url = GURL("https://example.com/");
     GURL password_change_url = GURL("https://example.com/password");
     ON_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-        .WillByDefault(testing::Return(password_change_url));
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    if (StartsWith(name, "PrivacyNotice", base::CompareCase::SENSITIVE)) {
-      password_change_service()->OfferPasswordChangeUi(
-          main_url, u"test", u"password", web_contents);
-      password_change_service()
-          ->GetPasswordChangeDelegate(web_contents)
-          ->StartPasswordChangeFlow();
-    } else if (StartsWith(name, "LeakBubble", base::CompareCase::SENSITIVE)) {
-      auto* controller =
-          ManagePasswordsUIController::FromWebContents(web_contents);
-      controller->OnCredentialLeak(password_manager::LeakedPasswordDetails(
-          password_manager::CreateLeakType(
-              password_manager::IsSaved(true),
-              password_manager::IsReused(false),
-              password_manager::IsSyncing(true),
-              password_manager::HasChangePasswordUrl(true)),
-          GURL("https://example.com/"), u"username", u"password",
-          /*in_account_store=*/false));
+        .WillByDefault(Return(password_change_url));
+    if (StartsWith(name, "LeakBubble", base::CompareCase::SENSITIVE)) {
+      ON_CALL(*mock_optimization_guide_keyed_service(),
+              ShouldFeatureBeCurrentlyEnabledForUser(
+                  optimization_guide::UserVisibleFeatureKey::
+                      kPasswordChangeSubmission))
+          .WillByDefault(Return(true));
     }
+
+    ManagePasswordsUIController::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents())
+        ->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+            password_manager::CreateLeakType(
+                password_manager::IsSaved(true),
+                password_manager::IsReused(false),
+                password_manager::IsSyncing(true),
+                password_manager::HasChangePasswordUrl(true)),
+            GURL("https://example.com/"), u"username", u"password",
+            /*in_account_store=*/false));
   }
 
   ChromePasswordChangeService* password_change_service() {

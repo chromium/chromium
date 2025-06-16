@@ -140,6 +140,9 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     logger->LogMessage(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STARTED);
   }
+
+  UpdateState(IsPrivacyNoticeAcknowledged() ? State::kOfferingPasswordChange
+                                            : State::kWaitingForAgreement);
 }
 
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
@@ -152,27 +155,7 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
   }
 }
 
-void PasswordChangeDelegateImpl::OfferPasswordChangeUi() {
-  UpdateState(PasswordChangeDelegate::State::kOfferingPasswordChange);
-}
-
 void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
-  if (IsPrivacyNoticeAcknowledged()) {
-    StartPasswordChange();
-    return;
-  }
-  UpdateState(State::kWaitingForAgreement);
-}
-
-void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
-  submission_verifier_.reset();
-  form_finder_.reset();
-  executor_.reset();
-
-  UpdateState(State::kCanceled);
-}
-
-void PasswordChangeDelegateImpl::StartPasswordChange() {
   flow_start_time_ = base::Time::Now();
   UpdateState(State::kWaitingForChangePasswordForm);
 
@@ -183,6 +166,14 @@ void PasswordChangeDelegateImpl::StartPasswordChange() {
       executor_.get(),
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
+  submission_verifier_.reset();
+  form_finder_.reset();
+  executor_.reset();
+
+  UpdateState(State::kCanceled);
 }
 
 void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
@@ -210,7 +201,7 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
               weak_ptr_factory_.GetWeakPtr()));
   submission_verifier_->FillChangePasswordForm(
       form_manager, username_, original_password_, generated_password_);
-  UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+  UpdateState(State::kChangingPassword);
 }
 
 void PasswordChangeDelegateImpl::OnTabWillDetach(
@@ -308,11 +299,10 @@ void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
       optimization_guide::prefs::GetSettingEnabledPrefName(
           optimization_guide::UserVisibleFeatureKey::kPasswordChangeSubmission),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  StartPasswordChange();
+  StartPasswordChangeFlow();
 }
 
-void PasswordChangeDelegateImpl::UpdateState(
-    PasswordChangeDelegate::State new_state) {
+void PasswordChangeDelegateImpl::UpdateState(State new_state) {
   if (new_state == current_state_) {
     return;
   }

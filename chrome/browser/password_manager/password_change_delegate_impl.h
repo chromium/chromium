@@ -49,9 +49,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   PasswordChangeDelegateImpl& operator=(const PasswordChangeDelegateImpl&) =
       delete;
 
-  // Sets `kOfferingPasswordChange` state and triggers the leak check bubble.
-  void OfferPasswordChangeUi();
-
   base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
 
 #if defined(UNIT_TEST)
@@ -83,10 +80,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
 
   void OnTabWillDetach(tabs::TabInterface* tab_interface,
                        tabs::TabInterface::DetachReason reason);
-
-  // Opens the tab for password change and start looking for change password
-  // form.
-  void StartPasswordChange();
 
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);

@@ -66,14 +66,14 @@ class PasswordChangeDelegate {
 
   virtual ~PasswordChangeDelegate() = default;
 
-  // Starts the password change flow (including showing the privacy notice
-  // agreement if necessary).
+  // Starts performing password change by looking for a change password form in
+  // a hidden tab.
   virtual void StartPasswordChangeFlow() = 0;
 
   // Cancels any password change operation.
   virtual void CancelPasswordChangeFlow() = 0;
 
-  // Responds whether password change is ongoing for a given |web_contents|.
+  // Responds whether password change is ongoing for a given `web_contents`.
   // This is true both for originator and a tab where password change is
   // performed.
   virtual bool IsPasswordChangeOngoing(content::WebContents* web_contents) = 0;
