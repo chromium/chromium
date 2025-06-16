@@ -537,14 +537,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return _node != nullptr;
 }
 
-- (BOOL)isIncludedInPlatformTree {
-  // TODO(accessibility): Do we really need to have invisible objects in
-  // the platform tree?
-  return [self instanceActive] &&
-         ![[self AXRole] isEqualToString:NSAccessibilityUnknownRole] &&
-         !_node->IsInvisibleOrIgnored();
-}
-
 - (id)titleUIElement {
   // True only if it's a control, if there's a single label, and the label has
   // nonempty text.
@@ -835,8 +827,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       return NSAccessibilityButtonRole;
     case ax::mojom::Role::kCanvas:
       return NSAccessibilityImageRole;
-    case ax::mojom::Role::kCaret:
-      return NSAccessibilityUnknownRole;
     case ax::mojom::Role::kCell:
       return @"AXCell";
     case ax::mojom::Role::kCheckBox:
@@ -893,14 +883,10 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       return @"AXHeading";
     case ax::mojom::Role::kImage:
       return NSAccessibilityImageRole;
-    case ax::mojom::Role::kImeCandidate:
-      return NSAccessibilityUnknownRole;
     case ax::mojom::Role::kInlineTextBox:
       return NSAccessibilityStaticTextRole;
     case ax::mojom::Role::kInputTime:
       return @"AXTimeField";
-    case ax::mojom::Role::kKeyboard:
-      return NSAccessibilityUnknownRole;
     case ax::mojom::Role::kLink:
       return NSAccessibilityLinkRole;
     case ax::mojom::Role::kList:
@@ -945,8 +931,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       return NSAccessibilityRowRole;
     case ax::mojom::Role::kRowHeader:
       return @"AXCell";
-    case ax::mojom::Role::kRubyAnnotation:
-      return NSAccessibilityUnknownRole;
     case ax::mojom::Role::kScrollBar:
       return NSAccessibilityScrollBarRole;
     case ax::mojom::Role::kScrollView:
@@ -986,18 +970,25 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::Role::kTreeItem:
       return NSAccessibilityRowRole;
     case ax::mojom::Role::kUnknown:
-      return NSAccessibilityUnknownRole;
+      // This occurs in the case where a View has no widget, and while this will
+      // not be exposed to users, it allows isAccessibilityElement() to have
+      // fewer rules.
+      return NSAccessibilityGroupRole;
     case ax::mojom::Role::kWindow:
       // Use the group role as the BrowserNativeWidgetWindow already provides
       // a kWindow role, and having extra window roles, which are treated
       // specially by screen readers, can break their ability to find the
       // content window. See http://crbug.com/875843 for more information.
       return NSAccessibilityGroupRole;
+    case ax::mojom::Role::kCaret:
     case ax::mojom::Role::kDescriptionListTermDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kDirectoryDeprecated:
+    case ax::mojom::Role::kImeCandidate:
+    case ax::mojom::Role::kKeyboard:
     case ax::mojom::Role::kPreDeprecated:
     case ax::mojom::Role::kPortalDeprecated:
+    case ax::mojom::Role::kRubyAnnotation:
       NOTREACHED();
   }
 }
@@ -1052,19 +1043,15 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (ax::mojom::Role)internalRole {
-  if ([self instanceActive]) {
-    ax::mojom::Role role = static_cast<ax::mojom::Role>(_node->GetRole());
-    // Make sure to use Role::kPopupButton instead of Role::kButton for all
-    // values of kHasPopup. This is normally already true, but the default
-    // implementation does not use kPopupButton if aria-haspopup="dialog".
-    if (role == ax::mojom::Role::kButton &&
-        _node->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup)) {
-      return ax::mojom::Role::kPopUpButton;
-    }
-    return role;
+  ax::mojom::Role role = static_cast<ax::mojom::Role>(_node->GetRole());
+  // Make sure to use Role::kPopupButton instead of Role::kButton for all
+  // values of kHasPopup. This is normally already true, but the default
+  // implementation does not use kPopupButton if aria-haspopup="dialog".
+  if (role == ax::mojom::Role::kButton &&
+      _node->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup)) {
+    return ax::mojom::Role::kPopUpButton;
   }
-
-  return ax::mojom::Role::kUnknown;
+  return role;
 }
 
 - (BOOL)hasAction:(ax::mojom::Action)action {
@@ -1095,8 +1082,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   bool has_image_semantics =
       ui::IsImage(_node->GetRole()) &&
       !_node->GetBoolAttribute(ax::mojom::BoolAttribute::kCanvasHasFallback) &&
-      !_node->GetChildCount() &&
-      _node->GetNameFrom() != ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
+      !_node->GetChildCount();
 #if DCHECK_IS_ON()
   bool is_native_image =
       [[self accessibilityRole] isEqualToString:NSAccessibilityImageRole];
@@ -2340,14 +2326,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   for (auto child_iterator_ptr = _node->GetDelegate()->ChildrenBegin();
        *child_iterator_ptr != *_node->GetDelegate()->ChildrenEnd();
        ++(*child_iterator_ptr)) {
-    ui::AXPlatformNodeDelegate* child = child_iterator_ptr->get();
-    if (child && child->IsInvisibleOrIgnored()) {
-      [children
-          addObjectsFromArray:[child_iterator_ptr->GetNativeViewAccessible()
-                                      .Get() accessibilityChildren]];
-    } else {
-      [children addObject:child_iterator_ptr->GetNativeViewAccessible().Get()];
-    }
+    [children addObject:child_iterator_ptr->GetNativeViewAccessible().Get()];
   }
   return NSAccessibilityUnignoredChildren(children);
 }
@@ -2619,12 +2598,27 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 // NSAccessibility: Configuring Accessibility.
 - (BOOL)isAccessibilityElement {
-  if (![self instanceActive])
+  if (!_node) {
     return NO;
+  }
+  DCHECK(_node->GetDelegate());
+  DCHECK([self instanceActive]);
 
-  return (![[[self class] nativeRoleFromAXRole:_node->GetRole()]
-              isEqualToString:NSAccessibilityUnknownRole] &&
-          !_node->GetDelegate()->IsIgnored());
+  // After ViewsAX lands, we should be able to add this DCHECK.
+  // DCHECK(!_node->GetDelegate()->IsIgnored())
+  //     << "Ignored nodes should be removed by PlatformGet*() methods:"
+  //     << _node->GetDelegate()->ToString();
+
+  if (_node->GetDelegate()->IsInvisibleOrIgnored()) {
+    return NO;
+  }
+
+  if ([self internalRole] == ax::mojom::Role::kImage &&
+      _node->GetData().GetNameFrom() ==
+          ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
+    return NO;
+  }
+  return YES;
 }
 
 - (BOOL)isAccessibilityEnabled {

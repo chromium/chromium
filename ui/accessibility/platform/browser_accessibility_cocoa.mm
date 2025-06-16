@@ -630,10 +630,7 @@ bool ui::IsNSRange(id value) {
       AXPlatformNodeCocoa* child =
           base::apple::ObjCCastStrict<AXPlatformNodeCocoa>(
               it->GetNativeViewAccessible().Get());
-      if ([child isIncludedInPlatformTree])
-        [_children addObject:child];
-      else
-        [_children addObjectsFromArray:[child accessibilityChildren]];
+      [_children addObject:child];
     }
 
     // Also, add indirect children (if any).
@@ -649,7 +646,7 @@ bool ui::IsNSRange(id value) {
       }
     }
   }
-  return _children;
+  return NSAccessibilityUnignoredChildren(_children);
 }
 
 - (void)childrenChanged {
@@ -660,14 +657,12 @@ bool ui::IsNSRange(id value) {
     return;
   }
   _children = nil;
-  if (![self isIncludedInPlatformTree]) {
-    BrowserAccessibility* parent = _owner->PlatformGetParent();
-    if (parent) {
-      BrowserAccessibilityCocoa* parentCocoa =
-          base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
-              parent->GetNativeViewAccessible().Get());
-      [parentCocoa childrenChanged];
-    }
+  BrowserAccessibility* parent = _owner->PlatformGetParent();
+  if (parent) {
+    BrowserAccessibilityCocoa* parentCocoa =
+        base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            parent->GetNativeViewAccessible().Get());
+    [parentCocoa childrenChanged];
   }
 }
 
@@ -1178,9 +1173,6 @@ bool ui::IsNSRange(id value) {
   } else if (ui::IsImage(_owner->GetRole()) && _owner->GetChildCount()) {
     // An image map is an image with children, and exposed on Mac as a group.
     cocoa_role = NSAccessibilityGroupRole;
-  } else if (ui::IsImage(_owner->GetRole()) &&
-             _owner->HasExplicitlyEmptyName()) {
-    cocoa_role = NSAccessibilityUnknownRole;
   } else if (_owner->IsRootWebAreaForPresentationalIframe()) {
     cocoa_role = NSAccessibilityGroupRole;
   } else if (role == ax::mojom::Role::kListBoxOption && _owner->IsWebContent()) {
@@ -1196,6 +1188,7 @@ bool ui::IsNSRange(id value) {
 
   TRACE_EVENT1("accessibility", "BrowserAccessibilityCocoa::role",
                "role=", base::SysNSStringToUTF8(cocoa_role));
+  DCHECK(cocoa_role != NSAccessibilityUnknownRole);
   return cocoa_role;
 }
 
@@ -2955,18 +2948,6 @@ bool ui::IsNSRange(id value) {
     return focus;
 
   return _owner;
-}
-
-- (BOOL)isAccessibilityElement {
-  if (![self instanceActive])
-    return NO;
-
-  if ([self internalRole] == ax::mojom::Role::kImage &&
-      _owner->HasExplicitlyEmptyName()) {
-    return NO;
-  }
-
-  return [super isAccessibilityElement];
 }
 
 @end

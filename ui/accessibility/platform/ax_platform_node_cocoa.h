@@ -42,9 +42,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // Determines if this object is alive, i.e. it hasn't been detached.
 - (BOOL)instanceActive;
 
-// Returns true if this accessible element should be included into the ax tree.
-- (BOOL)isIncludedInPlatformTree;
-
 // Returns true if this object should expose its accessible name using
 // accessibilityLabel (legacy AXDescription attribute).
 - (BOOL)isNameFromLabel;
