@@ -11,4 +11,5 @@ found in the LICENSE file.
     <dimen name="instance_switcher_dialog_content_padding">16dp</dimen>
     <dimen name="instance_switcher_dialog_list_item_padding">2dp</dimen>
     <dimen name="instance_switcher_dialog_max_info_top_padding">16dp</dimen>
+    <dimen name="instance_switcher_dialog_favicon_start_margin">16dp</dimen>
 </resources>

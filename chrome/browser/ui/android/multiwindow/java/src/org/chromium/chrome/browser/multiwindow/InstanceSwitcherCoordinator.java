@@ -231,7 +231,7 @@ public class InstanceSwitcherCoordinator {
                 EntryType.COMMAND,
                 parentView ->
                         LayoutInflater.from(mContext)
-                                .inflate(R.layout.instance_switcher_cmd_item, null),
+                                .inflate(R.layout.instance_switcher_cmd_item_v2, null),
                 InstanceSwitcherItemViewBinder::bind);
         return adapter;
     }

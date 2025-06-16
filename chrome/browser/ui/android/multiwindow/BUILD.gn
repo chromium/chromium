@@ -64,6 +64,7 @@ android_resources("java_resources") {
     "java/res/drawable/single_list_item_background.xml",
     "java/res/layout/close_confirmation_dialog.xml",
     "java/res/layout/instance_switcher_cmd_item.xml",
+    "java/res/layout/instance_switcher_cmd_item_v2.xml",
     "java/res/layout/instance_switcher_dialog.xml",
     "java/res/layout/instance_switcher_dialog_v2.xml",
     "java/res/layout/instance_switcher_item.xml",
