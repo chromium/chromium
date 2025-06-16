@@ -1227,8 +1227,8 @@ class TabListMediator implements TabListNotificationHandler {
 
                         @Nullable PropertyModel model = mModelList.getModelFromSyncId(syncId);
                         if (model != null) {
-                            Long archivalTimeMs =
-                                    mTabGroupSyncService.getGroup(syncId).archivalTimeMs;
+                            SavedTabGroup tabGroup = mTabGroupSyncService.getGroup(syncId);
+                            Long archivalTimeMs = tabGroup.archivalTimeMs;
 
                             // If the tab group is archived, run archival reset logic and remove the
                             // tab group from the model list.
@@ -1236,6 +1236,11 @@ class TabListMediator implements TabListNotificationHandler {
                                 model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
                                 mModelList.removeAt(index);
                                 mTabGroupSyncService.updateArchivalStatus(syncId, false);
+                                RecordUserAction.record(
+                                        "TabGroups.ArchivedTabGroupManualCloseOnInactiveSurface");
+                                RecordHistogram.recordCount1000Histogram(
+                                        "TabGroups.ArchivedTabGroupManualCloseOnInactiveSurface.TabGroupTabCount",
+                                        tabGroup.savedTabs.size());
                             }
                         }
                     }

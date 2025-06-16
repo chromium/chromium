@@ -798,6 +798,74 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="TabGroups.ArchivedTabGroupManualCloseOnInactiveSurface.TabGroupTabCount"
+    units="tabs" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records number of tabs within an archived tab group closed by pressing the X
+    button on the tab group in the inactive surface.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.CloseAllArchivedTabGroups.TabGroupCount"
+    units="groups" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records when archived tab groups are closed through the &quot;Close all
+    inactive tabs&quot; button in inactive pane.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.CloseAllArchivedTabGroups.TabGroupTabCount"
+    units="tabs" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records number of tabs within archived tab groups closed through the
+    &quot;Close all inactive tabs&quot; button in inactive pane.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.CloseArchivedTabsMenuItem.TabGroupCount"
+    units="groups" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records when archived tab groups are closed through the &quot;Close
+    tab&quot; menu item after user selects which tab groups to be closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.CloseArchivedTabsMenuItem.TabGroupTabCount"
+    units="tabs" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records number of tabs within archived tab groups closed through the
+    &quot;Close tab&quot; menu item after user selects which tab groups to be
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.CloseTabGroupsDeletedRemotely" units="groups"
+    expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records when tab groups are closed locally due to the synced tab group being
+    deleted elsewhere (e.g. another device logged into same account).
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.CollapsedGroupCountPerLoad" units="groups"
     expires_after="2025-09-28">
   <owner>dpenning@chromium.org</owner>
@@ -861,6 +929,72 @@ chromium-metrics-reviews@google.com.
     DataTypeStore that failed to parse as a SavedTabGroupData in the final stage
     of startup. Recorded during SavedTabGroupSyncBridge initialization after
     sucessfully passing through the migration stages.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.RestoreAllArchivedTabsMenuItem.TabGroupCount"
+    units="groups" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records when archived tab groups are restored through the &quot;Restore
+    all&quot; option menu item.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.RestoreAllArchivedTabsMenuItem.TabGroupTabCount"
+    units="tabs" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records number of tabs within archived tab groups restored by the
+    &quot;Restore all&quot; option menu item.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.RestoreArchivedTabsMenuItem.TabGroupCount"
+    units="groups" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records when archived tab groups are restored through the &quot;Restore
+    tab&quot; menu option after user selects which tab groups to restore.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.RestoreArchivedTabsMenuItem.TabGroupTabCount"
+    units="tabs" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records number of tabs within archived tab groups restored by user selecting
+    tab groups and using the &quot;Restore tab&quot; menu option.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.RestoreFromTabGroupPane.TabCount" units="tabs"
+    expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records number of tabs within an archived tab group restored by user opening
+    the synced tab group from the tab group pane.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.RestoreSingleTabGroup.TabGroupTabCount" units="tabs"
+    expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records number of tabs within archived tab groups restored by user manually
+    clicking into the tab group in the inactive surface.
   </summary>
 </histogram>
 
@@ -1576,6 +1710,27 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of tabs in a group whenever a tab group editor bubble
     closes.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.TabGroupDeclutter.ArchivedTabGroups" units="groups"
+    expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records number of tab groups that are archived due to tab group declutter.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.TabGroupDeclutter.ArchivedTabGroupTabCount"
+    units="tabs" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records number of tabs within each archived tab group that are archived when
+    the tab group is archived.
   </summary>
 </histogram>
 
