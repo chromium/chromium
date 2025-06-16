@@ -630,6 +630,11 @@ void FullscreenModel::OnBottomToolbarHeightChanged() {
 
 bool FullscreenModel::ScrollThresholdExceeded() const {
   if (web::features::IsFullscreenScrollThresholdEnabled()) {
+    // When scrolled to the very top, the threshold should be ignored so that
+    // fullscreen can be smoothly exited.
+    if (y_content_offset_ <= 0.0) {
+      return true;
+    }
     return std::abs(y_content_offset_ - offset_at_start_of_drag_) >
            scroll_threshold_;
   }
