@@ -75,6 +75,8 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   void HandleKey(ProviderIterator current,
                  const std::string& tag,
                  base::expected<Encryptor::Key, KeyProvider::KeyError> key);
+  // Sets the `encryptor_instance_` and reports metrics.
+  void SetEncryptorInstance(Encryptor encryptor);
 
   std::unique_ptr<Encryptor> encryptor_instance_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -87,6 +89,8 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   std::string provider_for_encryption_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string provider_for_os_crypt_sync_compatible_encryption_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  size_t number_of_failing_key_providers_
+      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

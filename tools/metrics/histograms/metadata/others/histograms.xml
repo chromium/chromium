@@ -7079,6 +7079,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.EncryptorKeyCount{EncryptorKeyType}" units="key count"
+    expires_after="2025-10-19">
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-platform-security-core@google.com</owner>
+  <summary>
+    Logged whenever the OSCrypt Async instance has been created after a call to
+    GetInstance. This counts the {EncryptorKeyType} key(s) in the keyring.
+  </summary>
+  <token key="EncryptorKeyType">
+    <variant name="" summary="total possible"/>
+    <variant name=".Available" summary="available"/>
+    <variant name=".PermanentlyUnavailable" summary="permanently unavailable"/>
+    <variant name=".TemporarilyUnavailable" summary="temporarily unavailable"/>
+  </token>
+</histogram>
+
 <histogram name="OSCrypt.FreedesktopSecretKeyProvider.InitStatus"
     enum="FreedesktopSecretKeyProviderInitStatus" expires_after="2025-12-17">
   <owner>thomasanderson@chromium.org</owner>
