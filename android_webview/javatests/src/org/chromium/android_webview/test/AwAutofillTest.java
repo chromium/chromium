@@ -2544,6 +2544,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "crbug.com/424007303")
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     public void testNoEventSentToAutofillServiceForFocusedDatalist() throws Throwable {
         final String url = getAbsoluteTestPageUrl("form_with_datalist.html");
