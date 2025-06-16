@@ -5,8 +5,7 @@
       "linux",
       "mac",
       "chromeos",
-      "android",
-      "fuchsia"
+      "desktop_android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "enterprise_hardware_platform_api.enabled",

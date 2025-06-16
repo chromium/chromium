@@ -9,8 +9,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Allow managed extensions to use the Enterprise Hardware Platform API
   value: true
