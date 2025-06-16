@@ -397,9 +397,11 @@ bool MailboxVideoFrameConverter::GenerateSharedImage(
   }
 
   // The allocated SharedImages should be usable for the (Display) compositor
-  // and, potentially, for overlays (Scanout).
+  // and, potentially, for overlays (Scanout). The shared image can be copied to
+  // GL texture over WebGL either directly or over raster interface.
   gpu::SharedImageUsageSet shared_image_usage =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ;
 
   // These SharedImages might also be used for zero-copy import into WebGPU to
   // serve as the sources of WebGPU reads (e.g., for video effects processing).
