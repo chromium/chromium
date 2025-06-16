@@ -193,11 +193,14 @@ void InputManager::OnCreateCompositorFrameSink(
 #if BUILDFLAG(IS_ANDROID)
   if (create_input_receiver) {
     CHECK(is_root);
+    auto cancellable_task =
+        std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
+            &InputManager::CreateOrReuseAndroidInputReceiver,
+            weak_ptr_factory_.GetWeakPtr(), frame_sink_id, surface_handle));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&InputManager::CreateOrReuseAndroidInputReceiver,
-                       weak_ptr_factory_.GetWeakPtr(), frame_sink_id,
-                       surface_handle));
+        FROM_HERE, cancellable_task->callback());
+    pending_create_input_receiver_callback_.emplace(
+        std::make_pair(frame_sink_id, std::move(cancellable_task)));
     return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -254,6 +257,21 @@ void InputManager::OnDestroyedCompositorFrameSink(
   TRACE_EVENT("viz", "InputManager::OnDestroyedCompositorFrameSink",
               "frame_sink_id", frame_sink_id);
 #if BUILDFLAG(IS_ANDROID)
+  auto callback_itr =
+      pending_create_input_receiver_callback_.find(frame_sink_id);
+  if (callback_itr != pending_create_input_receiver_callback_.end()) {
+    std::unique_ptr<base::CancelableOnceClosure>& callback =
+        callback_itr->second;
+    callback->Cancel();
+    pending_create_input_receiver_callback_.erase(callback_itr);
+
+    UMA_HISTOGRAM_ENUMERATION(
+        kInputReceiverCreationResultHistogram,
+        CreateAndroidInputReceiverResult::kRootCompositorFrameSinkDestroyed);
+
+    return;
+  }
+
   if (receiver_data_ && receiver_data_->root_frame_sink_id() == frame_sink_id) {
     receiver_data_->OnDestroyedCompositorFrameSink();
     if (base::android::android_info::sdk_int() >=
@@ -740,6 +758,8 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
     const gpu::SurfaceHandle& surface_handle) {
   CHECK(base::AndroidInputReceiverCompat::IsSupportAvailable());
 
+  pending_create_input_receiver_callback_.erase(frame_sink_id);
+
   if (receiver_data_ && receiver_data_->root_frame_sink_id().is_valid()) {
     // Only allow input receiver "creation" for single root compositor frame
     // sink.
@@ -749,12 +769,7 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
     return;
   }
 
-  if (!frame_sink_manager_->IsFrameSinkIdInRootSinkMap(frame_sink_id)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kInputReceiverCreationResultHistogram,
-        CreateAndroidInputReceiverResult::kRootCompositorFrameSinkDestroyed);
-    return;
-  }
+  CHECK(frame_sink_manager_->IsFrameSinkIdInRootSinkMap(frame_sink_id));
 
   // This results in a sync binder to Browser, the same call is made on
   // CompositorGpu thread as well but to keep the code simple and not having to

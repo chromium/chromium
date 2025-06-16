@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#include "base/cancelable_callback.h"
 #include "components/input/android/input_receiver_data.h"
 #include "components/viz/service/input/android_state_transfer_handler.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
@@ -198,6 +199,11 @@ class VIZ_SERVICE_EXPORT InputManager
   AndroidStateTransferHandler android_state_transfer_handler_;
 
   std::unique_ptr<input::InputReceiverData> receiver_data_;
+
+  // Allow cancelling the creation task, since it's possible for
+  // DestroyCompositorFrameSink call to come before the callback is ran.
+  base::flat_map<FrameSinkId, std::unique_ptr<base::CancelableOnceClosure>>
+      pending_create_input_receiver_callback_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   friend class MockInputManager;
