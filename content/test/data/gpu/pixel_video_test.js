@@ -61,7 +61,7 @@ function main() {
   getParametersTesting();
 
   video.onerror = e => {
-    logOutput(`Video playback error occurred: ${e.message}`);
+    logOutput(`Video playback error occurred: ${video.error.message}`);
     abort = true;
     domAutomationController.send('FAIL');
   };
