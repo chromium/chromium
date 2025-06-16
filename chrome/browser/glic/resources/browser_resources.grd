@@ -174,6 +174,15 @@ found in the LICENSE file.
       <message name="IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic sign in notice.">
         Verify it's you
       </message>
+      <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic ineligible profile notice.">
+        This account can't use glic
+      </message>
+      <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE" translateable="false" desc="This is the text of the glic ineligible profile notice.">
+        To use glic, sign in with a different Google Account
+      </message>
+      <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for a button that opens the profile picker.">
+        Choose another profile
+      </message>
 
       <!-- Experimental Glic settings -->
       <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Title of the Glic settings subpage. Also shown as page title in tabstrip.">

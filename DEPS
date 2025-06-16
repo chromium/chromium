@@ -4462,7 +4462,7 @@ deps = {
 
   'src/chrome/browser/glic/resources/internal': {
       'url': Var('chrome_git') + '/chrome/browser/glic/resources/internal.git' + '@' +
-        '650a73612179640be0a0f4e5a188bd986c5867bd',
+        '475441278dca99489f0e148f278ca395fd07926d',
       'condition': 'checkout_src_internal',
   },
 
