@@ -1693,6 +1693,17 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "mac_26_arm64",
+    generate_pyl_entry = False,
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "arm64",
+            "os": "Mac-26",
+        },
+    ),
+)
+
+targets.mixin(
     name = "mac_15_x64",
     # All references have been moved to starlark
     generate_pyl_entry = False,
