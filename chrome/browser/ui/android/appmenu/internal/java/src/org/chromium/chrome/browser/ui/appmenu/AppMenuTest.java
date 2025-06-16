@@ -520,16 +520,14 @@ public class AppMenuTest {
                 () -> {
                     Assert.assertEquals(
                             0,
-                            mAppMenuHandler
-                                    .getAppMenu()
-                                    .getMenuItemPropertyModel(R.id.menu_item_one)
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                            mAppMenuCoordinator, R.id.menu_item_one)
                                     .get(AppMenuItemProperties.POSITION));
 
                     Assert.assertEquals(
                             1,
-                            mAppMenuHandler
-                                    .getAppMenu()
-                                    .getMenuItemPropertyModel(R.id.menu_item_three)
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                            mAppMenuCoordinator, R.id.menu_item_three)
                                     .get(AppMenuItemProperties.POSITION));
                 });
     }
@@ -558,9 +556,8 @@ public class AppMenuTest {
                 () -> {
                     Assert.assertEquals(
                             0,
-                            mAppMenuHandler
-                                    .getAppMenu()
-                                    .getMenuItemPropertyModel(R.id.menu_item_three)
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                            mAppMenuCoordinator, R.id.menu_item_three)
                                     .get(AppMenuItemProperties.POSITION));
                 });
     }
@@ -590,26 +587,24 @@ public class AppMenuTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PropertyModel m = mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(13);
+                    PropertyModel m =
+                            AppMenuTestSupport.getMenuItemPropertyModel(mAppMenuCoordinator, 13);
                     Assert.assertNotNull(m.get(AppMenuItemProperties.CLICK_HANDLER));
                     Assert.assertEquals(0, m.get(AppMenuItemProperties.POSITION));
                     Assert.assertEquals(
                             1,
-                            mAppMenuHandler
-                                    .getAppMenu()
-                                    .getMenuItemPropertyModel(R.id.menu_item_one)
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                            mAppMenuCoordinator, R.id.menu_item_one)
                                     .get(AppMenuItemProperties.POSITION));
                     Assert.assertEquals(
                             2,
-                            mAppMenuHandler
-                                    .getAppMenu()
-                                    .getMenuItemPropertyModel(R.id.menu_item_two)
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                            mAppMenuCoordinator, R.id.menu_item_two)
                                     .get(AppMenuItemProperties.POSITION));
                     Assert.assertEquals(
                             3,
-                            mAppMenuHandler
-                                    .getAppMenu()
-                                    .getMenuItemPropertyModel(R.id.menu_item_three)
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                            mAppMenuCoordinator, R.id.menu_item_three)
                                     .get(AppMenuItemProperties.POSITION));
                 });
     }

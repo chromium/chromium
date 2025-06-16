@@ -56,7 +56,6 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
-import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -477,37 +476,6 @@ class AppMenu implements OnKeyListener {
      */
     @Nullable ListView getListView() {
         return mListView;
-    }
-
-    /**
-     * @return The menu instance inside of this class.
-     */
-    ModelList getMenuModelList() {
-        return mModelList;
-    }
-
-    /**
-     * Find the {@link PropertyModel} associated with the given id. If the menu item is not found,
-     * return null.
-     * @param itemId The id of the menu item to find.
-     * @return The {@link PropertyModel} has the given id. null if not found.
-     */
-    @Nullable PropertyModel getMenuItemPropertyModel(int itemId) {
-        for (int i = 0; i < mModelList.size(); i++) {
-            PropertyModel model = mModelList.get(i).model;
-            if (model.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
-                return model;
-            } else if (model.get(AppMenuItemProperties.ADDITIONAL_ICONS) != null) {
-                ModelList subList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
-                for (int j = 0; j < subList.size(); j++) {
-                    PropertyModel subModel = subList.get(j).model;
-                    if (subModel.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
-                        return subModel;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     @RequiresNonNull("mPopup")

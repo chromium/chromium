@@ -23,17 +23,40 @@ public class AppMenuTestSupport {
     public static ModelList getMenuModelList(AppMenuCoordinator coordinator) {
         return ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
-                .getAppMenu()
-                .getMenuModelList();
+                .getModelListForTesting();
     }
 
-    /** See {@link AppMenu#getMenuItemPropertyModel} */
+    /** See {@link #getMenuItemPropertyModel(ModelList, int)} */
     public static PropertyModel getMenuItemPropertyModel(
             AppMenuCoordinator coordinator, int itemId) {
-        return ((AppMenuCoordinatorImpl) coordinator)
-                .getAppMenuHandlerImplForTesting()
-                .getAppMenu()
-                .getMenuItemPropertyModel(itemId);
+        return getMenuItemPropertyModel(getMenuModelList(coordinator), itemId);
+    }
+
+    /**
+     * Find the {@link PropertyModel} associated with the given id. If the menu item is not found,
+     * return null.
+     *
+     * @param modelList The ModelList representing the menu.
+     * @param itemId The id of the menu item to find.
+     * @return The {@link PropertyModel} has the given id. null if not found.
+     */
+    @Nullable
+    public static PropertyModel getMenuItemPropertyModel(ModelList modelList, int itemId) {
+        for (int i = 0; i < modelList.size(); i++) {
+            PropertyModel model = modelList.get(i).model;
+            if (model.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
+                return model;
+            } else if (model.get(AppMenuItemProperties.ADDITIONAL_ICONS) != null) {
+                ModelList subList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
+                for (int j = 0; j < subList.size(); j++) {
+                    PropertyModel subModel = subList.get(j).model;
+                    if (subModel.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
+                        return subModel;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /** See {@link AppMenuHandlerImpl#onOptionsItemSelected(int)}. */
@@ -66,11 +89,7 @@ public class AppMenuTestSupport {
             AppMenuCoordinator coordinator,
             int menuItemId,
             @Nullable MotionEventInfo triggeringMotion) {
-        PropertyModel model =
-                ((AppMenuCoordinatorImpl) coordinator)
-                        .getAppMenuHandlerImplForTesting()
-                        .getAppMenu()
-                        .getMenuItemPropertyModel(menuItemId);
+        PropertyModel model = getMenuItemPropertyModel(coordinator, menuItemId);
 
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
@@ -86,11 +105,7 @@ public class AppMenuTestSupport {
      */
     public static void callOnItemLongClick(
             AppMenuCoordinator coordinator, int menuItemId, View view) {
-        PropertyModel model =
-                ((AppMenuCoordinatorImpl) coordinator)
-                        .getAppMenuHandlerImplForTesting()
-                        .getAppMenu()
-                        .getMenuItemPropertyModel(menuItemId);
+        PropertyModel model = getMenuItemPropertyModel(coordinator, menuItemId);
 
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
