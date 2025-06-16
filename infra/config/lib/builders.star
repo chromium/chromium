@@ -965,10 +965,13 @@ def builder(
 
     additional_exclusions = register_gn_args(builder_group, bucket, name, gn_args, use_siso)
 
-    builder_config_settings = defaults.get_value(
-        "builder_config_settings",
-        builder_config_settings,
-    )
+    if builder_spec or mirrors:
+        builder_config_settings = defaults.get_value(
+            "builder_config_settings",
+            builder_config_settings,
+        )
+    elif builder_config_settings == args.DEFAULT:
+        builder_config_settings = None
     register_builder_config(
         bucket,
         name,

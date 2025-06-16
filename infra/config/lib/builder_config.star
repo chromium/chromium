@@ -498,7 +498,7 @@ def register_builder_config(
         description_html: A string of html representing the description of the builder.
     """
     if not builder_spec and not mirrors:
-        if bc_settings and settings.project.startswith("chrome"):
+        if bc_settings:
             fail("bc_settings specified without builder_spec or mirrors")
 
         # TODO(gbeaty) Eventually make this a failure for the chromium
