@@ -169,7 +169,8 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
                               /*is_navigation_likely=*/false);
   pipelines_[canonical_url]->StartPrefetch(
       GetWebContents(), search_preload_service, prefetch_url,
-      chrome_preloading_predictor::kDefaultSearchEngine, no_vary_search_hint);
+      chrome_preloading_predictor::kDefaultSearchEngine, no_vary_search_hint,
+      /*is_navigation_likely=*/false);
 
   // Trigger prerender without waiting prefetch.
   //
@@ -289,7 +290,8 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
   pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), 100);
   return pipelines_[canonical_url]->StartPrefetch(
       GetWebContents(), search_preload_service, prefetch_url, predictor,
-      no_vary_search_hint);
+      no_vary_search_hint,
+      /*is_navigation_likely=*/true);
 }
 
 bool SearchPreloadPipelineManager::InvalidatePipelineForTesting(

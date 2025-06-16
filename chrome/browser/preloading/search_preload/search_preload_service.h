@@ -73,6 +73,9 @@ class SearchPreloadService : public KeyedService,
   void ClearPreloads();
 
   void OnPrefetchHeadReceived(const network::mojom::URLResponseHead& head);
+  void OnOnSuggestPrefetchCompletedOrFailed(
+      const network::URLLoaderCompletionStatus& completion_status,
+      const std::optional<int>& response_code);
 
   // Called when autocomplete is updated.
   void OnAutocompleteResultChanged(content::WebContents* web_contents,
@@ -111,6 +114,9 @@ class SearchPreloadService : public KeyedService,
   // Cache of No-Vary-Search header for the No-Vary-Search hint of the next
   // prefetch.
   std::optional<net::HttpNoVarySearchData> no_vary_search_data_cache_;
+
+  // If prefetch on-suggest failed, pause triggering preloads until this time.
+  base::TimeTicks pause_triggering_until_;
 
   base::WeakPtrFactory<SearchPreloadService> weak_factory_{this};
 };

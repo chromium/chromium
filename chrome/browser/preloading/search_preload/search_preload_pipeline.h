@@ -39,7 +39,8 @@ class SearchPreloadPipeline {
       base::WeakPtr<SearchPreloadService> search_preload_service,
       const GURL& prefetch_url,
       content::PreloadingPredictor predictor,
-      const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint);
+      const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint,
+      bool is_navigation_likely);
   // Starts prerender if not triggered yet and prefetch is alive.
   void StartPrerender(content::WebContents& web_contents,
                       const GURL& prerernder_url,

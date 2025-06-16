@@ -36,6 +36,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace {
 
@@ -54,6 +55,8 @@ enum class PrerenderFinalStatus {
 };
 
 }  // namespace alternative_content
+
+constexpr static char kSearchTerms_502OnPrefetch[] = "502-on-prefetch";
 
 std::optional<net::HttpNoVarySearchData> ParseNoVarySearchData(std::string s) {
   auto headers =
@@ -252,20 +255,38 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
 
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
+    const bool is_prefetch =
+        request.headers.find(blink::kPurposeHeaderName) !=
+            request.headers.end() &&
+        request.headers.find(blink::kPurposeHeaderName)->second ==
+            blink::kSecPurposePrefetchHeaderValue;
+    CHECK_EQ(is_prefetch,
+             request.headers.find(blink::kSecPurposeHeaderName) !=
+                     request.headers.end() &&
+                 request.headers.find(blink::kSecPurposeHeaderName)->second ==
+                     blink::kSecPurposePrefetchPrerenderHeaderValue);
+
+    if (request.GetURL().spec().find(kSearchTerms_502OnPrefetch) !=
+            std::string::npos &&
+        is_prefetch) {
+      net::HttpStatusCode code = net::HTTP_BAD_GATEWAY;
+      std::string content = "<html><body>preeftch</body></html>";
+      base::StringPairs headers = {
+          {"Content-Length", base::NumberToString(content.length())},
+          {"Content-Type", "text/html"},
+          {"No-Vary-Search", R"(key-order, params, except=("q"))"},
+      };
+      return CreateDeferrableResponse(code, headers, content);
+    }
+
     net::HttpStatusCode code = net::HttpStatusCode::HTTP_OK;
-    std::string content = R"(
-      <html><body>
-      PRERENDER: HI PREFETCH! \o/
-      </body></html>
-    )";
+    std::string content = "<html><body>prefetch</body></html>";
     base::StringPairs headers = {
         {"Content-Length", base::NumberToString(content.length())},
         {"Content-Type", "text/html"},
         {"No-Vary-Search", R"(key-order, params, except=("q"))"},
     };
-    std::unique_ptr<net::test_server::HttpResponse> response =
-        CreateDeferrableResponse(code, headers, content);
-    return response;
+    return CreateDeferrableResponse(code, headers, content);
   }
 
   enum class PrefetchHint { kEnabled, kDisabled };
@@ -941,6 +962,70 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_EQ(GetSearchPreloadService().GetNoVarySearchDataCacheForTesting(),
             ParseNoVarySearchData(R"(key-order, params, except=("q"))"));
+}
+
+class SearchPreloadBrowserTest_ErrorBackoffDuration
+    : public SearchPreloadBrowserTestBase {
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            {
+                features::kPrefetchPrerenderIntegration,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2ErrorBackoffDuration", "1000ms"},
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
+                },
+            },
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadBrowserTest_ErrorBackoffDuration,
+    PreloadsAreNotTriggeredCertainPeriodAfterPrefetchFailed) {
+  SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  auto check = [&](std::string original_query,
+                   const bool is_triggered_expected) {
+    request_collector().Reset();
+
+    std::string search_terms = original_query;
+    SearchUrls urls = GetSearchUrls(search_terms);
+
+    {
+      content::test::TestPrefetchWatcher watcher;
+
+      ChangeAutocompleteResult(original_query, search_terms,
+                               PrefetchHint::kEnabled,
+                               PrerenderHint::kDisabled);
+
+      if (is_triggered_expected) {
+        watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                                   urls.prefetch_on_suggest);
+      }
+    }
+
+    EXPECT_EQ(is_triggered_expected,
+              request_collector().CountByPath(urls.prefetch_on_suggest));
+    EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
+  };
+
+  check(kSearchTerms_502OnPrefetch, true);
+  check("two", false);
+  WaitForDuration(base::Milliseconds(1000));
+  check("three", true);
 }
 
 class SearchPreloadBrowserTest_DeviceMemoryThreshold

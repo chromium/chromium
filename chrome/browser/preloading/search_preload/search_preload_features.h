@@ -25,6 +25,9 @@ BASE_DECLARE_FEATURE(kDsePreload2);
 
 // The feature is disabled if device memory is smaller than the threshold.
 extern const base::FeatureParam<size_t> kDsePreload2DeviceMemoryThresholdMiB;
+// Pause triggering preloads when on-suggest prefetch failed.
+extern const base::FeatureParam<base::TimeDelta>
+    kDsePreload2ErrorBackoffDuration;
 extern const base::FeatureParam<size_t> kDsePreload2MaxPrefetch;
 // Time to live (TTL) of prefetch.
 extern const base::FeatureParam<base::TimeDelta> kDsePreload2PrefetchTtl;

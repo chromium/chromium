@@ -115,6 +115,17 @@ void SearchPreloadService::OnPrefetchHeadReceived(
   }
 }
 
+void SearchPreloadService::OnOnSuggestPrefetchCompletedOrFailed(
+    const network::URLLoaderCompletionStatus& completion_status,
+    const std::optional<int>& response_code) {
+  const bool is_2xx = response_code.has_value() &&
+                      (200 <= response_code && response_code < 300);
+  if (!is_2xx) {
+    pause_triggering_until_ = base::TimeTicks::Now() +
+                              features::kDsePreload2ErrorBackoffDuration.Get();
+  }
+}
+
 SearchPreloadPipelineManager&
 SearchPreloadService::GetOrCreatePipelineManagerWithLimit(
     content::WebContents& web_contents) {
@@ -146,6 +157,10 @@ void SearchPreloadService::OnAutocompleteResultChanged(
     return;
   }
 
+  if (base::TimeTicks::Now() < pause_triggering_until_) {
+    return;
+  }
+
   GetOrCreatePipelineManagerWithLimit(*web_contents)
       .OnAutocompleteResultChanged(*profile_, GetWeakPtr(), result,
                                    no_vary_search_data_cache_);
@@ -157,6 +172,10 @@ bool SearchPreloadService::OnNavigationLikely(
     omnibox::mojom::NavigationPredictor navigation_predictor,
     content::WebContents* web_contents) {
   if (!web_contents) {
+    return false;
+  }
+
+  if (base::TimeTicks::Now() < pause_triggering_until_) {
     return false;
   }
 

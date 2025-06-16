@@ -17,6 +17,9 @@ const base::FeatureParam<size_t> kDsePreload2DeviceMemoryThresholdMiB{
     &kDsePreload2, "kDsePreload2DeviceMemoryThresholdMiB",
     // 3 GiB = 3 * 2**10 * 2**20
     3072};
+const base::FeatureParam<base::TimeDelta> kDsePreload2ErrorBackoffDuration{
+    &kDsePreload2, "kDsePreload2ErrorBackoffDuration",
+    base::Milliseconds(60000)};
 const base::FeatureParam<size_t> kDsePreload2MaxPrefetch{
     &kDsePreload2, "kDsePreload2MaxPrefetch", 7};
 const base::FeatureParam<base::TimeDelta> kDsePreload2PrefetchTtl{
