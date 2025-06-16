@@ -13,11 +13,14 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
-#include "components/sync/base/data_type.h"
-#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
+
+namespace sync_pb {
+class PaymentInstrument;
+class PaymentInstrumentCreationOption;
+}  // namespace sync_pb
 
 namespace autofill {
 
