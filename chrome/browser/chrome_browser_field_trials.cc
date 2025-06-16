@@ -141,6 +141,18 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(kAndroidMediaPicker);
   feature_overrides.EnableFeature(features::kUserMediaScreenCapturing);
 
+  // Enable desktop tab management features.
+  // TODO(crbug.com/422902880): Remove when tablet rollout is complete.
+  feature_overrides.EnableFeature(
+      base::features::kUseSharedRebindServiceConnection);
+  // TODO(crbug.com/422902940): Remove when tablet rollout is complete.
+  feature_overrides.EnableFeature(
+      base::features::kBackgroundNotPerceptibleBinding);
+  // TODO(crbug.com/422902625): Remove when rollout is complete to all form
+  // factors.
+  feature_overrides.EnableFeature(chrome::android::kProcessRankPolicyAndroid);
+  feature_overrides.EnableFeature(features::kGroupRebindingForGroupImportance);
+  feature_overrides.EnableFeature(chrome::android::kProtectedTabsAndroid);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
