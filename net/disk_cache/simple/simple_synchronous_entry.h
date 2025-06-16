@@ -61,7 +61,7 @@ class NET_EXPORT_PRIVATE SimpleEntryStat {
  public:
   SimpleEntryStat(base::Time last_used,
                   const std::array<int32_t, kSimpleEntryStreamCount>& data_size,
-                  const int32_t sparse_data_size);
+                  const uint64_t sparse_data_size);
 
   int GetOffsetInFile(size_t key_length, int offset, int stream_index) const;
   int GetEOFOffsetInFile(size_t key_length, int stream_index) const;
@@ -76,15 +76,15 @@ class NET_EXPORT_PRIVATE SimpleEntryStat {
     data_size_[stream_index] = data_size;
   }
 
-  int32_t sparse_data_size() const { return sparse_data_size_; }
-  void set_sparse_data_size(int32_t sparse_data_size) {
+  uint64_t sparse_data_size() const { return sparse_data_size_; }
+  void set_sparse_data_size(uint64_t sparse_data_size) {
     sparse_data_size_ = sparse_data_size;
   }
 
  private:
   base::Time last_used_;
   std::array<int32_t, kSimpleEntryStreamCount> data_size_;
-  int32_t sparse_data_size_;
+  uint64_t sparse_data_size_;
 };
 
 struct SimpleStreamPrefetchData {
@@ -176,10 +176,10 @@ class SimpleSynchronousEntry {
   };
 
   struct SparseRequest {
-    SparseRequest(int64_t sparse_offset_p, int buf_len_p);
+    SparseRequest(uint64_t sparse_offset_p, size_t buf_len_p);
 
-    int64_t sparse_offset;
-    int buf_len;
+    uint64_t sparse_offset;
+    size_t buf_len;
   };
 
   NET_EXPORT_PRIVATE SimpleSynchronousEntry(
@@ -324,8 +324,8 @@ class SimpleSynchronousEntry {
   };
 
   struct SparseRange {
-    int64_t offset;
-    int64_t length;
+    uint64_t offset;
+    size_t length;
     uint32_t data_crc32;
     int64_t file_offset;
 
@@ -426,7 +426,7 @@ class SimpleSynchronousEntry {
 
   // Opens the sparse data file and scans it if it exists.
   bool OpenSparseFileIfExists(BackendFileOperations* file_operations,
-                              int32_t* out_sparse_data_size);
+                              uint64_t* out_sparse_data_size);
 
   // Creates and initializes the sparse data file.
   bool CreateSparseFile(BackendFileOperations* file_operations);
@@ -440,16 +440,16 @@ class SimpleSynchronousEntry {
   // Removes all but the header of the sparse file.
   bool TruncateSparseFile(base::File* sparse_file);
 
-  // Scans the existing ranges in the sparse file. Populates |sparse_ranges_|
-  // and sets |*out_sparse_data_size| to the total size of all the ranges (not
+  // Scans the existing ranges in the sparse file. Populates `sparse_ranges_`
+  // and sets `*out_sparse_data_size` to the total size of all the ranges (not
   // including headers).
-  bool ScanSparseFile(base::File* sparse_file, int32_t* out_sparse_data_size);
+  bool ScanSparseFile(base::File* sparse_file, uint64_t* out_sparse_data_size);
 
   // Reads from a single sparse range. If asked to read the entire range, also
   // verifies the CRC32.
   bool ReadSparseRange(base::File* sparse_file,
                        const SparseRange* range,
-                       size_t offset,
+                       size_t offset_in_range,
                        size_t len,
                        base::span<uint8_t> buf);
 
@@ -457,13 +457,13 @@ class SimpleSynchronousEntry {
   // range, also updates the CRC32; otherwise, invalidates it.
   bool WriteSparseRange(base::File* sparse_file,
                         SparseRange* range,
-                        size_t offset,
+                        size_t offset_in_range,
                         size_t len,
                         base::span<const uint8_t> buf);
 
   // Appends a new sparse range to the sparse data file.
   bool AppendSparseRange(base::File* sparse_file,
-                         int64_t offset,
+                         uint64_t offset,
                          size_t len,
                          base::span<const uint8_t> buf);
 
@@ -527,14 +527,14 @@ class SimpleSynchronousEntry {
   // was created to store it.
   std::array<bool, kSimpleEntryNormalFileCount> empty_file_omitted_;
 
-  typedef std::map<int64_t, SparseRange> SparseRangeOffsetMap;
+  typedef std::map<uint64_t, SparseRange> SparseRangeOffsetMap;
   typedef SparseRangeOffsetMap::iterator SparseRangeIterator;
   SparseRangeOffsetMap sparse_ranges_;
   bool sparse_file_open_ = false;
 
   // Offset of the end of the sparse file (where the next sparse range will be
   // written).
-  int64_t sparse_tail_offset_;
+  uint64_t sparse_tail_offset_;
 };
 
 }  // namespace disk_cache

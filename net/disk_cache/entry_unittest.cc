@@ -83,6 +83,7 @@ class DiskCacheEntryTest : public DiskCacheTestWithCache {
   void DoomedEntry(int stream_index);
   void BasicSparseIO();
   void HugeSparseIO();
+  void LargeOffsetSparseIO();
   void GetAvailableRangeTest();
   void CouldBeSparse();
   void UpdateSparseEntry();
@@ -1616,6 +1617,38 @@ TEST_P(DiskCacheGenericEntryTest, HugeSparseIO) {
   HugeSparseIO();
 }
 
+void DiskCacheEntryTest::LargeOffsetSparseIO() {
+  std::string key("the first key");
+  disk_cache::Entry* entry;
+  ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+  // Write 4 MB so that we cover multiple entries.
+  static constexpr size_t kSize = 4 * 1024 * 1024;
+
+  auto buf_1 = CacheTestCreateAndFillBuffer(kSize, false);
+  auto buf_2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
+
+  // Write sparse data from 4GB - 2MB to 4GB + 2MB.
+  constexpr int64_t offset = 4LL * 1024 * 1024 * 1024 - 2 * 1024 * 1024;
+
+  VerifySparseIO(entry, offset, buf_1.get(), kSize, buf_2.get());
+  entry->Close();
+
+  // Check it again.
+  ASSERT_THAT(OpenEntry(key, &entry), IsOk());
+  VerifyContentSparseIO(entry, offset, buf_1->span());
+  entry->Close();
+}
+
+// The test only works on SimpleCache now since other backend does not support
+// 2GB+ offset for 32 bits architecture.
+// TODO(crbug.com/391398191): Expand the test target to all cache backend.
+TEST_F(DiskCacheEntryTest, SimpleCacheLargeOffsetSparseIO) {
+  SetBackendToTest(BackendToTest::kSimple);
+  InitCache();
+  LargeOffsetSparseIO();
+}
+
 void DiskCacheEntryTest::GetAvailableRangeTest() {
   std::string key("the first key");
   disk_cache::Entry* entry;
@@ -1696,6 +1729,45 @@ void DiskCacheEntryTest::GetAvailableRangeTest() {
 TEST_P(DiskCacheGenericEntryTest, GetAvailableRange) {
   InitCache();
   GetAvailableRangeTest();
+}
+
+// The test only works on SimpleCache now since other backend does not support
+// 2GB+ offset for 32 bits architecture.
+// TODO(crbug.com/391398191): Expand the test target to all cache backend.
+TEST_F(DiskCacheEntryTest, SimpleCacheGetAvailableRangeForLargeOffset) {
+  SetBackendToTest(BackendToTest::kSimple);
+  InitCache();
+
+  std::string key("the first key");
+  disk_cache::Entry* entry;
+  ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+  // Write 4 MB so that we cover multiple entries.
+  static constexpr size_t kSize = 4 * 1024 * 1024;
+  auto buf = CacheTestCreateAndFillBuffer(kSize, false);
+
+  // Write sparse data from 4GB - 2MB to 4GB + 2MB.
+  constexpr int64_t offset = 4LL * 1024 * 1024 * 1024 - 2 * 1024 * 1024;
+
+  EXPECT_EQ(kSize, WriteSparseData(entry, offset, buf.get(), kSize));
+
+  TestRangeResultCompletionCallback cb;
+  RangeResult result =
+      cb.GetResult(entry->GetAvailableRange(offset, kSize * 2, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(kSize, result.available_len);
+  EXPECT_EQ(offset, result.start);
+
+  result = cb.GetResult(entry->GetAvailableRange(0, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
+
+  result = cb.GetResult(
+      entry->GetAvailableRange(offset - kSize, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
+
+  entry->Close();
 }
 
 TEST_F(DiskCacheEntryTest, GetAvailableRangeBlockFileDiscontinuous) {

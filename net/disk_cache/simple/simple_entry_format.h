@@ -87,8 +87,11 @@ struct SimpleFileSparseRangeHeader {
   SimpleFileSparseRangeHeader();
 
   uint64_t sparse_range_magic_number = 0;
-  int64_t offset = 0;
-  int64_t length = 0;
+  uint64_t offset = 0;
+
+  // `length` must be size-fixed to avoid padding, so using uint64_t instead of
+  // size_t.
+  uint64_t length = 0;
   uint32_t data_crc32 = 0;
 
   // Avoid implicit padding so `std::has_unique_object_representations_v<>` will

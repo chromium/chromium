@@ -22,7 +22,7 @@ SimpleEntryOperation SimpleEntryOperation::OpenOperation(
     SimpleEntryImpl* entry,
     EntryResultState result_state,
     EntryResultCallback callback) {
-  SimpleEntryOperation op(entry, nullptr, CompletionOnceCallback(), 0, 0, 0,
+  SimpleEntryOperation op(entry, nullptr, CompletionOnceCallback(), 0, 0, 0, 0,
                           TYPE_OPEN, INDEX_NOEXIST, 0, false, false);
   op.entry_callback_ = std::move(callback);
   op.entry_result_state_ = result_state;
@@ -34,7 +34,7 @@ SimpleEntryOperation SimpleEntryOperation::CreateOperation(
     SimpleEntryImpl* entry,
     EntryResultState result_state,
     EntryResultCallback callback) {
-  SimpleEntryOperation op(entry, nullptr, CompletionOnceCallback(), 0, 0, 0,
+  SimpleEntryOperation op(entry, nullptr, CompletionOnceCallback(), 0, 0, 0, 0,
                           TYPE_CREATE, INDEX_NOEXIST, 0, false, false);
   op.entry_callback_ = std::move(callback);
   op.entry_result_state_ = result_state;
@@ -47,7 +47,7 @@ SimpleEntryOperation SimpleEntryOperation::OpenOrCreateOperation(
     OpenEntryIndexEnum index_state,
     EntryResultState result_state,
     EntryResultCallback callback) {
-  SimpleEntryOperation op(entry, nullptr, CompletionOnceCallback(), 0, 0, 0,
+  SimpleEntryOperation op(entry, nullptr, CompletionOnceCallback(), 0, 0, 0, 0,
                           TYPE_OPEN_OR_CREATE, index_state, 0, false, false);
   op.entry_callback_ = std::move(callback);
   op.entry_result_state_ = result_state;
@@ -58,7 +58,7 @@ SimpleEntryOperation SimpleEntryOperation::OpenOrCreateOperation(
 SimpleEntryOperation SimpleEntryOperation::CloseOperation(
     SimpleEntryImpl* entry) {
   return SimpleEntryOperation(entry, nullptr, CompletionOnceCallback(), 0, 0, 0,
-                              TYPE_CLOSE, INDEX_NOEXIST, 0, false, false);
+                              0, TYPE_CLOSE, INDEX_NOEXIST, 0, false, false);
 }
 
 // static
@@ -70,7 +70,7 @@ SimpleEntryOperation SimpleEntryOperation::ReadOperation(
     net::IOBuffer* buf,
     CompletionOnceCallback callback) {
   return SimpleEntryOperation(entry, buf, std::move(callback), offset, 0,
-                              length, TYPE_READ, INDEX_NOEXIST, index, false,
+                              length, 0, TYPE_READ, INDEX_NOEXIST, index, false,
                               false);
 }
 
@@ -85,43 +85,43 @@ SimpleEntryOperation SimpleEntryOperation::WriteOperation(
     bool optimistic,
     CompletionOnceCallback callback) {
   return SimpleEntryOperation(entry, buf, std::move(callback), offset, 0,
-                              length, TYPE_WRITE, INDEX_NOEXIST, index,
+                              length, 0, TYPE_WRITE, INDEX_NOEXIST, index,
                               truncate, optimistic);
 }
 
 // static
 SimpleEntryOperation SimpleEntryOperation::ReadSparseOperation(
     SimpleEntryImpl* entry,
-    int64_t sparse_offset,
-    int length,
+    uint64_t sparse_offset,
+    size_t sparse_length,
     net::IOBuffer* buf,
     CompletionOnceCallback callback) {
   return SimpleEntryOperation(entry, buf, std::move(callback), 0, sparse_offset,
-                              length, TYPE_READ_SPARSE, INDEX_NOEXIST, 0, false,
-                              false);
+                              0, sparse_length, TYPE_READ_SPARSE, INDEX_NOEXIST,
+                              0, false, false);
 }
 
 // static
 SimpleEntryOperation SimpleEntryOperation::WriteSparseOperation(
     SimpleEntryImpl* entry,
-    int64_t sparse_offset,
-    int length,
+    uint64_t sparse_offset,
+    size_t sparse_length,
     net::IOBuffer* buf,
     CompletionOnceCallback callback) {
   return SimpleEntryOperation(entry, buf, std::move(callback), 0, sparse_offset,
-                              length, TYPE_WRITE_SPARSE, INDEX_NOEXIST, 0,
-                              false, false);
+                              0, sparse_length, TYPE_WRITE_SPARSE,
+                              INDEX_NOEXIST, 0, false, false);
 }
 
 // static
 SimpleEntryOperation SimpleEntryOperation::GetAvailableRangeOperation(
     SimpleEntryImpl* entry,
-    int64_t sparse_offset,
-    int length,
+    uint64_t sparse_offset,
+    size_t sparse_length,
     RangeResultCallback callback) {
-  SimpleEntryOperation op(entry, nullptr, CompletionOnceCallback(), 0,
-                          sparse_offset, length, TYPE_GET_AVAILABLE_RANGE,
-                          INDEX_NOEXIST, 0, false, false);
+  SimpleEntryOperation op(
+      entry, nullptr, CompletionOnceCallback(), 0, sparse_offset, 0,
+      sparse_length, TYPE_GET_AVAILABLE_RANGE, INDEX_NOEXIST, 0, false, false);
   op.range_callback_ = std::move(callback);
   return op;
 }
@@ -132,23 +132,25 @@ SimpleEntryOperation SimpleEntryOperation::DoomOperation(
     net::CompletionOnceCallback callback) {
   net::IOBuffer* const buf = nullptr;
   const int offset = 0;
-  const int64_t sparse_offset = 0;
+  const uint64_t sparse_offset = 0;
   const int length = 0;
+  const size_t sparse_length = 0;
   const OpenEntryIndexEnum index_state = INDEX_NOEXIST;
   const int index = 0;
   const bool truncate = false;
   const bool optimistic = false;
   return SimpleEntryOperation(entry, buf, std::move(callback), offset,
-                              sparse_offset, length, TYPE_DOOM, index_state,
-                              index, truncate, optimistic);
+                              sparse_offset, length, sparse_length, TYPE_DOOM,
+                              index_state, index, truncate, optimistic);
 }
 
 SimpleEntryOperation::SimpleEntryOperation(SimpleEntryImpl* entry,
                                            net::IOBuffer* buf,
                                            net::CompletionOnceCallback callback,
                                            int offset,
-                                           int64_t sparse_offset,
+                                           uint64_t sparse_offset,
                                            int length,
+                                           size_t sparse_length,
                                            EntryOperationType type,
                                            OpenEntryIndexEnum index_state,
                                            int index,
@@ -160,6 +162,7 @@ SimpleEntryOperation::SimpleEntryOperation(SimpleEntryImpl* entry,
       offset_(offset),
       sparse_offset_(sparse_offset),
       length_(length),
+      sparse_length_(sparse_length),
       type_(type),
       index_state_(index_state),
       index_(index),

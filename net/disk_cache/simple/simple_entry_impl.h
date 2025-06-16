@@ -383,7 +383,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // TODO(clamy): Unify last_used_ with data in the index.
   base::Time last_used_;
   std::array<int32_t, kSimpleEntryStreamCount> data_size_;
-  int32_t sparse_data_size_ = 0;
+  uint64_t sparse_data_size_ = 0;
 
   // Number of times this object has been returned from Backend::OpenEntry() and
   // Backend::CreateEntry() without subsequent Entry::Close() calls. Used to

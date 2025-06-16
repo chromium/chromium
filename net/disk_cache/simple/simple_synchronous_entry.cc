@@ -237,7 +237,7 @@ int GetSimpleCacheTrailerPrefetchSize(int hint_size) {
 SimpleEntryStat::SimpleEntryStat(
     base::Time last_used,
     const std::array<int32_t, kSimpleEntryStreamCount>& data_size,
-    const int32_t sparse_data_size)
+    const uint64_t sparse_data_size)
     : last_used_(last_used),
       data_size_(data_size),
       sparse_data_size_(sparse_data_size) {}
@@ -325,8 +325,8 @@ SimpleSynchronousEntry::WriteRequest::WriteRequest(int index_p,
       doomed(doomed_p),
       request_update_crc(request_update_crc_p) {}
 
-SimpleSynchronousEntry::SparseRequest::SparseRequest(int64_t sparse_offset_p,
-                                                     int buf_len_p)
+SimpleSynchronousEntry::SparseRequest::SparseRequest(uint64_t sparse_offset_p,
+                                                     size_t buf_len_p)
     : sparse_offset(sparse_offset_p), buf_len(buf_len_p) {}
 
 // static
@@ -758,11 +758,10 @@ void SimpleSynchronousEntry::ReadSparseData(const SparseRequest& in_entry_op,
   DCHECK(initialized_);
   BackendFileOperations* file_operations = nullptr;
   ScopedFileOperationsBinding binding(this, &file_operations);
-  int64_t offset = in_entry_op.sparse_offset;
-  int buf_len = in_entry_op.buf_len;
+  uint64_t offset = in_entry_op.sparse_offset;
+  size_t buf_len = in_entry_op.buf_len;
 
   base::span<uint8_t> buf = out_buf->span();
-  int read_so_far = 0;
 
   if (!sparse_file_open() || !buf_len) {
     *out_result = 0;
@@ -777,6 +776,8 @@ void SimpleSynchronousEntry::ReadSparseData(const SparseRequest& in_entry_op,
     return;
   }
 
+  size_t read_so_far = 0;
+
   // Find the first sparse range at or after the requested offset.
   auto it = sparse_ranges_.lower_bound(offset);
 
@@ -784,20 +785,18 @@ void SimpleSynchronousEntry::ReadSparseData(const SparseRequest& in_entry_op,
     // Hop back one range and read the one overlapping with the start.
     --it;
     SparseRange* found_range = &it->second;
-    DCHECK_EQ(it->first, found_range->offset);
-    if (found_range->offset + found_range->length > offset) {
-      DCHECK_GE(found_range->length, 0);
-      DCHECK_LE(found_range->length, std::numeric_limits<int32_t>::max());
-      DCHECK_GE(offset - found_range->offset, 0);
-      DCHECK_LE(offset - found_range->offset,
-                std::numeric_limits<int32_t>::max());
-      int net_offset = static_cast<int>(offset - found_range->offset);
-      int range_len_after_offset =
-          static_cast<int>(found_range->length - net_offset);
-      DCHECK_GE(range_len_after_offset, 0);
+    CHECK_EQ(it->first, found_range->offset);
 
-      int len_to_read = std::min(buf_len, range_len_after_offset);
-      if (!ReadSparseRange(sparse_file.get(), found_range, net_offset,
+    CHECK(base::CheckAdd(found_range->offset, found_range->length).IsValid());
+    if (found_range->offset + found_range->length > offset) {
+      CHECK_LE(offset - found_range->offset,
+               std::numeric_limits<size_t>::max());
+      size_t offset_in_range =
+          base::checked_cast<size_t>(offset - found_range->offset);
+      size_t range_len_after_offset = found_range->length - offset_in_range;
+
+      size_t len_to_read = std::min(buf_len, range_len_after_offset);
+      if (!ReadSparseRange(sparse_file.get(), found_range, offset_in_range,
                            len_to_read, buf)) {
         DoomInternal(file_operations);
         *out_result = net::ERR_CACHE_READ_FAILURE;
@@ -810,25 +809,27 @@ void SimpleSynchronousEntry::ReadSparseData(const SparseRequest& in_entry_op,
 
   // Keep reading until the buffer is full or there is not another contiguous
   // range.
-  while (read_so_far < buf_len &&
-         it != sparse_ranges_.end() &&
+  while (read_so_far < buf_len && it != sparse_ranges_.end() &&
          it->second.offset == offset + read_so_far) {
     SparseRange* found_range = &it->second;
-    DCHECK_EQ(it->first, found_range->offset);
-    int range_len = base::saturated_cast<int>(found_range->length);
-    int len_to_read = std::min(buf_len - read_so_far, range_len);
-    if (!ReadSparseRange(
-            sparse_file.get(), found_range, 0, len_to_read,
-            buf.subspan(base::checked_cast<size_t>(read_so_far)))) {
+    CHECK_EQ(it->first, found_range->offset);
+    size_t range_len = found_range->length;
+    size_t len_to_read = std::min(buf_len - read_so_far, range_len);
+    if (!ReadSparseRange(sparse_file.get(), found_range, 0, len_to_read,
+                         buf.subspan(read_so_far))) {
       DoomInternal(file_operations);
       *out_result = net::ERR_CACHE_READ_FAILURE;
       return;
     }
+
     read_so_far += len_to_read;
+
     ++it;
   }
 
-  *out_result = read_so_far;
+  // The length to read is limited to each sparse data which is far smaller than
+  // int max.
+  *out_result = base::checked_cast<int>(read_so_far);
 }
 
 void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
@@ -839,12 +840,10 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
   DCHECK(initialized_);
   BackendFileOperations* file_operations = nullptr;
   ScopedFileOperationsBinding binding(this, &file_operations);
-  int64_t offset = in_entry_op.sparse_offset;
-  int buf_len = in_entry_op.buf_len;
+  uint64_t offset = in_entry_op.sparse_offset;
+  size_t buf_len = in_entry_op.buf_len;
 
   base::span<const uint8_t> buf = in_buf->span();
-  int written_so_far = 0;
-  int appended_so_far = 0;
 
   if (!sparse_file_open() && !CreateSparseFile(file_operations)) {
     DoomInternal(file_operations);
@@ -859,42 +858,42 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
     return;
   }
 
-  int32_t sparse_data_size = out_entry_stat->sparse_data_size();
-  int32_t future_sparse_data_size;
+  uint64_t sparse_data_size = out_entry_stat->sparse_data_size();
+  uint64_t future_sparse_data_size;
   if (!base::CheckAdd(sparse_data_size, buf_len)
-           .AssignIfValid(&future_sparse_data_size) ||
-      future_sparse_data_size < 0) {
+           .AssignIfValid(&future_sparse_data_size)) {
     DoomInternal(file_operations);
     *out_result = net::ERR_CACHE_WRITE_FAILURE;
     return;
   }
   // This is a pessimistic estimate; it assumes the entire buffer is going to
   // be appended as a new range, not written over existing ranges.
-  if (static_cast<uint64_t>(future_sparse_data_size) > max_sparse_data_size) {
+  if (future_sparse_data_size > max_sparse_data_size) {
     DVLOG(1) << "Truncating sparse data file (" << sparse_data_size << " + "
              << buf_len << " > " << max_sparse_data_size << ")";
     TruncateSparseFile(sparse_file.get());
-    out_entry_stat->set_sparse_data_size(0);
+    out_entry_stat->set_sparse_data_size(0u);
   }
+
+  size_t written_so_far = 0;
+  size_t appended_so_far = 0;
 
   auto it = sparse_ranges_.lower_bound(offset);
 
   if (it != sparse_ranges_.begin()) {
     --it;
     SparseRange* found_range = &it->second;
-    if (found_range->offset + found_range->length > offset) {
-      DCHECK_GE(found_range->length, 0);
-      DCHECK_LE(found_range->length, std::numeric_limits<int32_t>::max());
-      DCHECK_GE(offset - found_range->offset, 0);
-      DCHECK_LE(offset - found_range->offset,
-                std::numeric_limits<int32_t>::max());
-      int net_offset = static_cast<int>(offset - found_range->offset);
-      int range_len_after_offset =
-          static_cast<int>(found_range->length - net_offset);
-      DCHECK_GE(range_len_after_offset, 0);
 
-      int len_to_write = std::min(buf_len, range_len_after_offset);
-      if (!WriteSparseRange(sparse_file.get(), found_range, net_offset,
+    CHECK(base::CheckAdd(found_range->offset, found_range->length).IsValid());
+    if (found_range->offset + found_range->length > offset) {
+      CHECK_LE(offset - found_range->offset,
+               std::numeric_limits<size_t>::max());
+      size_t offset_in_range =
+          static_cast<size_t>(offset - found_range->offset);
+      size_t range_len_after_offset = found_range->length - offset_in_range;
+
+      size_t len_to_write = std::min(buf_len, range_len_after_offset);
+      if (!WriteSparseRange(sparse_file.get(), found_range, offset_in_range,
                             len_to_write, buf)) {
         DoomInternal(file_operations);
         *out_result = net::ERR_CACHE_WRITE_FAILURE;
@@ -905,41 +904,40 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
     ++it;
   }
 
-  while (written_so_far < buf_len &&
-         it != sparse_ranges_.end() &&
+  while (written_so_far < buf_len && it != sparse_ranges_.end() &&
          it->second.offset < offset + buf_len) {
     SparseRange* found_range = &it->second;
     if (offset + written_so_far < found_range->offset) {
-      int len_to_append =
-          static_cast<int>(found_range->offset - (offset + written_so_far));
-      if (!AppendSparseRange(
-              sparse_file.get(), offset + written_so_far, len_to_append,
-              buf.subspan(base::checked_cast<size_t>(written_so_far)))) {
+      size_t len_to_append =
+          static_cast<size_t>(found_range->offset - (offset + written_so_far));
+      if (!AppendSparseRange(sparse_file.get(), offset + written_so_far,
+                             len_to_append, buf.subspan(written_so_far))) {
         DoomInternal(file_operations);
         *out_result = net::ERR_CACHE_WRITE_FAILURE;
         return;
       }
+
       written_so_far += len_to_append;
       appended_so_far += len_to_append;
     }
-    int range_len = base::saturated_cast<int>(found_range->length);
-    int len_to_write = std::min(buf_len - written_so_far, range_len);
-    if (!WriteSparseRange(
-            sparse_file.get(), found_range, 0, len_to_write,
-            buf.subspan(base::checked_cast<size_t>(written_so_far)))) {
+
+    size_t len_to_write =
+        std::min(buf_len - written_so_far, found_range->length);
+    if (!WriteSparseRange(sparse_file.get(), found_range, 0, len_to_write,
+                          buf.subspan(written_so_far))) {
       DoomInternal(file_operations);
       *out_result = net::ERR_CACHE_WRITE_FAILURE;
       return;
     }
+
     written_so_far += len_to_write;
     ++it;
   }
 
   if (written_so_far < buf_len) {
-    int len_to_append = buf_len - written_so_far;
-    if (!AppendSparseRange(
-            sparse_file.get(), offset + written_so_far, len_to_append,
-            buf.subspan(base::checked_cast<size_t>(written_so_far)))) {
+    size_t len_to_append = buf_len - written_so_far;
+    if (!AppendSparseRange(sparse_file.get(), offset + written_so_far,
+                           len_to_append, buf.subspan(written_so_far))) {
       DoomInternal(file_operations);
       *out_result = net::ERR_CACHE_WRITE_FAILURE;
       return;
@@ -948,28 +946,32 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
     appended_so_far += len_to_append;
   }
 
-  DCHECK_EQ(buf_len, written_so_far);
+  CHECK_EQ(buf_len, written_so_far);
 
   base::Time modification_time = Time::Now();
   out_entry_stat->set_last_used(modification_time);
-  int32_t old_sparse_data_size = out_entry_stat->sparse_data_size();
+  uint64_t old_sparse_data_size = out_entry_stat->sparse_data_size();
   out_entry_stat->set_sparse_data_size(old_sparse_data_size + appended_so_far);
-  *out_result = written_so_far;
+
+  // The length to read is limited to each sparse data which is far smaller than
+  // int max.
+  *out_result = base::checked_cast<int>(written_so_far);
 }
 
 void SimpleSynchronousEntry::GetAvailableRange(const SparseRequest& in_entry_op,
                                                RangeResult* out_result) {
   DCHECK(initialized_);
-  int64_t offset = in_entry_op.sparse_offset;
-  int len = in_entry_op.buf_len;
+  uint64_t offset = in_entry_op.sparse_offset;
+  size_t len = in_entry_op.buf_len;
 
   auto it = sparse_ranges_.lower_bound(offset);
 
-  int64_t start = offset;
-  int64_t avail_so_far = 0;
+  uint64_t start = offset;
+  uint64_t avail_so_far = 0;
 
-  if (it != sparse_ranges_.end() && it->second.offset < offset + len)
+  if (it != sparse_ranges_.end() && it->second.offset < offset + len) {
     start = it->second.offset;
+  }
 
   if ((it == sparse_ranges_.end() || it->second.offset > offset) &&
       it != sparse_ranges_.begin()) {
@@ -988,9 +990,13 @@ void SimpleSynchronousEntry::GetAvailableRange(const SparseRequest& in_entry_op,
     ++it;
   }
 
-  int64_t len_from_start = len - (start - offset);
-  *out_result = RangeResult(
-      start, static_cast<int>(std::min(avail_so_far, len_from_start)));
+  // `range_len` must fit in size_t since it's guaranteed to be same or smaller
+  // than `len - (start - offset)` where `len` is within size_t range and
+  // `start` is same or larger than `offset`.
+  size_t range_len = base::checked_cast<size_t>(
+      std::min(avail_so_far, len - (start - offset)));
+
+  *out_result = RangeResult(start, range_len);
 }
 
 int SimpleSynchronousEntry::CheckEOFRecord(
@@ -1505,7 +1511,7 @@ int SimpleSynchronousEntry::InitializeForOpen(
     }
   }
 
-  int32_t sparse_data_size = 0;
+  uint64_t sparse_data_size = 0u;
   if (!OpenSparseFileIfExists(file_operations, &sparse_data_size)) {
     RecordSyncOpenResult(cache_type_, OPEN_ENTRY_SPARSE_OPEN_FAILED);
     return net::ERR_FAILED;
@@ -1839,7 +1845,7 @@ base::FilePath SimpleSynchronousEntry::GetFilenameForSubfile(
 
 bool SimpleSynchronousEntry::OpenSparseFileIfExists(
     BackendFileOperations* file_operations,
-    int32_t* out_sparse_data_size) {
+    uint64_t* out_sparse_data_size) {
   DCHECK(!sparse_file_open());
 
   FilePath filename =
@@ -1896,7 +1902,7 @@ void SimpleSynchronousEntry::CloseSparseFile(
 bool SimpleSynchronousEntry::TruncateSparseFile(base::File* sparse_file) {
   DCHECK(sparse_file_open());
 
-  int64_t header_and_key_length = sizeof(SimpleFileHeader) + key_->size();
+  uint64_t header_and_key_length = sizeof(SimpleFileHeader) + key_->size();
   if (!sparse_file->SetLength(header_and_key_length)) {
     DLOG(WARNING) << "Could not truncate sparse file";
     return false;
@@ -1933,8 +1939,8 @@ bool SimpleSynchronousEntry::InitializeSparseFile(base::File* sparse_file) {
 }
 
 bool SimpleSynchronousEntry::ScanSparseFile(base::File* sparse_file,
-                                            int32_t* out_sparse_data_size) {
-  int64_t sparse_data_size = 0;
+                                            uint64_t* out_sparse_data_size) {
+  uint64_t sparse_data_size = 0;
 
   SimpleFileHeader header;
   if (!sparse_file->ReadAndCheck(0, base::byte_span_from_ref(header))) {
@@ -1954,7 +1960,7 @@ bool SimpleSynchronousEntry::ScanSparseFile(base::File* sparse_file,
 
   sparse_ranges_.clear();
 
-  int64_t range_header_offset = sizeof(header) + key_->size();
+  uint64_t range_header_offset = sizeof(header) + key_->size();
   while (true) {
     SimpleFileSparseRangeHeader range_header;
     std::optional<size_t> range_header_read_result = sparse_file->Read(
@@ -1974,20 +1980,29 @@ bool SimpleSynchronousEntry::ScanSparseFile(base::File* sparse_file,
       return false;
     }
 
+    if (range_header.length > std::numeric_limits<size_t>::max()) {
+      DLOG(WARNING) << "Too long sparse range length.";
+      return false;
+    }
+
+    if (!base::CheckAdd(range_header.offset, range_header.length).IsValid()) {
+      DLOG(WARNING) << "Too large sparse range tail.";
+      return false;
+    }
+
     SparseRange range;
     range.offset = range_header.offset;
-    range.length = range_header.length;
+    range.length = static_cast<size_t>(range_header.length);
     range.data_crc32 = range_header.data_crc32;
     range.file_offset = range_header_offset + sizeof(range_header);
     sparse_ranges_.emplace(range.offset, range);
 
     range_header_offset += sizeof(range_header) + range.length;
 
-    DCHECK_GE(sparse_data_size + range.length, sparse_data_size);
     sparse_data_size += range.length;
   }
 
-  *out_sparse_data_size = static_cast<int32_t>(sparse_data_size);
+  *out_sparse_data_size = sparse_data_size;
   sparse_tail_offset_ = range_header_offset;
 
   return true;
@@ -1995,23 +2010,23 @@ bool SimpleSynchronousEntry::ScanSparseFile(base::File* sparse_file,
 
 bool SimpleSynchronousEntry::ReadSparseRange(base::File* sparse_file,
                                              const SparseRange* range,
-                                             size_t offset,
+                                             size_t offset_in_range,
                                              size_t len,
                                              base::span<uint8_t> buf) {
-  DCHECK(range);
-  DCHECK_LE(static_cast<int64_t>(offset), range->length);
-  DCHECK_LE(static_cast<int64_t>(offset + len), range->length);
+  CHECK(range);
+  CHECK_LE(offset_in_range, range->length);
+  CHECK_LE(offset_in_range + len, range->length);
 
-  bool bytes_read_ok = sparse_file->ReadAndCheck(
-      range->file_offset + offset, buf.first(base::checked_cast<size_t>(len)));
+  bool bytes_read_ok =
+      sparse_file->ReadAndCheck(range->file_offset + offset_in_range,
+                                buf.first(base::checked_cast<size_t>(len)));
   if (!bytes_read_ok) {
     DLOG(WARNING) << "Could not read sparse range.";
     return false;
   }
 
   // If we read the whole range and we have a crc32, check it.
-  if (offset == 0 && static_cast<int64_t>(len) == range->length &&
-      range->data_crc32 != 0) {
+  if (offset_in_range == 0 && len == range->length && range->data_crc32 != 0) {
     if (simple_util::Crc32(buf.first(len)) != range->data_crc32) {
       DLOG(WARNING) << "Sparse range crc32 mismatch.";
       return false;
@@ -2024,15 +2039,15 @@ bool SimpleSynchronousEntry::ReadSparseRange(base::File* sparse_file,
 
 bool SimpleSynchronousEntry::WriteSparseRange(base::File* sparse_file,
                                               SparseRange* range,
-                                              size_t offset,
+                                              size_t offset_in_range,
                                               size_t len,
                                               base::span<const uint8_t> buf) {
-  DCHECK(range);
-  DCHECK_LE(static_cast<int64_t>(offset), range->length);
-  DCHECK_LE(static_cast<int64_t>(offset + len), range->length);
+  CHECK(range);
+  CHECK_LE(offset_in_range, range->length);
+  CHECK_LE(offset_in_range + len, range->length);
 
   uint32_t new_crc32 = 0;
-  if (offset == 0 && static_cast<int64_t>(len) == range->length) {
+  if (offset_in_range == 0 && len == range->length) {
     new_crc32 = simple_util::Crc32(buf.first(len));
   }
 
@@ -2053,8 +2068,8 @@ bool SimpleSynchronousEntry::WriteSparseRange(base::File* sparse_file,
     }
   }
 
-  bool bytes_written_ok =
-      sparse_file->WriteAndCheck(range->file_offset + offset, buf.first(len));
+  bool bytes_written_ok = sparse_file->WriteAndCheck(
+      range->file_offset + offset_in_range, buf.first(len));
   if (!bytes_written_ok) {
     DLOG(WARNING) << "Could not write sparse range.";
     return false;
@@ -2064,10 +2079,9 @@ bool SimpleSynchronousEntry::WriteSparseRange(base::File* sparse_file,
 }
 
 bool SimpleSynchronousEntry::AppendSparseRange(base::File* sparse_file,
-                                               int64_t offset,
+                                               uint64_t offset,
                                                size_t len,
                                                base::span<const uint8_t> buf) {
-  DCHECK_GE(offset, 0);
   DCHECK_NE(len, 0u);
 
   uint32_t data_crc32 = simple_util::Crc32(buf.first(len));
@@ -2091,7 +2105,7 @@ bool SimpleSynchronousEntry::AppendSparseRange(base::File* sparse_file,
     DLOG(WARNING) << "Could not append sparse range data.";
     return false;
   }
-  int64_t data_file_offset = sparse_tail_offset_;
+  uint64_t data_file_offset = sparse_tail_offset_;
   sparse_tail_offset_ += *bytes_written;
 
   SparseRange range;
