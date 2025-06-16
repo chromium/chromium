@@ -60,7 +60,7 @@ class DownloadToolbarUIController
   // PinnedToolbarActionsContainer is available since the
   // DownloadDisplayController can call Show() immediately.
   void Init();
-  void TearDownPreBrowserViewDestruction();
+  void TearDownPreBrowserWindowDestruction();
 
   // DownloadDisplay:
   void Show() override;

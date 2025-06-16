@@ -281,7 +281,7 @@ SigninViewController::SigninViewController(BrowserWindowInterface* browser)
 
 SigninViewController::~SigninViewController() = default;
 
-void SigninViewController::TearDownPreBrowserViewDestruction() {
+void SigninViewController::TearDownPreBrowserWindowDestruction() {
   CloseModalSignin();
 }
 

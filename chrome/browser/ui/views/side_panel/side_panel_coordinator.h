@@ -69,7 +69,7 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   ~SidePanelCoordinator() override;
 
   void Init(Browser* browser);
-  void TearDownPreBrowserViewDestruction();
+  void TearDownPreBrowserWindowDestruction();
 
   SidePanelRegistry* GetWindowRegistry();
 

@@ -1218,7 +1218,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 }
 
 BrowserView::~BrowserView() {
-  browser_->GetFeatures().TearDownPreBrowserViewDestruction();
+  browser_->GetFeatures().TearDownPreBrowserWindowDestruction();
 
   // Remove the layout manager to avoid dangling. This needs to be earlier than
   // other cleanups that destroy views referenced in the layout manager.

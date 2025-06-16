@@ -130,8 +130,8 @@ class BrowserWindowFeatures {
   // hierarchy in BrowserView.
   void InitPostBrowserViewConstruction(BrowserView* browser_view);
 
-  // Called exactly once to tear down state that depends on BrowserView.
-  void TearDownPreBrowserViewDestruction();
+  // Called exactly once to tear down state that depends on the window object.
+  void TearDownPreBrowserWindowDestruction();
 
   // Public accessors for features:
   extensions::Mv2DisabledDialogController*

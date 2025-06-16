@@ -267,7 +267,7 @@ void SidePanelCoordinator::Init(Browser* browser) {
   SidePanelUtil::PopulateGlobalEntries(browser, window_registry_.get());
 }
 
-void SidePanelCoordinator::TearDownPreBrowserViewDestruction() {
+void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
   extensions_model_observation_.Reset();
   pinned_model_observation_.Reset();
 }

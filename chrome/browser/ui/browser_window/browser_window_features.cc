@@ -385,7 +385,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   }
 }
 
-void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
+void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   memory_saver_opt_in_iph_controller_.reset();
   lens_overlay_entry_point_controller_.reset();
   tab_search_toolbar_button_controller_.reset();
@@ -397,13 +397,13 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
 #endif
 
   if (download_toolbar_ui_controller_) {
-    download_toolbar_ui_controller_->TearDownPreBrowserViewDestruction();
+    download_toolbar_ui_controller_->TearDownPreBrowserWindowDestruction();
   }
 
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.
   if (side_panel_coordinator_) {
-    side_panel_coordinator_->TearDownPreBrowserViewDestruction();
+    side_panel_coordinator_->TearDownPreBrowserWindowDestruction();
   }
 
   if (mv2_disabled_dialog_controller_) {
@@ -423,7 +423,7 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   }
 
   desktop_browser_window_capabilities_.reset();
-  signin_view_controller_->TearDownPreBrowserViewDestruction();
+  signin_view_controller_->TearDownPreBrowserWindowDestruction();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

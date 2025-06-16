@@ -210,7 +210,7 @@ class SigninViewController {
 
   base::WeakPtr<SigninViewController> AsWeakPtr();
 
-  void TearDownPreBrowserViewDestruction();
+  void TearDownPreBrowserWindowDestruction();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
