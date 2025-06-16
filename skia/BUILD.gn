@@ -185,13 +185,15 @@ config("skia_library_config") {
     "SK_CODEC_ENCODES_PNG_WITH_LIBPNG",
   ]
 
+  if (use_blink) {
+    defines += [ "SK_TYPEFACE_FACTORY_FONTATIONS" ]
+  }
   if (use_blink && !use_system_freetype) {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION_IS_BUILD_VERSION" ]
   }
   if (use_blink && enable_freetype) {
     defines += [
       "SK_TYPEFACE_FACTORY_FREETYPE",
-      "SK_TYPEFACE_FACTORY_FONTATIONS",
       "SK_FONTMGR_FREETYPE_EMPTY_AVAILABLE",
     ]
   }
