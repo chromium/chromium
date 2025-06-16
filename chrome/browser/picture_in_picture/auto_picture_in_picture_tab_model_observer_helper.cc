@@ -60,6 +60,11 @@ void AutoPictureInPictureTabModelObserverHelper::TabRemoved(TabAndroid* tab) {
   // TODO(crbug.com/421608904): add implementation
 }
 
+void AutoPictureInPictureTabModelObserverHelper::WillCloseTab(TabAndroid* tab) {
+  NOTIMPLEMENTED();
+  // TODO(crbug.com/421608904): add implementation
+}
+
 void AutoPictureInPictureTabModelObserverHelper::OnTabModelAdded(
     TabModel* model) {
   NOTIMPLEMENTED();

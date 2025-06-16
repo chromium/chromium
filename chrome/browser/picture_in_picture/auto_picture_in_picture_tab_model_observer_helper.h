@@ -49,9 +49,11 @@ class AutoPictureInPictureTabModelObserverHelper final
   // callback if it changed.
   void UpdateIsTabActivated();
 
-  raw_ptr<TabModel> observed_tab_model_ = nullptr;
-  bool is_tab_activated_ = false;
-  bool is_observing_ = false;
+  // TODO(crbug.com/421608904): remove [[maybe_unused]] once implementation is
+  // added.
+  [[maybe_unused]] raw_ptr<TabModel> observed_tab_model_ = nullptr;
+  [[maybe_unused]] bool is_tab_activated_ = false;
+  [[maybe_unused]] bool is_observing_ = false;
 };
 
 #endif  // CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PICTURE_IN_PICTURE_TAB_MODEL_OBSERVER_HELPER_H_
