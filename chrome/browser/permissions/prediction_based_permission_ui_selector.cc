@@ -479,9 +479,7 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   // `ConvertToProtoRelevance` execution.
   features.permission_relevance = PermissionRequestRelevance::kUnspecified;
   // if both Aiv3 and Aiv1 are enabled, we want to chose Aiv3.
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3) ||
-      base::FeatureList::IsEnabled(
-          permissions::features::kPermissionsAIv3Geolocation)) {
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
     features.experiment_id =
         PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
   } else if (base::FeatureList::IsEnabled(
@@ -670,9 +668,7 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   if (use_server_side) {
     // Aiv3 takes priority over Aiv1 if both are enabled.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3) ||
-        base::FeatureList::IsEnabled(
-            permissions::features::kPermissionsAIv3Geolocation)) {
+    if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
       return PredictionSource::kOnDeviceAiv3AndServerSideModel;
     }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

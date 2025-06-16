@@ -408,9 +408,7 @@ class PredictionServiceHoldbackBrowserTest
                                           permissions::features::
                                               kPermissionsAIv1,
                                           permissions::features::
-                                              kPermissionsAIv3,
-                                          permissions::features::
-                                              kPermissionsAIv3Geolocation}) {}
+                                              kPermissionsAIv3}) {}
 
   void SetUpOnMainThread() override {
     PredictionServiceBrowserTestBase::SetUpOnMainThread();
@@ -525,9 +523,7 @@ class SignatureModelPredictionServiceBrowserTest
                                          {permissions::features::
                                               kPermissionsAIv1,
                                           permissions::features::
-                                              kPermissionsAIv3,
-                                          permissions::features::
-                                              kPermissionsAIv3Geolocation}) {}
+                                              kPermissionsAIv3}) {}
 
   void TriggerCpssV1AndVerifyUi(
       PermissionAction permission_action,
@@ -792,11 +788,9 @@ std::vector<ModelMetadata> model_data_testcase = {
 
 std::vector<PermissionRequestMetadata> request_data_testcase = {
     {
-
         /*optimization_target=*/kAiv3OptTargetGeolocation,
         /*request_type=*/RequestType::kGeolocation},
     {
-
         /*optimization_target=*/kAiv3OptTargetNotification,
         /*request_type=*/RequestType::kNotifications},
 };
