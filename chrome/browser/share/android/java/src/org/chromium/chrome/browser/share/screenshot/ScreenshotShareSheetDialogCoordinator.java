@@ -11,10 +11,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Coordinator for displaying the screenshot share sheet dialog. */
+@NullMarked
 public class ScreenshotShareSheetDialogCoordinator {
     private final ScreenshotShareSheetDialog mDialog;
     private final FragmentManager mFragmentManager;

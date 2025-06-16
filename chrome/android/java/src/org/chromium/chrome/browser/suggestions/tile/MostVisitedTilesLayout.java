@@ -11,6 +11,8 @@ import android.widget.HorizontalScrollView;
 
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -18,6 +20,7 @@ import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** The most visited tiles layout. */
+@NullMarked
 public class MostVisitedTilesLayout extends TilesLinearLayout {
 
     private final boolean mIsTablet;
@@ -97,6 +100,7 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
     }
 
     @Override
+    @Initializer
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mInitialTileCount == null) {
             mInitialTileCount = getTileCount();
