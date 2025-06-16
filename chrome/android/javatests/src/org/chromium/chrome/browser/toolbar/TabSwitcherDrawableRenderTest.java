@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,9 +27,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
@@ -49,22 +49,20 @@ public class TabSwitcherDrawableRenderTest {
                     .setRevision(4)
                     .build();
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, true);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private ToggleTabStackButton mToggleTabStackButton;
     private TabSwitcherDrawable mTabSwitcherDrawable;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
+        mPage = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+                    ChromeTabbedActivity activity = mActivityTestRule.getActivity();
                     mToggleTabStackButton = activity.findViewById(R.id.tab_switcher_button);
                     mTabSwitcherDrawable = mToggleTabStackButton.getTabSwitcherDrawableForTesting();
                 });
@@ -75,8 +73,8 @@ public class TabSwitcherDrawableRenderTest {
     @Feature("RenderTest")
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testTabSwitcherDrawable_toggleNotificationRegular() throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        sActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
 
         int tabCount = 2;
         View toolbarView = activity.findViewById(R.id.toolbar);
@@ -110,9 +108,9 @@ public class TabSwitcherDrawableRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTabSwitcherDrawable_newTabPage() throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
-        sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ false);
+        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -127,9 +125,9 @@ public class TabSwitcherDrawableRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTabSwitcherDrawable_newTabPageIncognito() throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
-        sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -145,13 +143,13 @@ public class TabSwitcherDrawableRenderTest {
     @Feature("RenderTest")
     @DisabledTest(message = "b/359300762")
     public void testTabSwitcherDrawable_themedToolbar() throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
         String pageWithBrandColorUrl =
-                sActivityTestRule
+                mActivityTestRule
                         .getTestServer()
                         .getURL("/chrome/test/data/android/theme_color_test.html");
-        sActivityTestRule.loadUrl(pageWithBrandColorUrl);
+        mActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
 
         ThreadUtils.runOnUiThreadBlocking(
