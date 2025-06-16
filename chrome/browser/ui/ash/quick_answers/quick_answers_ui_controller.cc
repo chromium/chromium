@@ -292,9 +292,7 @@ void QuickAnswersUiController::CreateUserConsentViewInternal(
         GetReadWriteCardsUiController().SetQuickAnswersUi(
             views::Builder<quick_answers::MagicBoostUserConsentView>(
                 std::make_unique<quick_answers::MagicBoostUserConsentView>(
-                    // TODO: crbug.com/414391121 - Populate the button label
-                    // with the correct text.
-                    intent_text, GetReadWriteCardsUiController()))
+                    intent_type, intent_text, GetReadWriteCardsUiController()))
                 .SetSettingsButtonPressed(base::BindRepeating(
                     &QuickAnswersUiController::OnSettingsButtonPressed,
                     base::Unretained(this)))

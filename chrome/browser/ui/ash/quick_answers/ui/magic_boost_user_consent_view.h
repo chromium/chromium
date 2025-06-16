@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/ash/editor_menu/utils/focus_search.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -34,10 +35,11 @@ class MagicBoostUserConsentView : public chromeos::ReadWriteCardsView {
  public:
   static constexpr char kWidgetName[] = "MagicBoostUserConsentViewWidget";
 
-  // TODO: crbug.com/340628664 - remove `read_write_cards_ui_controller` arg
-  // once we stop extending `ReadWriteCardsView`.
+  // TODO(b/340628664): remove `read_write_cards_ui_controller` arg once we stop
+  // extending `ReadWriteCardsView`.
   MagicBoostUserConsentView(
-      const std::u16string& chip_label,
+      IntentType intent_type,
+      const std::u16string& intent_text,
       chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
 
   // Disallow copy and assign.

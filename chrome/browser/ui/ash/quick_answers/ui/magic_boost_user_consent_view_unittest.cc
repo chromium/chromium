@@ -113,12 +113,33 @@ class MagicBoostUserConsentViewTest : public ChromeQuickAnswersTestBase {
   raw_ptr<FakeQuickAnswersState> fake_quick_answers_state_ = nullptr;
 };
 
-TEST_F(MagicBoostUserConsentViewTest, ButtonTextLabel) {
+TEST_F(MagicBoostUserConsentViewTest, TranslateButtonTextLabel) {
   MagicBoostUserConsentView magic_boost_user_consent_view(
-      /*chip_label=*/u"testing label",
+      IntentType::kTranslation,
+      /*intent_text=*/u"testing label",
       GetUiController()->GetReadWriteCardsUiController());
 
-  EXPECT_EQ(u"testing label",
+  EXPECT_EQ(u"Translate \"testing label\"",
+            magic_boost_user_consent_view.chip_label_for_testing());
+}
+
+TEST_F(MagicBoostUserConsentViewTest, DefineButtonTextLabel) {
+  MagicBoostUserConsentView magic_boost_user_consent_view(
+      IntentType::kDictionary,
+      /*intent_text=*/u"testing label",
+      GetUiController()->GetReadWriteCardsUiController());
+
+  EXPECT_EQ(u"Define \"testing label\"",
+            magic_boost_user_consent_view.chip_label_for_testing());
+}
+
+TEST_F(MagicBoostUserConsentViewTest, ConvertButtonTextLabel) {
+  MagicBoostUserConsentView magic_boost_user_consent_view(
+      IntentType::kUnit,
+      /*intent_text=*/u"testing label",
+      GetUiController()->GetReadWriteCardsUiController());
+
+  EXPECT_EQ(u"Convert \"testing label\"",
             magic_boost_user_consent_view.chip_label_for_testing());
 }
 

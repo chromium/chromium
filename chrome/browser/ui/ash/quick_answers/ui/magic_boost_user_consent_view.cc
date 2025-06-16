@@ -74,13 +74,35 @@ constexpr char kConsentViewAccessibilityDescription[] = "Magic Boost";
 // Icon.
 constexpr gfx::Insets kIntentIconInsets = gfx::Insets(8);
 
+std::u16string GetChipLabel(IntentType intent_type,
+                            const std::u16string& intent_text) {
+  switch (intent_type) {
+    case IntentType::kUnit:
+      return l10n_util::GetStringFUTF16(
+          IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_CONSENT_UNIT_CONVERSION_INTENT_LABEL_BUTTON,
+          intent_text);
+    case IntentType::kDictionary:
+      return l10n_util::GetStringFUTF16(
+          IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_CONSENT_DEFINITION_INTENT_LABEL_BUTTON,
+          intent_text);
+    case IntentType::kTranslation:
+      return l10n_util::GetStringFUTF16(
+          IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_CONSENT_TRANSLATION_INTENT_LABEL_BUTTON,
+          intent_text);
+    case IntentType::kUnknown:
+      NOTREACHED() << "No chip label for Unknown intent type";
+  }
+  NOTREACHED() << "Unknown enum";
+}
+
 }  // namespace
 
 // MagicBoostUserConsentView
 // -------------------------------------------------------------
 
 MagicBoostUserConsentView::MagicBoostUserConsentView(
-    const std::u16string& chip_label,
+    IntentType intent_type,
+    const std::u16string& intent_text,
     chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller)
     : chromeos::ReadWriteCardsView(read_write_cards_ui_controller),
       focus_search_(
@@ -115,7 +137,8 @@ MagicBoostUserConsentView::MagicBoostUserConsentView(
                           .AddChild(
                               views::Builder<views::LabelButton>()
                                   .CopyAddressTo(&intent_chip_)
-                                  .SetText(chip_label)
+                                  .SetText(
+                                      GetChipLabel(intent_type, intent_text))
                                   .SetProperty(views::kMarginsKey, kChipMargin)
                                   .SetLabelStyle(
                                       views::style::STYLE_BODY_4_EMPHASIS)
