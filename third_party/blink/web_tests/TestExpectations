@@ -4961,7 +4961,6 @@ crbug.com/833658 media/video-controls-focus-movement-on-hide.html [ Failure Pass
 crbug.com/845610 [ Win ] http/tests/inspector-protocol/target/target-browser-context.js [ Failure Pass ]
 
 # Sheriff 2018-06-07
-crbug.com/41393183 http/tests/devtools/editor/text-editor-enter-behaviour.js [ Failure Pass Timeout ]
 crbug.com/41392978 http/tests/devtools/elements/styles-4/stylesheet-source-url-comment.js [ Failure Pass Timeout ]
 
 # User Activation
@@ -5081,7 +5080,6 @@ crbug.com/41448929 http/tests/devtools/elements/styles-3/styles-change-node-whil
 crbug.com/1021627 [ Mac ] fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Failure Pass Timeout ]
 
 # Sheriff 2019-03-28
-crbug.com/41449570 http/tests/devtools/editor/text-editor-search-switch-editor.js [ Failure Pass ]
 crbug.com/41449571 http/tests/devtools/elements/styles-2/paste-property.js [ Crash Pass Timeout ]
 
 # Sheriff 2019-04-09
