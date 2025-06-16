@@ -3,7 +3,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import sys
+
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             os.path.pardir, os.path.pardir, os.path.pardir,
+                             os.path.pardir, 'build'))
+import action_helpers
 
 if len(sys.argv) < 3:
   print ('Usage: %s output_deps_file input1_deps_file input2_deps_file ...' %
@@ -24,5 +30,5 @@ for input_filename in input_filenames:
       continue
     requires.add(line)
 
-with open(output_filename, 'w') as output_file:
+with action_helpers.atomic_output(output_filename, mode='w') as output_file:
   output_file.write(''.join(sorted(list(requires))))

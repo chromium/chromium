@@ -152,7 +152,10 @@ action("merge_rpm_dependencies") {
   deps = [ ":calculate_rpm_dependencies" ]
   script = "rpm/merge_package_deps.py"
   additional_deps = "rpm/additional_deps"
-  inputs = [ additional_deps ]
+  inputs = [
+    additional_deps,
+    "//build/action_helpers.py",
+  ]
   outputs = [ "$root_out_dir/rpm_common.deps" ]
   args = [
     "rpm_common.deps",
