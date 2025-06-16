@@ -313,7 +313,11 @@ public class RootUiCoordinator
     protected StatusBarColorController mStatusBarColorController;
     protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final EdgeToEdgeDebuggingInfo mEdgeToEdgeDebuggingInfo = new EdgeToEdgeDebuggingInfo();
+    private final EdgeToEdgeDebuggingInfo mEdgeToEdgeDebuggingInfo =
+            new EdgeToEdgeDebuggingInfo(
+                    (info) ->
+                            ChromePureJavaExceptionReporter.reportJavaExceptionFromMsg(
+                                    info, /* isWarning= */ true));
     protected Destroyable mEdgeToEdgeBottomChin;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
@@ -861,7 +865,7 @@ public class RootUiCoordinator
     }
 
     public void onResumeWithNative() {
-        dumpEdgeToEdgeDebuggingInfo("onResumeWithNative");
+        addToEdgeToEdgeDebuggingInfo("onResumeWithNative");
     }
 
     protected boolean showWebSearchInActionMode() {
@@ -1866,7 +1870,8 @@ public class RootUiCoordinator
                             mEdgeToEdgeManager,
                             mBrowserControlsManager,
                             mLayoutManagerSupplier,
-                            mFullscreenManager);
+                            mFullscreenManager,
+                            mEdgeToEdgeDebuggingInfo);
             mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
             mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
 
@@ -1910,7 +1915,7 @@ public class RootUiCoordinator
         mEdgeToEdgeDebuggingInfo.setMissingNavBarInsetsReason(reason);
     }
 
-    private void dumpEdgeToEdgeDebuggingInfo(String callSite) {
+    private void addToEdgeToEdgeDebuggingInfo(String callSite) {
         if (!ChromeFeatureList.sEdgeToEdgeDebugging.isEnabled()
                 || mEdgeToEdgeDebuggingInfo.isUsed()) {
             return;
@@ -1918,15 +1923,12 @@ public class RootUiCoordinator
 
         boolean hasEdgeToEdgeController = mEdgeToEdgeControllerSupplier.get() != null;
         boolean isSupportedConfiguration = EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
-        mEdgeToEdgeDebuggingInfo.buildDebugReport(
-                mActivity.getWindow(),
-                mWindowAndroid,
+        mEdgeToEdgeDebuggingInfo.addToDebugReport(
+                callSite,
                 hasEdgeToEdgeController,
                 isSupportedConfiguration,
-                callSite,
-                (info) ->
-                        ChromePureJavaExceptionReporter.reportJavaExceptionFromMsg(
-                                info, /* isWarning= */ true));
+                mActivity != null ? mActivity.getWindow() : null,
+                mWindowAndroid);
     }
 
     /** Create a bottom chin for Edge-to-Edge. */

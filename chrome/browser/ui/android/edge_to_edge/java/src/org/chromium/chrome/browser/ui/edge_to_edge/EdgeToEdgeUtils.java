@@ -490,50 +490,59 @@ public class EdgeToEdgeUtils {
     public static class EdgeToEdgeDebuggingInfo {
         boolean mHasUploaded;
         @Nullable @MissingNavbarInsetsReason Integer mMissingNavBarReason;
+        @Nullable String mUploadMessage;
+        final Callback<String> mReportUploadCallback;
 
         /**
-         * Gather the current debug information
+         * Create an EdgeToEdgeDebuggingInfo for logging info useful to debugging edge-to-edge
+         * issues.
          *
-         * @param window The current window.
-         * @param windowAndroid The window android of the activity.
-         * @param hasEdgeToEdgeController Whether the activity has an EdgeToEdgeController.
-         * @param isSupportedConfiguration Whether the activity supports for edge-to-edge.
-         * @param callSite The call site of the debugging info.
          * @param reportUploadCallback The callback to update debugging report.
          */
-        public void buildDebugReport(
-                @Nullable Window window,
-                @Nullable WindowAndroid windowAndroid,
+        public EdgeToEdgeDebuggingInfo(Callback<String> reportUploadCallback) {
+            mReportUploadCallback = reportUploadCallback;
+        }
+
+        /**
+         * Add to the current debug information
+         *
+         * @param callSite The call site of the debugging info.
+         * @param hasEdgeToEdgeController Whether the activity has an EdgeToEdgeController.
+         * @param isSupportedConfiguration Whether the activity supports for edge-to-edge.
+         * @param window The current window.
+         * @param windowAndroid The window android of the activity.
+         */
+        public void addToDebugReport(
+                String callSite,
                 boolean hasEdgeToEdgeController,
                 boolean isSupportedConfiguration,
-                String callSite,
-                Callback<String> reportUploadCallback) {
+                @Nullable Window window,
+                @Nullable WindowAndroid windowAndroid) {
             if (mHasUploaded || !ChromeFeatureList.sEdgeToEdgeDebugging.isEnabled()) return;
-
             if (!isCaseOfInterests(hasEdgeToEdgeController, window)) return;
 
-            String missingNavbarReasonString =
-                    mMissingNavBarReason != null ? String.valueOf(mMissingNavBarReason) : "null";
-            String state =
-                    "EdgeToEdgeDebugging: callSite: "
-                            + callSite
-                            + " \nEdgeToEdgeController hasValue: "
-                            + hasEdgeToEdgeController
-                            + " \nisSupportedConfiguration: "
-                            + isSupportedConfiguration
-                            + " \nedgeToEdgeEverywhere: "
-                            + EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
-                            + " \nobservedTappableNavigationBar: "
-                            + sObservedTappableNavigationBar
-                            + " \nmissingNavBarReason: "
-                            + missingNavbarReasonString;
+            if (mUploadMessage == null) {
+                mUploadMessage =
+                        "EdgeToEdgeDebugging:"
+                                + " \nedgeToEdgeEverywhere: "
+                                + EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                                + " \nmissingNavBarReason: "
+                                + mMissingNavBarReason;
+            }
 
+            String hasSeenNonZeroNavBar = "";
             String rawWindowInsetsIndicateGestureNav = "";
             String rawWindowInsetsState = "";
             String rawWindowInsetsIgnoringVisibilityState = "";
             String rawWindowInsetsTappableState = "";
-            String rawWindowInsetsStateSystemGestures = "";
+            String rawWindowInsetsSystemGesturesState = "";
             if (windowAndroid != null && windowAndroid.getInsetObserver() != null) {
+                hasSeenNonZeroNavBar =
+                        " \nhasSeenNonZeroNavBar: "
+                                + windowAndroid
+                                        .getInsetObserver()
+                                        .hasSeenNonZeroNavigationBarInsets();
+
                 var lastRawWindowInsets = windowAndroid.getInsetObserver().getLastRawWindowInsets();
                 var gestureNavString =
                         lastRawWindowInsets == null
@@ -580,14 +589,13 @@ public class EdgeToEdgeUtils {
                                         .getInsetsIgnoringVisibility(
                                                 WindowInsetsCompat.Type.systemGestures())
                                         .toString();
-                rawWindowInsetsStateSystemGestures =
+                rawWindowInsetsSystemGesturesState =
                         " \nlastRawWindowInsets systemGestures: " + systemGesturesInsetsString;
             }
 
             String windowMetricsIndicateGestureNav = "";
             String windowMetricsInsetsState = "";
             String windowMetricsInsetsStateTappable = "";
-            String windowMetricsInsetsStateMandatoryGestures = "";
             String windowMetricsInsetsStateSystemGestures = "";
             if (Build.VERSION.SDK_INT >= VERSION_CODES.R) {
                 if (window != null
@@ -623,18 +631,6 @@ public class EdgeToEdgeUtils {
                     windowMetricsInsetsStateTappable =
                             " \nwindowMetricsInsetsTappable: " + insetsStringTappable;
 
-                    var insetsStringMandatoryGestures =
-                            windowInsets == null
-                                    ? "null"
-                                    : windowInsets
-                                            .getInsets(
-                                                    WindowInsetsCompat.Type
-                                                            .mandatorySystemGestures())
-                                            .toString();
-                    windowMetricsInsetsStateMandatoryGestures =
-                            " \nwindowMetricsInsetsMandatoryGestures: "
-                                    + insetsStringMandatoryGestures;
-
                     var insetsStringSystemGestures =
                             windowInsets == null
                                     ? "null"
@@ -645,21 +641,33 @@ public class EdgeToEdgeUtils {
                             " \nwindowMetricsInsetsSystemGestures: " + insetsStringSystemGestures;
                 }
             }
-
-            // Ensure report is only sent once.
-            mHasUploaded = true;
-            reportUploadCallback.onResult(
-                    state
+            mUploadMessage +=
+                    "\n\ncallSite: "
+                            + callSite
+                            + hasSeenNonZeroNavBar
+                            + "\nisSupportedConfiguration: "
+                            + isSupportedConfiguration
+                            + " \nobservedTappableNavigationBar: "
+                            + sObservedTappableNavigationBar
                             + rawWindowInsetsIndicateGestureNav
                             + rawWindowInsetsState
                             + rawWindowInsetsIgnoringVisibilityState
                             + rawWindowInsetsTappableState
-                            + rawWindowInsetsStateSystemGestures
+                            + rawWindowInsetsSystemGesturesState
                             + windowMetricsIndicateGestureNav
                             + windowMetricsInsetsState
                             + windowMetricsInsetsStateTappable
-                            + windowMetricsInsetsStateMandatoryGestures
-                            + windowMetricsInsetsStateSystemGestures);
+                            + windowMetricsInsetsStateSystemGestures;
+        }
+
+        /** Uploads the current report. */
+        public void uploadReport() {
+            if (mHasUploaded || !ChromeFeatureList.sEdgeToEdgeDebugging.isEnabled()) return;
+            if (mUploadMessage == null) return;
+
+            // Ensure report is only sent once.
+            mHasUploaded = true;
+            mReportUploadCallback.onResult(mUploadMessage);
         }
 
         /** Returns whether the the instance has uploaded any report. */

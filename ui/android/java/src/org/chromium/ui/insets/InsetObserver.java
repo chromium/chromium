@@ -62,6 +62,9 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private @Nullable WindowInsetsCompat mLastSeenRawWindowInset;
     private static @Nullable WindowInsetsCompat sInitialRawWindowInsetsForTesting;
 
+    // Edge-to-edge investigations
+    private boolean mHasSeenNonZeroNavBar;
+
     /** Allows observing changes to the window insets from Android system UI. */
     public interface WindowInsetObserver {
         /**
@@ -317,9 +320,28 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         return mWindowInsetsAnimationProxyCallback;
     }
 
+    private void checkForNavigationBar(WindowInsetsCompat insets) {
+        Insets navigationBarInsets =
+                insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        boolean nonZeroNavBarInsets =
+                navigationBarInsets.left > 0
+                        || navigationBarInsets.bottom > 0
+                        || navigationBarInsets.right > 0;
+        mHasSeenNonZeroNavBar |= nonZeroNavBarInsets;
+    }
+
+    /**
+     * Returns whether the InsetObserver has observed non-zero navigation bar insets (ignoring
+     * visibility).
+     */
+    public boolean hasSeenNonZeroNavigationBarInsets() {
+        return mHasSeenNonZeroNavBar;
+    }
+
     @Override
     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
         mLastSeenRawWindowInset = insets;
+        checkForNavigationBar(insets);
 
         updateDisplayCutoutRect(insets);
         insets = forwardToInsetConsumers(insets);

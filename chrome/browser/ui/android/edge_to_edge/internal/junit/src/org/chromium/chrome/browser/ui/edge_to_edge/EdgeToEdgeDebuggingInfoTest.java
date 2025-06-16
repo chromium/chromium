@@ -57,7 +57,7 @@ public class EdgeToEdgeDebuggingInfoTest {
     @Mock private Window mWindow;
     @Mock private View mDecorView;
 
-    private final EdgeToEdgeDebuggingInfo mEdgeToEdgeDebuggingInfo = new EdgeToEdgeDebuggingInfo();
+    private EdgeToEdgeDebuggingInfo mEdgeToEdgeDebuggingInfo;
     private final PayloadCallbackHelper<String> mCrashUploadCallback =
             new PayloadCallbackHelper<>();
 
@@ -65,18 +65,19 @@ public class EdgeToEdgeDebuggingInfoTest {
     public void setUp() {
         EdgeToEdgeUtils.setObservedTappableNavigationBarForTesting(false);
         doReturn(mDecorView).when(mWindow).getDecorView();
+        mEdgeToEdgeDebuggingInfo = new EdgeToEdgeDebuggingInfo(mCrashUploadCallback::notifyCalled);
     }
 
     @Test
     public void withValidGestureNavBarInsets() {
         setupMockWindowInsets(NAV_BAR_ONLY_INSETS);
-        mEdgeToEdgeDebuggingInfo.buildDebugReport(
-                mWindow,
-                /* windowAndroid= */ null,
+        mEdgeToEdgeDebuggingInfo.addToDebugReport(
+                "callSite",
                 /* hasEdgeToEdgeController= */ true,
                 /* isSupportedConfiguration= */ true,
-                "callSite",
-                mCrashUploadCallback::notifyCalled);
+                mWindow,
+                /* windowAndroid= */ null);
+        mEdgeToEdgeDebuggingInfo.uploadReport();
 
         assertEquals(
                 "Configuration is not case of interests.", 0, mCrashUploadCallback.getCallCount());
@@ -86,13 +87,13 @@ public class EdgeToEdgeDebuggingInfoTest {
     public void withValidTappableNavBarInsets() {
         // Case where controller is not created, window has consistent tappable nav bar insets.
         setupMockWindowInsets(NAV_BAR_TAPPABLE_INSETS);
-        mEdgeToEdgeDebuggingInfo.buildDebugReport(
-                mWindow,
-                /* windowAndroid= */ null,
+        mEdgeToEdgeDebuggingInfo.addToDebugReport(
+                "callSite",
                 /* hasEdgeToEdgeController= */ false,
                 /* isSupportedConfiguration= */ false,
-                "callSite",
-                mCrashUploadCallback::notifyCalled);
+                mWindow,
+                /* windowAndroid= */ null);
+        mEdgeToEdgeDebuggingInfo.uploadReport();
 
         assertEquals(
                 "Configuration is not case of interests.", 0, mCrashUploadCallback.getCallCount());
@@ -101,13 +102,13 @@ public class EdgeToEdgeDebuggingInfoTest {
     @Test
     public void invalidTappableNavBarInsets() {
         setupMockWindowInsets(NAV_BAR_TAPPABLE_INSETS);
-        mEdgeToEdgeDebuggingInfo.buildDebugReport(
-                mWindow,
-                /* windowAndroid= */ null,
+        mEdgeToEdgeDebuggingInfo.addToDebugReport(
+                "callSite",
                 /* hasEdgeToEdgeController= */ true,
                 /* isSupportedConfiguration= */ false,
-                "callSite",
-                mCrashUploadCallback::notifyCalled);
+                mWindow,
+                /* windowAndroid= */ null);
+        mEdgeToEdgeDebuggingInfo.uploadReport();
 
         assertEquals(
                 "Configuration is a case of interests.", 1, mCrashUploadCallback.getCallCount());
@@ -118,13 +119,13 @@ public class EdgeToEdgeDebuggingInfoTest {
     public void emptyTappableNavBarInsets() {
         setupMockWindowInsets(EMPTY_NAV_BAR_INSETS);
         mEdgeToEdgeDebuggingInfo.setMissingNavBarInsetsReason(MissingNavbarInsetsReason.OTHER);
-        mEdgeToEdgeDebuggingInfo.buildDebugReport(
-                mWindow,
-                /* windowAndroid= */ null,
+        mEdgeToEdgeDebuggingInfo.addToDebugReport(
+                "callSite",
                 /* hasEdgeToEdgeController= */ true,
                 /* isSupportedConfiguration= */ true,
-                "callSite",
-                mCrashUploadCallback::notifyCalled);
+                mWindow,
+                /* windowAndroid= */ null);
+        mEdgeToEdgeDebuggingInfo.uploadReport();
 
         assertEquals(
                 "Report when nav bar insets are empty at controller creation.",

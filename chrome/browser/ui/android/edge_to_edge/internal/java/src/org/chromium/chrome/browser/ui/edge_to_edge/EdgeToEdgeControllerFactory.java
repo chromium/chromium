@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
@@ -40,8 +41,8 @@ public class EdgeToEdgeControllerFactory {
      * @param windowAndroid The current {@link WindowAndroid} to allow drawing under System Bars.
      * @param tabObservableSupplier Supplies an {@Link Observer} that is notified whenever the Tab
      *     changes.
-     * @param edgeToEdgeStateProvider Provides the edge-to-edge state and allows for requests to
-     *     draw edge-to-edge.
+     * @param edgeToEdgeManager Provides the edge-to-edge state and allows for requests to draw
+     *     edge-to-edge.
      * @param browserControlsStateProvider Provides the state of the BrowserControls so we can tell
      *     if the Toolbar is changing.
      * @param layoutManagerSupplier The supplier of {@link LayoutManager} for checking the active
@@ -57,7 +58,8 @@ public class EdgeToEdgeControllerFactory {
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
-            FullscreenManager fullscreenManager) {
+            FullscreenManager fullscreenManager,
+            EdgeToEdgeDebuggingInfo edgeToEdgeDebuggingInfo) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         assert EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
         return new EdgeToEdgeControllerImpl(
@@ -68,7 +70,8 @@ public class EdgeToEdgeControllerFactory {
                 edgeToEdgeManager,
                 browserControlsStateProvider,
                 layoutManagerSupplier,
-                fullscreenManager);
+                fullscreenManager,
+                edgeToEdgeDebuggingInfo);
     }
 
     /**

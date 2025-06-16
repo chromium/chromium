@@ -76,6 +76,9 @@ public class InsetObserverTest {
 
     private static final Insets SYSTEM_GESTURES_INSETS_MODIFIED = Insets.of(1, 1, 1, 2);
 
+    private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, 1);
+    private static final Insets NAVIGATION_BAR_INSETS_MODIFIED = Insets.of(0, 0, 0, 2);
+
     @Mock private InsetObserver.WindowInsetObserver mObserver;
 
     @Mock private WindowInsetsCompat mInsets;
@@ -111,6 +114,12 @@ public class InsetObserverTest {
                 .onApplyWindowInsets(mModifiedNonCompatInsets);
 
         doReturn(SYSTEM_BAR_INSETS).when(mInsets).getInsets(WindowInsetsCompat.Type.systemBars());
+        doReturn(NAVIGATION_BAR_INSETS)
+                .when(mInsets)
+                .getInsets(WindowInsetsCompat.Type.navigationBars());
+        doReturn(NAVIGATION_BAR_INSETS)
+                .when(mInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
         doReturn(SYSTEM_BAR_INSETS_MODIFIED)
                 .when(mModifiedInsets)
                 .getInsets(WindowInsetsCompat.Type.systemBars());
@@ -120,6 +129,12 @@ public class InsetObserverTest {
         doReturn(SYSTEM_GESTURES_INSETS_MODIFIED)
                 .when(mModifiedInsets)
                 .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(NAVIGATION_BAR_INSETS_MODIFIED)
+                .when(mModifiedInsets)
+                .getInsets(WindowInsetsCompat.Type.navigationBars());
+        doReturn(NAVIGATION_BAR_INSETS_MODIFIED)
+                .when(mModifiedInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
 
         mInsetObserver =
                 new InsetObserver(

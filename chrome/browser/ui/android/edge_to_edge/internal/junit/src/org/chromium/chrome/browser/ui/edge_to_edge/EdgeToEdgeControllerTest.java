@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl.SupportedConfigurationSwitch;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
@@ -176,6 +177,7 @@ public class EdgeToEdgeControllerTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
+    @Mock private EdgeToEdgeDebuggingInfo mEdgeToEdgeDebuggingInfo;
 
     @Implements(EdgeToEdgeControllerFactory.class)
     static class ShadowEdgeToEdgeControllerFactory extends EdgeToEdgeControllerFactory {
@@ -236,7 +238,8 @@ public class EdgeToEdgeControllerTest {
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         mLayoutManagerSupplier,
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        mEdgeToEdgeDebuggingInfo);
         verify(mEdgeToEdgeStateProvider, times(1)).acquireSetDecorFitsSystemWindowToken();
 
         if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
@@ -447,7 +450,8 @@ public class EdgeToEdgeControllerTest {
                                 mEdgeToEdgeManager,
                                 mBrowserControlsStateProvider,
                                 mLayoutManagerSupplier,
-                                mFullscreenManager);
+                                mFullscreenManager,
+                                null);
         assertNotNull(liveController);
         liveController.setIsOptedIntoEdgeToEdgeForTesting(true);
         liveController.setIsDrawingToEdgeForTesting(true);
@@ -1121,6 +1125,20 @@ public class EdgeToEdgeControllerTest {
         assertTrue(
                 "Has tappable nav bar is seen, so check should be true.",
                 EdgeToEdgeUtils.hasTappableNavigationBar(window));
+    }
+
+    @Test
+    public void firstContentfulPaint_uploadDebuggingReport() {
+        // Standard setup of a Web Tab ToEdge
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+
+        WebContentsObserver webContentsObserver =
+                mEdgeToEdgeControllerImpl.getWebContentsObserver();
+        assertNotNull(webContentsObserver);
+        webContentsObserver.firstContentfulPaintInPrimaryMainFrame(null);
+        verify(mEdgeToEdgeDebuggingInfo).uploadReport();
     }
 
     void assertToEdgeExpectations() {

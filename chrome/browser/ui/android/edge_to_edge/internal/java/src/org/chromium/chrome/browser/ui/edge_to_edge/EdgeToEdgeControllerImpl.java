@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -156,6 +157,7 @@ public class EdgeToEdgeControllerImpl
     private @Nullable WebContentsObserver mWebContentsObserver;
 
     private boolean mIsBottomChinEnabled;
+    private final EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo mEdgeToEdgeDebuggingInfo;
 
     /**
      * Whether the system is drawing "toEdge" (i.e. the edge-to-edge wrapper has no bottom padding).
@@ -211,13 +213,15 @@ public class EdgeToEdgeControllerImpl
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
-            FullscreenManager fullscreenManager) {
+            FullscreenManager fullscreenManager,
+            EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo edgeToEdgeDebuggingInfo) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mEdgeToEdgeManager = edgeToEdgeManager;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
         mDisablePaddingRootView = EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();
         mIsBottomChinEnabled = EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
+        mEdgeToEdgeDebuggingInfo = edgeToEdgeDebuggingInfo;
 
         mEdgeToEdgeOsWrapper =
                 edgeToEdgeOsWrapper == null && !mDisablePaddingRootView
@@ -435,6 +439,18 @@ public class EdgeToEdgeControllerImpl
                         for (var observer : mEdgeChangeObservers) {
                             observer.onSafeAreaConstraintChanged(mHasSafeAreaConstraint);
                         }
+                    }
+
+                    @Override
+                    public void firstContentfulPaintInPrimaryMainFrame(Page page) {
+                        if (mEdgeToEdgeDebuggingInfo.isUsed()) return;
+                        mEdgeToEdgeDebuggingInfo.addToDebugReport(
+                                "EdgeToEdgeController->firstContentfulPaintInPrimaryMainFrame",
+                                true,
+                                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity),
+                                mActivity.getWindow(),
+                                mWindowAndroid);
+                        mEdgeToEdgeDebuggingInfo.uploadReport();
                     }
                 };
     }
