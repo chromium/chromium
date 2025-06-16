@@ -90,7 +90,7 @@ public class FirstRunAppRestrictionInfoTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppRestrictionSupplier info = new AppRestrictionSupplier();
-                    info.getHasAppRestriction(appResCallbackHelper::notifyCalled);
+                    info.onAvailable(appResCallbackHelper::notifyCalled);
                     info.getCompletionElapsedRealtimeMs(
                             (ignored) -> completionCallbackHelper.notifyCalled());
                 });
@@ -115,9 +115,9 @@ public class FirstRunAppRestrictionInfoTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppRestrictionSupplier info = new AppRestrictionSupplier();
-                    info.getHasAppRestriction(appResCallbackHelper1::notifyCalled);
-                    info.getHasAppRestriction(appResCallbackHelper2::notifyCalled);
-                    info.getHasAppRestriction(appResCallbackHelper3::notifyCalled);
+                    info.onAvailable(appResCallbackHelper1::notifyCalled);
+                    info.onAvailable(appResCallbackHelper2::notifyCalled);
+                    info.onAvailable(appResCallbackHelper3::notifyCalled);
                     info.getCompletionElapsedRealtimeMs(
                             (ignored) -> completionCallbackHelper1.notifyCalled());
                     info.getCompletionElapsedRealtimeMs(
@@ -173,7 +173,7 @@ public class FirstRunAppRestrictionInfoTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppRestrictionSupplier info = new AppRestrictionSupplier();
-                    info.getHasAppRestriction(appResCallbackHelper::notifyCalled);
+                    info.onAvailable(appResCallbackHelper::notifyCalled);
                     info.getCompletionElapsedRealtimeMs(
                             (ignored) -> completionCallbackHelper.notifyCalled());
 
@@ -194,9 +194,7 @@ public class FirstRunAppRestrictionInfoTest {
     public void testCommandLine() {
         final PayloadCallbackHelper<Boolean> appResCallbackHelper = new PayloadCallbackHelper<>();
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        new AppRestrictionSupplier()
-                                .getHasAppRestriction(appResCallbackHelper::notifyCalled));
+                () -> new AppRestrictionSupplier().onAvailable(appResCallbackHelper::notifyCalled));
         Assert.assertTrue(appResCallbackHelper.getOnlyPayloadBlocking());
     }
 }

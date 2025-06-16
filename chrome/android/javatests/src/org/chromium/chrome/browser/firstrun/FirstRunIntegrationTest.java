@@ -864,7 +864,7 @@ public class FirstRunIntegrationTest {
                 .ensurePagesCreationSucceeded()
                 .ensureWelcomePageIsCurrentPage();
 
-        histograms.assertExpected("Child status or policies fetch time not recorded");
+        histograms.pollInstrumentationThreadUntilSatisfied();
     }
 
     @Test

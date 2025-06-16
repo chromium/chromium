@@ -58,7 +58,7 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
 
         mPolicyServiceSupplier = policyServiceSupplier;
 
-        appRestrictionInfo.getHasAppRestriction(
+        appRestrictionInfo.onAvailable(
                 mCallbackController.makeCancelable(this::onAppRestrictionDetected));
         policyServiceSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::onPolicyServiceAvailable));
