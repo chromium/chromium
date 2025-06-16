@@ -5,6 +5,7 @@
 #ifndef NET_COOKIES_CANONICAL_COOKIE_H_
 #define NET_COOKIES_CANONICAL_COOKIE_H_
 
+#include <compare>
 #include <memory>
 #include <optional>
 #include <string>
@@ -246,14 +247,16 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       CookieSourceType source_type = CookieSourceType::kUnknown,
       CookieInclusionStatus* status = nullptr);
 
-  bool operator<(const CanonicalCookie& other) const {
+  friend auto operator<=>(const CanonicalCookie& left,
+                          const CanonicalCookie& right) {
     // Use the cookie properties that uniquely identify a cookie to determine
     // ordering.
-    return RefUniqueKey() < other.RefUniqueKey();
+    return left.RefUniqueKey() <=> right.RefUniqueKey();
   }
 
-  bool operator==(const CanonicalCookie& other) const {
-    return IsEquivalent(other);
+  friend bool operator==(const CanonicalCookie& left,
+                         const CanonicalCookie& right) {
+    return left.RefUniqueKey() == right.RefUniqueKey();
   }
 
   // See CookieBase for other accessors.
