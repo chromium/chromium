@@ -365,7 +365,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sync.BookmarkModelMerger.Comparison{OptionalPreviouslySyncingGaiaId}.{SubtreeSelection}.{GroupingKey}{OptionalBookmarkCount}"
-    enum="BookmarkSetComparisonOutcome" expires_after="2025-11-23">
+    enum="LegacyBookmarkSetComparisonOutcome" expires_after="2025-11-23">
   <owner>mastiz@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -376,22 +376,24 @@ chromium-metrics-reviews@google.com.
 
     Recorded on desktop platforms (excluding ChromeOS) only when bookmark sync
     (legacy Full Sync) is turned on and after account bookmarks are downloaded
-    from the Sync server, for the case where
-    {OptionalPreviouslySyncingGaiaId}{OptionalBookmarkCount}.
+    from the Sync
+    server{OptionalPreviouslySyncingGaiaId}{OptionalBookmarkCount}.
   </summary>
 <!-- LINT.IfChange(BookmarkComparisonPreviouslySyncingGaiaId) -->
 
   <token key="OptionalPreviouslySyncingGaiaId">
-    <variant name="" summary="all users and"/>
+    <variant name="" summary=""/>
     <variant name=".DiffersPreviousGaiaId"
-        summary="the user (gaia ID) currently turning on bookmark sync is
-                 different to the one that had previously turned sync on"/>
+        summary=", for the case where the user (gaia ID) currently turning on
+                 bookmark sync is different to the one that had previously
+                 turned sync on"/>
     <variant name=".MatchesPreviousGaiaId"
-        summary="the user (gaia ID) currently turning on bookmark sync is the
-                 same as the one that had previously turned sync on"/>
+        summary=", for the case where the user (gaia ID) currently turning on
+                 bookmark sync is the same as the one that had previously
+                 turned sync on"/>
     <variant name=".NoPreviousGaiaId"
-        summary="sync was never turned on before in the current browser
-                 profile"/>
+        summary=", for the case where sync was never turned on before in the
+                 current browser profile"/>
   </token>
 <!-- LINT.ThenChange(//components/sync_bookmarks/bookmark_model_merger_comparison_metrics.cc:BookmarkComparisonPreviouslySyncingGaiaId) -->
 
@@ -424,20 +426,20 @@ chromium-metrics-reviews@google.com.
   <token key="OptionalBookmarkCount">
     <variant name="" summary=""/>
     <variant name=".1000OrMoreLocalUrlBookmarks"
-        summary=", and only if there were 1,000 or more URL bookmarks stored
+        summary=", only if there were 1,000 or more URL bookmarks stored
                  locally and relevant in this metric variant (prior to any
-                 grouping based on uniqueness keys)."/>
+                 grouping based on uniqueness keys)"/>
     <variant name=".Between1And19LocalUrlBookmarks"
-        summary=", and only if there were between 1 and 19 (both inclusive)
-                 URL bookmarks stored locally and relevant in this metric
-                 variant (prior to any grouping based on uniqueness keys)."/>
+        summary=", only if there were between 1 and 19 (both inclusive) URL
+                 bookmarks stored locally and relevant in this metric variant
+                 (prior to any grouping based on uniqueness keys)"/>
     <variant name=".Between20and999LocalUrlBookmarks"
-        summary=", and only if there were between 20 and 999 (both inclusive)
-                 URL bookmarks stored locally and relevant in this metric
-                 variant (prior to any grouping based on uniqueness keys)."/>
+        summary=", only if there were between 20 and 999 (both inclusive) URL
+                 bookmarks stored locally and relevant in this metric variant
+                 (prior to any grouping based on uniqueness keys)"/>
     <variant name=".ZeroLocalUrlBookmarks"
-        summary=", and only if there were no URL bookmarks stored locally
-                 that are relevant in this metric variant."/>
+        summary=", only if there were no URL bookmarks stored locally that
+                 are relevant in this metric variant"/>
   </token>
 <!-- LINT.ThenChange(//components/sync_bookmarks/bookmark_model_merger_comparison_metrics.cc:BookmarkComparisonBookmarkCount) -->
 

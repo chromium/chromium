@@ -511,6 +511,10 @@ void CompareAndLogHistogramsWithKey(
                         GroupingKeyInfixToString(Key::kGroupingKeyInfix),
                         optional_bookmark_count_suffix});
 
+      // The call below to CompareSets() mixes up local data with account data.
+      // Such implementation was accidental, but the resulting metric is anyway
+      // meaningful, and the resulting behavior documented in histograms.xml.
+      // TODO(crbug.com/424163391): Fix arguments below.
       base::UmaHistogramEnumeration(
           histogram_name, CompareSets(local_data_set, account_data_set));
     }
