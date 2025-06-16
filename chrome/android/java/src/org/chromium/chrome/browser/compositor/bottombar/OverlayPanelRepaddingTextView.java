@@ -18,7 +18,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 public abstract class OverlayPanelRepaddingTextView extends OverlayPanelInflater {
     private static final float REPADDING_THRESHOLD = 0.5f;
 
-    private final float mPeekedEndButtonsWidth;
+    private float mPeekedEndButtonsWidth;
     private final float mExpandedEndButtonsWidth;
 
     private int mPaddingStart;
@@ -55,9 +55,20 @@ public abstract class OverlayPanelRepaddingTextView extends OverlayPanelInflater
     }
 
     /**
+     * Sets the end padding to use when the overlay is peeking.
+     *
+     * @param paddingPx The padding in pixels.
+     */
+    public void setPeekedEndPadding(int paddingPx) {
+        mPeekedEndButtonsWidth = paddingPx;
+        invalidate();
+    }
+
+    /**
      * Updates the text view during the transition of the Overlay from Peeked to Expanded states.
-     * @param percentage A value from 0 to 1 that indicates the degree to which the panel has
-     *        been expanded.
+     *
+     * @param percentage A value from 0 to 1 that indicates the degree to which the panel has been
+     *     expanded.
      */
     public void onUpdateFromPeekToExpand(float percentage) {
         mIsPanelExpandedBeyondHalf = percentage > REPADDING_THRESHOLD;

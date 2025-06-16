@@ -485,6 +485,7 @@ chrome_java_resources = [
   "java/res/layout/context_menu_header.xml",
   "java/res/layout/context_menu_row.xml",
   "java/res/layout/context_menu_share_row.xml",
+  "java/res/layout/contextual_search_callout_view.xml",
   "java/res/layout/contextual_search_caption_view.xml",
   "java/res/layout/contextual_search_card_icon_view.xml",
   "java/res/layout/contextual_search_context_view.xml",

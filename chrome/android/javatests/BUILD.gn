@@ -629,6 +629,7 @@ android_library(
   resources_package = "org.chromium.chrome.test"
 
   sources = [
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchCalloutTest.java",
     "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchCriticalTest.java",
     "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchFakeServer.java",
     "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchHistogramTest.java",

@@ -284,6 +284,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelStateProvider.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelTextViewInflater.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchBarControl.java",
+  "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchCalloutControl.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchCaptionControl.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchCardIconControl.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchContextControl.java",

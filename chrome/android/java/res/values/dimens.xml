@@ -41,6 +41,9 @@ found in the LICENSE file.
     <dimen name="contextual_search_term_caption_spacing">
         @dimen/overlay_panel_caption_spacing
     </dimen>
+    <dimen name="contextual_search_callout_icon_size">18dp</dimen>
+    <dimen name="contextual_search_callout_margin_start">9dp</dimen>
+    <dimen name="contextual_search_callout_margin_end">24dp</dimen>
     <dimen name="contextual_search_padded_button_width">
       @dimen/overlay_panel_padded_button_width
     </dimen>
