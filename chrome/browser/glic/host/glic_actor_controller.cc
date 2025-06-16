@@ -59,6 +59,7 @@ void OnGetContextFromFocusedTab(
   }
 
   if (execution_engine &&
+      tab_context_result->get_tab_context()->annotated_page_data &&
       tab_context_result->get_tab_context()
           ->annotated_page_data->annotated_page_content.has_value()) {
     execution_engine->DidObserveContext(
