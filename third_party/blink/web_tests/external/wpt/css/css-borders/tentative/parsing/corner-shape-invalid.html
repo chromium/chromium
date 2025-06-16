@@ -25,7 +25,7 @@ test_invalid_value("corner-shape", "superellipse(1) / bevel");
 test_invalid_value("corner-shape", "superellipse(1) / superellipse(3)");
 test_invalid_value("corner-shape", "superellipse(1), superellipse(3)");
 
-for (const edge of ["left", "right", "top", "bottom"]) {
+for (const edge of ["left", "right", "top", "bottom", "inline-start", "inline-end", "block-start", "block-end"]) {
     const prop = `corner-${edge}-shape`;
     test_invalid_value(prop, "auto");
     test_invalid_value(prop, "none");

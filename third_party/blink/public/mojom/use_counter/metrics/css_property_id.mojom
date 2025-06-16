@@ -920,6 +920,10 @@ enum CSSSampleId {
     kCornerRightShape = 861,
     kCornerBottomShape = 862,
     kCornerLeftShape = 863,
+    kCornerBlockStartShape = 864,
+    kCornerBlockEndShape = 865,
+    kCornerInlineStartShape = 866,
+    kCornerInlineEndShape = 867,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

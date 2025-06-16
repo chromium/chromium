@@ -1385,29 +1385,8 @@ bool CornerShape::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  std::array<CSSValue*, 4> shapes = {nullptr};
-
-  if (!css_parsing_utils::ConsumeCornerShapes(shapes, stream, context)) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kCornerTopLeftShape, CSSPropertyID::kCornerShape,
-      *shapes[0], important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kCornerTopRightShape, CSSPropertyID::kCornerShape,
-      *shapes[1], important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kCornerBottomRightShape, CSSPropertyID::kCornerShape,
-      *shapes[2], important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kCornerBottomLeftShape, CSSPropertyID::kCornerShape,
-      *shapes[3], important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  return true;
+  return css_parsing_utils::ConsumeShorthandVia4Longhands(
+      cornerShapeShorthand(), important, context, stream, properties);
 }
 
 const CSSValue* CornerShape::CSSValueFromComputedStyleInternal(
@@ -1424,8 +1403,8 @@ bool CornerTopShape::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return css_parsing_utils::ConsumeEdgeCornerShapes(
-      important, stream, context, cornerTopShapeShorthand(), properties);
+  return css_parsing_utils::ConsumeShorthandVia2Longhands(
+      cornerTopShapeShorthand(), important, context, stream, properties);
 }
 
 bool CornerRightShape::ParseShorthand(
@@ -1434,8 +1413,8 @@ bool CornerRightShape::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return css_parsing_utils::ConsumeEdgeCornerShapes(
-      important, stream, context, cornerRightShapeShorthand(), properties);
+  return css_parsing_utils::ConsumeShorthandVia2Longhands(
+      cornerRightShapeShorthand(), important, context, stream, properties);
 }
 
 bool CornerLeftShape::ParseShorthand(
@@ -1444,8 +1423,8 @@ bool CornerLeftShape::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return css_parsing_utils::ConsumeEdgeCornerShapes(
-      important, stream, context, cornerLeftShapeShorthand(), properties);
+  return css_parsing_utils::ConsumeShorthandVia2Longhands(
+      cornerLeftShapeShorthand(), important, context, stream, properties);
 }
 
 bool CornerBottomShape::ParseShorthand(
@@ -1454,8 +1433,49 @@ bool CornerBottomShape::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return css_parsing_utils::ConsumeEdgeCornerShapes(
-      important, stream, context, cornerBottomShapeShorthand(), properties);
+  return css_parsing_utils::ConsumeShorthandVia2Longhands(
+      cornerBottomShapeShorthand(), important, context, stream, properties);
+}
+
+bool CornerBlockStartShape::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return css_parsing_utils::ConsumeShorthandVia2Longhands(
+      cornerBlockStartShapeShorthand(), important, context, stream, properties);
+}
+
+bool CornerBlockEndShape::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return css_parsing_utils::ConsumeShorthandVia2Longhands(
+      cornerBlockEndShapeShorthand(), important, context, stream, properties);
+}
+
+bool CornerInlineStartShape::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return css_parsing_utils::ConsumeShorthandVia2Longhands(
+      cornerInlineStartShapeShorthand(), important, context, stream,
+      properties);
+}
+
+bool CornerInlineEndShape::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return css_parsing_utils::ConsumeShorthandVia2Longhands(
+      cornerInlineEndShapeShorthand(), important, context, stream, properties);
 }
 
 const CSSValue* CornerTopShape::CSSValueFromComputedStyleInternal(
@@ -1464,7 +1484,7 @@ const CSSValue* CornerTopShape::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
-      style.CornerTopLeftShape(), style.CornerTopRightShape());
+      cornerTopShapeShorthand(), style);
 }
 
 const CSSValue* CornerRightShape::CSSValueFromComputedStyleInternal(
@@ -1473,7 +1493,7 @@ const CSSValue* CornerRightShape::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
-      style.CornerTopRightShape(), style.CornerBottomRightShape());
+      cornerRightShapeShorthand(), style);
 }
 
 const CSSValue* CornerBottomShape::CSSValueFromComputedStyleInternal(
@@ -1482,7 +1502,7 @@ const CSSValue* CornerBottomShape::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
-      style.CornerBottomLeftShape(), style.CornerBottomRightShape());
+      cornerBottomShapeShorthand(), style);
 }
 
 const CSSValue* CornerLeftShape::CSSValueFromComputedStyleInternal(
@@ -1491,7 +1511,43 @@ const CSSValue* CornerLeftShape::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
-      style.CornerTopLeftShape(), style.CornerBottomLeftShape());
+      cornerLeftShapeShorthand(), style);
+}
+
+const CSSValue* CornerBlockStartShape::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
+      cornerBlockStartShapeShorthand(), style);
+}
+
+const CSSValue* CornerBlockEndShape::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
+      cornerBlockEndShapeShorthand(), style);
+}
+
+const CSSValue* CornerInlineStartShape::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
+      cornerInlineStartShapeShorthand(), style);
+}
+
+const CSSValue* CornerInlineEndShape::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
+      cornerInlineEndShapeShorthand(), style);
 }
 
 bool Flex::ParseShorthand(bool important,

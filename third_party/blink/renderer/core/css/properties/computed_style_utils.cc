@@ -2884,12 +2884,15 @@ CSSValueList* ComputedStyleUtils::ValueForCornerShapeShorthand(
 }
 
 CSSValueList* ComputedStyleUtils::ValueForCornerShapeEdgeShorthand(
-    Superellipse a,
-    Superellipse b) {
+    const StylePropertyShorthand& shorthand,
+    const ComputedStyle& style) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*ValueForCornerShape(a));
-  if (a != b) {
-    list->Append(*ValueForCornerShape(b));
+  const CSSValue* a = ComputedPropertyValue(*shorthand.properties()[0], style);
+  const CSSValue* b =
+      ComputedPropertyValue(*(shorthand.properties()[1]), style);
+  list->Append(*a);
+  if (*a != *b) {
+    list->Append(*b);
   }
   return list;
 }

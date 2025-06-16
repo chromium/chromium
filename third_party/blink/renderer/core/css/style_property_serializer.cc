@@ -710,6 +710,14 @@ String StylePropertySerializer::SerializeShorthand(
       return Get2Values(cornerBottomShapeShorthand());
     case CSSPropertyID::kCornerLeftShape:
       return Get2Values(cornerLeftShapeShorthand());
+    case CSSPropertyID::kCornerBlockStartShape:
+      return Get2Values(cornerBlockStartShapeShorthand());
+    case CSSPropertyID::kCornerBlockEndShape:
+      return Get2Values(cornerBlockEndShapeShorthand());
+    case CSSPropertyID::kCornerInlineStartShape:
+      return Get2Values(cornerInlineStartShapeShorthand());
+    case CSSPropertyID::kCornerInlineEndShape:
+      return Get2Values(cornerInlineEndShapeShorthand());
     case CSSPropertyID::kScrollPadding:
       return Get4Values(scrollPaddingShorthand());
     case CSSPropertyID::kScrollPaddingBlock:

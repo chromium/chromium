@@ -8494,6 +8494,38 @@
       valid_for_page_context: true,
     },
     {
+      name: "corner-block-start-shape",
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      longhands: ["corner-start-start-shape", "corner-start-end-shape"],
+      runtime_flag: "CSSCornerShape",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-block-end-shape",
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      longhands: ["corner-end-start-shape", "corner-end-end-shape"],
+      runtime_flag: "CSSCornerShape",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-inline-start-shape",
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      longhands: ["corner-start-start-shape", "corner-end-start-shape"],
+      runtime_flag: "CSSCornerShape",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-inline-end-shape",
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      longhands: ["corner-start-end-shape", "corner-end-end-shape"],
+      runtime_flag: "CSSCornerShape",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
       name: "corner-shape",
       longhands: [
         "corner-top-left-shape", "corner-top-right-shape",

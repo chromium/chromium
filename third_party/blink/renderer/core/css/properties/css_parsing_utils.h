@@ -608,14 +608,6 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
                   CSSParserTokenStream& stream,
                   const CSSParserContext& context,
                   bool use_legacy_parsing);
-bool ConsumeCornerShapes(std::array<CSSValue*, 4>& shapes,
-                         CSSParserTokenStream& stream,
-                         const CSSParserContext& context);
-bool ConsumeEdgeCornerShapes(bool important,
-                             CSSParserTokenStream& stream,
-                             const CSSParserContext& context,
-                             const StylePropertyShorthand&,
-                             HeapVector<CSSPropertyValue, 64>& properties);
 
 CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream&);
 CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream&);
