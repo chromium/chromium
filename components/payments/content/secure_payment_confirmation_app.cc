@@ -69,6 +69,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     content::WebContents* web_contents_to_observe,
     const std::string& effective_relying_party_identity,
     const std::u16string& payment_instrument_label,
+    const std::u16string& payment_instrument_details,
     std::unique_ptr<SkBitmap> payment_instrument_icon,
     std::vector<uint8_t> credential_id,
     std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder,
@@ -85,6 +86,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
                         : content::GlobalRenderFrameHostId()),
       effective_relying_party_identity_(effective_relying_party_identity),
       payment_instrument_label_(payment_instrument_label),
+      payment_instrument_details_(payment_instrument_details),
       payment_instrument_icon_(std::move(payment_instrument_icon)),
       credential_id_(std::move(credential_id)),
       merchant_origin_(merchant_origin),
@@ -212,7 +214,7 @@ std::u16string SecurePaymentConfirmationApp::GetLabel() const {
 }
 
 std::u16string SecurePaymentConfirmationApp::GetSublabel() const {
-  return std::u16string();
+  return payment_instrument_details_;
 }
 
 const SkBitmap* SecurePaymentConfirmationApp::icon_bitmap() const {

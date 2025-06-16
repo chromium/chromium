@@ -277,6 +277,14 @@ extern const char kValidInstrumentIconRequired[];
 // not valid.
 extern const char kInvalidIcon[];
 
+// Used when the instrument details string is not valid UTF8 for the
+// "secure-payment-confirmation" method.
+extern const char kNonUtf8InstrumentDetailsString[];
+
+// Used when the instrument details string is too long for the
+// "secure-payment-confirmation" method.
+extern const char kTooLongInstrumentDetailsString[];
+
 // Used when the rpId field was not specified for the
 // "secure-payment-confirmation" method.
 extern const char kRpIdRequired[];

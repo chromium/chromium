@@ -69,8 +69,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
                                          public PaymentApp::Delegate {
  protected:
   SecurePaymentConfirmationAppTest()
-      : payment_instrument_label_(u"test instrument"),
-        web_contents_(web_contents_factory_.CreateWebContents(&context_)) {
+      : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {
     mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
     details->total = mojom::PaymentItem::New();
     details->total->amount = mojom::PaymentCurrencyAmount::New();
@@ -124,7 +123,8 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
     on_instrument_details_error_called_ = true;
   }
 
-  std::u16string payment_instrument_label_;
+  const std::u16string payment_instrument_label_ = u"test instrument";
+  const std::u16string payment_instrument_details_ = u"instrument details";
   std::unique_ptr<PaymentRequestSpec> spec_;
   std::string challenge_bytes_;
   std::string credential_id_bytes_;
@@ -152,6 +152,7 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
 
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
       /*passkey_browser_binder=*/nullptr,
@@ -359,6 +360,7 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       browser_bound_key_id));
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
       std::move(binder),
       GetParam().device_supports_browser_bound_keys_in_hardware,
@@ -440,6 +442,7 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
   webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
       /*passkey_browser_binder=*/nullptr,
@@ -482,6 +485,7 @@ TEST_F(SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest,
   webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
       /*passkey_browser_binder=*/nullptr,
@@ -514,6 +518,7 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
 
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
       /*passkey_browser_binder=*/nullptr,
@@ -548,6 +553,7 @@ class SecurePaymentConfirmationAppFallbackTest
 TEST_F(SecurePaymentConfirmationAppFallbackTest, NoCredentials) {
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       /*credential_id=*/std::vector<uint8_t>(),
       /*passkey_browser_binder=*/nullptr,
@@ -567,6 +573,7 @@ TEST_F(SecurePaymentConfirmationAppFallbackTest, WithCredentials) {
                                      credential_id_bytes_.end());
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
       /*passkey_browser_binder=*/nullptr,
       /*device_supports_browser_bound_keys_in_hardware=*/false,

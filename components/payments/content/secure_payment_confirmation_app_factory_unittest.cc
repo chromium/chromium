@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
@@ -127,7 +128,9 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
     return spc_request;
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  // Using mock time in this environment to reduce flakiness in TSAN builders.
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -252,6 +255,45 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(
                                   errors::kValidInstrumentIconRequired, _));
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with an invalid
+// (not UTF8) encoding fails.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_NonUtf8InstrumentDetails) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  // Set the details string to an invalid UTF-8 string.
+  method_data->secure_payment_confirmation->instrument->details = {
+      '\xEF', '\xB7', '\xAF'};
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(
+                                  errors::kNonUtf8InstrumentDetailsString, _));
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with a very long payment
+// instrument details fails.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_TooLongInstrumentDetails) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  // Set the details string longer than 4096.
+  static const std::string kTooLongInstrumentDetails = std::string(4097, '.');
+  method_data->secure_payment_confirmation->instrument->details =
+      kTooLongInstrumentDetails;
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(
+                                  errors::kTooLongInstrumentDetailsString, _));
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
@@ -1087,6 +1129,55 @@ TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
   EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps()).Times(1);
 
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that the payment instrument details string is made available to the
+// SecurePaymentConfirmationApp.
+TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
+       SecureConfirmationPaymentRequest_PaymentInstrumentDetails) {
+  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  method_data->secure_payment_confirmation->instrument->details =
+      "instrument details";
+  std::vector<std::vector<uint8_t>> credential_ids =
+      method_data->secure_payment_confirmation->credential_ids;
+  ASSERT_EQ(credential_ids.size(), 1u);
+  GURL icon = method_data->secure_payment_confirmation->instrument->icon;
+
+  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
+      CreateMockInternalAuthenticator(
+          {.response_to_get_matching_credential_ids =
+               method_data->secure_payment_confirmation->credential_ids});
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
+      base::MakeRefCounted<MockPaymentManifestWebDataService>();
+  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
+      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
+  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
+      .WillRepeatedly(Return(mock_service));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
+  std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
+      .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+  std::vector<gfx::Size> icon_sizes({{32, 32}});
+  std::vector<SkBitmap> icon_bitmaps(1);
+  icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
+  static_cast<content::TestWebContents*>(web_contents_.get())
+      ->TestDidDownloadImage(icon, /*http_status_code=*/200,
+                             std::move(icon_bitmaps), std::move(icon_sizes));
+
+  ASSERT_TRUE(secure_payment_confirmation_app);
+  EXPECT_EQ(secure_payment_confirmation_app->GetSublabel(),
+            u"instrument details");
 }
 
 #if BUILDFLAG(IS_ANDROID)

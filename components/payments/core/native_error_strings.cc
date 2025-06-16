@@ -238,6 +238,14 @@ const char kValidInstrumentIconRequired[] =
 const char kInvalidIcon[] =
     "The \"instrument.icon\" either could not be downloaded or decoded.";
 
+const char kNonUtf8InstrumentDetailsString[] =
+    "The \"secure-payment-confirmation\" method requires the "
+    "\"instrument.details\" field to be UTF8.";
+
+const char kTooLongInstrumentDetailsString[] =
+    "The \"secure-payment-confirmation\" method requires the "
+    "\"instrument.details\" field to be at most 4096 characters long.";
+
 const char kRpIdRequired[] =
     "The \"secure-payment-confirmation\" method requires a valid domain in the "
     "\"rpId\" field.";
