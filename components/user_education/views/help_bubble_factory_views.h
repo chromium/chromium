@@ -14,6 +14,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/widget/widget.h"
 
 namespace user_education {
@@ -38,6 +39,9 @@ class HelpBubbleFactoryViews : public HelpBubbleFactory {
                                            HelpBubbleParams params) override;
   bool CanBuildBubbleForTrackedElement(
       const ui::TrackedElement* element) const override;
+
+  // Returns the default border type for help bubbles.
+  static views::BubbleBorder::Shadow GetDefaultBubbleShadow();
 
  protected:
   std::unique_ptr<HelpBubble> CreateBubbleImpl(

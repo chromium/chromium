@@ -14,6 +14,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/color/color_id.h"
 #include "ui/webui/resources/cr_components/help_bubble/custom_help_bubble.mojom.h"
 
 // Derive your WebUIController from this if you want it to be used as a Custom
@@ -32,6 +33,10 @@ class CustomWebUIHelpBubbleController
   void BindInterface(mojo::PendingReceiver<
                      custom_help_bubble::mojom::CustomHelpBubbleHandlerFactory>
                          pending_receiver);
+
+  // Gets the background, frame, and arrow color for the bubble. Defaults to the
+  // normal help bubble background color.
+  virtual ui::ColorId GetBackgroundAndFrameColor() const;
 
   // This is required for wrapping help bubbles for Top Chrome.
   static constexpr std::string_view GetWebUIName() { return "UserEducation"; }

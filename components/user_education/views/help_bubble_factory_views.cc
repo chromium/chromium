@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/views/help_bubble_delegate.h"
@@ -17,6 +18,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -71,6 +73,20 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubbleImpl(
     MaybeApplyAttentionStateToTrackedElement(anchor.view);
   }
   return result;
+}
+
+// static
+views::BubbleBorder::Shadow HelpBubbleFactoryViews::GetDefaultBubbleShadow() {
+#if BUILDFLAG(IS_MAC)
+  // On Mac, the default DIALOG_SHADOW is system-drawn, which is
+  // incompatible with visible bubble arrows. Therefore, always use
+  // STANDARD_SHADOW.
+  return views::BubbleBorder::STANDARD_SHADOW;
+#else
+  // On other platforms, all shadows are Views-drawn; use the (slightly
+  // better-looking) default DIALOG_SHADOW.
+  return views::BubbleBorder::DIALOG_SHADOW;
+#endif
 }
 
 }  // namespace user_education

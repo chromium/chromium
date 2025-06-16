@@ -22,6 +22,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_event_relay.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/vector_icons/vector_icons.h"
@@ -324,21 +325,10 @@ HelpBubbleView::HelpBubbleView(
     const internal::HelpBubbleAnchorParams& anchor,
     HelpBubbleParams params,
     std::unique_ptr<HelpBubbleEventRelay> event_relay)
-    : BubbleDialogDelegateView(
-          anchor.view,
-          HelpBubbleViews::TranslateArrow(params.arrow),
-#if BUILDFLAG(IS_MAC)
-          // On Mac, the default DIALOG_SHADOW is system-drawn, which is
-          // incompatible with visible bubble arrows. Therefore, always use
-          // STANDARD_SHADOW.
-          views::BubbleBorder::STANDARD_SHADOW
-#else
-          // On other platforms, all shadows are Views-drawn; use the (slightly
-          // better-looking) default DIALOG_SHADOW.
-          views::BubbleBorder::DIALOG_SHADOW
-#endif
-          ,
-          true),
+    : BubbleDialogDelegateView(anchor.view,
+                               HelpBubbleViews::TranslateArrow(params.arrow),
+                               HelpBubbleFactoryViews::GetDefaultBubbleShadow(),
+                               true),
       delegate_(delegate),
       event_relay_(std::move(event_relay)) {
   SetBackgroundColor(delegate_->GetHelpBubbleBackgroundColorId());

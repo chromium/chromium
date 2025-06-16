@@ -16,6 +16,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -137,8 +138,25 @@ CustomWebUIHelpBubble::CreateForController(
       user_education::HelpBubbleViews::TranslateArrow(arrow),
       wrapper->GetWeakPtr());
   auto* const bubble = bubble_ptr.get();
+
+  // Ensure that the bubble gets the correct background and frame color.
+  bubble->SetBackgroundColor(
+      wrapper->GetWebUIController()->GetBackgroundAndFrameColor());
+
+  // Specific shadow types are required for help bubbles in order to properly
+  // render visible bubble arrows.
+  bubble->set_shadow(
+      user_education::HelpBubbleFactoryViews::GetDefaultBubbleShadow());
+
   auto widget = base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
       std::move(bubble_ptr), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+
+  // Maybe set the arrow. This may require recalculating the bubble bounds.
+  if (arrow != user_education::HelpBubbleArrow::kNone) {
+    bubble->GetBubbleFrameView()->SetDisplayVisibleArrow(true);
+    bubble->SizeToContents();
+  }
+
   wrapper->ShowUI();
   return base::WrapUnique(new CustomWebUIHelpBubble(
       std::move(widget), bubble, std::move(wrapper), params.anchor_element));

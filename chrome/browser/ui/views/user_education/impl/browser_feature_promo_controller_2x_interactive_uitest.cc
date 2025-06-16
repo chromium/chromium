@@ -420,6 +420,10 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
       user_education::test::TestCustomHelpBubbleView::kBubbleId;
   RunTestSequence(
       MaybeShowPromo(kCustomUiTestFeature, CustomHelpBubbleShown{kBubbleId}),
+      CheckView(kBubbleId,
+                [](views::BubbleDialogDelegateView* bubble) {
+                  return bubble->GetBubbleFrameView()->GetDisplayVisibleArrow();
+                }),
       WithView(kBubbleId,
                [](views::View* view) { view->GetWidget()->Close(); }),
       WaitForHide(kBubbleId), CheckPromoRequested(kCustomUiTestFeature, false),

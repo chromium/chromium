@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/user_education/custom_webui_help_bubble_controller.h"
 
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "components/user_education/common/help_bubble/custom_help_bubble.h"
+#include "components/user_education/views/help_bubble_delegate.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/resources/cr_components/help_bubble/custom_help_bubble.mojom.h"
 
@@ -60,6 +62,11 @@ void CustomWebUIHelpBubbleController::BindInterface(
   }
   custom_help_bubble_handler_factory_receiver_.Bind(
       std::move(pending_receiver));
+}
+
+ui::ColorId CustomWebUIHelpBubbleController::GetBackgroundAndFrameColor()
+    const {
+  return GetHelpBubbleDelegate()->GetHelpBubbleBackgroundColorId();
 }
 
 void CustomWebUIHelpBubbleController::CreateCustomHelpBubbleHandler(
