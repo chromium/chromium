@@ -8605,10 +8605,6 @@ crbug.com/348101805 external/wpt/html/browsers/browsing-the-web/overlapping-navi
 # Subtest with middle mouse drag occasionally flakes.
 crbug.com/423841918 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/6157257
-crbug.com/388445687 http/tests/devtools/console/console-copy-treeoutline.js [ Failure Pass ]
-crbug.com/388445687 http/tests/devtools/console/console-viewport-selection.js [ Failure Pass ]
-
 # Gardener 2024-06-28
 crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
 

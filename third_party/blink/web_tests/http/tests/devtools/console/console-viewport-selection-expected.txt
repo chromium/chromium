@@ -54,9 +54,6 @@ anchor = {item: 76, offset: 6}, head = {item: 140, offset: 0}
 Running: testZeroOffsetSelection
 Selected text: world
 
-Running: testSelectAll
-Selected all 150 messages.
-
 Running: testSelectWithNonTextNodeContainer
 Selected text: console-viewport-selection.js:18 Message #1
 
