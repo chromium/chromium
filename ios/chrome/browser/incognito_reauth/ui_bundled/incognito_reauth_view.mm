@@ -49,20 +49,24 @@ const CGFloat kContentOptimalWidth = 327;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    // Increase blur intensity by layering some blur views to make
-    // content behind really not recognizeable.
-    for (int i = 0; i < 3; i++) {
-      UIBlurEffect* blurEffect =
-          [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-      UIVisualEffectView* blurView =
-          [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-      [self addSubview:blurView];
-      blurView.translatesAutoresizingMaskIntoConstraints = NO;
-      AddSameConstraints(self, blurView);
+    if (!IsIOSSoftLockEnabled()) {
+      // Increase blur intensity by layering some blur views to make
+      // content behind really not recognizeable.
+      for (int i = 0; i < 3; i++) {
+        UIBlurEffect* blurEffect =
+            [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        UIVisualEffectView* blurView =
+            [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        [self addSubview:blurView];
+        blurView.translatesAutoresizingMaskIntoConstraints = NO;
+        AddSameConstraints(self, blurView);
+      }
     }
 
-    UIBlurEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+    UIBlurEffect* blurEffect = [UIBlurEffect
+        effectWithStyle:IsIOSSoftLockEnabled()
+                            ? UIBlurEffectStyleSystemThickMaterialDark
+                            : UIBlurEffectStyleDark];
     UIVisualEffectView* blurBackgroundView =
         [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     [self addSubview:blurBackgroundView];
@@ -314,13 +318,15 @@ const CGFloat kContentOptimalWidth = 327;
     [button setTitle:l10n_util::GetNSString(
                          IDS_IOS_INCOGNITO_REAUTH_CLOSE_INCOGNITO_TABS)
             forState:UIControlStateNormal];
+    button.titleLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   } else {
     [button setTitle:l10n_util::GetNSString(
                          IDS_IOS_INCOGNITO_REAUTH_GO_TO_NORMAL_TABS)
             forState:UIControlStateNormal];
+    button.titleLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
   }
-  button.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
   button.titleLabel.adjustsFontSizeToFitWidth = YES;
   button.titleLabel.adjustsFontForContentSizeCategory = YES;
   button.pointerInteractionEnabled = YES;
