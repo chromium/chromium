@@ -65,6 +65,18 @@ class TabStripInteractiveTestMixin : public T {
                 group_id)),
         T::MoveMouseTo(kTabGroupHeaderToHover));
   }
+
+  auto WaitForActiveTabChange(int index) {
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
+                                        kTabActiveChangeObserver);
+    return T::Steps(
+        T::PollState(kTabActiveChangeObserver,
+                     base::BindRepeating(
+                         &TabStripModel::active_index,
+                         base::Unretained(T::browser()->tab_strip_model()))),
+        T::WaitForState(kTabActiveChangeObserver, index),
+        T::StopObservingState(kTabActiveChangeObserver));
+  }
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TEST_TAB_STRIP_INTERACTIVE_TEST_MIXIN_H_

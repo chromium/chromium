@@ -4787,13 +4787,12 @@ void BrowserView::ShowSplitView(bool focus_active_view) {
   const int relative_active_position = active_index - first_split_tab_index;
   multi_contents_view_->SetActiveIndex(relative_active_position);
 
+  multi_contents_view_->UpdateSplitRatio(
+      split_data->visual_data()->split_ratio());
+
   if (focus_active_view) {
     multi_contents_view_->GetActiveContentsView()->RequestFocus();
   }
-
-  // Update visual information for the split.
-  multi_contents_view_->UpdateSplitRatio(
-      split_data->visual_data()->split_ratio());
 }
 
 void BrowserView::HideSplitView() {
@@ -4817,6 +4816,14 @@ void BrowserView::UpdateActiveTabInSplitView() {
       browser_->tab_strip_model()->GetIndexOfTab(first_tab);
   const int relative_active_position = active_index - first_split_tab_index;
   multi_contents_view_->SetActiveIndex(relative_active_position);
+
+  // When active tab changes inside a split, it's generally due to focus change.
+  // However, there are cases where inactive tab can be activated without a
+  // focus change e.g. using tab shortcuts and in these cases update focus.
+  if (GetWidget()->IsActive() &&
+      multi_contents_view_->GetInactiveContentsView()->HasFocus()) {
+    multi_contents_view_->GetActiveContentsView()->RequestFocus();
+  }
 }
 
 void BrowserView::UpdateContentsInSplitView(
