@@ -34,10 +34,11 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 
-namespace WTF {
+namespace blink {
 
 template <size_t size>
 struct UCharByteFiller;
+
 template <>
 struct UCharByteFiller<4> {
   static void Copy(LChar* destination, const uint8_t* source) {
@@ -51,6 +52,7 @@ struct UCharByteFiller<4> {
     destination[3] = source[3];
   }
 };
+
 template <>
 struct UCharByteFiller<8> {
   static void Copy(LChar* destination, const uint8_t* source) {
@@ -69,19 +71,14 @@ struct UCharByteFiller<8> {
   }
 };
 
-inline void CopyASCIIMachineWord(LChar* destination, const uint8_t* source) {
+inline void CopyAsciiMachineWord(LChar* destination, const uint8_t* source) {
   UCharByteFiller<sizeof(WTF::MachineWord)>::Copy(destination, source);
 }
 
-inline void CopyASCIIMachineWord(UChar* destination, const uint8_t* source) {
+inline void CopyAsciiMachineWord(UChar* destination, const uint8_t* source) {
   UCharByteFiller<sizeof(WTF::MachineWord)>::Copy(destination, source);
 }
 
-}  // namespace WTF
-
-// TODO(crbug.com/422768753): Remove these `using` directives.
-namespace blink {
-using WTF::CopyASCIIMachineWord;
-}
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_ASCII_FAST_PATH_H_
