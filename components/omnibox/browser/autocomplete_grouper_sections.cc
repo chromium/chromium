@@ -873,6 +873,27 @@ IOSIpadNTPZpsSection::IOSIpadNTPZpsSection(
           },
           group_configs) {}
 
+void IOSIpadNTPZpsSection::InitFromMatches(ACMatches& matches) {
+  bool mia_suggestions_detected =
+      std::ranges::any_of(matches, [&](const auto& match) {
+        return match.suggestion_group_id.value_or(omnibox::GROUP_INVALID) ==
+               omnibox::GROUP_MIA_RECOMMENDATIONS;
+      });
+
+  if (omnibox_feature_configs::MiaZPS::Get()
+          .suppress_psuggest_backfill_with_mia &&
+      mia_suggestions_detected) {
+    // Hacky and delicate, but follows a pattern found in other sections of this
+    // file.
+    const_cast<Group::LimitAndCount&>(
+        groups_[1].group_id_limits_and_counts().at(
+            omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST))
+        .limit = 0;
+  }
+
+  ZpsSectionWithLocalHistory::InitFromMatches(matches);
+}
+
 IOSIpadSRPZpsSection::IOSIpadSRPZpsSection(
     size_t total_count,
     omnibox::GroupConfigMap& group_configs)
