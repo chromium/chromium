@@ -6231,6 +6231,7 @@ chromium-metrics-reviews@google.com.
     <variant name="GpuMain"/>
     <variant name="NetworkService"/>
     <variant name="RendererMain"/>
+    <variant name="VizCompositor"/>
   </token>
 </histogram>
 

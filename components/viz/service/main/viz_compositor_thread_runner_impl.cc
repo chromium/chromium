@@ -46,6 +46,11 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   auto thread = std::make_unique<base::android::JavaHandlerThread>(kThreadName,
                                                                    thread_type);
   thread->Start();
+  thread->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce([]() {
+        mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
+            "VizCompositor");
+      }));
   return thread;
 #else  // !BUILDFLAG(IS_ANDROID)
 
@@ -73,6 +78,12 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   thread_options.thread_type = thread_type;
 
   CHECK(thread->StartWithOptions(std::move(thread_options)));
+
+  thread->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce([]() {
+        mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
+            "VizCompositor");
+      }));
 
   return thread;
 #endif  // !BUILDFLAG(IS_ANDROID)
