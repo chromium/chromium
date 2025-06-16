@@ -415,7 +415,7 @@ const CGFloat kSymbolSize = 15;
                           forControlEvents:UIControlEventAllEvents];
 }
 
-#pragma mark Accessibility
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   if ([self.accessibilityLabelValue length]) {

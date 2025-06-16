@@ -280,7 +280,7 @@ NSAttributedString* Strikethrough(NSString* text) {
 
 #endif
 
-#pragma mark - UIAccessibility
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityActivate {
   if (_data.complete) {

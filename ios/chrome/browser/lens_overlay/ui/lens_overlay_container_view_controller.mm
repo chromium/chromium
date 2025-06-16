@@ -390,7 +390,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   [self.delegate lensOverlayContainerDidChangeSizeClass:self];
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
   [self closeOverlayRequested];

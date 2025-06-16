@@ -86,6 +86,8 @@ const CGFloat kDotSize = 14;
   self.item = nil;
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   NSString* numberOfTabsString = l10n_util::GetPluralNSStringF(
       IDS_IOS_TAB_GROUP_TABS_NUMBER, _faviconsGrid.numberOfTabs);

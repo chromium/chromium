@@ -58,7 +58,7 @@
   _textLabel.text = nil;
 }
 
-#pragma mark - Private
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   return _textLabel.text;

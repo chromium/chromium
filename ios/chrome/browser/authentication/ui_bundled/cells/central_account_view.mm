@@ -212,6 +212,8 @@ UIImage* GetEnterpriseIcon() {
   return self;
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   NSMutableString* accessibilityLabel =
       [NSMutableString stringWithString:_name];

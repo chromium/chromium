@@ -10,6 +10,8 @@
 
 @implementation ToolbarProgressBar
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityValue {
   return l10n_util::GetNSStringF(
       IDS_IOS_PROGRESS_BAR_ACCESSIBILITY,

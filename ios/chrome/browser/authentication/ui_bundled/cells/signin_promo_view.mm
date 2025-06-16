@@ -401,7 +401,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
   self.primaryButton.configuration = buttonConfiguration;
 }
 
-#pragma mark - NSObject(Accessibility)
+#pragma mark - UIAccessibility
 
 - (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
   NOTREACHED();
@@ -418,6 +418,14 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
   }
   NOTREACHED();
 }
+
+- (NSArray<NSString*>*)accessibilityUserInputLabels {
+  // The name for Voice Control includes only
+  // `self.primaryButton.titleLabel.text`.
+  return @[ [self primaryButtonTitle] ];
+}
+
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityActivate {
   if (!self.primaryButton.enabled) {
@@ -451,12 +459,6 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
     [actions addObject:closeCustomAction];
   }
   return actions;
-}
-
-- (NSArray<NSString*>*)accessibilityUserInputLabels {
-  // The name for Voice Control includes only
-  // `self.primaryButton.titleLabel.text`.
-  return @[ [self primaryButtonTitle] ];
 }
 
 #pragma mark - Setters

@@ -473,6 +473,8 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   [self createSubviews];
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   return [NSString stringWithFormat:@"%@, %@", _title, _description];
 }

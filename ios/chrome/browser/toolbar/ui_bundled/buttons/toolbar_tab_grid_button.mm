@@ -93,11 +93,13 @@ const CGFloat kLabelOffset = 3;
   [self updateTabCountLabelTextColor];
 }
 
-#pragma mark - UIAccessibility
+#pragma mark - UIAccessibilityIdentification
 
 - (NSString*)accessibilityIdentifier {
   return kToolbarStackButtonIdentifier;
 }
+
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   switch (self.tabGroupState) {

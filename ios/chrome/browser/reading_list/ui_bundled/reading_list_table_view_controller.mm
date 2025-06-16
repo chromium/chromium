@@ -1167,7 +1167,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self setEditing:NO animated:animated];
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
   if (!self.delegate.canDismiss) {

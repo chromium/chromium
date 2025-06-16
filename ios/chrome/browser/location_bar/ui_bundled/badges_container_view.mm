@@ -34,6 +34,8 @@
   return self;
 }
 
+#pragma mark - UIAccessibilityContainer
+
 - (NSArray*)accessibilityElements {
   NSMutableArray* accessibleElements = [[NSMutableArray alloc] init];
 

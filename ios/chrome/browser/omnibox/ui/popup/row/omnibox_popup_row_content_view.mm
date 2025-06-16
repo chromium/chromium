@@ -329,6 +329,8 @@ const double kContentSizeMultiplierAccesibility = 2.0;
   _secondaryLabelTruncating.textAlignment = forcedTextAlignment;
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   return _primaryLabel.attributedText.string;
 }

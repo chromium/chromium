@@ -208,7 +208,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   return titleContainer;
 }
 
-#pragma mark - UIAccessibility
+#pragma mark - UIAccessibilityAction
 
 - (NSArray*)accessibilityCustomActions {
   int stringID = self.collapsed ? IDS_IOS_TAB_STRIP_TAB_GROUP_EXPAND
@@ -219,12 +219,12 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
           selector:@selector(collapseOrExpandTapped:)] ];
 }
 
+#pragma mark - Private
+
 // Selector registered to expand or collapse tab group.
 - (void)collapseOrExpandTapped:(id)sender {
   [self.delegate collapseOrExpandTappedForCell:self];
 }
-
-#pragma mark - Private
 
 // Sets up constraints.
 - (void)setupConstraints {

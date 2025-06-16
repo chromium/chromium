@@ -879,7 +879,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   _tabsCount = tabsCount;
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
   [self dismissViewController];

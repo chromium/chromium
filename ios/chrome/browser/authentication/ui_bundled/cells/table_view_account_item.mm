@@ -333,7 +333,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
       [accessoryImage.tintColor colorWithAlphaComponent:1];
 }
 
-#pragma mark - NSObject(Accessibility)
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   // The accessibilityLabel property may have been set by the owner of this

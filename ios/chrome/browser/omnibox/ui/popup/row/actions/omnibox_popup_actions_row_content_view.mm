@@ -288,6 +288,8 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
   _secondaryLabelTruncating.textAlignment = forcedTextAlignment;
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   return _primaryLabel.attributedText.string;
 }

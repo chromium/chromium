@@ -188,7 +188,7 @@ NSMutableAttributedString* GetAttributedString(NSString* imageName,
   self.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   return self.messageAttributedString.string;

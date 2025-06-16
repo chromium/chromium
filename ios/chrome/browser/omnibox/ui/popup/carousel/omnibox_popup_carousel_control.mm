@@ -237,7 +237,7 @@ const CGFloat kOmniboxPopupCarouselControlWidth =
                                       parameters:previewParameters];
 }
 
-#pragma mark - UIAccessibility
+#pragma mark - UIAccessibilityFocus
 
 - (void)accessibilityElementDidBecomeFocused {
   // Element is focused by VoiceOver, informs its delegate so it can make it
@@ -245,9 +245,13 @@ const CGFloat kOmniboxPopupCarouselControlWidth =
   [self.delegate carouselControlDidBecomeFocused:self];
 }
 
+#pragma mark - UIAccessibility
+
 - (UIAccessibilityTraits)accessibilityTraits {
   return UIAccessibilityTraitButton | [super accessibilityTraits];
 }
+
+#pragma mark - UIAccessibilityAction
 
 /// Custom actions for a cell configured with this item.
 - (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {

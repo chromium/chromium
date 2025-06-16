@@ -175,6 +175,8 @@
   _faviconTypeForMetrics = faviconTypeForMetrics;
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   NSString* label = _titleLabel.text;
   if (_detailLabel.text.length) {
@@ -189,12 +191,16 @@
   return label;
 }
 
+#pragma mark - UIAccessibilityIdentification
+
 - (NSString*)accessibilityIdentifier {
   return _detailLabel.text.length
              ? [NSString stringWithFormat:@"%@, %@", _titleLabel.text,
                                           _detailLabel.text]
              : _titleLabel.text;
 }
+
+#pragma mark - UIAccessibility
 
 - (BOOL)isAccessibilityElement {
   return YES;

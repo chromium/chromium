@@ -221,7 +221,7 @@ const CGFloat trailingMargin = -24.0;
   self.iconWidthAnchorConstraint.constant = kIconSize;
 }
 
-#pragma mark - Private
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   return self.textLabel.text;

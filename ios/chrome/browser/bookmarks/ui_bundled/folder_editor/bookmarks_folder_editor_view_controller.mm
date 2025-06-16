@@ -256,7 +256,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
   [self dismiss];

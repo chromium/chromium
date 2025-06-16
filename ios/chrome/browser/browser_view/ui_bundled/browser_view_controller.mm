@@ -818,7 +818,7 @@ enum HeaderBehaviour {
   _bookmarksCoordinator = nil;
 }
 
-#pragma mark - NSObject
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
   [self dismissPopups];

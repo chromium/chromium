@@ -104,6 +104,8 @@
   self.hidden = FALSE;
 }
 
+#pragma mark - UIAccessibility
+
 - (BOOL)isAccessibilityElement {
   return YES;
 }

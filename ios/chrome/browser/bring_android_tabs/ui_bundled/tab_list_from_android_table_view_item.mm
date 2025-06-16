@@ -95,7 +95,7 @@
   [self createSubviews];
 }
 
-#pragma mark - Accessors
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   NSString* accessibilityLabel = self.titleLabel.text;
@@ -111,6 +111,8 @@
   }
   return userInputLabels;
 }
+
+#pragma mark - UIAccessibilityIdentification
 
 - (NSString*)accessibilityIdentifier {
   return self.titleLabel.text;

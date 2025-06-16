@@ -74,10 +74,6 @@ const CGFloat kVerticalPadding = 20;
   _notificationItem = nil;
 }
 
-- (NSString*)accessibilityLabel {
-  return _textLabel.text;
-}
-
 - (void)setNotificationItem:(TabGroupsPanelItem*)notificationItem {
   CHECK_EQ(notificationItem.type, TabGroupsPanelItemType::kNotification);
   if ([notificationItem isEqual:_notificationItem]) {
@@ -85,6 +81,12 @@ const CGFloat kVerticalPadding = 20;
   }
   _notificationItem = notificationItem;
   _textLabel.text = notificationItem.notificationText;
+}
+
+#pragma mark - UIAccessibility
+
+- (NSString*)accessibilityLabel {
+  return _textLabel.text;
 }
 
 #pragma mark - Private

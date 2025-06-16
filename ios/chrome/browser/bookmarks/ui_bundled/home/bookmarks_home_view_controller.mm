@@ -1389,7 +1389,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // No-op
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
   if ([self isDisplayingBookmarkRoot]) {

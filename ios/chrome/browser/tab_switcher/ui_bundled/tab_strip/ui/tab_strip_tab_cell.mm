@@ -511,7 +511,7 @@ constexpr CGFloat kBlueDotInset = 1;
 }
 #endif
 
-#pragma mark - UIAccessibility
+#pragma mark - UIAccessibilityAction
 
 - (NSArray*)accessibilityCustomActions {
   return @[ [[UIAccessibilityCustomAction alloc]

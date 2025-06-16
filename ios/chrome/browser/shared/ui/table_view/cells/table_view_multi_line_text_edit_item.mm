@@ -168,7 +168,7 @@ const CGFloat kSymbolSize = 15;
   self.textView.text = nil;
 }
 
-#pragma mark - NSObject(Accessibility)
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   return [NSString

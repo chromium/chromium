@@ -252,7 +252,7 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
                                                size:kUseDefaultFontSize];
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   // If no subtitleLabel text has been set only use the titleLabel text.

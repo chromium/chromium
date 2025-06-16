@@ -135,7 +135,7 @@ UIStackView* CarouselStackView() {
   return self.suggestionsStackView.arrangedSubviews.count;
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibilityContainer
 
 - (NSArray*)accessibilityElements {
   return self.suggestionsStackView.arrangedSubviews;

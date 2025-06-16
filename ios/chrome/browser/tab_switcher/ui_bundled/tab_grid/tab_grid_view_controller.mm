@@ -364,7 +364,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
   [self.tabGridHandler exitTabGrid];

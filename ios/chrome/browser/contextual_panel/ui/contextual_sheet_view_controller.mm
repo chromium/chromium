@@ -132,11 +132,6 @@ const CGFloat kTopCornerRadius = 10;
 }
 #endif
 
-- (BOOL)accessibilityPerformEscape {
-  [self closeSheet];
-  return YES;
-}
-
 // Returns the calculated detent of the medium height sheet. If the content
 // height is less than the default medium detent, use that instead of the
 // default.
@@ -260,6 +255,13 @@ const CGFloat kTopCornerRadius = 10;
   base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
                                 ContextualPanelDismissedReason::UserDismissed);
   [self.contextualSheetHandler closeContextualSheet];
+}
+
+#pragma mark - UIAccessibilityAction
+
+- (BOOL)accessibilityPerformEscape {
+  [self closeSheet];
+  return YES;
 }
 
 #pragma mark - ContextualSheetDisplayController

@@ -497,7 +497,26 @@ UIColor* GetCheckedTintColor() {
   _radioButtonImageView.image = circleImage;
 }
 
-#pragma mark - Accessibility
+- (void)updateChevronIdentifier {
+  switch (_snippetButtonState) {
+    case SnippetButtonState::kOneLine:
+      _chevronButton.accessibilityIdentifier = [NSString
+          stringWithFormat:@"%@%@",
+                           kSnippetSearchEngineOneLineChevronIdentifierPrefix,
+                           self.searchEngineName];
+      break;
+    case SnippetButtonState::kExpanded:
+      base::RecordAction(
+          base::UserMetricsAction(kExpandSearchEngineDescriptionUserAction));
+      _chevronButton.accessibilityIdentifier = [NSString
+          stringWithFormat:@"%@%@",
+                           kSnippetSearchEngineExpandedChevronIdentifierPrefix,
+                           self.searchEngineName];
+      break;
+  }
+}
+
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   CHECK_NE(self.snippetText.length, 0ul)
@@ -514,15 +533,19 @@ UIColor* GetCheckedTintColor() {
   return @[ self.searchEngineName ];
 }
 
+- (BOOL)isAccessibilityElement {
+  return YES;
+}
+
+#pragma mark - UIAccessibilityIdentification
+
 - (NSString*)accessibilityIdentifier {
   return
       [NSString stringWithFormat:@"%@%@", kSnippetSearchEngineIdentifierPrefix,
                                  self.searchEngineName];
 }
 
-- (BOOL)isAccessibilityElement {
-  return YES;
-}
+#pragma mark - UIAccessibilityAction
 
 - (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
   if (!_isChevronButtonEnabled) {
@@ -545,25 +568,6 @@ UIColor* GetCheckedTintColor() {
           selector:@selector(chevronToggleAction:)];
   NSArray<UIAccessibilityCustomAction*>* actions = @[ action ];
   return actions;
-}
-
-- (void)updateChevronIdentifier {
-  switch (_snippetButtonState) {
-    case SnippetButtonState::kOneLine:
-      _chevronButton.accessibilityIdentifier = [NSString
-          stringWithFormat:@"%@%@",
-                           kSnippetSearchEngineOneLineChevronIdentifierPrefix,
-                           self.searchEngineName];
-      break;
-    case SnippetButtonState::kExpanded:
-      base::RecordAction(
-          base::UserMetricsAction(kExpandSearchEngineDescriptionUserAction));
-      _chevronButton.accessibilityIdentifier = [NSString
-          stringWithFormat:@"%@%@",
-                           kSnippetSearchEngineExpandedChevronIdentifierPrefix,
-                           self.searchEngineName];
-      break;
-  }
 }
 
 @end

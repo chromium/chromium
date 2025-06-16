@@ -144,6 +144,8 @@ struct ViewConfig {
   [self createSubviews];
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   return [NSString
       stringWithFormat:@"%@, %@", [self titleText], [self descriptionText]];

@@ -254,7 +254,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
   [self stopEdit];
 }
 
-#pragma mark Accessibility
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   if (!self.cloudSlashedView.hidden) {

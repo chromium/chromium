@@ -19,11 +19,6 @@ const CGFloat kAppearanceAnimationDuration = 0.3f;
 
 @implementation LensOverlayProgressBar
 
-- (NSString*)accessibilityValue {
-  return l10n_util::GetNSStringF(IDS_IOS_PROGRESS_BAR_ACCESSIBILITY,
-                                 [super accessibilityValue].cr_UTF16String);
-}
-
 - (void)setHidden:(BOOL)hidden
          animated:(BOOL)animated
        completion:(void (^)(BOOL finished))userCompletion {
@@ -49,4 +44,12 @@ const CGFloat kAppearanceAnimationDuration = 0.3f;
         }
       }];
 }
+
+#pragma mark - UIAccessibility
+
+- (NSString*)accessibilityValue {
+  return l10n_util::GetNSStringF(IDS_IOS_PROGRESS_BAR_ACCESSIBILITY,
+                                 [super accessibilityValue].cr_UTF16String);
+}
+
 @end

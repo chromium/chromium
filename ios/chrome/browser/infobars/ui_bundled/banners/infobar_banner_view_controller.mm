@@ -769,6 +769,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   return NO;
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   if ([self.bannerAccessibilityLabel length]) {
     return self.bannerAccessibilityLabel;

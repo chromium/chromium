@@ -305,7 +305,7 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
   }
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   if (self.additionalAccessibilityLabel) {

@@ -190,11 +190,13 @@ const CGFloat kContentOptimalWidth = 327;
   self.authenticateButton.accessibilityLabel = accessibilityLabel;
 }
 
-#pragma mark - voiceover
+#pragma mark - UIAccessibility
 
 - (BOOL)accessibilityViewIsModal {
   return YES;
 }
+
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformMagicTap {
   [self.authenticateButton

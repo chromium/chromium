@@ -140,20 +140,6 @@
   self.cloudSlashedView.hidden = YES;
 }
 
-- (NSString*)accessibilityLabel {
-  if (!self.cloudSlashedView.hidden) {
-    return l10n_util::GetNSStringF(
-        IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL,
-        base::SysNSStringToUTF16(self.parentFolderNameLabel.text));
-  }
-  return self.parentFolderNameLabel.text;
-}
-
-- (NSString*)accessibilityHint {
-  return l10n_util::GetNSString(
-      IDS_IOS_BOOKMARK_EDIT_PARENT_FOLDER_BUTTON_HINT);
-}
-
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -179,6 +165,22 @@
     self.stackView.alignment = UIStackViewAlignmentCenter;
     self.parentFolderNameLabel.textAlignment = NSTextAlignmentRight;
   }
+}
+
+#pragma mark - UIAccessibility
+
+- (NSString*)accessibilityLabel {
+  if (!self.cloudSlashedView.hidden) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL,
+        base::SysNSStringToUTF16(self.parentFolderNameLabel.text));
+  }
+  return self.parentFolderNameLabel.text;
+}
+
+- (NSString*)accessibilityHint {
+  return l10n_util::GetNSString(
+      IDS_IOS_BOOKMARK_EDIT_PARENT_FOLDER_BUTTON_HINT);
 }
 
 @end

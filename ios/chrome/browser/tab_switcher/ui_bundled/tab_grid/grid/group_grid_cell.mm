@@ -214,6 +214,8 @@ const CGFloat kTopBarLargeInset = 20;
   return YES;
 }
 
+#pragma mark - UIAccessibilityAction
+
 - (NSArray*)accessibilityCustomActions {
   if ([self isInSelectionMode]) {
     // If the cell is in tab grid selection mode, only allow toggling the

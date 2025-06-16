@@ -366,51 +366,6 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
   _faviconReplacementSymbolImageView = nil;
 }
 
-- (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
-  self.shouldGenerateAccessibilityLabel = !accessibilityLabel.length;
-  [super setAccessibilityLabel:accessibilityLabel];
-}
-
-- (NSString*)accessibilityLabel {
-  if (self.shouldGenerateAccessibilityLabel) {
-    NSString* accessibilityLabel = self.titleLabel.text;
-    if (self.URLLabel.text.length > 0) {
-      accessibilityLabel = [NSString
-          stringWithFormat:@"%@, %@", accessibilityLabel, self.URLLabel.text];
-    }
-    if (self.thirdRowLabel.text.length > 0) {
-      accessibilityLabel =
-          [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
-                                     self.thirdRowLabel.text];
-    }
-    if (self.metadataLabel.text.length > 0) {
-      accessibilityLabel =
-          [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
-                                     self.metadataLabel.text];
-    }
-    return accessibilityLabel;
-  } else {
-    return [super accessibilityLabel];
-  }
-}
-
-- (NSArray<NSString*>*)accessibilityUserInputLabels {
-  NSMutableArray<NSString*>* userInputLabels = [[NSMutableArray alloc] init];
-  if (self.titleLabel.text) {
-    [userInputLabels addObject:self.titleLabel.text];
-  }
-
-  return userInputLabels;
-}
-
-- (NSString*)accessibilityIdentifier {
-  return self.titleLabel.text;
-}
-
-- (BOOL)isAccessibilityElement {
-  return YES;
-}
-
 - (void)startAnimatingActivityIndicator {
   // It may be an edge case if the activity indicator is spinning when we don't
   // expect it. But it's okay to leave indicator spinning instead of crashing.
@@ -465,6 +420,55 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
   ]];
 
   _faviconReplacementSymbolImageView = symbolImageView;
+}
+
+#pragma mark - UIAccessibilityIdentification
+
+- (NSString*)accessibilityIdentifier {
+  return self.titleLabel.text;
+}
+
+#pragma mark - UIAccessibility
+
+- (BOOL)isAccessibilityElement {
+  return YES;
+}
+
+- (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
+  self.shouldGenerateAccessibilityLabel = !accessibilityLabel.length;
+  [super setAccessibilityLabel:accessibilityLabel];
+}
+
+- (NSString*)accessibilityLabel {
+  if (self.shouldGenerateAccessibilityLabel) {
+    NSString* accessibilityLabel = self.titleLabel.text;
+    if (self.URLLabel.text.length > 0) {
+      accessibilityLabel = [NSString
+          stringWithFormat:@"%@, %@", accessibilityLabel, self.URLLabel.text];
+    }
+    if (self.thirdRowLabel.text.length > 0) {
+      accessibilityLabel =
+          [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
+                                     self.thirdRowLabel.text];
+    }
+    if (self.metadataLabel.text.length > 0) {
+      accessibilityLabel =
+          [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
+                                     self.metadataLabel.text];
+    }
+    return accessibilityLabel;
+  } else {
+    return [super accessibilityLabel];
+  }
+}
+
+- (NSArray<NSString*>*)accessibilityUserInputLabels {
+  NSMutableArray<NSString*>* userInputLabels = [[NSMutableArray alloc] init];
+  if (self.titleLabel.text) {
+    [userInputLabels addObject:self.titleLabel.text];
+  }
+
+  return userInputLabels;
 }
 
 @end

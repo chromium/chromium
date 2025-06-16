@@ -250,6 +250,8 @@ void PositionView(UIView* view, CGPoint point) {
   return YES;
 }
 
+#pragma mark - UIAccessibilityAction
+
 - (NSArray*)accessibilityCustomActions {
   if (self.isInSelectionMode) {
     // If the cell is in tab grid selection mode, only allow toggling the

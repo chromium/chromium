@@ -151,7 +151,7 @@ const CGFloat kContentViewTrailingMargin = 13.0;
   _iconBackgroundView.backgroundColor = nil;
 }
 
-#pragma mark - Private
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   return self.textLabel.text;

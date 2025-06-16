@@ -183,7 +183,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   self.navigationController.toolbarHidden = NO;
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
   [self cancel];

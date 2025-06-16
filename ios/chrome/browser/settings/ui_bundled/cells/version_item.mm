@@ -92,6 +92,8 @@ const CGFloat kVerticalSpacing = 16;
   return self;
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   return self.textLabel.text;
 }

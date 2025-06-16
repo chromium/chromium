@@ -162,7 +162,7 @@ using bookmarks::BookmarkNode;
   }
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
   [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];

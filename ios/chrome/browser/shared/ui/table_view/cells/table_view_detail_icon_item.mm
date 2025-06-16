@@ -571,6 +571,22 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   _detailTextLabel.font = [UIFont preferredFontForTextStyle:preferredFont];
 }
 
+// Updates the cell's UI when device's content size category is an accessibility
+// category.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  BOOL isCurrentCategoryAccessibility =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (isCurrentCategoryAccessibility !=
+      UIContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory)) {
+    [self updateCellForAccessibilityContentSizeCategory:
+              isCurrentCategoryAccessibility];
+  }
+}
+
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   if (self.customAccessibilityLabel) {
     return self.customAccessibilityLabel;
@@ -622,20 +638,6 @@ NewFeatureBadgeView* NewIPHBadgeView() {
     }
   }
   return @[ self.textLabel.text ];
-}
-
-// Updates the cell's UI when device's content size category is an accessibility
-// category.
-- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
-  BOOL isCurrentCategoryAccessibility =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (isCurrentCategoryAccessibility !=
-      UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory)) {
-    [self updateCellForAccessibilityContentSizeCategory:
-              isCurrentCategoryAccessibility];
-  }
 }
 
 @end

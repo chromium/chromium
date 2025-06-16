@@ -27,6 +27,8 @@
   return self;
 }
 
+#pragma mark - UIAccessibilityAction
+
 // If accessibilityActivate isn't overriden, VoiceOver isn't able to close the
 // menu.
 // See crbbug.com/936850.

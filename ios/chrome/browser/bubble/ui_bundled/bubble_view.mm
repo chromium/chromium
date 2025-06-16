@@ -466,6 +466,8 @@ UIStackView* PageControl(BubblePageControlPage page) {
   [self updateArrowAlignmentConstraint];
 }
 
+#pragma mark - UIAccessibility
+
 - (NSString*)accessibilityLabel {
   return self.titleLabel.text;
 }
@@ -473,6 +475,8 @@ UIStackView* PageControl(BubblePageControlPage page) {
 - (NSString*)accessibilityValue {
   return self.label.text;
 }
+
+#pragma mark - UIAccessibilityAction
 
 - (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
   NSMutableArray<UIAccessibilityCustomAction*>* accessibilityCustomActions =

@@ -167,7 +167,7 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
   [self updateConstraintsForTrailingIconVisible:YES];
 }
 
-#pragma mark - NSObject(Accessibility)
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   NSString* accessibilityText = self.textLabel.text;
