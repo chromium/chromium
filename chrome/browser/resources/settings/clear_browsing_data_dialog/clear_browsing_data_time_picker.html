@@ -10,6 +10,7 @@
   .row {
     align-items: center;
     display: flex;
+    overflow: auto;
   }
 
   .time-period-chip {
@@ -17,7 +18,7 @@
   }
 </style>
 
-<div class="row">
+<div class="row" scrollable>
   <template is="dom-repeat" items="[[expandedOptionList_]]">
     <!-- TODO(crbug.com/397187800): Handle content overflow,
          current behavior is to scroll.-->
