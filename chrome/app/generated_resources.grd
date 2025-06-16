@@ -8820,6 +8820,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
        <message name="IDS_OPENS_MANAGEMENT_PAGE" desc="ARIA (accessibility) role description for a link in the New Tab footer which opens the chrome://management page in the current tab.">
         Learn about how your browser is managed
       </message>
+      <message name="IDS_HIDE_NEW_TAB_FOOTER" desc="Label for option to hide New Tab Footer feature, a UI that may show at the bottom of the New Tab Page.">
+        Hide footer on New Tab page
+      </message>
+
       <!-- Star View menu -->
       <if expr="use_titlecase">
         <message name="IDS_STAR_VIEW_MENU_ADD_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for adding a bookmark.">
