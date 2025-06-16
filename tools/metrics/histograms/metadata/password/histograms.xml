@@ -2378,7 +2378,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.MediationConditional"
-    enum="CredentialManagerGetResult" expires_after="2025-06-22">
+    enum="CredentialManagerGetResult" expires_after="2025-11-22">
   <owner>goto@google.com</owner>
   <owner>markusheintz@google.com</owner>
   <owner>yigu@google.com</owner>
