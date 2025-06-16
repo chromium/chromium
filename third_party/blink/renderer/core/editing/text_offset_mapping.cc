@@ -240,9 +240,7 @@ TextOffsetMapping::InlineContents ComputeInlineContentsFromNode(
   // If the node is inside a User agent Shadow root and the block_flow
   // is anonymous and outside the shadow root we should pass
   // node as Shadow host and get the layout object from that.
-  if (RuntimeEnabledFeatures::
-          NodeInUAShadowRootUnderAnonymousBlockFlowEnabled() &&
-      node.IsInUserAgentShadowRoot() && block_flow->IsAnonymous()) {
+  if (node.IsInUserAgentShadowRoot() && block_flow->IsAnonymous()) {
     return CreateInlineContentsFromBlockFlow(
         *block_flow, *(node.OwnerShadowHost()->GetLayoutObject()));
   }

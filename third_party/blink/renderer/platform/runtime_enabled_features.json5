@@ -3256,11 +3256,6 @@
       status: "stable",
     },
     {
-      // crbug.com/380107555
-      name: "NodeInUAShadowRootUnderAnonymousBlockFlow",
-      status: "stable",
-    },
-    {
       // This turns off all font antialiasing for tests unless it is
       // explicitly required and enabled using the
       // "--enable-font-antialiasing" flag like in the case of
