@@ -10,6 +10,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation_crosapi.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "content/public/browser/browser_context.h"

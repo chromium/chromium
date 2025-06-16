@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "components/printing/common/print.mojom.h"

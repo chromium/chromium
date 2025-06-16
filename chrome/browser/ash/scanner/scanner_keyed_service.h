@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_CROS_APPS_API_CROS_APPS_API_MUTABLE_REGISTRY_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_frame_context.h"

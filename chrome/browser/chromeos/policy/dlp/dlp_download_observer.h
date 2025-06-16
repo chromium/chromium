@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_DOWNLOAD_OBSERVER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_DOWNLOAD_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"

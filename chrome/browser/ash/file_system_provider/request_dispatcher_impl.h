@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom-forward.h"
 #include "extensions/common/extension_id.h"

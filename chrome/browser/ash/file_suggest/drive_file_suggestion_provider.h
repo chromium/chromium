@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_DRIVE_FILE_SUGGESTION_PROVIDER_H_
 #define CHROME_BROWSER_ASH_FILE_SUGGEST_DRIVE_FILE_SUGGESTION_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_suggest/file_suggestion_provider.h"
 #include "chrome/browser/ash/file_suggest/item_suggest_cache.h"

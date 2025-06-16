@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/events.h"

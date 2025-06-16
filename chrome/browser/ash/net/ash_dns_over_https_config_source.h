@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/net/dns_over_https_config_source.h"
 

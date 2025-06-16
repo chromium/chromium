@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/wm/video_detector.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

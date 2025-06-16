@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_MOUNT_REQUEST_HANDLER_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_MOUNT_REQUEST_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 

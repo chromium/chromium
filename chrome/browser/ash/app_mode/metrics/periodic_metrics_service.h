@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_METRICS_PERIODIC_METRICS_SERVICE_H_
 #define CHROME_BROWSER_ASH_APP_MODE_METRICS_PERIODIC_METRICS_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_service.h"
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/wm/desks/desks_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"

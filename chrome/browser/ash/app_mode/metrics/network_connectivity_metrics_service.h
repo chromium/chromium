@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_METRICS_NETWORK_CONNECTIVITY_METRICS_SERVICE_H_
 #define CHROME_BROWSER_ASH_APP_MODE_METRICS_NETWORK_CONNECTIVITY_METRICS_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
