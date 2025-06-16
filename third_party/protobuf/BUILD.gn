@@ -142,10 +142,6 @@ static_library("protobuf_full") {
 
       # The Cast Core gRPC generator tool.
       "//third_party/cast_core/public/src/build/chromium:cast_core_grpc_generator",
-
-      # The proto_extras plugin generates code that some of the above fuzzers
-      # use, and thus needs to know the full types.
-      "//components/proto_extras:protobuf_full_support",
     ]
   }
 

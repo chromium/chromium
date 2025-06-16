@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/test/values_test_util.h"
-#include "components/proto_extras/test_proto/test_proto.extras.h"
 #include "components/proto_extras/test_proto/test_proto.pb.h"
-#include "components/proto_extras/test_proto/test_proto_dependency.extras.h"
+#include "components/proto_extras/test_proto/test_proto.to_value.h"
 #include "components/proto_extras/test_proto/test_proto_dependency.pb.h"
-#include "components/proto_extras/test_proto2/test_proto2.extras.h"
+#include "components/proto_extras/test_proto/test_proto_dependency.to_value.h"
 #include "components/proto_extras/test_proto2/test_proto2.pb.h"
+#include "components/proto_extras/test_proto2/test_proto2.to_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace proto_extras {

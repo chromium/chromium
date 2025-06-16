@@ -36,11 +36,11 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/proto/csd.extras.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "components/safe_browsing/core/common/proto/realtimeapi.extras.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5.extras.h"
+#include "components/safe_browsing/core/common/proto/csd.to_value.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.to_value.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -58,8 +58,8 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
-#include "components/enterprise/common/proto/connectors.extras.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/connectors.to_value.h"
 #endif
 
 using base::Time;
