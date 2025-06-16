@@ -307,6 +307,7 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     // display compositor later.
     shared_image_ = sii->CreateSharedImage(
         {viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
+         kBottomLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
          "TestLabel"},
@@ -336,6 +337,7 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     shared_image_ =
         shared_image_interface_->CreateSharedImageForSoftwareCompositor(
             {format, rect_.size(), gfx::ColorSpace(),
+             kBottomLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
              gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "TestPluginSharedBitmap"});
     sync_token_ = shared_image_interface_->GenVerifiedSyncToken();
 
@@ -368,27 +370,16 @@ bool TestPlugin::PrepareTransferableResource(
     viz::ReleaseCallback* release_callback) {
   if (!content_changed_)
     return false;
-  gfx::Size size(rect_.size());
 
-  if (shared_image_ && !gl_) {
-    *resource = viz::TransferableResource::MakeSoftwareSharedImage(
-        shared_image_, sync_token_, shared_image_->size(),
-        viz::SinglePlaneFormat::kBGRA_8888,
-        viz::TransferableResource::ResourceSource::kCanvas);
-    *release_callback =
-        base::BindOnce(&ReleaseSharedImage, std::move(shared_image_));
-    sync_token_ = gpu::SyncToken();
-  } else if (shared_image_) {
-    *resource = viz::TransferableResource::MakeGpu(
-        shared_image_, GL_TEXTURE_2D, sync_token_, size,
-        viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
-    // We pass ownership of the shared image to the callback.
-    *release_callback = base::BindOnce(&ReleaseSharedImage,
-                                       std::exchange(shared_image_, nullptr));
-    sync_token_ = gpu::SyncToken();
-  }
-  resource->origin = kBottomLeft_GrSurfaceOrigin;
-  resource->size = size;
+  *resource = viz::TransferableResource::Make(
+      shared_image_, viz::TransferableResource::ResourceSource::kCanvas,
+      sync_token_);
+  // We pass ownership of the shared image to the callback.
+  *release_callback = base::BindOnce(&ReleaseSharedImage,
+                                     std::exchange(shared_image_, nullptr));
+
+  sync_token_ = gpu::SyncToken();
+
   content_changed_ = false;
   return true;
 }
