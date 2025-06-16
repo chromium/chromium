@@ -69,7 +69,7 @@ BASE_FEATURE(kPdfXfaSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-BASE_FEATURE(kPdfInk2, "PdfInk2", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPdfInk2, "PdfInk2", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables text annotations.
 const base::FeatureParam<bool> kPdfInk2TextAnnotations{
