@@ -126,14 +126,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     NOT_DESTROYED();
     return inline_node_data_.Get();
   }
-
-  // True if `this` has an `InlineNodeData` that does not have the
-  // `InlineItemsData` for the first-line.
-  bool HasInlineNodeDataWithoutFirstLine() const {
-    NOT_DESTROYED();
-    return inline_node_data_ && !inline_node_data_->HasFirstLineItems();
-  }
-
   // Same as `GetInlineNodeData` and then `ClearInlineNodeData`.
   InlineNodeData* TakeInlineNodeData() {
     NOT_DESTROYED();

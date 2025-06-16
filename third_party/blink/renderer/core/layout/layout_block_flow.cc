@@ -342,17 +342,6 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
         prev = sibling;
       }
     }
-  } else if (!prev && next && IsA<LayoutBlockFlow>(next) &&
-             GetDocument().GetStyleEngine().UsesFirstLineRules() &&
-             Style() != FirstLineStyle() &&
-             To<LayoutBlockFlow>(next)->HasInlineNodeDataWithoutFirstLine()) {
-    // The `::first-line` applies to the "first in-flow block-level child". When
-    // such child is removed and the next child is inline, the next child needs
-    // to run `PrepareLayout` again to create `InlineItem`s for the first-line.
-    // https://drafts.csswg.org/css-pseudo-4/#first-text-line
-    next->SetNeedsLayoutAndFullPaintInvalidation(
-        layout_invalidation_reason::kRemovedFromLayout);
-    next->SetNeedsCollectInlines();
   }
 
   LayoutBlock::RemoveChild(old_child);
