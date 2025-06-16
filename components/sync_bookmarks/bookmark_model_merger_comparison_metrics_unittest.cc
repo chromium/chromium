@@ -758,16 +758,96 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest,
       LegacySetComparisonOutcome::kAccountDataIsStrictSubsetOfLocalData,
       /*expected_bucket_count=*/1);
 
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndTitle",
+      /*sample=*/SetComparisonOutcome::kExactMatchNonEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndUuid",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndTitleAndPath",
+      /*sample=*/SetComparisonOutcome::kIntersectionBetween10And50Percent,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndTitleAndPathAndUuid",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndTitle",
+      /*sample=*/SetComparisonOutcome::kIntersectionBetween50And90Percent,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndUuid",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndTitleAndPath",
+      /*sample=*/SetComparisonOutcome::kIntersectionBetween50And90Percent,
+      /*expected_bucket_count=*/1);
+
+  // Same as above but with the bookmark count suffix.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndTitle.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kExactMatchNonEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndUuid.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndTitleAndPath."
+      "Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kIntersectionBetween10And50Percent,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndTitle.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kIntersectionBetween50And90Percent,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndUuid.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison2.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndTitleAndPath.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kIntersectionBetween50And90Percent,
+      /*expected_bucket_count=*/1);
+
   // Sanity-check the recording of a few metrics without the gaia ID info
   // breakdown.
   histogram_tester.ExpectUniqueSample(
-      "Sync.BookmarkModelMerger.Comparison."
+      "Sync.BookmarkModelMerger.Comparison2."
       "ConsideringAllBookmarks.ByUrlAndTitle",
       /*sample=*/LegacySetComparisonOutcome::kExactMatchNonEmpty,
       /*expected_bucket_count=*/1);
 
   histogram_tester.ExpectUniqueSample(
-      "Sync.BookmarkModelMerger.Comparison."
+      "Sync.BookmarkModelMerger.Comparison2."
       "ConsideringAllBookmarks.ByUrlAndUuid",
       /*sample=*/LegacySetComparisonOutcome::kIntersectionEmpty,
       /*expected_bucket_count=*/1);

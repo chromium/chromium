@@ -504,7 +504,7 @@ void CompareAndLogHistogramsWithKey(
     for (std::string_view optional_bookmark_count_suffix :
          {std::string_view(),
           BookmarkCountSuffixToString(bookmark_count_suffix)}) {
-      const std::string histogram_name =
+      const std::string legacy_histogram_name =
           base::StrCat({"Sync.BookmarkModelMerger.Comparison",
                         optional_previously_syncing_gaia_id_info_infix, ".",
                         SubtreeSelectionToInfix(subtree_selection), ".",
@@ -514,9 +514,24 @@ void CompareAndLogHistogramsWithKey(
       // The call below to CompareSets() mixes up local data with account data.
       // Such implementation was accidental, but the resulting metric is anyway
       // meaningful, and the resulting behavior documented in histograms.xml.
-      // TODO(crbug.com/424163391): Fix arguments below.
+      // For a fixed version of this, see `fixed_histogram_name` immediately
+      // below.
+      // TODO(crbug.com/424551547): Clean up the legacy metric, if not both,
+      // in upcoming milestones (M139 or M140).
       base::UmaHistogramEnumeration(
-          histogram_name, CompareSets(local_data_set, account_data_set));
+          legacy_histogram_name, CompareSets(/*account_data=*/local_data_set,
+                                             /*local_data=*/account_data_set));
+
+      const std::string fixed_histogram_name =
+          base::StrCat({"Sync.BookmarkModelMerger.Comparison2",
+                        optional_previously_syncing_gaia_id_info_infix, ".",
+                        SubtreeSelectionToInfix(subtree_selection), ".",
+                        GroupingKeyInfixToString(Key::kGroupingKeyInfix),
+                        optional_bookmark_count_suffix});
+
+      base::UmaHistogramEnumeration(
+          fixed_histogram_name, CompareSets(/*account_data=*/account_data_set,
+                                            /*local_data=*/local_data_set));
     }
   }
 }
