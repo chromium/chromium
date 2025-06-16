@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <array>
+#include <cstdint>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 
 // Expected rewrite:
 // base::span<T> get()
@@ -123,7 +125,7 @@ void raw_ptr_variables() {
   // Expected rewrite:
   // base::raw_span<char> buf5 = buf4;
   base::raw_span<char> buf5 = buf4;
-  buf5 = buf5.subspan(1);
+  buf5 = buf5.subspan(1u);
 
   // Expected rewrite:
   // base::raw_span<char> buf6 = buf5;
@@ -136,7 +138,8 @@ void raw_ptr_variables() {
 
   int index = 1;
   // Expected rewrite:
-  // raw_ptr<char> buf7 = buf6.subspan(index).data();
-  raw_ptr<char> buf7 = buf6.subspan(index).data();
+  // raw_ptr<char> buf7 =
+  // buf6.subspan(base::checked_cast<size_t>(index)).data();
+  raw_ptr<char> buf7 = buf6.subspan(base::checked_cast<size_t>(index)).data();
   (void)buf7;
 }

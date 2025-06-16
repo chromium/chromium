@@ -932,6 +932,38 @@ static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
                                    ")", source_manager));
 }
 
+// Closes an open `base::span(` if present.
+// Returns a `.subspan(` opener.
+// Opens a `base::checked_cast(` if necessary.
+static std::string CreateSubspanOpener(
+    const clang::ArrayTypeLoc* rhs_array_type,
+    const SubspanExprReplacement* subspan_expr_replacement) {
+  std::string_view maybe_base_span_closer = rhs_array_type ? ")" : "";
+  std::string_view maybe_checked_cast_opener = "";
+  if (const auto* replacement =
+          std::get_if<CheckedCastReplacement>(subspan_expr_replacement)) {
+    maybe_checked_cast_opener = replacement->opener.text;
+  }
+  return llvm::formatv("{0}.subspan({1}", maybe_base_span_closer,
+                       maybe_checked_cast_opener);
+}
+
+// Returns a `.subspan(` closer.
+// Closes an open `base::checked_cast(` if necessary,
+// or appends a `u` to the integer literal expression.
+static std::string CreateSubspanCloser(
+    const SubspanExprReplacement* subspan_expr_replacement) {
+  std::string_view maybe_closer = "";
+  if (const auto* replacement =
+          std::get_if<RangedReplacement>(subspan_expr_replacement)) {
+    maybe_closer = replacement->text;
+  } else if (const auto* replacement = std::get_if<CheckedCastReplacement>(
+                 subspan_expr_replacement)) {
+    maybe_closer = replacement->closer.text;
+  }
+  return llvm::formatv("{0})", maybe_closer);
+}
+
 static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const auto* binary_operation =
@@ -984,24 +1016,29 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   // becomes
   //
   // a .subspan( b
+  const auto* binary_op_RHS =
+      GetNodeOrCrash<clang::Expr>(result, "binary_op_rhs", __FUNCTION__);
+  const auto subspan_expr_replacement =
+      GetSubspanExprReplacement(binary_op_RHS, result, key);
+
+  std::string subspan_opener =
+      CreateSubspanOpener(rhs_array_type, &subspan_expr_replacement);
+
   const clang::SourceLocation binary_operator_begin =
       GetBinaryOperationOperatorLoc(binary_operation, result);
   EmitReplacement(
       key,
       GetReplacementDirective(
           {binary_operator_begin, binary_operator_begin.getLocWithOffset(1)},
-          llvm::formatv("{0}.subspan(", rhs_array_type ? ")" : ""),
-          source_manager, -kAdaptBinaryOperationPrecedence));
+          subspan_opener, source_manager, -kAdaptBinaryOperationPrecedence));
 
-  const auto* binary_op_RHS =
-      GetNodeOrCrash<clang::Expr>(result, "binary_op_rhs", __FUNCTION__);
   const clang::SourceRange operator_rhs_range = getExprRange(
       binary_op_RHS, source_manager, result.Context->getLangOpts());
 
-  // Insert the closing right parenthesis.
+  std::string subspan_closer = CreateSubspanCloser(&subspan_expr_replacement);
   EmitReplacement(key, GetReplacementDirective(
-                           operator_rhs_range.getEnd(), ")", source_manager,
-                           -kAdaptBinaryOperationPrecedence));
+                           operator_rhs_range.getEnd(), subspan_closer,
+                           source_manager, -kAdaptBinaryOperationPrecedence));
 
   // It's possible we emitted a rewrite that creates a temporary but
   // unnamed `base::span` (issue 408018846). This could end up being

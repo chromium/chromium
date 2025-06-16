@@ -24,6 +24,6 @@ void function() {
   UseBufferUnsafely(int_array);
 
   // Expected rewrite:
-  // UseBufferUnsafely(base::span<int>(int_array).subspan(1));
-  UseBufferUnsafely(base::span<int>(int_array).subspan(1));
+  // UseBufferUnsafely(base::span<int>(int_array).subspan(1u));
+  UseBufferUnsafely(base::span<int>(int_array).subspan(1u));
 }

@@ -16,6 +16,6 @@ unsigned char UseBufferUnsafely(base::span<const unsigned char> arg) {
   // TODO(crbug.com/419598098): figure out why this doesn't work.
   //
   // Expected rewrite:
-  // return GetUnsafeChar(arg.subspan(1u).data());
-  return GetUnsafeChar(arg.subspan(1));
+  // return GetUnsafeChar(arg.subspan(1u));
+  return GetUnsafeChar(arg.subspan(1u));
 }
