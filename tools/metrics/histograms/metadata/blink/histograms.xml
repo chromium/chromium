@@ -1135,6 +1135,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-10-26">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time between CommitNavigation to StartLoadingResponse in the renderer
     process. This is recorded on each new navigation for http or https URLs in
@@ -1147,6 +1148,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-10-12">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent processing DocumentLoader::CreateParserPostCommit() in the
     renderer process. This is recorded on each new navigation for http or https
@@ -3109,6 +3111,7 @@ chromium-metrics-reviews@google.com.
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the total elapsed time it takes to run SVGImage::DataChanged()
     while loading the outermost main frame document until finishing parsing.
@@ -3390,6 +3393,7 @@ chromium-metrics-reviews@google.com.
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Record when the page's main frame starts preloading {SubresourceType}.
     Measures the duration between when the navigation starts, to when preloading
@@ -4981,6 +4985,7 @@ chromium-metrics-reviews@google.com.
   <owner>paint-dev@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent updating a SVG image once all data is received.
 

@@ -2609,6 +2609,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-10-12">
   <owner>chikamune@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>{MetricName}, but recorded only for {Origin} navigations.</summary>
   <token key="Origin">
     <variant name="CrossOrigin" summary="cross-origin"/>

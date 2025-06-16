@@ -785,6 +785,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2025-11-16">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent processing RenderFrameImpl::CommitNavigationWithParams() in the
     renderer process. This is recorded on each WebFrameLoadType::kStandard
@@ -1192,6 +1193,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2025-11-16">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent processing GetFrameHostForNavigation() in
     RenderFrameHostManager::DidCreateNavigationRequest() that can prepare a
@@ -1403,6 +1405,7 @@ chromium-metrics-reviews@google.com.
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Record when (a) the navigation happened in MainFrame, (b) it was a new
     navigation, (c) it was not a session restore, (d) the URL was http or https,
@@ -1633,6 +1636,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-11-16">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Milliseconds spent to process all the beforeunload events in JavaScript and
     waiting time for beforeunload dialog is closed if necessary. Recorded only

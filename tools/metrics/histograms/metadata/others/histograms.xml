@@ -6011,6 +6011,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-10-26">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the elapsed time it takes to read LCPPNavigationHint and attach it
     to NavigationHandle. Recorded on DidStartNavigatinon or

@@ -825,6 +825,7 @@ chromium-metrics-reviews@google.com.
   <owner>chikamune@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time it takes to synchronously establish the GPU channel.
     Logged on the first run of a sync call to EstableGpuChannelSync is made.
