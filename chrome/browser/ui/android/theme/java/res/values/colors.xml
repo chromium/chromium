@@ -7,7 +7,7 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Toolbar colors -->
-    <color name="toolbar_text_box_background_incognito">@color/baseline_neutral_0</color>
+    <color name="toolbar_text_box_background_incognito">@color/gm3_baseline_surface_container_highest_dark</color>
     <color name="toolbar_hairline_overlay_dark">@color/baseline_neutral_0_alpha_10</color>
     <color name="toolbar_hairline_overlay_light">@color/baseline_neutral_100_alpha_10</color>
     <color name="toolbar_icon_unfocused_activity_incognito_color">@color/baseline_neutral_90_alpha_38</color>

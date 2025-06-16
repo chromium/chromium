@@ -93,8 +93,6 @@ public class ThemeUtils {
     public static @ColorInt int getTextBoxColorForToolbarBackgroundInNonNativePage(
             Context context, @ColorInt int color, boolean isIncognito, boolean isCustomTab) {
         // Text box color on default toolbar background in incognito mode is a pre-defined color.
-        // TODO(https://crbug.com/406890625): Update incognito mode once we have confirmation from
-        // UX.
         if (isIncognito) {
             return SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
                     context, /* isIncognito= */ true);

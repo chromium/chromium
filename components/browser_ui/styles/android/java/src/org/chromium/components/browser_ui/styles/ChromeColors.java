@@ -28,12 +28,12 @@ public class ChromeColors {
      *
      * @param context {@link Context} used to retrieve colors.
      * @param isIncognito Whether the color is used in incognito mode. If true, this method will
-     *                    return a non-dynamic dark theme color.
+     *     return a non-dynamic dark theme color.
      * @return The default theme color.
      */
     public static @ColorInt int getDefaultThemeColor(Context context, boolean isIncognito) {
         return isIncognito
-                ? context.getColor(R.color.toolbar_background_primary_dark)
+                ? context.getColor(R.color.toolbar_background_incognito)
                 : MaterialColors.getColor(context, R.attr.colorSurface, TAG);
     }
 
