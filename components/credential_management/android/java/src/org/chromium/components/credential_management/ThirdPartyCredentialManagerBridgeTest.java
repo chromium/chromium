@@ -67,6 +67,10 @@ public class ThirdPartyCredentialManagerBridgeTest {
 
     @Test
     public void testOnPasswordCredentialReceivedCalled() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ThirdPartyCredentialManagerMetricsRecorder.GET_RESULT_HISTOGRAM_NAME,
+                        CredentialManagerAndroidGetResult.SUCCESS);
         PasswordCredential passwordCredential = new PasswordCredential(USERNAME, PASSWORD);
         GetCredentialResponse response = new GetCredentialResponse(passwordCredential);
 
@@ -93,10 +97,15 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         argThat(
                                 new PasswordCredentialResponseMatcher(
                                         new PasswordCredentialResponse(true, USERNAME, PASSWORD))));
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testOnGetCredentialErrorCalled() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ThirdPartyCredentialManagerMetricsRecorder.GET_RESULT_HISTOGRAM_NAME,
+                        CredentialManagerAndroidGetResult.UNEXPECTED_ERROR);
         doAnswer(invocation -> respondToGetCallback(invocation, null, mGetCredentialException))
                 .when(mCredentialManager)
                 .getCredentialAsync(
@@ -120,6 +129,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         argThat(
                                 new PasswordCredentialResponseMatcher(
                                         new PasswordCredentialResponse(false, "", ""))));
+        histogramWatcher.assertExpected();
     }
 
     @Test

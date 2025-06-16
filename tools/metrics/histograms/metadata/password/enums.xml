@@ -277,6 +277,21 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Edit username and password and save"/>
 </enum>
 
+<!-- LINT.IfChange(CredentialManagerAndroidGetResult) -->
+
+<enum name="CredentialManagerAndroidGetResult">
+  <int value="0" label="New type of error, unhandled in Chrome"/>
+  <int value="1" label="The operation succeeded"/>
+  <int value="2" label="The user intentionally canceled the flow"/>
+  <int value="3" label="Custom error by the third-party SDK"/>
+  <int value="4" label="Failed due to a transient internal API interruption"/>
+  <int value="5" label="Configurations are mismatched for the provider"/>
+  <int value="6" label="Failed with no detailed information"/>
+  <int value="7" label="Credential manager is unsupported"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/credential_management/android/java/src/org/chromium/components/credential_management/CredentialManagerAndroidGetResult.java:CredentialManagerAndroidGetResult) -->
+
 <enum name="CredentialManagerAPIError">
   <summary>
     Numeric values correspond to CredentialManagerStatusCodes class.

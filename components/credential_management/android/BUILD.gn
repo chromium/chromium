@@ -35,6 +35,7 @@ android_library("java") {
 
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/components/credential_management/CredentialManagerAndroidGetResult.java",
     "java/src/org/chromium/components/credential_management/CredentialManagerStoreResult.java",
     "java/src/org/chromium/components/credential_management/PasswordCredentialResponse.java",
     "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerBridge.java",

@@ -78,13 +78,19 @@ class ThirdPartyCredentialManagerBridge {
                 credentialCallback =
                         new CredentialManagerCallback<>() {
                             @Override
-                            public void onError(GetCredentialException e) {
+                            public void onError(GetCredentialException error) {
                                 callback.onResult(new PasswordCredentialResponse(false, "", ""));
+                                ThirdPartyCredentialManagerMetricsRecorder
+                                        .recordCredentialManagerGetResult(
+                                                /* success= */ false, /* error= */ error);
                             }
 
                             @Override
                             public void onResult(GetCredentialResponse result) {
                                 onGetCredentialResponse(result, callback);
+                                ThirdPartyCredentialManagerMetricsRecorder
+                                        .recordCredentialManagerGetResult(
+                                                /* success= */ true, /* error= */ null);
                             }
                         };
         credentialManager.getCredentialAsync(

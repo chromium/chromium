@@ -9,6 +9,13 @@ import androidx.credentials.exceptions.CreateCredentialException;
 import androidx.credentials.exceptions.CreateCredentialInterruptedException;
 import androidx.credentials.exceptions.CreateCredentialNoCreateOptionException;
 import androidx.credentials.exceptions.CreateCredentialUnknownException;
+import androidx.credentials.exceptions.GetCredentialCancellationException;
+import androidx.credentials.exceptions.GetCredentialCustomException;
+import androidx.credentials.exceptions.GetCredentialException;
+import androidx.credentials.exceptions.GetCredentialInterruptedException;
+import androidx.credentials.exceptions.GetCredentialProviderConfigurationException;
+import androidx.credentials.exceptions.GetCredentialUnknownException;
+import androidx.credentials.exceptions.GetCredentialUnsupportedException;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -18,6 +25,8 @@ import org.chromium.build.annotations.NullMarked;
 public final class ThirdPartyCredentialManagerMetricsRecorder {
     public static final String STORE_RESULT_HISTOGRAM_NAME =
             "PasswordManager.CredentialRequest.ThirdParty.Store";
+    public static final String GET_RESULT_HISTOGRAM_NAME =
+            "PasswordManager.CredentialRequest.ThirdParty.Get";
 
     private ThirdPartyCredentialManagerMetricsRecorder() {}
 
@@ -39,5 +48,29 @@ public final class ThirdPartyCredentialManagerMetricsRecorder {
         }
         RecordHistogram.recordEnumeratedHistogram(
                 STORE_RESULT_HISTOGRAM_NAME, result, CredentialManagerStoreResult.COUNT);
+    }
+
+    public static void recordCredentialManagerGetResult(
+            boolean success, @Nullable GetCredentialException error) {
+        int result = CredentialManagerAndroidGetResult.SUCCESS;
+        if (!success) {
+            if (error instanceof GetCredentialCancellationException) {
+                result = CredentialManagerAndroidGetResult.USER_CANCELED;
+            } else if (error instanceof GetCredentialCustomException) {
+                result = CredentialManagerAndroidGetResult.CUSTOM_ERROR;
+            } else if (error instanceof GetCredentialInterruptedException) {
+                result = CredentialManagerAndroidGetResult.INTERRUPTED;
+            } else if (error instanceof GetCredentialProviderConfigurationException) {
+                result = CredentialManagerAndroidGetResult.PROVIDER_CONFIGURATION_ERROR;
+            } else if (error instanceof GetCredentialUnknownException) {
+                result = CredentialManagerAndroidGetResult.UNKNOWN;
+            } else if (error instanceof GetCredentialUnsupportedException) {
+                result = CredentialManagerAndroidGetResult.UNSUPPORTED;
+            } else {
+                result = CredentialManagerAndroidGetResult.UNEXPECTED_ERROR;
+            }
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                GET_RESULT_HISTOGRAM_NAME, result, CredentialManagerAndroidGetResult.COUNT);
     }
 }

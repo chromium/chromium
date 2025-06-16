@@ -1386,6 +1386,17 @@ chromium-metrics-reviews@google.com.
   <token key="ProfileType" variants="ProfileType"/>
 </histogram>
 
+<histogram name="PasswordManager.CredentialRequest.ThirdParty.Get"
+    enum="CredentialManagerAndroidGetResult" expires_after="2025-12-11">
+  <owner>izuzic@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Log the result of the call to the Credential Manager API on Android when
+    getting a credential. Logged only on Android when Chrome uses platform
+    Autofill.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.CredentialRequest.ThirdParty.Store"
     enum="CredentialManagerStoreResult" expires_after="2025-12-11">
   <owner>izuzic@google.com</owner>
