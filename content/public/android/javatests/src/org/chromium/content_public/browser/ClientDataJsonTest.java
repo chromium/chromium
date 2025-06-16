@@ -86,6 +86,9 @@ public class ClientDataJsonTest {
                 output,
                 containsString(
                         String.format("\"displayName\":\"%s\"", payment.instrument.displayName)));
+        assertThat(
+                output,
+                containsString(String.format("\"details\":\"%s\"", payment.instrument.details)));
         assertThat(output, containsString(String.format("\"browserBoundPublicKey\":\"AQIDBA\"")));
     }
 
@@ -109,6 +112,26 @@ public class ClientDataJsonTest {
         assertThat(output, containsString(String.format("\"origin\":\"%s\"", ORIGIN)));
         assertThat(output, containsString("\"crossOrigin\":false"));
         assertThat(output, containsString("\"payment\":{\"browserBoundPublicKey\":\"AQIDBA\"}"));
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildClientDataJsonWithEmptyDetails() {
+        PaymentOptions payment = createSamplePaymentOptions();
+        payment.instrument.details = "";
+        String output =
+                ClientDataJson.buildClientDataJson(
+                        ClientDataRequestType.PAYMENT_GET,
+                        ORIGIN,
+                        CHALLENGE_BYTES,
+                        /* isCrossOrigin= */ false,
+                        payment,
+                        RELYING_PARTY_ID,
+                        TOP_ORIGIN);
+
+        assertParsesJson(output);
+        // Test that the output does not contain the details field.
+        assertThat(output, not(containsString("\"details\":")));
     }
 
     @Test

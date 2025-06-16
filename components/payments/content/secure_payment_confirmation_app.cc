@@ -379,6 +379,8 @@ void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
   // passed the correct information.
   std::optional<std::vector<blink::mojom::ShownPaymentEntityLogoPtr>>
       payment_entities_logos;
+  blink::mojom::PaymentCredentialInstrumentPtr instrument =
+      request_->instrument.Clone();
   if (base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationUxRefresh)) {
     payment_entities_logos.emplace();
@@ -389,11 +391,18 @@ void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
                 logo.url, base::UTF16ToUTF8(logo.label)));
       }
     }
+  } else {
+    // If kSecurePaymentConfirmationUxRefresh is not enabled, then we did not
+    // show the instrument details in the UI, and therefore we do not include
+    // them in the clientData by setting an empty string. Details should be an
+    // empty string here because the dictionary field is already flag protected
+    // on the render side; however, we also set it empty here on the
+    // browser-side as well.
+    instrument->details = "";
   }
   authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
       spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
-      request_->instrument.Clone(), request_->payee_name,
-      request_->payee_origin,
+      std::move(instrument), request_->payee_name, request_->payee_origin,
       /*payment_entities_logos=*/std::move(payment_entities_logos),
       std::move(browser_bound_public_key)));
 

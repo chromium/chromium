@@ -163,6 +163,11 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
     ret.append(R"(,"displayName":)");
     ret.append(ToJSONString(params.payment_options->instrument->display_name));
 
+    if (!params.payment_options->instrument->details.empty()) {
+      ret.append(R"(,"details":)");
+      ret.append(ToJSONString(params.payment_options->instrument->details));
+    }
+
     ret.append("}");
     if (params.payment_options->browser_bound_public_key.has_value()) {
       ret.append(R"(,"browserBoundPublicKey":)");

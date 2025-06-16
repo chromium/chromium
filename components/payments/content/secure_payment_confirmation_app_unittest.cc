@@ -98,6 +98,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
       request->browser_bound_pub_key_cred_params =
           std::move(*credential_parameters);
     }
+    request->instrument = blink::mojom::PaymentCredentialInstrument::New();
     return request;
   }
 
@@ -446,7 +447,7 @@ Matcher<blink::mojom::ShownPaymentEntityLogoPtr> IsShownPaymentEntityLogo(
 }
 
 TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
-       AddsPaymentEntitiesLogosToPaymentOptions) {
+       AddsPaymentEntitiesLogosAndDetailsToPaymentOptions) {
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
   auto authenticator =
@@ -462,6 +463,8 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
                      kPaymentEntity1LogoUrl);
   logos.emplace_back(u"PaymentEntity #2", std::move(drawsSomethingBitmap2),
                      kPaymentEntity2LogoUrl);
+  mojom::SecurePaymentConfirmationRequestPtr request = MakeRequest();
+  request->instrument->details = "**** 1234";
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
       payment_instrument_details_,
@@ -470,7 +473,7 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
       /*passkey_browser_binder=*/nullptr,
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
-      MakeRequest(), std::move(authenticator), std::move(logos));
+      std::move(request), std::move(authenticator), std::move(logos));
 
   blink::mojom::PaymentOptionsPtr payment_options;
   EXPECT_CALL(*mock_authenticator, SetPaymentOptions)
@@ -478,15 +481,20 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 
   // The first logo is not included because its bitmap is not set.
-  EXPECT_THAT(
-      payment_options,
-      Pointer(Field("payment_entities_logos",
-                    &blink::mojom::PaymentOptions::payment_entities_logos,
-                    Optional(ElementsAre(
-                        IsShownPaymentEntityLogo(kPaymentEntity1LogoUrl,
-                                                 "PaymentEntity #1"),
-                        IsShownPaymentEntityLogo(kPaymentEntity2LogoUrl,
-                                                 "PaymentEntity #2"))))));
+  EXPECT_THAT(payment_options,
+              Pointer(AllOf(
+                  Field("payment_entities_logos",
+                        &blink::mojom::PaymentOptions::payment_entities_logos,
+                        Optional(ElementsAre(
+                            IsShownPaymentEntityLogo(kPaymentEntity1LogoUrl,
+                                                     "PaymentEntity #1"),
+                            IsShownPaymentEntityLogo(kPaymentEntity2LogoUrl,
+                                                     "PaymentEntity #2")))),
+                  Field("instrument", &blink::mojom::PaymentOptions::instrument,
+                        Pointer(Field(
+                            "details",
+                            &blink::mojom::PaymentCredentialInstrument::details,
+                            "**** 1234"))))));
 }
 
 TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
@@ -542,7 +550,7 @@ class SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest
 };
 
 TEST_F(SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest,
-       DoesNotAddPaymentEntitiesLogosToPaymentOptions) {
+       DoesNotAddPaymentEntitiesLogosAndDetailsToPaymentOptions) {
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
   auto authenticator =
@@ -564,11 +572,16 @@ TEST_F(SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest,
       .WillOnce(MoveArg<0>(&payment_options));
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 
-  EXPECT_THAT(
-      payment_options,
-      Pointer(Field("payment_entities_logos",
-                    &blink::mojom::PaymentOptions::payment_entities_logos,
-                    std::cref(std::nullopt))));
+  EXPECT_THAT(payment_options,
+              Pointer(AllOf(
+                  Field("payment_entities_logos",
+                        &blink::mojom::PaymentOptions::payment_entities_logos,
+                        std::cref(std::nullopt)),
+                  Field("instrument", &blink::mojom::PaymentOptions::instrument,
+                        Pointer(Field(
+                            "details",
+                            &blink::mojom::PaymentCredentialInstrument::details,
+                            ""))))));
 }
 
 // Test that OnInstrumentDetailsError is called when the authenticator returns
