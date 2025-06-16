@@ -1161,6 +1161,7 @@ if (use_blink) {
         "//content/test:content_test_bundle_data",
         "//content/test:gpu_process_bundle",
         "//content/test:network_process_bundle",
+        "//testing/buildbot/filters:components_browsertests_use_blink_filters_bundle_data",
       ]
     }
 

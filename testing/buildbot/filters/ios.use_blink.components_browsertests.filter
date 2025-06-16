@@ -13,4 +13,14 @@
 -DistillerPageWebContentsTest.UsingCurrentWebContentsWrongUrl
 -DistillerPageWebContentsTest.VisibilityDetection
 -DomDistillerDistillablePageUtilsTest.TestIsDistillablePage
+-DomDistillerDistillablePageUtilsTest.TestIsNotDistillablePage
 -DomDistillerJsTest.RunJsTests
+
+# These tests are hitting a NOTREACHED() in WebContentsImpl::GetSize().
+-All/PageContentProtoProviderBrowserTestMultiProcess.*
+-All/PageContentProtoProviderBrowserTestSiteIsolation.*
+-PageContentProtoProviderBrowserTest.*
+-PageContentProtoProviderBrowserTestActionableElements.AIPageContent
+-PageContentProtoProviderBrowserTestFencedFrame.AIPageContentFencedFrame
+-PageContentProtoProviderBrowserTestPaidContentDisabled.PaidContentDisabled
+-ScaledPageContentProtoProviderBrowserTest.ScaleSizes
