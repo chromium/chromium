@@ -16919,7 +16919,7 @@
                         "PartitionAllocSchedulerLoopQuarantineBrowserUICapacity": "1048576",
                         "enabled-processes": "browser-only"
                     },
-                    "disable_features": [
+                    "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
                         "PartitionAllocWithAdvancedChecks",
                         "PartitionAllocZappingByFreeFlags"
