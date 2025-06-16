@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_entrypoint_view.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_presentation_type.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
@@ -305,6 +306,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
         @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(updateTrailingButtonState)];
+
+    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+                       withAction:@selector(sizeClassDidChange)];
   }
 }
 
@@ -1098,13 +1102,27 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   }
 }
 
+- (void)sizeClassDidChange {
+  [self updateLensVisibilityIndicationIfNeeded];
+}
+
 - (void)setLensOverlayVisible:(BOOL)lensOverlayVisible {
   if (lensOverlayVisible == _lensOverlayVisible) {
     return;
   }
 
   _lensOverlayVisible = lensOverlayVisible;
-  [_lensOverlayPlaceholderView setLensOverlayActive:lensOverlayVisible];
+  [self updateLensVisibilityIndicationIfNeeded];
+}
+
+- (void)updateLensVisibilityIndicationIfNeeded {
+  // Only indicate Lens Overlay in use when the presentation does not cover the
+  // location bar.
+  BOOL shouldIndicateLensInUse =
+      lens::ContainerPresentationFor(self) !=
+      lens::ContainerPresentationType::kFullscreenCover;
+  [_lensOverlayPlaceholderView
+      setLensOverlayActive:shouldIndicateLensInUse && _lensOverlayVisible];
 }
 
 @end
