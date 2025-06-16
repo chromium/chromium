@@ -81,7 +81,6 @@
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/renderer_extension_registry.h"
-#include "extensions/renderer/renderer_frame_context_data.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -603,7 +602,7 @@ void Dispatcher::DidInitializeServiceWorkerContextOnWorkerThread(
   }
 }
 
-void Dispatcher::WillPrepareForEvaluationOnWorkerThread(
+void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     blink::WebServiceWorkerContextProxy* context_proxy,
     v8::Local<v8::Context> v8_context,
     int64_t service_worker_version_id,
@@ -731,28 +730,13 @@ void Dispatcher::WillPrepareForEvaluationOnWorkerThread(
   RequireGuestViewModules(context);
 #endif
 
+  WorkerThreadDispatcher::GetServiceWorkerData()->Init();
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
 
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   UMA_HISTOGRAM_TIMES(
       "Extensions.DidInitializeServiceWorkerContextOnWorkerThread2", elapsed);
   service_worker_context_state = ServiceWorkerContextState::kInitialized;
-}
-
-void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread() {
-  const int thread_id = content::WorkerThread::GetCurrentId();
-  CHECK_NE(thread_id, kMainThreadId);
-
-  // `WillPrepareForEvaluationOnWorkerThread` should have run and updated
-  // `service_worker_context_state`.
-  CHECK_NE(service_worker_context_state,
-           extensions::ServiceWorkerContextState::kDefault);
-
-  if (service_worker_context_state != ServiceWorkerContextState::kInitialized) {
-    return;
-  }
-
-  WorkerThreadDispatcher::GetServiceWorkerData()->Init();
 }
 
 void Dispatcher::WillReleaseScriptContext(

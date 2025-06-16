@@ -129,7 +129,6 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   void DidFetchScript() override;
   void DidFailToFetchClassicScript() override;
   void DidFailToFetchModuleScript() override;
-  void WillPrepareForEvaluation() override;
   void WillEvaluateScript() override;
   void DidEvaluateTopLevelScript(bool success) override;
   void DidCloseWorkerGlobalScope() override;

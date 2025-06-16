@@ -144,25 +144,18 @@ class Dispatcher : public content::RenderThreadObserver,
       const GURL& service_worker_scope,
       const GURL& script_url);
 
-  // This is called before a service worker prepares script engine for
-  // evaluation.
+  // This is called immediately before a service worker evaluates the
+  // toplevel script. This method installs extension API bindings.
   //
   // Runs on a different thread and should only use thread-safe member
   // variables.
-  void WillPrepareForEvaluationOnWorkerThread(
+  void WillEvaluateServiceWorkerOnWorkerThread(
       blink::WebServiceWorkerContextProxy* context_proxy,
       v8::Local<v8::Context> v8_context,
       int64_t service_worker_version_id,
       const GURL& service_worker_scope,
       const GURL& script_url,
       const blink::ServiceWorkerToken& service_worker_token);
-
-  // This is called immediately before a service worker evaluates the
-  // toplevel script. This method installs extension API bindings.
-  //
-  // Runs on a different thread and should only use thread-safe member
-  // variables.
-  void WillEvaluateServiceWorkerOnWorkerThread();
 
   void WillReleaseScriptContext(blink::WebLocalFrame* frame,
                                 const v8::Local<v8::Context>& context,
