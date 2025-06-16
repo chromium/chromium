@@ -187,10 +187,13 @@ class WaylandFrameManager {
   // presentation feedback info.
   void ClearProcessedSubmittedFrames();
 
+  // TODO(crbug.com/422765424): These 2 functions can be merged into one.
   void OnExplicitBufferRelease(WaylandSurface* surface,
                                wl_buffer* wl_buffer,
                                base::ScopedFD fence);
-  void OnWlBufferRelease(WaylandSurface* surface, wl_buffer* wl_buffer);
+  void OnWlBufferRelease(WaylandSurface* surface,
+                         wl_buffer* wl_buffer,
+                         bool is_destruct);
 
   // wl_callback_listener callbacks:
   static void OnFrameDone(void* data, wl_callback* callback, uint32_t time);

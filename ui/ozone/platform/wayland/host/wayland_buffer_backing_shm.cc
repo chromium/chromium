@@ -15,7 +15,10 @@ WaylandBufferBackingShm::WaylandBufferBackingShm(
     uint64_t length,
     const gfx::Size& size,
     uint32_t buffer_id)
-    : WaylandBufferBacking(connection, buffer_id, size),
+    : WaylandBufferBacking(connection,
+                           buffer_id,
+                           size,
+                           BufferBackingType::kShm),
       fd_(std::move(fd)),
       length_(length) {}
 
@@ -30,11 +33,6 @@ void WaylandBufferBackingShm::RequestBufferHandle(
       fd_, length_, size(), /*with_alpha_channel=*/true));
   if (UseExplicitSyncRelease())
     auto close = std::move(fd_);
-}
-
-WaylandBufferBacking::BufferBackingType
-WaylandBufferBackingShm::GetBackingType() const {
-  return WaylandBufferBacking::BufferBackingType::kShm;
 }
 
 }  // namespace ui

@@ -30,8 +30,7 @@ class WaylandBufferBacking {
   enum class BufferBackingType {
     kShm = 0,
     kDmabuf = 1,
-    kSolidColor = 2,
-    kSinglePixel = 3,
+    kSinglePixel = 2,
   };
 
   WaylandBufferBacking() = delete;
@@ -40,6 +39,7 @@ class WaylandBufferBacking {
   WaylandBufferBacking(const WaylandConnection* connection,
                        uint32_t buffer_id,
                        const gfx::Size& size,
+                       BufferBackingType type,
                        uint32_t format = DRM_FORMAT_INVALID);
   virtual ~WaylandBufferBacking();
 
@@ -60,7 +60,7 @@ class WaylandBufferBacking {
   WaylandBufferHandle* GetBufferHandle(WaylandSurface* requestor);
 
   // Returns type of the backing. See BufferBackingType.
-  virtual BufferBackingType GetBackingType() const = 0;
+  BufferBackingType type() const { return type_; }
 
  private:
   // Non-owned pointer to the main connection.
@@ -82,6 +82,8 @@ class WaylandBufferBacking {
 
   // Actual buffer size in pixels.
   const gfx::Size size_;
+
+  const BufferBackingType type_;
 
   // Collection of wl_buffers objects backed by this backing. Maintains the
   // relationship of wl_surfaces to wl_buffers, corresponding to the

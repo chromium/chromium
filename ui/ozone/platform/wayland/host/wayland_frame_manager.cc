@@ -466,12 +466,6 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
 
   bool needs_commit = false;
 
-  // If it's a solid color buffer, do not set a release callback as it's not
-  // required to wait for this buffer - Wayland compositor only uses that to
-  // produce a config for the quad.
-  const bool is_solid_color_buffer =
-      buffer_handle->backing_type() ==
-      WaylandBufferBacking::BufferBackingType::kSolidColor;
   if (will_attach) {
     // Setup frame callback if wayland_surface will commit this buffer.
     // On Mutter, we don't receive frame.callback acks if we don't attach a
@@ -496,16 +490,24 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
       needs_commit = true;
     }
 
-    if (!is_solid_color_buffer) {
-      if (connection_->SupportsExplicitSync()) {
+    switch (buffer_handle->sync_method()) {
+      case WaylandBufferHandle::SyncMethod::kNone:
+        break;
+      case WaylandBufferHandle::SyncMethod::kSyncobj:
         surface->RequestExplicitRelease(
             base::BindOnce(&WaylandFrameManager::OnExplicitBufferRelease,
                            weak_factory_.GetWeakPtr(), surface));
-      }
-      buffer_handle->set_buffer_released_callback(
-          base::BindOnce(&WaylandFrameManager::OnWlBufferRelease,
-                         weak_factory_.GetWeakPtr(), surface),
-          surface);
+        [[fallthrough]];
+      case WaylandBufferHandle::SyncMethod::kDMAFence:
+        [[fallthrough]];
+      case WaylandBufferHandle::SyncMethod::kImplicit:
+        buffer_handle->set_buffer_released_callback(
+            base::BindOnce(&WaylandFrameManager::OnWlBufferRelease,
+                           weak_factory_.GetWeakPtr(), surface),
+            surface);
+        break;
+      default:
+        NOTREACHED();
     }
   }
 
@@ -521,7 +523,7 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
     needs_commit = true;
   }
 
-  if (!is_solid_color_buffer) {
+  if (buffer_handle->sync_method() != WaylandBufferHandle::SyncMethod::kNone) {
     // If we have submitted this buffer in a previous frame and it is not
     // released yet, submitting the buffer again will not make wayland
     // compositor to release it twice. Remove it from the previous frame.
@@ -754,7 +756,8 @@ void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
 }
 
 void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
-                                            wl_buffer* buffer) {
+                                            wl_buffer* buffer,
+                                            bool is_destruct) {
   DCHECK(buffer);
 
   // Releases may not necessarily come in order, so search the submitted
@@ -763,7 +766,8 @@ void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
     auto result = frame->submitted_buffers.find(surface);
     if (result != frame->submitted_buffers.end() &&
         result->second->buffer() == buffer) {
-      if (connection_->UseImplicitSyncInterop()) {
+      if (!is_destruct && result->second->sync_method() ==
+                              WaylandBufferHandle::SyncMethod::kDMAFence) {
         base::ScopedFD fence =
             connection_->buffer_manager_host()->ExtractReleaseFence(
                 result->second->id());
@@ -782,7 +786,9 @@ void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
       TRACE_EVENT_INSTANT("wayland", "OnWlBufferRelease", "frame_id",
                           frame->frame_id, "buffer_id", result->second->id());
       frame->submitted_buffers.erase(result);
-      break;
+      if (!is_destruct) {
+        break;
+      }
     }
   }
 

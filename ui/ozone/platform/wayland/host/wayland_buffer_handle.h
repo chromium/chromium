@@ -21,6 +21,17 @@ class WaylandSyncobjReleaseTimeline;
 // corresponding WaylandBufferBackings.
 class WaylandBufferHandle {
  public:
+  enum class SyncMethod {
+    // No acquire or release needed
+    kNone = 0,
+    // Attach and release are treated as ready to use/reuse
+    kImplicit = 1,
+    // Using DRM syncobj timeline
+    kSyncobj = 2,
+    // Using fence packaged in dmabuf, should not co-exist with kSyncObj
+    kDMAFence = 3,
+  };
+
   WaylandBufferHandle() = delete;
   WaylandBufferHandle(const WaylandBufferHandle&) = delete;
   WaylandBufferHandle& operator=(const WaylandBufferHandle&) = delete;
@@ -32,7 +43,7 @@ class WaylandBufferHandle {
     created_callback_ = std::move(callback);
   }
   void set_buffer_released_callback(
-      base::OnceCallback<void(wl_buffer*)> callback,
+      base::OnceCallback<void(wl_buffer*, bool)> callback,
       WaylandSurface* requestor) {
     released_callbacks_.emplace(requestor, std::move(callback));
   }
@@ -61,8 +72,9 @@ class WaylandBufferHandle {
   void OnExplicitRelease(WaylandSurface* requestor);
 
   WaylandBufferBacking::BufferBackingType backing_type() const {
-    return backing_->GetBackingType();
+    return backing_->type();
   }
+  SyncMethod sync_method() const { return sync_method_; }
 
  private:
   void OnWlBufferCreated(wl::Object<wl_buffer> wl_buffer);
@@ -75,6 +87,9 @@ class WaylandBufferHandle {
 
   // A wl_buffer backed by the dmabuf/shm |backing_| created on the GPU side.
   wl::Object<wl_buffer> wl_buffer_;
+
+  // How synchronization of this buffer is managed.
+  const SyncMethod sync_method_;
 
   // A callback that runs when the wl_buffer is created.
   base::OnceClosure created_callback_;
@@ -96,7 +111,7 @@ class WaylandBufferHandle {
   // from the wl_compositor.
   // When linux explicit synchronization is adopted, buffer_listener is unset
   // and this callback should be reset by OnExplicitRelease() instead.
-  base::flat_map<WaylandSurface*, base::OnceCallback<void(wl_buffer*)>>
+  base::flat_map<WaylandSurface*, base::OnceCallback<void(wl_buffer*, bool)>>
       released_callbacks_;
 
   friend WaylandBufferBacking;

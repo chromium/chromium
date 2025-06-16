@@ -13,7 +13,10 @@ WaylandBufferBackingSinglePixel::WaylandBufferBackingSinglePixel(
     const WaylandConnection* connection,
     SkColor4f color,
     uint32_t buffer_id)
-    : WaylandBufferBacking(connection, buffer_id, gfx::Size(1, 1)),
+    : WaylandBufferBacking(connection,
+                           buffer_id,
+                           gfx::Size(1, 1),
+                           BufferBackingType::kSinglePixel),
       color_(color) {}
 
 WaylandBufferBackingSinglePixel::~WaylandBufferBackingSinglePixel() = default;
@@ -23,11 +26,6 @@ void WaylandBufferBackingSinglePixel::RequestBufferHandle(
   DCHECK(!callback.is_null());
   std::move(callback).Run(
       connection()->single_pixel_buffer()->CreateSinglePixelBuffer(color_));
-}
-
-WaylandBufferBacking::BufferBackingType
-WaylandBufferBackingSinglePixel::GetBackingType() const {
-  return WaylandBufferBacking::BufferBackingType::kSinglePixel;
 }
 
 }  // namespace ui
