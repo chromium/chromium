@@ -83,10 +83,10 @@ bool ShouldDiscardShortVisit(
 }
 
 visited_url_ranking::URLVisit::Source GetVisitSource(
-    std::map<std::string,
-             std::pair<std::string, syncer::DeviceInfo::FormFactor>>
+    const std::map<std::string,
+                   std::pair<std::string, syncer::DeviceInfo::FormFactor>>&
         sync_device_info,
-    history::AnnotatedVisit annotated_visit,
+    const history::AnnotatedVisit& annotated_visit,
     raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service) {
   // The `originator_cache_guid` field is only set for foreign session visits
   // but some foreign visits are actually local as they can come from different
@@ -98,6 +98,7 @@ visited_url_ranking::URLVisit::Source GetVisitSource(
   if (annotated_visit.visit_row.originator_cache_guid.empty() ||
       (it != sync_device_info.end() &&
        (local_device_info_provider &&
+        local_device_info_provider->GetLocalDeviceInfo() &&
         it->second.first ==
             local_device_info_provider->GetLocalDeviceInfo()->client_name()))) {
     return visited_url_ranking::URLVisit::Source::kLocal;
