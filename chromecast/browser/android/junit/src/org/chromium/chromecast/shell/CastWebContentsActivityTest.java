@@ -31,7 +31,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.PatternMatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -282,23 +281,6 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.O})
-    public void testTurnsScreenOnIfTurnOnScreen_AndroidO() {
-        mActivityLifecycle =
-                Robolectric.buildActivity(
-                        CastWebContentsActivity.class,
-                        CastWebContentsIntentUtils.requestStartCastActivity(
-                                mWebContents, true, false, true, false, "0"));
-        mActivity = mActivityLifecycle.get();
-        mActivity.testingModeForTesting();
-        mActivityLifecycle.create();
-
-        Assert.assertTrue(
-                Shadows.shadowOf(mActivity.getWindow())
-                        .getFlag(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON));
-    }
-
-    @Test
     @Config(shadows = {ExtendedShadowActivity.class})
     public void testDoesNotTurnScreenOnIfNotTurnOnScreen() {
         mActivityLifecycle =
@@ -313,23 +295,6 @@ public class CastWebContentsActivityTest {
 
         Assert.assertFalse(shadowActivity.getTurnScreenOn());
         Assert.assertFalse(shadowActivity.getShowWhenLocked());
-    }
-
-    @Test
-    @Config(sdk = {Build.VERSION_CODES.O})
-    public void testDoesNotTurnScreenOnIfNotTurnOnScreen_AndroidO() {
-        mActivityLifecycle =
-                Robolectric.buildActivity(
-                        CastWebContentsActivity.class,
-                        CastWebContentsIntentUtils.requestStartCastActivity(
-                                mWebContents, true, false, true, false, "0"));
-        mActivity = mActivityLifecycle.get();
-        mActivity.testingModeForTesting();
-        mActivityLifecycle.create();
-
-        Assert.assertTrue(
-                Shadows.shadowOf(mActivity.getWindow())
-                        .getFlag(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON));
     }
 
     @Test
@@ -464,9 +429,7 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(
-            shadows = {ExtendedShadowActivity.class},
-            sdk = {Build.VERSION_CODES.O})
+    @Config(shadows = {ExtendedShadowActivity.class})
     public void testStopWhileNotInPipModeDoesNotCloseActivity() {
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
         mActivityLifecycle.create().start().resume();
@@ -480,9 +443,7 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(
-            shadows = {ExtendedShadowActivity.class},
-            sdk = {Build.VERSION_CODES.O})
+    @Config(shadows = {ExtendedShadowActivity.class})
     public void testStopWhileInPipModeDoesNotClosesActivity() {
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
         mActivityLifecycle.create().start().resume();
