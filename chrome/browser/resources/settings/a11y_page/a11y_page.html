@@ -9,31 +9,34 @@
             sub-label="$i18n{moreFeaturesLinkDescription}" external>
         </cr-link-row>
 </if>
-<if expr="not is_chromeos">
-        <template is="dom-if" if="[[captionSettingsOpensExternally_]]">
-          <template is="dom-if" if="[[enableLiveCaption_]]">
-            <settings-live-caption prefs="{{prefs}}"
-                languages="[[languages]]"
-                language-helper="[[languageHelper]]">
-            </settings-live-caption>
-          </template>
-          <cr-link-row id="captions"
-              class="hr"
-              label="$i18n{captionsPreferencesTitle}"
-              sub-label="$i18n{captionsPreferencesSubtitle}"
-              on-click="onCaptionsClick_"
-              button-aria-description="$i18n{opensInNewTab}"
-              external$="[[captionSettingsOpensExternally_]]">
-          </cr-link-row>
+
+<if expr="is_macosx or is_win">
+        <template is="dom-if" if="[[enableLiveCaption_]]">
+          <settings-live-caption prefs="{{prefs}}"
+              languages="[[languages]]"
+              language-helper="[[languageHelper]]">
+          </settings-live-caption>
         </template>
-        <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
+        <cr-link-row id="captions"
+            class="hr"
+            label="$i18n{captionsPreferencesTitle}"
+            sub-label="$i18n{captionsPreferencesSubtitle}"
+            on-click="onCaptionsClick_"
+            button-aria-description="$i18n{opensInNewTab}"
+            external>
+        </cr-link-row>
+</if>
+
+<if expr="is_linux">
           <cr-link-row id="captions"
               class="hr"
               label="$i18n{captionsTitle}"
               on-click="onCaptionsClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
-        </template>
+</if>
+
+<if expr="not is_chromeos">
         <settings-toggle-button
             class="hr"
             pref="{{prefs.settings.a11y.focus_highlight}}"
@@ -75,7 +78,6 @@
 <if expr="is_win or is_linux">
         <settings-toggle-button
             class="hr"
-            hidden$="[[!showOverscrollHistoryNavigationToggle_]]"
             pref="{{prefs.settings.a11y.overscroll_history_navigation}}"
             on-change="onOverscrollHistoryNavigationChange_"
             label="$i18n{overscrollHistoryNavigationTitle}"
@@ -85,7 +87,6 @@
 <if expr="is_macosx">
         <cr-link-row
             class="hr"
-            hidden$="[[!showOverscrollHistoryNavigationToggle_]]"
             on-click="onMacTrackpadGesturesLinkClick_"
             button-aria-description="$i18n{opensInNewTab}"
             label="$i18n{overscrollHistoryNavigationTitle}"
@@ -108,18 +109,16 @@
             external>
         </cr-link-row>
       </div>
-<if expr="not is_chromeos">
-      <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
-        <template is="dom-if" route-path="/captions">
-          <settings-subpage
-              associated-control="[[$$('#captions')]]"
-              page-title="$i18n{captionsTitle}">
-            <settings-captions prefs="{{prefs}}"
-                languages="[[languages]]"
-                language-helper="[[languageHelper]]">
-            </settings-captions>
-          </settings-subpage>
-        </template>
+<if expr="is_linux">
+      <template is="dom-if" route-path="/captions">
+        <settings-subpage
+            associated-control="[[$$('#captions')]]"
+            page-title="$i18n{captionsTitle}">
+          <settings-captions prefs="{{prefs}}"
+              languages="[[languages]]"
+              language-helper="[[languageHelper]]">
+          </settings-captions>
+        </settings-subpage>
       </template>
 </if>
     </settings-animated-pages>
