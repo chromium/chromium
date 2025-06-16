@@ -147,6 +147,7 @@ class AutocompleteTest : public InProcessBrowserTest {
            };)",
                            kDefaultAutocompleteInputId);
     ASSERT_TRUE(content::ExecJs(web_contents(), js));
+    content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
 
     for (const char c : value) {
       ui::DomKey key = ui::DomKey::FromCharacter(c);
