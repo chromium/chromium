@@ -561,7 +561,9 @@ _CROSSBENCH_WEBVIEW = frozenset([
         arguments=[
             '--wpr=crossbench_android_loading_000.wprgo',
             '--probe=chrome_histograms:{"baseline":false,"metrics":'
-            '{"Android.WebView.Startup.CreationTime.StartChromiumLocked":["mean"]}}',
+            '{"Android.WebView.Startup.CreationTime.StartChromiumLocked":["mean"],'
+            '"Android.WebView.Startup.CreationTime.Stage1.FactoryInit":["mean"],'
+            '"PageLoad.PaintTiming.NavigationToFirstContentfulPaint":["mean"]}}',
             '--repetitions=50',
             '--stories=cnn',
         ]
