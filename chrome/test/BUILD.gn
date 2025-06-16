@@ -5744,7 +5744,6 @@ if (!is_android) {
 
     if (enable_webui_tab_strip) {
       sources += [
-        "../browser/ui/views/frame/webui_tab_strip_container_view_browsertest.cc",
         "../browser/ui/views/frame/webui_tab_strip_field_trial_browsertest.cc",
         "../browser/ui/views/toolbar/webui_tab_counter_button_browsertest.cc",
         "../browser/ui/webui/tab_strip/tab_strip_ui_browsertest.cc",
@@ -6614,6 +6613,7 @@ test("unit_tests") {
 
   if (enable_webui_tab_strip) {
     sources += [
+      "../browser/ui/views/frame/webui_tab_strip_container_view_unittest.cc",
       "../browser/ui/webui/tab_strip/tab_strip_page_handler_unittest.cc",
       "../browser/ui/webui/tab_strip/tab_strip_ui_layout_unittest.cc",
       "../browser/ui/webui/tab_strip/thumbnail_tracker_unittest.cc",

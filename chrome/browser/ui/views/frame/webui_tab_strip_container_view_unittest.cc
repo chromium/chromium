@@ -6,54 +6,46 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/test/browser_test.h"
+#include "chrome/test/base/test_browser_window.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/mock_tracker.h"
+#include "content/public/common/drop_data.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
-class WebUITabStripContainerViewBrowserTest : public InProcessBrowserTest {
+class WebUITabStripContainerViewTest : public TestWithBrowserView {
  public:
-  WebUITabStripContainerViewBrowserTest() {
+  template <typename... Args>
+  explicit WebUITabStripContainerViewTest(Args... args)
+      : TestWithBrowserView(args...) {
     feature_override_.InitAndEnableFeature(features::kWebUITabStrip);
   }
 
-  ~WebUITabStripContainerViewBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    browser_view_ = BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
-  void TearDownOnMainThread() override {
-    browser_view_ = nullptr;
-    InProcessBrowserTest::TearDownOnMainThread();
-  }
-
-  BrowserView* browser_view() { return browser_view_; }
+  ~WebUITabStripContainerViewTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_override_;
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
-
- protected:
-  raw_ptr<BrowserView> browser_view_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUITabStripContainerViewBrowserTest,
-                       TabStripStartsClosed) {
+TEST_F(WebUITabStripContainerViewTest, TabStripStartsClosed) {
   EXPECT_TRUE(WebUITabStripContainerView::UseTouchableTabStrip(
       browser_view()->browser()));
   ASSERT_NE(nullptr, browser_view()->webui_tab_strip());
   EXPECT_FALSE(browser_view()->webui_tab_strip()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(WebUITabStripContainerViewBrowserTest,
-                       TouchModeTransition) {
+TEST_F(WebUITabStripContainerViewTest, TouchModeTransition) {
   EXPECT_TRUE(WebUITabStripContainerView::UseTouchableTabStrip(
       browser_view()->browser()));
   EXPECT_NE(nullptr, browser_view()->webui_tab_strip());
@@ -71,8 +63,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripContainerViewBrowserTest,
   ASSERT_NE(nullptr, browser_view()->webui_tab_strip());
 }
 
-IN_PROC_BROWSER_TEST_F(WebUITabStripContainerViewBrowserTest,
-                       ButtonsPresentInToolbar) {
+TEST_F(WebUITabStripContainerViewTest, ButtonsPresentInToolbar) {
   ASSERT_NE(nullptr, browser_view()->toolbar()->new_tab_button_for_testing());
   EXPECT_TRUE(browser_view()->toolbar()->Contains(
       browser_view()->toolbar()->new_tab_button_for_testing()));
@@ -83,8 +74,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripContainerViewBrowserTest,
       browser_view()->webui_tab_strip()->tab_counter()));
 }
 
-IN_PROC_BROWSER_TEST_F(WebUITabStripContainerViewBrowserTest,
-                       CloseContainerOnRendererCrash) {
+TEST_F(WebUITabStripContainerViewTest, CloseContainerOnRendererCrash) {
   auto* webui_tab_strip = browser_view()->webui_tab_strip();
   webui_tab_strip->PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus::TERMINATION_STATUS_PROCESS_CRASHED);
@@ -93,42 +83,22 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripContainerViewBrowserTest,
   EXPECT_EQ(true, webui_tab_strip->GetVisible());
 }
 
-class WebUITabStripDevToolsBrowserTest
-    : public WebUITabStripContainerViewBrowserTest {
+class WebUITabStripDevToolsTest : public WebUITabStripContainerViewTest {
  public:
-  WebUITabStripDevToolsBrowserTest() = default;
-  ~WebUITabStripDevToolsBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    WebUITabStripContainerViewBrowserTest::SetUpOnMainThread();
-    Browser::CreateParams params =
-        Browser::CreateParams::CreateForDevTools(browser()->profile());
-    devtools_browser_ = Browser::Create(params);
-  }
-
-  void TearDownOnMainThread() override {
-    devtools_browser_ = nullptr;
-    WebUITabStripContainerViewBrowserTest::TearDownOnMainThread();
-  }
-
- protected:
-  raw_ptr<Browser> devtools_browser_ = nullptr;
+  WebUITabStripDevToolsTest()
+      : WebUITabStripContainerViewTest(Browser::TYPE_DEVTOOLS) {}
+  ~WebUITabStripDevToolsTest() override = default;
 };
 
 // Regression test for crbug.com/1010247, crbug.com/1090208.
-IN_PROC_BROWSER_TEST_F(WebUITabStripDevToolsBrowserTest,
-                       DevToolsWindowHasNoTabStrip) {
-  BrowserView* devtools_browser_view =
-      BrowserView::GetBrowserViewForBrowser(devtools_browser_);
-  ASSERT_TRUE(devtools_browser_view);
-
-  EXPECT_FALSE(
-      WebUITabStripContainerView::UseTouchableTabStrip(devtools_browser_));
-  EXPECT_EQ(nullptr, devtools_browser_view->webui_tab_strip());
+TEST_F(WebUITabStripDevToolsTest, DevToolsWindowHasNoTabStrip) {
+  EXPECT_FALSE(WebUITabStripContainerView::UseTouchableTabStrip(
+      browser_view()->browser()));
+  EXPECT_EQ(nullptr, browser_view()->webui_tab_strip());
 
   ui::TouchUiController::TouchUiScoperForTesting disable_touch_mode(false);
   ui::TouchUiController::TouchUiScoperForTesting reenable_touch_mode(true);
-  EXPECT_EQ(nullptr, devtools_browser_view->webui_tab_strip());
+  EXPECT_EQ(nullptr, browser_view()->webui_tab_strip());
 }
 
 // TODO(crbug.com/40124617): add coverage of open and close gestures.
