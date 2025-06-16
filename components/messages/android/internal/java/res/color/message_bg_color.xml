@@ -6,5 +6,5 @@ found in the LICENSE file.
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:color="?attr/colorSurface"/>
+  <item android:color="?attr/colorSurfaceBright"/>
 </selector>
