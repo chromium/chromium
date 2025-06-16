@@ -1373,7 +1373,6 @@ def create_proto_modules(blueprint, gn, target, is_test_target):
   source_module.genrule_srcs.add(':' + source_module.name)
   source_module.genrule_headers.add(header_module.name)
 
-  source_module.genrule_shared_libs.add('libprotobuf-cpp-lite')
   cmd += [f'--cpp_out=lite=true:{absolute_cpp_out_dir}']
 
   cmd += absolute_sources
