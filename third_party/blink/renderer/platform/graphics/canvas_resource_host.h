@@ -65,12 +65,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
 
-  // TODO(crbug.com/352263194): Transition all usages of this method to
-  // context-specific variants and eliminate the method.
-  CanvasResourceProvider* ResourceProviderDEPRECATED() const {
-    return resource_provider_.get();
-  }
-
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
       std::unique_ptr<CanvasResourceProvider>);
 
@@ -96,6 +90,15 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
+
+ protected:
+  // Should be called only from within subclasses'
+  // GetResourceProviderFor<ContextType> methods.
+  // TODO(crbug.com/352263194): Explode `resource_provider_` into one ivar for
+  // each context type.
+  CanvasResourceProvider* GetResourceProviderWithoutContextCheck() const {
+    return resource_provider_.get();
+  }
 
  private:
   std::unique_ptr<CanvasResourceProvider> resource_provider_;

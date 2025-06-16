@@ -209,7 +209,7 @@ class CORE_EXPORT OffscreenCanvas final
 
   CanvasResourceProvider* GetResourceProviderForImageBitmap() {
     CHECK(IsImageBitmapRenderingContext());
-    return ResourceProviderDEPRECATED();
+    return GetResourceProviderWithoutContextCheck();
   }
 
   class ScopedInsideWorkerRAF {
