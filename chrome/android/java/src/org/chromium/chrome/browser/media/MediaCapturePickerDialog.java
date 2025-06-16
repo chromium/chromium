@@ -279,10 +279,6 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
 
         mScreenButton.setOnClickListener(view -> startAndroidCapturePrompt());
 
-        // TODO(crbug.com/352187279): Show button once the entire screen sharing pipeline is
-        // working.
-        mScreenButton.setVisibility(View.GONE);
-
         mModalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.TAB);
     }
 }
