@@ -1257,7 +1257,7 @@ class AndroidBuildMixin:
     reversed_apk_mapping = {v: k for k, v in self._get_apk_mapping().items()}
     for apk_path in glob.glob(self._get_extract_binary_glob(tempdir, "*")):
       apk_name = os.path.basename(apk_path)
-      if not re.search("\.apks?$", apk_name):
+      if not re.search(r'\.apks?$', apk_name):
         continue
       all_apks.append(apk_name)
       if apk_name in reversed_apk_mapping:
