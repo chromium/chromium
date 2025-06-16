@@ -58,7 +58,6 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
-#include "chrome/browser/ui/views/passwords/password_change/password_change_credential_leak_bubble_view.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
