@@ -54,7 +54,6 @@ constexpr CGFloat kTitleInsetTrailing = 20;
 constexpr CGFloat kSpinnerInsetTop = 12;
 constexpr CGFloat kSpinnerInsetBottom = 14;
 
-constexpr CGFloat kConfirmationImageMarginBottom = 14;
 constexpr CGFloat kConfirmationSymbolPointSize = 22;
 
 constexpr CGFloat kMessageInsetLeading = 20;
@@ -296,6 +295,8 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   // The checkmark shown when the pending state suggested by the _spinner ends.
   // It replaces the _spinner in the view.
   UIImageView* _checkmark;
+
+  UIView* _progressIndicatorContainerView;
 }
 
 #pragma mark - Public
@@ -409,17 +410,44 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   }
 
   if (self.shouldShowActivityIndicator) {
+    _progressIndicatorContainerView = [[UIView alloc] init];
+    _progressIndicatorContainerView.translatesAutoresizingMaskIntoConstraints =
+        NO;
+    [stackView addArrangedSubview:_progressIndicatorContainerView];
+
     _spinner = GetLargeUIActivityIndicatorView();
-    [stackView addArrangedSubview:_spinner];
-    [stackView setCustomSpacing:kSpinnerInsetBottom afterView:_spinner];
+    _spinner.translatesAutoresizingMaskIntoConstraints = NO;
 
     _checkmark = [[UIImageView alloc] init];
     _checkmark.image = DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
                                                   kConfirmationSymbolPointSize);
     _checkmark.tintColor = [UIColor systemGreenColor];
-    [stackView addArrangedSubview:_checkmark];
-    [stackView setCustomSpacing:kConfirmationImageMarginBottom
-                      afterView:_checkmark];
+    _checkmark.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [_progressIndicatorContainerView addSubview:_spinner];
+    [_progressIndicatorContainerView addSubview:_checkmark];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_progressIndicatorContainerView.heightAnchor
+          constraintEqualToAnchor:_spinner.heightAnchor],
+      [_progressIndicatorContainerView.widthAnchor
+          constraintEqualToAnchor:_spinner.widthAnchor],
+      [_spinner.centerXAnchor
+          constraintEqualToAnchor:_progressIndicatorContainerView
+                                      .centerXAnchor],
+      [_spinner.centerYAnchor
+          constraintEqualToAnchor:_progressIndicatorContainerView
+                                      .centerYAnchor],
+
+      [_checkmark.centerXAnchor
+          constraintEqualToAnchor:_progressIndicatorContainerView
+                                      .centerXAnchor],
+      [_checkmark.centerYAnchor
+          constraintEqualToAnchor:_progressIndicatorContainerView.centerYAnchor]
+    ]];
+
+    [stackView setCustomSpacing:kSpinnerInsetBottom
+                      afterView:_progressIndicatorContainerView];
 
     [self setProgressState:ProgressIndicatorStateActivity];
   }
