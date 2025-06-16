@@ -364,7 +364,11 @@ public class TabGridDialogView extends FrameLayout {
     private void clearBackgroundViewAccessibilityImportance() {
         assert mAccessibilityImportanceMap.isEmpty();
         ViewGroup parent = (ViewGroup) getParent();
-        ViewGroup grandparent = (ViewGroup) parent.getParent();
+        ViewGroup grandparent = parent == null ? null : (ViewGroup) parent.getParent();
+        // Fix for crbug.com/424865865, this can happen if the animation is forced to finish before
+        // it is attached to the view hierarchy after which the view is dismissed anyways.
+        if (parent == null || grandparent == null) return;
+
         for (int i = 0; i < grandparent.getChildCount(); i++) {
             View view = grandparent.getChildAt(i);
             if (view == parent) {
@@ -381,7 +385,8 @@ public class TabGridDialogView extends FrameLayout {
     private void restoreBackgroundViewAccessibilityImportance() {
         ViewGroup parent = (ViewGroup) getParent();
         ViewGroup grandparent = parent == null ? null : (ViewGroup) parent.getParent();
-        // Fix for crbug.com/424749240, it is not clear why this would be null.
+        // Fix for crbug.com/424749240, this can happen if the animation is forced to finish before
+        // it is attached to the view hierarchy after which the view is dismissed anyways.
         if (parent == null || grandparent == null) {
             for (View view : mAccessibilityImportanceMap.keySet()) {
                 view.setImportantForAccessibility(mAccessibilityImportanceMap.get(view));
