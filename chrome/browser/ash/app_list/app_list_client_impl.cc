@@ -20,7 +20,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/shell.h"
-#include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -556,8 +555,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 
 void AppListClientImpl::SetUpSearchUI() {
   search_controller_ = app_list::CreateSearchController(
-      profile_, current_model_updater_, this, GetNotifier(),
-      ash::Shell::Get()->federated_service_controller());
+      profile_, current_model_updater_, this, GetNotifier());
 
   // Refresh the results used for the suggestion chips with empty query.
   // This fixes crbug.com/999287.
@@ -606,7 +604,6 @@ void AppListClientImpl::OnTemplateURLServiceChanged() {
           template_url_service->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
 
   current_model_updater_->SetSearchEngineIsGoogle(is_google);
-  search_controller_->OnDefaultSearchIsGoogleSet(is_google);
 }
 
 void AppListClientImpl::ShowAppList(ash::AppListShowSource source) {

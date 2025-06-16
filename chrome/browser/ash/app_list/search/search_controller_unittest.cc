@@ -96,8 +96,7 @@ class SearchControllerTest : public testing::Test {
     search_controller_ = std::make_unique<SearchController>(
         /*model_updater=*/&model_updater_,
         /*list_controller=*/&list_controller_,
-        /*notifier=*/nullptr, &profile_,
-        /*federated_service_controller_*/ nullptr);
+        /*notifier=*/nullptr, &profile_);
     search_controller_->Initialize();
 
     auto ranker_manager = std::make_unique<TestRankerManager>(&profile_);

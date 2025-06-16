@@ -349,7 +349,7 @@ class SpokenFeedbackAppListSearchTest
     std::unique_ptr<app_list::SearchController> search_controller =
         std::make_unique<app_list::SearchController>(
             app_list_client->GetModelUpdaterForTest(), app_list_client, nullptr,
-            browser()->profile(), nullptr);
+            browser()->profile());
     search_controller->Initialize();
     // Disable ranking, which may override the explicitly set relevance scores
     // and best match status of results.

@@ -106,32 +106,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Third-Party Apps"/>
 </enum>
 
-<enum name="AppListFederatedActions">
-  <int value="0" label="Impression"/>
-  <int value="1" label="Launch"/>
-  <int value="2" label="Abandon"/>
-  <int value="3" label="Ignore"/>
-</enum>
-
-<enum name="AppListFederatedInitStatus">
-  <int value="0" label="Ok"/>
-  <int value="1" label="Missing notifier"/>
-  <int value="2" label="Missing controller"/>
-  <int value="3" label="Federated connection failed to establish"/>
-</enum>
-
-<enum name="AppListFederatedReportStatus">
-  <int value="0" label="Ok"/>
-  <int value="1" label="Federated service not available"/>
-  <int value="2" label="Federated service not connected"/>
-</enum>
-
-<enum name="AppListFederatedSearchSessionConclusion">
-  <int value="0" label="Quit"/>
-  <int value="1" label="Launch"/>
-  <int value="2" label="AnswerCardSeen"/>
-</enum>
-
 <enum name="AppListFolderOpened">
   <int value="0" label="Original Folder Design"/>
   <int value="1" label="Peeking App List Folder Design"/>

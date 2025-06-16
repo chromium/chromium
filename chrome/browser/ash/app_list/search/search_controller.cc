@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -48,7 +47,6 @@
 namespace app_list {
 namespace {
 
-
 void ClearNonZeroStateResults(ResultsMap& results) {
   for (auto it = results.begin(); it != results.end();) {
     if (!ash::IsZeroStateResultType(it->first)) {
@@ -61,18 +59,14 @@ void ClearNonZeroStateResults(ResultsMap& results) {
 
 }  // namespace
 
-SearchController::SearchController(
-    AppListModelUpdater* model_updater,
-    AppListControllerDelegate* list_controller,
-    ash::AppListNotifier* notifier,
-    Profile* profile,
-    ash::federated::FederatedServiceController* federated_service_controller)
+SearchController::SearchController(AppListModelUpdater* model_updater,
+                                   AppListControllerDelegate* list_controller,
+                                   ash::AppListNotifier* notifier,
+                                   Profile* profile)
     : profile_(profile),
       model_updater_(model_updater),
       list_controller_(list_controller),
-      notifier_(notifier),
-      federated_service_controller_(federated_service_controller) {
-}
+      notifier_(notifier) {}
 
 SearchController::~SearchController() = default;
 
@@ -84,9 +78,6 @@ void SearchController::Initialize() {
       std::make_unique<SearchMetricsManager>(profile_, notifier_);
   session_metrics_manager_ =
       std::make_unique<SearchSessionMetricsManager>(profile_, notifier_);
-  federated_metrics_manager_ =
-      std::make_unique<federated::FederatedMetricsManager>(
-          notifier_, federated_service_controller_);
   app_search_data_source_ = std::make_unique<AppSearchDataSource>(
       profile_, list_controller_, base::DefaultClock::GetInstance());
   app_discovery_metrics_manager_ =
@@ -459,10 +450,6 @@ void SearchController::AddObserver(Observer* observer) {
 
 void SearchController::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
-}
-
-void SearchController::OnDefaultSearchIsGoogleSet(bool is_google) {
-  federated_metrics_manager_->OnDefaultSearchIsGoogleSet(is_google);
 }
 
 std::u16string SearchController::get_query() {

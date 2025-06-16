@@ -14,11 +14,6 @@ class Profile;
 
 namespace ash {
 class AppListNotifier;
-
-namespace federated {
-class FederatedServiceController;
-}  // namespace federated
-
 }  // namespace ash
 
 namespace app_list {
@@ -30,8 +25,7 @@ std::unique_ptr<SearchController> CreateSearchController(
     Profile* profile,
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
-    ash::AppListNotifier* notifier,
-    ash::federated::FederatedServiceController* federated_service_controller);
+    ash::AppListNotifier* notifier);
 
 // Returns a bitmask of `AutocompleteProvider::Type` for Launcher's
 // `SearchController`.
