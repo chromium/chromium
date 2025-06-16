@@ -289,6 +289,17 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Other Failure"/>
 </enum>
 
+<!-- LINT.IfChange(WebAuthenticationImmediateMediationRejectionReason) -->
+
+<enum name="WebAuthenticationImmediateMediationRejectionReason">
+  <int value="0" label="Incognito"/>
+  <int value="1" label="RateLimited"/>
+  <int value="2" label="NoCredentials"/>
+  <int value="3" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/authenticator_request_client_delegate.h:ImmediateMediationRejectionReason) -->
+
 <!-- LINT.IfChange(WebAuthenticationIOSContentAreaEvent) -->
 
 <enum name="WebAuthenticationIOSContentAreaEvent">

@@ -342,7 +342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertion.Immediate.EnclaveReady"
-    enum="Boolean" expires_after="2025-11-26">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -352,9 +352,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.GetAssertion.Immediate.RejectionReason"
+    enum="WebAuthenticationImmediateMediationRejectionReason"
+    expires_after="2025-11-30">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the reason why a WebAuthn get() request with immediate mediation was
+    rejected by the browser before showing any UI.
+  </summary>
+</histogram>
+
 <histogram
     name="WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi"
-    enum="Boolean" expires_after="2025-11-09">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>

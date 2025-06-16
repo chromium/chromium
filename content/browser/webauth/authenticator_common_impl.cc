@@ -2565,6 +2565,9 @@ void AuthenticatorCommonImpl::BeginImmediateRequestTimeout() {
 
 void AuthenticatorCommonImpl::OnImmediateTimeout() {
   base::UmaHistogramBoolean(kImmediateTimeoutWhileWaitingForUi, true);
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.GetAssertion.Immediate.RejectionReason",
+      ImmediateMediationRejectionReason::kTimeout);
   CancelRequestForImmediateMediation();
 }
 

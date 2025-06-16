@@ -936,6 +936,9 @@ bool ChromeAuthenticatorRequestDelegate::MaybeHandleImmediateMediation(
 
   // Always return not allowed immediate in incognito.
   if (profile()->IsOffTheRecord()) {
+    base::UmaHistogramEnumeration(
+        "WebAuthentication.GetAssertion.Immediate.RejectionReason",
+        content::ImmediateMediationRejectionReason::kIncognito);
     return true;
   }
 
@@ -945,11 +948,17 @@ bool ChromeAuthenticatorRequestDelegate::MaybeHandleImmediateMediation(
     if (!rate_limiter->IsRequestAllowed(origin)) {
       FIDO_LOG(ERROR)
           << "Immediate request rate limit exceeded for the origin.";
+      base::UmaHistogramEnumeration(
+          "WebAuthentication.GetAssertion.Immediate.RejectionReason",
+          content::ImmediateMediationRejectionReason::kRateLimited);
       return true;
     }
   }
 
   if (data.recognized_credentials.size() + passwords.size() == 0) {
+    base::UmaHistogramEnumeration(
+        "WebAuthentication.GetAssertion.Immediate.RejectionReason",
+        content::ImmediateMediationRejectionReason::kNoCredentials);
     return true;
   }
 

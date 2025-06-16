@@ -41,6 +41,24 @@ class Origin;
 
 namespace content {
 
+// LINT.IfChange
+// Reasons why a WebAuthn get() request with `mediation: "immediate"` was
+// rejected by the browser before showing any UI.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ImmediateMediationRejectionReason {
+  // The request was in an incognito/off-the-record profile.
+  kIncognito = 0,
+  // The request was rate-limited for the origin.
+  kRateLimited = 1,
+  // No credentials were found for the request.
+  kNoCredentials = 2,
+  // The request timed out before the UI could be shown.
+  kTimeout = 3,
+  kMaxValue = kTimeout,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
+
 // AuthenticatorRequestClientDelegate is an interface that lets embedders
 // customize the lifetime of a single WebAuthn API request in the //content
 // layer. In particular, the Authenticator mojo service uses
