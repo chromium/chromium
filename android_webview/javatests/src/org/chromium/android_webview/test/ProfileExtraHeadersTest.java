@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-import android.webkit.WebSettings;
-
 import androidx.annotation.NonNull;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -31,7 +29,6 @@ import org.chromium.android_webview.test.TestWebMessageListener.Data;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -570,24 +567,14 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @Test
-    @DisabledTest(message = "https://crbug.com/424621656")
     public void willAttachHeaderOnCrossOriginResourceRequests() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mAwContents.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE));
-        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-        TestWebMessageListener listener = addTestWebMessageListener();
+        // Explicitly enable image loading to make the test resilient against external settings
+        // changes (e.g. variations).
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getSettings().setImagesEnabled(true));
         String mainContentTemplate =
                 """
             <!DOCTYPE html>
-            <html>
-            <script>
-            function onImageLoaded() {
-              testListener.postMessage("loaded");
-            }
-            </script>
-            <!-- onerror because we are returning an invalid result from the test server. -->
-            <body><img onerror="onImageLoaded()" src="%s">
-            </body></html>
+            <html><body><img src="%s"></body></html>
             """;
         try (TestWebServer server = TestWebServer.start();
                 TestWebServer corsServer = TestWebServer.startAdditional()) {
@@ -601,8 +588,8 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
             String mainContent = String.format(mainContentTemplate, corsUrl);
             String mainUrl = server.setResponse("/index.html", mainContent, null);
 
-            mActivityTestRule.loadUrlAsync(mAwContents, mainUrl);
-            listener.waitForOnPostMessage();
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), mainUrl);
 
             HTTPRequest lastRequest = server.getLastRequest("/index.html");
             Assert.assertEquals("", lastRequest.headerValue("X-ApplicationHeader"));
