@@ -262,18 +262,6 @@ constexpr const char* BuildFlavor() {
 #endif
 }
 
-constexpr const char* BuildArch() {
-#if defined(ARCH_CPU_ARM64)
-  return "64 bit (ARM)";
-#elif defined(ARCH_CPU_X86_64)
-  return "64 bit (x64)";
-#elif defined(ARCH_CPU_X86)
-  return "32 bit (x86)";
-#else
-#error CPU architecture is unknown.
-#endif
-}
-
 std::string OperatingSystemVersion() {
 #if BUILDFLAG(IS_WIN)
   const base::win::OSInfo::VersionNumber v =
@@ -326,7 +314,8 @@ int UpdaterMain(int argc, const char* const* argv) {
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);
   VLOG(1) << "Version: " << kUpdaterVersion << ", " << BuildFlavor() << ", "
-          << BuildArch() << ", command line: " << GetCommandLineString();
+          << base::SysInfo::ProcessCPUArchitecture()
+          << ", command line: " << GetCommandLineString();
   VLOG(1) << "OS version: " << OperatingSystemVersion()
           << ", System uptime (seconds): "
           << base::SysInfo::Uptime().InSeconds() << ", parent pid: "
