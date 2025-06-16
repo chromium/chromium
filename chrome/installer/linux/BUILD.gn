@@ -136,7 +136,10 @@ action_foreach("calculate_rpm_dependencies") {
   deps = [ ":installer_deps" ]
   script = "rpm/calculate_package_deps.py"
   sources = packaging_files_binaries
-  inputs = [ "rpm/dist_package_provides.json" ]
+  inputs = [
+    "rpm/dist_package_provides.json",
+    "//build/action_helpers.py",
+  ]
   outputs = [ "$root_out_dir/rpm_{{source_name_part}}.deps" ]
   args = [
     "{{source}}",

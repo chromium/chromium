@@ -64,8 +64,11 @@ if distro_check:
         ret_code = 1
         continue
 if ret_code == 0:
+  sys.path.append(os.path.join(script_dir, os.path.pardir, os.path.pardir,
+                               os.path.pardir, os.path.pardir, 'build'))
+  import action_helpers
   requires = requires.difference(remove_requires)
-  with open(dep_filename, 'w') as dep_file:
+  with action_helpers.atomic_output(dep_filename, mode='w') as dep_file:
     for requirement in sorted(list(requires)):
       dep_file.write(requirement + '\n')
 sys.exit(ret_code)
