@@ -175,13 +175,6 @@ public class AccountManagerTestRule implements TestRule {
         mFakeAccountManagerFacade.setAccountFetchFailed();
     }
 
-    /** Scheduled for removal. Use blockGetAccountsUpdate instead. */
-    @Deprecated
-    public FakeAccountManagerFacade.UpdateBlocker blockGetCoreAccountInfosUpdate(
-            boolean populateCache) {
-        return mFakeAccountManagerFacade.blockGetAccounts(populateCache);
-    }
-
     /** See {@link FakeAccountManagerFacade#blockGetAccounts(boolean)}. */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate(boolean populateCache) {
         return mFakeAccountManagerFacade.blockGetAccounts(populateCache);
