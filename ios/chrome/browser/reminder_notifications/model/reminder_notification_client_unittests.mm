@@ -134,7 +134,6 @@ class ReminderNotificationClientTest : public PlatformTest {
   void SetReminderPrefs(const base::Value::Dict& reminders) {
     profile_->GetPrefs()->SetDict(prefs::kReminderNotifications,
                                   reminders.Clone());
-    task_environment_.RunUntilIdle();
   }
 
   // Helper to set the reminder permission.
@@ -142,7 +141,6 @@ class ReminderNotificationClientTest : public PlatformTest {
     ScopedDictPrefUpdate update(profile_->GetPrefs(),
                                 prefs::kFeaturePushNotificationPermissions);
     update->Set(kReminderNotificationKey, enabled);
-    task_environment_.RunUntilIdle();
   }
 
   web::WebTaskEnvironment task_environment_{
@@ -196,6 +194,7 @@ TEST_F(ReminderNotificationClientTest, OneReminderInPrefs) {
   StubGetPendingRequests(nil);
   ExpectAddNotificationRequest(url);
   SetReminderPrefs(reminders);
+  task_environment_.RunUntilIdle();
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
 
@@ -223,6 +222,7 @@ TEST_F(ReminderNotificationClientTest, MultipleRemindersInPrefs) {
   ExpectAddNotificationRequest(url1);
   ExpectAddNotificationRequest(url2);
   SetReminderPrefs(reminders);
+  task_environment_.RunUntilIdle();
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
 
@@ -281,4 +281,121 @@ TEST_F(ReminderNotificationClientTest, HandleInteractionOpensUrlInNewTab) {
   task_environment_.RunUntilIdle();
 
   EXPECT_OCMOCK_VERIFY(mock_application_handler);
+}
+
+// Test scheduling a single notification from Prefs and verifies Prefs removal.
+TEST_F(ReminderNotificationClientTest, OneReminderInPrefsHasPrefRemoved) {
+  SetupMockNotificationCenter();
+  SetReminderPermission(true);
+  GURL url("http://example.com/page1");
+  base::Time reminder_time = base::Time::Now() + base::Minutes(10);
+  base::Value::Dict reminder_details;
+  reminder_details.Set(kReminderNotificationsTimeKey,
+                       base::TimeToValue(reminder_time));
+  base::Value::Dict reminders;
+  reminders.Set(url.spec(), std::move(reminder_details));
+
+  StubGetPendingRequests(nil);
+  ExpectAddNotificationRequest(url);
+
+  // Set the prefs, which will trigger the scheduling logic.
+  SetReminderPrefs(reminders);
+
+  // Verify the pref is initially set.
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(prefs::kReminderNotifications)
+                  .contains(url.spec()));
+
+  // Run pending tasks to allow the notification scheduling and its
+  // completion handler (which removes the pref) to execute.
+  task_environment_.RunUntilIdle();
+
+  // Verify the mock and that the pref has been removed.
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  const base::Value::Dict& final_reminders =
+      profile_->GetPrefs()->GetDict(prefs::kReminderNotifications);
+  EXPECT_FALSE(final_reminders.contains(url.spec()));
+  EXPECT_TRUE(final_reminders.empty());
+}
+
+// Test scheduling multiple notifications from Prefs and verifies Prefs removal.
+TEST_F(ReminderNotificationClientTest,
+       MultipleRemindersInPrefsHavePrefsRemoved) {
+  SetupMockNotificationCenter();
+  SetReminderPermission(true);
+  GURL url1("http://example.com/page1");
+  GURL url2("http://example.org/anotherpage");
+  base::Time reminder_time1 = base::Time::Now() + base::Minutes(10);
+  base::Time reminder_time2 = base::Time::Now() + base::Minutes(20);
+
+  base::Value::Dict details1;
+  details1.Set(kReminderNotificationsTimeKey,
+               base::TimeToValue(reminder_time1));
+  base::Value::Dict details2;
+  details2.Set(kReminderNotificationsTimeKey,
+               base::TimeToValue(reminder_time2));
+
+  base::Value::Dict reminders;
+  reminders.Set(url1.spec(), std::move(details1));
+  reminders.Set(url2.spec(), std::move(details2));
+
+  StubGetPendingRequests(nil);
+  ExpectAddNotificationRequest(url1);
+  ExpectAddNotificationRequest(url2);
+
+  // Set the prefs, triggering scheduling.
+  SetReminderPrefs(reminders);
+
+  // Verify prefs are initially set.
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(prefs::kReminderNotifications)
+                  .contains(url1.spec()));
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(prefs::kReminderNotifications)
+                  .contains(url2.spec()));
+
+  // Run pending tasks.
+  task_environment_.RunUntilIdle();
+
+  // Verify mocks and pref removal.
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  const base::Value::Dict& final_reminders =
+      profile_->GetPrefs()->GetDict(prefs::kReminderNotifications);
+  EXPECT_FALSE(final_reminders.contains(url1.spec()));
+  EXPECT_FALSE(final_reminders.contains(url2.spec()));
+  EXPECT_TRUE(final_reminders.empty());
+}
+
+// Tests that the client doesn't reschedule a reminder that is already pending
+// in the notification center.
+TEST_F(ReminderNotificationClientTest, DoesNotReschedulePendingReminder) {
+  SetupMockNotificationCenter();
+  SetReminderPermission(true);
+  GURL url("http://example.com/page1");
+  base::Time reminder_time = base::Time::Now() + base::Minutes(10);
+
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
+  content.userInfo = @{@"url" : [net::NSURLWithGURL(url) absoluteString]};
+  UNNotificationRequest* pending_request =
+      [UNNotificationRequest requestWithIdentifier:@"reminder_existing_123"
+                                           content:content
+                                           trigger:nil];
+  StubGetPendingRequests(@[ pending_request ]);
+
+  base::Value::Dict reminder_details;
+  reminder_details.Set(kReminderNotificationsTimeKey,
+                       base::TimeToValue(reminder_time));
+  base::Value::Dict reminders;
+  reminders.Set(url.spec(), std::move(reminder_details));
+  SetReminderPrefs(reminders);
+
+  OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
+                                        withCompletionHandler:[OCMArg any]]);
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(prefs::kReminderNotifications)
+                  .contains(url.spec()));
 }
