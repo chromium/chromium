@@ -5352,14 +5352,6 @@
       name: "WebAuthAuthenticatorAttachment",
       status: "test",
     },
-    // Aligns the error thrown by navigator.credentials.create in a
-    // cross-origin iframe with no user activation to be correct to the
-    // webauthn spec whether or not the 'payment' extension is specified. See
-    // https://crbug.com/41484826
-    {
-      name: "WebAuthenticationAlignErrorTypeForPaymentCredentialCreate",
-      status: "stable",
-    },
     // Prototyping https://github.com/w3c/webauthn/issues/2144
     {
       name: "WebAuthenticationAmbient",

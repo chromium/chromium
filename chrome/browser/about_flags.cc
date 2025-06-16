@@ -12381,16 +12381,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kAndroidWindowOcclusion)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"web-authentication-align-error-type-for-payment-credential-create",
-     flag_descriptions::
-         kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateName,
-     flag_descriptions::
-         kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::
-             kWebAuthenticationAlignErrorTypeForPaymentCredentialCreate)},
-
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     {"enterprise-file-obfuscation",
      flag_descriptions::kEnterpriseFileObfuscationName,

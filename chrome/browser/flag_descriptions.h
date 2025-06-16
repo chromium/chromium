@@ -2552,11 +2552,6 @@ extern const char kWallpaperGooglePhotosSharedAlbumsDescription[];
 extern const char kWallpaperSearchSettingsVisibilityName[];
 extern const char kWallpaperSearchSettingsVisibilityDescription[];
 
-extern const char
-    kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateName[];
-extern const char
-    kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[];
 extern const char

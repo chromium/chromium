@@ -4412,15 +4412,6 @@ const char kWebAppInstallationApiDescription[] =
     "Enables the Web App Installation API which allows web apps to be "
     "installed programmatically using navigator.install().";
 
-const char kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateName[] =
-    "Web Authentication Align Error Type for 'payment' credentials";
-
-const char
-    kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateDescription[] =
-        "Throw a 'NotAllowedError' instead of 'SecurityError' when creating "
-        "'payment' credentials in a cross-origin iframe without user "
-        " activation. See https://crbug.com/41484826";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[] =
     "Use passkey from another device in the context menu";
