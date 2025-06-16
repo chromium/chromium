@@ -187,13 +187,12 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   if (sysno == __NR_fcntl)
     return RestrictFcntlCommands();
 
-#if defined(__i386__) || defined(__arm__) || \
-    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+#if !defined(__LP64__)
   if (sysno == __NR_fcntl64)
     return RestrictFcntlCommands();
 #endif
 
-#if !defined(__aarch64__)
+#if defined(__NR_fork)
   // fork() is never used as a system call (clone() is used instead), but we
   // have seen it in fallback code on Android.
   if (sysno == __NR_fork) {
@@ -203,16 +202,15 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
 
 #if defined(__NR_vfork)
   // vfork() is almost never used as a system call, but some libc versions (e.g.
-  // older versions of bionic) might use it in a posix_spawn() implementation,
-  // which is used by system();
+  // 32-bit versions of bionic) use it in a posix_spawn() implementation,
+  // which is used by system().
   if (sysno == __NR_vfork) {
     return Error(EPERM);
   }
 #endif
 
   if (sysno == __NR_futex
-#if defined(__i386__) || defined(__arm__) || \
-    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+#if !defined(__LP64__)
       || sysno == __NR_futex_time64
 #endif
   ) {
@@ -254,14 +252,14 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
         .Else(Error(EPERM));
   }
 
+  // TODO(crbug.com/40528912): should i386 really be in this list?
 #if defined(__i386__) || defined(__x86_64__) || defined(__mips__) || \
     defined(__aarch64__)
   if (sysno == __NR_mmap)
     return RestrictMmapFlags();
 #endif
 
-#if defined(__i386__) || defined(__arm__) || \
-    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+#if !defined(__LP64__)
   if (sysno == __NR_mmap2)
     return RestrictMmapFlags();
 #endif
@@ -275,8 +273,7 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   if (sysno == __NR_prctl)
     return RestrictPrctl();
 
-#if defined(__x86_64__) || defined(__arm__) || defined(__mips__) || \
-    defined(__aarch64__)
+  // (Note that i386 may also use socketcall() for this, handled below.)
   if (sysno == __NR_socketpair) {
     // Only allow AF_UNIX, PF_UNIX. Crash if anything else is seen.
     static_assert(AF_UNIX == PF_UNIX,
@@ -284,7 +281,6 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     const Arg<int> domain(0);
     return If(domain == AF_UNIX, Allow()).Else(CrashSIGSYS());
   }
-#endif
 
   // On Android, for https://crbug.com/701137.
   // On Desktop, for https://crbug.com/741984.
@@ -345,15 +341,14 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return RestrictSocketcallCommand();
 #endif
 
-#if !defined(__i386__)
   if (sysno == __NR_getsockopt || sysno ==__NR_setsockopt) {
     // Used by Mojo EDK to catch a message pipe being sent over itself.
+    // TODO(crbug.com/40528912): is this still needed?
     const Arg<int> level(1);
     const Arg<int> optname(2);
     return If(AllOf(level == SOL_SOCKET, optname == SO_PEEK_OFF), Allow())
         .Else(CrashSIGSYS());
   }
-#endif
 
   // https://crbug.com/644759
   // https://chromium-review.googlesource.com/c/crashpad/crashpad/+/3278691
@@ -366,7 +361,7 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   // Allow creating pipes, but don't allow weird flags to pipe2().
   // O_NOTIFICATION_PIPE (== O_EXCL) can be used to create
   // "notification pipes", which are rarely used.
-#if !defined(__aarch64__)
+#if defined(__NR_pipe)
   if (sysno == __NR_pipe) {
     return Allow();
   }
