@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -27,12 +29,13 @@ import java.lang.annotation.RetentionPolicy;
  * Checks whether the currently seen web page belongs to a verified origin and notifies any
  * observers.
  */
+@NullMarked
 public class CurrentPageVerifier implements NativeInitObserver {
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Verifier mDelegate;
 
-    @Nullable private VerificationState mState;
+    private @Nullable VerificationState mState;
 
     private final ObserverList<Runnable> mObservers = new ObserverList<>();
 
@@ -68,7 +71,7 @@ public class CurrentPageVerifier implements NativeInitObserver {
                 }
 
                 @Override
-                public void onObservingDifferentTab(@NonNull Tab tab) {
+                public void onObservingDifferentTab(Tab tab) {
                     // When a link with target="_blank" is followed and the user navigates back, we
                     // don't get the onDidFinishNavigation event (because the original page wasn't
                     // navigated away from, it was only ever hidden). https://crbug.com/942088
@@ -139,6 +142,7 @@ public class CurrentPageVerifier implements NativeInitObserver {
         boolean resultStillApplies =
                 tab != null && scope.equals(mDelegate.getVerifiedScope(tab.getUrl().getSpec()));
         if (resultStillApplies) {
+            assumeNonNull(tab);
             updateState(
                     scope,
                     tab.getUrl().getSpec(),

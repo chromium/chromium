@@ -660,7 +660,7 @@ public abstract class Layout {
     /**
      * @return The EventFilter to use for processing events for this Layout.
      */
-    protected abstract EventFilter getEventFilter();
+    protected abstract @Nullable EventFilter getEventFilter();
 
     /**
      * Get an instance of {@link SceneLayer}. Any class inheriting {@link Layout}

@@ -11,6 +11,8 @@ import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -23,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * coordinators, running most of the business logic associated with the fake search box component,
  * and updating the model accordingly.
  */
+@NullMarked
 public class SearchBoxCoordinator {
     private final PropertyModel mModel;
     private final ViewGroup mView;
@@ -37,6 +40,7 @@ public class SearchBoxCoordinator {
         mMediator = new SearchBoxMediator(context, mModel, mView);
     }
 
+    @Initializer
     public void initialize(
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             boolean isIncognito,

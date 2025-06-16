@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -13,6 +14,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -24,11 +27,12 @@ import java.util.List;
 
 /** This class allows Java code to get and clear the list of recently closed entries. */
 @JNINamespace("recent_tabs")
+@NullMarked
 public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     private long mNativeBridge;
     private final TabModelSelector mTabModelSelector;
 
-    @Nullable private Runnable mEntriesUpdatedRunnable;
+    private @Nullable Runnable mEntriesUpdatedRunnable;
 
     @CalledByNative
     private static void addTabToEntries(List<RecentlyClosedEntry> entries, RecentlyClosedTab tab) {
@@ -84,6 +88,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         TabGroupModelFilter groupFilter = filter;
 
         int rootId = tabIds[0];
+        assumeNonNull(groupFilter);
         groupFilter.setTabGroupColor(rootId, color);
 
         // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.
@@ -129,7 +134,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     }
 
     @Override
-    public List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount) {
+    public @Nullable List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount) {
         List<RecentlyClosedEntry> entries = new ArrayList<>();
         boolean received =
                 RecentlyClosedBridgeJni.get()

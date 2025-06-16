@@ -59,7 +59,7 @@ public interface HubLayoutAnimatorProvider {
      * the work of transferring the bitmap from native up to Java.
      */
     @Nullable
-    default Callback<Bitmap> getThumbnailCallback() {
+    default Callback<@Nullable Bitmap> getThumbnailCallback() {
         return null;
     }
 }

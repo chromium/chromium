@@ -23,7 +23,7 @@ public interface RecentlyClosedTabManager {
      * @param maxEntryCount The maximum number of recently closed entries to return.
      * @return A snapshot of the list of recently closed entries, with up to maxEntryCount elements.
      */
-    List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount);
+    @Nullable List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount);
 
     /**
      * Opens a recently closed tab in the current tab or a new tab. If opened in the current tab,

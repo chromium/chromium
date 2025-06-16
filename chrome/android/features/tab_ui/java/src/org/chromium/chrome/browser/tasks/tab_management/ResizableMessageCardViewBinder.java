@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for TabGridSecondaryItem. */
+@NullMarked
 class ResizableMessageCardViewBinder {
     public static void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         if (ResizableMessageCardViewProperties.WIDTH == propertyKey) {

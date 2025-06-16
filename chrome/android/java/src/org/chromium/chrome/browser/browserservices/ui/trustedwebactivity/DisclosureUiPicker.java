@@ -15,6 +15,7 @@ import android.os.Build;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TwaDisclosureUi;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
@@ -34,6 +35,7 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
  * * The new Notification. (When notifications are enabled.) <br>
  * * The new Snackbar. (A Snackbar dismisses automatically, this one after 7 seconds.)
  */
+@NullMarked
 public class DisclosureUiPicker implements NativeInitObserver {
     private final Supplier<DisclosureInfobar> mDisclosureInfobar;
     private final Supplier<DisclosureSnackbar> mDisclosureSnackbar;

@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.device.DeviceConditions;
 
 /**
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.device.DeviceConditions;
  * queued requests.
  */
 @JNINamespace("offline_pages::android")
+@NullMarked
 public class BackgroundSchedulerBridge {
     // Starts processing of one or more queued background requests.
     // Returns whether processing was started and that caller should

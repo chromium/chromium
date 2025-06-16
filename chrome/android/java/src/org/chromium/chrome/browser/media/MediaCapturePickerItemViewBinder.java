@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.media;
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for {@link MediaCapturePickerDialog}. */
+@NullMarked
 public class MediaCapturePickerItemViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (MediaCapturePickerItemProperties.CLICK_LISTENER == propertyKey) {
