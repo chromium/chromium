@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
@@ -43,7 +44,17 @@ struct hash<gpu::GpuMemoryBufferConfigurationKey> {
 };
 }  // namespace std
 
+namespace arc {
+class GpuArcVideoEncodeAccelerator;
+}
+
+namespace media {
+class VaapiJpegEncodeAccelerator;
+class V4L2JpegEncodeAccelerator;
+}  // namespace media
+
 namespace gpu {
+class ClientSharedImage;
 class GpuMemoryBufferManager;
 
 // Provides a common factory for GPU memory buffer implementations.
@@ -72,6 +83,43 @@ class GPU_EXPORT GpuMemoryBufferSupport {
                                        gfx::BufferFormat format,
                                        gfx::BufferUsage usage);
 
+  // Creates a GpuMemoryBufferImpl from the given |handle| for VideoFrames.
+  // |size| and |format| should match what was used to allocate the |handle|.
+  // NOTE: DO NOT ADD ANY USAGES OF THIS METHOD.
+  // TODO(crbug.com/40263579): Remove this method once all usages are
+  // eliminated.
+  std::unique_ptr<GpuMemoryBufferImpl>
+  CreateGpuMemoryBufferImplFromHandleForVideoFrame(
+      gfx::GpuMemoryBufferHandle handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage) {
+    return CreateGpuMemoryBufferImplFromHandle(std::move(handle), size, format,
+                                               usage, base::NullCallback());
+  }
+
+  std::unique_ptr<GpuMemoryBufferImpl>
+  CreateGpuMemoryBufferImplFromHandleForTesting(
+      gfx::GpuMemoryBufferHandle handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      GpuMemoryBufferImpl::DestructionCallback callback) {
+    return CreateGpuMemoryBufferImplFromHandle(std::move(handle), size, format,
+                                               usage, std::move(callback));
+  }
+
+ private:
+  // TODO(crbug.com/404905709): Eliminate these class' creation of GMBs and
+  // remove this friending.
+  friend class arc::GpuArcVideoEncodeAccelerator;
+  friend class media::VaapiJpegEncodeAccelerator;
+  friend class media::V4L2JpegEncodeAccelerator;
+
+  // ClientSharedImage is the only entity that should be creating GMBs via
+  // GpuMemoryBufferSupport.
+  friend class ClientSharedImage;
+
   // Creates a GpuMemoryBufferImpl from the given |handle|. |size| and |format|
   // should match what was used to allocate the |handle|. |callback|, if
   // non-null, is called when instance is deleted, which is not necessarily on
@@ -89,7 +137,6 @@ class GPU_EXPORT GpuMemoryBufferSupport {
       scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr,
       base::span<uint8_t> premapped_memory = base::span<uint8_t>());
 
- private:
   // Returns whether the provided buffer format is supported.
   static bool IsNativeGpuMemoryBufferConfigurationSupported(
       gfx::BufferFormat format,

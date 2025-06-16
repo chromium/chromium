@@ -189,7 +189,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
 
       std::unique_ptr<GpuMemoryBufferImpl> buffer(
           TestFixture::gpu_memory_buffer_support()
-              ->CreateGpuMemoryBufferImplFromHandle(
+              ->CreateGpuMemoryBufferImplFromHandleForTesting(
                   std::move(handle), kBufferSize, format, usage,
                   std::move(destroy_callback)));
       ASSERT_TRUE(buffer);
@@ -242,7 +242,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandleSmallBuffer) {
       // Handle import should fail when the size is bigger than expected.
       std::unique_ptr<GpuMemoryBufferImpl> buffer(
           TestFixture::gpu_memory_buffer_support()
-              ->CreateGpuMemoryBufferImplFromHandle(
+              ->CreateGpuMemoryBufferImplFromHandleForTesting(
                   std::move(handle), bogus_size, format, usage,
                   std::move(destroy_callback)));
 
@@ -280,7 +280,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
 
     std::unique_ptr<GpuMemoryBufferImpl> buffer(
         TestFixture::gpu_memory_buffer_support()
-            ->CreateGpuMemoryBufferImplFromHandle(
+            ->CreateGpuMemoryBufferImplFromHandleForTesting(
                 std::move(handle), kBufferSize, format,
                 gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
                 std::move(destroy_callback)));
@@ -346,7 +346,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
 
     std::unique_ptr<GpuMemoryBufferImpl> buffer(
         TestFixture::gpu_memory_buffer_support()
-            ->CreateGpuMemoryBufferImplFromHandle(
+            ->CreateGpuMemoryBufferImplFromHandleForTesting(
                 std::move(handle), kBufferSize, format,
                 gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
                 std::move(destroy_callback)));
@@ -444,7 +444,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
 
       std::unique_ptr<GpuMemoryBufferImpl> buffer(
           TestFixture::gpu_memory_buffer_support()
-              ->CreateGpuMemoryBufferImplFromHandle(
+              ->CreateGpuMemoryBufferImplFromHandleForTesting(
                   std::move(output_handle), kBufferSize, format, usage,
                   std::move(destroy_callback)));
       ASSERT_TRUE(buffer);

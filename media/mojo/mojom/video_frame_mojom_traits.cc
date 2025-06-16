@@ -374,9 +374,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     gpu::GpuMemoryBufferSupport support;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-        support.CreateGpuMemoryBufferImplFromHandle(
+        support.CreateGpuMemoryBufferImplFromHandleForVideoFrame(
             std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
-            buffer_usage, base::NullCallback());
+            buffer_usage);
     if (!gpu_memory_buffer) {
       return false;
     }
