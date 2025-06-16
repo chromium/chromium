@@ -2352,6 +2352,11 @@ extern const char kUnsafeWebGPUDescription[];
 extern const char kForceHighPerformanceGPUName[];
 extern const char kForceHighPerformanceGPUDescription[];
 
+#if BUILDFLAG(IS_WIN)
+extern const char kUiaProviderName[];
+extern const char kUiaProviderDescription[];
+#endif
+
 extern const char kUiPartialSwapName[];
 extern const char kUiPartialSwapDescription[];
 

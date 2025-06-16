@@ -4031,6 +4031,12 @@ const char kForceHighPerformanceGPUDescription[] =
     "Forces use of high performance GPU if available. Warning: this flag may "
     "increase power consumption leading to shorter battery time.";
 
+#if BUILDFLAG(IS_WIN)
+const char kUiaProviderName[] = "UI Automation";
+const char kUiaProviderDescription[] =
+    "Enables native support of the UI Automation provider.";
+#endif
+
 const char kUiPartialSwapName[] = "Partial swap";
 const char kUiPartialSwapDescription[] = "Sets partial swap behavior.";
 
