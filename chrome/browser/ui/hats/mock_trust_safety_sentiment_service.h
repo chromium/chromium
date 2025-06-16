@@ -7,19 +7,17 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service_interface.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
 class BrowserContext;
 }
 
+class KeyedService;
 class Profile;
 
-class MockTrustSafetySentimentService
-    : public TrustSafetySentimentServiceInterface,
-      public KeyedService {
+class MockTrustSafetySentimentService : public TrustSafetySentimentService {
  public:
   explicit MockTrustSafetySentimentService(Profile* profile);
   ~MockTrustSafetySentimentService() override;
@@ -65,7 +63,8 @@ class MockTrustSafetySentimentService
   MOCK_METHOD(void, PhishedPasswordUpdateFinished, (), (override));
   MOCK_METHOD(void,
               TriggerSafetyHubSurvey,
-              (FeatureArea, (std::map<std::string, bool>)),
+              (TrustSafetySentimentService::FeatureArea,
+               (std::map<std::string, bool>)),
               (override));
 };
 
