@@ -23,6 +23,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
+                "host_platform": "mac",
                 "target_bits": 64,
                 "target_platform": "ios"
               },

@@ -1540,6 +1540,7 @@ fyi_ios_builder(
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
+            host_platform = builder_config.host_platform.MAC,
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
