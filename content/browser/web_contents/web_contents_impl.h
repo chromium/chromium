@@ -762,8 +762,8 @@ class CONTENT_EXPORT WebContentsImpl
   void UnrecoverableAccessibilityError() override;
   device::mojom::GeolocationContext* GetGeolocationContext() override;
   device::mojom::WakeLockContext* GetWakeLockContext() override;
-#if BUILDFLAG(IS_ANDROID)
-  void GetNFC(RenderFrameHost*,
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  void GetNFC(RenderFrameHostImpl*,
               mojo::PendingReceiver<device::mojom::NFC>) override;
 #endif
   bool CanEnterFullscreenMode(RenderFrameHostImpl* requesting_frame) override;
@@ -2490,7 +2490,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   bool updating_web_preferences_ = false;
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   std::unique_ptr<NFCHost> nfc_host_;
 #endif
 

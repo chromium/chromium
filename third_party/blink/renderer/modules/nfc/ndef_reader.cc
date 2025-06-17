@@ -555,6 +555,10 @@ void NDEFReader::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
+void NDEFReader::Dispose() {
+  nfc_proxy_->StopReading(this);
+}
+
 PermissionService* NDEFReader::GetPermissionService() {
   if (!permission_service_.is_bound()) {
     ConnectToPermissionService(

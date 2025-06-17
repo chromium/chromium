@@ -19,5 +19,14 @@ blink_modules_sources("nfc") {
     "nfc_type_converters.cc",
     "nfc_type_converters.h",
   ]
+
   deps = [ "//third_party/blink/renderer/modules/permissions" ]
+
+  if (is_ios) {
+    sources += [
+      "nfc_parser_ios.h",
+      "nfc_parser_ios.mm",
+    ]
+    deps += [ "//services/device/public/cpp/nfc" ]
+  }
 }

@@ -5583,7 +5583,7 @@
     {
       name: "WebNFC",
       public: true,
-      status: {"Android": "stable", "default": "test"},
+      status: {"Android": "stable", "iOS": "stable", "default": "test"},
       base_feature: "none",
     },
     {

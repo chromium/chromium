@@ -5,6 +5,7 @@
 #include "content/browser/android/nfc_host.h"
 
 #include "base/memory/raw_ptr.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/test/mock_permission_controller.h"
@@ -76,8 +77,10 @@ TEST_F(NFCHostTest, GetNFCTwice) {
       .WillOnce(Return(kSubscriptionId));
 
   mojo::Remote<device::mojom::NFC> nfc1, nfc2;
-  contents()->GetNFC(main_rfh(), nfc1.BindNewPipeAndPassReceiver());
-  contents()->GetNFC(main_rfh(), nfc2.BindNewPipeAndPassReceiver());
+  contents()->GetNFC(static_cast<RenderFrameHostImpl*>(main_rfh()),
+                     nfc1.BindNewPipeAndPassReceiver());
+  contents()->GetNFC(static_cast<RenderFrameHostImpl*>(main_rfh()),
+                     nfc2.BindNewPipeAndPassReceiver());
 
   nfc1.FlushForTesting();
   nfc2.FlushForTesting();

@@ -2763,6 +2763,15 @@ source_set("browser") {
     }
   }
 
+  if (is_ios && target_platform == "iphoneos") {
+    sources += [
+      "ios/nfc_host.h",
+      "ios/nfc_host.mm",
+    ]
+    frameworks += [ "CoreNFC.framework" ]
+    deps += [ "//services/device/public/cpp/nfc" ]
+  }
+
   if (is_mac) {
     sources -=
         [ "file_system_access/file_path_watcher/file_path_watcher_stub.cc" ]
