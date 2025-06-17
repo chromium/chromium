@@ -1030,9 +1030,8 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
    public:
     static infobars::InfoBar* Create(
         infobars::ContentInfoBarManager* infobar_manager) {
-      return static_cast<InfoBarView*>(
-          infobar_manager->AddInfoBar(std::make_unique<InfoBarView>(
-              std::make_unique<TestInfoBarDelegate>())));
+      return infobar_manager->AddInfoBar(std::make_unique<InfoBarView>(
+          std::make_unique<TestInfoBarDelegate>()));
     }
 
     TestInfoBarDelegate() = default;
