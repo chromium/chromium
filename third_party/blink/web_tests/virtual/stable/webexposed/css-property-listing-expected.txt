@@ -154,6 +154,14 @@ All changes to this list should go through Blink's feature review process: http:
     container-type
     content
     content-visibility
+    corner-bottom-left-shape
+    corner-bottom-right-shape
+    corner-end-end-shape
+    corner-end-start-shape
+    corner-start-end-shape
+    corner-start-start-shape
+    corner-top-left-shape
+    corner-top-right-shape
     counter-increment
     counter-reset
     counter-set
@@ -603,6 +611,35 @@ All changes to this list should go through Blink's feature review process: http:
     container
         container-name
         container-type
+    corner-block-end-shape
+        corner-end-end-shape
+        corner-end-start-shape
+    corner-block-start-shape
+        corner-start-end-shape
+        corner-start-start-shape
+    corner-bottom-shape
+        corner-bottom-left-shape
+        corner-bottom-right-shape
+    corner-inline-end-shape
+        corner-end-end-shape
+        corner-start-end-shape
+    corner-inline-start-shape
+        corner-end-start-shape
+        corner-start-start-shape
+    corner-left-shape
+        corner-bottom-left-shape
+        corner-top-left-shape
+    corner-right-shape
+        corner-bottom-right-shape
+        corner-top-right-shape
+    corner-shape
+        corner-bottom-left-shape
+        corner-bottom-right-shape
+        corner-top-left-shape
+        corner-top-right-shape
+    corner-top-shape
+        corner-top-left-shape
+        corner-top-right-shape
     flex
         flex-basis
         flex-grow
