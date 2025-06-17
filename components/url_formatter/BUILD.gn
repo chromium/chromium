@@ -89,12 +89,20 @@ source_set("unit_tests") {
   ]
 }
 
-fuzzer_test("url_formatter_fixer_fuzzer") {
+test("url_formatter_fixer_fuzzer") {
   sources = [ "url_fixer_fuzzer.cc" ]
+  fuzztests = [
+    "URLFixerFuzzer.FuzzSegmentURL",
+    "URLFixerFuzzer.FuzzUTF16SegmentURL",
+    "URLFixerFuzzer.FuzzFormatURL",
+    "URLFixerFuzzer.FuzzFixupURL",
+    "URLFixerFuzzer.FuzzFixupRelativeFile",
+  ]
   deps = [
     ":url_formatter",
     "//base",
     "//base:i18n",
+    "//third_party/fuzztest:fuzztest_gtest_main",
     "//url",
   ]
 }

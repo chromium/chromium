@@ -7,4 +7,5 @@ include_rules = [
   "+content/public/test/android",
   "+net",
   "+ui/gfx",
+  "+third_party/fuzztest/src/fuzztest/fuzztest.h",
 ]
