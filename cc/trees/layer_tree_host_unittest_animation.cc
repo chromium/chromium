@@ -1289,9 +1289,10 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationCompletion
     }
     KeyframeModel* keyframe_model =
         animation_child_impl_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
-    if (!keyframe_model || keyframe_model->run_state() ==
-                               KeyframeModel::RunState::WAITING_FOR_DELETION)
+    if (!keyframe_model) {
+      impl_animation_cleaned_up_ = true;
       EndTest();
+    }
   }
 
   void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {
@@ -1309,12 +1310,13 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationCompletion
     // The animation should have run for some frames.
     EXPECT_TRUE(ran_animation_);
 
-    // The finished KeyframeModel should have been removed from both the
-    // main and impl side animations.
+    // The finished KeyframeModel should have been removed from the
+    // main side animation.
     EXPECT_EQ(nullptr, animation_child_->GetKeyframeModel(
                            TargetProperty::SCROLL_OFFSET));
-    EXPECT_EQ(nullptr, animation_child_impl_->GetKeyframeModel(
-                           TargetProperty::SCROLL_OFFSET));
+
+    // The impl-side animation should have been completely cleaned up.
+    EXPECT_TRUE(impl_animation_cleaned_up_);
 
     // The scroll should have been completed.
     EXPECT_EQ(final_position_, scroll_layer_->scroll_offset());
@@ -1325,6 +1327,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationCompletion
   scoped_refptr<FakePictureLayer> scroll_layer_;
   const gfx::PointF final_position_;
   bool ran_animation_ = false;
+  bool impl_animation_cleaned_up_ = false;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestScrollOffsetAnimationCompletion);
