@@ -397,6 +397,17 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Conditional Create (Passkey Upgrade) Failure"/>
 </enum>
 
+<!-- LINT.IfChange(WebAuthenticationMechanismDeduplicatedType) -->
+
+<enum name="WebAuthenticationMechanismDeduplicatedType">
+  <int value="0" label="Enclave Passkey"/>
+  <int value="1" label="Platform Passkey"/>
+  <int value="2" label="Password"/>
+  <int value="3" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/mechanism_sorter.h:WebAuthnMechanismDeduplicatedType) -->
+
 <enum name="WebAuthenticationPinRenewalEvent">
   <int value="0" label="Considered renewing the PIN"/>
   <int value="1" label="No PIN to renew"/>

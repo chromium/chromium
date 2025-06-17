@@ -9,6 +9,7 @@
 #include <numeric>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "device/fido/fido_types.h"
@@ -152,6 +153,26 @@ std::vector<Mechanism> DeduplicateMechanismsByAccount(
     }
 
     if (selected_mechanism) {
+      if (account_mechanisms.size() > 1) {
+        WebAuthnMechanismDeduplicatedType type_to_log;
+        switch (GetSortableMechanismType(*selected_mechanism)) {
+          case SortableMechanismType::kEnclavePasskey:
+            type_to_log = WebAuthnMechanismDeduplicatedType::kEnclavePasskey;
+            break;
+          case SortableMechanismType::kPlatformPasskey:
+            type_to_log = WebAuthnMechanismDeduplicatedType::kPlatformPasskey;
+            break;
+          case SortableMechanismType::kPassword:
+            type_to_log = WebAuthnMechanismDeduplicatedType::kPassword;
+            break;
+          case SortableMechanismType::kOther:
+            type_to_log = WebAuthnMechanismDeduplicatedType::kOther;
+            break;
+        }
+        base::UmaHistogramEnumeration(
+            "WebAuthentication.MechanismSorter.SelectedMechanismType",
+            type_to_log);
+      }
       deduplicated_mechanisms.emplace_back(
           std::move(const_cast<Mechanism&>(*selected_mechanism)));
     }
@@ -218,6 +239,10 @@ std::vector<Mechanism> MechanismSorter::ProcessMechanisms(
   //    Pass the `mechanisms` copy to allow moving from it.
   std::vector<Mechanism> deduplicated_mechanisms =
       DeduplicateMechanismsByAccount(grouped_by_account);
+
+  base::UmaHistogramBoolean(
+      "WebAuthentication.MechanismSorter.DeduplicationHappened",
+      mechanisms.size() > deduplicated_mechanisms.size());
 
   // 3. Sort the deduplicated mechanisms.
   //    `deduplicated_mechanisms` is already a new vector, pass by value.

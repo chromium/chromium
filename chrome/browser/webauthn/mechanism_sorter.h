@@ -9,6 +9,20 @@
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
+// LINT.IfChange
+//
+// Represents the type of credential that was selected after deduplication.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WebAuthnMechanismDeduplicatedType {
+  kEnclavePasskey = 0,
+  kPlatformPasskey = 1,
+  kPassword = 2,
+  kOther = 3,
+  kMaxValue = kOther,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
+
 // Class to handle deduplication and sorting of WebAuthn mechanisms,
 // with specific logic for the kModalImmediate UI presentation.
 class MechanismSorter {

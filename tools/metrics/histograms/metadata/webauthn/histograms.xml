@@ -488,6 +488,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.MechanismSorter.DeduplicationHappened"
+    enum="Boolean" expires_after="2025-11-30">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    For a given WebAuthn request, records whether any credentials for the same
+    account were deduplicated. This is recorded for get requests with immediate
+    mediation.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.MechanismSorter.SelectedMechanismType"
+    enum="WebAuthenticationMechanismDeduplicatedType"
+    expires_after="2025-11-30">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the type of the credential that was selected for an account after
+    deduplication. This is recorded for each account that had more than one
+    credential (i.e. when deduplication happened). This is recorded for get
+    requests with immediate mediation.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.OnboardingEvents" enum="OnboardingEvents"
     expires_after="2025-11-16">
   <owner>natiahlyi@google.com</owner>
