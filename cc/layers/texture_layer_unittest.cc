@@ -1159,6 +1159,13 @@ class TextureLayerReleaseResourcesBase : public LayerTreeTest,
   bool PrepareTransferableResource(
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
+    if (commit_count_ > 0) {
+      // Any update after the first commit should clear the resource to ensure
+      // the main thread layer doesn't hold onto it.
+      *resource = viz::TransferableResource();
+      return true;
+    }
+
     *resource = MakeFakeResource();
     *release_callback =
         base::BindOnce(&TextureLayerReleaseResourcesBase::ResourceReleased,
@@ -1168,6 +1175,10 @@ class TextureLayerReleaseResourcesBase : public LayerTreeTest,
 
   void ResourceReleased(const gpu::SyncToken& sync_token, bool lost_resource) {
     resource_released_ = true;
+    // End the test when resource is released.
+    if (commit_count_ >= 1) {
+      EndTest();
+    }
   }
 
   void SetupTree() override {
@@ -1183,27 +1194,44 @@ class TextureLayerReleaseResourcesBase : public LayerTreeTest,
 
   void BeginTest() override {
     resource_released_ = false;
+    commit_count_ = 0;
     PostSetNeedsCommitToMainThread();
   }
 
-  void DidCommitAndDrawFrame() override { EndTest(); }
+  void DidCommitAndDrawFrame() override {
+    ++commit_count_;
+    PostSetNeedsCommitToMainThread();
+  }
 
   void AfterTest() override { EXPECT_TRUE(resource_released_); }
 
  protected:
   int texture_layer_id_;
+  int commit_count_ = 0;
 
  private:
-  bool resource_released_;
+  bool resource_released_ = false;
 };
 
 class TextureLayerReleaseResourcesAfterCommit
     : public TextureLayerReleaseResourcesBase {
  public:
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
-    LayerTreeImpl* tree = nullptr;
-    tree = host_impl->sync_tree();
-    tree->LayerById(texture_layer_id_)->ReleaseResources();
+    if (commit_count_ == 0) {
+      // After first commit, call ReleaseResources and verify it's released by
+      // the impl layer. It'll be released by the main thread layer during the
+      // next update.
+      auto* texture_impl = static_cast<TextureLayerImpl*>(
+          host_impl->sync_tree()->LayerById(texture_layer_id_));
+
+      // Verify resource exists before releasing
+      EXPECT_FALSE(texture_impl->transferable_resource().is_empty());
+
+      texture_impl->ReleaseResources();
+
+      // Verify resource was released from impl thread
+      EXPECT_TRUE(texture_impl->transferable_resource().is_empty());
+    }
   }
 };
 
@@ -1213,7 +1241,21 @@ class TextureLayerReleaseResourcesAfterActivate
     : public TextureLayerReleaseResourcesBase {
  public:
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
-    host_impl->active_tree()->LayerById(texture_layer_id_)->ReleaseResources();
+    if (commit_count_ == 0) {
+      // After first commit, call ReleaseResources and verify it's released by
+      // the impl layer. It'll be released by the main thread layer during the
+      // next update.
+      auto* texture_impl = static_cast<TextureLayerImpl*>(
+          host_impl->active_tree()->LayerById(texture_layer_id_));
+
+      // Verify resource exists before releasing
+      EXPECT_FALSE(texture_impl->transferable_resource().is_empty());
+
+      texture_impl->ReleaseResources();
+
+      // Verify resource was released from impl thread
+      EXPECT_TRUE(texture_impl->transferable_resource().is_empty());
+    }
   }
 };
 
