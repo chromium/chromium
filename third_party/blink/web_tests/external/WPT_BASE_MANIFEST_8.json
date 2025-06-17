@@ -132613,6 +132613,19 @@
        {}
       ]
      ],
+     "font-variant-caps-invalidation-container-sizing.html": [
+      "a3e2c8d6294c4da592bae0cef51b181da4fb3c53",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-variant-caps-invalidation-container-sizing-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-variant-caps.html": [
       "7d89802f1cf0dd4f2e197f025d183c5bc8e4aa35",
       [
@@ -133336,6 +133349,19 @@
         [
          [
           "/css/css-fonts/matching/font-unicode-PUA-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "font-unicode-presented-as-emoji-outline.html": [
+       "51fa87abaa82fe7ad3c018bd7ae69f44faad5fc6",
+       [
+        null,
+        [
+         [
+          "/css/css-fonts/matching/font-unicode-presented-as-emoji-outline-ref.html",
           "=="
          ]
         ],
@@ -135448,6 +135474,136 @@
          [
           [
            "/css/css-gaps/grid/grid-gap-decorations-012-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-009.html": [
+        "96f90de5643b18a7e5a1cadd7c93230aea4b3727",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-010.html": [
+        "dd8cac2a7df0f124df374f4b5c47cb3a6f066cba",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-011.html": [
+        "d80b0a2b3e43995fa40624e607ec73ce6820d830",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-012.html": [
+        "9cc84c3e04b3c9135d976931836462e6a8d6f456",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/subgrid/subgrid-gap-decorations-012-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-013.html": [
+        "3afa02f21494786c7959936f9d2b6218e48a2472",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/subgrid/subgrid-gap-decorations-013-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-014.html": [
+        "468614669c9b5efb262c13a6d12e299d975bbfde",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-015.html": [
+        "a7010d199e414d1b290a432a7437a517cda34bf3",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/subgrid/subgrid-gap-decorations-015-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-016.html": [
+        "353367bd06ca4e267c01204fd0868381ea9f4543",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/subgrid/subgrid-gap-decorations-016-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-017.html": [
+        "c175dfa656353d7bc799e5c9376b723fda4b6155",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/subgrid/subgrid-gap-decorations-017-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-gap-decorations-018.html": [
+        "1fd2f1e16a5a3b6944bfae6920b3fbc696f614ea",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
            "=="
           ]
          ],
@@ -316244,7 +316400,7 @@
        ]
       ],
       "pathlength-002.svg": [
-       "bdae7e75f2ddfe77c5caac7807a793a9dcf3e018",
+       "5bae25641686f67cee43861e15082193da9d6dd3",
        [
         null,
         [
@@ -316257,7 +316413,7 @@
        ]
       ],
       "pathlength-003.svg": [
-       "506952f54b4b0b59d10a106af50ae61062873e99",
+       "7d50694f76ceb6f290a3edaac69b1fcedf486f57",
        [
         null,
         [
@@ -344753,6 +344909,10 @@
       "eeddd2ed86a226ff8c894fdd843d13c266575b27",
       []
      ],
+     "calc-in-font-variation-settings-expected.txt": [
+      "1daab4048a6e0cca7d1ffc949f128fbcdc25e6b2",
+      []
+     ],
      "downloadable-font-in-iframe-print-ref.html": [
       "f66046f8a28e4662a0ad5eb715e969df600d371f",
       []
@@ -345419,6 +345579,10 @@
       "2dbc43904fd0f5825e095a4fb87e0edb590c4a87",
       []
      ],
+     "font-variant-caps-invalidation-container-sizing-ref.html": [
+      "8463376cb8a99d0bead34358421030100f4dbe00",
+      []
+     ],
      "font-variant-caps-ref.html": [
       "f84e51add0c573b4a38f28c3f051cfe8a97221b8",
       []
@@ -345672,11 +345836,19 @@
        "01b95e8e72e59bf248148555d32a5e06c943b166",
        []
       ],
+      "font-unicode-presented-as-emoji-outline-ref.html": [
+       "1c6532187cceeb5435a8c352422469a3a31b67c6",
+       []
+      ],
       "range-descriptor-reversed-ref.html": [
        "e59dc50dc757ddc746e73615953372c4a3e92d3c",
        []
       ],
       "resources": {
+       "AhemCrossmarkSupport.otf": [
+        "9ec89a89c94f25c1f38c5ef752498e321edb1594",
+        []
+       ],
        "variabletest_matching.ttf": [
         "89ed12a2c03531a1e8f764e3a2365824a8f40a12",
         []
@@ -352185,7 +352357,7 @@
        []
       ],
       "at-font-face-descriptors-expected.txt": [
-       "05f9a11a70d24e34ab797ec7182d11c1040f44c9",
+       "f2e573c02846354f9ede050da982e228cacc6043",
        []
       ],
       "font-descriptor-range-reversed-ref.html": [
@@ -352699,7 +352871,29 @@
       "grid-gap-decorations-045-ref.html": [
        "b002cf0fb3a3481e476ee6fc5adfed14b8d19f79",
        []
-      ]
+      ],
+      "subgrid": {
+       "subgrid-gap-decorations-012-ref.html": [
+        "bcb16d454899cd69314fddecc2f6883e14ed49b5",
+        []
+       ],
+       "subgrid-gap-decorations-013-ref.html": [
+        "9b20aaf22c6f1b5c7a4da450a20f21c2fa45c324",
+        []
+       ],
+       "subgrid-gap-decorations-015-ref.html": [
+        "41915ab503eb3e16e01e8a8f8e4719ab5c5a5fd6",
+        []
+       ],
+       "subgrid-gap-decorations-016-ref.html": [
+        "43577fa98006f1662a5732e658d2f3de940ab44e",
+        []
+       ],
+       "subgrid-gap-decorations-017-ref.html": [
+        "e2218e06c45ca5f0109e9573a57e23e2b87f96d6",
+        []
+       ]
+      }
      },
      "multicol": {
       "multicol-gap-decorations-001-ref.html": [
@@ -402476,7 +402670,7 @@
         []
        ],
        "test-helper.js": [
-        "fa9ec20c62be2aa9158abd32e1732689457c3f4d",
+        "c7c80958fd577b5f3e00d30de0ab7bb1d55fd784",
         []
        ]
       },
@@ -415212,7 +415406,7 @@
     }
    },
    "lint.ignore": [
-    "7273ff2c0597d2a377de936cfed64a7b145a5d84",
+    "597f692249f289944436f38c084985df3bcee088",
     []
    ],
    "loading": {
@@ -438003,7 +438197,7 @@
      []
     ],
     "RTCRtpTransceiver.https-expected.txt": [
-     "3661b1e2a89371e612930805b28f985b571073eb",
+     "7a07190ce98f3583d9c15b123b4ad711ac39b217",
      []
     ],
     "WEB_FEATURES.yml": [
@@ -438388,6 +438582,10 @@
     ],
     "getStats-remote-candidate-address-expected.txt": [
      "f73ad23fc53014c79fb1d0aa11ece0ab1c2f8ff1",
+     []
+    ],
+    "outbound-rtp.https-expected.txt": [
+     "fb3703309450f9875522465b9fd34bda721c747a",
      []
     ],
     "rtp-stats-creation-expected.txt": [
@@ -507900,7 +508098,7 @@
       ]
      },
      "calc-in-font-variation-settings.html": [
-      "1a7c59abd5ddebfc6cd1f972ee6a186bdb7b97df",
+      "47f98a1dc777682183e24af82c26d62bcd9ef9ad",
       [
        null,
        {}
@@ -508784,7 +508982,7 @@
      ],
      "variations": {
       "at-font-face-descriptors.html": [
-       "bb41c24ad07a4404bb570817a37091ff46eb5295",
+       "7e9792730dc1abf1cfa5b2e3c281ef9ea8794bc2",
        [
         null,
         {}
@@ -689319,18 +689517,42 @@
      ]
     ],
     "pointerevent_element_haspointercapture.html": [
-     "3db6acf8e57b0524c4b55f58faa1761927f41499",
+     "d0f73a03982ebf5430640eb891debfc42a81c58d",
      [
-      null,
+      "pointerevents/pointerevent_element_haspointercapture.html?mouse",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_element_haspointercapture.html?pen",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_element_haspointercapture.html?touch",
       {
        "testdriver": true
       }
      ]
     ],
     "pointerevent_element_haspointercapture_release_pending_capture.html": [
-     "e75dff867528d91d62b14ac7e48d822626deba34",
+     "26ce5837cbdec04702e3761e4d61700a0ca2b17b",
      [
-      null,
+      "pointerevents/pointerevent_element_haspointercapture_release_pending_capture.html?mouse",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_element_haspointercapture_release_pending_capture.html?pen",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_element_haspointercapture_release_pending_capture.html?touch",
       {
        "testdriver": true
       }
@@ -689832,9 +690054,21 @@
      ]
     ],
     "pointerevent_releasepointercapture_release_right_after_capture.html": [
-     "409951b918aa6ef9de4603ac97f330085080e2b7",
+     "bdae1a37a364dedf470a52da760a7a49cd0bd535",
      [
-      null,
+      "pointerevents/pointerevent_releasepointercapture_release_right_after_capture.html?mouse",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_releasepointercapture_release_right_after_capture.html?pen",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_releasepointercapture_release_right_after_capture.html?touch",
       {
        "testdriver": true
       }
@@ -689912,9 +690146,21 @@
      ]
     ],
     "pointerevent_setpointercapture_override_pending_capture_element.html": [
-     "f7c1d4299192f28ac8b3b99142951876f3155b45",
+     "7021153e3171cb4a0f0d90b4b0e191c98a88a604",
      [
-      null,
+      "pointerevents/pointerevent_setpointercapture_override_pending_capture_element.html?mouse",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_setpointercapture_override_pending_capture_element.html?pen",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_setpointercapture_override_pending_capture_element.html?touch",
       {
        "testdriver": true
       }
@@ -689948,9 +690194,21 @@
      ]
     ],
     "pointerevent_setpointercapture_to_same_element_twice.html": [
-     "5225ac508d42dca00b0a7269c8a4f95350545d64",
+     "156fa6cd340cae62475f890b1e138b4962f10539",
      [
-      null,
+      "pointerevents/pointerevent_setpointercapture_to_same_element_twice.html?mouse",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_setpointercapture_to_same_element_twice.html?pen",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_setpointercapture_to_same_element_twice.html?touch",
       {
        "testdriver": true
       }
@@ -716931,6 +717189,15 @@
     ],
     "lcp": {
      "tentative": {
+      "background-image-set-image.html": [
+       "a99ba5bdd789afeb11b809b98e13c061604fc22b",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "broken-image-icon.html": [
        "fbfb2280dcfbad916b0b62d69e481b35256b0188",
        [
@@ -716942,6 +717209,24 @@
       ],
       "contracted-image.html": [
        "46d359a87b3fe5e99e03879cf3801e4e358e1f67",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "first-paint-equals-lcp-text.html": [
+       "ea0ceb15387ce27fc551055966865f34b7beb1b0",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "iframe-content-not-observed.html": [
+       "73beb752adf07e7c6f07c4a6321b0a466aeec4d5",
        [
         null,
         {
@@ -801403,7 +801688,7 @@
      ]
     ],
     "RTCRtpTransceiver.https.html": [
-     "54af97aa7b85629369f6bb83ad720c4346553180",
+     "943550d4b7feeb0bc69dd02de3fec722aef4565c",
      [
       null,
       {
@@ -802725,7 +803010,7 @@
      ]
     ],
     "outbound-rtp.https.html": [
-     "196e8fd003706f9d6fe89cdaa2adf17e8fc2b30e",
+     "ff87d54256026b3b6fc6da2aa9f03a579730b330",
      [
       null,
       {
@@ -838342,13 +838627,6 @@
      ],
      "font-size-adjust-003.xht": [
       "1886ccc6bfdb027b797efe69f127f41bc6aa46f8",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-variant-caps-invalidation-container-sizing.html": [
-      "54a00dc360fac3beb6c8b4fb2e8ccf372b3c5cea",
       [
        null,
        {}
