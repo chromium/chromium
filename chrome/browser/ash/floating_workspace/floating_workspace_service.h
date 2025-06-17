@@ -292,6 +292,8 @@ class FloatingWorkspaceService
   // a delay, so tracking `MergeFullSyncData` can be seen as an optimization.
   void SetCallbacksToLaunchOnFirstSync();
 
+  void MaybeStartOrStopCaptureBasedOnTabSyncSetting();
+
   const raw_ptr<Profile> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;
@@ -315,6 +317,10 @@ class FloatingWorkspaceService
   // Flag to tell us if we should launch the floating workspace template onto a
   // new desk.
   bool launch_on_new_desk_ = false;
+
+  // When Sync state changes we check if the user has disabled tab sync. This
+  // flag caches the result of the last check.
+  bool tab_sync_enabled_ = true;
 
   // Time when the service is initialized.
   base::TimeTicks initialization_timeticks_;

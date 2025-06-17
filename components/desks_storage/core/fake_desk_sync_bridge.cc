@@ -192,7 +192,7 @@ bool FakeDeskSyncBridge::IsReady() const {
 }
 
 bool FakeDeskSyncBridge::IsSyncing() const {
-  return false;
+  return true;
 }
 
 ash::DeskTemplate* FakeDeskSyncBridge::FindOtherEntryWithName(

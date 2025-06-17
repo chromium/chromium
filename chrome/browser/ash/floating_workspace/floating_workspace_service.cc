@@ -51,8 +51,10 @@
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
@@ -276,6 +278,7 @@ void FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession() {
 }
 
 void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
+  MaybeStartOrStopCaptureBasedOnTabSyncSetting();
   UpdateUiStateIfNeeded();
   // Prematurely return when sync feature is not active.
   if (!sync_service_->IsSyncFeatureActive()) {
@@ -520,6 +523,9 @@ FloatingWorkspaceService::GetOpenTabsUIDelegate() {
 }
 
 void FloatingWorkspaceService::StartCaptureAndUploadActiveDesk() {
+  if (!tab_sync_enabled_) {
+    return;
+  }
   CaptureAndUploadActiveDesk();
   if (!timer_.IsRunning()) {
     timer_.Start(
@@ -601,6 +607,14 @@ FloatingWorkspaceService::GetFloatingWorkspaceTemplateEntries() {
 }
 
 void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
+  if (!tab_sync_enabled_) {
+    return;
+  }
+  if (!desk_sync_service_->GetDeskModel()->IsSyncing()) {
+    // Even when tab sync is enabled, Sync might be not running or not syncing
+    // WORKSPACE_DESK data for some other reasons.
+    return;
+  }
   if (should_run_restore_) {
     // A safeguard in case the capture was triggered while we are waiting to
     // restore the session.
@@ -623,8 +637,10 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
 
 void FloatingWorkspaceService::StopProgressBarAndRestoreFloatingWorkspace() {
   FloatingWorkspaceDialog::Close();
-  RestoreFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
-  StartCaptureAndUploadActiveDesk();
+  if (tab_sync_enabled_) {
+    RestoreFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
+    StartCaptureAndUploadActiveDesk();
+  }
 }
 
 void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
@@ -1191,6 +1207,11 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
   sync_service_ = sync_service;
   desk_sync_service_ = desk_sync_service;
   device_info_sync_service_ = device_info_sync_service;
+  tab_sync_enabled_ = sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs);
+  if (!tab_sync_enabled_) {
+    should_run_restore_ = false;
+  }
   if (ash::NetworkHandler::IsInitialized()) {
     auto* network_handler = NetworkHandler::Get();
     if (!network_handler->network_state_handler()->HasObserver(this)) {
@@ -1266,6 +1287,29 @@ void FloatingWorkspaceService::LaunchWhenDeskTemplatesAreReadyOnFirstSync() {
   desk_sync_service_->RunWhenDesksTemplatesAreReadyOnFirstSync(
       base::BindOnce(&FloatingWorkspaceService::LaunchWhenAppCacheIsReady,
                      weak_pointer_factory_.GetWeakPtr()));
+}
+
+void FloatingWorkspaceService::MaybeStartOrStopCaptureBasedOnTabSyncSetting() {
+  // Users don't have a direct toggle for workspace desks in Sync settings. But
+  // if they disable tab sync there, we treat this as a signal to also disable
+  // Floating Workspace functionality.
+  // TODO(crbug.com/425368424): Sync data types might be disabled for a variety
+  // of reasons. We should track the change of `DeskSyncBridge::IsSyncing()`
+  // instead of only checking the state of `kTabs` here.
+  bool tab_sync_enabled =
+      sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kTabs);
+  if (tab_sync_enabled_ == tab_sync_enabled) {
+    return;
+  }
+  tab_sync_enabled_ = tab_sync_enabled;
+  if (!tab_sync_enabled) {
+    should_run_restore_ = false;
+    StopCaptureAndUploadActiveDesk();
+  } else {
+    // Start capturing user's desk once they (re)-enable tab sync.
+    StartCaptureAndUploadActiveDesk();
+  }
 }
 
 void FloatingWorkspaceService::StopRestoringSession() {

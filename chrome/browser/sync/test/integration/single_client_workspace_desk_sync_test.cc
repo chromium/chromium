@@ -80,9 +80,13 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
   void DisableDeskSync() {
     syncer::SyncService* service = GetSyncService(0);
 
-      // Disable all OS types, including the desk sync type.
-    service->GetUserSettings()->SetSelectedOsTypes(
-        /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
+    // Disable tab sync - this should also disable desk sync.
+    syncer::UserSelectableTypeSet types_to_enable =
+        service->GetUserSettings()->GetSelectedTypes();
+    ASSERT_TRUE(types_to_enable.Has(syncer::UserSelectableType::kTabs));
+    types_to_enable.Remove(syncer::UserSelectableType::kTabs);
+    service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, types_to_enable);
 
     ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
   }

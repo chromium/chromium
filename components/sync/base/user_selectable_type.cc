@@ -101,12 +101,13 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
     case UserSelectableType::kTabs:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      return {kTabsTypeName,
-              SESSIONS,
-              {SESSIONS, SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA,
-               COLLABORATION_GROUP, SHARED_TAB_GROUP_ACCOUNT_DATA}};
+      return {
+          kTabsTypeName,
+          SESSIONS,
+          {SESSIONS, SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA,
+           COLLABORATION_GROUP, SHARED_TAB_GROUP_ACCOUNT_DATA, WORKSPACE_DESK}};
 #else
-      return {kTabsTypeName, SESSIONS, {SESSIONS}};
+      return {kTabsTypeName, SESSIONS, {SESSIONS, WORKSPACE_DESK}};
 #endif
     case UserSelectableType::kSavedTabGroups:
       // Note: Tab groups is presented as a separate type only on desktop.
@@ -150,7 +151,7 @@ UserSelectableTypeInfo GetUserSelectableOsTypeInfo(UserSelectableOsType type) {
       return {kOsPreferencesTypeName,
               OS_PREFERENCES,
               {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
-               PRINTERS_AUTHORIZATION_SERVERS, WORKSPACE_DESK}};
+               PRINTERS_AUTHORIZATION_SERVERS}};
     case UserSelectableOsType::kOsWifiConfigurations:
       return {kOsWifiConfigurationsTypeName,
               WIFI_CONFIGURATIONS,

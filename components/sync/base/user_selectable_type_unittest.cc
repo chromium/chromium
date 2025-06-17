@@ -14,7 +14,9 @@ namespace {
 
 class UserSelectableTypeTest : public ::testing::Test {
  public:
-  DataTypeSet OsOnlyTypes() {
+  // Data types which are only selectable on ChromeOS where they are mapped to
+  // `UserSelectableOsType`.
+  DataTypeSet ChromeOsOnlyTypes() {
     DataTypeSet data_types;
 
     data_types.Put(APP_LIST);
@@ -23,12 +25,13 @@ class UserSelectableTypeTest : public ::testing::Test {
     data_types.Put(OS_PRIORITY_PREFERENCES);
     data_types.Put(PRINTERS);
     data_types.Put(PRINTERS_AUTHORIZATION_SERVERS);
-    data_types.Put(WORKSPACE_DESK);
     data_types.Put(WIFI_CONFIGURATIONS);
 
     return data_types;
   }
 
+  // Data types which are mapped to `UserSelectableOsType` on ChromeOS, but are
+  // mapped to `UserSelectableType` on other platforms.
   DataTypeSet ChromeOsSpecificTypes() {
     DataTypeSet data_types;
 
@@ -40,6 +43,7 @@ class UserSelectableTypeTest : public ::testing::Test {
     return data_types;
   }
 
+  // Data types with a different `UserSelectableType` mapping across platforms.
   DataTypeSet AmbiguousTypes() {
     DataTypeSet data_types;
 
@@ -55,15 +59,11 @@ class UserSelectableTypeTest : public ::testing::Test {
 TEST_F(UserSelectableTypeTest, GetUserSelectableTypeFromDataType) {
   // These data types do not have a corresponding `UserSelectableType` in
   // `GetUserSelectableTypeInfo()` and will therefore return `std::nullopt`.
-  DataTypeSet non_convertible_types = base::Union(
-      base::Union(AlwaysPreferredUserTypes(), ControlTypes()), OsOnlyTypes());
+  DataTypeSet non_convertible_types =
+      base::Union(base::Union(AlwaysPreferredUserTypes(), ControlTypes()),
+                  ChromeOsOnlyTypes());
 
   for (const auto type : DataTypeSet::All()) {
-    // TODO (crbug.com/361625648): Removing
-    // `UserSelectableType::kSharedTabGroupData` would get rid of ambiguity in
-    // the conversion from data types to user selectable types on most
-    // platforms. However, this check would then still be required for Android
-    // and iOS because of `UserSelectableType::kTabs`.
     if (AmbiguousTypes().Has(type)) {
       continue;
     }
