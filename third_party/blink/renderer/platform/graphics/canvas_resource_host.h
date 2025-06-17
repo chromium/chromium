@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 
