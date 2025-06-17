@@ -464,10 +464,7 @@ void EditorMenuControllerImpl::EditorCardSession::OpenSettings() {
     case ActiveFeature::kEditor:
       setting_url = GURL(base::StrCat(
           {"chrome://os-settings/",
-           chromeos::MagicBoostState::Get() &&
-                   chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()
-               ? chromeos::settings::mojom::kSystemPreferencesSectionPath
-               : chromeos::settings::mojom::kInputSubpagePath,
+           chromeos::settings::mojom::kSystemPreferencesSectionPath,
            "?settingId=",
            base::NumberToString(static_cast<int>(
                chromeos::settings::mojom::Setting::kShowOrca))}));

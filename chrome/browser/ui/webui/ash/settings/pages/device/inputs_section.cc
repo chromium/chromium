@@ -98,18 +98,6 @@ base::span<const SearchConcept> GetEmojiSuggestionSearchConcepts() {
   return tags;
 }
 
-base::span<const SearchConcept> GetHelpMeWriteSearchConcepts() {
-  static constexpr auto tags = std::to_array<SearchConcept>({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_HELP_ME_WRITE_SUGGESTIONS,
-       mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kLanguage,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowOrca}},
-  });
-  return tags;
-}
-
 base::span<const SearchConcept> GetSpellCheckSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
@@ -406,10 +394,6 @@ InputsSection::InputsSection(Profile* profile,
     updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
   }
 
-  if (should_show_orca_settings) {
-    updater.AddSearchTags(GetHelpMeWriteSearchConcepts());
-  }
-
   UpdateSpellCheckSearchTags();
 }
 
@@ -609,7 +593,6 @@ void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kSetCurrentInputMethod,
       mojom::Setting::kShowEmojiSuggestions,
       mojom::Setting::kShowInputOptionsInShelf,
-      mojom::Setting::kShowOrca,
       mojom::Setting::kSpellCheckOnOff,
       mojom::Setting::kAddSpellCheckLanguage,
       mojom::Setting::kRemoveSpellCheckLanguage,

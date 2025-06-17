@@ -31,9 +31,6 @@ namespace ash::settings {
 
 namespace {
 
-constexpr OsSettingsIdentifier kShowOrcaSettingsId = {
-    .setting = chromeos::settings::mojom::Setting::kShowOrca};
-
 std::string GetSettingsSearchResultId(OsSettingsIdentifier id, int message_id) {
   std::stringstream ss;
   ss << id.setting << "," << message_id;
@@ -146,29 +143,19 @@ TEST_F(InputsSectionTest,
       html_source->GetLocalizedStrings()->FindBool("allowOrca").value());
 }
 
-TEST_F(InputsSectionTest, SearchResultShouldIncludeHelpMeWrite) {
-  base::test::ScopedFeatureList feature_list;
-
-  // Note that `kMahi` is associated with the Magic Boost feature.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {
-          chromeos::features::kFeatureManagementOrca,
-      },
-      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
-                             chromeos::features::kFeatureManagementMahi,
-                             chromeos::features::kMahi});
-
+TEST_F(InputsSectionTest, SearchResultShouldIncludeEmojiSuggestion) {
   auto mock_geolocation_provider =
       std::make_unique<input_method::EditorGeolocationMockProvider>("us");
   input_method::EditorMediator editor_mediator(
       profile(), std::move(mock_geolocation_provider));
   inputs_section_ = std::make_unique<InputsSection>(
       profile(), search_tag_registry(), pref_service(), &editor_mediator);
+  OsSettingsIdentifier kEmojiSuggestionSettingId = {
+      .setting = chromeos::settings::mojom::Setting::kShowEmojiSuggestions};
 
   std::string result_id = GetSettingsSearchResultId(
-      kShowOrcaSettingsId,
-      IDS_OS_SETTINGS_TAG_LANGUAGES_HELP_ME_WRITE_SUGGESTIONS);
+      kEmojiSuggestionSettingId,
+      IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS);
 
   EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
 }

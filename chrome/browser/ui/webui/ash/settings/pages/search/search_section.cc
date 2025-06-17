@@ -85,6 +85,17 @@ bool IsMagicBoostNoticeBannerVisible(Profile* profile) {
   return hmr_needs_notice_banner || hmw_needs_notice_banner;
 }
 
+bool IsOrcaSettingsToggleVisible(Profile* profile) {
+  if (!chromeos::features::IsOrcaEnabled()) {
+    return false;
+  }
+
+  ash::input_method::EditorMediator* editor_mediator =
+      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
+          profile);
+  return editor_mediator && editor_mediator->IsAllowedForUse();
+}
+
 bool IsLobsterSettingsToggleVisible(Profile* profile) {
   return ash::features::IsLobsterEnabled() &&
          LobsterServiceProvider::GetForProfile(profile) != nullptr &&
@@ -439,7 +450,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   bool is_magic_boost_feature_enabled =
       chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() ||
-      IsLobsterSettingsToggleVisible(profile());
+      IsLobsterSettingsToggleVisible(profile()) ||
+      IsOrcaSettingsToggleVisible(profile());
 
   // Updates magic boost search tags each time when the load time data is added,
   // instead of a one-off update in the constructor, to avoid the unreliable
@@ -552,9 +564,7 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
     generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
   }
 
-  // TODO(b:337868408): Setting::kShowOrca is already registered in
-  // device/input_section.cc, therefore UMA emitted from search_secion fails to
-  // log it.
+  generator->RegisterTopLevelSetting(mojom::Setting::kShowOrca);
   generator->RegisterTopLevelSetting(mojom::Setting::kMahiOnOff);
   generator->RegisterTopLevelSetting(mojom::Setting::kMagicBoostOnOff);
   generator->RegisterTopLevelSetting(mojom::Setting::kLobsterOnOff);
