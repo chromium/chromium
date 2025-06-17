@@ -74,6 +74,9 @@ class TabListContainerProperties {
     public static final ReadableObjectPropertyKey<Callback<TabKeyEventData>> PAGE_KEY_LISTENER =
             new ReadableObjectPropertyKey<>();
 
+    public static final PropertyModel.WritableBooleanPropertyKey SUPPRESS_ACCESSIBILITY =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     /** Keys for {@link TabSwitcherPaneCoordinator}. */
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -89,5 +92,6 @@ class TabListContainerProperties {
                 IS_SCROLLING_SUPPLIER_CALLBACK,
                 IS_CONTENT_SENSITIVE,
                 PAGE_KEY_LISTENER,
+                SUPPRESS_ACCESSIBILITY,
             };
 }

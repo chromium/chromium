@@ -33,6 +33,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.Di
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -107,6 +111,19 @@ public class TabSwitcherPaneMediator
                 }
             };
 
+    private final BottomSheetObserver mBottomSheetObserver =
+            new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetOpened(@StateChangeReason int reason) {
+                    suppressAccessibility(true);
+                }
+
+                @Override
+                public void onSheetClosed(@StateChangeReason int reason) {
+                    suppressAccessibility(false);
+                }
+            };
+
     private final Callback<Boolean> mOnAnimatingChanged = this::onAnimatingChanged;
     private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
     private final Callback<Boolean> mNotifyBackPressedCallback =
@@ -133,6 +150,7 @@ public class TabSwitcherPaneMediator
     private final Runnable mOnTabSwitcherShown;
     private final Callback<Integer> mOnTabClickCallback;
     private final TabIndexLookup mTabIndexLookup;
+    private final BottomSheetController mBottomSheetController;
 
     private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
     private @Nullable TransitiveObservableSupplier<TabListEditorController, Boolean>
@@ -154,6 +172,7 @@ public class TabSwitcherPaneMediator
      * @param isAnimatingSupplier Supplier for when the pane is animating in or out of visibility.
      * @param onTabClickCallback Callback to invoke when a tab is clicked.
      * @param tabIndexLookup Lookup for scroll position from tab index.
+     * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      */
     public TabSwitcherPaneMediator(
             @NonNull TabSwitcherResetHandler resetHandler,
@@ -165,7 +184,8 @@ public class TabSwitcherPaneMediator
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
             @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
             @NonNull Callback<Integer> onTabClickCallback,
-            @NonNull TabIndexLookup tabIndexLookup) {
+            @NonNull TabIndexLookup tabIndexLookup,
+            @NonNull BottomSheetController bottomSheetController) {
         mResetHandler = resetHandler;
         mTabIndexLookup = tabIndexLookup;
         mOnTabClickCallback = onTabClickCallback;
@@ -196,6 +216,8 @@ public class TabSwitcherPaneMediator
         isVisibleSupplier.addObserver(mOnVisibilityChanged);
         mIsAnimatingSupplier = isAnimatingSupplier;
         isAnimatingSupplier.addObserver(mOnAnimatingChanged);
+        mBottomSheetController = bottomSheetController;
+        mBottomSheetController.addObserver(mBottomSheetObserver);
 
         notifyBackPressStateChangedInternal();
     }
@@ -208,6 +230,7 @@ public class TabSwitcherPaneMediator
 
         mIsVisibleSupplier.removeObserver(mOnVisibilityChanged);
         mIsAnimatingSupplier.removeObserver(mOnAnimatingChanged);
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
         DialogController controller = getTabGridDialogController();
         if (controller != null) {
             controller
@@ -492,5 +515,9 @@ public class TabSwitcherPaneMediator
                     mTabGroupModelFilterSupplier.get().getRepresentativeTabList());
             setInitialScrollIndexOffset();
         }
+    }
+
+    private void suppressAccessibility(boolean suppress) {
+        mContainerViewModel.set(TabListContainerProperties.SUPPRESS_ACCESSIBILITY, suppress);
     }
 }

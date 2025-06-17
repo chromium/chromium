@@ -323,7 +323,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             isVisibleSupplier,
                             isAnimatingSupplier,
                             onTabClickCallback,
-                            this::getNthTabIndexInModel);
+                            this::getNthTabIndexInModel,
+                            bottomSheetController);
 
             mMultiThumbnailCardProvider =
                     new MultiThumbnailCardProvider(

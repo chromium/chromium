@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_SCROLLING_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PAGE_KEY_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SUPPRESS_ACCESSIBILITY;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -118,6 +119,12 @@ class TabListContainerViewBinder {
             }
         } else if (PAGE_KEY_LISTENER == propertyKey) {
             view.setPageKeyListenerCallback(model.get(PAGE_KEY_LISTENER));
+        } else if (SUPPRESS_ACCESSIBILITY == propertyKey) {
+            int important =
+                    model.get(SUPPRESS_ACCESSIBILITY)
+                            ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                            : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+            view.setImportantForAccessibility(important);
         }
     }
 

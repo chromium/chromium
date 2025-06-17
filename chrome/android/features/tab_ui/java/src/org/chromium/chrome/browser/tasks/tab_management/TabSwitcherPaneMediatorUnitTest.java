@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SUPPRESS_ACCESSIBILITY;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneMediator.TabIndexLookup;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -82,8 +86,10 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Mock private Runnable mCustomViewBackPressRunnable;
     @Mock private Callback<Integer> mOnTabClickedCallback;
     @Mock private TabIndexLookup mTabIndexLookup;
+    @Mock private BottomSheetController mBottomSheetController;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
@@ -168,7 +174,8 @@ public class TabSwitcherPaneMediatorUnitTest {
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
-                        mTabIndexLookup);
+                        mTabIndexLookup,
+                        mBottomSheetController);
 
         assertTrue(mTabGroupModelFilterSupplier.hasObservers());
         assertTrue(mIsVisibleSupplier.hasObservers());
@@ -263,7 +270,8 @@ public class TabSwitcherPaneMediatorUnitTest {
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
-                        mTabIndexLookup);
+                        mTabIndexLookup,
+                        mBottomSheetController);
         ShadowLooper.runUiThreadTasks();
 
         mIsVisibleSupplier.set(true);
@@ -454,5 +462,17 @@ public class TabSwitcherPaneMediatorUnitTest {
         assertTrue(mModel.get(BLOCK_TOUCH_INPUT));
         mShowingOrAnimationSupplier.set(false);
         assertFalse(mModel.get(BLOCK_TOUCH_INPUT));
+    }
+
+    @Test
+    public void testSuppressAccessibility() {
+        assertFalse(mModel.get(SUPPRESS_ACCESSIBILITY));
+
+        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
+        assertTrue(mModel.get(SUPPRESS_ACCESSIBILITY));
+
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
+        assertFalse(mModel.get(SUPPRESS_ACCESSIBILITY));
     }
 }
