@@ -225,19 +225,7 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android-oreo-arm64-dbg",
-          "group": "tryserver.chromium.android"
-        },
-        {
           "builder": "android-pie-arm64-dbg",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-webview-oreo-arm64-dbg",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-webview-pie-arm64-dbg",
           "group": "tryserver.chromium.android"
         },
         {

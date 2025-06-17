@@ -61,7 +61,7 @@ consoles.console_view(
 
 ci.thin_tester(
     name = "Android WebView O (dbg)",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     parent = "ci/Android arm64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -103,6 +103,7 @@ ci.thin_tester(
             ),
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
         short_name = "O",
@@ -115,7 +116,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Android WebView P (dbg)",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     parent = "ci/Android arm64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -151,6 +152,7 @@ ci.thin_tester(
             "has_native_resultdb_integration",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
         short_name = "P",
@@ -845,7 +847,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "Oreo Phone Tester",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     parent = "ci/Android arm64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1326,6 +1328,7 @@ ci.builder(
             ),
         },
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
         short_name = "bfc",
@@ -2708,7 +2711,8 @@ ci.builder(
     # TODO(crbug.com/355704916): Revert back to builderless after compile OOM
     # issue is resolved.
     builderless = not settings.is_main,
-    tree_closing = True,
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x86",
         short_name = "O",
@@ -2762,7 +2766,7 @@ ci.thin_tester(
 
 ci.builder(
     name = "android-pie-x86-rel",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2949,7 +2953,8 @@ ci.builder(
     ),
     cores = 16,
     ssd = True,
-    tree_closing = True,
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x86",
         short_name = "P",

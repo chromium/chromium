@@ -908,43 +908,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-oreo-arm64-dbg",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/Oreo Phone Tester",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder",
-            "android_with_static_analysis",
-            "debug_try_builder",
-            "enable_android_secondary_abi",
-            "remoteexec",
-            "arm64",
-        ],
-    ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-oreo-x86-rel",
-    mirrors = [
-        "ci/android-oreo-x86-rel",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-oreo-x86-rel",
-            "release_try_builder",
-            "use_java_coverage",
-            "partial_code_coverage_instrumentation",
-        ],
-    ),
-    coverage_test_types = ["unit", "overall"],
-    use_java_coverage = True,
-)
-
-try_.builder(
     name = "android-perfetto-rel",
     mirrors = [
         "ci/android-perfetto-rel",
@@ -1001,20 +964,6 @@ try_.builder(
             "third_party/ruy/.+",
             "third_party/tflite/.+",
             "third_party/xnnpack/.+",
-        ],
-    ),
-)
-
-try_.builder(
-    name = "android-pie-x86-rel",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/android-pie-x86-rel",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-pie-x86-rel",
-            "release_try_builder",
         ],
     ),
 )
@@ -1091,44 +1040,6 @@ try_.builder(
         ],
     ),
     contact_team_email = "woa-engprod@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-webview-oreo-arm64-dbg",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/Android WebView O (dbg)",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Android arm64 Builder (dbg)",
-            "enable_android_secondary_abi",
-            "release_try_builder",
-            "strip_debug_info",
-            "webview_monochrome",
-        ],
-    ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-webview-pie-arm64-dbg",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/Android WebView P (dbg)",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Android arm64 Builder (dbg)",
-            "enable_android_secondary_abi",
-            "release_try_builder",
-            "strip_debug_info",
-            "webview_monochrome",
-        ],
-    ),
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

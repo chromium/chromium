@@ -48,12 +48,6 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-pie-x86-rel",
-          "group": "tryserver.chromium.android"
-        }
-      ],
       "retry_failed_shards": true,
       "retry_invalid_shards": true,
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-pie-x86-rel/targets"
@@ -79,11 +73,5 @@
     ]
   },
   "builder_group": "chromium.android",
-  "gardener_rotations": [
-    "android"
-  ],
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "android"
-  ]
+  "recipe": "chromium"
 }
