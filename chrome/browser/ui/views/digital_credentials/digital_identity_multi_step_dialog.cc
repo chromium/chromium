@@ -24,6 +24,11 @@ namespace {
 
 using ButtonModel = ui::DialogModel::Button;
 
+// A top margin is necessary since without the dialog "close" button, there is
+// no enough margin to display the progress bar and match the margin below the
+// content view.
+constexpr int kContentMarginTop = 12;
+
 // Creates ScrollView for `contents_view`.
 std::unique_ptr<views::View> CreateContentsScrollView(
     std::unique_ptr<views::View> contents_view) {
@@ -262,7 +267,8 @@ void DigitalIdentityMultiStepDialog::TryShow(
                   new_dialog_delegate.release(), web_contents_.get())
                   ->GetWeakPtr();
   }
-
+  delegate->GetBubbleFrameView()->SetContentMargins(
+      gfx::Insets::TLBR(kContentMarginTop, 0, 0, 0));
   delegate->GetBubbleFrameView()->SetProgress(
       show_progress_bar ? std::optional<double>(-1) : std::nullopt);
 }
