@@ -168,6 +168,17 @@ class LayerContextImplTest : public testing::Test {
       cc::mojom::LayerType type = cc::mojom::LayerType::kLayer,
       int id = -1);
 
+  // Helper to manually add a layer to an update, bypassing AddDefaultLayer.
+  // This is useful for testing specific ID scenarios or invalid properties.
+  mojom::LayerPtr CreateManualLayer(
+      int id,
+      cc::mojom::LayerType type = cc::mojom::LayerType::kLayer,
+      const gfx::Size& bounds = kDefaultLayerBounds,
+      int transform_idx = cc::kSecondaryRootPropertyNodeId,
+      int clip_idx = cc::kRootPropertyNodeId,
+      int effect_idx = cc::kSecondaryRootPropertyNodeId,
+      int scroll_idx = cc::kSecondaryRootPropertyNodeId);
+
   void RemoveLayerInUpdate(mojom::LayerTreeUpdate* update, int id);
 
   TransferableResource MakeFakeResource(gfx::Size size);
@@ -177,6 +188,8 @@ class LayerContextImplTest : public testing::Test {
       mojom::TransferableUIResourceRequest::Type type);
 
  protected:
+  cc::LayerImpl* GetLayerFromActiveTree(int layer_id);
+
   FakeCompositorFrameSinkClient dummy_client_;
   FrameSinkManagerImpl frame_sink_manager_;
 

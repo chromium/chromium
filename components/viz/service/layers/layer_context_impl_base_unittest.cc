@@ -454,4 +454,28 @@ LayerContextImplTest::CreateUIResourceRequest(
   return request;
 }
 
+cc::LayerImpl* LayerContextImplTest::GetLayerFromActiveTree(int layer_id) {
+  return layer_context_impl_->host_impl()->active_tree()->LayerById(layer_id);
+}
+
+mojom::LayerPtr LayerContextImplTest::CreateManualLayer(
+    int id,
+    cc::mojom::LayerType type,
+    const gfx::Size& bounds,
+    int transform_idx,
+    int clip_idx,
+    int effect_idx,
+    int scroll_idx) {
+  auto layer = mojom::Layer::New();
+  layer->id = id;
+  layer->type = type;
+  layer->bounds = bounds;
+  layer->transform_tree_index = transform_idx;
+  layer->clip_tree_index = clip_idx;
+  layer->effect_tree_index = effect_idx;
+  layer->scroll_tree_index = scroll_idx;
+  layer->layer_extra = CreateDefaultLayerExtra(type);
+  return layer;
+}
+
 }  // namespace viz

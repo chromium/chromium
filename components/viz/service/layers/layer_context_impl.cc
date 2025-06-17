@@ -1831,21 +1831,26 @@ void LayerContextImpl::DoDraw(const BeginFrameArgs& begin_frame_args) {
 void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
                                            bool update_damage) {
   CHECK(receiver_);
+  auto result = DoUpdateDisplayTiling(std::move(tiling), update_damage);
+  if (!result.has_value()) {
+    receiver_->ReportBadMessage(result.error());
+  }
+}
+
+base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTiling(
+    mojom::TilingPtr tiling,
+    bool update_damage) {
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
   if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
     if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
-      receiver_->ReportBadMessage("Invalid tile update");
-      return;
+      return base::unexpected("Invalid tile update");
     }
 
-    auto result = DeserializeTiling(
-        host_impl_.get(), static_cast<cc::TileDisplayLayerImpl&>(*layer),
-        *tiling, update_damage);
-    if (!result.has_value()) {
-      receiver_->ReportBadMessage(result.error());
-      return;
-    }
+    return DeserializeTiling(host_impl_.get(),
+                             static_cast<cc::TileDisplayLayerImpl&>(*layer),
+                             *tiling, update_damage);
   }
+  return base::ok();
 }
 
 }  // namespace viz

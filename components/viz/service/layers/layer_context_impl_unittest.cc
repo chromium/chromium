@@ -289,10 +289,6 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
   }
 
  protected:
-  cc::LayerImpl* GetLayerFromActiveTree(int layer_id) {
-    return layer_context_impl_->host_impl()->active_tree()->LayerById(layer_id);
-  }
-
   void VerifyLayerExists(int layer_id, bool should_exist) {
     if (should_exist) {
       EXPECT_NE(nullptr, GetLayerFromActiveTree(layer_id))
@@ -319,28 +315,6 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
       EXPECT_EQ(expected_order[i], layer->id()) << "Mismatch at index " << i;
       i++;
     }
-  }
-
-  // Helper to manually add a layer to an update, bypassing AddDefaultLayer.
-  // This is useful for testing specific ID scenarios or invalid properties.
-  mojom::LayerPtr CreateManualLayer(
-      int id,
-      cc::mojom::LayerType type = cc::mojom::LayerType::kLayer,
-      const gfx::Size& bounds = kDefaultLayerBounds,
-      int transform_idx = cc::kSecondaryRootPropertyNodeId,
-      int clip_idx = cc::kRootPropertyNodeId,
-      int effect_idx = cc::kSecondaryRootPropertyNodeId,
-      int scroll_idx = cc::kSecondaryRootPropertyNodeId) {
-    auto layer = mojom::Layer::New();
-    layer->id = id;
-    layer->type = type;
-    layer->bounds = bounds;
-    layer->transform_tree_index = transform_idx;
-    layer->clip_tree_index = clip_idx;
-    layer->effect_tree_index = effect_idx;
-    layer->scroll_tree_index = scroll_idx;
-    layer->layer_extra = CreateDefaultLayerExtra(type);
-    return layer;
   }
 };
 
