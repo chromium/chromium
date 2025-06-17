@@ -132,57 +132,6 @@ public class ChildProcessConnection {
         int COUNT = 4;
     }
 
-    /**
-     * Count the ChildServiceConnectionDelegate.onServiceConnected callback.
-     *
-     * <p>This is to detect the service binding restart. If the counter is more than 1, it means the
-     * service is restarted (e.g. due to LMK, crash).
-     *
-     * <p>onServiceDisconnectedOnLauncherThread() unbinds all service bindings when the child
-     * process dies to prevent the service from restarting. However there is race and the child
-     * process can restart. The metrics "Android.ChildProcessConnection.OnServiceConnectedCounts" is
-     * to understand how much restarts happen in practice.
-     *
-     * <p>This is expected to be used for waived service binding which is bound once for the service
-     * lifetime. retireAndCreateFallbackBindings() unbinds the waived binding, but
-     * CountOnServiceConnectedDecorator will be recreated at createBindings() in the method.
-     */
-    private static class CountOnServiceConnectedDecorator
-            implements ChildServiceConnectionDelegate {
-        private final ChildServiceConnectionDelegate mDelegate;
-        private final Handler mLauncherHandler;
-
-        private int mCountOnServiceConnected;
-
-        CountOnServiceConnectedDecorator(
-                ChildServiceConnectionDelegate delegate, Handler launcherHandler) {
-            mDelegate = delegate;
-            mLauncherHandler = launcherHandler;
-        }
-
-        @Override
-        public void onServiceConnected(final IBinder service) {
-            mDelegate.onServiceConnected(service);
-            if (mLauncherHandler.getLooper() == Looper.myLooper()) {
-                incrementCount();
-                return;
-            }
-            mLauncherHandler.post(() -> incrementCount());
-        }
-
-        @Override
-        public void onServiceDisconnected() {
-            mDelegate.onServiceDisconnected();
-        }
-
-        private void incrementCount() {
-            mCountOnServiceConnected += 1;
-            RecordHistogram.recordCount100Histogram(
-                    "Android.ChildProcessConnection.OnServiceConnectedCounts",
-                    mCountOnServiceConnected);
-        }
-    }
-
     private static class ChildProcessMismatchException extends RuntimeException {
         ChildProcessMismatchException(String msg) {
             super(msg);
@@ -531,7 +480,7 @@ public class ChildProcessConnection {
                 mConnectionFactory.createConnection(
                         mBindIntent,
                         mDefaultBindFlags | Context.BIND_WAIVE_PRIORITY,
-                        new CountOnServiceConnectedDecorator(mConnectionDelegate, mLauncherHandler),
+                        mConnectionDelegate,
                         mInstanceName);
     }
 
