@@ -76,7 +76,7 @@ bool ApplyLandlock(sandbox::mojom::Sandbox sandbox_type) {
       "/data/app",
       // Allow read-only access to /proc/self. This is needed for the process
       // to introspect its own state.
-      "/proc/self", "/sys", "/var"};
+      "/proc/self", "/sys"};
   uint64_t ro_access =
       LANDLOCK_ACCESS_FS_READ_FILE | LANDLOCK_ACCESS_FS_READ_DIR;
   if (!AddRulesToPolicy(ruleset_fd.get(), allowed_ro_paths, ro_access)) {
