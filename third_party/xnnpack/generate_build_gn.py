@@ -59,6 +59,7 @@ _HEADER = '''
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import("//build/config/android/config.gni")
+import("//third_party/xnnpack/build_defs.gni")
 
 config("xnnpack_config") {
   include_dirs = [
@@ -80,28 +81,9 @@ config("xnnpack_config") {
 
   defines = [
     "CHROMIUM",
-    "XNN_ENABLE_ASSEMBLY=1",
-    "XNN_ENABLE_GEMM_M_SPECIALIZATION=1",
-    "XNN_ENABLE_MEMOPT=1",
-    "XNN_ENABLE_CPUINFO=1",
-    "XNN_ENABLE_SPARSE=1",
     "XNN_LOG_LEVEL=0",
     "XNN_LOG_TO_STDIO=0",
-    "XNN_ENABLE_AVX512BF16=0",
-  ]
-
-  if (current_cpu == "arm64") {
-    defines += [
-      "XNN_ENABLE_ARM_DOTPROD=1",
-      "XNN_ENABLE_ARM_I8MM=1",
-    ]
-  }
-
-  if (current_cpu == "x86" || current_cpu == "x64") {
-    defines += [
-      "XNN_ENABLE_AVXVNNI=1",
-    ]
-  }
+  ] + xnn_defines
 }
 '''.strip()
 
