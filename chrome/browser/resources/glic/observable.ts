@@ -81,4 +81,20 @@ export class ObservableValue<T> {
     }
     return newSub;
   }
+
+  /**
+   * Asynchronously waits until the ObservableValue's current value satisfies a
+   * given criteria.
+   */
+  async waitUntil(criteria: (value: T) => boolean): Promise<T> {
+    const {promise, resolve} = Promise.withResolvers<T>();
+    const sub = this.subscribe((newValue) => {
+      if (criteria(newValue)) {
+        resolve(newValue);
+      }
+    });
+    const resultValue = await promise;
+    sub.unsubscribe();
+    return resultValue;
+  }
 }

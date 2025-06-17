@@ -37,6 +37,11 @@ export enum WebClientState {
   ERROR,  // Final state
 }
 
+enum PanelOpenState {
+  OPEN,
+  CLOSED,
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -49,7 +54,9 @@ export enum DetailedWebClientState {
   TEMPORARY_UNRESPONSIVE = 4,
   PERMANENT_UNRESPONSIVE = 5,
   RESPONSIVE = 6,
-  MAX_VALUE = RESPONSIVE,
+  RESPONSIVE_INACTIVE = 7,
+  UNRESPONSIVE_INACTIVE = 8,
+  MAX_VALUE = UNRESPONSIVE_INACTIVE,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicDetailedWebClientState)
 
@@ -94,6 +101,7 @@ class WebClientImpl implements WebClientInterface {
           {panelOpeningData: panelOpeningDataToClient(panelOpeningData)});
     } finally {
       this.host.setWaitingOnPanelWillOpen(false);
+      this.host.panelOpenStateChanged(PanelOpenState.OPEN);
     }
 
     // The web client is ready to show, ensure the webview is
@@ -121,6 +129,7 @@ class WebClientImpl implements WebClientInterface {
   }
 
   notifyPanelWasClosed(): Promise<void> {
+    this.host.panelOpenStateChanged(PanelOpenState.CLOSED);
     return this.sender.requestWithResponse(
         'glicWebClientNotifyPanelWasClosed', undefined);
   }
@@ -630,6 +639,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private webClientState =
       ObservableValue.withValue<WebClientState>(WebClientState.UNINITIALIZED);
   private waitingOnPanelWillOpenValue = false;
+  private clientActiveObs = ObservableValue.withValue(false);
+  private panelOpenState = PanelOpenState.CLOSED;
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
 
   constructor(
@@ -679,6 +690,17 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   setWaitingOnPanelWillOpen(value: boolean): void {
     this.waitingOnPanelWillOpenValue = value;
+  }
+
+  panelOpenStateChanged(state: PanelOpenState) {
+    this.panelOpenState = state;
+    this.clientActiveObs.assignAndSignal(this.isClientActive());
+  }
+
+  isClientActive() {
+    // TODO - crbug.com/416530284: Add check for Chrome window in focus.
+    return this.panelOpenState === PanelOpenState.OPEN &&
+        this.webClientState.getCurrentValue() !== WebClientState.ERROR;
   }
 
   // Called when the web client is initialized.
@@ -744,6 +766,22 @@ export class GlicApiHost implements PostMessageRequestHandler {
         loadTimeData.getInteger('clientResponsivenessCheckIntervalMs');
 
     while (this.webClientState.getCurrentValue() !== WebClientState.ERROR) {
+      if (!this.isClientActive()) {
+        if (this.webClientState.getCurrentValue() ===
+            WebClientState.UNRESPONSIVE) {
+          this.detailedWebClientState =
+              DetailedWebClientState.UNRESPONSIVE_INACTIVE;
+          // Prevent unresponsive overlay showing forever while checking is
+          // paused.
+          this.setWebClientState(WebClientState.RESPONSIVE);
+          this.webClientErrorTimer.reset();
+        } else {
+          this.detailedWebClientState =
+              DetailedWebClientState.RESPONSIVE_INACTIVE;
+        }
+        await this.clientActiveObs.waitUntil((active) => active);
+      }
+
       let gotResponse = false;
       const responsePromise =
           this.sender

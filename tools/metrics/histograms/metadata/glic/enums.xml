@@ -155,6 +155,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Temporary unresponsive"/>
   <int value="5" label="Permanent unresponsive"/>
   <int value="6" label="Responsive"/>
+  <int value="7" label="Responsive Inactive"/>
+  <int value="8" label="Unresponsive Inactive"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/glic_api_host.ts:DetailedWebClientState) -->
