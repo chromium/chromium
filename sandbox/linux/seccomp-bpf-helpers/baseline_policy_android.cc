@@ -252,14 +252,12 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     return RestrictAndroidIoctl(options_.allow_userfaultfd_ioctls);
   }
 
-#if defined(MADV_PAGEOUT)
   if (sysno == __NR_madvise) {
     // Allow MADV_PAGEOUT
     const Arg<int> advice(2);
     return If(advice == MADV_PAGEOUT, Allow())
         .Else(BaselinePolicy::EvaluateSyscall(sysno));
   }
-#endif
 
   // Ptrace is allowed so the crash reporter can fork in a renderer
   // and then ptrace the parent. https://crbug.com/933418
