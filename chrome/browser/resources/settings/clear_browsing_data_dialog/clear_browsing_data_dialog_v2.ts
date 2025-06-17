@@ -23,6 +23,7 @@ import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_pr
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
@@ -58,7 +59,7 @@ export interface SettingsClearBrowsingDataDialogV2Element {
     cancelButton: CrButtonElement,
     deleteButton: CrButtonElement,
     deleteBrowsingDataDialog: CrDialogElement,
-    manageOtherGoogleDataRow: HTMLElement,
+    manageOtherGoogleDataRow: CrLinkRowElement,
     moreOptionsList: HTMLElement,
     showMoreButton: CrButtonElement,
     spinner: HTMLElement,
@@ -171,6 +172,17 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         value: false,
       },
 
+      otherGoogleDataRowLabel_: {
+        type: String,
+        computed: 'computeOtherGoogleDataRowLabel_(isGoogleDse_)',
+      },
+
+      otherGoogleDataRowSubLabel_: {
+        type: String,
+        computed:
+            'computeOtherGoogleDataRowSubLabel_(syncStatus_.signedInState, isGoogleDse_)',
+      },
+
       showHistoryDeletionDialog_: {
         type: Boolean,
         value: false,
@@ -194,6 +206,8 @@ export class SettingsClearBrowsingDataDialogV2Element extends
   declare private isDeletionInProgress_: boolean;
   declare private isNoDatatypeSelected_: boolean;
   declare private isGoogleDse_: boolean;
+  declare private otherGoogleDataRowLabel_: boolean;
+  declare private otherGoogleDataRowSubLabel_: boolean;
   declare private showHistoryDeletionDialog_: boolean;
   declare private showOtherGoogleDataDialog_: boolean;
   declare private expandedBrowsingDataTypeOptionsList_:
@@ -316,6 +330,19 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     return canDeleteAccountData(this.syncStatus_) ?
         loadTimeData.getString('clearData') :
         loadTimeData.getString('deleteDataFromDevice');
+  }
+
+  private computeOtherGoogleDataRowLabel_() {
+    return this.isGoogleDse_ ?
+        loadTimeData.getString('manageOtherGoogleDataLabel') :
+        loadTimeData.getString('manageOtherDataLabel');
+  }
+
+  private computeOtherGoogleDataRowSubLabel_() {
+    if (!this.isSignedIn_() && this.isGoogleDse_) {
+      return loadTimeData.getString('managePasswordsSubLabel');
+    }
+    return loadTimeData.getString('manageOtherDataSubLabel');
   }
 
   private onTimePeriodChanged_() {

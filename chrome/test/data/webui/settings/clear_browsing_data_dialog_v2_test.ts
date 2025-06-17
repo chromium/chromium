@@ -572,6 +572,86 @@ suite('DeleteBrowsingDataDialog', function() {
     assertFalse(dialog.$.deleteBrowsingDataDialog.open);
   });
 
+  test('OtherGoogleDataRow', async function() {
+    function setSignedInAndDseState(
+        signedInState: SignedInState, isGoogleDse: boolean) {
+      webUIListenerCallback('update-sync-state', {
+        isNonGoogleDse: !isGoogleDse,
+      });
+      webUIListenerCallback('sync-status-changed', {
+        signedInState: signedInState,
+      });
+    }
+
+    // Case 1: User is signed-in and has Google as their DSE.
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
+    await flushTasks();
+
+    assertEquals(
+        loadTimeData.getString('manageOtherGoogleDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('manageOtherDataSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // Case 2: User is syncing and has Google as their DSE.
+    setSignedInAndDseState(SignedInState.SYNCING, /*isGoogleDse=*/ true);
+    await flushTasks();
+
+    assertEquals(
+        loadTimeData.getString('manageOtherGoogleDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('manageOtherDataSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // Case 3: User is signed-in paused and has Google as their DSE.
+    setSignedInAndDseState(
+        SignedInState.SIGNED_IN_PAUSED, /*isGoogleDse=*/ true);
+    await flushTasks();
+
+    assertEquals(
+        loadTimeData.getString('manageOtherGoogleDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('manageOtherDataSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // Case 4: User is signed-in and does not have Google as their DSE.
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ false);
+    await flushTasks();
+
+    assertEquals(
+        loadTimeData.getString('manageOtherDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('manageOtherDataSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // Case 5: User is signed-out and does not have Google as their DSE.
+    setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ false);
+    await flushTasks();
+
+    assertEquals(
+        loadTimeData.getString('manageOtherDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('manageOtherDataSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // Case 6: User has web only sign-in and Google as their DSE.
+    setSignedInAndDseState(
+        SignedInState.WEB_ONLY_SIGNED_IN, /*isGoogleDse=*/ true);
+    await flushTasks();
+
+    assertEquals(
+        loadTimeData.getString('manageOtherGoogleDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('managePasswordsSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+  });
+
   test('NavigationToAndFromOtherGoogleData', async function() {
     let otherGoogleDataDialog =
         dialog.shadowRoot!.querySelector('settings-other-google-data-dialog');
