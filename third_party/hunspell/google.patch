@@ -839,7 +839,7 @@ index 8e03a03..f96ea1d 100644
  
  #define ROTATE(v, q) \
 diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
-index 35266c9..bab2ff2 100644
+index e748936..fbe6638 100644
 --- a/src/hunspell/hunspell.cxx
 +++ b/src/hunspell/hunspell.cxx
 @@ -77,19 +77,28 @@
@@ -977,7 +977,7 @@ index 35266c9..bab2ff2 100644
    struct hentry* rv = NULL;
  
    int info2 = 0;
-@@ -785,6 +831,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
+@@ -783,6 +829,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
    if (!len)
      return NULL;
  
@@ -990,8 +990,8 @@ index 35266c9..bab2ff2 100644
 +
    // word reversing wrapper for complex prefixes
    if (complexprefixes) {
-     if (!usebuffer) {
-@@ -985,6 +1038,9 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
+     if (utf8)
+@@ -977,6 +1030,9 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
  
  std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
          bool& capwords, size_t& abbv, int& captype) {
@@ -1001,7 +1001,7 @@ index 35266c9..bab2ff2 100644
    captype = NOCAP;
    abbv = 0;
    capwords = false;
-@@ -2021,18 +2077,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2015,18 +2071,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
    return 0;
  }
  
@@ -1027,7 +1027,7 @@ index 35266c9..bab2ff2 100644
  
  bool Hunspell::spell(const std::string& word, int* info, std::string* root) {
    return m_Impl->spell(word, info, root);
-@@ -2159,22 +2222,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2153,22 +2216,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
  }
  
  Hunhandle* Hunspell_create(const char* affpath, const char* dpath) {
@@ -1144,7 +1144,7 @@ index 1e3efa4..c35a373 100644
  
  #include <string>
 diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
-index dba084e..a37100d 100644
+index c23f165..cabe2bd 100644
 --- a/src/hunspell/suggestmgr.cxx
 +++ b/src/hunspell/suggestmgr.cxx
 @@ -82,7 +82,112 @@ const w_char W_VLINE = {'\0', '|'};

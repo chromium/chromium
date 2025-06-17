@@ -2168,7 +2168,7 @@ int SuggestMgr::leftcommonsubstring(
   int l2 = su2.size();
   // decapitalize dictionary word
   if (complexprefixes) {
-    if (su1[l1 - 1] == su2[l2 - 1])
+    if (l1 && l2 && su1[l1 - 1] == su2[l2 - 1])
       return 1;
   } else {
     unsigned short idx = su2.empty() ? 0 : (su2[0].h << 8) + su2[0].l;
