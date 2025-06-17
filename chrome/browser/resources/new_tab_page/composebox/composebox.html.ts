@@ -32,6 +32,11 @@ export function getHtml(this: ComposeboxElement) {
         </cr-icon-button>
       </div>
     </div>
+    <cr-icon-button id="cancelIcon" class="action-icon icon-clear"
+        @click="${this.onCancelClick_}">
+    </cr-icon-button>
+    <cr-icon-button id="submitIcon" class="action-icon icon-arrow-upward">
+    </cr-icon-button>
   </div>
   <ntp-composebox-file-carousel
       id="carousel"

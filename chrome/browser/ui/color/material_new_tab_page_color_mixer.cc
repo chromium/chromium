@@ -38,9 +38,21 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageButtonBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};
   mixer[kColorNewTabPageButtonForeground] = {ui::kColorSysOnTonalContainer};
+
   mixer[kColorNewTabPageComposeboxBackground] = {
       dark_mode ? SkColorSetRGB(0x1D, 0x1E, 0x26)
                 : SkColorSetRGB(0xF0, 0xF2, 0xF5)};
+  mixer[kColorNewTabPageComposeboxFont] = {
+      dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
+                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorNewTabPageComposeboxCancelButton] = {
+      dark_mode ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
+                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorNewTabPageComposeboxHover] = {
+      dark_mode ? SkColorSetRGB(0x25, 0x26, 0x2E)
+                : SkColorSetRGB(0xE9, 0xEB, 0xF0)};
+  mixer[kColorNewTabPageComposeboxSubmitButton] = {
+      SkColorSetRGB(0x0B, 0x50, 0xD0)};
 
   mixer[kColorNewTabPageControlBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};

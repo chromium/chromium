@@ -45,6 +45,7 @@
   border: none;
   box-sizing: border-box;
   caret-color: var(--caret-color);
+  color: var(--color-new-tab-page-composebox-font);
   display: block;
   field-sizing: content;
   font-family: inherit;
@@ -80,9 +81,43 @@
 
 .upload-icon {
   --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-hover-background-color:
+      var(--color-new-tab-page-composebox-hover);
   --cr-icon-button-size: 48px;
 }
 
 #imageUploadButton {
   --cr-icon-button-margin-start: -12px;
+}
+
+.action-icon {
+  --cr-icon-button-focus-outline-color:
+      var(--color-searchbox-results-icon-focused-outline);
+  --cr-icon-button-hover-background-color:
+      var(--color-new-tab-page-composebox-hover);
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-size: 48px;
+  position: absolute;
+  right: 16px;
+}
+
+#cancelIcon {
+  --cr-icon-button-fill-color:
+      var(--color-new-tab-page-composebox-cancel-button);
+  --cr-icon-button-icon-size: contain 14px;
+  top: 16px;
+}
+
+#submitIcon {
+  --cr-icon-button-fill-color: white;
+  --cr-icon-button-icon-size: contain 16px;
+  background-color: var(--color-new-tab-page-composebox-submit-button);
+  bottom: var(--input-bottom-spacing);
+  cursor: default;
+  opacity: 30%;
+}
+
+:host([submit-enabled_]) #submitIcon {
+  cursor: pointer;
+  opacity: 100%;
 }

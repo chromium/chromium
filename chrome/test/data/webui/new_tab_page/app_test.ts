@@ -1169,13 +1169,6 @@ suite('NewTabPageAppTest', () => {
       const composebox = app.shadowRoot.querySelector('ntp-composebox');
       assertTrue(!!composebox);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
-
-      // Act.
-      $$<HTMLElement>(app, '#composeboxScrim')!.click();
-      await microtasksFinished();
-
-      // Assert.
-      assertStyle($$(app, '#searchbox')!, 'visibility', 'visible');
     });
     test(
         'Clicking the searchbox composebox button notifies composebox handler',

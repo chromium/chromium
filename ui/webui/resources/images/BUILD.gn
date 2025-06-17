@@ -68,6 +68,7 @@ generate_grd("build_grdp") {
       "dark/chevron_down.svg",
       "icon_arrow_drop_down_cr23.svg",
       "icon_arrow_drop_up_cr23.svg",
+      "icon_arrow_upward.svg",
       "icon_bookmark.svg",
       "icon_clear.svg",
       "icon_clock.svg",

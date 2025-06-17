@@ -30,7 +30,7 @@
         ?composebox-enabled="${this.composeboxEnabled}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
-      <ntp-composebox>
+      <ntp-composebox @toggle-composebox="${this.toggleComposebox_}">
       </ntp-composebox>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`

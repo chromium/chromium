@@ -4,6 +4,7 @@
 
 import {ComposeboxPageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -21,11 +22,60 @@ suite('NewTabPageComposeboxTest', () => {
         ComposeboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(mock)));
   });
-
   function createComposeboxElement() {
     composeboxElement = new ComposeboxElement();
     document.body.appendChild(composeboxElement);
   }
+
+  test('clear functionality', async () => {
+    createComposeboxElement();
+
+    // Check submit button disabled.
+    assertEquals(
+        window
+            .getComputedStyle(
+                $$<HTMLElement>(composeboxElement, '#submitIcon')!)
+            .cursor,
+        'default');
+
+    // Add input.
+    composeboxElement.$.input.value = 'test';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(
+        new File(['foo1'], 'foo1.pdf', {type: 'application/pdf'}));
+    composeboxElement.$.fileInput.files = dataTransfer.files;
+    composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+
+    // Check submit button enabled and file uploaded.
+    assertEquals(
+        window
+            .getComputedStyle(
+                $$<HTMLElement>(composeboxElement, '#submitIcon')!)
+            .cursor,
+        'pointer');
+    assertEquals(composeboxElement.$.carousel.files.length, 1);
+
+    // Clear input.
+    $$<HTMLElement>(composeboxElement, '#cancelIcon')!.click();
+    await microtasksFinished();
+
+    // Check submit button disabled and files empty.
+    assertEquals(
+        window
+            .getComputedStyle(
+                $$<HTMLElement>(composeboxElement, '#submitIcon')!)
+            .cursor,
+        'default');
+    assertEquals(composeboxElement.$.carousel.files.length, 0);
+
+    // Close composebox.
+    const whenToggleComposebox =
+        eventToPromise('toggle-composebox', composeboxElement);
+    $$<HTMLElement>(composeboxElement, '#cancelIcon')!.click();
+    await whenToggleComposebox;
+  });
 
   test('upload image', async () => {
     createComposeboxElement();
