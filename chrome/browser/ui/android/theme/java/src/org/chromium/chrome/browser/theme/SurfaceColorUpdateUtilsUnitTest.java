@@ -255,7 +255,7 @@ public class SurfaceColorUpdateUtilsUnitTest {
                 SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(
                         mContext, /* isIncognito= */ true);
         assertEquals(
-                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_container_low_dark),
+                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_container_dark),
                 gtsBackgroundColorIncognito);
     }
 

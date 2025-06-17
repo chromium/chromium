@@ -152,10 +152,10 @@ public class SurfaceColorUpdateUtils {
         @ColorInt
         int defaultBackground =
                 ColorUtils.inNightMode(context)
-                        ? SemanticColorUtils.getColorSurfaceContainerLow(context)
+                        ? SemanticColorUtils.getColorSurfaceContainer(context)
                         : SemanticColorUtils.getColorSurface(context);
         return isIncognito
-                ? ContextCompat.getColor(context, R.color.gm3_baseline_surface_container_low_dark)
+                ? ContextCompat.getColor(context, R.color.gm3_baseline_surface_container_dark)
                 : defaultBackground;
     }
 
