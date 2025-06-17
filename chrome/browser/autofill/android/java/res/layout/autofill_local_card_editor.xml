@@ -38,7 +38,6 @@ found in the LICENSE file.
     <!-- Credit card number -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/credit_card_number_label"
-        android:labelFor="@+id/credit_card_number_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
@@ -48,7 +47,7 @@ found in the LICENSE file.
 
         <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
         <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
-            tools:ignore="Autofill,LabelFor"
+            tools:ignore="Autofill"
             android:id="@+id/credit_card_number_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -223,7 +222,6 @@ found in the LICENSE file.
     <!-- Name -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/credit_card_name_label"
-        android:labelFor="@+id/credit_card_name_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
@@ -232,7 +230,7 @@ found in the LICENSE file.
 
         <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
         <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
-            tools:ignore="Autofill,LabelFor"
+            tools:ignore="Autofill"
             android:id="@+id/credit_card_name_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -247,7 +245,6 @@ found in the LICENSE file.
     <!-- Nickname -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/credit_card_nickname_label"
-        android:labelFor="@+id/credit_card_nickname_edit"
         app:counterMaxLength="25"
         app:errorEnabled="true"
         android:layout_width="match_parent"
@@ -257,7 +254,7 @@ found in the LICENSE file.
         android:hint="@string/autofill_credit_card_editor_nickname">
 
         <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
-            tools:ignore="Autofill,LabelFor"
+            tools:ignore="Autofill"
             android:id="@+id/credit_card_nickname_edit"
             android:maxLength="25"
             android:layout_width="match_parent"
