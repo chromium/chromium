@@ -1792,6 +1792,8 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   CHECK(active_index() != kNoTab);
   CHECK(active_index() != indices[0]);
 
+  base::RecordAction(UserMetricsAction("DesktopSplitView_Create"));
+
   split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
 
   return AddToSplitImpl(split_id, indices, visual_data,

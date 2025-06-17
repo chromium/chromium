@@ -9946,6 +9946,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DesktopSplitView_Create">
+  <owner>agale@google.com</owner>
+  <owner>chrome-desktop-ui@google.com</owner>
+  <description>Recorded when the user creates a split view.</description>
+</action>
+
 <action name="Destination_Application_Edit">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
