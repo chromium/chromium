@@ -28,19 +28,27 @@ The patch is in google.patch.
 * Improve performance of HashMgr::InitHashEntry when BDICT file is used.
 
 Chromium-specific changes are in google.patch. To update the patch, follow these
-steps, or simply run update_google_patch.sh from the commandline.
-1) Checkout hunspell:
+steps.
+1) Create an environment variable for Chromium Hunspell directory
+   $ export CHROMIUM_HUNSPELL=~/chromium/src/third_party/hunspell
+2) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
    $ git checkout v1.7.0
-2) Apply the existing patch:
-   $ patch -p1 -i ~/src/third_party/hunspell/google.patch
-3) Make your new changes inside the git hunspell directory.
-4) Generate the updated patch:
-   $ git diff > ~/src/third_party/hunspell/google.patch
-5) Copy the patched source to Chromium:
-   $ cp -r src/ README.md COPYING* license* \
-       ~/src/third_party/hunspell/
+3) Apply the existing patch:
+   $ patch -p1 -i $CHROMIUM_HUNSPELL/google.patch
+4) Make your new changes inside the git hunspell directory.
+5) Generate the updated patch:
+   $ git diff > $CHROMIUM_HUNSPELL/google.patch
+6) Copy the patched source to Chromium:
+   $ cp -r src/ README.md COPYING* license* $CHROMIUM_HUNSPELL
+   $ rm -r $CHROMIUM_HUNSPELL/src/Makefile.am \
+       $CHROMIUM_HUNSPELL/src/hunspell/Makefile.am \
+       $CHROMIUM_HUNSPELL/src/parsers/.gitignore \
+       $CHROMIUM_HUNSPELL/src/parsers/Makefile.am \
+       $CHROMIUM_HUNSPELL/src/tools/
+7) In the Chromium src folder:
+   $ git add third_party/hunspell
 
 All dictionaries used by Chromium has been checked in to the
 'third_party/hunspell_dictionaries' directory. They have several additions over
