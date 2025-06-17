@@ -221,10 +221,12 @@ interface FederatedAuthRequest {
   ResolveTokenRequest(string? account_id, string token) => (bool success);
 
   // Marks the user as logged in/out to the IDP on this origin. 'origin' must
-  // not be opaque.
+  // not be opaque. Options such as a list of pushed accounts may be provided.
+  // An empty callback is used to provide confirmation to the caller that the
+  // browser has processed the message.
   SetIdpSigninStatus(url.mojom.Origin origin,
                      IdpSigninStatus status,
-                     LoginStatusOptions? options);
+                     LoginStatusOptions? options) => ();
 
   // Registers the url as an IdP's configURL of the user's preference.
   RegisterIdP(url.mojom.Url url) => (RegisterIdpStatus status);

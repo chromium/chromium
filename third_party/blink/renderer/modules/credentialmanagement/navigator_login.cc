@@ -18,8 +18,15 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
+
+namespace {
+void OnSetIdpSigninStatus(ScriptPromiseResolver<IDLUndefined>* resolver) {
+  resolver->Resolve();
+}
+}  // namespace
 
 const char NavigatorLogin::kSupplementName[] = "NavigatorLogin";
 
@@ -43,6 +50,10 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
   auto* request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
 
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  ScriptPromise<IDLUndefined> promise = resolver->Promise();
+
   mojom::blink::IdpSigninStatus status;
   switch (v8_status.AsEnum()) {
     case V8LoginStatus::Enum::kLoggedIn:
@@ -52,8 +63,10 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
       status = mojom::blink::IdpSigninStatus::kSignedOut;
       break;
   }
-  request->SetIdpSigninStatus(context->GetSecurityOrigin(), status, nullptr);
-  return EmptyPromise();
+  request->SetIdpSigninStatus(
+      context->GetSecurityOrigin(), status, nullptr,
+      WTF::BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
+  return promise;
 }
 
 ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
@@ -103,8 +116,8 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
 
   request->SetIdpSigninStatus(
       context->GetSecurityOrigin(), status,
-      mojo::ConvertTo<blink::mojom::blink::LoginStatusOptionsPtr>(*options));
-  resolver->Resolve();
+      mojo::ConvertTo<blink::mojom::blink::LoginStatusOptionsPtr>(*options),
+      WTF::BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
   return promise;
 }
 

@@ -98,8 +98,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void SetIdpSigninStatus(
       const url::Origin& origin,
       blink::mojom::IdpSigninStatus status,
-      const std::optional<::blink::common::webid::LoginStatusOptions>& options)
-      override;
+      const std::optional<::blink::common::webid::LoginStatusOptions>& options,
+      SetIdpSigninStatusCallback) override;
   void RegisterIdP(const ::GURL& idp, RegisterIdPCallback) override;
   void UnregisterIdP(const ::GURL& idp, UnregisterIdPCallback) override;
 

@@ -617,7 +617,10 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
 void FederatedAuthRequestImpl::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     blink::mojom::IdpSigninStatus status,
-    const std::optional<blink::common::webid::LoginStatusOptions>& options) {
+    const std::optional<blink::common::webid::LoginStatusOptions>& options,
+    SetIdpSigninStatusCallback callback) {
+  auto scoped_closure = base::ScopedClosureRunner(std::move(callback));
+
   if (render_frame_host().IsNestedWithinFencedFrame()) {
     RecordSetLoginStatusIgnoredReason(
         FedCmSetLoginStatusIgnoredReason::kInFencedFrame);

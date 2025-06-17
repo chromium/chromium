@@ -228,7 +228,8 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest {
   void SetIdpSigninStatus(
       const ::scoped_refptr<const ::blink::SecurityOrigin>& origin,
       mojom::IdpSigninStatus status,
-      mojom::blink::LoginStatusOptionsPtr options) override {}
+      mojom::blink::LoginStatusOptionsPtr options,
+      SetIdpSigninStatusCallback callback) override {}
   void RegisterIdP(const ::blink::KURL& url,
                    RegisterIdPCallback callback) override {}
   void UnregisterIdP(const ::blink::KURL& url,
