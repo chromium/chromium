@@ -51,9 +51,7 @@ struct LocalClientConfig {
 // Each federated client should have an entry in `kLocalClientConfigs` that
 // contains its client name, example table id and a feature with launch stage as
 // the associated parameter, or a hardcoded launch stage.
-const std::array<LocalClientConfig, 4> kLocalClientConfigs = {{
-    {"input_autocorrect_phh", FederatedExampleTableId::INPUT_AUTOCORRECT,
-     &features::kAutocorrectFederatedPhh},
+const std::array<LocalClientConfig, 3> kLocalClientConfigs = {{
     {"launcher_query_analytics_v1", FederatedExampleTableId::LAUNCHER_QUERY,
      nullptr},
     {"launcher_query_analytics_v2", FederatedExampleTableId::LAUNCHER_QUERY_V2,

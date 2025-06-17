@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/services/federated/public/mojom/tables.mojom.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -426,16 +425,6 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
-
-  if (ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() &&
-      base::FeatureList::IsEnabled(features::kAutocorrectFederatedPhh)) {
-    // Report `original_text` to the Federated Service.
-    federated_manager_.ReportSingleString(
-        /*table_id*/ chromeos::federated::mojom::FederatedExampleTableId::
-            INPUT_AUTOCORRECT,
-        /*example_feature_name*/ "original_text",
-        /*example_str*/ base::UTF16ToUTF8(original_text));
-  }
 }
 
 void AutocorrectManager::RecordPendingMetricsAwaitingKeyPress() {

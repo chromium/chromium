@@ -119,12 +119,6 @@ BASE_FEATURE(kAutoScreenBrightness,
              "AutoScreenBrightness",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables collection of autocorrect strings for federated analytics via Private
-// Heavy Hitters (PHH).
-BASE_FEATURE(kAutocorrectFederatedPhh,
-             "AutocorrectFederatedPhh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables params tuning experiment for autocorrect on ChromeOS.
 BASE_FEATURE(kAutocorrectParamsTuning,
              "AutocorrectParamsTuning",
