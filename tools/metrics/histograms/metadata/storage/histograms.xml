@@ -1540,7 +1540,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Database.Error" enum="SqliteErrorCode"
-    expires_after="2025-06-08">
+    expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1570,7 +1570,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Median"
-    units="B" expires_after="2025-06-08">
+    units="B" expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1633,7 +1633,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Database.FileBacked.BytesUsed.Total.KB"
-    units="KB" expires_after="2025-06-08">
+    units="KB" expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1797,14 +1797,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Database.Timing.OpenImpl" units="ms"
-    expires_after="2025-04-06">
+    expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Measures the time from start to end of the call to
     `components::SharedStorageDatabase::OpenImpl()`. Recorded in
-    `components::SharedStorageDatabase::OpenImpl()``.
+    `components::SharedStorageDatabase::OpenImpl()``. WARNING: Was expired from
+    2025-04-06 to 2025-06-18.
   </summary>
 </histogram>
 
@@ -1835,7 +1836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Document.Timing.BatchUpdate" units="ms"
-    expires_after="2025-06-03">
+    expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1956,13 +1957,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.DocumentServiceBind.IsSecureFrame"
-    enum="BooleanSecure" expires_after="2025-04-06">
+    enum="BooleanSecure" expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records whether the frame is secure when the shared storage document mojom
-    service is initialized.
+    service is initialized. WARNING: Was expired from 2025-04-06 to 2025-06-18.
   </summary>
 </histogram>
 
@@ -2000,31 +2001,37 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.InterestGroups.InBrowserRetrievalTime"
-    units="ms" expires_after="2025-04-17">
+    units="ms" expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Time taken to retrieve interest groups from the browser's cache or database
     for interestGroups(). Only measures when interestGroups() passes early
-    permission checks.
+    permission checks. WARNING: Was expired from 2025-04-17 to 2025-06-18.
   </summary>
 </histogram>
 
 <histogram name="Storage.SharedStorage.InterestGroups.ResultStatus"
-    enum="SharedStorageInterestGroupsResultStatus" expires_after="2025-04-17">
+    enum="SharedStorageInterestGroupsResultStatus" expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
-  <summary>The success or the failure reason for interestGroups().</summary>
+  <summary>
+    The success or the failure reason for interestGroups(). WARNING: Was expired
+    from 2025-04-17 to 2025-06-18.
+  </summary>
 </histogram>
 
 <histogram name="Storage.SharedStorage.InterestGroups.TimeToResolve" units="ms"
-    expires_after="2025-04-17">
+    expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
-  <summary>Resolving time for successful interestGroups() calls.</summary>
+  <summary>
+    Resolving time for successful interestGroups() calls. WARNING: Was expired
+    from 2025-04-17 to 2025-06-18.
+  </summary>
 </histogram>
 
 <histogram
@@ -2316,7 +2323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Timing.BatchUpdate" units="ms"
-    expires_after="2025-06-03">
+    expires_after="2025-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
