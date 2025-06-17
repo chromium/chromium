@@ -409,9 +409,7 @@ void FetchHandler::OnResponseBodyPipeTaken(
     return;
   }
   // The pipe stream is owned only by io_context after we return.
-  bool is_binary = !DevToolsIOContext::IsTextMimeType(mime_type);
-  auto stream =
-      DevToolsStreamPipe::Create(io_context_, std::move(pipe), is_binary);
+  auto stream = DevToolsStreamPipe::Create(io_context_, std::move(pipe));
   callback->sendSuccess(stream->handle());
 }
 

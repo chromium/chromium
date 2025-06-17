@@ -20,16 +20,14 @@ class DevToolsStreamPipe : public DevToolsIOContext::Stream {
  public:
   static scoped_refptr<DevToolsStreamPipe> Create(
       DevToolsIOContext* context,
-      mojo::ScopedDataPipeConsumerHandle pipe,
-      bool is_binary);
+      mojo::ScopedDataPipeConsumerHandle pipe);
   const std::string& handle() const { return handle_; }
 
  private:
   struct ReadRequest;
 
   DevToolsStreamPipe(DevToolsIOContext* context,
-                     mojo::ScopedDataPipeConsumerHandle pipe,
-                     bool is_binary);
+                     mojo::ScopedDataPipeConsumerHandle pipe);
   ~DevToolsStreamPipe() override;
 
   bool SupportsSeek() const override;
@@ -42,7 +40,6 @@ class DevToolsStreamPipe : public DevToolsIOContext::Stream {
 
   const std::string handle_;
   const mojo::ScopedDataPipeConsumerHandle pipe_;
-  const bool is_binary_;
 
   mojo::SimpleWatcher pipe_watcher_;
   base::queue<ReadRequest> read_requests_;

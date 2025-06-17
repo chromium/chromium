@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 
@@ -24,18 +25,15 @@ struct DevToolsStreamPipe::ReadRequest {
 // static
 scoped_refptr<DevToolsStreamPipe> DevToolsStreamPipe::Create(
     DevToolsIOContext* context,
-    mojo::ScopedDataPipeConsumerHandle pipe,
-    bool is_binary) {
-  return new DevToolsStreamPipe(context, std::move(pipe), is_binary);
+    mojo::ScopedDataPipeConsumerHandle pipe) {
+  return new DevToolsStreamPipe(context, std::move(pipe));
 }
 
 DevToolsStreamPipe::DevToolsStreamPipe(DevToolsIOContext* context,
-                                       mojo::ScopedDataPipeConsumerHandle pipe,
-                                       bool is_binary)
+                                       mojo::ScopedDataPipeConsumerHandle pipe)
     : DevToolsIOContext::Stream(base::SequencedTaskRunner::GetCurrentDefault()),
       handle_(Register(context)),
       pipe_(std::move(pipe)),
-      is_binary_(is_binary),
       pipe_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       last_status_(StatusSuccess) {
   MojoResult res = pipe_watcher_.Watch(
@@ -112,10 +110,12 @@ void DevToolsStreamPipe::OnPipeSignalled(
 
 void DevToolsStreamPipe::DispatchResponse() {
   auto data = std::make_unique<std::string>(std::move(buffer_));
-  if (is_binary_ && !data->empty())
+  bool is_binary = !data->empty() && !base::IsStringUTF8(*data);
+  if (is_binary) {
     *data.get() = base::Base64Encode(*data);
+  }
   std::move(read_requests_.front().read_callback)
-      .Run(std::move(data), is_binary_, last_status_);
+      .Run(std::move(data), is_binary, last_status_);
   read_requests_.pop();
 }
 
