@@ -179,16 +179,10 @@ public class SurfaceColorUpdateUtils {
                     ? ContextCompat.getColor(context, R.color.gm3_baseline_surface_dim_dark)
                     : SemanticColorUtils.getColorSurfaceDim(context);
         }
-        // Checking night mode to keep color behaviour the same as in tab_card_view_bg_color.
-        @ColorInt
-        int defaultBackground =
-                ColorUtils.inNightMode(context)
-                        ? SemanticColorUtils.getColorSurfaceContainerHighest(context)
-                        : SemanticColorUtils.getColorSurfaceContainerHigh(context);
         return isIncognito
                 ? ContextCompat.getColor(
                         context, R.color.gm3_baseline_surface_container_highest_dark)
-                : defaultBackground;
+                : SemanticColorUtils.getColorSurfaceContainerHighest(context);
     }
 
     /**
