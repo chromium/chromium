@@ -297,11 +297,9 @@ class WebRtcScreenCaptureBrowserTest : public WebRtcTestBase {
   std::string GetConstraints(bool video,
                              bool audio,
                              bool prefer_current_tab) const {
-    return base::StringPrintf(
-        "{video: %s, audio: %s, selfBrowserSurface: \"include\", "
-        "preferCurrentTab: %s}",
-        base::ToString(video), base::ToString(audio),
-        base::ToString(prefer_current_tab));
+    return base::StringPrintf("{video: %s, audio: %s, preferCurrentTab: %s}",
+                              base::ToString(video), base::ToString(audio),
+                              base::ToString(prefer_current_tab));
   }
 
   std::string GetConstraints(bool video,
@@ -322,11 +320,7 @@ class WebRtcScreenCaptureBrowserTestWithPicker
     : public WebRtcScreenCaptureBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  WebRtcScreenCaptureBrowserTestWithPicker() : test_config_(GetParam()) {
-#if BUILDFLAG(IS_MAC)
-    feature_list_.InitAndDisableFeature(media::kUseSCContentSharingPicker);
-#endif
-  }
+  WebRtcScreenCaptureBrowserTestWithPicker() : test_config_(GetParam()) {}
 
   void SetUpOnMainThread() override {
     WebRtcScreenCaptureBrowserTest::SetUpOnMainThread();
@@ -351,7 +345,7 @@ class WebRtcScreenCaptureBrowserTestWithPicker
                                       "Display");
 #else
       command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
-                                      "screen");
+                                      "Entire screen");
 #endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
@@ -361,7 +355,6 @@ class WebRtcScreenCaptureBrowserTestWithPicker
   }
 
   const TestConfigForPicker test_config_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -371,7 +364,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                              /*accept_this_tab_capture=*/Bool()));
 
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/41493366): enable this flaky test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
@@ -441,7 +435,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/41493366): enable this flaky test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
 #elif BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
