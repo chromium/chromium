@@ -9,8 +9,6 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_mutator.h"
 
-@class BackgroundCustomizationConfiguration;
-
 // Mediator responsible for managing the background customization action sheet,
 // which allows the user to pick a background option.
 @interface HomeCustomizationBackgroundPickerActionSheetMediator

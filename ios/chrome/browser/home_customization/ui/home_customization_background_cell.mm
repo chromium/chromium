@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "url/gurl.h"
 
 // Define constants within the namespace
 namespace {
@@ -88,7 +89,7 @@ const CGFloat kFeedsWidth = 70.0;
 
 @implementation HomeCustomizationBackgroundCell {
   // Associated background configuration.
-  BackgroundCustomizationConfiguration* _backgroundConfiguration;
+  id<BackgroundCustomizationConfiguration> _backgroundConfiguration;
 
   // The background image of the cell.
   UIImageView* _backgroundImageView;
@@ -195,11 +196,12 @@ const CGFloat kFeedsWidth = 70.0;
   ]];
 }
 
-- (void)
-    configureWithBackgroundOption:(BackgroundCustomizationConfiguration*)option
-                       logoVendor:(id<LogoVendor>)logoVendor
-                     colorPalette:(HomeCustomizationColorPaletteConfiguration*)
-                                      colorPalette {
+- (void)configureWithBackgroundOption:
+            (id<BackgroundCustomizationConfiguration>)option
+                           logoVendor:(id<LogoVendor>)logoVendor
+                         colorPalette:
+                             (HomeCustomizationColorPaletteConfiguration*)
+                                 colorPalette {
   if (_isConfigured) {
     return;
   }

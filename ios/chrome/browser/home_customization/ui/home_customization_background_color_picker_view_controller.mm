@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_cutomization_color_palette_cell.h"
@@ -120,8 +120,8 @@ const CGFloat kSectionInsetBottom = 20.0;
 
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
-  BackgroundCustomizationConfiguration* backgroundConfiguration =
-      [[BackgroundCustomizationConfiguration alloc]
+  BackgroundCustomizationConfigurationItem* backgroundConfiguration =
+      [[BackgroundCustomizationConfigurationItem alloc]
           initWithBackgroundColor:_colorPaletteConfigurations[indexPath.item]
                                       .seedColor];
   _selectedColorIndex = @(indexPath.item);

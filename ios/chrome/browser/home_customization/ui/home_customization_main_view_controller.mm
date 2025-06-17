@@ -49,7 +49,7 @@
 
   // Contains the options the HomeCustomizationBackgroundCell will use to set a
   // background on the NTP.
-  NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*
+  NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
       _backgroundCustomizationConfigurationMap;
 
   // The id of the selected background cell.
@@ -263,7 +263,7 @@
   NSString* itemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
 
-  BackgroundCustomizationConfiguration* backgroundConfiguration =
+  id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
 
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
@@ -281,7 +281,7 @@
     return;
   }
 
-  BackgroundCustomizationConfiguration* backgroundConfiguration =
+  id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
 
   if (backgroundConfiguration &&
@@ -315,12 +315,12 @@
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
-- (void)
-    populateBackgroundCustomizationConfigurations:
-        (NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*)
-            backgroundCustomizationConfigurationMap
-                             selectedBackgroundId:
-                                 (NSString*)selectedBackgroundId {
+- (void)populateBackgroundCustomizationConfigurations:
+            (NSMutableDictionary<NSString*,
+                                 id<BackgroundCustomizationConfiguration>>*)
+                backgroundCustomizationConfigurationMap
+                                 selectedBackgroundId:
+                                     (NSString*)selectedBackgroundId {
   _backgroundCustomizationConfigurationMap =
       backgroundCustomizationConfigurationMap;
   _selectedBackgroundId = selectedBackgroundId;
@@ -344,7 +344,7 @@
 // Returns an array of identifiers for the background options, which can be used
 // by the snapshot.
 - (NSArray<NSString*>*)identifiersForBackgroundCells:
-    (NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*)
+    (NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*)
         backgroundCustomizationConfigurationMap {
   NSMutableArray<NSString*>* identifiers = [[NSMutableArray alloc] init];
   for (NSString* key in backgroundCustomizationConfigurationMap) {
@@ -374,7 +374,7 @@
 - (void)configureBackgroundCell:(HomeCustomizationBackgroundCell*)cell
                     atIndexPath:(NSIndexPath*)indexPath
              withItemIdentifier:(NSString*)itemIdentifier {
-  BackgroundCustomizationConfiguration* backgroundConfiguration =
+  id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
   id<LogoVendor> logoVendor = [self.logoVendorProvider provideLogoVendor];
   HomeCustomizationColorPaletteConfiguration* colorPalette =

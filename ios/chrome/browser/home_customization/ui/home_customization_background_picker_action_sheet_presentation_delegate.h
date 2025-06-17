@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class BackgroundCustomizationConfiguration;
+@protocol BackgroundCustomizationConfiguration;
 
 // A delegate protocol for handling presentation-related actions in the
 // Home Customization Background Picker action sheet.
@@ -17,7 +17,7 @@
 // Applies the specified background configuration to the NTP based on the
 // current user selection.
 - (void)applyBackgroundForConfiguration:
-    (BackgroundCustomizationConfiguration*)backgroundConfiguration;
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration;
 
 @end
 

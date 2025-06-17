@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class BackgroundCustomizationConfiguration;
+@protocol BackgroundCustomizationConfiguration;
 
 // A tuple for grouping a collection name with its associated array of
 // `BackgroundCustomizationConfiguration`.
@@ -18,7 +18,7 @@
 
 // The background customization configurations associated with this collection.
 @property(nonatomic, strong)
-    NSArray<BackgroundCustomizationConfiguration*>* configurations;
+    NSArray<id<BackgroundCustomizationConfiguration>>* configurations;
 
 @end
 

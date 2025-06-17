@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "url/gurl.h"
 
-@implementation BackgroundCustomizationConfiguration {
+@implementation BackgroundCustomizationConfigurationItem {
+  CollectionImage _collectionImage;
+  HomeCustomizationBackgroundStyle _backgroundType;
   NSString* _configurationID;
-  GURL _thumbnailURL;
-  GURL _highResURL;
+  UIColor* _backgroundColor;
 }
 
 - (instancetype)initWithCollectionImage:
     (const CollectionImage&)collectionImage {
   self = [super init];
   if (self) {
+    _collectionImage = collectionImage;
+    _backgroundType = HomeCustomizationBackgroundStyle::kPreset;
     _configurationID = [NSString
         stringWithFormat:@"%@_%ld_%@", kBackgroundCellIdentifier,
-                         HomeCustomizationBackgroundStyle::kPreset,
+                         _backgroundType,
                          base::SysUTF8ToNSString(
                              base::NumberToString(collectionImage.asset_id))];
-    _thumbnailURL = collectionImage.thumbnail_image_url;
-    _highResURL = collectionImage.image_url;
   }
   return self;
 }
@@ -32,10 +32,10 @@
 - (instancetype)initWithBackgroundColor:(UIColor*)backgroundColor {
   self = [super init];
   if (self) {
-    _configurationID =
-        [NSString stringWithFormat:@"%@_%ld_%@", kBackgroundCellIdentifier,
-                                   HomeCustomizationBackgroundStyle::kColor,
-                                   backgroundColor.description];
+    _backgroundType = HomeCustomizationBackgroundStyle::kColor;
+    _configurationID = [NSString
+        stringWithFormat:@"%@_%ld_%@", kBackgroundCellIdentifier,
+                         _backgroundType, backgroundColor.description];
     _backgroundColor = backgroundColor;
   }
   return self;
@@ -49,6 +49,28 @@
                                    HomeCustomizationBackgroundStyle::kDefault];
   }
   return self;
+}
+
+- (const CollectionImage&)collectionImage {
+  return _collectionImage;
+}
+
+#pragma mark - BackgroundCustomizationConfiguration
+
+- (HomeCustomizationBackgroundStyle)backgroundType {
+  return _backgroundType;
+}
+
+- (NSString*)configurationID {
+  return _configurationID;
+}
+
+- (const GURL&)thumbnailURL {
+  return _collectionImage.thumbnail_image_url;
+}
+
+- (UIColor*)backgroundColor {
+  return _backgroundColor;
 }
 
 @end

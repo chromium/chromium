@@ -11,7 +11,6 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/themes/ntp_background_data.h"
 #import "components/themes/ntp_background_service_observer.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 
 class NtpBackgroundService;
 

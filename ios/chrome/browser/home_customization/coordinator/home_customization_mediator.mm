@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
@@ -72,13 +72,13 @@
   [self.mainPageConsumer populateToggles:toggleMap];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
-    NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*
+    NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
         backgroundCustomizationConfigurationMap =
             [NSMutableDictionary dictionary];
 
     // Create and add a background configuration with no background applied.
-    BackgroundCustomizationConfiguration* defaultConfig =
-        [[BackgroundCustomizationConfiguration alloc] initWithNoBackground];
+    BackgroundCustomizationConfigurationItem* defaultConfig =
+        [[BackgroundCustomizationConfigurationItem alloc] initWithNoBackground];
     backgroundCustomizationConfigurationMap[defaultConfig.configurationID] =
         defaultConfig;
 
@@ -274,7 +274,7 @@
 }
 
 - (void)applyBackgroundForConfiguration:
-    (BackgroundCustomizationConfiguration*)backgroundConfiguration {
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
   // TODO(crbug.com/408243803): apply NTP background configuration to NTP.
 }
 

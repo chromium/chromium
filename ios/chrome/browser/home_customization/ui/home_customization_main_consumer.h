@@ -22,12 +22,12 @@
 
 // Populates the background customization cells with a map of options, then
 // update the snapshot.
-- (void)
-    populateBackgroundCustomizationConfigurations:
-        (NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*)
-            BackgroundCustomizationConfigurationMap
-                             selectedBackgroundId:
-                                 (NSString*)selectedBackgroundId;
+- (void)populateBackgroundCustomizationConfigurations:
+            (NSMutableDictionary<NSString*,
+                                 id<BackgroundCustomizationConfiguration>>*)
+                BackgroundCustomizationConfigurationMap
+                                 selectedBackgroundId:
+                                     (NSString*)selectedBackgroundId;
 
 @end
 

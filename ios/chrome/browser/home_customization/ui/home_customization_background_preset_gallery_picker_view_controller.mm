@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/home_customization/model/background_collection_configuration.h"
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_mutator.h"
@@ -42,7 +43,7 @@ const CGFloat kHeaderInsetSides = 7.5;
 
   // A flat map of background customization options, keyed by background ID.
   // Used by HomeCustomizationBackgroundCell to apply backgrounds on the NTP.
-  NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*
+  NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
       _backgroundCustomizationConfigurationMap;
 
   // A list of background customization configurations grouped by section,
@@ -120,7 +121,7 @@ const CGFloat kHeaderInsetSides = 7.5;
             (NSArray<BackgroundCollectionConfiguration*>*)
                 backgroundCollectionConfigurations
                          selectedBackgroundId:(NSString*)selectedBackgroundId {
-  NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*
+  NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
       backgroundCustomizationConfigurationMap =
           [NSMutableDictionary dictionary];
 
@@ -128,7 +129,7 @@ const CGFloat kHeaderInsetSides = 7.5;
   // map.
   for (BackgroundCollectionConfiguration* BackgroundCollectionConfiguration in
            backgroundCollectionConfigurations) {
-    for (BackgroundCustomizationConfiguration* backgroundConfiguration in
+    for (id<BackgroundCustomizationConfiguration> backgroundConfiguration in
              BackgroundCollectionConfiguration.configurations) {
       [backgroundCustomizationConfigurationMap
           setObject:backgroundConfiguration
@@ -177,7 +178,7 @@ const CGFloat kHeaderInsetSides = 7.5;
     forItemAtIndexPath:(NSIndexPath*)indexPath {
   NSString* itemIdentifier =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
-  BackgroundCustomizationConfiguration* backgroundConfiguration =
+  id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
 
   if (!backgroundConfiguration.thumbnailURL.is_empty()) {
@@ -213,7 +214,7 @@ const CGFloat kHeaderInsetSides = 7.5;
       BackgroundCollectionConfiguration.collectionName
     ]];
     NSMutableArray* backgroundIds = [NSMutableArray array];
-    for (BackgroundCustomizationConfiguration* backgroundConfiguration in
+    for (id<BackgroundCustomizationConfiguration> backgroundConfiguration in
              BackgroundCollectionConfiguration.configurations) {
       [backgroundIds addObject:backgroundConfiguration.configurationID];
     }
@@ -295,7 +296,7 @@ const CGFloat kHeaderInsetSides = 7.5;
 - (void)configureBackgroundCell:(HomeCustomizationBackgroundCell*)cell
                     atIndexPath:(NSIndexPath*)indexPath
              withItemIdentifier:(NSString*)itemIdentifier {
-  BackgroundCustomizationConfiguration* backgroundConfiguration =
+  id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
   id<LogoVendor> logoVendor = [self.logoVendorProvider provideLogoVendor];
 

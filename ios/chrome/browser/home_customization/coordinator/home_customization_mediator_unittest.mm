@@ -9,6 +9,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
@@ -42,12 +43,12 @@
   _toggleMap = toggleMap;
 }
 
-- (void)
-    populateBackgroundCustomizationConfigurations:
-        (NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*)
-            BackgroundCustomizationConfigurationMap
-                             selectedBackgroundId:
-                                 (NSString*)selectedBackgroundId {
+- (void)populateBackgroundCustomizationConfigurations:
+            (NSMutableDictionary<NSString*,
+                                 id<BackgroundCustomizationConfiguration>>*)
+                BackgroundCustomizationConfigurationMap
+                                 selectedBackgroundId:
+                                     (NSString*)selectedBackgroundId {
   // No-op for fake implementation.
 }
 

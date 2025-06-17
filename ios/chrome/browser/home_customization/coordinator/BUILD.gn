@@ -74,6 +74,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs",
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
+    "//ios/chrome/browser/home_customization/model",
     "//ios/chrome/browser/home_customization/ui",
     "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/image_fetcher/model",

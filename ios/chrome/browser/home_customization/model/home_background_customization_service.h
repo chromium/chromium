@@ -13,7 +13,6 @@
 #import "components/sync/protocol/theme_types.pb.h"
 #import "third_party/skia/include/core/SkColor.h"
 
-@class BackgroundCustomizationConfiguration;
 class GURL;
 class HomeBackgroundCustomizationServiceObserver;
 

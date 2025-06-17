@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_picker_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_mediator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_preset_gallery_picker_mediator.h"
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_mutator.h"
@@ -58,7 +59,7 @@ CGFloat const kSheetCornerRadius = 30;
   UIViewController* _mainViewController;
 
   // Stores the most recently applied background configuration.
-  BackgroundCustomizationConfiguration* _lastAppliedBackgroundConfiguration;
+  id<BackgroundCustomizationConfiguration> _lastAppliedBackgroundConfiguration;
 }
 
 @end
@@ -144,7 +145,7 @@ CGFloat const kSheetCornerRadius = 30;
 #pragma mark - HomeCustomizationBackgroundPickerActionSheetPresentationDelegate
 
 - (void)applyBackgroundForConfiguration:
-    (BackgroundCustomizationConfiguration*)backgroundConfiguration {
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
   _lastAppliedBackgroundConfiguration = backgroundConfiguration;
   [_mediator applyBackgroundForConfiguration:backgroundConfiguration];
 }

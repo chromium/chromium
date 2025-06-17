@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PICKER_ACTION_SHEET_MUTATOR_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PICKER_ACTION_SHEET_MUTATOR_H_
 
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+@protocol BackgroundCustomizationConfiguration;
 
 // A mutator protocol used to communicate with the the background customization
 // action sheet.
@@ -14,12 +14,12 @@
 // Applies the given background configuration to the NTP.
 // This method updates the background based on the provided configuration.
 - (void)applyBackgroundForConfiguration:
-    (BackgroundCustomizationConfiguration*)backgroundConfiguration;
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration;
 
 // Adds the given background configuration to the list of recently used
 // backgrounds.
 - (void)addBackgroundToRecentlyUsed:
-    (BackgroundCustomizationConfiguration*)backgroundConfiguration;
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration;
 
 @end
 
