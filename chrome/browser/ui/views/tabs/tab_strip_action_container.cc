@@ -503,7 +503,9 @@ void TabStripActionContainer::OnGlicButtonMouseDown() {
   // cache the results for future calls. Which is why the callback does nothing.
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  glic_service->FetchZeroStateSuggestions(false, base::DoNothing());
+  glic_service->FetchZeroStateSuggestions(
+      /*is_first_run=*/false, /*supported_tools=*/std::nullopt,
+      base::DoNothing());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

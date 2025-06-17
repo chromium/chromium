@@ -281,6 +281,7 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
 void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     content::WebContents* web_contents,
     bool is_fre,
+    std::optional<std::vector<std::string>> supported_tools,
     GlicSuggestionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -300,13 +301,18 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     return;
   }
 
+  // TODO: crbug.com/424473209 - If `supported_tools` is nullopt, get cached
+  // value.
+  // TODO: crbug.com/424473209 - If `supported_tools` is non-nullopt, cache
+  // value and use in fetch.
   ZeroStateSuggestionsPageData* page_data =
       ZeroStateSuggestionsPageData::GetOrCreateForPage(
           web_contents->GetPrimaryPage());
   page_data->FetchSuggestions(
-      is_fre, base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             base::TimeTicks::Now(), std::move(callback)));
+      is_fre, supported_tools.value_or(std::vector<std::string>({})),
+      base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     std::move(callback)));
 #else
   std::move(callback).Run(std::nullopt);
 #endif

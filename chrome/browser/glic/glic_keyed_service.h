@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
@@ -95,6 +97,7 @@ class GlicKeyedService : public KeyedService {
   // Fetch zero state suggestions for the active web contents.
   void FetchZeroStateSuggestions(
       bool is_first_run,
+      std::optional<std::vector<std::string>> supported_tools,
       glic::mojom::WebClientHandler::
           GetZeroStateSuggestionsForFocusedTabCallback callback);
 

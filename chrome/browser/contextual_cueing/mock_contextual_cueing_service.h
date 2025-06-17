@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_MOCK_CONTEXTUAL_CUEING_SERVICE_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_MOCK_CONTEXTUAL_CUEING_SERVICE_H_
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -30,7 +34,10 @@ class MockContextualCueingService : public ContextualCueingService {
               (content::WebContents*));
   MOCK_METHOD(void,
               GetContextualGlicZeroStateSuggestions,
-              (content::WebContents*, bool, GlicSuggestionsCallback));
+              (content::WebContents*,
+               bool,
+               std::optional<std::vector<std::string>>,
+               GlicSuggestionsCallback));
 };
 
 }  // namespace contextual_cueing

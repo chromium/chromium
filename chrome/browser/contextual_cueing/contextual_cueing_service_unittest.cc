@@ -483,7 +483,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
   service()->GetContextualGlicZeroStateSuggestions(
-      web_contents(), /*is_fre=*/false, future.GetCallback());
+      web_contents(), /*is_fre=*/false, /*supported_tools=*/{},
+      future.GetCallback());
 
   EXPECT_NE(nullptr, ZeroStateSuggestionsPageData::GetForPage(
                          web_contents()->GetPrimaryPage()));
@@ -497,7 +498,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
   service()->GetContextualGlicZeroStateSuggestions(
-      web_contents(), /*is_fre=*/false, future.GetCallback());
+      web_contents(), /*is_fre=*/false, /*supported_tools=*/{},
+      future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
 

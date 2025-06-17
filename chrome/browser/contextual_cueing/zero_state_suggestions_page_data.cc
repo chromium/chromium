@@ -223,6 +223,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
 
 void ZeroStateSuggestionsPageData::FetchSuggestions(
     bool is_fre,
+    std::vector<std::string> supported_tools,
     GlicSuggestionsCallback callback) {
   if (cached_suggestions_) {
     OPTIMIZATION_GUIDE_LOG(
@@ -248,6 +249,8 @@ void ZeroStateSuggestionsPageData::FetchSuggestions(
   suggestions_request_ = optimization_guide::proto::
       ZeroStateSuggestionsRequest::default_instance();
   suggestions_request_->set_is_fre(is_fre);
+  *suggestions_request_->mutable_supported_tools() = {supported_tools.begin(),
+                                                      supported_tools.end()};
   suggestions_callbacks_.AddUnsafe(std::move(callback));
   RequestSuggestionsIfComplete();
 }

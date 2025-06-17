@@ -223,6 +223,7 @@ void GlicKeyedService::OnZeroStateSuggestionsFetched(
 
 void GlicKeyedService::FetchZeroStateSuggestions(
     bool is_first_run,
+    std::optional<std::vector<std::string>> supported_tools,
     mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
         callback) {
   auto* active_web_contents =
@@ -235,7 +236,7 @@ void GlicKeyedService::FetchZeroStateSuggestions(
     suggestions->tab_id = GetTabId(active_web_contents);
     suggestions->tab_url = active_web_contents->GetLastCommittedURL();
     contextual_cueing_service_->GetContextualGlicZeroStateSuggestions(
-        active_web_contents, is_first_run,
+        active_web_contents, is_first_run, supported_tools,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::BindOnce(&GlicKeyedService::OnZeroStateSuggestionsFetched,
                            GetWeakPtr(), std::move(suggestions),

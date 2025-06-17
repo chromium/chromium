@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -50,7 +49,9 @@ class ZeroStateSuggestionsPageData
   void InitiatePageContentExtraction();
 
   // Explicitly fetch suggestions for this page.
-  void FetchSuggestions(bool is_fre, GlicSuggestionsCallback callback);
+  void FetchSuggestions(bool is_fre,
+                        std::vector<std::string> supported_tools,
+                        GlicSuggestionsCallback callback);
 
  private:
   friend class content::PageUserData<ZeroStateSuggestionsPageData>;

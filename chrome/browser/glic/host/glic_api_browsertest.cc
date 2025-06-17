@@ -908,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabState) {
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
                        testGetZeroStateSuggestions) {
   EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestions(_, _, _))
+              GetContextualGlicZeroStateSuggestions(_, _, _, _))
       .Times(1);
 
   ExecuteJsTest();
@@ -917,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
                        testGetZeroStateSuggestionsFailsWhenHidden) {
   EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestions(_, _, _))
+              GetContextualGlicZeroStateSuggestions(_, _, _, _))
       .Times(0);
 
   ExecuteJsTest();

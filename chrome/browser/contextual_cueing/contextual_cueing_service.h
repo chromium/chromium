@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_SERVICE_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_SERVICE_H_
 
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/containers/lru_cache.h"
@@ -89,6 +91,7 @@ class ContextualCueingService
   virtual void GetContextualGlicZeroStateSuggestions(
       content::WebContents* web_contents,
       bool is_fre,
+      std::optional<std::vector<std::string>> supported_tools,
       GlicSuggestionsCallback callback);
 
  private:
