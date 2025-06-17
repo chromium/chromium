@@ -10,6 +10,7 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
@@ -28,6 +29,8 @@ class SafeBrowsingApiHandlerBridge {
       base::OnceCallback<void(SBThreatType, const ThreatMetadata&)>;
   using VerifyAppsResponseCallback =
       base::OnceCallback<void(VerifyAppsEnabledResult)>;
+  using GetSafetyNetIdResponseCallback =
+      base::OnceCallback<void(const std::string&)>;
 
   SafeBrowsingApiHandlerBridge();
 
@@ -67,6 +70,10 @@ class SafeBrowsingApiHandlerBridge {
   // with the result of the query.
   void StartEnableVerifyApps(VerifyAppsResponseCallback callback);
 
+  // Get the SafetyNet ID for the device. Will run `callback` with the result
+  // of the query or a cached result, or an empty string if unsuccessful.
+  void StartGetSafetyNetId(GetSafetyNetIdResponseCallback callback);
+
   // Called when a non-recoverable failure is encountered from SafeBrowsing API.
   void OnSafeBrowsingApiNonRecoverableFailure();
 
@@ -82,6 +89,13 @@ class SafeBrowsingApiHandlerBridge {
     verify_apps_enabled_for_testing_ = result;
   }
 
+  // Resets the cached value and callback subscriptions list.
+  void ResetSafetyNetIdForTesting();
+
+  std::optional<std::string> GetCachedSafetyNetIdForTesting() const {
+    return safety_net_id_;
+  }
+
  private:
   // Makes Native-to-Java call to check the URL through GMSCore SafeBrowsing
   // API.
@@ -89,6 +103,10 @@ class SafeBrowsingApiHandlerBridge {
                                    const GURL& url,
                                    const SBThreatTypeSet& threat_types,
                                    const SafeBrowsingJavaProtocol& protocol);
+
+  // Stores the `result` of a call to get the SafetyNet ID from Java, including
+  // an empty result which indicates non-recoverable error.
+  void CacheSafetyNetId(const std::string& result);
 
   // Used as a key to identify unique requests sent to Java to get Safe Browsing
   // reputation from GmsCore SafeBrowsing API.
@@ -103,6 +121,21 @@ class SafeBrowsingApiHandlerBridge {
   // false, future calls to SafeBrowsing API will return safe immediately.
   // Once set to false, it will remain false until browser restarts.
   bool is_safe_browsing_api_available_ = true;
+
+  // Cached SafetyNet ID. The SafetyNet ID for the device does not change, so
+  // once it is obtained from Java, it is cached here for any future calls to
+  // StartGetSafetyNetId(). An empty value may be cached here, which indicates
+  // an error that is not likely recoverable during this process lifetime. Note
+  // that a non-empty value may still be an incorrect/default value.
+  std::optional<std::string> safety_net_id_ = std::nullopt;
+
+  // Callback subscriptions to enable cancelling any pending
+  // GetSafetyNetIdResponseCallbacks when destroying `this`. This should not
+  // grow unboundedly, because the first invocation of getSafetyNetId() that
+  // returns a non-empty value should cache the value and subsequent calls will
+  // not add a callback to this list.
+  std::vector<base::CallbackListSubscription>
+      pending_get_safety_net_id_callbacks_;
 
   raw_ptr<UrlCheckInterceptor> interceptor_for_testing_ = nullptr;
 

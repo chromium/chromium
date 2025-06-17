@@ -46,6 +46,10 @@ public final class SafeBrowsingApiBridge {
     private static boolean sSafetyNetApiHandlerInitCalled;
 
     @GuardedBy("sSafetyNetApiHandlerLock")
+    private static @SafetyNetApiHandler.SafetyNetApiState int sSafetyNetApiState =
+            SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE;
+
+    @GuardedBy("sSafetyNetApiHandlerLock")
     private static @Nullable SafetyNetApiHandler sSafetyNetApiHandler;
 
     @GuardedBy("sSafeBrowsingApiHandlerLock")
@@ -92,6 +96,7 @@ public final class SafeBrowsingApiBridge {
         synchronized (sSafetyNetApiHandlerLock) {
             sSafetyNetApiHandlerInitCalled = false;
             sSafetyNetApiHandler = null;
+            sSafetyNetApiState = SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE;
         }
         synchronized (sSafeBrowsingApiHandlerLock) {
             sSafeBrowsingApiHandler = null;
@@ -107,10 +112,19 @@ public final class SafeBrowsingApiBridge {
      * @return true iff the initialization succeeded.
      */
     @CalledByNative
-    public static boolean ensureSafetyNetApiInitialized() {
+    public static boolean ensureSafetyNetApiInitialized(boolean requireFirstParty) {
         synchronized (sSafetyNetApiHandlerLock) {
-            return getSafetyNetApiHandler() != null;
+            return getSafetyNetApiHandler() != null
+                    && (!requireFirstParty
+                            || sSafetyNetApiState
+                                    == SafetyNetApiHandler.SafetyNetApiState
+                                            .INITIALIZED_FIRST_PARTY);
         }
+    }
+
+    @CalledByNative
+    public static boolean ensureSafetyNetApiInitialized() {
+        return ensureSafetyNetApiInitialized(/* requireFirstParty= */ false);
     }
 
     /**
@@ -155,9 +169,10 @@ public final class SafeBrowsingApiBridge {
     }
 
     /**
-     * Initializes the SafetyNetApiHandler, if supported.
+     * Initializes the SafetyNetApiHandler, if supported. Sets {@link sSafetyNetApiState} to
+     * indicate which operations are available from the handler.
      *
-     * The caller must {@link #setSafetyNetApiHandler(SafetyNetApiHandler)} first.
+     * <p>The caller must {@link #setSafetyNetApiHandler(SafetyNetApiHandler)} first.
      *
      * @return the handler if it is usable, or null if the API is not supported.
      */
@@ -168,9 +183,12 @@ public final class SafeBrowsingApiBridge {
                 Log.i(TAG, "initSafetyNetApiHandler");
             }
             if (sSafetyNetApiHandler == null) return null;
-            return sSafetyNetApiHandler.init(new SafetyNetApiLookupDoneObserver())
-                    ? sSafetyNetApiHandler
-                    : null;
+            sSafetyNetApiState =
+                    sSafetyNetApiHandler.initialize(new SafetyNetApiLookupDoneObserver());
+            if (sSafetyNetApiState == SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE) {
+                return null;
+            }
+            return sSafetyNetApiHandler;
         }
     }
 
@@ -179,6 +197,13 @@ public final class SafeBrowsingApiBridge {
         public void onVerifyAppsEnabledDone(long callbackId, int result) {
             synchronized (sSafetyNetApiHandlerLock) {
                 SafeBrowsingApiBridgeJni.get().onVerifyAppsEnabledDone(callbackId, result);
+            }
+        }
+
+        @Override
+        public void onGetSafetyNetIdDone(String result) {
+            synchronized (sSafetyNetApiHandlerLock) {
+                SafeBrowsingApiBridgeJni.get().onGetSafetyNetIdDone(result);
             }
         }
     }
@@ -228,6 +253,7 @@ public final class SafeBrowsingApiBridge {
         synchronized (sSafetyNetApiHandlerLock) {
             assert sSafetyNetApiHandlerInitCalled;
             assert sSafetyNetApiHandler != null;
+            assert sSafetyNetApiState != SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE;
             try (TraceEvent t = TraceEvent.scoped("SafeBrowsingApiBridge.startAllowlistLookup")) {
                 return sSafetyNetApiHandler.startAllowlistLookup(uri, threatType);
             }
@@ -274,6 +300,7 @@ public final class SafeBrowsingApiBridge {
         synchronized (sSafetyNetApiHandlerLock) {
             assert sSafetyNetApiHandlerInitCalled;
             assert sSafetyNetApiHandler != null;
+            assert sSafetyNetApiState != SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE;
             sSafetyNetApiHandler.isVerifyAppsEnabled(callbackId);
         }
     }
@@ -288,7 +315,24 @@ public final class SafeBrowsingApiBridge {
         synchronized (sSafetyNetApiHandlerLock) {
             assert sSafetyNetApiHandlerInitCalled;
             assert sSafetyNetApiHandler != null;
+            assert sSafetyNetApiState != SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE;
             sSafetyNetApiHandler.enableVerifyApps(callbackId);
+        }
+    }
+
+    /**
+     * Gets the device's shared UUID from the SafetyNet API.
+     *
+     * <p>Must only be called if {@code #ensureSafetyNetApiInitialized(true)} returns true.
+     */
+    @CalledByNative
+    public static void getSafetyNetId() {
+        synchronized (sSafetyNetApiHandlerLock) {
+            assert sSafetyNetApiHandlerInitCalled;
+            assert sSafetyNetApiHandler != null;
+            assert sSafetyNetApiState
+                    == SafetyNetApiHandler.SafetyNetApiState.INITIALIZED_FIRST_PARTY;
+            sSafetyNetApiHandler.getSafetyNetId();
         }
     }
 
@@ -303,5 +347,7 @@ public final class SafeBrowsingApiBridge {
                 long checkDeltaUs);
 
         void onVerifyAppsEnabledDone(long callbackId, int result);
+
+        void onGetSafetyNetIdDone(String result);
     }
 }

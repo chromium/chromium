@@ -4,6 +4,8 @@
 
 package org.chromium.components.safe_browsing;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -12,26 +14,62 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public interface SafetyNetApiHandler {
-    /** Observer to be notified when the SafetyNetApiHandler determines the verify apps result. */
+    // Enumerates possible initialization states for the SafetyNetApiHandler.
+    @IntDef({
+        SafetyNetApiState.NOT_AVAILABLE,
+        SafetyNetApiState.INITIALIZED,
+        SafetyNetApiState.INITIALIZED_FIRST_PARTY,
+    })
+    public @interface SafetyNetApiState {
+        // The API handler is not initialized. Calls to methods below will not work.
+        int NOT_AVAILABLE = 0;
+        // The API handler is initialized for most usages, but calls to {@link getSafetyNetId} will
+        // not work.
+        int INITIALIZED = 1;
+        // The API handler is initialized for all method calls.
+        int INITIALIZED_FIRST_PARTY = 2;
+    };
+
+    /**
+     * Observer to be notified when the SafetyNetApiHandler determines the result of asynchronous
+     * calls.
+     */
     interface Observer {
         void onVerifyAppsEnabledDone(long callbackId, @VerifyAppsResult int result);
+
+        // TODO(crbug.com/397407934): Replace this default implementation with the real one.
+        default void onGetSafetyNetIdDone(String result) {}
     }
 
     /**
      * Verifies that SafetyNetApiHandler can operate and initializes if feasible. Should be called
-     * on the same sequence as |startAllowlistLookup| and |isVerifyAppsEnabled|.
+     * on the same sequence as {@link startAllowlistLookup}, {@link isVerifyAppsEnabled}, and {@link
+     * getSafetyNetId}.
      *
      * @param observer The object on which to call the callback functions when app verification
      *     checking is complete.
-     * @return whether Safe Browsing is supported for this installation.
+     * @return Enum value indicating which methods are supported for this installation.
      */
-    boolean init(Observer observer);
+    // TODO(crbug.com/397407934): Replace this default implementation with the real one.
+    // At least one of init() or initialize() must be implemented.
+    @SafetyNetApiState
+    default int initialize(Observer observer) {
+        return init(observer) ? SafetyNetApiState.INITIALIZED : SafetyNetApiState.NOT_AVAILABLE;
+    }
+
+    // Temporary shim for the above.
+    // TODO(crbug.com/397407934): Remove this method in favor of the above.
+    // At least one of init() or initialize() must be implemented.
+    default boolean init(Observer observer) {
+        return initialize(observer) != SafetyNetApiState.NOT_AVAILABLE;
+    }
 
     /**
      * Start a check to determine if a uri is in an allowlist. If true, password protection service
-     * will consider the uri to be safe.
+     * will consider the uri to be safe. Requires initialized state {@code INITIALIZED} or {@code
+     * INITIALIZED_FIRST_PARTY}.
      *
-     * @param uri The uri from a password protection event(user focuses on password form * or user
+     * @param uri The uri from a password protection event(user focuses on password form or user
      *     reuses their password)
      * @param threatType determines the type of the allowlist that the uri will be matched to.
      * @return true if the uri is found in the corresponding allowlist. Otherwise, false.
@@ -40,17 +78,28 @@ public interface SafetyNetApiHandler {
 
     /**
      * Start a check to see if the user has app verification enabled. The response will be provided
-     * to the observer with the onVerifyAppsEnabledDone method.
+     * to the observer with the onVerifyAppsEnabledDone method. Requires initialized state {@code
+     * INITIALIZED} or {@code INITIALIZED_FIRST_PARTY}.
      *
-     * @param callbackId The id of the callback which should be returned * with the result.
+     * @param callbackId The id of the callback which should be returned with the result.
      */
     void isVerifyAppsEnabled(long callbackId);
 
     /**
      * Prompt the user to enable app verification. The response will be provided to the observer
-     * with the onVerifyAppsEnabledDone method.
+     * with the onVerifyAppsEnabledDone method. Requires initialized state {@code INITIALIZED} or
+     * {@code INITIALIZED_FIRST_PARTY}.
      *
-     * @param callbackId The id of the callback which should be returned * with the result.
+     * @param callbackId The id of the callback which should be returned with the result.
      */
     void enableVerifyApps(long callbackId);
+
+    /**
+     * Get the shared UUID from the SafetyNet API. A result will be returned to {@link
+     * Observer#onGetSafetyNetIdDone}. Result may be empty string in case of error, in which case
+     * the error is not likely recoverable during this process lifetime. May also return a non-empty
+     * default value for some errors. Requires initialized state {@code INITIALIZED_FIRST_PARTY}.
+     */
+    // TODO(crbug.com/397407934): Replace this default implementation with the real one.
+    default void getSafetyNetId() {}
 }

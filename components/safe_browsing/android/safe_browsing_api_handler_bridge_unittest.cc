@@ -54,6 +54,13 @@ SBThreatTypeSet GetAllThreatTypes() {
                                 SBThreatType::SB_THREAT_TYPE_BILLING});
 }
 
+// Test-only mirror of SafetyNetApiHandler.SafetyNetApiState in Java.
+enum class SafetyNetApiInitializationState {
+  kNotAvailable = 0,
+  kInitialized = 1,
+  kInitializedFirstParty = 2,
+};
+
 }  // namespace
 
 class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
@@ -73,6 +80,7 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
   void TearDown() override {
     SafeBrowsingApiHandlerBridge::GetInstance()
         .ResetSafeBrowsingApiAvailableForTesting();
+    SafeBrowsingApiHandlerBridge::GetInstance().ResetSafetyNetIdForTesting();
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_tearDown(env_);
   }
 
@@ -114,6 +122,17 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
   void SetVerifyAppsResult(VerifyAppsEnabledResult result) {
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setVerifyAppsResult(
         env_, static_cast<int>(result));
+  }
+
+  void SetSafetyNetApiInitializationState(
+      SafetyNetApiInitializationState state) {
+    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetApiInitializationState(
+        env_, static_cast<int>(state));
+  }
+
+  void SetSafetyNetIdResultEmpty() {
+    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetIdResultEmpty(
+        env_);
   }
 
   void RunHashDatabaseUrlCheck(
@@ -805,6 +824,82 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, EnableVerifyApps) {
   SafeBrowsingApiHandlerBridge::GetInstance().StartEnableVerifyApps(
       result_future.GetCallback());
   EXPECT_EQ(result_future.Get(), VerifyAppsEnabledResult::TIMEOUT);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest, GetSafetyNetIdFailsIfNotInitialized) {
+  SetSafetyNetApiInitializationState(
+      SafetyNetApiInitializationState::kNotAvailable);
+  base::test::TestFuture<const std::string&> result_future;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartGetSafetyNetId(
+      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), "");
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       GetSafetyNetIdFailsIfFirstPartyApiNotAvailable) {
+  SetSafetyNetApiInitializationState(
+      SafetyNetApiInitializationState::kInitialized);
+  base::test::TestFuture<const std::string&> result_future;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartGetSafetyNetId(
+      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), "");
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       GetSafetyNetIdSucceedsIfFirstPartyApiAvailable) {
+  SetSafetyNetApiInitializationState(
+      SafetyNetApiInitializationState::kInitializedFirstParty);
+  base::test::TestFuture<const std::string&> result_future;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartGetSafetyNetId(
+      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), "safety-net-id-0");
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       GetSafetyNetIdCachesAndReturnsSameNonEmptyResult) {
+  SetSafetyNetApiInitializationState(
+      SafetyNetApiInitializationState::kInitializedFirstParty);
+  base::test::TestFuture<const std::string&> result_future;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartGetSafetyNetId(
+      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), "safety-net-id-0");
+
+  EXPECT_TRUE(SafeBrowsingApiHandlerBridge::GetInstance()
+                  .GetCachedSafetyNetIdForTesting()
+                  .has_value());
+  EXPECT_EQ(*SafeBrowsingApiHandlerBridge::GetInstance()
+                 .GetCachedSafetyNetIdForTesting(),
+            "safety-net-id-0");
+
+  base::test::TestFuture<const std::string&> result_future2;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartGetSafetyNetId(
+      result_future2.GetCallback());
+  EXPECT_EQ(result_future2.Get(), "safety-net-id-0");
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       GetSafetyNetIdCachesAndReturnsEmptyResult) {
+  SetSafetyNetApiInitializationState(
+      SafetyNetApiInitializationState::kInitializedFirstParty);
+  // Simulate an error that returns an empty result despite being initialized.
+  SetSafetyNetIdResultEmpty();
+
+  base::test::TestFuture<const std::string&> result_future;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartGetSafetyNetId(
+      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), "");
+
+  EXPECT_TRUE(SafeBrowsingApiHandlerBridge::GetInstance()
+                  .GetCachedSafetyNetIdForTesting()
+                  .has_value());
+  EXPECT_EQ(*SafeBrowsingApiHandlerBridge::GetInstance()
+                 .GetCachedSafetyNetIdForTesting(),
+            "");
+
+  base::test::TestFuture<const std::string&> result_future2;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartGetSafetyNetId(
+      result_future2.GetCallback());
+  EXPECT_EQ(result_future2.Get(), "");
 }
 
 }  // namespace safe_browsing

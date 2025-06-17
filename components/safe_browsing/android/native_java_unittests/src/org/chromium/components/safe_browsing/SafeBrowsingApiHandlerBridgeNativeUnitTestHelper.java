@@ -33,10 +33,23 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         // Maps to store preset values, keyed by uri.
         private static final Map<String, Boolean> sCsdAllowlistMap = new HashMap<>();
 
+        // The initialization state of the API handler. The default value of -1 signifies
+        // uninitialized.
+        private static int sSafetyNetApiInitializationState = -1;
+
+        // Number to insert into the mock value to return for the default getSafetyNetId() result.
+        private static int sGetSafetyNetIdCount;
+        // A string to override the default mock result for getSafetyNetId().
+        private static String sSafetyNetIdResultOverride;
+
         @Override
-        public boolean init(Observer result) {
-            mObserver = result;
-            return true;
+        public @SafetyNetApiHandler.SafetyNetApiState int initialize(Observer observer) {
+            mObserver = observer;
+            if (sSafetyNetApiInitializationState == -1) {
+                setSafetyNetApiInitializationState(
+                        SafetyNetApiHandler.SafetyNetApiState.INITIALIZED);
+            }
+            return sSafetyNetApiInitializationState;
         }
 
         @Override
@@ -55,8 +68,21 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             mObserver.onVerifyAppsEnabledDone(callbackId, sVerifyAppsResult);
         }
 
+        @Override
+        public void getSafetyNetId() {
+            assert sSafetyNetApiInitializationState
+                    == SafetyNetApiHandler.SafetyNetApiState.INITIALIZED_FIRST_PARTY;
+            String result = sSafetyNetIdResultOverride;
+            if (result == null) {
+                result = String.format("safety-net-id-%d", sGetSafetyNetIdCount++);
+            }
+            mObserver.onGetSafetyNetIdDone(result);
+        }
+
         public static void tearDown() {
             sCsdAllowlistMap.clear();
+            sSafetyNetApiInitializationState = -1;
+            sGetSafetyNetIdCount = 0;
         }
 
         public static void setCsdAllowlistMatch(String uri, boolean match) {
@@ -65,6 +91,17 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         public static void setVerifyAppsResult(int result) {
             sVerifyAppsResult = result;
+        }
+
+        /** Mock the initialization state enum for tests. */
+        public static void setSafetyNetApiInitializationState(
+                @SafetyNetApiHandler.SafetyNetApiState int state) {
+            sSafetyNetApiInitializationState = state;
+        }
+
+        /** Supply a mock getSafetyNetId result for tests. */
+        public static void setSafetyNetIdResult(String result) {
+            sSafetyNetIdResultOverride = result;
         }
     }
 
@@ -231,5 +268,16 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     @CalledByNative
     static void setVerifyAppsResult(int result) {
         MockSafetyNetApiHandler.setVerifyAppsResult(result);
+    }
+
+    @CalledByNative
+    static void setSafetyNetApiInitializationState(
+            @SafetyNetApiHandler.SafetyNetApiState int state) {
+        MockSafetyNetApiHandler.setSafetyNetApiInitializationState(state);
+    }
+
+    @CalledByNative
+    static void setSafetyNetIdResultEmpty() {
+        MockSafetyNetApiHandler.setSafetyNetIdResult("");
     }
 }
