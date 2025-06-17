@@ -213,48 +213,6 @@ BASE_FEATURE(kPrivacySandboxSentimentSurvey,
 const base::FeatureParam<std::string> kPrivacySandboxSentimentSurveyTriggerId{
     &kPrivacySandboxSentimentSurvey, "sentiment-survey-trigger-id", ""};
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPrivacySandboxCctAdsNoticeSurvey,
-             "PrivacySandboxCctAdsNoticeSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyControlEeaTriggerId{
-        &kPrivacySandboxCctAdsNoticeSurvey, "eea-control-trigger-id", ""};
-
-const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyAcceptedEeaTriggerId{
-        &kPrivacySandboxCctAdsNoticeSurvey, "eea-accepted-trigger-id", ""};
-
-const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyDeclinedEeaTriggerId{
-        &kPrivacySandboxCctAdsNoticeSurvey, "eea-declined-trigger-id", ""};
-
-const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyControlRowTriggerId{
-        &kPrivacySandboxCctAdsNoticeSurvey, "row-control-trigger-id", ""};
-
-const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyAcknowledgedRowTriggerId{
-        &kPrivacySandboxCctAdsNoticeSurvey, "row-acknowledged-trigger-id", ""};
-
-const base::FeatureParam<double>
-    kPrivacySandboxCctAdsNoticeSurveyAcceptedConsentTriggerRate{
-        &kPrivacySandboxCctAdsNoticeSurvey, "accepted-trigger-rate", 0.0};
-
-const base::FeatureParam<double>
-    kPrivacySandboxCctAdsNoticeSurveyDeclineConsentTriggerRate{
-        &kPrivacySandboxCctAdsNoticeSurvey, "declined-trigger-rate", 0.0};
-
-const base::FeatureParam<std::string> kPrivacySandboxCctAdsNoticeSurveyAppId{
-    &kPrivacySandboxCctAdsNoticeSurvey, "survey-app-id", ""};
-
-const base::FeatureParam<int>
-    kPrivacySandboxCctAdsNoticeSurveyDelaysMilliseconds{
-        &kPrivacySandboxCctAdsNoticeSurvey, "survey-delay-ms",
-        /*20 seconds*/ 20000};
-
-#endif  // BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacySandboxAdsApiUxEnhancements,
              "PrivacySandboxAdsApiUxEnhancements",
              base::FEATURE_DISABLED_BY_DEFAULT);

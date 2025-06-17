@@ -233,50 +233,6 @@ extern const base::FeatureParam<std::string>
     kPrivacySandboxSentimentSurveyTriggerId;
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables the Ads notice survey on CCT.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxCctAdsNoticeSurvey);
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyControlEeaTriggerId;
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyAcceptedEeaTriggerId;
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyDeclinedEeaTriggerId;
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyControlRowTriggerId;
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyAcknowledgedRowTriggerId;
-
-// Used to set the probability rate for the `Accepted EEA` survey.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<double>
-    kPrivacySandboxCctAdsNoticeSurveyAcceptedConsentTriggerRate;
-
-// Used to set the probability rate for the `Declined EEA` survey.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<double>
-    kPrivacySandboxCctAdsNoticeSurveyDeclineConsentTriggerRate;
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<std::string>
-    kPrivacySandboxCctAdsNoticeSurveyAppId;
-
-// The delay in milliseconds from ads notice close to the attempt to surface a
-// survey.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<int>
-    kPrivacySandboxCctAdsNoticeSurveyDelaysMilliseconds;
-
 // The delay in milliseconds between the first click and the next accepted
 // click.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)

@@ -18531,33 +18531,6 @@
             ]
         }
     ],
-    "PrivacySandboxAdsNoticeCCTSurvey": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "accepted-trigger-rate": "1.0",
-                        "declined-trigger-rate": "1.0",
-                        "eea-accepted-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
-                        "eea-control-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
-                        "eea-declined-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
-                        "probability": "1.0",
-                        "row-acknowledged-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
-                        "row-control-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3",
-                        "survey-app-id": "com.google.android.googlequicksearchbox",
-                        "survey-delay-ms": "20000"
-                    },
-                    "enable_features": [
-                        "PrivacySandboxCctAdsNoticeSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxAllowPromptForBlocked3PCookies": [
         {
             "platforms": [
