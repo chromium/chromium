@@ -36,7 +36,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
@@ -47,7 +49,7 @@ import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.AppType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -62,9 +64,8 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class AddToHomescreenAddShortcutTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String WEBAPP_ACTION_NAME = "WEBAPP_ACTION";
 
@@ -117,6 +118,9 @@ public class AddToHomescreenAddShortcutTest {
     private static final String MASKABLE_MANIFEST_TEST_PAGE_PATH =
             "/chrome/test/data/banners/manifest_test_page.html?manifest=manifest_maskable.json";
     private static final String MANIFEST_TEST_PAGE_TITLE = "Web app banner test page";
+
+    private EmbeddedTestServer mServer;
+    private WebPageStation mPage;
 
     private static class TestShortcutHelperDelegate extends ShortcutHelper.Delegate {
         public String mRequestedShortcutTitle;
@@ -199,7 +203,8 @@ public class AddToHomescreenAddShortcutTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mServer = mActivityTestRule.getTestServer();
+        mPage = mActivityTestRule.startOnBlankPage();
         mShortcutHelperDelegate = new TestShortcutHelperDelegate();
         ShortcutHelper.setDelegateForTests(mShortcutHelperDelegate);
         mActivity = mActivityTestRule.getActivity();
@@ -214,7 +219,7 @@ public class AddToHomescreenAddShortcutTest {
         // a web app and would, under normal circumstances, install a webapk, but because universal
         // install is in play, a shortcut gets created. If the universal install flag is disabled,
         // the assert in canSubmit (above) fires.
-        loadUrl(WebappTestPage.getTestUrl(mTestServerRule.getServer()), WebappTestPage.PAGE_TITLE);
+        loadUrl(WebappTestPage.getTestUrl(mServer), WebappTestPage.PAGE_TITLE);
         addShortcutToTab(mTab, "", true, /* expectedDialogType= */ AppType.SHORTCUT);
     }
 
@@ -251,9 +256,7 @@ public class AddToHomescreenAddShortcutTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testAddAdaptableShortcut() throws Exception {
         // Test the baseline of no adaptive icon.
-        loadUrl(
-                mTestServerRule.getServer().getURL(NON_MASKABLE_MANIFEST_TEST_PAGE_PATH),
-                MANIFEST_TEST_PAGE_TITLE);
+        loadUrl(mServer.getURL(NON_MASKABLE_MANIFEST_TEST_PAGE_PATH), MANIFEST_TEST_PAGE_TITLE);
         addShortcutToTab(mTab, "", true, AppType.SHORTCUT);
 
         Assert.assertFalse(mShortcutHelperDelegate.mRequestedShortcutAdaptable);
@@ -261,9 +264,7 @@ public class AddToHomescreenAddShortcutTest {
         mShortcutHelperDelegate.clearRequestedShortcutData();
 
         // Test the adaptive icon.
-        loadUrl(
-                mTestServerRule.getServer().getURL(MASKABLE_MANIFEST_TEST_PAGE_PATH),
-                MANIFEST_TEST_PAGE_TITLE);
+        loadUrl(mServer.getURL(MASKABLE_MANIFEST_TEST_PAGE_PATH), MANIFEST_TEST_PAGE_TITLE);
         addShortcutToTab(mTab, "", true, AppType.SHORTCUT);
 
         Assert.assertTrue(mShortcutHelperDelegate.mRequestedShortcutAdaptable);
@@ -330,8 +331,7 @@ public class AddToHomescreenAddShortcutTest {
     @Feature("{Webapp}")
     public void testAddWebappShortcutAppInstalledEvent() throws Exception {
         loadUrl(
-                WebappTestPage.getTestUrlWithAction(
-                        mTestServerRule.getServer(), "verify_appinstalled"),
+                WebappTestPage.getTestUrlWithAction(mServer, "verify_appinstalled"),
                 WebappTestPage.PAGE_TITLE);
 
         addShortcutToTab(mTab, "", true, AppType.SHORTCUT);
