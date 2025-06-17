@@ -95,7 +95,7 @@ constexpr base::FeatureParam<PreloadTopChromeWebUIMode>::Option
 };
 const base::FeatureParam<PreloadTopChromeWebUIMode> kPreloadTopChromeWebUIMode{
     &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIModeName,
-    PreloadTopChromeWebUIMode::kPreloadOnMakeContents,
+    PreloadTopChromeWebUIMode::kPreloadOnWarmup,
     &kPreloadTopChromeWebUIModeOptions};
 
 const char kPreloadTopChromeWebUISmartPreloadName[] = "smart-preload";
