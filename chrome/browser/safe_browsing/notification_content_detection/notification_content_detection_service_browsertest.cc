@@ -87,8 +87,15 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionServiceFactoryBrowserTest,
                          browser()->profile()));
 }
 
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DisabledForIncognitoMode DISABLED_DisabledForIncognitoMode
+#else
+#define MAYBE_DisabledForIncognitoMode DisabledForIncognitoMode
+#endif
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionServiceFactoryBrowserTest,
-                       DisabledForIncognitoMode) {
+                       MAYBE_DisabledForIncognitoMode) {
   auto test_profile = TestingProfile::Builder().Build();
   TestingProfile* incognito =
       TestingProfile::Builder().BuildIncognito(test_profile.get());
