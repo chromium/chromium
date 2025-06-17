@@ -1431,7 +1431,8 @@ TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
   }
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+// TODO(crbug.com/421799257): Enable the tests on desktop android.
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests for supervised users (child accounts). Supervised users are not allowed
 // to install apps or extensions unless their parent approves.
@@ -1518,7 +1519,7 @@ TEST_F(ExtensionInfoGeneratorUnitTestSupervised,
   EXPECT_FALSE(info->disable_reasons.parent_disabled_permissions);
 }
 
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 
