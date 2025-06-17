@@ -3219,6 +3219,129 @@ TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
   EXPECT_EQ(layer_impl->should_check_backface_visibility(), kDefaultValue);
 }
 
+class LayerContextImplViewportPropertyIdsTest : public LayerContextImplTest {};
+
+TEST_F(LayerContextImplViewportPropertyIdsTest,
+       UpdateValidViewportPropertyIds) {
+  auto update = CreateDefaultUpdate();
+
+  // Add dummy nodes to ensure the IDs we use below are valid and unique.
+  for (int i = 0; i < 3; ++i) {
+    AddTransformNode(update.get(), cc::kRootPropertyNodeId);
+    AddClipNode(update.get(), cc::kRootPropertyNodeId);
+    AddScrollNode(update.get(), cc::kRootPropertyNodeId);
+  }
+
+  const int kOverscrollElasticityTransformId = 4;
+  const int kPageScaleTransformId = 5;
+  const int kInnerScrollId = 2;
+  const int kOuterClipId = 3;
+  const int kOuterScrollId = 4;
+
+  update->overscroll_elasticity_transform = kOverscrollElasticityTransformId;
+  update->page_scale_transform = kPageScaleTransformId;
+  update->inner_scroll = kInnerScrollId;
+  update->outer_clip = kOuterClipId;
+  update->outer_scroll = kOuterScrollId;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  const auto& viewport_property_ids =
+      layer_context_impl_->host_impl()->active_tree()->viewport_property_ids();
+  EXPECT_EQ(viewport_property_ids.overscroll_elasticity_transform,
+            kOverscrollElasticityTransformId);
+  EXPECT_EQ(viewport_property_ids.page_scale_transform, kPageScaleTransformId);
+  EXPECT_EQ(viewport_property_ids.inner_scroll, kInnerScrollId);
+  EXPECT_EQ(viewport_property_ids.outer_clip, kOuterClipId);
+  EXPECT_EQ(viewport_property_ids.outer_scroll, kOuterScrollId);
+}
+
+TEST_F(LayerContextImplViewportPropertyIdsTest,
+       UpdateViewportPropertyIdsWithInvalidInnerScroll) {
+  auto update = CreateDefaultUpdate();
+  update->inner_scroll = 99;  // Invalid ID
+  update->outer_clip = 1;
+  update->outer_scroll = 1;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid inner_scroll");
+}
+
+TEST_F(LayerContextImplViewportPropertyIdsTest,
+       UpdateViewportPropertyIdsWithInvalidOuter) {
+  auto update = CreateDefaultUpdate();
+  update->inner_scroll = 1;
+  update->outer_clip = 99;  // Invalid ID
+  update->outer_scroll = 1;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid outer_clip");
+
+  update = CreateDefaultUpdate();
+  update->inner_scroll = 1;
+  update->outer_clip = 1;
+  update->outer_scroll = 99;  // Invalid ID
+
+  result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid outer_scroll");
+}
+
+TEST_F(LayerContextImplViewportPropertyIdsTest,
+       UpdateViewportPropertyIdsToInvalid) {
+  auto update = CreateDefaultUpdate();
+  update->overscroll_elasticity_transform = cc::kInvalidPropertyNodeId;
+  update->page_scale_transform = cc::kInvalidPropertyNodeId;
+  update->inner_scroll = cc::kInvalidPropertyNodeId;
+  update->outer_clip = cc::kInvalidPropertyNodeId;
+  update->outer_scroll = cc::kInvalidPropertyNodeId;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  const auto& viewport_property_ids =
+      layer_context_impl_->host_impl()->active_tree()->viewport_property_ids();
+  EXPECT_EQ(viewport_property_ids.overscroll_elasticity_transform,
+            cc::kInvalidPropertyNodeId);
+  EXPECT_EQ(viewport_property_ids.page_scale_transform,
+            cc::kInvalidPropertyNodeId);
+  EXPECT_EQ(viewport_property_ids.inner_scroll, cc::kInvalidPropertyNodeId);
+  EXPECT_EQ(viewport_property_ids.outer_clip, cc::kInvalidPropertyNodeId);
+  EXPECT_EQ(viewport_property_ids.outer_scroll, cc::kInvalidPropertyNodeId);
+}
+
+TEST_F(LayerContextImplViewportPropertyIdsTest,
+       UpdateViewportPropertyIdsWithInvalidOverscrollElasticityTransform) {
+  auto update = CreateDefaultUpdate();
+  update->overscroll_elasticity_transform = 99;  // Invalid ID
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid overscroll_elasticity_transform");
+}
+
+TEST_F(LayerContextImplViewportPropertyIdsTest,
+       UpdateViewportPropertyIdsWithInvalidPageScaleTransform) {
+  auto update = CreateDefaultUpdate();
+  update->page_scale_transform = 99;  // Invalid ID
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid page_scale_transform");
+}
+
+TEST_F(LayerContextImplViewportPropertyIdsTest,
+       UpdateViewportPropertyIdsWithOuterScrollAndInvalidInnerScroll) {
+  auto update = CreateDefaultUpdate();
+  update->inner_scroll = cc::kInvalidPropertyNodeId;
+  update->outer_scroll = 1;
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Cannot set outer_clip or outer_scroll without valid inner_scroll");
+}
+
 // Test fixture for TileDisplayLayerImpl specific property updates.
 class LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest
     : public LayerContextImplLayerLifecycleTest {};
