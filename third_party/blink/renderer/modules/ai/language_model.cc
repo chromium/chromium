@@ -342,6 +342,18 @@ bool ParseConstraint(
   return true;
 }
 
+// Gets the stringified schema that should be used to append to the prompt.
+// Returns an empty string if no schema should be added to the prompt.
+WTF::String GetSchemaForInput(
+    const on_device_model::mojom::blink::ResponseConstraintPtr& constraint,
+    const LanguageModelPromptOptions* options) {
+  if (options->omitResponseConstraintInput() || !constraint ||
+      !constraint->is_json_schema()) {
+    return "";
+  }
+  return constraint->get_json_schema();
+}
+
 }  // namespace
 
 // static
@@ -591,8 +603,10 @@ ScriptPromise<IDLString> LanguageModel::prompt(
       WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
                          WrapPersistent(this)));
 
+  WTF::String json_schema = GetSchemaForInput(*processed_constraint, options);
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
+      json_schema,
       WTF::BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
                     WrapPersistent(script_state), WrapPersistent(resolver),
                     std::move(*processed_constraint),
@@ -625,8 +639,10 @@ ReadableStream* LanguageModel::promptStreaming(
       WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
                          WrapPersistent(this)));
 
+  WTF::String json_schema = GetSchemaForInput(*processed_constraint, options);
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
+      json_schema,
       WTF::BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
                     WrapPersistent(script_state), WrapPersistent(stream),
                     std::move(*processed_constraint), std::move(remote)),
@@ -772,6 +788,7 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
 
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
+      /*json_schema=*/"",
       WTF::BindOnce(&AppendClient::Create, WrapPersistent(script_state),
                     WrapPersistent(this), WrapPersistent(resolver),
                     WrapPersistent(signal),
@@ -848,6 +865,7 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
 
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
+      /*json_schema=*/"",
       WTF::BindOnce(&LanguageModel::ExecuteMeasureInputUsage,
                     WrapPersistent(this), WrapPersistent(resolver),
                     WrapPersistent(signal)),

@@ -31,9 +31,14 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 namespace {
+
+constexpr char kSchemaPrefix[] =
+    "\n\nRemember to respond in JSON that follows this \"JSON Schema\" "
+    "specification:\n";
 
 using ResolveCallback = base::OnceCallback<void(
     WTF::Vector<mojom::blink::AILanguageModelPromptPtr>)>;
@@ -100,6 +105,7 @@ class LanguageModelPromptBuilder
       AbortSignal* abort_signal,
       WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
       const V8LanguageModelPrompt* input,
+      const WTF::String& json_schema,
       ResolveCallback resolve_callback,
       RejectCallback reject_callback);
   void Trace(Visitor*) const override;
@@ -157,6 +163,7 @@ class LanguageModelPromptBuilder
   Member<ScriptState> script_state_;
   Member<AbortSignal> abort_signal_;
   WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types_;
+  WTF::String json_schema_;
 
   ResolveCallback resolve_callback_;
   RejectCallback reject_callback_;
@@ -167,11 +174,13 @@ LanguageModelPromptBuilder::LanguageModelPromptBuilder(
     AbortSignal* abort_signal,
     WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
     const V8LanguageModelPrompt* input,
+    const WTF::String& json_schema,
     ResolveCallback resolve_callback,
     RejectCallback reject_callback)
     : script_state_(script_state),
       abort_signal_(abort_signal),
       allowed_types_(allowed_types),
+      json_schema_(json_schema),
       resolve_callback_(std::move(resolve_callback)),
       reject_callback_(std::move(reject_callback)) {
   SetContextLifecycleNotifier(ExecutionContext::From(script_state));
@@ -195,6 +204,20 @@ void LanguageModelPromptBuilder::Resolve() {
   if (resolve_callback_.is_null() || reject_callback_.is_null() ||
       !script_state_->ContextIsValid()) {
     return;
+  }
+  if (!json_schema_.empty()) {
+    // Make sure the last prompt is a user prompt that the schema instructions
+    // get appended to.
+    if (processed_prompts_.empty() ||
+        processed_prompts_.back()->role !=
+            mojom::blink::AILanguageModelPromptRole::kUser) {
+      auto prompt = mojom::blink::AILanguageModelPrompt::New();
+      prompt->role = mojom::blink::AILanguageModelPromptRole::kUser;
+      processed_prompts_.push_back(std::move(prompt));
+    }
+    processed_prompts_.back()->content.push_back(
+        mojom::blink::AILanguageModelPromptContent::NewText(
+            StrCat({kSchemaPrefix, json_schema_})));
   }
   std::move(resolve_callback_).Run(std::move(processed_prompts_));
   Cleanup();
@@ -561,10 +584,11 @@ void ConvertPromptInputsToMojo(
     AbortSignal* abort_signal,
     const V8LanguageModelPrompt* input,
     WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
+    const WTF::String& json_schema,
     ResolveCallback resolve_callback,
     RejectCallback reject_callback) {
   MakeGarbageCollected<LanguageModelPromptBuilder>(
-      script_state, abort_signal, allowed_types, input,
+      script_state, abort_signal, allowed_types, input, json_schema,
       std::move(resolve_callback), std::move(reject_callback));
 }
 

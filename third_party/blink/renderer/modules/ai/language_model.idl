@@ -10,6 +10,7 @@ dictionary LanguageModelCloneOptions {
 
 dictionary LanguageModelPromptOptions {
   object responseConstraint;
+  boolean omitResponseConstraintInput = false;
   AbortSignal signal;
 };
 

@@ -24,6 +24,7 @@ void ConvertPromptInputsToMojo(
     AbortSignal* abort_signal,
     const V8LanguageModelPrompt* input,
     WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
+    const WTF::String& json_schema,
     base::OnceCallback<void(
         WTF::Vector<mojom::blink::AILanguageModelPromptPtr>)> resolved_callback,
     base::OnceCallback<void(const ScriptValue& error)> rejected_callback);

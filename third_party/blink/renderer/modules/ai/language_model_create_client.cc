@@ -152,7 +152,7 @@ void LanguageModelCreateClient::Create(
   ConvertPromptInputsToMojo(
       GetScriptState(), options_->getSignalOr(nullptr),
       MakeGarbageCollected<V8LanguageModelPrompt>(options_->initialPrompts()),
-      maybe_allowed_types,
+      maybe_allowed_types, /*json_schema=*/"",
       WTF::BindOnce(&LanguageModelCreateClient::OnInitialPromptsResolved,
                     WrapPersistent(this), std::move(expected_in),
                     std::move(expected_out)),
