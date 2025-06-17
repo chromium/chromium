@@ -23,8 +23,12 @@ component("url") {
   sources = [
     "gurl.cc",
     "gurl.h",
+    "gurl_debug.cc",
+    "gurl_debug.h",
     "origin.cc",
     "origin.h",
+    "origin_debug.cc",
+    "origin_debug.h",
     "scheme_host_port.cc",
     "scheme_host_port.h",
     "third_party/mozilla/url_parse.cc",

@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl_abstract_tests.h"
+#include "url/gurl_debug.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
 #include "url/url_test_utils.h"

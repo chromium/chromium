@@ -46,6 +46,7 @@
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/origin_debug.h"
 
 namespace network {
 

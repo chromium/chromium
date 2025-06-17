@@ -26,8 +26,7 @@
 #include "url/url_canon_stdstring.h"
 #include "url/url_util.h"
 
-GURL::GURL() : is_valid_(false) {
-}
+GURL::GURL() : is_valid_(false) {}
 
 GURL::GURL(const GURL& other)
     : spec_(other.spec_),
@@ -551,15 +550,3 @@ bool operator==(const GURL& x, std::string_view spec) {
          "the string is fully canonicalized.";
   return x.possibly_invalid_spec() == spec;
 }
-
-namespace url::debug {
-
-ScopedUrlCrashKey::ScopedUrlCrashKey(base::debug::CrashKeyString* crash_key,
-                                     const GURL& url)
-    : scoped_string_value_(
-          crash_key,
-          url.is_empty() ? "<empty url>" : url.possibly_invalid_spec()) {}
-
-ScopedUrlCrashKey::~ScopedUrlCrashKey() = default;
-
-}  // namespace url::debug

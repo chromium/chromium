@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin_abstract_tests.h"
+#include "url/origin_debug.h"
 #include "url/url_util.h"
 
 namespace url {

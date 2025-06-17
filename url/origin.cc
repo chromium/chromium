@@ -476,18 +476,4 @@ bool Origin::Nonce::operator==(const Origin::Nonce& other) const {
   return (other.token_ == token_) && !(token_.is_empty() && (&other != this));
 }
 
-namespace debug {
-
-ScopedOriginCrashKey::ScopedOriginCrashKey(
-    base::debug::CrashKeyString* crash_key,
-    const url::Origin* value)
-    : scoped_string_value_(
-          crash_key,
-          value ? value->GetDebugString(false /* include_nonce */)
-                : "nullptr") {}
-
-ScopedOriginCrashKey::~ScopedOriginCrashKey() = default;
-
-}  // namespace debug
-
 }  // namespace url

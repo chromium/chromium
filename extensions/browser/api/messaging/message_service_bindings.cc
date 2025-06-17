@@ -22,6 +22,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/trace_util.h"
+#include "url/origin_debug.h"
 
 using content::BrowserThread;
 using content::RenderProcessHost;
