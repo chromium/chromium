@@ -174,7 +174,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 // The Lens button. May be null if Lens is not available.
 @property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* lensButton;
-@property(nonatomic, strong, readwrite) UIView* voiceAndLensDivider;
+// The MIA button. May be null if MIA is not available.
+@property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* miaButton;
+@property(nonatomic, strong) UIView* voiceAndLensDivider;
+@property(nonatomic, strong) UIView* miaAndVoiceDivider;
 
 @property(nonatomic, strong, readwrite)
     ExtendedTouchTargetButton* voiceSearchButton;
@@ -366,6 +369,17 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
   ]];
 
+  const BOOL useInlineMIA =
+      self.isGoogleDefaultSearchEngine &&
+      GetNTPMIAEntrypointVariation() ==
+          NTPMIAEntrypointVariation::kOmniboxContainedInline;
+  if (useInlineMIA) {
+    self.miaButton =
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    [_buttonStack addArrangedSubview:self.miaButton];
+    [self addMIAAndVoiceDivider];
+  }
+
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
@@ -433,6 +447,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
           self.lensButton, 1 - _lastAnimationPercent);
     }
+  }
+
+  if (self.miaButton) {
+    content_suggestions::ConfigureInlineMIAButton(self.miaButton, useColorIcon);
   }
 }
 
@@ -594,6 +612,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                                                               1 - percent);
     // Hide divider when N badge is shown.
     self.voiceAndLensDivider.alpha = percent;
+    self.miaAndVoiceDivider.alpha = percent;
   }
 
   _lastAnimationPercent = percent;
@@ -873,8 +892,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
            endColor:BlendColors(FakeboxBottomColor(), pinnedColor, progress)];
 }
 
-// Adds a short vertical line between the mic and lens icons in the fakebox.
-- (void)addVoiceAndLensDivider {
+// Creates a thin grey divider that acts as a visual separator.
+- (UIView*)createDivider {
   UIView* divider = [[UIView alloc] init];
   divider.backgroundColor = [UIColor colorNamed:kGrey600Color];
   divider.translatesAutoresizingMaskIntoConstraints = NO;
@@ -884,7 +903,21 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [divider.heightAnchor constraintEqualToConstant:kIconDividerHeight],
     [divider.widthAnchor constraintEqualToConstant:dividerWidth],
   ]];
+
+  return divider;
+}
+
+// Adds a short vertical line between the mic and lens icons in the fakebox.
+- (void)addVoiceAndLensDivider {
+  UIView* divider = [self createDivider];
   self.voiceAndLensDivider = divider;
+  [_buttonStack addArrangedSubview:divider];
+}
+
+// Adds a short vertical line between the MIA and Voice icons in the fakebox.
+- (void)addMIAAndVoiceDivider {
+  UIView* divider = [self createDivider];
+  self.miaAndVoiceDivider = divider;
   [_buttonStack addArrangedSubview:divider];
 }
 

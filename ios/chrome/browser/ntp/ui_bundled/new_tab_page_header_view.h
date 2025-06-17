@@ -37,6 +37,9 @@
 // The button that opens Lens. May be nil if Lens is not enabled.
 @property(nonatomic, strong, readonly) UIButton* lensButton;
 
+// The button that opens MIA. May be nil if MIA is not enabled.
+@property(nonatomic, strong, readonly) UIButton* miaButton;
+
 // Fake cancel button, used for animations. Hidden by default.
 @property(nonatomic, strong) UIView* cancelButton;
 // Fake omnibox, used for animations. Hidden by default.
