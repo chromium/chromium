@@ -722,7 +722,7 @@
 <if expr="enable_extensions">
   <!-- Extensions Zero State Promo IPH -->
   <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER" desc="Header of the extensions zero state in-product help promo.">
-    Supercharge your browser with extensions and themes
+    Enhance your browser with extensions
   </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
     Extensions are add-ons for Chrome that can help you do more
