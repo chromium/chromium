@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
@@ -731,7 +732,13 @@ BASE_FEATURE_ENUM_PARAM(
 // window's top-level site.
 BASE_FEATURE(kEnforceNoopenerOnBlobURLNavigation,
              "EnforceNoopenerOnBlobURLNavigation",
+// TODO(crbug.com/421810301): Temporarily disable this feature on ChromeOS due
+// to a regression.
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource,
              "EventTimingIgnorePresentationTimeFromUnexpectedFrameSource",
