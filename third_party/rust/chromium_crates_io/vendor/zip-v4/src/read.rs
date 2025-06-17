@@ -24,7 +24,7 @@ use std::fs::create_dir_all;
 use std::io::{self, copy, prelude::*, sink, SeekFrom};
 use std::mem;
 use std::mem::size_of;
-use std::ops::Deref;
+use std::ops::{Deref, Range};
 use std::path::{Component, Path, PathBuf};
 use std::sync::{Arc, OnceLock};
 
@@ -34,9 +34,6 @@ pub use config::*;
 
 /// Provides high level API for reading from a stream.
 pub(crate) mod stream;
-
-#[cfg(feature = "lzma")]
-pub(crate) mod lzma;
 
 pub(crate) mod magic_finder;
 
@@ -499,9 +496,6 @@ impl<'a> TryFrom<&'a CentralDirectoryEndInfo> for CentralDirectoryInfo {
                 Some(DataAndPosition { data: eocd64, .. }) => {
                     if eocd64.number_of_files_on_this_disk > eocd64.number_of_files {
                         return Err(invalid!("ZIP64 footer indicates more files on this disk than in the whole archive"));
-                    } else if eocd64.version_needed_to_extract > eocd64.version_made_by {
-                        return Err(invalid!("ZIP64 footer indicates a new version is needed to extract this archive than the \
-                                                         version that wrote it"));
                     }
                     (
                         eocd64.central_directory_offset,
@@ -972,6 +966,28 @@ impl<R: Read + Seek> ZipArchive<R> {
         self.shared.files.keys().map(|s| s.as_ref())
     }
 
+    /// Returns Ok(true) if any compressed data in this archive belongs to more than one file. This
+    /// doesn't make the archive invalid, but some programs will refuse to decompress it because the
+    /// copies would take up space independently in the destination.
+    pub fn has_overlapping_files(&mut self) -> ZipResult<bool> {
+        let mut ranges = Vec::<Range<u64>>::with_capacity(self.shared.files.len());
+        for file in self.shared.files.values() {
+            if file.compressed_size == 0 {
+                continue;
+            }
+            let start = file.data_start(&mut self.reader)?;
+            let end = start + file.compressed_size;
+            if ranges
+                .iter()
+                .any(|range| range.start <= end && start <= range.end)
+            {
+                return Ok(true);
+            }
+            ranges.push(start..end);
+        }
+        Ok(false)
+    }
+
     /// Search for a file entry by name, decrypt with given password
     ///
     /// # Warning
@@ -985,12 +1001,12 @@ impl<R: Read + Seek> ZipArchive<R> {
     /// There are many passwords out there that will also pass the validity checks
     /// we are able to perform. This is a weakness of the ZipCrypto algorithm,
     /// due to its fairly primitive approach to cryptography.
-    pub fn by_name_decrypt(&mut self, name: &str, password: &[u8]) -> ZipResult<ZipFile<R>> {
+    pub fn by_name_decrypt(&mut self, name: &str, password: &[u8]) -> ZipResult<ZipFile<'_, R>> {
         self.by_name_with_optional_password(name, Some(password))
     }
 
     /// Search for a file entry by name
-    pub fn by_name(&mut self, name: &str) -> ZipResult<ZipFile<R>> {
+    pub fn by_name(&mut self, name: &str) -> ZipResult<ZipFile<'_, R>> {
         self.by_name_with_optional_password(name, None)
     }
 
@@ -1016,12 +1032,12 @@ impl<R: Read + Seek> ZipArchive<R> {
     }
 
     /// Search for a file entry by name and return a seekable object.
-    pub fn by_name_seek(&mut self, name: &str) -> ZipResult<ZipFileSeek<R>> {
+    pub fn by_name_seek(&mut self, name: &str) -> ZipResult<ZipFileSeek<'_, R>> {
         self.by_index_seek(self.index_for_name(name).ok_or(ZipError::FileNotFound)?)
     }
 
     /// Search for a file entry by index and return a seekable object.
-    pub fn by_index_seek(&mut self, index: usize) -> ZipResult<ZipFileSeek<R>> {
+    pub fn by_index_seek(&mut self, index: usize) -> ZipResult<ZipFileSeek<'_, R>> {
         let reader = &mut self.reader;
         self.shared
             .files
@@ -2160,10 +2176,10 @@ mod test {
     fn test_is_symlink() -> std::io::Result<()> {
         let mut v = Vec::new();
         v.extend_from_slice(include_bytes!("../tests/data/symlink.zip"));
-        let mut reader = ZipArchive::new(Cursor::new(v)).unwrap();
-        assert!(reader.by_index(0).unwrap().is_symlink());
+        let mut reader = ZipArchive::new(Cursor::new(v))?;
+        assert!(reader.by_index(0)?.is_symlink());
         let tempdir = TempDir::with_prefix("test_is_symlink")?;
-        reader.extract(&tempdir).unwrap();
+        reader.extract(&tempdir)?;
         assert!(tempdir.path().join("bar").is_symlink());
         Ok(())
     }
@@ -2233,8 +2249,7 @@ mod test {
         writer.add_symlink("symlink/", "../dest-sibling/", SimpleFileOptions::default())?;
         writer.start_file("symlink/dest-file", SimpleFileOptions::default())?;
         let mut reader = writer.finish_into_readable()?;
-        let dest_parent =
-            TempDir::with_prefix("read__test_cannot_symlink_outside_destination").unwrap();
+        let dest_parent = TempDir::with_prefix("read__test_cannot_symlink_outside_destination")?;
         let dest_sibling = dest_parent.path().join("dest-sibling");
         create_dir(&dest_sibling)?;
         let dest = dest_parent.path().join("dest");
@@ -2249,7 +2264,7 @@ mod test {
         let mut v = Vec::new();
         v.extend_from_slice(include_bytes!("../tests/data/mimetype.zip"));
         let mut reader = ZipArchive::new(Cursor::new(v))?;
-        let dest = TempDir::with_prefix("read__test_can_create_destination").unwrap();
+        let dest = TempDir::with_prefix("read__test_can_create_destination")?;
         reader.extract(&dest)?;
         assert!(dest.path().join("mimetype").exists());
         Ok(())

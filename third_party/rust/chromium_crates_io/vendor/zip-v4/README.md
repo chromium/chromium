@@ -73,26 +73,22 @@ See the [examples directory](examples) for:
 Fuzzing
 -------
 
-Fuzzing support is through [cargo fuzz](https://github.com/rust-fuzz/cargo-fuzz). To install cargo fuzz:
+Fuzzing support is through [cargo afl](https://rust-fuzz.github.io/book/afl.html). To install cargo afl:
 
 ```bash
-cargo install cargo-fuzz
-```
-
-To list fuzz targets:
-
-```bash
-cargo +nightly fuzz list
+cargo install cargo-afl
 ```
 
 To start fuzzing zip extraction:
 
 ```bash
-cargo +nightly fuzz run fuzz_read
+cargo +nightly afl build --all-features --manifest-path fuzz_read/Cargo.toml
+cargo +nightly afl run fuzz_read/target/debug/fuzz_read
 ```
 
 To start fuzzing zip creation:
 
 ```bash
-cargo +nightly fuzz run fuzz_write
+cargo +nightly afl build --all-features --manifest-path fuzz_write/Cargo.toml
+cargo +nightly afl run fuzz_write/target/debug/fuzz_write
 ```

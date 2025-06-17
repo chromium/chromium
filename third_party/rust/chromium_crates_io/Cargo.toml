@@ -116,6 +116,6 @@ version = "0.0.9"
 features = ["compiled_data"]
 
 [dependencies.zip]
-version = "3.0.0"
+version = "4.1.0"
 default-features = false
 features = ["deflate-flate2"]

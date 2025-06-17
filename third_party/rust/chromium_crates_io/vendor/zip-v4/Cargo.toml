@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.75.0"
 name = "zip"
-version = "3.0.0"
+version = "4.1.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -56,15 +56,15 @@ rustdoc-args = [
 _all-features = []
 _deflate-any = []
 aes-crypto = [
-    "aes",
-    "constant_time_eq",
+    "dep:aes",
+    "dep:constant_time_eq",
     "hmac",
     "pbkdf2",
     "sha1",
     "getrandom",
     "zeroize",
 ]
-chrono = ["chrono/default"]
+chrono = ["dep:chrono"]
 default = [
     "aes-crypto",
     "bzip2",
@@ -92,14 +92,14 @@ deflate-flate2-zlib-rs = [
     "flate2/zlib-rs",
 ]
 deflate-zopfli = [
-    "zopfli",
+    "dep:zopfli",
     "_deflate-any",
 ]
 jiff-02 = ["dep:jiff"]
-lzma = ["lzma-rs/stream"]
+lzma = ["dep:liblzma"]
 nt-time = ["dep:nt-time"]
 unreserved = []
-xz = ["dep:xz2"]
+xz = ["dep:liblzma"]
 
 [lib]
 name = "zip"
@@ -133,7 +133,7 @@ version = "0.4"
 optional = true
 
 [dependencies.constant_time_eq]
-version = "0.3"
+version = "0.3.1"
 optional = true
 
 [dependencies.crc32fast]
@@ -168,10 +168,9 @@ version = "2"
 version = "0.2.4"
 optional = true
 
-[dependencies.lzma-rs]
-version = "0.3"
+[dependencies.liblzma]
+version = "0.4.1"
 optional = true
-default-features = false
 
 [dependencies.memchr]
 version = "2.7"
@@ -194,10 +193,6 @@ version = "0.3.37"
 features = ["std"]
 optional = true
 default-features = false
-
-[dependencies.xz2]
-version = "0.1.7"
-optional = true
 
 [dependencies.zeroize]
 version = "1.8"

@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.1.0](https://github.com/zip-rs/zip2/compare/v4.0.0...v4.1.0) - 2025-06-14
+
+### <!-- 0 -->🚀 Features
+
+- Add has_overlapping_files method
+
+## [4.0.0](https://github.com/zip-rs/zip2/compare/v3.0.0...v4.0.0) - 2025-05-21
+
+### <!-- 1 -->🐛 Bug Fixes
+
+- Allow extraction of Zip64 where "Version needed to extract" is higher than "Version made by" ([#356](https://github.com/zip-rs/zip2/pull/356))
+
+### <!-- 7 -->⚙️ Miscellaneous Tasks
+
+- Revert nt-time upgrade (would increase MSRV)
+- Revert constant_time_eq update (would increase MSRV)
+- Update fully-qualified names of liblzma imports
+
 ## [3.0.0](https://github.com/zip-rs/zip2/compare/v2.6.1...v3.0.0) - 2025-05-14
 
 ### <!-- 1 -->🐛 Bug Fixes

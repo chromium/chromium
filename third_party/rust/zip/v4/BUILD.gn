@@ -10,32 +10,31 @@ import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
   crate_name = "zip"
-  epoch = "3"
+  epoch = "4"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/aes.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/aes_ctr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/compression.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/cp437.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/crc32.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/extra_fields/extended_timestamp.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/extra_fields/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/extra_fields/ntfs.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/extra_fields/zipinfo_utf8.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/path.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read/config.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read/lzma.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read/magic_finder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read/stream.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/result.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/spec.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/types.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/unstable.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/write.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/zipcrypto.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/aes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/aes_ctr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/compression.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/cp437.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/crc32.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/extra_fields/extended_timestamp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/extra_fields/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/extra_fields/ntfs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/extra_fields/zipinfo_utf8.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/path.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/read/config.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/read/magic_finder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/read/stream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/result.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/spec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/unstable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/write.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v4/src/zipcrypto.rs",
   ]
   inputs = []
 
@@ -45,7 +44,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "zip"
   cargo_pkg_description =
       "Library to support the reading and writing of zip files."
-  cargo_pkg_version = "3.0.0"
+  cargo_pkg_version = "4.1.0"
 
   allow_unsafe = true
 

@@ -50,6 +50,6 @@ rust_static_library("zip_ffi_glue") {
   visibility = [ ":utils" ]
   deps = [
     "//third_party/rust/anyhow/v1:lib",
-    "//third_party/rust/zip/v3:lib",
+    "//third_party/rust/zip/v4:lib",
   ]
 }
