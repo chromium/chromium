@@ -62,6 +62,16 @@ def add_common_args(parser):
                       '-f',
                       action='store_true',
                       help='Skip all prompts about config mismatches.')
+  parser.add_argument('-n',
+                      type=int,
+                      default=1,
+                      help='Runs the build/test command N times without '
+                      'cleaning the build dir, and exits on the first failure. '
+                      'Note that this is different from passing in a test arg '
+                      'like `--gtest_repeat=N`, as that will run the same test '
+                      'cases N times in the same test invocation. This arg '
+                      'runs the entire end-to-end compile-and-test invocation '
+                      'N times.')
   parser.add_argument('--test',
                       '-t',
                       action='append',
@@ -223,7 +233,7 @@ def parse_args(args=None):
 
 def main():
   telemetry.initialize('chromium.tools.utr')
-  _main_impl()
+  return _main_impl()
 
 
 @tracer.start_as_current_span('chromium.tools.utr.main')
@@ -267,30 +277,34 @@ def _main_impl():
     recipes_path = args.recipe_dir.joinpath('recipes')
   skip_compile = args.run_mode == 'test'
   skip_test = args.run_mode == 'compile'
-  recipe_runner = recipe.LegacyRunner(
-      recipes_path,
-      builder_props,
-      project,
-      args.bucket,
-      args.builder,
-      args.tests,
-      skip_compile,
-      skip_test,
-      args.force,
-      build_dir,
-      additional_test_args=None if skip_test else args.additional_test_args,
-      swarming_dimensions=args.dimensions,
-      swarming_shards=args.shards,
-      reuse_task=args.reuse_task,
-      skip_coverage=not skip_compile and args.no_coverage_instrumentation,
-      no_rbe=not skip_compile and args.no_rbe,
-      no_siso=args.no_siso,
-  )
-  exit_code, error_msg = recipe_runner.run_recipe(
-      filter_stdout=args.verbosity < 2)
-  if error_msg:
-    logging.error('\nUTR failure:')
-    logging.error(error_msg)
+  for _ in range(args.n):
+    recipe_runner = recipe.LegacyRunner(
+        recipes_path,
+        builder_props,
+        project,
+        args.bucket,
+        args.builder,
+        args.tests,
+        skip_compile,
+        skip_test,
+        args.force,
+        build_dir,
+        additional_test_args=None if skip_test else args.additional_test_args,
+        swarming_dimensions=args.dimensions,
+        swarming_shards=args.shards,
+        reuse_task=args.reuse_task,
+        skip_coverage=not skip_compile and args.no_coverage_instrumentation,
+        no_rbe=not skip_compile and args.no_rbe,
+        no_siso=args.no_siso,
+    )
+    exit_code, error_msg = recipe_runner.run_recipe(
+        filter_stdout=args.verbosity < 2)
+    if error_msg:
+      logging.error('\nUTR failure:')
+      logging.error(error_msg)
+    if exit_code:
+      break
+
   maybe_print_survey_link()
   return exit_code
 
