@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/tracing.h"
@@ -233,18 +234,48 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
 
     // TODO(crbug.com/346835898): Add a NetLog to record ECH retry configs.
 
-    // Reset states.
-    tcp_handshake_completed_ = false;
-    tls_handshake_started_ = false;
-    ssl_socket_.reset();
-    ssl_cert_request_info_.reset();
-
+    ResetStateForRestart();
     next_state_ = State::kTcpAttempt;
     return OK;
   }
 
+  // If we got a certificate error and the server advertised some Trust Anchor
+  // IDs in the handshake that we trust, then retry the connection, using the
+  // fresh Trust Anchor IDs from the server. We only want to retry once; if we
+  // have we already retried, so we skip all of this and treat the connection
+  // error as usual.
+  //
+  // TODO(https://crbug.com/399937371): clarify and test the interactions of ECH
+  // retry and TAI retry.
+  if (IsCertificateError(rv) && !retried_for_trust_anchor_ids_ &&
+      base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+    CHECK(ssl_socket_);
+
+    std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
+        ssl_socket_->GetServerTrustAnchorIDsForRetry();
+    // https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-retry-mechanism:
+    // If the EncryptedExtensions had no trust_anchor extension, or no match was
+    // found, the client returns the error to the application.
+    if (!server_trust_anchor_ids.empty()) {
+      std::vector<uint8_t> trust_anchor_ids_for_retry =
+          SSLConfig::SelectTrustAnchorIDs(
+              server_trust_anchor_ids,
+              params().ssl_client_context->config().trust_anchor_ids);
+      if (!trust_anchor_ids_for_retry.empty()) {
+        retried_for_trust_anchor_ids_ = true;
+        ssl_config_->trust_anchor_ids = trust_anchor_ids_for_retry;
+
+        ResetStateForRestart();
+        next_state_ = State::kTcpAttempt;
+        return OK;
+      }
+    }
+  }
+
   const bool is_ech_capable =
       ssl_config_ && !ssl_config_->ech_config_list.empty();
+  // TODO(crbug.com/422931824): pass in Trust Anchor IDs info and record
+  // TAI-specific metrics.
   SSLClientSocket::RecordSSLConnectResult(ssl_socket_.get(), rv, is_ech_capable,
                                           ech_enabled, ech_retry_configs_,
                                           connect_timing());
@@ -272,6 +303,13 @@ void TlsStreamAttempt::MaybeRecordTlsHandshakeEnd(int rv) {
     return;
   }
   TRACE_EVENT_END("net.stream", track(), "result", rv);
+}
+
+void TlsStreamAttempt::ResetStateForRestart() {
+  tcp_handshake_completed_ = false;
+  tls_handshake_started_ = false;
+  ssl_socket_.reset();
+  ssl_cert_request_info_.reset();
 }
 
 }  // namespace net

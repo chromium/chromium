@@ -294,6 +294,12 @@ ServiceEndpointBuilder& ServiceEndpointBuilder::set_ech_config_list(
   return *this;
 }
 
+ServiceEndpointBuilder& ServiceEndpointBuilder::set_trust_anchor_ids(
+    std::vector<std::vector<uint8_t>> trust_anchor_ids) {
+  endpoint_.metadata.trust_anchor_ids = std::move(trust_anchor_ids);
+  return *this;
+}
+
 // static
 std::unique_ptr<FakeStreamSocket> FakeStreamSocket::CreateForSpdy() {
   auto stream = std::make_unique<FakeStreamSocket>();

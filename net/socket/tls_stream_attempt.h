@@ -113,6 +113,8 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   void MaybeRecordTlsHandshakeEnd(int rv);
 
+  void ResetStateForRestart();
+
   State next_state_ = State::kNone;
   const HostPortPair host_port_pair_;
   const raw_ptr<Delegate> delegate_;
@@ -127,6 +129,10 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   std::optional<SSLConfig> ssl_config_;
   std::optional<std::vector<uint8_t>> ech_retry_configs_;
+  // Set to true when the TlsStreamAttempt retries itself after receiving a
+  // certificate error when sending TLS Trust Anchor IDs. Used to ensure that we
+  // only retry once per connection attempt.
+  bool retried_for_trust_anchor_ids_ = false;
 
   base::WeakPtrFactory<TlsStreamAttempt> weak_ptr_factory_{this};
 };

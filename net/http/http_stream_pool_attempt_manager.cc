@@ -424,10 +424,6 @@ HttpStreamPool::AttemptManager::GetSSLConfig(const IPEndPoint& ip_endpoint) {
   ssl_config.early_data_enabled =
       http_network_session()->params().enable_early_data;
 
-  if (!IsEchEnabled()) {
-    return ssl_config;
-  }
-
   const bool svcb_optional = IsSvcbOptional();
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
     if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
@@ -437,7 +433,18 @@ HttpStreamPool::AttemptManager::GetSSLConfig(const IPEndPoint& ip_endpoint) {
                                                       ? endpoint.ipv4_endpoints
                                                       : endpoint.ipv6_endpoints;
     if (base::Contains(ip_endpoints, ip_endpoint)) {
-      ssl_config.ech_config_list = endpoint.metadata.ech_config_list;
+      if (IsEchEnabled()) {
+        ssl_config.ech_config_list = endpoint.metadata.ech_config_list;
+      }
+      if (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs) &&
+          !endpoint.metadata.trust_anchor_ids.empty()) {
+        ssl_config.trust_anchor_ids =
+            SSLConfig::SelectTrustAnchorIDs(endpoint.metadata.trust_anchor_ids,
+                                            pool()
+                                                ->stream_attempt_params()
+                                                ->ssl_client_context->config()
+                                                .trust_anchor_ids);
+      }
       return ssl_config;
     }
   }
