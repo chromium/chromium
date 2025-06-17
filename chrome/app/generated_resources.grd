@@ -18944,6 +18944,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
+    <!-- Multi Capture -->
+    <if expr="is_chromeos">
+      <message name="IDS_MULTI_CAPTURE_MAY_CAPTURE_NOTIFICATION_MESSAGE" desc="String notifying that the screens may be captured.">
+      {NUM_APPS, plural, offset:2
+          =1 {Your administrator can record your screen anytime with <ph name="APP0_NAME">{APP0_NAME}</ph>. You will be notified when the recording starts.}
+          =2 {Your administrator can record your screen anytime with <ph name="APP0_NAME">{APP0_NAME}</ph> and <ph name="APP1_NAME">{APP1_NAME}</ph>. You will be notified when the recording starts.}
+          =3 {Your administrator can record your screen anytime with <ph name="APP0_NAME">{APP0_NAME}</ph>, <ph name="APP1_NAME">{APP1_NAME}</ph> and one other app. You will be notified when the recording starts.}
+          other {Your administrator can record your screen anytime with <ph name="APP0_NAME">{APP0_NAME}</ph>, <ph name="APP1_NAME">{APP1_NAME}</ph> and # other apps. You will be notified when the recording starts.}
+        }
+      </message>
+    </if>
 
   <message name="IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE" desc="The title for the notification sent by Chrome informing the user that their decision to never show warnings for the url has been applied.">
     Always allow
