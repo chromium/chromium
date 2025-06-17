@@ -16346,6 +16346,21 @@
             ]
         }
     ],
+    "OzonePlatformAutoExternal": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OverrideDefaultOzonePlatformHintToAuto"
+                    ]
+                }
+            ]
+        }
+    ],
     "PWAIconAndTitleInNativeNotificationsWin": [
         {
             "platforms": [
