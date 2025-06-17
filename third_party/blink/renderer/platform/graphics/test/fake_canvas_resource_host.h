@@ -68,7 +68,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
           gfx::ColorSpace::CreateSRGB(), kShouldInitialize, this);
     }
 
-    ReplaceResourceProvider(std::move(provider));
+    SetResourceProviderWithoutContextCheck(std::move(provider));
 
     return GetResourceProviderForCanvas2D();
   }
