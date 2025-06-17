@@ -24,6 +24,7 @@
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/mirror_layer_impl.h"
+#include "cc/layers/nine_patch_layer_impl.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
@@ -83,6 +84,10 @@ base::expected<void, std::string> CreateLayer(
 
     case cc::mojom::LayerType::kMirror:
       layer = cc::MirrorLayerImpl::Create(&tree, id);
+      break;
+
+    case cc::mojom::LayerType::kNinePatch:
+      layer = cc::NinePatchLayerImpl::Create(&tree, id);
       break;
 
     case cc::mojom::LayerType::kNinePatchThumbScrollbar: {
@@ -499,6 +504,20 @@ void UpdateMirrorLayerExtra(const mojom::MirrorLayerExtraPtr& extra,
   layer.SetMirroredLayerId(extra->mirrored_layer_id);
 }
 
+base::expected<void, std::string> UpdateNinePatchLayerExtra(
+    const mojom::NinePatchLayerExtraPtr& extra,
+    cc::NinePatchLayerImpl& layer) {
+  if (!extra->ui_resource_id) {
+    return base::unexpected("Invalid ui_resource_id for NinePatchLayerImpl");
+  }
+  layer.SetUIResourceId(extra->ui_resource_id);
+  layer.SetImageBounds(extra->image_bounds);
+  layer.SetLayout(extra->image_aperture, extra->border, extra->layer_occlusion,
+                  extra->fill_center);
+  layer.SetUV(extra->uv_top_left, extra->uv_bottom_right);
+  return base::ok();
+}
+
 void UpdateTextureLayerExtra(const mojom::TextureLayerExtraPtr& extra,
                              cc::TextureLayerImpl& layer) {
   layer.SetBlendBackgroundColor(extra->blend_background_color);
@@ -524,13 +543,16 @@ void UpdateTextureLayerExtra(const mojom::TextureLayerExtraPtr& extra,
   }
 }
 
-void UpdateUIResourceLayerExtra(const mojom::UIResourceLayerExtraPtr& extra,
-                                cc::UIResourceLayerImpl& layer) {
-  layer.SetUIResourceId(extra->ui_resource_id);
-  if (extra->ui_resource_id) {
-    layer.SetImageBounds(extra->image_bounds);
+base::expected<void, std::string> UpdateUIResourceLayerExtra(
+    const mojom::UIResourceLayerExtraPtr& extra,
+    cc::UIResourceLayerImpl& layer) {
+  if (!extra->ui_resource_id) {
+    return base::unexpected("Invalid ui_resource_id for UIResourceLayerImpl");
   }
+  layer.SetUIResourceId(extra->ui_resource_id);
+  layer.SetImageBounds(extra->image_bounds);
   layer.SetUV(extra->uv_top_left, extra->uv_bottom_right);
+  return base::ok();
 }
 
 void UpdateScrollbarLayerBaseExtra(
@@ -713,6 +735,14 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
       UpdateMirrorLayerExtra(wire.layer_extra->get_mirror_layer_extra(),
                              static_cast<cc::MirrorLayerImpl&>(layer));
       break;
+    case cc::mojom::LayerType::kNinePatch:
+      RETURN_IF_FALSE(
+          wire.layer_extra && wire.layer_extra->is_nine_patch_layer_extra(),
+          "Invalid layer_extra type for NinePatchLayerImpl");
+      RETURN_IF_ERROR(UpdateNinePatchLayerExtra(
+          wire.layer_extra->get_nine_patch_layer_extra(),
+          static_cast<cc::NinePatchLayerImpl&>(layer)));
+      break;
     case cc::mojom::LayerType::kNinePatchThumbScrollbar:
       RETURN_IF_FALSE(
           wire.layer_extra &&
@@ -765,9 +795,9 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
       RETURN_IF_FALSE(
           wire.layer_extra && wire.layer_extra->is_ui_resource_layer_extra(),
           "Invalid layer_extra type for UIResourceLayerImpl");
-      UpdateUIResourceLayerExtra(
+      RETURN_IF_ERROR(UpdateUIResourceLayerExtra(
           wire.layer_extra->get_ui_resource_layer_extra(),
-          static_cast<cc::UIResourceLayerImpl&>(layer));
+          static_cast<cc::UIResourceLayerImpl&>(layer)));
       break;
     case cc::mojom::LayerType::kViewTransitionContent:
       RETURN_IF_FALSE(

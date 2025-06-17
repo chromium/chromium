@@ -193,6 +193,22 @@ struct ViewTransitionContentLayerExtra {
   gfx.mojom.RectF max_extents_rect;
 };
 
+// Extra fields in a cc::NinePatchLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct NinePatchLayerExtra {
+  // From NinePatchLayer quad_generator_ properties
+  gfx.mojom.Rect image_aperture;
+  gfx.mojom.Rect border;
+  gfx.mojom.Rect layer_occlusion;
+  bool fill_center;
+
+  // From UIResourceLayer properties
+  cc.mojom.UIResourceId ui_resource_id;
+  gfx.mojom.Size image_bounds;
+  gfx.mojom.PointF uv_top_left;
+  gfx.mojom.PointF uv_bottom_right;
+};
+
 
 // Extra properties that are specific to a LayerImpl type.
 union LayerExtra {
@@ -214,6 +230,8 @@ union LayerExtra {
   TileDisplayLayerExtra tile_display_layer_extra;
   // Extra properties that are specific to ViewTransitionContentLayerImpl.
   ViewTransitionContentLayerExtra view_transition_content_layer_extra;
+  // Extra properties that are specific to NinePatchLayerImpl.
+  NinePatchLayerExtra nine_patch_layer_extra;
 };
 
 // Details about a cc::LayerImpl that has been added to a tree or modified in

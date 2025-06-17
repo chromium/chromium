@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "cc/layers/mirror_layer_impl.h"
+#include "cc/layers/nine_patch_layer_impl.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
@@ -135,10 +136,20 @@ const std::optional<SkColor4f> kDefaultTileDisplaySolidColor = std::nullopt;
 const bool kDefaultTileDisplayIsBackdropFilterMask = false;
 
 // Default UIResourceLayer property values
-const cc::UIResourceId kDefaultUIResourceId = 123u;
-const gfx::Size kDefaultUIResourceImageBounds(100, 200);
-const gfx::PointF kDefaultUIResourceUVTopLeft(0.f, 0.f);
-const gfx::PointF kDefaultUIResourceUVBottomRight(1.f, 1.f);
+const cc::UIResourceId kDefaultUIResourceId = 12;
+const gfx::Size kDefaultUIResourceImageBounds = gfx::Size();
+const gfx::PointF kDefaultUIResourceUVTopLeft = gfx::PointF(0.0f, 0.0f);
+const gfx::PointF kDefaultUIResourceUVBottomRight = gfx::PointF(1.0f, 1.0f);
+
+// Default NinePatchLayer property values
+const gfx::Rect kDefaultNinePatchAperture = gfx::Rect();
+const gfx::Rect kDefaultNinePatchBorder = gfx::Rect();
+const gfx::Rect kDefaultNinePatchLayerOcclusion = gfx::Rect();
+const bool kDefaultNinePatchFillCenter = false;
+const cc::UIResourceId kDefaultNinePatchUIResourceId = 23;
+const gfx::Size kDefaultNinePatchImageBounds = gfx::Size();
+const gfx::PointF kDefaultNinePatchUVTopLeft = gfx::PointF(0.0f, 0.0f);
+const gfx::PointF kDefaultNinePatchUVBottomRight = gfx::PointF(1.0f, 1.0f);
 
 class LayerContextImplTest : public testing::Test {
  public:
@@ -368,6 +379,18 @@ class LayerContextImplTest : public testing::Test {
         extra->mirrored_layer_id = kDefaultMirrorLayerMirroredLayerId;
         return mojom::LayerExtra::NewMirrorLayerExtra(std::move(extra));
       }
+      case cc::mojom::LayerType::kNinePatch: {
+        auto extra = mojom::NinePatchLayerExtra::New();
+        extra->image_aperture = kDefaultNinePatchAperture;
+        extra->border = kDefaultNinePatchBorder;
+        extra->layer_occlusion = kDefaultNinePatchLayerOcclusion;
+        extra->fill_center = kDefaultNinePatchFillCenter;
+        extra->ui_resource_id = kDefaultNinePatchUIResourceId;
+        extra->image_bounds = kDefaultNinePatchImageBounds;
+        extra->uv_top_left = kDefaultNinePatchUVTopLeft;
+        extra->uv_bottom_right = kDefaultNinePatchUVBottomRight;
+        return mojom::LayerExtra::NewNinePatchLayerExtra(std::move(extra));
+      }
       case cc::mojom::LayerType::kPaintedScrollbar: {
         auto extra = mojom::PaintedScrollbarLayerExtra::New();
         extra->scrollbar_base_extra = CreateDefaultScrollbarBaseExtra();
@@ -416,6 +439,10 @@ class LayerContextImplTest : public testing::Test {
       }
       case cc::mojom::LayerType::kUIResource: {
         auto extra = mojom::UIResourceLayerExtra::New();
+        extra->ui_resource_id = kDefaultUIResourceId;
+        extra->image_bounds = kDefaultUIResourceImageBounds;
+        extra->uv_top_left = kDefaultUIResourceUVTopLeft;
+        extra->uv_bottom_right = kDefaultUIResourceUVBottomRight;
         return mojom::LayerExtra::NewUiResourceLayerExtra(std::move(extra));
       }
 
@@ -1818,6 +1845,8 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
         return "LayerImpl";
       case cc::mojom::LayerType::kMirror:
         return "MirrorLayerImpl";
+      case cc::mojom::LayerType::kNinePatch:
+        return "NinePatchLayerImpl";
       case cc::mojom::LayerType::kNinePatchThumbScrollbar:
         return "NinePatchThumbScrollbarLayerImpl";
       case cc::mojom::LayerType::kPaintedScrollbar:
@@ -1897,49 +1926,26 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
   }
 };
 
-TEST_F(LayerContextImplLayerLifecycleTest, UpdateUIResourceLayer) {
-  const cc::UIResourceId kUpdatedUIResourceId = 321u;
+class LayerContextImplUpdateDisplayTreeUIResourceLayerTest
+    : public LayerContextImplLayerLifecycleTest {
+ protected:
+  cc::UIResourceLayerImpl* GetUIResourceLayerFromActiveTree(int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (layer && layer->GetLayerType() == cc::mojom::LayerType::kUIResource) {
+      return static_cast<cc::UIResourceLayerImpl*>(layer);
+    }
+    return nullptr;
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeUIResourceLayerTest,
+       CreateAndUpdateUIResourceLayer) {
+  const cc::UIResourceId kUpdatedUIResourceId = 321;
   const gfx::Size kUpdatedUIResourceImageBounds(50, 100);
+  const gfx::PointF kUpdatedUIResourceUVTopLeft = gfx::PointF(0.1f, 0.2f);
+  const gfx::PointF kUpdatedUIResourceUVBottomRight = gfx::PointF(0.9f, 0.8f);
 
-  // First, create the layer.
-  auto update = CreateDefaultUpdate();
-  int layer_id =
-      AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kUIResource);
-
-  auto ui_resource_extra = mojom::UIResourceLayerExtra::New();
-  ui_resource_extra->ui_resource_id = kDefaultUIResourceId;
-  ui_resource_extra->image_bounds = kDefaultUIResourceImageBounds;
-  update->layers.back()->layer_extra =
-      mojom::LayerExtra::NewUiResourceLayerExtra(std::move(ui_resource_extra));
-
-  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  ASSERT_TRUE(result.has_value());
-
-  // Now, update the layer.
-  auto update2 = CreateDefaultUpdate();
-  auto ui_resource_extra2 = mojom::UIResourceLayerExtra::New();
-  ui_resource_extra2->ui_resource_id = kUpdatedUIResourceId;
-  ui_resource_extra2->image_bounds = kUpdatedUIResourceImageBounds;
-
-  auto layer_update =
-      CreateManualLayer(layer_id, cc::mojom::LayerType::kUIResource);
-  layer_update->layer_extra =
-      mojom::LayerExtra::NewUiResourceLayerExtra(std::move(ui_resource_extra2));
-  update2->layers.push_back(std::move(layer_update));
-
-  auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
-  ASSERT_TRUE(result2.has_value());
-
-  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(layer_id);
-  ASSERT_TRUE(layer_impl);
-  ASSERT_EQ(layer_impl->GetLayerType(), cc::mojom::LayerType::kUIResource);
-  auto* ui_resource_layer = static_cast<cc::UIResourceLayerImpl*>(layer_impl);
-
-  EXPECT_EQ(ui_resource_layer->ui_resource_id(), kUpdatedUIResourceId);
-  EXPECT_EQ(ui_resource_layer->image_bounds(), kUpdatedUIResourceImageBounds);
-}
-
-TEST_F(LayerContextImplLayerLifecycleTest, UIResourceLayer) {
+  // 1. Create the layer with default properties.
   auto update = CreateDefaultUpdate();
   int layer_id =
       AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kUIResource);
@@ -1952,16 +1958,216 @@ TEST_F(LayerContextImplLayerLifecycleTest, UIResourceLayer) {
   update->layers.back()->layer_extra =
       mojom::LayerExtra::NewUiResourceLayerExtra(std::move(ui_resource_extra));
 
+  auto result1 = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result1.has_value());
+
+  cc::UIResourceLayerImpl* layer_impl =
+      GetUIResourceLayerFromActiveTree(layer_id);
+  ASSERT_TRUE(layer_impl);
+
+  // Verify initial default properties.
+  EXPECT_EQ(layer_impl->ui_resource_id(), kDefaultUIResourceId);
+  EXPECT_EQ(layer_impl->image_bounds(), kDefaultUIResourceImageBounds);
+  EXPECT_EQ(layer_impl->uv_top_left(), kDefaultUIResourceUVTopLeft);
+  EXPECT_EQ(layer_impl->uv_bottom_right(), kDefaultUIResourceUVBottomRight);
+
+  // 2. Update some properties of the layer.
+  auto update2 = CreateDefaultUpdate();
+  auto ui_resource_extra2 = mojom::UIResourceLayerExtra::New();
+  ui_resource_extra2->ui_resource_id = kUpdatedUIResourceId;
+  ui_resource_extra2->image_bounds = kUpdatedUIResourceImageBounds;
+  ui_resource_extra2->uv_top_left = kUpdatedUIResourceUVTopLeft;
+  ui_resource_extra2->uv_bottom_right = kUpdatedUIResourceUVBottomRight;
+
+  auto layer_update2 =
+      CreateManualLayer(layer_id, cc::mojom::LayerType::kUIResource);
+  layer_update2->layer_extra =
+      mojom::LayerExtra::NewUiResourceLayerExtra(std::move(ui_resource_extra2));
+  update2->layers.push_back(std::move(layer_update2));
+
+  auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result2.has_value());
+
+  EXPECT_EQ(layer_impl->ui_resource_id(), kUpdatedUIResourceId);
+  EXPECT_EQ(layer_impl->image_bounds(), kUpdatedUIResourceImageBounds);
+  EXPECT_EQ(layer_impl->uv_top_left(), kUpdatedUIResourceUVTopLeft);
+  EXPECT_EQ(layer_impl->uv_bottom_right(), kUpdatedUIResourceUVBottomRight);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeUIResourceLayerTest,
+       UpdateUIResourceLayerWithInvalidIdFails) {
+  constexpr int kLayerId = 2;
+  const cc::UIResourceId kValidUIResourceId = kDefaultUIResourceId;
+  const cc::UIResourceId kInvalidUIResourceId = 0;
+
+  // Initial update: Create UIResourceLayer with a valid resource ID.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kUIResource,
+                          kLayerId);
+  auto ui_resource_extra1 = mojom::UIResourceLayerExtra::New();
+  ui_resource_extra1->ui_resource_id = kValidUIResourceId;
+  ui_resource_extra1->image_bounds = kDefaultUIResourceImageBounds;
+  update1->layers.back()->layer_extra =
+      mojom::LayerExtra::NewUiResourceLayerExtra(std::move(ui_resource_extra1));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  cc::UIResourceLayerImpl* ui_resource_layer_impl =
+      static_cast<cc::UIResourceLayerImpl*>(GetLayerFromActiveTree(kLayerId));
+  ASSERT_NE(nullptr, ui_resource_layer_impl);
+  EXPECT_EQ(ui_resource_layer_impl->ui_resource_id(), kValidUIResourceId);
+
+  // Second update: Attempt to update with an invalid resource ID.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kLayerId, cc::mojom::LayerType::kUIResource);
+  auto ui_resource_extra2 = mojom::UIResourceLayerExtra::New();
+  ui_resource_extra2->ui_resource_id = kInvalidUIResourceId;  // Invalid ID
+  layer_props2->layer_extra =
+      mojom::LayerExtra::NewUiResourceLayerExtra(std::move(ui_resource_extra2));
+  update2->layers.push_back(std::move(layer_props2));
+
+  auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(result2.error(), "Invalid ui_resource_id for UIResourceLayerImpl");
+  EXPECT_EQ(ui_resource_layer_impl->ui_resource_id(), kValidUIResourceId);
+}
+
+class LayerContextImplUpdateDisplayTreeNinePatchLayerTest
+    : public LayerContextImplLayerLifecycleTest {
+ protected:
+  cc::NinePatchLayerImpl* GetNinePatchLayerFromActiveTree(int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (layer && layer->GetLayerType() == cc::mojom::LayerType::kNinePatch) {
+      return static_cast<cc::NinePatchLayerImpl*>(layer);
+    }
+    return nullptr;
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeNinePatchLayerTest,
+       CreateAndUpdateNinePatchLayer) {
+  auto update = CreateDefaultUpdate();
+  const gfx::Rect kUpdatedNinePatchAperture(11, 12, 13, 14);
+  const gfx::Rect kUpdatedNinePatchBorder(15, 16, 17, 18);
+  const gfx::Rect kUpdatedNinePatchLayerOcclusion(19, 20, 21, 22);
+  const bool kUpdatedNinePatchFillCenter = true;
+  const cc::UIResourceId kUpdatedNinePatchUIResourceId = 456;
+  const gfx::Size kUpdatedNinePatchImageBounds(300, 400);
+  const gfx::PointF kUpdatedNinePatchUVTopLeft(0.1f, 0.2f);
+  const gfx::PointF kUpdatedNinePatchUVBottomRight(0.8f, 0.9f);
+  int layer_id =
+      AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kNinePatch);
+
+  auto nine_patch_extra = mojom::NinePatchLayerExtra::New();
+  nine_patch_extra->image_aperture = kDefaultNinePatchAperture;
+  nine_patch_extra->border = kDefaultNinePatchBorder;
+  nine_patch_extra->layer_occlusion = kDefaultNinePatchLayerOcclusion;
+  nine_patch_extra->fill_center = kDefaultNinePatchFillCenter;
+  nine_patch_extra->ui_resource_id = kDefaultNinePatchUIResourceId;
+  nine_patch_extra->image_bounds = kDefaultNinePatchImageBounds;
+  nine_patch_extra->uv_top_left = kDefaultNinePatchUVTopLeft;
+  nine_patch_extra->uv_bottom_right = kDefaultNinePatchUVBottomRight;
+  update->layers.back()->layer_extra =
+      mojom::LayerExtra::NewNinePatchLayerExtra(std::move(nine_patch_extra));
+
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
   ASSERT_TRUE(result.has_value());
 
-  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(layer_id);
-  ASSERT_TRUE(layer_impl);
-  ASSERT_EQ(layer_impl->GetLayerType(), cc::mojom::LayerType::kUIResource);
-  auto* ui_resource_layer = static_cast<cc::UIResourceLayerImpl*>(layer_impl);
+  cc::NinePatchLayerImpl* nine_patch_layer =
+      GetNinePatchLayerFromActiveTree(layer_id);
+  ASSERT_TRUE(nine_patch_layer);
 
-  EXPECT_EQ(ui_resource_layer->ui_resource_id(), kDefaultUIResourceId);
-  EXPECT_EQ(ui_resource_layer->image_bounds(), kDefaultUIResourceImageBounds);
+  EXPECT_EQ(nine_patch_layer->quad_generator().image_aperture(),
+            kDefaultNinePatchAperture);
+  EXPECT_EQ(nine_patch_layer->quad_generator().border(),
+            kDefaultNinePatchBorder);
+  EXPECT_EQ(nine_patch_layer->quad_generator().output_occlusion(),
+            kDefaultNinePatchLayerOcclusion);
+  EXPECT_EQ(nine_patch_layer->quad_generator().fill_center(),
+            kDefaultNinePatchFillCenter);
+  EXPECT_EQ(nine_patch_layer->ui_resource_id(), kDefaultNinePatchUIResourceId);
+  EXPECT_EQ(nine_patch_layer->image_bounds(), kDefaultNinePatchImageBounds);
+  EXPECT_EQ(nine_patch_layer->uv_top_left(), kDefaultNinePatchUVTopLeft);
+  EXPECT_EQ(nine_patch_layer->uv_bottom_right(),
+            kDefaultNinePatchUVBottomRight);
+
+  // Update all NinePatchLayerExtra properties.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(layer_id, cc::mojom::LayerType::kNinePatch);
+  auto nine_patch_extra2 = mojom::NinePatchLayerExtra::New();
+  nine_patch_extra2->image_aperture = kUpdatedNinePatchAperture;
+  nine_patch_extra2->border = kUpdatedNinePatchBorder;
+  nine_patch_extra2->layer_occlusion = kUpdatedNinePatchLayerOcclusion;
+  nine_patch_extra2->fill_center = kUpdatedNinePatchFillCenter;
+  nine_patch_extra2->ui_resource_id = kUpdatedNinePatchUIResourceId;
+  nine_patch_extra2->image_bounds = kUpdatedNinePatchImageBounds;
+  nine_patch_extra2->uv_top_left = kUpdatedNinePatchUVTopLeft;
+  nine_patch_extra2->uv_bottom_right = kUpdatedNinePatchUVBottomRight;
+  layer_props2->layer_extra =
+      mojom::LayerExtra::NewNinePatchLayerExtra(std::move(nine_patch_extra2));
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  EXPECT_EQ(nine_patch_layer->quad_generator().image_aperture(),
+            kUpdatedNinePatchAperture);
+  EXPECT_EQ(nine_patch_layer->quad_generator().border(),
+            kUpdatedNinePatchBorder);
+  EXPECT_EQ(nine_patch_layer->quad_generator().output_occlusion(),
+            kUpdatedNinePatchLayerOcclusion);
+  EXPECT_EQ(nine_patch_layer->quad_generator().fill_center(),
+            kUpdatedNinePatchFillCenter);
+  EXPECT_EQ(nine_patch_layer->ui_resource_id(), kUpdatedNinePatchUIResourceId);
+  EXPECT_EQ(nine_patch_layer->image_bounds(), kUpdatedNinePatchImageBounds);
+  EXPECT_EQ(nine_patch_layer->uv_top_left(), kUpdatedNinePatchUVTopLeft);
+  EXPECT_EQ(nine_patch_layer->uv_bottom_right(),
+            kUpdatedNinePatchUVBottomRight);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeNinePatchLayerTest,
+       UpdateNinePatchLayerWithInvalidUIResourceIdFails) {
+  constexpr int kLayerId = 2;
+  const cc::UIResourceId kValidUIResourceId = kDefaultNinePatchUIResourceId;
+  const cc::UIResourceId kInvalidUIResourceId = 0;
+
+  // Initial update: Create NinePatchLayer with a valid resource ID.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kNinePatch,
+                          kLayerId);
+  auto nine_patch_extra1 = mojom::NinePatchLayerExtra::New();
+  nine_patch_extra1->ui_resource_id = kValidUIResourceId;
+  // Set other required fields for a valid NinePatchLayer
+  nine_patch_extra1->image_aperture = kDefaultNinePatchAperture;
+  nine_patch_extra1->border = kDefaultNinePatchBorder;
+  update1->layers.back()->layer_extra =
+      mojom::LayerExtra::NewNinePatchLayerExtra(std::move(nine_patch_extra1));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  cc::NinePatchLayerImpl* nine_patch_layer_impl =
+      GetNinePatchLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, nine_patch_layer_impl);
+  EXPECT_EQ(nine_patch_layer_impl->ui_resource_id(), kValidUIResourceId);
+
+  // Second update: Attempt to update with an invalid resource ID.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kLayerId, cc::mojom::LayerType::kNinePatch);
+  auto nine_patch_extra2 = mojom::NinePatchLayerExtra::New();
+  nine_patch_extra2->ui_resource_id = kInvalidUIResourceId;  // Invalid ID
+  layer_props2->layer_extra =
+      mojom::LayerExtra::NewNinePatchLayerExtra(std::move(nine_patch_extra2));
+  update2->layers.push_back(std::move(layer_props2));
+
+  auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(result2.error(), "Invalid ui_resource_id for NinePatchLayerImpl");
+  EXPECT_EQ(nine_patch_layer_impl->ui_resource_id(), kValidUIResourceId);
 }
 
 TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
@@ -2124,7 +2330,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   EXPECT_EQ(result15.error(), "Invalid or duplicate layer ID");
 
   // Test Case 7: Invalid Property Tree Indices on Creation
-  // Update 16: Try to send a layer update with an invalid transform node index
+  // Update 16: Try to send a layer update with a1valid transform node index
   auto update16 = CreateDefaultUpdate();
   update16->layers.push_back(
       CreateManualLayer(kLayerId2, cc::mojom::LayerType::kLayer,
@@ -2539,19 +2745,21 @@ TEST_F(LayerContextImplLayerLifecycleTest, ContentsOpaqueFlags) {
   EXPECT_FALSE(layer_impl_valid3->contents_opaque_for_text());
 }
 
-TEST_F(LayerContextImplLayerLifecycleTest, MissingLayerExtra) {
-  const std::vector<cc::mojom::LayerType> types_requiring_extra = {
-      cc::mojom::LayerType::kMirror,
-      cc::mojom::LayerType::kNinePatchThumbScrollbar,
-      cc::mojom::LayerType::kPaintedScrollbar,
-      cc::mojom::LayerType::kSolidColorScrollbar,
-      cc::mojom::LayerType::kSurface,
-      cc::mojom::LayerType::kTexture,
-      cc::mojom::LayerType::kUIResource,
-      cc::mojom::LayerType::kViewTransitionContent,
-  };
+const cc::mojom::LayerType kLayerTypesWithSpecificExtras[] = {
+    cc::mojom::LayerType::kMirror,
+    cc::mojom::LayerType::kNinePatch,
+    cc::mojom::LayerType::kNinePatchThumbScrollbar,
+    cc::mojom::LayerType::kPaintedScrollbar,
+    cc::mojom::LayerType::kSolidColorScrollbar,
+    cc::mojom::LayerType::kSurface,
+    cc::mojom::LayerType::kTexture,
+    cc::mojom::LayerType::kTileDisplay,
+    cc::mojom::LayerType::kUIResource,
+    cc::mojom::LayerType::kViewTransitionContent,
+};
 
-  for (cc::mojom::LayerType type : types_requiring_extra) {
+TEST_F(LayerContextImplLayerLifecycleTest, MissingLayerExtra) {
+  for (cc::mojom::LayerType type : kLayerTypesWithSpecificExtras) {
     SCOPED_TRACE(testing::Message()
                  << "Testing LayerType: " << GetLayerImplName(type));
     ResetTestState();
@@ -2583,18 +2791,6 @@ TEST_F(LayerContextImplLayerLifecycleTest, MissingLayerExtra) {
 class LayerContextImplLayerExtraTypeValidationTest
     : public LayerContextImplLayerLifecycleTest,
       public testing::WithParamInterface<cc::mojom::LayerType> {};
-
-const cc::mojom::LayerType kLayerTypesWithSpecificExtras[] = {
-    cc::mojom::LayerType::kMirror,
-    cc::mojom::LayerType::kNinePatchThumbScrollbar,
-    cc::mojom::LayerType::kPaintedScrollbar,
-    cc::mojom::LayerType::kSolidColorScrollbar,
-    cc::mojom::LayerType::kSurface,
-    cc::mojom::LayerType::kTexture,
-    cc::mojom::LayerType::kTileDisplay,
-    cc::mojom::LayerType::kUIResource,
-    cc::mojom::LayerType::kViewTransitionContent,
-};
 
 TEST_P(LayerContextImplLayerExtraTypeValidationTest, MismatchedLayerExtra) {
   constexpr int kLayerId = 2;

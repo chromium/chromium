@@ -25,6 +25,7 @@
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/mirror_layer_impl.h"
+#include "cc/layers/nine_patch_layer_impl.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -765,6 +766,18 @@ void SerializeViewTransitionContentLayerExtra(
   extra->max_extents_rect = layer.max_extents_rect();
 }
 
+void SerializeNinePatchLayerExtra(NinePatchLayerImpl& layer,
+                                  viz::mojom::NinePatchLayerExtraPtr& extra) {
+  extra->image_aperture = layer.quad_generator().image_aperture();
+  extra->border = layer.quad_generator().border();
+  extra->layer_occlusion = layer.quad_generator().output_occlusion();
+  extra->fill_center = layer.quad_generator().fill_center();
+  extra->ui_resource_id = layer.ui_resource_id();
+  extra->image_bounds = layer.image_bounds();
+  extra->uv_top_left = layer.uv_top_left();
+  extra->uv_bottom_right = layer.uv_bottom_right();
+}
+
 void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
                                 viz::mojom::SurfaceLayerExtraPtr& extra) {
   extra->surface_range = layer.range();
@@ -846,6 +859,14 @@ void SerializeLayer(LayerImpl& layer,
       wire.layer_extra =
           viz::mojom::LayerExtra::NewNinePatchThumbScrollbarLayerExtra(
               std::move(nine_patch_thumb_scrollbar_layer_extra));
+      break;
+    }
+    case mojom::LayerType::kNinePatch: {
+      auto nine_patch_layer_extra = viz::mojom::NinePatchLayerExtra::New();
+      SerializeNinePatchLayerExtra(static_cast<NinePatchLayerImpl&>(layer),
+                                   nine_patch_layer_extra);
+      wire.layer_extra = viz::mojom::LayerExtra::NewNinePatchLayerExtra(
+          std::move(nine_patch_layer_extra));
       break;
     }
     case mojom::LayerType::kPaintedScrollbar: {

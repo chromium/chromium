@@ -36,6 +36,8 @@ class CC_EXPORT NinePatchLayerImpl : public UIResourceLayerImpl {
                  const gfx::Rect& layer_occlusion,
                  bool fill_center);
 
+  const NinePatchGenerator& quad_generator() const { return quad_generator_; }
+
   mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
