@@ -148,8 +148,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
       allowEmojiSuggestion_: Boolean,
 
-      allowOrca_: Boolean,
-
       allowSuggestionSection_: Boolean,
 
       acceleratorFetcher: Object,
@@ -180,7 +178,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     Setting.kAddInputMethod,
     Setting.kShowEmojiSuggestions,
     Setting.kShowInputOptionsInShelf,
-    Setting.kShowOrca,
     Setting.kSpellCheckOnOff,
   ]);
   // From RouteOriginMixin.
@@ -208,11 +205,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       loadTimeData.getBoolean('languagePacksInSettingsEnabled');
   private readonly allowEmojiSuggestion_: boolean =
       loadTimeData.getBoolean('allowEmojiSuggestion');
-  private readonly allowOrca_: boolean = loadTimeData.getBoolean('allowOrca');
-  private readonly showOrcaReviewTermsBanner_: boolean =
-      loadTimeData.getBoolean('showOrcaReviewTermsBanner');
   private readonly allowSuggestionSection_: boolean =
-      this.allowOrca_ || this.allowEmojiSuggestion_;
+      this.allowEmojiSuggestion_;
 
   // Computed properties.
   private spellCheckLanguages_: SpellCheckLanguageState[]|undefined;

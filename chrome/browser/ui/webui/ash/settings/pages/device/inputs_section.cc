@@ -122,18 +122,6 @@ base::span<const SearchConcept> GetAutoCorrectionSearchConcepts() {
   return tags;
 }
 
-bool ShouldShowOrcaSettings(input_method::EditorMediator* editor_mediator) {
-  auto* magic_boost_state = chromeos::MagicBoostState::Get();
-  return (!magic_boost_state || !magic_boost_state->IsMagicBoostAvailable()) &&
-         editor_mediator && editor_mediator->IsAllowedForUse();
-}
-
-bool ShouldShowOrcaTermsReviewBanner(
-    input_method::EditorMediator* editor_mediator) {
-  return editor_mediator && ShouldShowOrcaSettings(editor_mediator) &&
-         editor_mediator->CanShowNoticeBanner();
-}
-
 void AddInputMethodOptionsLoadTimeData(
     content::WebUIDataSource* html_source,
     bool is_physical_keyboard_autocorrect_allowed,
@@ -334,28 +322,15 @@ void AddInputMethodOptionsLoadTimeData(
 }
 
 void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source,
-                                bool allow_orca_settings_to_show,
-                                bool allow_orca_notice_review_banner_to_show,
                                 bool allow_emoji_suggestion_settings_to_show) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"suggestionsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
-      {"orcaTitle", IDS_OS_SETTINGS_SUGGESTIONS_ORCA_TITLE},
-      {"orcaDescription", IDS_OS_SETTINGS_SUGGESTIONS_ORCA_DESCRIPTION},
-      {"orcaReviewTermsBannerDescription",
-       IDS_SETTINGS_SUGGESTIONS_ORCA_REVIEW_TERMS_BANNER_DESCRIPTION},
-      {"orcaReviewTermsButtonLabel",
-       IDS_OS_SETTINGS_MAGIC_BOOST_REVIEW_TERMS_BUTTON_LABEL},
       {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
       {"emojiSuggestionDescription",
        IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddString("orcaLearnMoreUrl",
-                         chrome::kOrcaSuggestionLearnMoreURL);
   html_source->AddBoolean("allowEmojiSuggestion",
                           allow_emoji_suggestion_settings_to_show);
-  html_source->AddBoolean("allowOrca", allow_orca_settings_to_show);
-  html_source->AddBoolean("showOrcaReviewTermsBanner",
-                          allow_orca_notice_review_banner_to_show);
 }
 
 }  // namespace
@@ -385,12 +360,8 @@ InputsSection::InputsSection(Profile* profile,
 
   bool should_show_emoji_suggestions_settings =
       ShouldShowEmojiSuggestionsSettings();
-  bool should_show_orca_settings = ShouldShowOrcaSettings(editor_mediator_);
-  if (should_show_emoji_suggestions_settings || should_show_orca_settings) {
-    updater.AddSearchTags(GetSuggestionsSearchConcepts());
-  }
-
   if (should_show_emoji_suggestions_settings) {
+    updater.AddSearchTags(GetSuggestionsSearchConcepts());
     updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
   }
 
@@ -548,8 +519,6 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       input_method::IsPhysicalKeyboardPredictiveWritingAllowed(*pref_service_));
 
   AddSuggestionsLoadTimeData(html_source,
-                             ShouldShowOrcaSettings(editor_mediator_),
-                             ShouldShowOrcaTermsReviewBanner(editor_mediator_),
                              ShouldShowEmojiSuggestionsSettings());
 }
 

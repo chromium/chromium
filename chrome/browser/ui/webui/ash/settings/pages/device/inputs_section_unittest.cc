@@ -81,68 +81,6 @@ class InputsSectionTest : public ChromeAshTestBase {
   TestingProfile profile_;
 };
 
-TEST_F(InputsSectionTest,
-       InputsSectionShouldIncludeHelpMeWriteSettingsWhenMagicBoostIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-
-  // Note that `kMahi` is associated with the Magic Boost feature.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {
-          chromeos::features::kFeatureManagementOrca,
-      },
-      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
-                             chromeos::features::kFeatureManagementMahi,
-                             chromeos::features::kMahi});
-
-  auto mock_geolocation_provider =
-      std::make_unique<input_method::EditorGeolocationMockProvider>("us");
-  input_method::EditorMediator editor_mediator(
-      profile(), std::move(mock_geolocation_provider));
-  inputs_section_ = std::make_unique<InputsSection>(
-      profile(), search_tag_registry(), pref_service(), &editor_mediator);
-  std::unique_ptr<content::TestWebUIDataSource> html_source =
-      content::TestWebUIDataSource::Create("test-inputs-section");
-
-  inputs_section_->AddLoadTimeData(html_source->GetWebUIDataSource());
-
-  EXPECT_TRUE(
-      html_source->GetLocalizedStrings()->FindBool("allowOrca").value());
-}
-
-TEST_F(InputsSectionTest,
-       InputsSectionShouldNotHaveHelpMeWriteSettingsWhenMagicBoostIsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-
-  // Note that `kMahi` is associated with the Magic Boost feature.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
-                            chromeos::features::kFeatureManagementMahi,
-                            chromeos::features::kMahi},
-      /*disabled_features=*/{
-          ash::features::kOrcaUseAccountCapabilities,
-      });
-
-  chromeos::test::FakeMagicBoostState magic_boost_state;
-  magic_boost_state.SetAvailability(true);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kMahiRestrictionsOverride);
-
-  auto mock_geolocation_provider =
-      std::make_unique<input_method::EditorGeolocationMockProvider>("us");
-  input_method::EditorMediator editor_mediator(
-      profile(), std::move(mock_geolocation_provider));
-  inputs_section_ = std::make_unique<InputsSection>(
-      profile(), search_tag_registry(), pref_service(), &editor_mediator);
-  std::unique_ptr<content::TestWebUIDataSource> html_source =
-      content::TestWebUIDataSource::Create("test-inputs-section");
-
-  inputs_section_->AddLoadTimeData(html_source->GetWebUIDataSource());
-
-  EXPECT_FALSE(
-      html_source->GetLocalizedStrings()->FindBool("allowOrca").value());
-}
-
 TEST_F(InputsSectionTest, SearchResultShouldIncludeEmojiSuggestion) {
   auto mock_geolocation_provider =
       std::make_unique<input_method::EditorGeolocationMockProvider>("us");
