@@ -221,7 +221,7 @@ void SetIconNatives::SetIconCommon(
   auto set_null_prototype = [v8_context, isolate](v8::Local<v8::Object> obj) {
     // Avoid any pesky Object.prototype manipulation.
     bool succeeded =
-        obj->SetPrototype(v8_context, v8::Null(isolate)).ToChecked();
+        obj->SetPrototypeV2(v8_context, v8::Null(isolate)).ToChecked();
     CHECK(succeeded);
   };
   set_null_prototype(bitmap_set_value);

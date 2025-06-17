@@ -19,7 +19,7 @@ namespace {
 
 void PagePopupControllerAttributeGetter(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Object> holder = info.Holder();
+  v8::Local<v8::Object> holder = info.HolderV2();
   LocalFrame* frame =
       To<LocalDOMWindow>(V8Window::ToWrappableUnsafe(info.GetIsolate(), holder))
           ->GetFrame();

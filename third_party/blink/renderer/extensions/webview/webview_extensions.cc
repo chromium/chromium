@@ -17,7 +17,7 @@ void WebViewDataPropertyGetCallback(
     v8::Local<v8::Name> v8_property_name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   bindings::V8SetReturnValue(info, MakeGarbageCollected<Android>(),
-                             info.Holder()->GetCreationContextChecked());
+                             info.HolderV2()->GetCreationContextChecked());
 }
 
 // Whether we should install WebView extensions in `execution_context`.

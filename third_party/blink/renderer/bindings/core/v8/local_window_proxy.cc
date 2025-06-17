@@ -510,15 +510,15 @@ void Getter(v8::Local<v8::Name> property,
   v8::Isolate* isolate = info.GetIsolate();
   AtomicString name = ToCoreAtomicString(isolate, property.As<v8::String>());
   HTMLDocument* html_document =
-      V8HTMLDocument::ToWrappableUnsafe(isolate, info.Holder());
+      V8HTMLDocument::ToWrappableUnsafe(isolate, info.HolderV2());
   DCHECK(html_document);
   v8::Local<v8::Value> namedPropertyValue =
-      GetNamedProperty(html_document, name, info.Holder(), isolate);
+      GetNamedProperty(html_document, name, info.HolderV2(), isolate);
   bool hasNamedProperty = !namedPropertyValue.IsEmpty();
 
   v8::Local<v8::Value> prototypeChainValue;
   bool hasPropertyInPrototypeChain =
-      info.Holder()
+      info.HolderV2()
           ->GetRealNamedPropertyInPrototypeChain(isolate->GetCurrentContext(),
                                                  property.As<v8::String>())
           .ToLocal(&prototypeChainValue);

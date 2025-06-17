@@ -28,7 +28,7 @@ class GIN_EXPORT Arguments {
   template <typename T>
   bool GetHolder(T* out) const {
     v8::Local<v8::Object> holder = is_for_property_
-                                       ? info_for_property_->Holder()
+                                       ? info_for_property_->HolderV2()
                                        : info_for_function_->This();
     return ConvertFromV8(isolate_, holder, out);
   }

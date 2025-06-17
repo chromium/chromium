@@ -79,7 +79,7 @@ void APIBindingJSUtil::SendRequest(
       NOTREACHED();
     }
     v8::Local<v8::Object> options_obj = options.As<v8::Object>();
-    if (!options_obj->GetPrototype()->IsNull()) {
+    if (!options_obj->GetPrototypeV2()->IsNull()) {
       NOTREACHED();
     }
     gin::Dictionary options_dict(isolate, options_obj);

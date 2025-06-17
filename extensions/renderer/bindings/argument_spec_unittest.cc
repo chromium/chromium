@@ -982,7 +982,7 @@ TEST_F(ArgumentSpecUnitTest, V8Conversion) {
       v8::Local<v8::Context> context = object->GetCreationContextChecked();
       // We expect a null prototype to ensure we avoid tricky getters/setters on
       // the Object prototype.
-      EXPECT_TRUE(object->GetPrototype()->IsNull());
+      EXPECT_TRUE(object->GetPrototypeV2()->IsNull());
       gin::Dictionary dict(context->GetIsolate(), object);
       v8::Local<v8::Value> result;
       ASSERT_TRUE(dict.Get("str", &result));

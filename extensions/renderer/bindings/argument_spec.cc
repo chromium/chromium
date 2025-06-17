@@ -619,7 +619,7 @@ bool ArgumentSpec::ParseArgumentToObject(
         found = true;
         break;
       }
-      next_check = current->GetPrototype();
+      next_check = current->GetPrototypeV2();
     } while (next_check->IsObject());
 
     if (!found) {
@@ -636,7 +636,7 @@ bool ArgumentSpec::ParseArgumentToObject(
       v8::Local<v8::Object> converted = v8_result.Build();
       // We set the object's prototype to Null() so that handlers avoid
       // triggering any tricky getters or setters on Object.prototype.
-      CHECK(converted->SetPrototype(context, v8::Null(context->GetIsolate()))
+      CHECK(converted->SetPrototypeV2(context, v8::Null(context->GetIsolate()))
                 .ToChecked());
       *v8_out_value = converted;
     } else {

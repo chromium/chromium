@@ -55,9 +55,9 @@ v8::Local<v8::Object> ObservableArrayBase::GetProxyHandlerObject(
       v8_function_template->GetFunction(v8_context).ToLocalChecked();
   v8::Local<v8::Object> v8_object =
       v8_function->NewInstance(v8_context).ToLocalChecked();
-  CHECK(
-      v8_object->SetPrototype(v8_context, v8::Null(script_state->GetIsolate()))
-          .ToChecked());
+  CHECK(v8_object
+            ->SetPrototypeV2(v8_context, v8::Null(script_state->GetIsolate()))
+            .ToChecked());
   return v8_object;
 }
 

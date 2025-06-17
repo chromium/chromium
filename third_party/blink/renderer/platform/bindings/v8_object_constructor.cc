@@ -83,7 +83,7 @@ v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
 
   if (type->parent_class) {
     DCHECK(!parent_interface.IsEmpty());
-    interface_object->SetPrototype(context, parent_interface).Check();
+    interface_object->SetPrototypeV2(context, parent_interface).Check();
   }
 
   v8::Local<v8::Object> prototype_object;

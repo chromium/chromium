@@ -62,7 +62,7 @@ v8::Intercepted NamedPropertyGetter(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.Holder());
+      NamedInterceptorFromV8(isolate, info.HolderV2());
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -83,7 +83,7 @@ v8::Intercepted NamedPropertySetter(
     const v8::PropertyCallbackInfo<void>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.Holder());
+      NamedInterceptorFromV8(isolate, info.HolderV2());
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -100,7 +100,7 @@ v8::Intercepted NamedPropertyQuery(
     const v8::PropertyCallbackInfo<v8::Integer>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.Holder());
+      NamedInterceptorFromV8(isolate, info.HolderV2());
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -116,7 +116,7 @@ v8::Intercepted NamedPropertyQuery(
 void NamedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.Holder());
+      NamedInterceptorFromV8(isolate, info.HolderV2());
   if (!interceptor) {
     return;
   }
@@ -133,7 +133,7 @@ v8::Intercepted IndexedPropertyQuery(
     const v8::PropertyCallbackInfo<v8::Integer>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   IndexedPropertyInterceptor* interceptor =
-      IndexedInterceptorFromV8(isolate, info.Holder());
+      IndexedInterceptorFromV8(isolate, info.HolderV2());
   if (interceptor &&
       !interceptor->GetIndexedProperty(isolate, index).IsEmpty()) {
     info.GetReturnValue().Set(v8::None);
@@ -147,7 +147,7 @@ v8::Intercepted IndexedPropertyGetter(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   IndexedPropertyInterceptor* interceptor =
-      IndexedInterceptorFromV8(isolate, info.Holder());
+      IndexedInterceptorFromV8(isolate, info.HolderV2());
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -165,7 +165,7 @@ v8::Intercepted IndexedPropertySetter(
     const v8::PropertyCallbackInfo<void>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   IndexedPropertyInterceptor* interceptor =
-      IndexedInterceptorFromV8(isolate, info.Holder());
+      IndexedInterceptorFromV8(isolate, info.HolderV2());
   if (interceptor && interceptor->SetIndexedProperty(isolate, index, value)) {
     return v8::Intercepted::kYes;
   }
@@ -176,7 +176,7 @@ void IndexedPropertyEnumerator(
     const v8::PropertyCallbackInfo<v8::Array>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   IndexedPropertyInterceptor* interceptor =
-      IndexedInterceptorFromV8(isolate, info.Holder());
+      IndexedInterceptorFromV8(isolate, info.HolderV2());
   if (!interceptor) {
     return;
   }

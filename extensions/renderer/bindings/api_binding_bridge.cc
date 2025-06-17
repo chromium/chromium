@@ -88,7 +88,7 @@ void APIBindingBridge::RegisterCustomHook(v8::Isolate* isolate,
   if (!result.IsJust() || !result.FromJust())
     return;
 
-  result = hook_object->SetPrototype(context, v8::Null(isolate));
+  result = hook_object->SetPrototypeV2(context, v8::Null(isolate));
   if (!result.IsJust() || !result.FromJust())
     return;
 
