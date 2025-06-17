@@ -12067,6 +12067,8 @@ source_set("sync_integration_test_support") {
   sources = [
     "../browser/sync/test/integration/autofill_helper.cc",
     "../browser/sync/test/integration/autofill_helper.h",
+    "../browser/sync/test/integration/await_match_status_change_checker.cc",
+    "../browser/sync/test/integration/await_match_status_change_checker.h",
     "../browser/sync/test/integration/bookmarks_helper.cc",
     "../browser/sync/test/integration/bookmarks_helper.h",
     "../browser/sync/test/integration/committed_all_nudged_changes_checker.cc",
@@ -12137,8 +12139,6 @@ source_set("sync_integration_test_support") {
     sources += [
       "../browser/sync/test/integration/apps_helper.cc",
       "../browser/sync/test/integration/apps_helper.h",
-      "../browser/sync/test/integration/await_match_status_change_checker.cc",
-      "../browser/sync/test/integration/await_match_status_change_checker.h",
       "../browser/sync/test/integration/cookie_helper.cc",
       "../browser/sync/test/integration/cookie_helper.h",
       "../browser/sync/test/integration/dictionary_helper.cc",
@@ -12147,8 +12147,6 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/dictionary_load_observer.h",
       "../browser/sync/test/integration/extension_settings_helper.cc",
       "../browser/sync/test/integration/extension_settings_helper.h",
-      "../browser/sync/test/integration/extensions_helper.cc",
-      "../browser/sync/test/integration/extensions_helper.h",
       "../browser/sync/test/integration/fake_sync_signin_delegate_desktop.cc",
       "../browser/sync/test/integration/fake_sync_signin_delegate_desktop.h",
       "../browser/sync/test/integration/live_sync_signin_delegate_desktop.cc",
@@ -12167,8 +12165,6 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/sessions_helper.h",
       "../browser/sync/test/integration/sync_app_helper.cc",
       "../browser/sync/test/integration/sync_app_helper.h",
-      "../browser/sync/test/integration/sync_extension_helper.cc",
-      "../browser/sync/test/integration/sync_extension_helper.h",
       "../browser/sync/test/integration/sync_integration_test_util.cc",
       "../browser/sync/test/integration/sync_integration_test_util.h",
       "../browser/sync/test/integration/themes_helper.cc",
@@ -12188,6 +12184,14 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/sync_test_utils_android.h",
       "../browser/sync/test/integration/webapks_helper.cc",
       "../browser/sync/test/integration/webapks_helper.h",
+    ]
+  }
+  if (enable_extensions_core) {
+    sources += [
+      "../browser/sync/test/integration/extensions_helper.cc",
+      "../browser/sync/test/integration/extensions_helper.h",
+      "../browser/sync/test/integration/sync_extension_helper.cc",
+      "../browser/sync/test/integration/sync_extension_helper.h",
     ]
   }
   public_deps = [

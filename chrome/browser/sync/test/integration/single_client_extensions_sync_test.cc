@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -14,21 +19,51 @@
 
 namespace {
 
-using extensions_helper::AllProfilesHaveSameExtensionsAsVerifier;
 using extensions_helper::DisableExtension;
 using extensions_helper::GetInstalledExtensions;
 using extensions_helper::InstallExtension;
 using extensions_helper::InstallExtensionForAllProfiles;
 
+std::ostream& operator<<(std::ostream& os,
+                         const base::flat_set<std::string>& set) {
+  os << "{";
+  for (const std::string& element : set) {
+    os << element << ", ";
+  }
+  os << "}";
+  return os;
+}
+
+// Checks if server extension IDs match the IDs provided in the constructor.
+class TestServerExtensionIds
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  explicit TestServerExtensionIds(base::flat_set<std::string> extension_ids)
+      : expected_extension_ids_(extension_ids) {}
+
+  // FakeServerMatchStatusChecker:
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    std::vector<sync_pb::SyncEntity> entities =
+        fake_server()->GetSyncEntitiesByDataType(syncer::EXTENSIONS);
+    base::flat_set<std::string> actual_extension_ids =
+        base::MakeFlatSet<std::string>(
+            entities,
+            /*comp=*/{}, /*proj=*/[](const sync_pb::SyncEntity& e) {
+              return e.specifics().extension().id();
+            });
+    *os << "Expected ids in fake server: " << expected_extension_ids_
+        << ". Actual ids " << actual_extension_ids << ".";
+    return expected_extension_ids_ == actual_extension_ids;
+  }
+
+ private:
+  base::flat_set<std::string> expected_extension_ids_;
+};
+
 class SingleClientExtensionsSyncTest : public SyncTest {
  public:
   SingleClientExtensionsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientExtensionsSyncTest() override = default;
-
-  bool UseVerifier() override {
-    // TODO(crbug.com/40724938): rewrite tests to not use verifier profile.
-    return true;
-  }
 
   // TODO(https://crbug.com/40804030): Remove when these tests use only MV3
   // extensions.
@@ -37,34 +72,29 @@ class SingleClientExtensionsSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, StartWithNoExtensions) {
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameExtensionsAsVerifier());
+  ASSERT_TRUE(TestServerExtensionIds({}).Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest,
                        StartWithSomeExtensions) {
   ASSERT_TRUE(SetupClients());
 
-  const int kNumExtensions = 5;
-  for (int i = 0; i < kNumExtensions; ++i) {
-    InstallExtension(GetProfile(0), i);
-    InstallExtension(verifier(), i);
-  }
+  std::string id0 = InstallExtension(GetProfile(0), 0);
+  std::string id1 = InstallExtension(GetProfile(0), 1);
+  std::string id2 = InstallExtension(GetProfile(0), 2);
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameExtensionsAsVerifier());
+  ASSERT_TRUE(TestServerExtensionIds({id0, id1, id2}).Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, InstallSomeExtensions) {
   ASSERT_TRUE(SetupSync());
 
-  const int kNumExtensions = 5;
-  for (int i = 0; i < kNumExtensions; ++i) {
-    InstallExtension(GetProfile(0), i);
-    InstallExtension(verifier(), i);
-  }
+  std::string id0 = InstallExtension(GetProfile(0), 0);
+  std::string id1 = InstallExtension(GetProfile(0), 1);
+  std::string id2 = InstallExtension(GetProfile(0), 2);
 
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  ASSERT_TRUE(AllProfilesHaveSameExtensionsAsVerifier());
+  ASSERT_TRUE(TestServerExtensionIds({id0, id1, id2}).Wait());
 }
 
 // Helper function for waiting to see the extension count in a profile
@@ -84,9 +114,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, UninstallWinsConflicts) {
   ASSERT_TRUE(SetupClients());
 
   // Start with an extension installed, and setup sync.
-  InstallExtensionForAllProfiles(0);
+  std::string id0 = InstallExtension(GetProfile(0), 0);
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameExtensionsAsVerifier());
+  ASSERT_TRUE(TestServerExtensionIds({id0}).Wait());
 
   // Simulate a delete at the server.
   std::vector<sync_pb::SyncEntity> server_extensions =

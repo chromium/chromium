@@ -12,7 +12,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 class SyncTest;

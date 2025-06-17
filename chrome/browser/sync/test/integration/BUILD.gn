@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
 } else {
@@ -70,6 +71,11 @@ source_set("sync_integration_tests_impl") {
   ]
   data = [ "//chrome/test/data/sync/" ]
 
+  # Extensions are enabled on Win/Mac/Linux/CrOS and desktop Android.
+  if (enable_extensions_core) {
+    sources += [ "single_client_extensions_sync_test.cc" ]
+  }
+
   if (is_android) {
     sources += [
       "//chrome/test/android/browsertests_apk/android_browsertests_jni_onload.cc",
@@ -108,7 +114,6 @@ source_set("sync_integration_tests_impl") {
       "single_client_app_settings_sync_test.cc",
       "single_client_common_sync_test.cc",
       "single_client_extension_apps_sync_test.cc",
-      "single_client_extensions_sync_test.cc",
       "single_client_incoming_password_sharing_invitation_test.cc",
       "single_client_nigori_sync_test.cc",
       "single_client_outgoing_password_sharing_invitation_test.cc",
@@ -134,7 +139,8 @@ source_set("sync_integration_tests_impl") {
       "sync_auth_test.cc",
       "sync_errors_test.cc",
 
-      # Tests with two clients can't run on Android.
+      # Tests with two clients can't run on Android because Android doesn't
+      # support multiple profiles.
       "two_client_app_settings_sync_test.cc",
       "two_client_autocomplete_sync_test.cc",
       "two_client_autofill_sync_test.cc",
