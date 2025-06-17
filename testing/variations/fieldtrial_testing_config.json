@@ -13908,6 +13908,24 @@
             ]
         }
     ],
+    "LensSearchSidePanelDefaultWidth": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LensSearchSidePanelDefaultWidthEnabled",
+                    "enable_features": [
+                        "LensSearchSidePanelDefaultWidthChange"
+                    ]
+                }
+            ]
+        }
+    ],
     "LensSearchSidePanelScrollToAPI": [
         {
             "platforms": [
