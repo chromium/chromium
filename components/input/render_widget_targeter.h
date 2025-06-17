@@ -5,17 +5,20 @@
 #ifndef COMPONENTS_INPUT_RENDER_WIDGET_TARGETER_H_
 #define COMPONENTS_INPUT_RENDER_WIDGET_TARGETER_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <queue>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "base/component_export.h"
 #include "ui/events/blink/web_input_event_traits.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/latency/latency_info.h"
 
 namespace blink {
@@ -30,24 +33,17 @@ namespace input {
 
 class RenderWidgetHostViewInput;
 
-// TODO(sunxd): Make |RenderWidgetTargetResult| a class. Merge the booleans into
-// a mask to reduce the size. Make the constructor take in enums for better
-// readability.
 struct COMPONENT_EXPORT(INPUT) RenderWidgetTargetResult {
   RenderWidgetTargetResult();
   RenderWidgetTargetResult(const RenderWidgetTargetResult&);
   RenderWidgetTargetResult(RenderWidgetHostViewInput* view,
                            bool should_query_view,
-                           std::optional<gfx::PointF> location,
-                           bool latched_target);
+                           std::optional<gfx::PointF> location);
   ~RenderWidgetTargetResult();
 
   raw_ptr<RenderWidgetHostViewInput, DanglingUntriaged> view = nullptr;
   bool should_query_view = false;
   std::optional<gfx::PointF> target_location = std::nullopt;
-  // When |latched_target| is false, we explicitly hit-tested events instead of
-  // using a known target.
-  bool latched_target = false;
 };
 
 class RenderWidgetTargeter {

@@ -5,16 +5,22 @@
 #include "components/input/render_widget_targeter.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/input/render_widget_host_view_input.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/blink_event_util.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/latency/latency_info.h"
 
 namespace input {
 
@@ -54,12 +60,10 @@ RenderWidgetTargetResult::RenderWidgetTargetResult(
 RenderWidgetTargetResult::RenderWidgetTargetResult(
     RenderWidgetHostViewInput* in_view,
     bool in_should_query_view,
-    std::optional<gfx::PointF> in_location,
-    bool in_latched_target)
+    std::optional<gfx::PointF> in_location)
     : view(in_view),
       should_query_view(in_should_query_view),
-      target_location(in_location),
-      latched_target(in_latched_target) {}
+      target_location(in_location) {}
 
 RenderWidgetTargetResult::~RenderWidgetTargetResult() = default;
 
@@ -366,7 +370,8 @@ void RenderWidgetTargeter::FoundFrameSinkId(
 
     if (request.IsWebInputEventRequest() &&
         IsMouseMiddleClick(*request.GetEvent())) {
-      middle_click_result_ = {view, false, transformed_location, false};
+      middle_click_result_ = {view, /*should_query_view=*/false,
+                              transformed_location};
     }
 
     FoundTarget(view, transformed_location, &request);
