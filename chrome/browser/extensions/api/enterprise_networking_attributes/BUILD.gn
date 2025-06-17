@@ -19,14 +19,21 @@ source_set("enterprise_networking_attributes") {
   public_deps = [
     "//chromeos/crosapi/mojom",
     "//extensions/browser",
+
+    # TODO(crbug.com/354842935): Temporarily added to access
+    # primary user profile without changing the behavior.
+    "//chrome/browser:browser_public_dependencies",
   ]
 
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/network",
     "//net",
   ]
 }

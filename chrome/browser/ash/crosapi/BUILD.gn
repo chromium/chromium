@@ -45,8 +45,6 @@ static_library("crosapi") {
     "media_ui_ash.h",
     "multi_capture_service_ash.cc",
     "multi_capture_service_ash.h",
-    "networking_attributes_ash.cc",
-    "networking_attributes_ash.h",
     "parent_access_ash.cc",
     "parent_access_ash.h",
     "primary_profile_creation_waiter.cc",
@@ -348,7 +346,6 @@ source_set("unit_tests") {
     "document_scan_ash_unittest.cc",
     "keystore_service_ash_unittest.cc",
     "local_printer_ash_unittest.cc",
-    "networking_attributes_ash_unittest.cc",
     "parent_access_ash_unittest.cc",
     "primary_profile_creation_waiter_unittest.cc",
   ]

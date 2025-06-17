@@ -28,7 +28,6 @@ import "chromeos/crosapi/mojom/login.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
-import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
@@ -213,11 +212,7 @@ interface Crosapi {
   [MinVersion=88]
   BindNetworkChange@92(pending_receiver<NetworkChange> receiver);
 
-  // Binds the networking attributes service which is used by enterprise
-  // extension APIs to query details about the network.
-  [MinVersion=39]
-  BindNetworkingAttributes@44(pending_receiver<NetworkingAttributes> receiver);
-
+  // BindNetworkingAttributes@44 was removed.
   // BindOneDriveNotificationService@132 was removed.
   // BindOneDriveIntegrationService@135 was removed.
 

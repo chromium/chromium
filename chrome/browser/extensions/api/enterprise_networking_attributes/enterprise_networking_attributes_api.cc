@@ -4,19 +4,45 @@
 
 #include "chrome/browser/extensions/api/enterprise_networking_attributes/enterprise_networking_attributes_api.h"
 
-#include <optional>
-
-#include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/enterprise_networking_attributes.h"
-#include "net/base/ip_address.h"
-
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_util.h"
+#include "components/user_manager/user.h"
 
 namespace extensions {
+namespace {
+
+constexpr char kErrorUserNotAffiliated[] =
+    "Network attributes can only be read by an affiliated user.";
+constexpr char kErrorNetworkNotConnected[] =
+    "Device is not connected to a network.";
+
+bool IsAccessAllowed(Profile* profile) {
+  if (ash::IsSigninBrowserContext(profile)) {
+    return true;
+  }
+
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (!user) {
+    return false;
+  }
+  return user->IsAffiliated();
+}
+
+}  // namespace
 
 EnterpriseNetworkingAttributesGetNetworkDetailsFunction::
     EnterpriseNetworkingAttributesGetNetworkDetailsFunction() = default;
@@ -26,43 +52,39 @@ EnterpriseNetworkingAttributesGetNetworkDetailsFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseNetworkingAttributesGetNetworkDetailsFunction::Run() {
-  auto callback = base::BindOnce(
-      &EnterpriseNetworkingAttributesGetNetworkDetailsFunction::OnResult, this);
-
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->networking_attributes_ash()
-      ->GetNetworkDetails(std::move(callback));
-
-  return RespondLater();
-}
-
-void EnterpriseNetworkingAttributesGetNetworkDetailsFunction::OnResult(
-    crosapi::mojom::GetNetworkDetailsResultPtr result) {
-  using Result = crosapi::mojom::GetNetworkDetailsResult;
-  switch (result->which()) {
-    case Result::Tag::kErrorMessage:
-      Respond(Error(result->get_error_message()));
-      return;
-    case Result::Tag::kNetworkDetails:
-      api::enterprise_networking_attributes::NetworkDetails network_details;
-
-      std::optional<net::IPAddress> ipv4_address =
-          result->get_network_details()->ipv4_address;
-      std::optional<net::IPAddress> ipv6_address =
-          result->get_network_details()->ipv6_address;
-
-      network_details.mac_address = result->get_network_details()->mac_address;
-      if (ipv4_address.has_value()) {
-        network_details.ipv4 = ipv4_address->ToString();
-      }
-      if (ipv6_address.has_value()) {
-        network_details.ipv6 = ipv6_address->ToString();
-      }
-
-      Respond(WithArguments(network_details.ToValue()));
-      return;
+  // TODO(crbug.com/354842935): Use Profile returned by browser_context().
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!IsAccessAllowed(profile)) {
+    return RespondNow(Error(kErrorUserNotAffiliated));
   }
+
+  ash::NetworkStateHandler* network_state_handler =
+      ash::NetworkHandler::Get()->network_state_handler();
+  const ash::NetworkState* network = network_state_handler->DefaultNetwork();
+  if (!network) {
+    // Not connected to a network.
+    return RespondNow(Error(kErrorNetworkNotConnected));
+  }
+  const ash::DeviceState* device =
+      network_state_handler->GetDeviceState(network->device_path());
+  if (!device) {
+    return RespondNow(Error(kErrorNetworkNotConnected));
+  }
+
+  api::enterprise_networking_attributes::NetworkDetails network_details;
+  network_details.mac_address =
+      ash::network_util::FormattedMacAddress(device->mac_address());
+  if (std::string ipv4 = device->GetIpAddressByType(shill::kTypeIPv4);
+      !ipv4.empty()) {
+    network_details.ipv4 = std::move(ipv4);
+  }
+  if (std::string ipv6 = device->GetIpAddressByType(shill::kTypeIPv6);
+      !ipv6.empty()) {
+    network_details.ipv6 = std::move(ipv6);
+  }
+
+  return RespondNow(WithArguments(network_details.ToValue()));
 }
 
 }  // namespace extensions

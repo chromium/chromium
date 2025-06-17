@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
-#include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -105,7 +104,6 @@ CrosapiAsh::CrosapiAsh()
       login_ash_(std::make_unique<LoginAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
-      networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
@@ -246,11 +244,6 @@ void CrosapiAsh::BindMultiCaptureService(
 void CrosapiAsh::BindNetworkChange(
     mojo::PendingReceiver<crosapi::mojom::NetworkChange> receiver) {
   NOTREACHED();
-}
-
-void CrosapiAsh::BindNetworkingAttributes(
-    mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) {
-  networking_attributes_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindParentAccess(
