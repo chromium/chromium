@@ -27,6 +27,11 @@ group("command_buffer_traits") {
   }
 }
 
+source_set("export") {
+  visibility = [ "//gpu/ipc/common/*" ]
+  sources = [ "gpu_ipc_common_export.h" ]
+}
+
 source_set("command_buffer_traits_sources") {
   # External code should depend on this via
   # //gpu/ipc/common:command_buffer_traits above rather than depending on this
@@ -45,6 +50,7 @@ source_set("command_buffer_traits_sources") {
   ]
 
   public_deps = [
+    ":export",
     "//gpu/command_buffer/common:common_sources",
     "//ipc",
     "//ui/gfx/ipc",
@@ -67,7 +73,10 @@ source_set("memory_stats_sources") {
     "memory_stats.cc",
     "memory_stats.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":export",
+    "//base",
+  ]
   configs += [ "//gpu:gpu_implementation" ]
 }
 
@@ -126,6 +135,7 @@ source_set("ipc_common_sources") {
 
   public_deps = [
     ":command_buffer_traits_sources",
+    ":export",
     ":gpu_channel_mojom",
     ":gpu_peak_memory",
     ":interfaces_cpp_sources",
@@ -205,13 +215,17 @@ component("vulkan_ycbcr_info") {
     "vulkan_ycbcr_info.cc",
     "vulkan_ycbcr_info.h",
   ]
+  public_deps = [ ":export" ]
   deps = [ "//base" ]
   configs += [ "//gpu:gpu_implementation" ]
 }
 
 source_set("vulkan_types") {
   sources = [ "vulkan_types.h" ]
-  public_deps = [ "//ui/gfx" ]
+  public_deps = [
+    ":export",
+    "//ui/gfx",
+  ]
   all_dependent_configs =
       [ "//third_party/vulkan-headers/src:vulkan_headers_config" ]
   configs += [ "//gpu:gpu_implementation" ]

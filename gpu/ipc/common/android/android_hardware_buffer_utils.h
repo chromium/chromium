@@ -6,7 +6,7 @@
 #define GPU_IPC_COMMON_ANDROID_ANDROID_HARDWARE_BUFFER_UTILS_H_
 
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace gfx {
@@ -15,7 +15,7 @@ class Size;
 
 namespace gpu {
 
-GPU_EXPORT base::android::ScopedHardwareBufferHandle
+GPU_IPC_COMMON_EXPORT base::android::ScopedHardwareBufferHandle
 CreateScopedHardwareBufferHandle(const gfx::Size& size,
                                  gfx::BufferFormat format,
                                  gfx::BufferUsage usage);

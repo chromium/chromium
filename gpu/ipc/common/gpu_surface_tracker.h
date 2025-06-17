@@ -11,7 +11,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gl/android/scoped_java_surface.h"
@@ -28,7 +28,7 @@ namespace gpu {
 // ScopedJavaSurface, using GpuSurfaceLookup (implemented by
 // ChildProcessSurfaceManager).
 // This class is thread safe.
-class GPU_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
+class GPU_IPC_COMMON_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
  public:
   SurfaceRecord AcquireJavaSurface(gpu::SurfaceHandle surface_handle) override;
 

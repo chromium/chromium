@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 
 namespace gfx {
@@ -21,7 +21,8 @@ class ClientNativePixmapFactory;
 namespace gpu {
 
 // Implementation of GPU memory buffer based on Ozone native pixmap.
-class GPU_EXPORT GpuMemoryBufferImplNativePixmap : public GpuMemoryBufferImpl {
+class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
+    : public GpuMemoryBufferImpl {
  public:
   GpuMemoryBufferImplNativePixmap(const GpuMemoryBufferImplNativePixmap&) =
       delete;

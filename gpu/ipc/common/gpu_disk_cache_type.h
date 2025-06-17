@@ -12,7 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/types/id_type.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 
 namespace gpu {
 
@@ -31,15 +31,15 @@ enum class GpuDiskCacheType {
 };
 
 // Stream operator implemented for GpuDiskCacheType for debugging.
-GPU_EXPORT std::ostream& operator<<(std::ostream& s,
-                                    const GpuDiskCacheType& type);
+GPU_IPC_COMMON_EXPORT std::ostream& operator<<(std::ostream& s,
+                                               const GpuDiskCacheType& type);
 
 static constexpr std::array<GpuDiskCacheType, 3> kGpuDiskCacheTypes = {
     GpuDiskCacheType::kGlShaders,
     GpuDiskCacheType::kDawnWebGPU,
     GpuDiskCacheType::kDawnGraphite,
 };
-GPU_EXPORT base::FilePath::StringType GetGpuDiskCacheSubdir(
+GPU_IPC_COMMON_EXPORT base::FilePath::StringType GetGpuDiskCacheSubdir(
     GpuDiskCacheType type);
 
 //
@@ -78,12 +78,14 @@ using GpuDiskCacheHandle = std::variant<std::monostate,
                                         GpuDiskCacheGlShaderHandle,
                                         GpuDiskCacheDawnWebGPUHandle,
                                         GpuDiskCacheDawnGraphiteHandle>;
-GPU_EXPORT GpuDiskCacheType GetHandleType(const GpuDiskCacheHandle& handle);
-GPU_EXPORT int32_t GetHandleValue(const GpuDiskCacheHandle& handle);
+GPU_IPC_COMMON_EXPORT GpuDiskCacheType
+GetHandleType(const GpuDiskCacheHandle& handle);
+GPU_IPC_COMMON_EXPORT int32_t GetHandleValue(const GpuDiskCacheHandle& handle);
 
 // Stream operator implemented for GpuDiskCacheHandle for debugging.
-GPU_EXPORT std::ostream& operator<<(std::ostream& s,
-                                    const GpuDiskCacheHandle& handle);
+GPU_IPC_COMMON_EXPORT std::ostream& operator<<(
+    std::ostream& s,
+    const GpuDiskCacheHandle& handle);
 
 //
 // Reserved cache handles that are specifically used for static caches.
@@ -99,7 +101,8 @@ constexpr GpuDiskCacheGlShaderHandle kGrShaderGpuDiskCacheHandle(-2);
 // RasterDecoder and SkiaRenderer.
 constexpr GpuDiskCacheDawnGraphiteHandle kGraphiteDawnGpuDiskCacheHandle(-3);
 
-GPU_EXPORT bool IsReservedGpuDiskCacheHandle(const GpuDiskCacheHandle& handle);
+GPU_IPC_COMMON_EXPORT bool IsReservedGpuDiskCacheHandle(
+    const GpuDiskCacheHandle& handle);
 
 }  // namespace gpu
 

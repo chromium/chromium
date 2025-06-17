@@ -7,15 +7,15 @@
 
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_channel.mojom-shared.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT
-    EnumTraits<gpu::mojom::SchedulingPriority, gpu::SchedulingPriority> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::SchedulingPriority,
+                                        gpu::SchedulingPriority> {
   static gpu::mojom::SchedulingPriority ToMojom(
       gpu::SchedulingPriority priority) {
     switch (priority) {

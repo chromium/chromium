@@ -8,15 +8,16 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_channel.mojom-shared.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::ContextType, gpu::ContextType> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextType,
+                                        gpu::ContextType> {
   static gpu::mojom::ContextType ToMojom(gpu::ContextType type) {
     switch (type) {
       case gpu::CONTEXT_TYPE_WEBGL1:
@@ -63,8 +64,9 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ContextType, gpu::ContextType> {
 };
 
 template <>
-struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
-                               gpu::ContextCreationAttribs> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::ContextCreationAttribsDataView,
+    gpu::ContextCreationAttribs> {
   static gl::GpuPreference gpu_preference(
       const gpu::ContextCreationAttribs& attribs) {
     return attribs.gpu_preference;

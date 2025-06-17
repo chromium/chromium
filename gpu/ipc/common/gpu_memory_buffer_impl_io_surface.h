@@ -12,14 +12,15 @@
 #include <memory>
 
 #include "base/apple/scoped_cftyperef.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
 
 // Implementation of GPU memory buffer based on IO surfaces.
-class GPU_EXPORT GpuMemoryBufferImplIOSurface : public GpuMemoryBufferImpl {
+class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
+    : public GpuMemoryBufferImpl {
  public:
   GpuMemoryBufferImplIOSurface(const GpuMemoryBufferImplIOSurface&) = delete;
   GpuMemoryBufferImplIOSurface& operator=(const GpuMemoryBufferImplIOSurface&) =

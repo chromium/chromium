@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -17,7 +17,7 @@ namespace gpu {
 // Provides common implementation of a GPU memory buffer.
 //
 // TODO(reveman): Rename to GpuMemoryBufferBase.
-class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
+class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
  public:
   using DestructionCallback = base::OnceCallback<void()>;
 

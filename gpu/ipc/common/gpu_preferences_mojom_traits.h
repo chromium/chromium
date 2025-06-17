@@ -10,7 +10,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_preferences.mojom-shared.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -21,7 +21,8 @@
 namespace mojo {
 
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::GrContextType,
+                                        gpu::GrContextType> {
   static gpu::mojom::GrContextType ToMojom(gpu::GrContextType input) {
     switch (input) {
       case gpu::GrContextType::kNone:
@@ -61,8 +62,8 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
 };
 
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::VulkanImplementationName,
-                             gpu::VulkanImplementationName> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::VulkanImplementationName,
+                                        gpu::VulkanImplementationName> {
   static gpu::mojom::VulkanImplementationName ToMojom(
       gpu::VulkanImplementationName input) {
     switch (input) {
@@ -98,8 +99,8 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::VulkanImplementationName,
 };
 
 template <>
-struct GPU_EXPORT
-    EnumTraits<gpu::mojom::WebGPUAdapterName, gpu::WebGPUAdapterName> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::WebGPUAdapterName,
+                                        gpu::WebGPUAdapterName> {
   static gpu::mojom::WebGPUAdapterName ToMojom(gpu::WebGPUAdapterName input) {
     switch (input) {
       case gpu::WebGPUAdapterName::kDefault:
@@ -134,8 +135,8 @@ struct GPU_EXPORT
 };
 
 template <>
-struct GPU_EXPORT
-    EnumTraits<gpu::mojom::WebGPUPowerPreference, gpu::WebGPUPowerPreference> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::WebGPUPowerPreference,
+                                        gpu::WebGPUPowerPreference> {
   static gpu::mojom::WebGPUPowerPreference ToMojom(
       gpu::WebGPUPowerPreference input) {
     switch (input) {
@@ -177,8 +178,8 @@ struct GPU_EXPORT
 };
 
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::DawnBackendValidationLevel,
-                             gpu::DawnBackendValidationLevel> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::DawnBackendValidationLevel,
+                                        gpu::DawnBackendValidationLevel> {
   static gpu::mojom::DawnBackendValidationLevel ToMojom(
       gpu::DawnBackendValidationLevel input) {
     switch (input) {
@@ -209,8 +210,8 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::DawnBackendValidationLevel,
 };
 
 template <>
-struct GPU_EXPORT
-    StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuPreferencesDataView,
+                                          gpu::GpuPreferences> {
   static bool Read(gpu::mojom::GpuPreferencesDataView prefs,
                    gpu::GpuPreferences* out) {
     out->disable_accelerated_video_decode =

@@ -8,7 +8,7 @@
 #include <variant>
 
 #include "base/android/scoped_java_ref.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/android/scoped_java_surface.h"
@@ -19,7 +19,7 @@ namespace gpu {
 using JavaSurfaceVariant =
     std::variant<gl::ScopedJavaSurface, gl::ScopedJavaSurfaceControl>;
 
-struct GPU_EXPORT SurfaceRecord {
+struct GPU_IPC_COMMON_EXPORT SurfaceRecord {
   SurfaceRecord(
       gl::ScopedJavaSurface surface,
       bool can_be_used_with_surface_control,
@@ -38,7 +38,7 @@ struct GPU_EXPORT SurfaceRecord {
 };
 // This class provides an interface to look up window surface handles
 // that cannot be sent through the IPC channel.
-class GPU_EXPORT GpuSurfaceLookup {
+class GPU_IPC_COMMON_EXPORT GpuSurfaceLookup {
  public:
   GpuSurfaceLookup() {}
 

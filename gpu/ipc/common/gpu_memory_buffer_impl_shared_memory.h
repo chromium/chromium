@@ -9,13 +9,14 @@
 
 #include <memory>
 
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 
 namespace gpu {
 
 // Implementation of GPU memory buffer based on shared memory.
-class GPU_EXPORT GpuMemoryBufferImplSharedMemory : public GpuMemoryBufferImpl {
+class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
+    : public GpuMemoryBufferImpl {
  public:
   GpuMemoryBufferImplSharedMemory(const GpuMemoryBufferImplSharedMemory&) =
       delete;

@@ -10,8 +10,8 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/exported_shared_image.mojom-shared.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/shared_image_metadata_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
@@ -21,8 +21,9 @@
 namespace mojo {
 
 template <>
-struct GPU_EXPORT StructTraits<gpu::mojom::ExportedSharedImageDataView,
-                               gpu::ExportedSharedImage> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::ExportedSharedImageDataView,
+    gpu::ExportedSharedImage> {
   static const gpu::Mailbox& mailbox(const gpu::ExportedSharedImage& holder) {
     return holder.mailbox_;
   }

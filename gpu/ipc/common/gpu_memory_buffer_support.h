@@ -16,7 +16,7 @@
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -58,7 +58,7 @@ class ClientSharedImage;
 class GpuMemoryBufferManager;
 
 // Provides a common factory for GPU memory buffer implementations.
-class GPU_EXPORT GpuMemoryBufferSupport {
+class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
  public:
   GpuMemoryBufferSupport();
 
@@ -149,7 +149,7 @@ class GPU_EXPORT GpuMemoryBufferSupport {
 
 // Helper class to manage allocated GMB info and to provide interface to dump
 // the memory consumed by that GMB.
-class GPU_EXPORT AllocatedBufferInfo {
+class GPU_IPC_COMMON_EXPORT AllocatedBufferInfo {
  public:
   AllocatedBufferInfo(const gfx::GpuMemoryBufferHandle& handle,
                       const gfx::Size& size,

@@ -6,15 +6,16 @@
 #define GPU_IPC_COMMON_GPU_PEAK_MEMORY_MOJOM_TRAITS_H_
 
 #include "base/notreached.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/ipc/common/gpu_peak_memory.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::GpuPeakMemoryAllocationSource,
-                             gpu::GpuPeakMemoryAllocationSource> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<
+    gpu::mojom::GpuPeakMemoryAllocationSource,
+    gpu::GpuPeakMemoryAllocationSource> {
   static gpu::mojom::GpuPeakMemoryAllocationSource ToMojom(
       gpu::GpuPeakMemoryAllocationSource gpu_peak_memory_allocation_source) {
     switch (gpu_peak_memory_allocation_source) {

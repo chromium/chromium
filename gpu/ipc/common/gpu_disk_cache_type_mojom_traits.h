@@ -5,15 +5,15 @@
 #ifndef GPU_IPC_COMMON_GPU_DISK_CACHE_TYPE_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_GPU_DISK_CACHE_TYPE_MOJOM_TRAITS_H_
 
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.mojom.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT
-    EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::GpuDiskCacheType,
+                                        gpu::GpuDiskCacheType> {
   static gpu::mojom::GpuDiskCacheType ToMojom(gpu::GpuDiskCacheType support);
   static bool FromMojom(gpu::mojom::GpuDiskCacheType input,
                         gpu::GpuDiskCacheType* out);
@@ -59,8 +59,8 @@ struct StructTraits<gpu::mojom::GpuDiskCacheDawnGraphiteHandleDataView,
           gpu::GpuDiskCacheDawnGraphiteHandle> {};
 
 template <>
-struct GPU_EXPORT UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView,
-                              gpu::GpuDiskCacheHandle> {
+struct GPU_IPC_COMMON_EXPORT UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView,
+                                         gpu::GpuDiskCacheHandle> {
   static bool IsNull(const gpu::GpuDiskCacheHandle& handle);
   static void SetToNull(gpu::GpuDiskCacheHandle* handle);
 

@@ -7,7 +7,7 @@
 
 #include <xpc/xpc.h>
 
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 
 namespace gpu {
@@ -15,7 +15,7 @@ namespace gpu {
 // Allows the BELayerHierarchy to be transported from the GPU process
 // to the browser process. Since BELayerHierarchy is only serializable
 // over XPC (and not mojo) it needs a hook into the XPC IPC channel.
-class GPU_EXPORT BELayerHierarchyTransport {
+class GPU_IPC_COMMON_EXPORT BELayerHierarchyTransport {
  public:
   static BELayerHierarchyTransport* GetInstance();
   static void SetInstance(BELayerHierarchyTransport* instance);

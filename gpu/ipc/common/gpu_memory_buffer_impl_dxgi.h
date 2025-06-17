@@ -20,7 +20,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -30,7 +30,8 @@ namespace gpu {
 class GpuMemoryBufferManager;
 
 // Implementation of GPU memory buffer based on dxgi textures.
-class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
+class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
+    : public GpuMemoryBufferImpl {
  public:
   GpuMemoryBufferImplDXGI(const GpuMemoryBufferImplDXGI&) = delete;
   GpuMemoryBufferImplDXGI& operator=(const GpuMemoryBufferImplDXGI&) = delete;
