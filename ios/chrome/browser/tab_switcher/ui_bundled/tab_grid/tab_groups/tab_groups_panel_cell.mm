@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/saved_tab_groups/favicon/ui/tab_group_favicons_grid.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -20,9 +21,21 @@ const CGFloat kDotSize = 14;
 
 }  // namespace
 
+@interface TabGroupsPanelCell ()
+
+// The face pile view.
+@property(nonatomic, strong) UIView* facePile;
+
+@end
+
 @implementation TabGroupsPanelCell {
   // The main stack view that contains subviews.
   UIStackView* _stackView;
+  // The FacePileProvider, responsible for providing and managing the
+  // FacePileView and ensuring its updates.
+  id<FacePileProviding> _facePileProvider;
+  // Spacer view used when `facePile` is added to the `_stackView`.
+  UIView* _spacerFacePileView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -57,10 +70,23 @@ const CGFloat kDotSize = 14;
     labelsStackView.spacing = kSpacing;
     [_stackView addArrangedSubview:labelsStackView];
 
+    UIView* contentView = self.contentView;
+
     AddSquareConstraints(_dot, kDotSize);
-    AddSameCenterYConstraint(_faviconsGrid, self.contentView);
-    AddSameCenterYConstraint(labelsStackView, self.contentView);
-    AddSameConstraintsWithInset(_stackView, self.contentView, kMargin);
+    AddSameCenterYConstraint(_faviconsGrid, contentView);
+    AddSameCenterYConstraint(labelsStackView, contentView);
+    [NSLayoutConstraint activateConstraints:@[
+      [_stackView.leadingAnchor
+          constraintEqualToAnchor:contentView.leadingAnchor
+                         constant:kMargin],
+      [_stackView.topAnchor constraintEqualToAnchor:contentView.topAnchor
+                                           constant:kMargin],
+      [_stackView.bottomAnchor constraintEqualToAnchor:contentView.bottomAnchor
+                                              constant:-kMargin],
+      [_stackView.trailingAnchor
+          constraintEqualToAnchor:contentView.trailingAnchor
+                         constant:-kMargin],
+    ]];
   }
   return self;
 }
@@ -134,9 +160,21 @@ const CGFloat kDotSize = 14;
 
 #pragma mark - Setters
 
+- (void)setFacePileProvider:(id<FacePileProviding>)facePileProvider {
+  if (_facePileProvider == facePileProvider) {
+    return;
+  }
+  _facePileProvider = facePileProvider;
+
+  self.facePile = [_facePileProvider facePileView];
+}
+
 - (void)setFacePile:(UIView*)facePile {
-  if (_facePile.superview == _stackView) {
+  if ([_facePile isDescendantOfView:self]) {
     [_facePile removeFromSuperview];
+  }
+  if ([_spacerFacePileView isDescendantOfView:self]) {
+    [_spacerFacePileView removeFromSuperview];
   }
 
   _facePile = facePile;
@@ -145,7 +183,26 @@ const CGFloat kDotSize = 14;
     return;
   }
 
+  if (!_spacerFacePileView) {
+    _spacerFacePileView = [[UIView alloc] init];
+    _spacerFacePileView.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+
   facePile.translatesAutoresizingMaskIntoConstraints = NO;
+  [facePile setContentHuggingPriority:UILayoutPriorityRequired
+                              forAxis:UILayoutConstraintAxisHorizontal];
+  [facePile
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+  [_spacerFacePileView
+      setContentHuggingPriority:UILayoutPriorityFittingSizeLevel
+                        forAxis:UILayoutConstraintAxisHorizontal];
+  [_spacerFacePileView
+      setContentCompressionResistancePriority:UILayoutPriorityFittingSizeLevel
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+  [_stackView addArrangedSubview:_spacerFacePileView];
   [_stackView addArrangedSubview:facePile];
 }
 

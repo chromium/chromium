@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol FacePileProviding;
 @class TabGroupsPanelCell;
 @class TabGroupsPanelItem;
 @class TabGroupsPanelItemData;
@@ -22,7 +23,7 @@
 - (void)fetchFaviconsForCell:(TabGroupsPanelCell*)cell;
 
 // Returns the facePile view associated with the item.
-- (UIView*)facePileViewForItem:(TabGroupsPanelItem*)item;
+- (id<FacePileProviding>)facePileProviderForItem:(TabGroupsPanelItem*)item;
 
 @end
 

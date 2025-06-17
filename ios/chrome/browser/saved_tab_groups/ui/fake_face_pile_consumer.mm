@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/saved_tab_groups/ui/fake_face_pile_consumer.h"
+
+@implementation FakeFacePileConsumer
+
+- (void)setShowsTextWhenEmpty:(BOOL)showsTextWhenEmpty {
+  _lastShowsTextWhenEmpty = showsTextWhenEmpty;
+  _setShowsTextWhenEmptyCallCount++;
+}
+
+- (void)updateWithFaces:(NSArray<id<ShareKitAvatarPrimitive>>*)faces
+            totalNumber:(NSInteger)totalNumber {
+  _lastFaces = faces;
+  _lastTotalNumber = totalNumber;
+  _updateWithViewsCallCount++;
+}
+
+@end

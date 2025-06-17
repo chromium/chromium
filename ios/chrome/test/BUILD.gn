@@ -422,6 +422,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/safety_check_notifications/utils:unit_tests",
     "//ios/chrome/browser/save_to_drive/ui_bundled:unit_tests",
     "//ios/chrome/browser/save_to_photos/ui_bundled:unit_tests",
+    "//ios/chrome/browser/saved_tab_groups/coordinator:unit_tests",
     "//ios/chrome/browser/saved_tab_groups/model:unit_tests",
     "//ios/chrome/browser/screenshot/model:unit_tests",
     "//ios/chrome/browser/search_engine_choice/model:unit_tests",

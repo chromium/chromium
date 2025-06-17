@@ -7,6 +7,7 @@
 
 #import "base/uuid.h"
 
+@protocol FacePileProviding;
 enum class TabGroupActionType;
 @class TabGroupsPanelMediator;
 
@@ -31,6 +32,9 @@ enum class TabGroupActionType;
                                  groupTitle:(NSString*)groupTitle
                                   forAction:(TabGroupActionType)actionType
                                  sourceView:(UIView*)sourceView;
+
+// Returns a FacePile provider for `groupID`.
+- (id<FacePileProviding>)facePileProviderForGroupID:(const std::string&)groupID;
 
 @end
 

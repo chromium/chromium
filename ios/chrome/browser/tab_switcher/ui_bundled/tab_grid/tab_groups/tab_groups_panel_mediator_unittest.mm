@@ -18,6 +18,7 @@
 #import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/fake_face_pile_provider.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -108,6 +110,35 @@ NSString* SummaryFromMessages(const std::vector<PersistentMessage>& messages) {
 }
 
 - (void)dismissModals {
+}
+
+@end
+
+@interface FakeTabGroupsPanelMediatorDelegate
+    : NSObject <TabGroupsPanelMediatorDelegate>
+@end
+
+@implementation FakeTabGroupsPanelMediatorDelegate
+
+- (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
+           openGroupWithSyncID:(const base::Uuid&)syncID {
+}
+
+- (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
+    showDeleteGroupConfirmationWithSyncID:(const base::Uuid)syncID
+                               sourceView:(UIView*)sourceView {
+}
+
+- (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
+    startLeaveOrDeleteSharedGroupWithSyncID:(const base::Uuid)syncID
+                                 groupTitle:(NSString*)groupTitle
+                                  forAction:(TabGroupActionType)actionType
+                                 sourceView:(UIView*)sourceView {
+}
+
+- (id<FacePileProviding>)facePileProviderForGroupID:
+    (const std::string&)groupID {
+  return [[FakeFacePileProvider alloc] init];
 }
 
 @end
@@ -686,7 +717,7 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
 }
 
 // Tests that `facePileViewForItem` returns an UIView when the group is shared.
-TEST_F(TabGroupsPanelMediatorTest, FacePileViewForItem) {
+TEST_F(TabGroupsPanelMediatorTest, facePileProviderForItem) {
   auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:sync_service.get()
@@ -698,6 +729,9 @@ TEST_F(TabGroupsPanelMediatorTest, FacePileViewForItem) {
                     faviconLoader:nullptr
                  disabledByPolicy:NO
                       browserList:browser_list_];
+  FakeTabGroupsPanelMediatorDelegate* delegate =
+      [[FakeTabGroupsPanelMediatorDelegate alloc] init];
+  mediator.delegate = delegate;
 
   // Set a saved tab group.
   tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
@@ -708,14 +742,14 @@ TEST_F(TabGroupsPanelMediatorTest, FacePileViewForItem) {
       initWithSavedTabGroupID:group.saved_guid()
                  sharingState:SharingState::kSharedAndOwned];
 
-  EXPECT_EQ(nil, [mediator facePileViewForItem:item]);
+  EXPECT_EQ(nil, [mediator facePileProviderForItem:item]);
 
   // Share the group.
   sync_service->MakeTabGroupShared(
       group.local_group_id().value(), syncer::CollaborationId("collaboration"),
       tab_groups::TabGroupSyncService::TabGroupSharingCallback());
 
-  EXPECT_NE(nil, [mediator facePileViewForItem:item]);
+  EXPECT_NE(nil, [mediator facePileProviderForItem:item]);
 }
 
 // Tests that a persistent message about a shared tab group that is no longer

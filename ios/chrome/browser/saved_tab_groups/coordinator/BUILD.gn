@@ -1,0 +1,52 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "face_pile_configuration.h",
+    "face_pile_configuration.mm",
+    "face_pile_coordinator.h",
+    "face_pile_coordinator.mm",
+    "face_pile_mediator.h",
+    "face_pile_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/data_sharing/public",
+    "//ios/chrome/browser/data_sharing/model",
+    "//ios/chrome/browser/data_sharing/model:observer_bridge",
+    "//ios/chrome/browser/saved_tab_groups/ui",
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/signin/model",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "face_pile_mediator_unittest.mm" ]
+
+  deps = [
+    ":coordinator",
+    "//components/data_sharing:test_support",
+    "//components/saved_tab_groups/public",
+    "//components/saved_tab_groups/test_support",
+    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
+    "//ios/chrome/browser/saved_tab_groups/ui:test_support",
+    "//ios/chrome/browser/share_kit/model:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ui/base",
+  ]
+}
