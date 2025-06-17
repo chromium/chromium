@@ -282,7 +282,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         private final Context mContext;
         private final int mWidgetId;
         private final SharedPreferences mPreferences;
-        private final RemoteViews mBookmarkWidgeRemoteView;
+        private final RemoteViews mBookmarkWidgetRemoteView;
         private int mIconColor;
 
         // Accessed only on the UI thread
@@ -298,9 +298,9 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mPreferences = getWidgetState(mWidgetId);
             mIconColor = getIconColor(mContext);
             SystemNightModeMonitor.getInstance().addObserver(this);
-            mBookmarkWidgeRemoteView =
+            mBookmarkWidgetRemoteView =
                     new RemoteViews(mContext.getPackageName(), R.layout.bookmark_widget);
-            mBookmarkWidgeRemoteView.setOnClickPendingIntent(
+            mBookmarkWidgetRemoteView.setOnClickPendingIntent(
                     R.id.empty_message,
                     BookmarkWidgetProxy.createBookmarkProxyLaunchIntent(context));
         }
@@ -400,7 +400,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
             if (!BookmarkWidgetProvider.shouldShowIconsOnly(appWidgetManager, mWidgetId)) {
                 boolean folderIsEmpty = mCurrentFolder != null && mCurrentFolder.children.isEmpty();
-                mBookmarkWidgeRemoteView.setViewVisibility(
+                mBookmarkWidgetRemoteView.setViewVisibility(
                         R.id.empty_message, folderIsEmpty ? View.VISIBLE : View.GONE);
 
                 // Directly update the widget on the UI thread.
@@ -411,7 +411,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                             // empty_message visibility, avoiding full widget redraws and redundant
                             // intent setup from BookmarkWidgetProvider#performUpdate.
                             appWidgetManager.partiallyUpdateAppWidget(
-                                    mWidgetId, mBookmarkWidgeRemoteView);
+                                    mWidgetId, mBookmarkWidgetRemoteView);
                         });
             }
         }
