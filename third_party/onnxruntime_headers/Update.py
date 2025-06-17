@@ -16,9 +16,9 @@ onnxruntime_headers = [
 ]
 
 # The target revision of ONNX Runtime
-revision = "30c682547bdae3e09523614f8e38526e49ca8fbc"
+revision = "f217402897f40ebba457e2421bc0a4702771968e"
 # These headers are extracted from a git repository and versioned by revision
-version = "N/A"
+version = "v1.22.0"
 
 base_url = "https://raw.githubusercontent.com/microsoft/onnxruntime"
 onnxruntime_headers_path = ["include", "onnxruntime", "core", "session"]
