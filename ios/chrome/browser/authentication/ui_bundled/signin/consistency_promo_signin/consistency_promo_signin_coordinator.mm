@@ -139,6 +139,12 @@
             continuationProvider:continuationProvider];
 }
 
+- (void)dealloc {
+  CHECK(!self.navigationController, base::NotFatalUntil::M142);
+  CHECK(!self.consistencyPromoSigninMediator, base::NotFatalUntil::M142);
+  CHECK(!self.defaultAccountCoordinator, base::NotFatalUntil::M142);
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
