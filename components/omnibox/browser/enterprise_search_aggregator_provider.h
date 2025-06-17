@@ -245,11 +245,15 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   // document') fields that can be used to compare input similarity.
   // Non-user-readable fields (e.g. 'doc_id=123/locations/global') should be
   // excluded because the input matching that would be a coincidence and not
-  // a sign the user wanted this suggestion. Does not return fields already
-  // returned by `GetMatchDescription()` and `GetMatchContents()`.
+  // a sign the user wanted this suggestion. `GetMatchDescription()` and
+  // `GetMatchContents()`, and `GetEmailUsernames()` should be passed to
+  // `GetStrongScoringFields()`.
   std::vector<std::string> GetStrongScoringFields(
       const base::Value::Dict& result,
-      SuggestionType suggestion_type) const;
+      SuggestionType suggestion_type,
+      const std::string& contents,
+      const std::string& description,
+      const std::vector<std::u16string> email_usernames) const;
   std::vector<std::string> GetWeakScoringFields(
       const base::Value::Dict& result,
       SuggestionType suggestion_type) const;

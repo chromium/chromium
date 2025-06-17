@@ -20,6 +20,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/i18n/case_conversion.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -120,6 +121,15 @@ int kScorePerWeakTextMatch() {
 int kMaxTextScore() {
   return omnibox_feature_configs::SearchAggregatorProvider::Get()
       .scoring_max_text_score;
+}
+
+// Shift people relevances whose email username was exactly matched by an input
+// term. Some people-seeking inputs will have words intended to match email
+// usernames and scoring these 400 wouldn't reliably allow them to make it to
+// the final results.
+int kPeopleEmailMatchScoreBoost() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .scoring_people_email_match_score_boost;
 }
 
 // Shift people relevances higher than calculated with the above constants. Most
@@ -297,6 +307,30 @@ std::set<std::u16string> GetWords(std::vector<std::string> strings) {
   return GetWords(u16strings);
 }
 
+// Helper for getting a list of lowercase email usernames from the result
+// dictionary.
+const std::vector<std::u16string> GetEmailUsernames(
+    const base::Value::Dict& result) {
+  std::vector<std::u16string> usernames;
+  const base::Value::List* emails =
+      result.FindListByDottedPath("document.derivedStructData.emails");
+  if (!emails) {
+    return usernames;
+  }
+  for (const auto& email : *emails) {
+    const std::string* email_value = email.GetDict().FindString("value");
+    if (!email_value) {
+      continue;
+    }
+    size_t at_pos = email_value->find('@');
+    if (at_pos != std::string::npos) {
+      usernames.push_back(base::i18n::ToLower(
+          base::UTF8ToUTF16(email_value->substr(0, at_pos))));
+    }
+  }
+  return usernames;
+}
+
 // Whether `word` matches any of `potential_match_words`.
 enum class WordMatchType {
   NONE = 0,
@@ -324,16 +358,25 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
     bool in_keyword_mode,
     AutocompleteMatch::EnterpriseSearchAggregatorType suggestion_type,
     const std::vector<std::string> strong_scoring_fields,
-    const std::vector<std::string> weak_scoring_fields) {
+    const std::vector<std::string> weak_scoring_fields,
+    const std::vector<std::u16string> email_usernames) {
   // Split match fields into words.
   std::set<std::u16string> strong_scoring_words =
       GetWords(strong_scoring_fields);
   std::set<std::u16string> weak_scoring_words = GetWords(weak_scoring_fields);
+  // Do not use `GetWords()` for email usernames as it may split the username by
+  // special symbols leading to false positives in "exact" matching.
+  std::set<std::u16string> email_usernames_words;
+  std::ranges::transform(
+      email_usernames,
+      std::inserter(email_usernames_words, email_usernames_words.end()),
+      [](const std::u16string& email_username) { return email_username; });
 
   // Compute text similarity of the input and match fields. See comment for
   // `kMinCharForStrongTextMatch`.
   size_t strong_word_matches = 0;
   size_t weak_word_matches = 0;
+  bool has_email_match = false;
   for (const auto& input_word : input_words) {
     WordMatchType strong_match_type =
         GetWordMatchType(input_word, strong_scoring_words);
@@ -350,6 +393,15 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
     } else if (GetWordMatchType(input_word, weak_scoring_words) !=
                WordMatchType::NONE) {
       weak_word_matches++;
+    }
+    // Check if the input has exact match with the email username fields for
+    // people suggestions.
+    if (!has_email_match &&
+        suggestion_type ==
+            AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE &&
+        GetWordMatchType(input_word, email_usernames_words) ==
+            WordMatchType::EXACT) {
+      has_email_match = true;
     }
   }
 
@@ -391,6 +443,10 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
       return {0, strong_word_matches, weak_word_matches,
               "local, unmatched input word for PEOPLE type"};
     } else {
+      // See comment for `kPeopleEmailMatchScoreBoost`.
+      if (has_email_match) {
+        relevance += kPeopleEmailMatchScoreBoost();
+      }
       // See comment for `kPeopleScoreBoost`.
       relevance += kPeopleScoreBoost();
     }
@@ -936,14 +992,14 @@ EnterpriseSearchAggregatorProvider::ParseResultList(
          adjusted_input_.InKeywordMode())) {
       relevance_data = GetServerRelevanceData(result);
     } else {
-      auto strong_scoring_fields =
-          GetStrongScoringFields(result, suggestion_type);
-      strong_scoring_fields.push_back(contents);
-      strong_scoring_fields.push_back(description);
+      const std::vector<std::u16string> email_usernames =
+          GetEmailUsernames(result);
+      auto strong_scoring_fields = GetStrongScoringFields(
+          result, suggestion_type, contents, description, email_usernames);
       auto weak_scoring_fields = GetWeakScoringFields(result, suggestion_type);
       relevance_data = CalculateRelevanceData(
           input_words, adjusted_input_.InKeywordMode(), suggestion_type,
-          strong_scoring_fields, weak_scoring_fields);
+          strong_scoring_fields, weak_scoring_fields, email_usernames);
     }
     if (relevance_data.relevance) {
       // Decrement scores to keep sorting stable. Add 10 to avoid going below
@@ -1075,15 +1131,24 @@ std::u16string EnterpriseSearchAggregatorProvider::GetLocalizedContentMetadata(
 std::vector<std::string>
 EnterpriseSearchAggregatorProvider::GetStrongScoringFields(
     const base::Value::Dict& result,
-    SuggestionType suggestion_type) const {
+    SuggestionType suggestion_type,
+    const std::string& contents,
+    const std::string& description,
+    const std::vector<std::u16string> email_usernames) const {
+  std::vector<std::string> strong_scoring_fields;
   // Should not return any fields already included in `GetMatchDescription()` &
   // `GetMatchContents()`.
   if (suggestion_type == SuggestionType::PEOPLE) {
-    return {
-        ptr_to_string(result.FindString("suggestion")),
-    };
+    std::ranges::transform(
+        email_usernames, std::back_inserter(strong_scoring_fields),
+        [](const auto& u16string) { return base::UTF16ToUTF8(u16string); });
+  } else {
+    // Contents field for people suggestions is always "{NAME} People" and is
+    // not a good field to use to score relevancy.
+    strong_scoring_fields.push_back(contents);
   }
-  return {};
+  strong_scoring_fields.push_back(description);
+  return strong_scoring_fields;
 }
 
 std::vector<std::string>
@@ -1098,8 +1163,6 @@ EnterpriseSearchAggregatorProvider::GetWeakScoringFields(
             "document.derivedStructData.name.givenName")),
         ptr_to_string(result.FindStringByDottedPath(
             "document.derivedStructData.name.familyName")),
-        ptr_to_string(result.FindStringByDottedPath(
-            "document.derivedStructData.emails.value")),
     };
   } else if (suggestion_type == SuggestionType::CONTENT) {
     return {

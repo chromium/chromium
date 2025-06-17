@@ -360,6 +360,7 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   int scoring_score_per_weak_text_match;
   int scoring_max_text_score;
   int scoring_people_score_boost;
+  int scoring_people_email_match_score_boost;
   bool scoring_prefer_contents_over_queries;
   size_t scoring_scoped_max_low_quality_matches;
   size_t scoring_unscoped_max_low_quality_matches;

@@ -554,6 +554,36 @@ std::string CreatePeopleResult(const std::string& displayName,
   return base::StringPrintf(
       R"(
         {
+          "suggestion": "%s@example.com",
+          "document": {
+            "derivedStructData": {
+              "name": {
+                "displayName": "%s",
+                "givenName": "%s",
+                "familyName": "%s"
+              },
+              "emails": [
+                {
+                "type": "",
+                "value": "%s@example.com"
+                }
+              ]
+            }
+          },
+          "destinationUri": "https://example.com/people/%s",
+          "score": %0.1f
+        }
+        )",
+      userName, displayName, givenName, familyName, userName, userName, score);
+}
+std::string CreatePeopleResultWithoutEmailField(const std::string& displayName,
+                                                const std::string& userName,
+                                                const std::string& givenName,
+                                                const std::string& familyName,
+                                                const float score = 0.0) {
+  return base::StringPrintf(
+      R"(
+        {
           "suggestion": "%s",
           "document": {
             "derivedStructData": {
@@ -568,7 +598,7 @@ std::string CreatePeopleResult(const std::string& displayName,
           "score": %0.1f
         }
         )",
-      userName, displayName, givenName, familyName, userName, score);
+      displayName, displayName, givenName, familyName, userName, score);
 }
 std::string CreateContentResult(const std::string& title,
                                 const std::string& url,
@@ -1676,17 +1706,19 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, LocalRelevanceScoring) {
   // matches in people suggestions.
   provider_->adjusted_input_ = CreateInput(u"weak ab", true);
   StartAndComplete3Requests(
-      200, CreateResponse({},
-                          {
-                              {CreatePeopleResult("ab", "ab", "weak", "")},
-                              {CreatePeopleResult("abc", "abc", "weak", "")},
-                          },
-                          {
-                              CreateContentResultWithOwnerEmail(
-                                  "ab", "weak", "https://url-ab/"),
-                              CreateContentResultWithOwnerEmail(
-                                  "abc", "weak", "https://url-abc/"),
-                          }));
+      200,
+      CreateResponse(
+          {},
+          {
+              {CreatePeopleResultWithoutEmailField("ab", "ab", "weak", "")},
+              {CreatePeopleResultWithoutEmailField("abc", "abc", "weak", "")},
+          },
+          {
+              CreateContentResultWithOwnerEmail("ab", "weak",
+                                                "https://url-ab/"),
+              CreateContentResultWithOwnerEmail("abc", "weak",
+                                                "https://url-abc/"),
+          }));
   EXPECT_THAT(
       GetScoredMatches(),
       testing::ElementsAre(ScoredMatch{u"https://example.com/people/ab", 610},
@@ -1698,17 +1730,19 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, LocalRelevanceScoring) {
   // regardless of whether they fully or prefix match.
   provider_->adjusted_input_ = CreateInput(u"weak abc", true);
   StartAndComplete3Requests(
-      200, CreateResponse({},
-                          {
-                              {CreatePeopleResult("abc", "abc", "weak", "")},
-                              {CreatePeopleResult("abcd", "abcd", "weak", "")},
-                          },
-                          {
-                              CreateContentResultWithOwnerEmail(
-                                  "abc", "weak", "https://url-abc/"),
-                              CreateContentResultWithOwnerEmail(
-                                  "abcd", "weak", "https://url-abcd/"),
-                          }));
+      200,
+      CreateResponse(
+          {},
+          {
+              {CreatePeopleResultWithoutEmailField("abc", "abc", "weak", "")},
+              {CreatePeopleResultWithoutEmailField("abcd", "abcd", "weak", "")},
+          },
+          {
+              CreateContentResultWithOwnerEmail("abc", "weak",
+                                                "https://url-abc/"),
+              CreateContentResultWithOwnerEmail("abcd", "weak",
+                                                "https://url-abcd/"),
+          }));
   EXPECT_THAT(
       GetScoredMatches(),
       testing::ElementsAre(ScoredMatch{u"https://example.com/people/abc", 610},
@@ -1814,28 +1848,63 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, LocalRelevanceScoring) {
                           }));
   EXPECT_THAT(GetScoredMatches(), testing::ElementsAre(FieldsAre(_, 0)));
 
-  // People matches should be boosted.
+  // People matches should be boosted. Also test that people matches without
+  // email fields are still scored appropriately.
   provider_->adjusted_input_ = CreateInput(u"input i", true);
   StartAndComplete3Requests(
-      200, CreateResponse(
-               {
-                   CreateQueryResult("input"),
-               },
-               {
-                   CreatePeopleResult("displayName input", "userName",
-                                      "givenName", "familyName"),
-                   CreatePeopleResult("displayName", "NoMatchUserName",
-                                      "givenName", "familyName"),
-               },
-               {
-                   CreateContentResult("title input", "https://url/"),
-               }));
+      200,
+      CreateResponse(
+          {
+              CreateQueryResult("input"),
+          },
+          {
+              CreatePeopleResult("displayName input", "userName", "givenName",
+                                 "familyName"),
+              CreatePeopleResult("displayName", "NoMatchUserName", "givenName",
+                                 "familyName"),
+              CreatePeopleResultWithoutEmailField(
+                  "displayName input", "userName2", "givenName", "familyName"),
+              CreatePeopleResultWithoutEmailField(
+                  "displayName", "NoMatchUserName2", "givenName", "familyName"),
+          },
+          {
+              CreateContentResult("title input", "https://url/"),
+          }));
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
                   ScoredMatch{u"https://example.com/people/userName", 610},
+                  ScoredMatch{u"https://example.com/people/userName2", 608},
                   ScoredMatch{u"https://url/", 520},
                   ScoredMatch{u"https://www.google.com/?q=input", 510},
-                  FieldsAre(_, 0)));
+                  FieldsAre(_, 0), FieldsAre(_, 0)));
+
+  // People matches with exact email matches should be boosted.
+  provider_->adjusted_input_ = CreateInput(u"userName d", true);
+  StartAndComplete3Requests(
+      200,
+      CreateResponse(
+          {
+              CreateQueryResult("userName"),
+          },
+          {
+              CreatePeopleResult("userName displayName", "userName",
+                                 "givenName", "familyName"),
+              CreatePeopleResult("userName displayName", "userNamePrefixMatch",
+                                 "givenName", "familyName"),
+              CreatePeopleResult("userName displayName", "NoMatchUserName",
+                                 "givenName", "familyName"),
+          },
+          {
+              CreateContentResult("title userName", "https://url/"),
+          }));
+  EXPECT_THAT(
+      GetScoredMatches(),
+      testing::ElementsAre(
+          ScoredMatch{u"https://example.com/people/userName", 1010},
+          ScoredMatch{u"https://example.com/people/userNamePrefixMatch", 609},
+          ScoredMatch{u"https://example.com/people/NoMatchUserName", 608},
+          ScoredMatch{u"https://url/", 420},
+          ScoredMatch{u"https://www.google.com/?q=userName", 410}));
 
   // People matches must match all input words.
   provider_->adjusted_input_ = CreateInput(u"query q unmatched", true);
