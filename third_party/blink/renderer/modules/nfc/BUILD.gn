@@ -28,5 +28,6 @@ blink_modules_sources("nfc") {
       "nfc_parser_ios.mm",
     ]
     deps += [ "//services/device/public/cpp/nfc" ]
+    frameworks = [ "CoreNFC.framework" ]
   }
 }
