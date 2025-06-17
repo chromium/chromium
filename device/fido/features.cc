@@ -218,10 +218,10 @@ BASE_FEATURE(kWebAuthnImmediateGetAutoselect,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
-// Disabled by default. Feature not yet implemented.
+// Default enabled in M139. Remove in or after M142.
 BASE_FEATURE(kWebAuthnLargeBlobForICloudKeychain,
              "WebAuthenticationLargeBlobICloudKeychain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace device
