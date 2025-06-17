@@ -192,7 +192,14 @@ LinkToTextMenuObserverTest::~LinkToTextMenuObserverTest() = default;
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, AddsCopyMenuItem) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AddsCopyMenuItem DISABLED_AddsCopyMenuItem
+#else
+#define MAYBE_AddsCopyMenuItem AddsCopyMenuItem
+#endif
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, MAYBE_AddsCopyMenuItem) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = u"hello world";
@@ -209,7 +216,15 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, AddsCopyMenuItem) {
   EXPECT_FALSE(item.enabled);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, AddsCopyAndRemoveMenuItems) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AddsCopyAndRemoveMenuItems DISABLED_AddsCopyAndRemoveMenuItems
+#else
+#define MAYBE_AddsCopyAndRemoveMenuItems AddsCopyAndRemoveMenuItems
+#endif
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
+                       MAYBE_AddsCopyAndRemoveMenuItems) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.annotation_type = blink::mojom::AnnotationType::kSharedHighlight;
@@ -272,7 +287,14 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   EXPECT_FALSE(menu()->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ReplacesRefInURL) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ReplacesRefInURL DISABLED_ReplacesRefInURL
+#else
+#define MAYBE_ReplacesRefInURL ReplacesRefInURL
+#endif
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, MAYBE_ReplacesRefInURL) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/#:~:text=hello%20world");
@@ -339,8 +361,18 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, Blocklist) {
   EXPECT_FALSE(menu()->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
-                       SelectionOverlappingHighlightCopiesNewLinkToText) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SelectionOverlappingHighlightCopiesNewLinkToText \
+  DISABLED_SelectionOverlappingHighlightCopiesNewLinkToText
+#else
+#define MAYBE_SelectionOverlappingHighlightCopiesNewLinkToText \
+  SelectionOverlappingHighlightCopiesNewLinkToText
+#endif
+IN_PROC_BROWSER_TEST_F(
+    LinkToTextMenuObserverTest,
+    MAYBE_SelectionOverlappingHighlightCopiesNewLinkToText) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
@@ -413,8 +445,15 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
       1);
 }
 
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LinkGenerationRequestedMetric_Success_NoDelay DISABLED_LinkGenerationRequestedMetric_Success_NoDelay
+#else
+#define MAYBE_LinkGenerationRequestedMetric_Success_NoDelay LinkGenerationRequestedMetric_Success_NoDelay
+#endif
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
-                       LinkGenerationRequestedMetric_Success_NoDelay) {
+                       MAYBE_LinkGenerationRequestedMetric_Success_NoDelay) {
   base::HistogramTester histogram_tester;
 
   content::BrowserTestClipboardScope test_clipboard_scope;
@@ -658,8 +697,15 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   EXPECT_TRUE(text.empty());
 }
 
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WarnsCopyingLinkToTextAndCancel DISABLED_WarnsCopyingLinkToTextAndCancel
+#else
+#define MAYBE_WarnsCopyingLinkToTextAndCancel WarnsCopyingLinkToTextAndCancel
+#endif
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
-                       WarnsCopyingLinkToTextAndCancel) {
+                       MAYBE_WarnsCopyingLinkToTextAndCancel) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",
@@ -771,7 +817,14 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
             text);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ShowsToastOnCopyingLink) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowsToastOnCopyingLink DISABLED_ShowsToastOnCopyingLink
+#else
+#define MAYBE_ShowsToastOnCopyingLink ShowsToastOnCopyingLink
+#endif
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, MAYBE_ShowsToastOnCopyingLink) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
@@ -811,7 +864,14 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   EXPECT_TRUE(item.enabled);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, RemovesGlicHighlight) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RemovesGlicHighlight DISABLED_RemovesGlicHighlight
+#else
+#define MAYBE_RemovesGlicHighlight RemovesGlicHighlight
+#endif
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, MAYBE_RemovesGlicHighlight) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
