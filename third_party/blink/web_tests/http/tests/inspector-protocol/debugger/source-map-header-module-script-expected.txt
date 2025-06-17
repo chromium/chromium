@@ -1,0 +1,8 @@
+Tests that the SourceMap header is reported on Debugger.scriptParsed events
+Script parsed event:
+  - url: http://devtools.test:8000/inspector-protocol/resources/source-map-module.php
+  - sourceMapURL: http://localhost/source.js.map
+Script parsed event:
+  - url: http://devtools.test:8000/inspector-protocol/resources/source-map-module.php
+  - sourceMapURL: http://localhost/source.js.map
+

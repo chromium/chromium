@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<body>
+  <script src="./source-map-module.php" type="module"></script>
+  <script type="module">
+    const worker = new Worker('./source-map-module.php', { type: 'module' });
+
+    //# sourceURL=worker-setup.js
+  </script>
+</body>

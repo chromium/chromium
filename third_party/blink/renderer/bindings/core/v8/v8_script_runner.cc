@@ -374,12 +374,12 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
   v8::ScriptOrigin origin(
       V8String(isolate, file_name), start_position.line_.ZeroBasedInt(),
       start_position.column_.ZeroBasedInt(),
-      true,                        // resource_is_shared_cross_origin
-      -1,                          // script id
-      v8::String::Empty(isolate),  // source_map_url
-      false,                       // resource_is_opaque
-      false,                       // is_wasm
-      true,                        // is_module
+      true,  // resource_is_shared_cross_origin
+      -1,    // script id
+      V8String(isolate, params.SourceMapURL()),
+      false,  // resource_is_opaque
+      false,  // is_wasm
+      true,   // is_module
       referrer_info.ToV8HostDefinedOptions(isolate, params.SourceURL()));
 
   v8::Local<v8::String> code = V8String(isolate, params.GetSourceText());

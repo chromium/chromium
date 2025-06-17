@@ -101,7 +101,8 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
       /*source_url=*/fetch_params.Url(), /*base_url=*/fetch_params.Url(),
       ScriptSourceLocationType::kExternalFile, resolved_module_type,
       ParkableString(script_data->TakeSourceText().Impl()),
-      /*cache_handler=*/nullptr, response_referrer_policy));
+      /*cache_handler=*/nullptr, response_referrer_policy,
+      /*source_map_url=*/String()));
 }
 
 void InstalledServiceWorkerModuleScriptFetcher::Trace(Visitor* visitor) const {

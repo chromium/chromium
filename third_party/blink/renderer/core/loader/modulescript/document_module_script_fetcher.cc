@@ -107,7 +107,9 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
       /*source_url=*/url, /*base_url=*/url,
       ScriptSourceLocationType::kExternalFile, resolved_module_type.value(),
       script_resource->SourceText(), script_resource->CacheHandler(),
-      response_referrer_policy, streamer, not_streamed_reason, import_phase_));
+      response_referrer_policy,
+      script_resource->GetResponse().HttpHeaderField(http_names::kSourceMap),
+      streamer, not_streamed_reason, import_phase_));
 }
 
 void DocumentModuleScriptFetcher::Trace(Visitor* visitor) const {

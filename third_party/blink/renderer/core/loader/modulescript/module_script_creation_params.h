@@ -47,6 +47,7 @@ class ModuleScriptCreationParams {
       const ParkableString& source_text,
       CachedMetadataHandler* cache_handler,
       network::mojom::ReferrerPolicy response_referrer_policy,
+      const String& source_map_url,
       ScriptStreamer* script_streamer = nullptr,
       ScriptStreamer::NotStreamingReason not_streaming_reason =
           ScriptStreamer::NotStreamingReason::kStreamingDisabled,
@@ -58,6 +59,7 @@ class ModuleScriptCreationParams {
         source_text_(source_text),
         cache_handler_(cache_handler),
         response_referrer_policy_(response_referrer_policy),
+        source_map_url_(source_map_url),
         script_streamer_(script_streamer),
         not_streaming_reason_(not_streaming_reason),
         import_phase_(import_phase) {
@@ -90,7 +92,7 @@ class ModuleScriptCreationParams {
     return ModuleScriptCreationParams(
         SourceURL(), BaseURL(), source_location_type_, module_type_,
         source_text_, /*cache_handler=*/nullptr, response_referrer_policy_,
-        /*script_streamer=*/nullptr,
+        source_map_url_, /*script_streamer=*/nullptr,
         ScriptStreamer::NotStreamingReason::kStreamingDisabled, import_phase_);
   }
 
@@ -99,6 +101,7 @@ class ModuleScriptCreationParams {
 
   const KURL& SourceURL() const { return source_url_; }
   const KURL& BaseURL() const { return base_url_; }
+  const String& SourceMapURL() const { return source_map_url_; }
 
   const ParkableString& GetSourceText() const {
     return source_text_;
@@ -112,7 +115,7 @@ class ModuleScriptCreationParams {
     return ModuleScriptCreationParams(
         source_url_, base_url_, source_location_type_, module_type_,
         ParkableString(), /*cache_handler=*/nullptr, response_referrer_policy_,
-        /*script_streamer=*/nullptr,
+        source_map_url_, /*script_streamer=*/nullptr,
         ScriptStreamer::NotStreamingReason::kStreamingDisabled, import_phase_);
   }
 
@@ -150,6 +153,9 @@ class ModuleScriptCreationParams {
   // will always be `kDefault` if there is no referrer policy sent in the
   // response. Consumers of this policy are responsible for detecting this.
   const network::mojom::ReferrerPolicy response_referrer_policy_;
+
+  // |source_map_url_| as provided by the response header.
+  const String source_map_url_;
 
   // |script_streamer_| is cleared when crossing thread boundaries.
   Persistent<ScriptStreamer> script_streamer_;

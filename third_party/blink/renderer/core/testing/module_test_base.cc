@@ -27,7 +27,7 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(ScriptState* script_state,
       /*source_url=*/url, /*base_url=*/url,
       ScriptSourceLocationType::kExternalFile, ResolvedModuleType::kJavaScript,
       ParkableString(source.Impl()), nullptr,
-      network::mojom::ReferrerPolicy::kDefault);
+      network::mojom::ReferrerPolicy::kDefault, /*source_map_url=*/String());
   return ModuleRecord::Compile(script_state, params, ScriptFetchOptions(),
                                TextPosition::MinimumPosition());
 }

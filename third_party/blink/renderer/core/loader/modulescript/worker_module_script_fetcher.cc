@@ -201,7 +201,8 @@ void WorkerModuleScriptFetcher::NotifyClient(
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/response_url, /*base_url=*/response_url,
       ScriptSourceLocationType::kExternalFile, module_type, source_text,
-      cache_handler, response_referrer_policy, nullptr,
+      cache_handler, response_referrer_policy,
+      response.HttpHeaderField(http_names::kSourceMap), nullptr,
       ScriptStreamer::NotStreamingReason::kStreamingDisabled, import_phase_));
 }
 

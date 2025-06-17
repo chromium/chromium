@@ -167,7 +167,8 @@ class ModuleMapTestModulator final : public DummyModulator {
       client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
           url_, url_, ScriptSourceLocationType::kExternalFile,
           resolved_module_type, ParkableString(script_string.ReleaseImpl()),
-          nullptr, network::mojom::ReferrerPolicy::kDefault, nullptr,
+          nullptr, network::mojom::ReferrerPolicy::kDefault,
+          /*source_map_url=*/String(), nullptr,
           ScriptStreamer::NotStreamingReason::kStreamingDisabled,
           import_phase_));
     }
