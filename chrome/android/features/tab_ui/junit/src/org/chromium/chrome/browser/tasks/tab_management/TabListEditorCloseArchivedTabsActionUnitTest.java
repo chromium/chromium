@@ -61,7 +61,7 @@ public class TabListEditorCloseArchivedTabsActionUnitTest {
                 R.id.tab_list_editor_close_archived_tabs_menu_item,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.MENU_ITEM_ID));
         Assert.assertEquals(
-                R.plurals.tab_selection_editor_close_tabs,
+                R.plurals.archived_tabs_dialog_close_action,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
         Assert.assertEquals(
                 true,

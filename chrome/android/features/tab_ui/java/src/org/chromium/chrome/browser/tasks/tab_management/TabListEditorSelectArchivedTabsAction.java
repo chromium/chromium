@@ -33,7 +33,7 @@ public class TabListEditorSelectArchivedTabsAction extends TabListEditorAction {
                 ShowMode.MENU_ONLY,
                 ButtonType.TEXT,
                 IconPosition.START,
-                R.string.tab_selection_editor_toolbar_select_tabs,
+                R.string.archived_tabs_dialog_select_action,
                 null,
                 null);
 

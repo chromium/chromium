@@ -58,7 +58,7 @@ public class TabListEditorSelectArchivedTabsActionUnitTest {
                 R.id.tab_list_editor_select_archived_tabs_menu_item,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.MENU_ITEM_ID));
         Assert.assertEquals(
-                R.string.tab_selection_editor_toolbar_select_tabs,
+                R.string.archived_tabs_dialog_select_action,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
         Assert.assertEquals(
                 false,

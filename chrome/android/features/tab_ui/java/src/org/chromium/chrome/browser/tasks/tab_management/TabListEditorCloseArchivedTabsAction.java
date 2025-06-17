@@ -33,7 +33,7 @@ public class TabListEditorCloseArchivedTabsAction extends TabListEditorAction {
                 ShowMode.MENU_ONLY,
                 ButtonType.TEXT,
                 IconPosition.START,
-                R.plurals.tab_selection_editor_close_tabs,
+                R.plurals.archived_tabs_dialog_close_action,
                 R.plurals.accessibility_tab_selection_editor_close_tabs,
                 null);
 

@@ -188,13 +188,13 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("1 inactive tab")).check(matches(isDisplayed()));
+        onView(withText("1 inactive item")).check(matches(isDisplayed()));
         mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(1);
 
         mRobot.actionRobot.clickToolbarMenuButton();
         mRobot.resultRobot
                 .verifyToolbarMenuItemState("Restore all", true)
-                .verifyToolbarMenuItemState("Select tabs", true)
+                .verifyToolbarMenuItemState("Select items", true)
                 .verifyToolbarMenuItemState("Settings", true);
     }
 
@@ -207,7 +207,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
         // The dialog isn't scrollable, so the shadow should be hidden.
         onView(withId(R.id.close_all_tabs_button_container_shadow))
                 .check(matches(not(isDisplayed())));
@@ -224,7 +224,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
         mRobot.resultRobot.verifyAdapterHasItemCount(3);
         assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogIphShown"));
     }
@@ -240,7 +240,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
 
         SettingsActivity activity =
                 ActivityTestUtils.waitForActivity(
@@ -307,7 +307,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -330,7 +330,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore all");
         mRobot.resultRobot.verifyTabListEditorIsHidden();
@@ -434,8 +434,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher("Tabs.CloseAllArchivedTabs.TabCount", 2);
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
-        onView(withText("Close all inactive tabs")).perform(click());
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
+        onView(withText("Close all")).perform(click());
         onView(withText("Close all")).perform(click());
 
         mRobot.resultRobot.verifyTabListEditorIsHidden();
@@ -453,8 +453,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
-        onView(withText("Close all inactive tabs")).perform(click());
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
+        onView(withText("Close all")).perform(click());
         onView(withText("Cancel")).perform(click());
 
         assertEquals(2, mArchivedTabModel.getCount());
@@ -470,14 +470,14 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
         assertEquals(1, mUserActionTester.getActionCount("Tabs.SelectArchivedTabsMenuItem"));
 
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(2)
                 .verifyItemNotSelectedAtAdapterPosition(0)
                 .verifyItemNotSelectedAtAdapterPosition(1)
-                .verifyToolbarSelectionText("2 inactive tabs");
+                .verifyToolbarSelectionText("2 inactive items");
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
@@ -488,7 +488,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.resultRobot
                 .verifyTabListEditorIsVisible()
                 .verifyAdapterHasItemCount(2)
-                .verifyToolbarSelectionText("2 inactive tabs");
+                .verifyToolbarSelectionText("2 inactive items");
     }
 
     @Test
@@ -500,11 +500,11 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
         mRobot.actionRobot.clickToolbarMenuButton();
         mRobot.resultRobot
-                .verifyToolbarMenuItemState("Close tabs", false)
-                .verifyToolbarMenuItemState("Restore tabs", false);
+                .verifyToolbarMenuItemState("Close items", false)
+                .verifyToolbarMenuItemState("Restore items", false);
         Espresso.pressBack();
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
@@ -512,8 +512,8 @@ public class ArchivedTabsDialogCoordinatorTest {
 
         mRobot.actionRobot.clickToolbarMenuButton();
         mRobot.resultRobot
-                .verifyToolbarMenuItemState("Close tab", true)
-                .verifyToolbarMenuItemState("Restore tab", true);
+                .verifyToolbarMenuItemState("Close item", true)
+                .verifyToolbarMenuItemState("Restore item", true);
         Espresso.pressBack();
 
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
@@ -521,8 +521,8 @@ public class ArchivedTabsDialogCoordinatorTest {
 
         mRobot.actionRobot.clickToolbarMenuButton();
         mRobot.resultRobot
-                .verifyToolbarMenuItemState("Close tabs", true)
-                .verifyToolbarMenuItemState("Restore tabs", true);
+                .verifyToolbarMenuItemState("Close items", true)
+                .verifyToolbarMenuItemState("Restore items", true);
     }
 
     @Test
@@ -538,7 +538,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(3, mArchivedTabModel.getCount());
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -546,7 +546,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close items");
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(1)
                 .verifyUndoSnackbarWithTextIsShown("2 tabs closed");
@@ -569,7 +569,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(3, mArchivedTabModel.getCount());
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -578,7 +578,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.actionRobot.clickItemAtAdapterPosition(2);
         mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close items");
         mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("3 tabs closed");
 
         assertEquals(1, mRegularTabModel.getCount());
@@ -600,7 +600,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(3, mArchivedTabModel.getCount());
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -608,20 +608,20 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore items");
         mRobot.resultRobot.verifyAdapterHasItemCount(1);
         assertEquals(3, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
         assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreArchivedTabsMenuItem"));
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
 
         histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.RestoreArchivedTabsMenuItem.TabCount", 1);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore tab");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore item");
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(4, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
@@ -680,7 +680,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
 
         mRobot.actionRobot.clickViewIdAtAdapterPosition(1, R.id.action_button);
         mRobot.resultRobot
@@ -697,7 +697,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
 
         mRobot.actionRobot.clickViewIdAtAdapterPosition(1, R.id.action_button);
         mRobot.resultRobot
@@ -755,7 +755,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("50 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("50 inactive items")).check(matches(isDisplayed()));
         mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(50);
 
         // When there is more than a page of tabs, then the bottom container should have a shadow.
@@ -782,7 +782,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("11 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("11 inactive items")).check(matches(isDisplayed()));
         mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(11);
 
         // When there is more than a page of tabs, then the bottom container should have a shadow.
@@ -864,8 +864,8 @@ public class ArchivedTabsDialogCoordinatorTest {
                         .expectIntRecords("TabGroups.CloseAllArchivedTabGroups.TabGroupTabCount", 1)
                         .build();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
-        onView(withText("Close all inactive tabs")).perform(click());
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
+        onView(withText("Close all")).perform(click());
         onView(withText("Close all")).perform(click());
 
         // Assert that the group was archived and emit an event with the new archive status.
@@ -898,7 +898,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(3, mArchivedTabModel.getCount());
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
@@ -910,7 +910,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.actionRobot.clickItemAtAdapterPosition(2);
         mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close items");
 
         // Assert that the group was archived and emit an event with the new archive status.
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
@@ -943,7 +943,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(2, mArchivedTabModel.getCount());
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
@@ -955,7 +955,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.actionRobot.clickItemAtAdapterPosition(2);
         mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close items");
 
         // Assert that the group was archived and emit an event with the new archive status.
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
@@ -983,7 +983,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
@@ -1031,7 +1031,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(2, mArchivedTabModel.getCount());
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
@@ -1048,7 +1048,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         // createNewTabGroup and LocalTabGroupMutationHelper, reflected in the regular tab model.
         ThreadUtils.runOnUiThreadBlocking(() -> notifyTabGroupSyncObserversWithInitialization());
 
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore items");
 
         // Assert that the group was unarchived and emit an event with the new archive status.
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);

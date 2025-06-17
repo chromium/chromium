@@ -224,11 +224,11 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         verify(mRootView).addView(any());
         verify(mTabListEditorController).show(any(), eq(Collections.emptyList()), eq(null));
         verify(mTabListEditorController).setNavigationProvider(any());
-        verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive tab");
+        verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive item");
         verify(mBackPressManager).addHandler(any(), eq(BackPressHandler.Type.ARCHIVED_TABS_DIALOG));
 
         mTabCountSupplier.set(2);
-        verify(mTabListEditorController).setToolbarTitle("2 inactive tabs");
+        verify(mTabListEditorController).setToolbarTitle("2 inactive items");
     }
 
     @Test
@@ -251,15 +251,15 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mCoordinator.show(mOnTabSelectingListener);
 
         // First verify a tab exists as the base condition for showing.
-        verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive tab");
+        verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive item");
 
         // Then add a second tab.
         mTabCountSupplier.set(2);
-        verify(mTabListEditorController).setToolbarTitle("2 inactive tabs");
+        verify(mTabListEditorController).setToolbarTitle("2 inactive items");
 
         // Then close both tabs.
         mTabCountSupplier.set(1);
-        verify(mTabListEditorController, times(3)).setToolbarTitle("1 inactive tab");
+        verify(mTabListEditorController, times(3)).setToolbarTitle("1 inactive item");
 
         mTabCountSupplier.set(0);
 
