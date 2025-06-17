@@ -578,7 +578,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </variants>
 
 <variants name="AutofillImage">
-  <variant name="CreditCardImage" summary="credit card image"/>
+  <variant name="CreditCardArt" summary="credit card art image"/>
   <variant name="PixAccountImage" summary="Pix account image"/>
   <variant name="ValuableImage" summary="Google Wallet valuable image"/>
 </variants>
