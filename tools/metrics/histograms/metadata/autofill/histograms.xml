@@ -4894,13 +4894,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards"
     enum="Boolean" expires_after="2025-10-26">
   <owner>darwinyang@google.com</owner>
-  <owner>npnavarro@google.com</owner>
+  <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Logs true when the cards are viewed when the user does not have any existing
     cards. If the user has existing cards, this metric is logged as false.
-    Recorded when a user enters the Payment Methods Settings Page and they do
-    not have any existing cards.
+    Recorded only if Autofill for Payment methods is enabled, when a user either
+    enters the Payment Methods Settings Page or if that page is rebuilt while
+    the user is on it (e.g., if a preference toggle is changed or new payment
+    methods are synced).
+
+    Note that this metric does not care about the presence or absence of other
+    payment methods (e.g., IBAN, pay over time, etc). It only measures whether
+    or not there are local or server cards shown on the settings page.
   </summary>
 </histogram>
 

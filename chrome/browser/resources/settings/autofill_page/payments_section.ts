@@ -242,12 +242,12 @@ export class SettingsPaymentsSectionElement extends
     // Create listener function.
     const setCreditCardsListener =
         (cardList: chrome.autofillPrivate.CreditCardEntry[]) => {
-          this.creditCards = cardList;
+          this.setCreditCards_(cardList);
         };
 
     const setPersonalDataListener: PersonalDataChangedListener =
         (_addressList, cardList, ibanList, payOverTimeIssuerList) => {
-          this.creditCards = cardList;
+          this.setCreditCards_(cardList);
           this.ibans = ibanList;
           if (this.shouldShowPayOverTimeSettings_) {
             this.payOverTimeIssuers = payOverTimeIssuerList;
@@ -300,6 +300,19 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.removePersonalDataManagerListener(
         this.setPersonalDataListener_);
     this.setPersonalDataListener_ = null;
+  }
+
+  private setCreditCards_(cardList: chrome.autofillPrivate.CreditCardEntry[]) {
+    this.creditCards = cardList;
+
+    // To align with Android, only record this histogram when the pref is
+    // enabled.
+    const autofillEnabledPref = this.get('prefs.autofill.credit_card_enabled');
+    if (!!autofillEnabledPref && autofillEnabledPref.value) {
+      MetricsBrowserProxyImpl.getInstance().recordBooleanHistogram(
+          'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards',
+          this.creditCards.length === 0);
+    }
   }
 
   /**

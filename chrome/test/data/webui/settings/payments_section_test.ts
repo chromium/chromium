@@ -53,6 +53,32 @@ suite('PaymentsSection', function() {
     });
   });
 
+  /**
+   * Verifies that a given boolean `histogramName` was recorded exactly once and
+   * with the given `value`.
+   */
+  async function verifyBooleanHistogramRecorded(
+      testMetricsBrowserProxy: TestMetricsBrowserProxy, histogramName: string,
+      value: boolean) {
+    const recordedHistograms =
+        await testMetricsBrowserProxy.getArgs('recordBooleanHistogram');
+    const filteredHistograms =
+        recordedHistograms.filter(histogram => histogram[0] === histogramName);
+    assertEquals(1, filteredHistograms.length);
+    assertEquals(value, filteredHistograms[0][1]);
+  }
+
+  /**
+   * Verifies that a given boolean `histogramName` was not recorded.
+   */
+  async function verifyBooleanHistogramNotRecorded(
+      testMetricsBrowserProxy: TestMetricsBrowserProxy, histogramName: string) {
+    const recordedHistograms =
+        await testMetricsBrowserProxy.getArgs('recordBooleanHistogram');
+    assertFalse(
+        recordedHistograms.some(histogram => histogram[0] === histogramName));
+  }
+
   test('ManagePaymentMethodsLink_RecordsMetrics', async function() {
     const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
@@ -79,6 +105,9 @@ suite('PaymentsSection', function() {
   });
 
   test('verifyNoCreditCards', async function() {
+    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
     const section = await createPaymentsSection(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         {credit_card_enabled: {value: true}});
@@ -100,9 +129,17 @@ suite('PaymentsSection', function() {
             '#addPaymentMethods');
     assertTrue(!!addPaymentMethodsButton);
     assertFalse(addPaymentMethodsButton.disabled);
+
+    await verifyBooleanHistogramRecorded(
+        testMetricsBrowserProxy,
+        'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards',
+        true);
   });
 
   test('verifyCreditCardsDisabled', async function() {
+    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
     loadTimeData.overrideValues({
       showIbansSettings: false,
     });
@@ -115,9 +152,18 @@ suite('PaymentsSection', function() {
         section.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     assertTrue(addCreditCardButton.hidden);
+
+    // This metric should only be recorded when autofilling of credit cards is
+    // enabled.
+    await verifyBooleanHistogramNotRecorded(
+        testMetricsBrowserProxy,
+        'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards');
   });
 
   test('verifyCreditCardCount', async function() {
+    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
     const creditCards = [
       createCreditCardEntry(),
       createCreditCardEntry(),
@@ -148,6 +194,11 @@ suite('PaymentsSection', function() {
             '#addPaymentMethods');
     assertTrue(!!addPaymentMethodsButton);
     assertFalse(addPaymentMethodsButton.disabled);
+
+    await verifyBooleanHistogramRecorded(
+        testMetricsBrowserProxy,
+        'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards',
+        false);
   });
 
   test('CanMakePaymentToggle_RecordsMetrics', async function() {
