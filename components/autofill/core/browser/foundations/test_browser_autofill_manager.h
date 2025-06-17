@@ -13,7 +13,6 @@
 
 #include "base/run_loop.h"
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/filling/test_form_filler.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -56,12 +55,12 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                             const FieldGlobalId& field_id) override;
   void OnSelectControlSelectionChanged(const FormData& form,
                                        const FieldGlobalId& field_id) override;
-  void OnAskForValuesToFill(const FormData& form,
-                            const FieldGlobalId& field_id,
-                            const gfx::Rect& caret_bounds,
-                            AutofillSuggestionTriggerSource trigger_source,
-                            base::optional_ref<const PasswordSuggestionRequest>
-                                password_request) override;
+  void OnAskForValuesToFill(
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const gfx::Rect& caret_bounds,
+      AutofillSuggestionTriggerSource trigger_source,
+      std::optional<PasswordSuggestionRequest> password_request) override;
   void OnFocusOnFormField(const FormData& form,
                           const FieldGlobalId& field_id) override;
   void OnDidFillAutofillFormData(const FormData& form,
@@ -111,8 +110,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kTextFieldValueChanged,
-      const std::optional<PasswordSuggestionRequest>& password_request =
-          std::nullopt);
+      std::optional<PasswordSuggestionRequest> password_request = std::nullopt);
 
  private:
   const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);

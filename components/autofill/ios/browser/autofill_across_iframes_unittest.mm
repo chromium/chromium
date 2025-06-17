@@ -14,7 +14,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/types/id_type.h"
-#import "base/types/optional_ref.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -335,15 +334,16 @@ class TestAutofillManager : public BrowserAutofillManager {
     BrowserAutofillManager::OnFormSubmitted(form, source);
   }
 
-  void OnAskForValuesToFill(const FormData& form,
-                            const FieldGlobalId& field_id,
-                            const gfx::Rect& caret_bounds,
-                            AutofillSuggestionTriggerSource trigger_source,
-                            base::optional_ref<const PasswordSuggestionRequest>
-                                password_request) override {
+  void OnAskForValuesToFill(
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const gfx::Rect& caret_bounds,
+      AutofillSuggestionTriggerSource trigger_source,
+      std::optional<PasswordSuggestionRequest> password_request) override {
     ask_for_filldata_forms_.emplace_back(form);
-    BrowserAutofillManager::OnAskForValuesToFill(
-        form, field_id, caret_bounds, trigger_source, password_request);
+    BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
+                                                 trigger_source,
+                                                 std::move(password_request));
   }
 
   void OnTextFieldValueChanged(const FormData& form,

@@ -318,8 +318,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source,
-      base::optional_ref<const PasswordSuggestionRequest> password_request)
-      override;
+      std::optional<PasswordSuggestionRequest> password_request) override;
   void OnSelectControlSelectionChangedImpl(
       const FormData& form,
       const FieldGlobalId& field_id) override;

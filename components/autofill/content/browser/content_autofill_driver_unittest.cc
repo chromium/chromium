@@ -330,7 +330,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
                const FieldGlobalId&,
                const gfx::Rect&,
                AutofillSuggestionTriggerSource,
-               base::optional_ref<const PasswordSuggestionRequest>),
+               std::optional<PasswordSuggestionRequest>),
               (override));
   MOCK_METHOD(void,
               OnFormsSeen,

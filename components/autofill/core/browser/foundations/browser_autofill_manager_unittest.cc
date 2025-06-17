@@ -1192,11 +1192,11 @@ class BrowserAutofillManagerTest : public testing::Test {
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kTextFieldValueChanged,
-      base::optional_ref<const PasswordSuggestionRequest> password_request =
+      std::optional<PasswordSuggestionRequest> password_request =
           std::nullopt) {
     manager().OnAskForValuesToFill(form, field.global_id(),
                                    GetFakeCaretBounds(field), trigger_source,
-                                   password_request);
+                                   std::move(password_request));
   }
 
   void DidShowSuggestions(const FormData& form,

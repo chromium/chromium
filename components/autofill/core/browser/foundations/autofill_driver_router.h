@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/form_forest.h"
@@ -193,14 +192,13 @@ class AutofillDriverRouter {
                      const FieldGlobalId&,
                      const gfx::Rect&,
                      AutofillSuggestionTriggerSource,
-                     base::optional_ref<const PasswordSuggestionRequest>>
-          callback,
+                     std::optional<PasswordSuggestionRequest>> callback,
       AutofillDriver& source,
       FormData form,
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source,
-      base::optional_ref<const PasswordSuggestionRequest> password_request);
+      std::optional<PasswordSuggestionRequest> password_request);
   // This event is broadcast to all drivers.
   void DidEndTextFieldEditing(RoutedCallback<> callback,
                               AutofillDriver& source);

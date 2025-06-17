@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/bad_message.h"
@@ -600,12 +601,19 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 
 void ContentPasswordManagerDriver::ShowPasswordSuggestionsForField(
     const autofill::TriggeringField& triggering_field) {
+  gfx::RectF bounds =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAndPasswordsInSameSurface)
+          ? triggering_field
+                .bounds  // Already transformed in ContentAutofillDriver.
+          : TransformToRootCoordinates(render_frame_host_,
+                                       triggering_field.bounds);
   GetPasswordAutofillManager()->OnShowPasswordSuggestions(
       triggering_field.element_id, triggering_field.trigger_source,
       triggering_field.text_direction, triggering_field.typed_username,
       ShowWebAuthnCredentials(triggering_field.show_webauthn_credentials),
       ShowIdentityCredentials(triggering_field.show_identity_credentials),
-      TransformToRootCoordinates(render_frame_host_, triggering_field.bounds));
+      bounds);
 }
 
 void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
