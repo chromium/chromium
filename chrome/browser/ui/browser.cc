@@ -1249,6 +1249,10 @@ BrowserWindowFeatures& Browser::GetFeatures() {
   return *features_.get();
 }
 
+const BrowserWindowFeatures& Browser::GetFeatures() const {
+  return *features_.get();
+}
+
 UnownedUserDataHost& Browser::GetUnownedUserDataHost() {
   return unowned_user_data_host_;
 }

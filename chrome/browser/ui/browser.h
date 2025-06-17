@@ -833,6 +833,7 @@ class Browser : public TabStripModelObserver,
       ActiveTabChangeCallback callback) override;
   tabs::TabInterface* GetActiveTabInterface() override;
   BrowserWindowFeatures& GetFeatures() override;
+  const BrowserWindowFeatures& GetFeatures() const override;
   UnownedUserDataHost& GetUnownedUserDataHost() override;
   const UnownedUserDataHost& GetUnownedUserDataHost() const override;
   web_modal::WebContentsModalDialogHost*

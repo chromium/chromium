@@ -39,6 +39,7 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               (override));
   MOCK_METHOD(tabs::TabInterface*, GetActiveTabInterface, (), (override));
   MOCK_METHOD(BrowserWindowFeatures&, GetFeatures, (), (override));
+  MOCK_METHOD(const BrowserWindowFeatures&, GetFeatures, (), (const, override));
   MOCK_METHOD(UnownedUserDataHost&, GetUnownedUserDataHost, (), (override));
   MOCK_METHOD(const UnownedUserDataHost&,
               GetUnownedUserDataHost,

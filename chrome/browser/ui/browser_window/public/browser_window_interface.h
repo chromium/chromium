@@ -186,6 +186,7 @@ class BrowserWindowInterface : public content::PageNavigator {
   //   that is conceptually a BrowserWindowFeature and needs access to other
   //   BrowserWindowFeature.
   virtual BrowserWindowFeatures& GetFeatures() = 0;
+  virtual const BrowserWindowFeatures& GetFeatures() const = 0;
 
   // Returns the web contents modal dialog host pertaining to this
   // BrowserWindow.
