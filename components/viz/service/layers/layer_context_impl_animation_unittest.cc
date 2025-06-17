@@ -22,19 +22,61 @@ namespace {
 
 class LayerContextImplAnimationTest : public LayerContextImplTest {
  protected:
+  // Default TimingFunction values
+  static constexpr double kDefaultCubicBezierX1 = 0.25;
+  static constexpr double kDefaultCubicBezierY1 = 0.1;
+  static constexpr double kDefaultCubicBezierX2 = 0.25;
+  static constexpr double kDefaultCubicBezierY2 = 1.0;
+  static constexpr uint32_t kDefaultSteps = 5;
+  static constexpr mojom::TimingStepPosition kDefaultStepPosition =
+      mojom::TimingStepPosition::kStart;
+
+  // Default Keyframe values
+  static constexpr base::TimeDelta kDefaultKeyframeStartTime =
+      base::TimeDelta();
+  static constexpr float kDefaultKeyframeStartOpacity = 0.0f;
+  static constexpr base::TimeDelta kDefaultKeyframeEndOpacityTime =
+      base::Seconds(1);
+  static constexpr float kDefaultKeyframeEndOpacity = 1.0f;
+
+  // Default KeyframeModel values
+  static constexpr double kDefaultScaledDuration = 1.0;
+  static constexpr double kDefaultPlaybackRate = 1.0;
+  static constexpr double kDefaultIterations = 1.0;
+  static constexpr double kDefaultIterationStart = 0.0;
+  static const cc::ElementId kDefaultElementId;
+
   mojom::TimingFunctionPtr CreateDefaultMojomTimingFunction() {
-    auto cubic_bezier =
-        mojom::CubicBezierTimingFunction::New(0.25, 0.1, 0.25, 1.0);
+    auto cubic_bezier = mojom::CubicBezierTimingFunction::New(
+        kDefaultCubicBezierX1, kDefaultCubicBezierY1, kDefaultCubicBezierX2,
+        kDefaultCubicBezierY2);
     return mojom::TimingFunction::NewCubicBezier(std::move(cubic_bezier));
+  }
+
+  mojom::TimingFunctionPtr CreateMojomLinearTimingFunction() {
+    return mojom::TimingFunction::NewLinear(
+        std::vector<mojom::LinearEasingPointPtr>());
+  }
+
+  mojom::TimingFunctionPtr CreateMojomStepsTimingFunction(
+      uint32_t steps = kDefaultSteps,
+      mojom::TimingStepPosition position = kDefaultStepPosition) {
+    auto steps_fn = mojom::StepsTimingFunction::New();
+    steps_fn->num_steps = steps;
+    steps_fn->step_position = position;
+    return mojom::TimingFunction::NewSteps(std::move(steps_fn));
   }
 
   mojom::AnimationKeyframePtr CreateDefaultMojomScalarKeyframe(
       base::TimeDelta start_time,
-      float value) {
+      float value,
+      mojom::TimingFunctionPtr timing_function = nullptr) {
     auto keyframe = mojom::AnimationKeyframe::New();
     keyframe->start_time = start_time;
     keyframe->value = mojom::AnimationKeyframeValue::NewScalar(value);
-    keyframe->timing_function = CreateDefaultMojomTimingFunction();
+    keyframe->timing_function = timing_function
+                                    ? std::move(timing_function)
+                                    : CreateDefaultMojomTimingFunction();
     return keyframe;
   }
 
@@ -47,19 +89,96 @@ class LayerContextImplAnimationTest : public LayerContextImplTest {
     model->target_property_type =
         static_cast<int32_t>(cc::TargetProperty::OPACITY);
     model->timing_function = CreateDefaultMojomTimingFunction();
-    model->scaled_duration = 1.0;
-    model->keyframes.push_back(
-        CreateDefaultMojomScalarKeyframe(base::TimeDelta(), 0.0f));
-    model->keyframes.push_back(
-        CreateDefaultMojomScalarKeyframe(base::Seconds(1), 1.0f));
+    model->scaled_duration = kDefaultScaledDuration;
+    model->keyframes.push_back(CreateDefaultMojomScalarKeyframe(
+        kDefaultKeyframeStartTime, kDefaultKeyframeStartOpacity));
+    model->keyframes.push_back(CreateDefaultMojomScalarKeyframe(
+        kDefaultKeyframeEndOpacityTime, kDefaultKeyframeEndOpacity));
     model->direction = mojom::AnimationDirection::kNormal;
     model->fill_mode = mojom::AnimationFillMode::kForwards;
-    model->playback_rate = 1.0;
-    model->iterations = 1.0;
-    model->iteration_start = 0.0;
+    model->playback_rate = kDefaultPlaybackRate;
+    model->iterations = kDefaultIterations;
+    model->iteration_start = kDefaultIterationStart;
     model->time_offset = base::TimeDelta();
-    model->element_id = cc::ElementId(123);  // Arbitrary element ID
+    model->element_id = kDefaultElementId;
     return model;
+  }
+
+  mojom::AnimationKeyframePtr CreateMojomColorKeyframe(
+      base::TimeDelta start_time,
+      SkColor value,
+      mojom::TimingFunctionPtr timing_function = nullptr) {
+    auto keyframe = mojom::AnimationKeyframe::New();
+    keyframe->start_time = start_time;
+    keyframe->value = mojom::AnimationKeyframeValue::NewColor(value);
+    keyframe->timing_function = timing_function
+                                    ? std::move(timing_function)
+                                    : CreateDefaultMojomTimingFunction();
+    return keyframe;
+  }
+
+  mojom::AnimationKeyframePtr CreateMojomSizeKeyframe(
+      base::TimeDelta start_time,
+      const gfx::SizeF& value,
+      mojom::TimingFunctionPtr timing_function = nullptr) {
+    auto keyframe = mojom::AnimationKeyframe::New();
+    keyframe->start_time = start_time;
+    keyframe->value = mojom::AnimationKeyframeValue::NewSize(value);
+    keyframe->timing_function = timing_function
+                                    ? std::move(timing_function)
+                                    : CreateDefaultMojomTimingFunction();
+    return keyframe;
+  }
+
+  mojom::AnimationKeyframePtr CreateMojomRectKeyframe(
+      base::TimeDelta start_time,
+      const gfx::Rect& value,
+      mojom::TimingFunctionPtr timing_function = nullptr) {
+    auto keyframe = mojom::AnimationKeyframe::New();
+    keyframe->start_time = start_time;
+    keyframe->value = mojom::AnimationKeyframeValue::NewRect(value);
+    keyframe->timing_function = timing_function
+                                    ? std::move(timing_function)
+                                    : CreateDefaultMojomTimingFunction();
+    return keyframe;
+  }
+
+  mojom::AnimationKeyframePtr CreateMojomTransformKeyframe(
+      base::TimeDelta start_time,
+      const gfx::TransformOperations& value,
+      mojom::TimingFunctionPtr timing_function = nullptr) {
+    auto keyframe = mojom::AnimationKeyframe::New();
+    keyframe->start_time = start_time;
+    std::vector<mojom::TransformOperationPtr> ops_mojom;
+    for (size_t i = 0; i < value.size(); ++i) {
+      const auto& op = value.at(i);
+      switch (op.type) {
+        case gfx::TransformOperation::TRANSFORM_OPERATION_TRANSLATE:
+          ops_mojom.push_back(mojom::TransformOperation::NewTranslate(
+              gfx::Vector3dF(op.translate.x, op.translate.y, op.translate.z)));
+          break;
+        case gfx::TransformOperation::TRANSFORM_OPERATION_ROTATE:
+          ops_mojom.push_back(
+              mojom::TransformOperation::NewRotate(mojom::AxisAngle::New(
+                  gfx::Vector3dF(op.rotate.axis.x, op.rotate.axis.y,
+                                 op.rotate.axis.z),
+                  op.rotate.angle)));
+          break;
+        case gfx::TransformOperation::TRANSFORM_OPERATION_SCALE:
+          ops_mojom.push_back(mojom::TransformOperation::NewScale(
+              gfx::Vector3dF(op.scale.x, op.scale.y, op.scale.z)));
+          break;
+        // Add other cases as needed for tests.
+        default:
+          break;
+      }
+    }
+    keyframe->value =
+        mojom::AnimationKeyframeValue::NewTransform(std::move(ops_mojom));
+    keyframe->timing_function = timing_function
+                                    ? std::move(timing_function)
+                                    : CreateDefaultMojomTimingFunction();
+    return keyframe;
   }
 
   mojom::AnimationPtr CreateDefaultMojomAnimation(int animation_id,
@@ -67,7 +186,7 @@ class LayerContextImplAnimationTest : public LayerContextImplTest {
                                                   int group_id) {
     auto animation = mojom::Animation::New();
     animation->id = animation_id;
-    animation->element_id = cc::ElementId(123);  // Arbitrary element ID
+    animation->element_id = kDefaultElementId;
     animation->keyframe_models.push_back(
         CreateDefaultOpacityMojomKeyframeModel(model_id, group_id));
     return animation;
@@ -85,12 +204,13 @@ class LayerContextImplAnimationTest : public LayerContextImplTest {
   }
 };
 
+const cc::ElementId LayerContextImplAnimationTest::kDefaultElementId(123);
+
 TEST_F(LayerContextImplAnimationTest, AddNewAnimationTimelineAndAnimation) {
   constexpr int kTimelineId = 1;
   constexpr int kAnimationId = 10;
   constexpr int kKeyframeModelId = 100;
   constexpr int kGroupId = 1;
-  const cc::ElementId kElementId(123);
 
   auto update = CreateDefaultUpdate();
   update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
@@ -112,7 +232,7 @@ TEST_F(LayerContextImplAnimationTest, AddNewAnimationTimelineAndAnimation) {
   cc::Animation* animation_impl = timeline_impl->GetAnimationById(kAnimationId);
   ASSERT_NE(nullptr, animation_impl);
   EXPECT_EQ(animation_impl->id(), kAnimationId);
-  EXPECT_EQ(animation_impl->element_id(), kElementId);
+  EXPECT_EQ(animation_impl->element_id(), kDefaultElementId);
 
   cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
   ASSERT_NE(nullptr, effect_impl);
@@ -125,11 +245,40 @@ TEST_F(LayerContextImplAnimationTest, AddNewAnimationTimelineAndAnimation) {
       cc::KeyframeModel::ToCcKeyframeModel(gfx_keyframe_model);
   ASSERT_NE(nullptr, cc_keyframe_model);
 
+  // Verify gfx::KeyframeModel properties
   EXPECT_EQ(gfx_keyframe_model->id(), kKeyframeModelId);
+  EXPECT_EQ(gfx_keyframe_model->iterations(), kDefaultIterations);
+  EXPECT_EQ(gfx_keyframe_model->iteration_start(), kDefaultIterationStart);
+  EXPECT_EQ(gfx_keyframe_model->direction(),
+            gfx::KeyframeModel::Direction::NORMAL);
+  EXPECT_EQ(gfx_keyframe_model->fill_mode(),
+            gfx::KeyframeModel::FillMode::FORWARDS);
+  EXPECT_EQ(gfx_keyframe_model->playback_rate(), kDefaultPlaybackRate);
+  EXPECT_EQ(gfx_keyframe_model->time_offset(), base::TimeDelta());
+
+  // Verify cc::KeyframeModel specific properties
   EXPECT_EQ(cc_keyframe_model->group(), kGroupId);
   EXPECT_EQ(cc_keyframe_model->TargetProperty(),
             static_cast<int32_t>(cc::TargetProperty::OPACITY));
-  EXPECT_EQ(cc_keyframe_model->element_id(), kElementId);
+  EXPECT_EQ(cc_keyframe_model->element_id(), kDefaultElementId);
+
+  // Verify AnimationCurve properties (via gfx::KeyframeModel)
+  const gfx::AnimationCurve* curve = gfx_keyframe_model->curve();
+  ASSERT_NE(nullptr, curve);
+  EXPECT_EQ(curve->Type(), gfx::AnimationCurve::FLOAT);
+  const auto* float_curve =
+      static_cast<const gfx::KeyframedFloatAnimationCurve*>(curve);
+  ASSERT_NE(nullptr, float_curve);
+  EXPECT_EQ(float_curve->Duration(),
+            kDefaultKeyframeEndOpacityTime - kDefaultKeyframeStartTime);
+  EXPECT_DOUBLE_EQ(float_curve->scaled_duration(), kDefaultScaledDuration);
+  ASSERT_NE(nullptr, float_curve->timing_function());  // Default cubic bezier
+  const auto& keyframes = float_curve->keyframes();
+  ASSERT_EQ(keyframes.size(), 2u);
+  EXPECT_EQ(keyframes[0]->Time(), kDefaultKeyframeStartTime);
+  EXPECT_EQ(keyframes[0]->Value(), kDefaultKeyframeStartOpacity);
+  EXPECT_EQ(keyframes[1]->Time(), kDefaultKeyframeEndOpacityTime);
+  EXPECT_EQ(keyframes[1]->Value(), kDefaultKeyframeEndOpacity);
 }
 
 TEST_F(LayerContextImplAnimationTest, AddAnimationToExistingTimeline) {
@@ -284,7 +433,8 @@ TEST_F(LayerContextImplAnimationTest, RemoveAnimationTimeline) {
 TEST_F(LayerContextImplAnimationTest, AnimationWithNoKeyframesFails) {
   constexpr int kTimelineId = 7;
   constexpr int kAnimationId = 70;
-  const cc::ElementId kElementId(777);
+  // Use an ElementId distinct from kDefaultElementId.
+  const cc::ElementId kDistinctElementId(777);
   constexpr int kKeyframeModelId = 700;
   constexpr int kGroupId = 7;
   constexpr double kScaledDuration = 1.0;
@@ -295,7 +445,7 @@ TEST_F(LayerContextImplAnimationTest, AnimationWithNoKeyframesFails) {
   auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
   auto animation_mojom = mojom::Animation::New();
   animation_mojom->id = kAnimationId;
-  animation_mojom->element_id = kElementId;
+  animation_mojom->element_id = kDistinctElementId;
   // Add a keyframe model but leave its keyframes vector empty.
   auto keyframe_model_mojom = mojom::AnimationKeyframeModel::New();
   keyframe_model_mojom->id = kKeyframeModelId;
@@ -313,6 +463,386 @@ TEST_F(LayerContextImplAnimationTest, AnimationWithNoKeyframesFails) {
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), "Unexpected animation with no keyframes");
+}
+
+TEST_F(LayerContextImplAnimationTest, DeserializeColorAnimationCurve) {
+  constexpr int kTimelineId = 8;
+  constexpr int kAnimationId = 80;
+  constexpr int kKeyframeModelId = 800;
+  constexpr int kGroupId = 8;
+  const SkColor kStartColor = SK_ColorRED;
+  const SkColor kEndColor = SK_ColorBLUE;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom = mojom::Animation::New();
+  animation_mojom->id = kAnimationId;
+  animation_mojom->element_id = kDefaultElementId;
+
+  auto model_mojom = mojom::AnimationKeyframeModel::New();
+  model_mojom->id = kKeyframeModelId;
+  model_mojom->group_id = kGroupId;
+  model_mojom->target_property_type =
+      static_cast<int32_t>(cc::TargetProperty::BACKGROUND_COLOR);
+  model_mojom->timing_function = CreateDefaultMojomTimingFunction();
+  model_mojom->scaled_duration = kDefaultScaledDuration;
+  model_mojom->keyframes.push_back(
+      CreateMojomColorKeyframe(kDefaultKeyframeStartTime, kStartColor));
+  model_mojom->keyframes.push_back(
+      CreateMojomColorKeyframe(kDefaultKeyframeEndOpacityTime, kEndColor));
+  model_mojom->element_id = kDefaultElementId;
+  // Explicitly set properties to match CreateDefaultOpacityMojomKeyframeModel
+  // and ensure playback_rate is not 0.
+  model_mojom->direction = mojom::AnimationDirection::kNormal;
+  model_mojom->fill_mode = mojom::AnimationFillMode::kForwards;
+  model_mojom->playback_rate = kDefaultPlaybackRate;
+  model_mojom->iterations = kDefaultIterations;
+  model_mojom->iteration_start = kDefaultIterationStart;
+  model_mojom->time_offset = base::TimeDelta();
+
+  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::AnimationHost* host = GetAnimationHost();
+  cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  cc::Animation* animation_impl = timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  gfx::KeyframeModel* gfx_model_impl = effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+  EXPECT_EQ(gfx_model_impl->curve()->Type(), gfx::AnimationCurve::COLOR);
+  const auto* color_curve =
+      static_cast<const gfx::KeyframedColorAnimationCurve*>(
+          gfx_model_impl->curve());
+  ASSERT_NE(nullptr, color_curve);
+  ASSERT_EQ(color_curve->keyframes().size(), 2u);
+  EXPECT_EQ(color_curve->keyframes()[0]->Value(), kStartColor);
+  EXPECT_EQ(color_curve->keyframes()[1]->Value(), kEndColor);
+}
+
+TEST_F(LayerContextImplAnimationTest, DeserializeSizeAnimationCurve) {
+  constexpr int kTimelineId = 9;
+  constexpr int kAnimationId = 90;
+  constexpr int kKeyframeModelId = 900;
+  constexpr int kGroupId = 9;
+  const gfx::SizeF kStartSize(10.f, 20.f);
+  const gfx::SizeF kEndSize(30.f, 40.f);
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom = mojom::Animation::New();
+  animation_mojom->id = kAnimationId;
+  animation_mojom->element_id = kDefaultElementId;
+
+  auto model_mojom = mojom::AnimationKeyframeModel::New();
+  model_mojom->id = kKeyframeModelId;
+  model_mojom->group_id = kGroupId;
+  model_mojom->target_property_type =
+      static_cast<int32_t>(cc::TargetProperty::BOUNDS);  // Example property
+  model_mojom->timing_function = CreateDefaultMojomTimingFunction();
+  model_mojom->scaled_duration = kDefaultScaledDuration;
+  model_mojom->keyframes.push_back(
+      CreateMojomSizeKeyframe(kDefaultKeyframeStartTime, kStartSize));
+  model_mojom->keyframes.push_back(
+      CreateMojomSizeKeyframe(kDefaultKeyframeEndOpacityTime, kEndSize));
+  model_mojom->element_id = kDefaultElementId;
+  // Explicitly set properties
+  model_mojom->direction = mojom::AnimationDirection::kNormal;
+  model_mojom->fill_mode = mojom::AnimationFillMode::kForwards;
+  model_mojom->playback_rate = kDefaultPlaybackRate;
+  model_mojom->iterations = kDefaultIterations;
+  model_mojom->iteration_start = kDefaultIterationStart;
+  model_mojom->time_offset = base::TimeDelta();
+
+  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::AnimationHost* host = GetAnimationHost();
+  cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  cc::Animation* animation_impl = timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  gfx::KeyframeModel* gfx_model_impl = effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+  EXPECT_EQ(gfx_model_impl->curve()->Type(), gfx::AnimationCurve::SIZE);
+  const auto* size_curve = static_cast<const gfx::KeyframedSizeAnimationCurve*>(
+      gfx_model_impl->curve());
+  ASSERT_NE(nullptr, size_curve);
+  ASSERT_EQ(size_curve->keyframes().size(), 2u);
+  EXPECT_EQ(size_curve->keyframes()[0]->Value(), kStartSize);
+  EXPECT_EQ(size_curve->keyframes()[1]->Value(), kEndSize);
+}
+
+TEST_F(LayerContextImplAnimationTest, DeserializeRectAnimationCurve) {
+  constexpr int kTimelineId = 10;
+  constexpr int kAnimationId = 100;
+  constexpr int kKeyframeModelId = 1000;
+  constexpr int kGroupId = 10;
+  const gfx::Rect kStartRect(10, 20, 30, 40);
+  const gfx::Rect kEndRect(50, 60, 70, 80);
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom = mojom::Animation::New();
+  animation_mojom->id = kAnimationId;
+  animation_mojom->element_id = kDefaultElementId;
+
+  auto model_mojom = mojom::AnimationKeyframeModel::New();
+  model_mojom->id = kKeyframeModelId;
+  model_mojom->group_id = kGroupId;
+  // Using OPACITY as a placeholder; Rect animations might target other props.
+  model_mojom->target_property_type =
+      static_cast<int32_t>(cc::TargetProperty::OPACITY);
+  model_mojom->timing_function = CreateDefaultMojomTimingFunction();
+  model_mojom->scaled_duration = kDefaultScaledDuration;
+  model_mojom->keyframes.push_back(
+      CreateMojomRectKeyframe(kDefaultKeyframeStartTime, kStartRect));
+  model_mojom->keyframes.push_back(
+      CreateMojomRectKeyframe(kDefaultKeyframeEndOpacityTime, kEndRect));
+  model_mojom->element_id = kDefaultElementId;
+  // Explicitly set properties
+  model_mojom->direction = mojom::AnimationDirection::kNormal;
+  model_mojom->fill_mode = mojom::AnimationFillMode::kForwards;
+  model_mojom->playback_rate = kDefaultPlaybackRate;
+  model_mojom->iterations = kDefaultIterations;
+  model_mojom->iteration_start = kDefaultIterationStart;
+  model_mojom->time_offset = base::TimeDelta();
+
+  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::AnimationHost* host = GetAnimationHost();
+  cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  cc::Animation* animation_impl = timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  gfx::KeyframeModel* gfx_model_impl = effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+  EXPECT_EQ(gfx_model_impl->curve()->Type(), gfx::AnimationCurve::RECT);
+  const auto* rect_curve = static_cast<const gfx::KeyframedRectAnimationCurve*>(
+      gfx_model_impl->curve());
+  ASSERT_NE(nullptr, rect_curve);
+  ASSERT_EQ(rect_curve->keyframes().size(), 2u);
+  EXPECT_EQ(rect_curve->keyframes()[0]->Value(), kStartRect);
+  EXPECT_EQ(rect_curve->keyframes()[1]->Value(), kEndRect);
+}
+
+TEST_F(LayerContextImplAnimationTest, DeserializeTransformAnimationCurve) {
+  constexpr int kTimelineId = 11;
+  constexpr int kAnimationId = 110;
+  constexpr int kKeyframeModelId = 1100;
+  constexpr int kGroupId = 11;
+  gfx::TransformOperations kStartTransform;
+  kStartTransform.AppendTranslate(10.f, 20.f, 30.f);
+  gfx::TransformOperations kEndTransform;
+  kEndTransform.AppendScale(2.f, 2.f, 1.f);
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom = mojom::Animation::New();
+  animation_mojom->id = kAnimationId;
+  animation_mojom->element_id = kDefaultElementId;
+
+  auto model_mojom = mojom::AnimationKeyframeModel::New();
+  model_mojom->id = kKeyframeModelId;
+  model_mojom->group_id = kGroupId;
+  model_mojom->target_property_type =
+      static_cast<int32_t>(cc::TargetProperty::TRANSFORM);
+  model_mojom->timing_function = CreateDefaultMojomTimingFunction();
+  model_mojom->scaled_duration = kDefaultScaledDuration;
+  model_mojom->keyframes.push_back(
+      CreateMojomTransformKeyframe(kDefaultKeyframeStartTime, kStartTransform));
+  model_mojom->keyframes.push_back(CreateMojomTransformKeyframe(
+      kDefaultKeyframeEndOpacityTime, kEndTransform));
+  model_mojom->element_id = kDefaultElementId;
+  // Explicitly set properties
+  model_mojom->direction = mojom::AnimationDirection::kNormal;
+  model_mojom->fill_mode = mojom::AnimationFillMode::kForwards;
+  model_mojom->playback_rate = kDefaultPlaybackRate;
+  model_mojom->iterations = kDefaultIterations;
+  model_mojom->iteration_start = kDefaultIterationStart;
+  model_mojom->time_offset = base::TimeDelta();
+
+  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::AnimationHost* host = GetAnimationHost();
+  cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  cc::Animation* animation_impl = timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  gfx::KeyframeModel* gfx_model_impl = effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+  EXPECT_EQ(gfx_model_impl->curve()->Type(), gfx::AnimationCurve::TRANSFORM);
+  const auto* transform_curve =
+      static_cast<const gfx::KeyframedTransformAnimationCurve*>(
+          gfx_model_impl->curve());
+  ASSERT_NE(nullptr, transform_curve);
+  ASSERT_EQ(transform_curve->keyframes().size(), 2u);
+  EXPECT_TRUE(transform_curve->keyframes()[0]->Value().ApproximatelyEqual(
+      kStartTransform, 0.0f));
+  EXPECT_TRUE(transform_curve->keyframes()[1]->Value().ApproximatelyEqual(
+      kEndTransform, 0.0f));
+}
+
+TEST_F(LayerContextImplAnimationTest, DeserializeWithLinearTimingFunction) {
+  constexpr int kTimelineId = 12;
+  constexpr int kAnimationId = 120;
+  constexpr int kKeyframeModelId = 1200;
+  constexpr int kGroupId = 12;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom =
+      CreateDefaultMojomAnimation(kAnimationId, kKeyframeModelId, kGroupId);
+  // Override the keyframe model's timing function.
+  animation_mojom->keyframe_models[0]->timing_function =
+      CreateMojomLinearTimingFunction();
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::AnimationHost* host = GetAnimationHost();
+  cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  cc::Animation* animation_impl = timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  gfx::KeyframeModel* gfx_model_impl = effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+  const gfx::AnimationCurve* curve = gfx_model_impl->curve();
+  ASSERT_NE(nullptr, curve);
+  // Default animation is opacity (float).
+  const auto* float_curve =
+      static_cast<const gfx::KeyframedFloatAnimationCurve*>(curve);
+  ASSERT_NE(nullptr, float_curve->timing_function());
+  EXPECT_EQ(float_curve->timing_function()->GetType(),
+            gfx::TimingFunction::Type::LINEAR);
+}
+
+TEST_F(LayerContextImplAnimationTest, DeserializeWithStepsTimingFunction) {
+  constexpr int kTimelineId = 13;
+  constexpr int kAnimationId = 130;
+  constexpr int kKeyframeModelId = 1300;
+  constexpr int kGroupId = 13;
+  constexpr uint32_t kNumSteps = 4;
+  constexpr mojom::TimingStepPosition kStepPosition =
+      mojom::TimingStepPosition::kEnd;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom =
+      CreateDefaultMojomAnimation(kAnimationId, kKeyframeModelId, kGroupId);
+  // Override the keyframe model's timing function.
+  animation_mojom->keyframe_models[0]->timing_function =
+      CreateMojomStepsTimingFunction(kNumSteps, kStepPosition);
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::AnimationHost* host = GetAnimationHost();
+  cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  cc::Animation* animation_impl = timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  gfx::KeyframeModel* gfx_model_impl = effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+  const gfx::AnimationCurve* curve = gfx_model_impl->curve();
+  ASSERT_NE(nullptr, curve);
+  // Default animation is opacity (float).
+  const auto* float_curve =
+      static_cast<const gfx::KeyframedFloatAnimationCurve*>(curve);
+  ASSERT_NE(nullptr, float_curve->timing_function());
+  EXPECT_EQ(float_curve->timing_function()->GetType(),
+            gfx::TimingFunction::Type::STEPS);
+  const auto* steps_timing_fn = static_cast<const gfx::StepsTimingFunction*>(
+      float_curve->timing_function());
+  EXPECT_EQ(steps_timing_fn->steps(), static_cast<int>(kNumSteps));
+  EXPECT_EQ(steps_timing_fn->step_position(),
+            gfx::StepsTimingFunction::StepPosition::END);
+}
+
+TEST_F(LayerContextImplAnimationTest,
+       DeserializeAnimationWithZeroPlaybackRateFails) {
+  constexpr int kTimelineId = 14;
+  constexpr int kAnimationId = 140;
+  constexpr int kKeyframeModelId = 1400;
+  constexpr int kGroupId = 14;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom = mojom::Animation::New();
+  animation_mojom->id = kAnimationId;
+  animation_mojom->element_id = kDefaultElementId;
+
+  auto model_mojom =
+      CreateDefaultOpacityMojomKeyframeModel(kKeyframeModelId, kGroupId);
+  model_mojom->playback_rate = 0.0;  // Invalid playback rate
+
+  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid playback_rate: cannot be 0");
+
+  // Verify no animation was added.
+  cc::AnimationHost* host = GetAnimationHost();
+  ASSERT_NE(nullptr, host);
+  cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
+  EXPECT_EQ(nullptr, timeline_impl);
 }
 
 }  // namespace

@@ -1178,6 +1178,10 @@ base::expected<void, std::string> DeserializeAnimationCurve(
     const mojom::AnimationKeyframeModel& wire,
     cc::Animation& animation) {
   auto curve = CurveType::Create();
+  if (wire.playback_rate == 0.0) {
+    return base::unexpected("Invalid playback_rate: cannot be 0");
+  }
+
   curve->SetTimingFunction(DeserializeTimingFunction(*wire.timing_function));
   curve->set_scaled_duration(wire.scaled_duration);
   for (const auto& wire_keyframe : wire.keyframes) {
@@ -1263,9 +1267,10 @@ base::expected<void, std::string> DeserializeAnimationTimeline(
     const mojom::AnimationTimeline& wire,
     cc::AnimationHost& host) {
   scoped_refptr<cc::AnimationTimeline> timeline = host.GetTimelineById(wire.id);
+  bool add_new_timeline = false;
   if (!timeline) {
     timeline = cc::AnimationTimeline::Create(wire.id);
-    host.AddAnimationTimeline(timeline);
+    add_new_timeline = true;
   }
   for (int32_t id : wire.removed_animations) {
     if (auto* animation = timeline->GetAnimationById(id)) {
@@ -1274,6 +1279,9 @@ base::expected<void, std::string> DeserializeAnimationTimeline(
   }
   for (const auto& wire_animation : wire.new_animations) {
     RETURN_IF_ERROR(DeserializeAnimation(*wire_animation, *timeline));
+  }
+  if (add_new_timeline) {
+    host.AddAnimationTimeline(timeline);
   }
   return base::ok();
 }
