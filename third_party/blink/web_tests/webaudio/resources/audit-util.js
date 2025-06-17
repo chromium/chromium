@@ -194,6 +194,66 @@ function computeSNR(actual, expected) {
   return signalPower / noisePower;
 }
 
+// BufferLoader – utility for fetching & decoding multiple audio files.
+function BufferLoader(context, urlList, callback) {
+  this.context = context;
+  this.urlList = urlList;
+  this.onload = callback;
+  this.bufferList = new Array();
+  this.loadCount = 0;
+}
+
+// BufferLoader – utility for fetching & decoding multiple audio files.
+BufferLoader.prototype.loadBuffer = function(url, index) {
+  // Load buffer asynchronously
+  let request = new XMLHttpRequest();
+  request.open('GET', url, true);
+  request.responseType = 'arraybuffer';
+
+  let loader = this;
+
+  request.onload = function() {
+    loader.context.decodeAudioData(
+      request.response,
+      function(decodedAudio) {
+        try {
+          loader.bufferList[index] = decodedAudio;
+          if (++loader.loadCount === loader.urlList.length)
+            loader.onload(loader.bufferList);
+        } catch (e) {
+          console.log(e);
+          alert(
+            'BufferLoader: unable to load buffer ' + index +
+            ', url: ' + loader.urlList[index]);
+        }
+      },
+      function() {
+        alert('error decoding file data: ' + url);
+      }
+    );
+  };
+
+  request.onerror = function() {
+    alert('BufferLoader: XHR error');
+  };
+
+  request.send();
+};
+
+BufferLoader.prototype.load = function() {
+  for (let i = 0; i < this.urlList.length; ++i)
+    this.loadBuffer(this.urlList[i], i);
+};
+
+// Returns a promise that resolves with an array of AudioBuffers once all
+// resources have loaded.
+function loadBuffers(context, urls) {
+  return new Promise((resolve, reject) => {
+    const loader = new BufferLoader(context, urls, resolve, reject);
+    loader.load();
+  });
+}
+
 /**
  * Creates a test buffer with linear ramp PCM data: 0, 1, 2, ... length-1.
  * @param {!BaseAudioContext} context

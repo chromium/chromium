@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
-[FAIL] X SNR between actual expected channel 0 is not greater than or equal to 110.97. Got 109.84518788831046.
-  assert_true: expected true got false
-[FAIL] X SNR between actual expected channel 1 is not greater than or equal to 110.97. Got 109.84518788831046.
-  assert_true: expected true got false
-[FAIL] < [test] 2 out of 7 assertions were failed.
-  assert_true: expected true got false
-[FAIL] # AUDIT TASK RUNNER FINISHED: 1 out of 1 tasks were failed.
-  assert_true: expected true got false
+[FAIL] Decoded WebM matches reference WAV within tolerance
+  assert_greater_than_equal: SNR for channel 0 expected a number greater than or equal to 110.97 but got 109.84518788831046
 Harness: the test ran to completion.
 
