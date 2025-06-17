@@ -12,6 +12,8 @@
 
 namespace ash {
 
+class ExtensionConsoleErrorObserver;
+
 namespace test {
 class SpeechMonitor;
 }  // namespace test
@@ -44,6 +46,7 @@ class ChromeVoxTestUtils {
 
  private:
   std::unique_ptr<test::SpeechMonitor> sm_;
+  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
 
 }  // namespace ash

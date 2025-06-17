@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "extensions/browser/background_script_executor.h"
@@ -29,8 +30,9 @@ ChromeVoxTestUtils::~ChromeVoxTestUtils() = default;
 void ChromeVoxTestUtils::EnableChromeVox(bool check_for_intro) {
   // Enable ChromeVox, disable earcons and wait for key mappings to be fetched.
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  // TODO(crbug.com/388867840): fix console error/warnings and instantiate
-  // |console_observer_| here.
+
+  console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
+      GetProfile(), extension_misc::kChromeVoxExtensionId);
 
   // Load ChromeVox and block until it's fully loaded.
   extensions::ExtensionHostTestHelper host_helper(
@@ -76,24 +78,30 @@ void ChromeVoxTestUtils::WaitForReady() {
 }
 
 void ChromeVoxTestUtils::WaitForValidRange() {
-  GlobalizeModule("ChromeVoxRange");
-
   std::string script(R"JS(
-      if (!ChromeVoxRange.current) {
-        await new Promise(resolve => {
-            new (class {
-                constructor() {
-                  ChromeVoxRange.addObserver(this);
-                }
-                onCurrentRangeChanged(newRange) {
-                  if (newRange) {
-                      ChromeVoxRange.removeObserver(this);
-                      resolve();
+      (async function() {
+        const imports = TestImportManager.getImports();
+        await imports.ChromeVoxState.ready();
+
+        const ChromeVoxRange = imports.ChromeVoxRange;
+        if (!ChromeVoxRange.current) {
+          await new Promise(resolve => {
+              new (class {
+                  constructor() {
+                    ChromeVoxRange.addObserver(this);
                   }
-                }
-            })();
-        });
-      }
+                  onCurrentRangeChanged(newRange) {
+                    if (newRange) {
+                        ChromeVoxRange.removeObserver(this);
+                        resolve();
+                    }
+                  }
+              })();
+          });
+        }
+
+        window.domAutomationController.send('done');
+      })()
   )JS");
 
   RunJS(script);
