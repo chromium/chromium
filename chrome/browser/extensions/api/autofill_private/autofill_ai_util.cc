@@ -59,7 +59,7 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
     const std::string& app_locale,
     std::vector<autofill_private::EntityInstanceWithLabels>& output) {
   // Step 1#, get all available labels for `entity_instances`.
-  const autofill::EntitiesLabels labels_for_entities =
+  const std::vector<autofill::EntityLabel> labels_for_entities =
       autofill::GetLabelsForEntities(entity_instances,
                                      /*allow_only_disambiguating_types=*/false,
                                      /*return_at_least_one_label=*/true,
@@ -76,7 +76,7 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
   // the second line.
   std::vector<autofill_private::EntityInstanceWithLabels>
       entities_instances_with_labels;
-  CHECK_EQ(entity_instances.size(), labels_for_entities->size());
+  CHECK_EQ(entity_instances.size(), labels_for_entities.size());
   for (size_t i = 0; i < entity_instances.size(); i++) {
     const EntityInstance& entity_instance = *entity_instances[i];
     autofill_private::EntityInstanceWithLabels& entity_instance_with_labels =
@@ -86,7 +86,7 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
     entity_instance_with_labels.entity_instance_label =
         base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
     entity_instance_with_labels.entity_instance_sub_label = base::UTF16ToUTF8(
-        base::JoinString((*labels_for_entities)[i], autofill::kLabelSeparator));
+        base::JoinString(labels_for_entities[i], autofill::kLabelSeparator));
   }
 }
 

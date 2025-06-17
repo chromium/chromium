@@ -25,33 +25,34 @@ inline constexpr char16_t kLabelSeparator[] = u" · ";
 // settings page.
 inline constexpr size_t kMaxNumberOfLabels = 2;
 
-// An EntitiesLabels object is always implicitly associated with a list of
-// EntityInstances: the `i`th element of the EntitiesLabels represents the
-// label of the `i`the entity.
-//
-// Every label of an individual entity is represented as a (potentially empty)
-// vector of non-empty strings.
-using EntitiesLabels =
-    base::StrongAlias<class EntitiesLabelsTag,
-                      std::vector<std::vector<std::u16string>>>;
+// During label computation, every entity's label is a vector of non-empty
+// strings (which the UI later concatenates).
+using EntityLabel = std::vector<std::u16string>;
 
 // Returns whether the form is eligible for the filling journey.
 bool IsFormEligibleForFilling(const FormStructure& form);
 
-// Given `entity_instances` returns `EntitiesLabels`, which will be a
-// list of labels that can be used by an UI surface to display entities
-// information. This is for example used by filling suggestions and the settings
-// page.
-// If `allow_only_disambiguating_types` is true, it will for example in the
-// passport case return only values for name and country attributes, as they are
-// part of the disambiguating attributes from the passport entity. If
-// `return_at_least_one_label` is true, it makes sure that for each
-// `entity_instances`, at least one label is present, even if it repeats across
-// all other entities.
-EntitiesLabels GetLabelsForEntities(base::span<const EntityInstance*> entities,
-                                    bool allow_only_disambiguating_types,
-                                    bool return_at_least_one_label,
-                                    const std::string& app_locale);
+// Returns a vector of EntityLabels, with one entry for each EntityInstance in
+// `entities`.
+//
+// That is, the `i`th element of the returned vector corresponds to
+// `entities[i]`. The individual EntityLabels may be empty, but the strings they
+// contain are non-empty.
+//
+// This is for example used by filling suggestions and the settings page.
+//
+// If `allow_only_disambiguating_types` is true, only disambiguating types are
+// considered. For example, for a passport, the name and country are considered,
+// but the number is not.
+//
+// If `return_at_least_one_label` is true and the attributes agree on all
+// (potentially disambiguating) attribute values, then we fall back to some of
+// those values they agree on.
+std::vector<EntityLabel> GetLabelsForEntities(
+    base::span<const EntityInstance*> entities,
+    bool allow_only_disambiguating_types,
+    bool return_at_least_one_label,
+    const std::string& app_locale);
 
 }  // namespace autofill
 

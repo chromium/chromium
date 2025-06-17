@@ -65,14 +65,14 @@ struct SuggestionWithMetadata {
 // `labels_for_all_suggestions` contain for each suggestion all the strings that
 // should be concatenated to generate the final label.
 std::vector<Suggestion> AssignLabelsToSuggestions(
-    EntitiesLabels labels_for_all_suggestions,
+    std::vector<EntityLabel> labels_for_all_suggestions,
     std::vector<Suggestion> suggestions) {
-  CHECK_EQ(labels_for_all_suggestions->size(), suggestions.size());
+  CHECK_EQ(labels_for_all_suggestions.size(), suggestions.size());
 
   size_t suggestion_index = 0;
   for (Suggestion& suggestion : suggestions) {
     suggestion.labels.push_back({Suggestion::Text(base::JoinString(
-        (*labels_for_all_suggestions)[suggestion_index], kLabelSeparator))});
+        labels_for_all_suggestions[suggestion_index], kLabelSeparator))});
     suggestion_index++;
   }
 
@@ -100,7 +100,7 @@ std::vector<Suggestion> AssignLabelsToSuggestions(
 //    `triggering_field_attribute` as the attribute type to exclude from the
 //    possible labels, since it will already be part of the suggestion main
 //    text.
-EntitiesLabels GetLabelsForSuggestions(
+std::vector<EntityLabel> GetLabelsForSuggestions(
     base::span<const SuggestionWithMetadata> suggestions_with_metadata,
     base::span<const EntityInstance*> other_entities_that_can_fill_section,
     const std::string& app_locale) {
@@ -115,11 +115,11 @@ EntitiesLabels GetLabelsForSuggestions(
 
   // Note that `all_entities_labels` are for all entities, including
   // those that were not used in suggestion generation.
-  EntitiesLabels all_entities_labels =
+  std::vector<EntityLabel> all_entities_labels =
       GetLabelsForEntities(entities, /*allow_only_disambiguating_types=*/true,
                            /*return_at_least_one_label=*/false, app_locale);
-  if (all_entities_labels->size() > suggestions_with_metadata.size()) {
-    all_entities_labels->resize(suggestions_with_metadata.size());
+  if (all_entities_labels.size() > suggestions_with_metadata.size()) {
+    all_entities_labels.resize(suggestions_with_metadata.size());
   }
   return all_entities_labels;
 }
@@ -156,15 +156,17 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
 
   // The final list of labels to be used by each suggestion. Note that they
   // always contain at least the entity name.
-  EntitiesLabels suggestions_labels;
+  std::vector<EntityLabel> suggestions_labels;
 
   // Step #2
   // Get the list of disambiguating labels. The list is created for the entities
   // used to build the suggestions, but it also uses other entities that can
   // fill a field in the form.
-  EntitiesLabels disambiguating_labels_for_all_entities_that_fill_section =
-      GetLabelsForSuggestions(suggestions_with_metadata,
-                              other_entities_that_can_fill_section, app_locale);
+  std::vector<EntityLabel>
+      disambiguating_labels_for_all_entities_that_fill_section =
+          GetLabelsForSuggestions(suggestions_with_metadata,
+                                  other_entities_that_can_fill_section,
+                                  app_locale);
 
   for (size_t i = 0; i < num_suggestions; i++) {
     // Do not assign labels that are identical or derived from the triggering
@@ -176,14 +178,13 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
     // triggering field.
     CHECK(attribute);
 
-    std::vector<std::u16string> disambiguating_labels = std::move(
-        (*disambiguating_labels_for_all_entities_that_fill_section)[i]);
+    EntityLabel disambiguating_labels =
+        std::move(disambiguating_labels_for_all_entities_that_fill_section[i]);
     std::erase_if(disambiguating_labels, [&](const std::u16string& label) {
       return label == attribute->GetCompleteInfo(app_locale);
     });
 
-    std::vector<std::u16string>& suggestion_labels =
-        suggestions_labels->emplace_back();
+    EntityLabel& suggestion_labels = suggestions_labels.emplace_back();
     suggestion_labels.push_back(std::u16string(entity.type().GetNameForI18n()));
     base::Extend(suggestion_labels, std::move(disambiguating_labels));
   }
