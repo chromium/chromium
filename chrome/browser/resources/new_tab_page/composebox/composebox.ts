@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './file_carousel.js';
+import './icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -16,9 +17,11 @@ import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
 export interface ComposeboxElement {
   $: {
-    attachmentUploader: HTMLInputElement,
+    fileInput: HTMLInputElement,
+    fileUploadButton: HTMLElement,
     carousel: ComposeboxFileCarouselElement,
-    imageUploader: HTMLInputElement,
+    imageInput: HTMLInputElement,
+    imageUploadButton: HTMLElement,
     input: HTMLInputElement,
   };
 }
@@ -82,9 +85,8 @@ export class ComposeboxElement extends CrLitElement {
         newFiles.push({
           uuid: this.createUuid(),
           name: file.name,
-          objectUrl: e.target === this.$.imageUploader ?
-              URL.createObjectURL(file) :
-              null,
+          objectUrl:
+              e.target === this.$.imageInput ? URL.createObjectURL(file) : null,
           type: file.type,
         });
         // TODO(crbug.com/422559977): Upload the file.
@@ -93,6 +95,14 @@ export class ComposeboxElement extends CrLitElement {
     this.files_ = this.files_.concat(newFiles);
     // Clear the file input.
     input.value = '';
+  }
+
+  protected openImageUpload_() {
+    this.$.imageInput.click();
+  }
+
+  protected openFileUpload_() {
+    this.$.fileInput.click();
   }
 
   private createUuid(): string {

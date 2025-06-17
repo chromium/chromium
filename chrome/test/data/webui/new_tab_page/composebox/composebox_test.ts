@@ -6,7 +6,7 @@ import {ComposeboxPageHandlerRemote} from 'chrome://new-tab-page/composebox.mojo
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../test_support.js';
 
@@ -36,8 +36,8 @@ suite('NewTabPageComposeboxTest', () => {
     // Act.
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
-    composeboxElement.$.imageUploader.files = dataTransfer.files;
-    composeboxElement.$.imageUploader.dispatchEvent(new Event('change'));
+    composeboxElement.$.imageInput.files = dataTransfer.files;
+    composeboxElement.$.imageInput.dispatchEvent(new Event('change'));
     await microtasksFinished();
 
     // Assert one image file.
@@ -58,8 +58,8 @@ suite('NewTabPageComposeboxTest', () => {
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(
         new File(['foo'], 'foo.pdf', {type: 'application/pdf'}));
-    composeboxElement.$.attachmentUploader.files = dataTransfer.files;
-    composeboxElement.$.attachmentUploader.dispatchEvent(new Event('change'));
+    composeboxElement.$.fileInput.files = dataTransfer.files;
+    composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
     await microtasksFinished();
 
     // Assert one pdf file.
@@ -79,8 +79,8 @@ suite('NewTabPageComposeboxTest', () => {
         new File(['foo1'], 'foo1.pdf', {type: 'application/pdf'}));
     dataTransfer.items.add(
         new File(['foo2'], 'foo2.pdf', {type: 'application/pdf'}));
-    composeboxElement.$.attachmentUploader.files = dataTransfer.files;
-    composeboxElement.$.attachmentUploader.dispatchEvent(new Event('change'));
+    composeboxElement.$.fileInput.files = dataTransfer.files;
+    composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
     await microtasksFinished();
 
     // Assert two files.
@@ -108,5 +108,23 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert call occurs.
     assertEquals(handler.getCallCount('notifySessionStarted'), 1);
+  });
+
+  test('image upload button clicks file input', async () => {
+    const imageUploadEventPromise =
+        eventToPromise('click', composeboxElement.$.imageInput);
+    composeboxElement.$.imageUploadButton.click();
+
+    // Assert.
+    await imageUploadEventPromise;
+  });
+
+  test('file upload button clicks file input', async () => {
+    const fileUploadClickEventPromise =
+        eventToPromise('click', composeboxElement.$.fileInput);
+    composeboxElement.$.fileUploadButton.click();
+
+    // Assert.
+    await fileUploadClickEventPromise;
   });
 });

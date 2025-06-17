@@ -1,0 +1,27 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import '//resources/cr_elements/cr_icon/cr_iconset.js';
+
+import {getTrustedHTML} from '//resources/js/static_types.js';
+
+const div = document.createElement('div');
+div.innerHTML = getTrustedHTML`
+<cr-iconset name="composebox">
+  <svg>
+    <defs>
+      <g id="imageUpload">
+        <path d="M5 21C4.45 21 3.975 20.8083 3.575 20.425C3.19167 20.025 3 19.55 3 19V5C3 4.45 3.19167 3.98333 3.575 3.6C3.975 3.2 4.45 3 5 3H13C13 3.28333 13 3.59167 13 3.925C13 4.25833 13 4.61667 13 5H5V19H19V11C19.3833 11 19.7417 11 20.075 11C20.4083 11 20.7167 11 21 11V19C21 19.55 20.8 20.025 20.4 20.425C20.0167 20.8083 19.55 21 19 21H5ZM6 17H18L14.25 12L11.25 16L9 13L6 17ZM17 9V7H15V5H17V3H19V5H21V7H19V9H17Z" fill="currentColor"/>
+      </g>
+      <g id="fileUpload">
+        <path d="M18 15.75C18 17.4833 17.3917 18.9583 16.175 20.175C14.9583 21.3917 13.4833 22 11.75 22C10.0167 22 8.54167 21.3917 7.325 20.175C6.10833 18.9583 5.5 17.4833 5.5 15.75V6.5C5.5 5.25 5.93333 4.19167 6.8 3.325C7.68333 2.44167 8.75 2 10 2C11.25 2 12.3083 2.44167 13.175 3.325C14.0583 4.19167 14.5 5.25 14.5 6.5V15.25C14.5 16.0167 14.2333 16.6667 13.7 17.2C13.1667 17.7333 12.5167 18 11.75 18C10.9833 18 10.3333 17.7333 9.8 17.2C9.26667 16.6667 9 16.0167 9 15.25V6H11V15.25C11 15.4667 11.0667 15.65 11.2 15.8C11.35 15.9333 11.5333 16 11.75 16C11.9667 16 12.1417 15.9333 12.275 15.8C12.425 15.65 12.5 15.4667 12.5 15.25V6.5C12.4833 5.8 12.2333 5.20833 11.75 4.725C11.2833 4.24167 10.7 4 10 4C9.3 4 8.70833 4.24167 8.225 4.725C7.74167 5.20833 7.5 5.8 7.5 6.5V15.75C7.48333 16.9333 7.89167 17.9417 8.725 18.775C9.55833 19.5917 10.5667 20 11.75 20C12.9167 20 13.9083 19.5917 14.725 18.775C15.5417 17.9417 15.9667 16.9333 16 15.75V6H18V15.75Z" fill="currentColor"/>
+      </g>
+    </defs>
+  </svg>
+</cr-iconset>`;
+
+const iconsets = div.querySelectorAll('cr-iconset');
+for (const iconset of iconsets) {
+  document.head.appendChild(iconset);
+}

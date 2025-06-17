@@ -74,7 +74,15 @@
   display: none;
 }
 
-#imageUpload {
-  height: 48px;
-  width: 48px
+#uploadContainer {
+  display: flex;
+}
+
+.upload-icon {
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-size: 48px;
+}
+
+#imageUploadButton {
+  --cr-icon-button-margin-start: -12px;
 }
