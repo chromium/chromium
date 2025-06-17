@@ -73,6 +73,10 @@ class OmniboxViewIOS;
 /// Retrieves the current textfield selection bounds.
 - (void)getSelectionBounds:(size_t*)start end:(size_t*)end;
 
+/// Reverts the edit and popup back to their unedited state (permanent text
+/// showing, popup closed, no user input in progress).
+- (void)revertAll;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.

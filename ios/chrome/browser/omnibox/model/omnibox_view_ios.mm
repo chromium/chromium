@@ -52,8 +52,7 @@ using base::UserMetricsAction;
 
 #pragma mark - Public
 
-OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field)
-    : field_(field), ignore_popup_updates_(false) {}
+OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field) : field_(field) {}
 
 OmniboxViewIOS::~OmniboxViewIOS() = default;
 
@@ -96,32 +95,8 @@ void OmniboxViewIOS::SetCaretPos(size_t caret_pos) {
   [omnibox_text_controller_ setCaretPos:caret_pos];
 }
 
-void OmniboxViewIOS::RevertAll() {
-  ignore_popup_updates_ = true;
-  // This will clear the model's `user_input_in_progress_`.
-  if (model_) {
-    model_->Revert();
-  }
-
-  // This will stop the `AutocompleteController`. This should happen after
-  // `user_input_in_progress_` is cleared above; otherwise, closing the popup
-  // will trigger unnecessary `AutocompleteClassifier::Classify()` calls to
-  // try to update the views which are unnecessary since they'll be thrown
-  // away during the model revert anyways.
-  CloseOmniboxPopup();
-
-  TextChanged();
-  ignore_popup_updates_ = false;
-}
-
 void OmniboxViewIOS::UpdatePopup() {
   [omnibox_text_controller_ startAutocompleteAfterEdit];
-}
-
-void OmniboxViewIOS::CloseOmniboxPopup() {
-  if (controller_) {
-    controller_->StopAutocomplete(/*clear_result=*/true);
-  }
 }
 
 void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
@@ -138,10 +113,4 @@ void OmniboxViewIOS::SetAdditionalText(const std::u16string& text) {
 
 void OmniboxViewIOS::OnAcceptAutocomplete() {
   [omnibox_text_controller_ onAcceptAutocomplete];
-}
-
-#pragma mark - Private
-
-void OmniboxViewIOS::TextChanged() {
-  model_->OnChanged();
 }

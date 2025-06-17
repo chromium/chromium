@@ -97,10 +97,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   // If Siri is thinking, treat that as user input being in progress.  It is
   // unsafe to modify the text field while voice entry is pending.
   if (_omniboxEditModel->ResetDisplayTexts()) {
-    if (_omniboxViewIOS) {
-      // Revert everything to the baseline look.
-      _omniboxViewIOS->RevertAll();
-    }
+    // Revert everything to the baseline look.
+    [self revertAll];
   } else if (!_omniboxEditModel->has_focus()) {
     // Even if the change wasn't "user visible" to the model, it still may be
     // necessary to re-color to the URL string.  Only do this if the omnibox is
@@ -172,9 +170,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   [self.focusDelegate omniboxDidResignFirstResponder];
 
   // Blow away any in-progress edits.
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->RevertAll();
-  }
+  [self revertAll];
+
   DCHECK(![self.textField hasAutocompleteText]);
   _suggestionsListScrolled = NO;
 }
@@ -209,6 +206,26 @@ const char kOmniboxFocusResultedInNavigation[] =
     *end = selectedRange.location + self.textField.autocompleteText.length;
   } else {
     *start = *end = 0;
+  }
+}
+
+- (void)revertAll {
+  // This will clear the model's `user_input_in_progress_`.
+  if (_omniboxEditModel) {
+    _omniboxEditModel->Revert();
+  }
+
+  // This will stop the `AutocompleteController`. This should happen after
+  // `user_input_in_progress_` is cleared above; otherwise, closing the popup
+  // will trigger unnecessary `AutocompleteClassifier::Classify()` calls to
+  // try to update the views which are unnecessary since they'll be thrown
+  // away during the model revert anyways.
+  if (_omniboxController) {
+    _omniboxController->StopAutocomplete(/*clear_result=*/true);
+  }
+
+  if (_omniboxEditModel) {
+    _omniboxEditModel->OnChanged();
   }
 }
 
@@ -292,9 +309,8 @@ const char kOmniboxFocusResultedInNavigation[] =
       _omniboxEditModel->OpenSelection();
     }
   }
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->RevertAll();
-  }
+
+  [self revertAll];
 }
 
 - (void)prepareForScribble {

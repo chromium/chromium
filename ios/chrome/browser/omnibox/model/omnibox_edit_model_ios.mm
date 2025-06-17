@@ -677,7 +677,7 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
     base::AutoReset<bool> tmp(&text_model_->in_revert, true);
-    view_->RevertAll();  // Revert the box to its unedited state.
+    [text_controller_ revertAll];  // Revert the box to its unedited state.
   }
 
   if (!action) {

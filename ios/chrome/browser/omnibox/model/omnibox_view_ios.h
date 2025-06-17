@@ -58,18 +58,9 @@ class OmniboxViewIOS {
   // position to the length of the current text.
   virtual void SetCaretPos(size_t caret_pos);
 
-  // Reverts the edit and popup back to their unedited state (permanent text
-  // showing, popup closed, no user input in progress).
-  virtual void RevertAll();
-
   // Updates the autocomplete popup and other state after the text has been
   // changed by the user.
   virtual void UpdatePopup();
-
-  // Closes the autocomplete popup, if it's open. The name `ClosePopup`
-  // conflicts with the OSX class override as that has a base class that also
-  // defines a method with that name.
-  virtual void CloseOmniboxPopup();
 
   // Called when the inline autocomplete text in the model may have changed.
   // `user_text` is the portion of omnibox text the user typed.
@@ -88,17 +79,8 @@ class OmniboxViewIOS {
  private:
   friend class TestOmniboxViewIOS;
 
-  // Internally invoked whenever the text changes in some way.
-  virtual void TextChanged();
-
   base::WeakPtr<OmniboxControllerIOS> controller_;
   OmniboxTextFieldIOS* field_;
-
-  // TODO(crbug.com/379693750): This is a monster hack, needed because closing
-  // the popup ends up inadvertently triggering a new round of autocomplete. Fix
-  // the underlying problem, which is that textDidChange: is called when closing
-  // the popup, and then remove this hack.
-  BOOL ignore_popup_updates_;
 
   /// Controller that will replace OmniboxViewIOS at the end of the refactoring
   /// crbug.com/390409559.
