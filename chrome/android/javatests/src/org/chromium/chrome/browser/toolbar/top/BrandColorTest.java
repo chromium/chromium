@@ -35,8 +35,10 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -53,7 +55,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 })
 public class BrandColorTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String BRAND_COLOR_1 = "#482329";
     private static final String BRAND_COLOR_2 = "#505050";
@@ -101,13 +104,14 @@ public class BrandColorTest {
         }
     }
 
-    protected void startMainActivityWithURL(String url) {
-        mActivityTestRule.startMainActivityWithURL(url);
+    protected WebPageStation startMainActivityWithURL(String url) {
+        WebPageStation page = mActivityTestRule.startOnUrl(url);
         mToolbar = (ToolbarPhone) mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mToolbarDataProvider = mToolbar.getToolbarDataProvider();
         mDefaultColor =
                 ChromeColors.getDefaultThemeColor(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
+        return page;
     }
 
     /** Test for having default primary color working correctly. */

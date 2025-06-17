@@ -25,8 +25,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -39,8 +41,8 @@ import java.io.IOException;
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 public class ToolbarTabletTest {
     @ClassRule
-    public static ChromeTabbedActivityTestRule activityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public static AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -49,18 +51,19 @@ public class ToolbarTabletTest {
             RenderTestRule.Builder.withPublicCorpus().setBugComponent(UI_BROWSER_TOOLBAR).build();
 
     private ToolbarTablet mToolbar;
+    private WebPageStation mPage;
 
     @BeforeClass
     public static void setupClass() {
         // Setting touch mode: false allows us to test the button's focused appearance.
         // It seems like touch mode has to be configured during setup.
         InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
-        activityTestRule.startMainActivityOnBlankPage();
     }
 
     @Before
     public void setUp() {
-        mToolbar = activityTestRule.getActivity().findViewById(R.id.toolbar);
+        mPage = mActivityTestRule.startOnBlankPage();
+        mToolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
     }
 
     @Test
