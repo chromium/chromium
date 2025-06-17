@@ -332,6 +332,8 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
     pic_hdr.ref_order_hint[i] = 0;
   }
 
+  pic_hdr.cdef_damping_minus_3 = pic_param.cdef_damping_minus_3;
+  pic_hdr.cdef_bits = pic_param.cdef_bits;
   for (size_t i = 0; i < ARRAY_SIZE(current_params.cdef_y_pri_strength); i++) {
     pic_hdr.cdef_y_pri_strength[i] = current_params.cdef_y_pri_strength[i];
     pic_hdr.cdef_y_sec_strength[i] = current_params.cdef_y_sec_strength[i];
@@ -339,6 +341,8 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
     pic_hdr.cdef_uv_sec_strength[i] = current_params.cdef_uv_sec_strength[i];
   }
   pic_hdr.reduced_tx_set = pic_param.picture_flags.bits.reduced_tx_set;
+  pic_hdr.tx_mode =
+      static_cast<libgav1::TxMode>(pic_param.mode_control_flags.bits.tx_mode);
   pic_hdr.segmentation_enabled =
       pic_param.segments.seg_flags.bits.segmentation_enabled;
   if (pic_hdr.segmentation_enabled) {
@@ -350,7 +354,10 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
     pic_hdr.segmentation_update_data = true;
     for (uint32_t i = 0; i < pic_hdr.segment_number; i++) {
       pic_hdr.feature_data[i][0] = pic_param.segments.feature_data[i][0];
-      pic_hdr.feature_mask[i] = pic_param.segments.feature_mask[i];
+      for (uint32_t j = 0; j < libgav1::kSegmentFeatureMax; j++) {
+        pic_hdr.feature_enabled[i][j] =
+            !!(pic_param.segments.feature_mask[i] & (1 << j));
+      }
     }
   }
   pic_hdr.allow_screen_content_tools =

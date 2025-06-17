@@ -110,8 +110,24 @@ class D3D12VideoEncodeAV1DelegateTest
     return vea_config;
   }
 
+  void UpdatePostEncodeValues(
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES& post_encode_values,
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS& post_encode_flags) {
+    static_cast<D3D12VideoEncodeAV1Delegate*>(encoder_delegate_.get())
+        ->UpdateFrameHeaderPostEncode(post_encode_flags, post_encode_values,
+                                      frame_header_);
+  }
+
+  void UpdateLoopRestoration(
+      const D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG& restoration_config,
+      AV1BitstreamBuilder::FrameHeader& frame_header) {
+    static_cast<D3D12VideoEncodeAV1Delegate*>(encoder_delegate_.get())
+        ->UpdateFrameHeaderLoopRestoration(restoration_config, frame_header);
+  }
+
   Microsoft::WRL::ComPtr<D3D12DeviceMock> device_;
   Microsoft::WRL::ComPtr<D3D12VideoDevice3Mock> video_device3_;
+  AV1BitstreamBuilder::FrameHeader frame_header_{};
 };
 
 TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles) {
@@ -142,8 +158,10 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
             .Height = static_cast<UINT>(config.input_visible_size.height()),
             .Format = VideoPixelFormatToDxgiFormat(config.input_format),
         }));
-    constexpr size_t kBufferSize = 1024;
-    constexpr size_t kStreamSize = 52;
+    // AV1 output metadata includes post encode syntax values, so we need
+    // larger buffer.
+    constexpr size_t kBufferSize = 4096;
+    constexpr size_t kStreamSize = 3072;
     auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
     BitstreamBuffer bitstream_buffer(base::RandInt(0, 7 /*MaxDPBSize - 1*/),
                                      shared_memory.Duplicate(), kBufferSize);
@@ -166,6 +184,175 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
     EXPECT_LE(metadata.payload_size_bytes, kBufferSize);
     EXPECT_GT(metadata.qp, 0);
   }
+}
+
+// Test post encode update of frame header through
+// UpdateFrameHeaderPostEncode() with every flag that is possible.
+TEST_F(D3D12VideoEncodeAV1DelegateTest, UpdateFrameHeaderPostEncode) {
+  VideoEncodeAccelerator::Config config = GetDefaultConfig();
+  EXPECT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES post_encode_values{};
+  D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS post_encode_flags =
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_NONE;
+
+  // CDEF
+  constexpr std::array<uint8_t, 8> kCdefPriStrength = {9, 12, 0, 6, 2, 4, 1, 2};
+  constexpr std::array<uint8_t, 8> kCdefSecStrength = {0, 2, 0, 0, 0, 1, 0, 1};
+  post_encode_flags = D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_CDEF_DATA;
+  post_encode_values.CDEF.CdefBits = 3;
+  post_encode_values.CDEF.CdefDampingMinus3 = 2;
+  for (uint32_t i = 0; i < (1 << post_encode_values.CDEF.CdefBits); i++) {
+    base::span(post_encode_values.CDEF.CdefYPriStrength)[i] =
+        kCdefPriStrength[i];
+    base::span(post_encode_values.CDEF.CdefUVPriStrength)[i] =
+        kCdefPriStrength[i];
+    base::span(post_encode_values.CDEF.CdefYSecStrength)[i] =
+        kCdefSecStrength[i];
+    base::span(post_encode_values.CDEF.CdefUVSecStrength)[i] =
+        kCdefSecStrength[i];
+  }
+  UpdatePostEncodeValues(post_encode_values, post_encode_flags);
+  EXPECT_EQ(frame_header_.cdef_damping_minus_3, 2);
+  EXPECT_EQ(frame_header_.cdef_bits, 3);
+  EXPECT_THAT(frame_header_.cdef_y_pri_strength,
+              ::testing::ElementsAreArray(kCdefPriStrength));
+  EXPECT_THAT(frame_header_.cdef_y_sec_strength,
+              ::testing::ElementsAreArray(kCdefSecStrength));
+  EXPECT_THAT(frame_header_.cdef_uv_pri_strength,
+              ::testing::ElementsAreArray(kCdefPriStrength));
+  EXPECT_THAT(frame_header_.cdef_uv_sec_strength,
+              ::testing::ElementsAreArray(kCdefSecStrength));
+
+  // Loop filter
+  post_encode_flags =
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_LOOP_FILTER;
+  post_encode_values.LoopFilter.LoopFilterLevel[0] = 5;
+  post_encode_values.LoopFilter.LoopFilterLevel[1] = 5;
+  post_encode_values.LoopFilter.LoopFilterLevelU = 5;
+  post_encode_values.LoopFilter.LoopFilterLevelV = 5;
+  post_encode_values.LoopFilter.LoopFilterSharpnessLevel = 0;
+  post_encode_values.LoopFilter.LoopFilterDeltaEnabled = true;
+  post_encode_values.LoopFilter.UpdateRefDelta = true;
+  constexpr std::array<int8_t, 8> kRefDeltas = {1, -1, 0, 0, 0, 0, 0, 0};
+  for (size_t i = 0; i < kRefDeltas.size(); ++i) {
+    base::span(post_encode_values.LoopFilter.RefDeltas)[i] = kRefDeltas[i];
+  }
+  post_encode_values.LoopFilter.UpdateModeDelta = true;
+  constexpr std::array<int8_t, 2> kModeDeltas = {1, -1};
+  for (size_t i = 0; i < kModeDeltas.size(); ++i) {
+    base::span(post_encode_values.LoopFilter.ModeDeltas)[i] = kModeDeltas[i];
+  }
+  UpdatePostEncodeValues(post_encode_values, post_encode_flags);
+  EXPECT_TRUE(frame_header_.loop_filter_delta_enabled);
+  EXPECT_TRUE(frame_header_.loop_filter_delta_update);
+  EXPECT_EQ(frame_header_.filter_level[0], 5u);
+  EXPECT_EQ(frame_header_.filter_level[1], 5u);
+  EXPECT_EQ(frame_header_.filter_level_u, 5u);
+  EXPECT_EQ(frame_header_.filter_level_v, 5u);
+  EXPECT_EQ(frame_header_.sharpness_level, 0u);
+  EXPECT_THAT(frame_header_.loop_filter_ref_deltas,
+              ::testing::ElementsAreArray(kRefDeltas));
+  EXPECT_THAT(frame_header_.loop_filter_mode_deltas,
+              ::testing::ElementsAreArray(kModeDeltas));
+
+  // Loop filter delta
+  post_encode_flags =
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_LOOP_FILTER_DELTA;
+  post_encode_values.LoopFilterDelta.DeltaLFPresent = true;
+  post_encode_values.LoopFilterDelta.DeltaLFMulti = true;
+  post_encode_values.LoopFilterDelta.DeltaLFRes = 1;
+  UpdatePostEncodeValues(post_encode_values, post_encode_flags);
+  EXPECT_TRUE(frame_header_.delta_lf_present);
+  EXPECT_TRUE(frame_header_.delta_lf_multi);
+  EXPECT_EQ(frame_header_.delta_lf_res, 1u);
+
+  // Quantization
+  post_encode_flags =
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_QUANTIZATION;
+  post_encode_values.Quantization.BaseQIndex = 100;
+  post_encode_values.Quantization.YDCDeltaQ = 1;
+  post_encode_values.Quantization.UDCDeltaQ = 2;
+  post_encode_values.Quantization.UACDeltaQ = 3;
+  post_encode_values.Quantization.VDCDeltaQ = 4;
+  post_encode_values.Quantization.VACDeltaQ = 5;
+  post_encode_values.Quantization.UsingQMatrix = true;
+  post_encode_values.Quantization.QMY = 1;
+  post_encode_values.Quantization.QMU = 2;
+  post_encode_values.Quantization.QMV = 3;
+  UpdatePostEncodeValues(post_encode_values, post_encode_flags);
+  EXPECT_EQ(frame_header_.base_qindex,
+            post_encode_values.Quantization.BaseQIndex);
+  EXPECT_TRUE(frame_header_.separate_uv_delta_q);
+  EXPECT_EQ(frame_header_.delta_q_y_dc,
+            post_encode_values.Quantization.YDCDeltaQ);
+  EXPECT_EQ(frame_header_.delta_q_u_dc,
+            post_encode_values.Quantization.UDCDeltaQ);
+  EXPECT_EQ(frame_header_.delta_q_u_ac,
+            post_encode_values.Quantization.UACDeltaQ);
+  EXPECT_EQ(frame_header_.delta_q_v_dc,
+            post_encode_values.Quantization.VDCDeltaQ);
+  EXPECT_EQ(frame_header_.delta_q_v_ac,
+            post_encode_values.Quantization.VACDeltaQ);
+  EXPECT_TRUE(frame_header_.using_qmatrix);
+  EXPECT_EQ(frame_header_.qm_y, post_encode_values.Quantization.QMY);
+  EXPECT_EQ(frame_header_.qm_u, post_encode_values.Quantization.QMU);
+  EXPECT_EQ(frame_header_.qm_v, post_encode_values.Quantization.QMV);
+
+  // Quantization delta
+  post_encode_flags =
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_QUANTIZATION_DELTA;
+  post_encode_values.QuantizationDelta.DeltaQPresent = true;
+  post_encode_values.QuantizationDelta.DeltaQRes = 1;
+  UpdatePostEncodeValues(post_encode_values, post_encode_flags);
+  EXPECT_TRUE(frame_header_.delta_q_present);
+  EXPECT_EQ(frame_header_.delta_q_res,
+            post_encode_values.QuantizationDelta.DeltaQRes);
+
+  // Primary reference frame
+  post_encode_flags =
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_PRIMARY_REF_FRAME;
+  post_encode_values.PrimaryRefFrame = 2;
+  UpdatePostEncodeValues(post_encode_values, post_encode_flags);
+  EXPECT_EQ(frame_header_.primary_ref_frame,
+            post_encode_values.PrimaryRefFrame);
+
+  // Reference indices
+  constexpr std::array<uint8_t, 7> kReferenceIndices = {0, 1, 1, 2, 2, 3, 3};
+  post_encode_flags =
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_REFERENCE_INDICES;
+  for (uint32_t i = 0; i < kReferenceIndices.size(); ++i) {
+    base::span(post_encode_values.ReferenceIndices)[i] = kReferenceIndices[i];
+  }
+  UpdatePostEncodeValues(post_encode_values, post_encode_flags);
+  EXPECT_THAT(frame_header_.ref_frame_idx,
+              ::testing::ElementsAreArray(kReferenceIndices));
+
+  // Compound prediction type
+  post_encode_flags =
+      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_COMPOUND_PREDICTION_MODE;
+  post_encode_values.CompoundPredictionType = 1;
+  UpdatePostEncodeValues(post_encode_values, post_encode_flags);
+  EXPECT_EQ(frame_header_.reference_select,
+            post_encode_values.CompoundPredictionType);
+
+  // Update loop restoration params.
+  D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG restoration_config{};
+  restoration_config.FrameRestorationType[0] =
+      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SGRPROJ;
+  restoration_config.FrameRestorationType[1] =
+      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_WIENER;
+  restoration_config.FrameRestorationType[2] =
+      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_DISABLED;
+  restoration_config.LoopRestorationPixelSize[0] =
+      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_128x128;
+  restoration_config.LoopRestorationPixelSize[1] =
+      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_64x64;
+  restoration_config.LoopRestorationPixelSize[2] =
+      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED;
+  UpdateLoopRestoration(restoration_config, frame_header_);
+  EXPECT_EQ(frame_header_.lr_unit_shift, 1u);
+  EXPECT_EQ(frame_header_.lr_uv_shift, 1u);
 }
 
 }  // namespace media

@@ -45,6 +45,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate) override;
 
  private:
+  friend class D3D12VideoEncodeAV1DelegateTest;
+
   EncoderStatus InitializeVideoEncoder(
       const VideoEncodeAccelerator::Config& config) override;
 
@@ -52,6 +54,19 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
       base::span<uint8_t> bitstream_buffer) override;
 
   void FillPictureControlParams(const VideoEncoder::EncodeOptions& options);
+
+  // Updates frame header to be packed into the encoder output bitstream,
+  // according to the post-encode metadata from driver.
+  bool UpdateFrameHeaderPostEncode(
+      const D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS& post_encode_flags,
+      const D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES& post_encode_values,
+      AV1BitstreamBuilder::FrameHeader& frame_header);
+
+  // When loop restoration is enabled, updates frame header with loop
+  // restoration parameters submitted to driver.
+  void UpdateFrameHeaderLoopRestoration(
+      const D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG& restoration_config,
+      AV1BitstreamBuilder::FrameHeader& frame_header);
 
   D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS input_arguments_{};
 
@@ -73,8 +88,15 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   // Enabled features for creating D3D12 AV1 encoder.
   D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS enabled_features_{};
 
+  // Codec configuration support limits of D3D12 AV1 encoder.
+  D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT config_support_limit_{};
+
   // Picture control flags for each Encoding frame.
   PictureControlFlags picture_ctrl_{};
+
+  // Subregion layout settings.
+  D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES
+  sub_layout_{};
 
   // The encoding content is a screen content.
   bool is_screen_ = false;
