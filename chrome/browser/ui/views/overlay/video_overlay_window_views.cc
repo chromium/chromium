@@ -83,6 +83,10 @@
 #include "ui/base/win/shell.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/overlay/video_overlay_window_native_widget_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 
 // Lower bound size of the window is a fixed value to allow for minimal sizes
@@ -388,6 +392,14 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
   params.name = "PictureInPictureWindow";
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.delegate = new OverlayWindowWidgetDelegate();
+
+#if BUILDFLAG(IS_MAC)
+  // On Mac, we override the default native widget with our own subclass, which
+  // allows us to get the default window styling (e.g. corner radius) even
+  // though we're using `views::Widget::InitParams::remove_standard_frame`.
+  params.native_widget =
+      new VideoOverlayWindowNativeWidgetMac(overlay_window.get());
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
   params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
