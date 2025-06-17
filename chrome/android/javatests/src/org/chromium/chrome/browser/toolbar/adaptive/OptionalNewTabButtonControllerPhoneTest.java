@@ -27,7 +27,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,9 +41,10 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -64,16 +64,13 @@ import org.chromium.ui.test.util.ViewUtils;
 public class OptionalNewTabButtonControllerPhoneTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
 
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, /* clearAllTabState= */ false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private String mTestPageUrl;
     private String mButtonDescription;
+    private WebPageStation mPage;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -88,14 +85,15 @@ public class OptionalNewTabButtonControllerPhoneTest {
 
     @Before
     public void setUp() {
-        mTestPageUrl = sActivityTestRule.getTestServer().getURL(TEST_PAGE);
+        mTestPageUrl = mActivityTestRule.getTestServer().getURL(TEST_PAGE);
         mButtonDescription =
-                sActivityTestRule.getActivity().getResources().getString(R.string.button_new_tab);
+                mActivityTestRule.getActivity().getResources().getString(R.string.button_new_tab);
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     @After
     public void tearDown() {
-        ActivityTestUtils.clearActivityOrientation(sActivityTestRule.getActivity());
+        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     @Test
@@ -103,8 +101,8 @@ public class OptionalNewTabButtonControllerPhoneTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testClick_opensNewTab_portrait() {
         ActivityTestUtils.rotateActivityToOrientation(
-                sActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
-        sActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
+                mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
+        mActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
 
         onViewWaiting(
                         allOf(
@@ -121,7 +119,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
                 Integer.valueOf(2),
                 ThreadUtils.<Integer>runOnUiThreadBlocking(
                         () ->
-                                sActivityTestRule
+                                mActivityTestRule
                                         .getActivity()
                                         .getCurrentTabModel()
                                         .getComprehensiveModel()
@@ -132,8 +130,8 @@ public class OptionalNewTabButtonControllerPhoneTest {
     @MediumTest
     public void testClick_opensNewTab_landscape() {
         ActivityTestUtils.rotateActivityToOrientation(
-                sActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
-        sActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
+                mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+        mActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
 
         // Check view exists and is set up correctly.
         onViewWaiting(withId(R.id.optional_toolbar_button))
@@ -146,7 +144,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
         // Clicking with espresso is flaky, perform click directly.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sActivityTestRule
+                    mActivityTestRule
                             .getActivity()
                             .findViewById(R.id.optional_toolbar_button)
                             .performClick();
@@ -159,7 +157,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
                 Integer.valueOf(2),
                 ThreadUtils.<Integer>runOnUiThreadBlocking(
                         () -> {
-                            return sActivityTestRule
+                            return mActivityTestRule
                                     .getActivity()
                                     .getCurrentTabModel()
                                     .getComprehensiveModel()
@@ -170,7 +168,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
     @Test
     @MediumTest
     public void testClick_opensNewTabInIncognito() {
-        sActivityTestRule.loadUrlInNewTab(mTestPageUrl, /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab(mTestPageUrl, /* incognito= */ true);
 
         onViewWaiting(
                         allOf(
@@ -187,7 +185,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
                 Integer.valueOf(2),
                 ThreadUtils.<Integer>runOnUiThreadBlocking(
                         () ->
-                                sActivityTestRule
+                                mActivityTestRule
                                         .getActivity()
                                         .getCurrentTabModel()
                                         .getComprehensiveModel()
@@ -195,7 +193,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
         assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                sActivityTestRule
+                                mActivityTestRule
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
                                         .get()
@@ -205,7 +203,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
     @Test
     @MediumTest
     public void testClick_recordsUserAction() {
-        sActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
+        mActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
         UserActionTester userActionTester = new UserActionTester();
 
         onViewWaiting(
@@ -226,9 +224,9 @@ public class OptionalNewTabButtonControllerPhoneTest {
     @MediumTest
     @DisabledTest(message = "crbug.com/1450561")
     public void testButton_hidesOnNtp() {
-        sActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
+        mActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sActivityTestRule.getActivity().getActivityTab().reload());
+                () -> mActivityTestRule.getActivity().getActivityTab().reload());
         onViewWaiting(
                 allOf(
                         withId(R.id.optional_toolbar_button),
@@ -236,7 +234,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
                         isEnabled(),
                         withContentDescription(mButtonDescription)));
 
-        sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         ViewUtils.waitForViewCheckingState(
                 withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
