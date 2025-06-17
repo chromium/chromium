@@ -2006,8 +2006,7 @@ TEST_F(WebSchedulingTaskQueueTest, DynamicPriorityContinuations) {
 TEST_F(WebSchedulingTaskQueueTest, WebScheduingAndNonWebScheduingTasks) {
   Vector<String> run_order;
   Vector<TestTaskSpecEntry> test_spec = {
-      {.descriptor = "Idle",
-       .type_info = TaskType::kLowPriorityScriptExecution},
+      {.descriptor = "Idle", .type_info = TaskType::kInternalContentCapture},
       {.descriptor = "BG",
        .type_info = WebSchedulingParams(
            {.queue_type = WebSchedulingQueueType::kTaskQueue,

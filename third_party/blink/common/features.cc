@@ -1849,7 +1849,7 @@ BASE_FEATURE_ENUM_PARAM(AsyncScriptPrioritisationType,
                         kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam,
                         &kLowPriorityAsyncScriptExecution,
                         "low_pri_async_exec_lower_task_priority",
-                        AsyncScriptPrioritisationType::kBestEffort,
+                        AsyncScriptPrioritisationType::kLow,
                         &async_script_prioritisation_types);
 // kLowPriorityAsyncScriptExecution will change evaluation schedule for the
 // specified target.
