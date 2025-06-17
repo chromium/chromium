@@ -130,10 +130,6 @@ void MoveWebStateWithIdentifierToInsertionParams(
   // some moves actions.
   int web_state_list_count = web_state_list->count();
   if (source_group) {
-    // Save the current destination web state to retrieve its index if some tab
-    // been added before the end of the move.
-    web::WebState* destination_web_state =
-        web_state_list->GetWebStateAt(desired_web_state_index);
     if (!from_same_collection) {
       //  If the dropped item is from another collection and
       //  `desired_web_state_index` is after the last tab group index, decrease
@@ -144,6 +140,10 @@ void MoveWebStateWithIdentifierToInsertionParams(
         desired_web_state_index -= 1;
       }
     }
+    // Save the current destination web state to retrieve its index if some tab
+    // been added before the end of the move.
+    web::WebState* destination_web_state =
+        web_state_list->GetWebStateAt(desired_web_state_index);
     web_state_list->RemoveFromGroups({source_web_state_index});
     // If some tab been added or removed, update the desired index.
     if (web_state_list->count() != web_state_list_count) {
