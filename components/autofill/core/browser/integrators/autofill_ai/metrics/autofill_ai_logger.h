@@ -2,48 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_METRICS_AUTOFILL_AI_LOGGER_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_METRICS_AUTOFILL_AI_LOGGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_LOGGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_LOGGER_H_
 
 #include <map>
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_ai/core/browser/metrics/autofill_ai_ukm_logger.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 // A class that takes care of keeping track of metric-related states and user
 // interactions with forms.
 class AutofillAiLogger {
  public:
-  explicit AutofillAiLogger(autofill::AutofillClient* client);
+  explicit AutofillAiLogger(AutofillClient* client);
   AutofillAiLogger(const AutofillAiLogger&) = delete;
   AutofillAiLogger& operator=(const AutofillAiLogger&) = delete;
   ~AutofillAiLogger();
 
-  void OnFormEligibilityAvailable(autofill::FormGlobalId form_id,
-                                  bool is_eligible);
-  void OnFormHasDataToFill(autofill::FormGlobalId form_id);
-  void OnSuggestionsShown(const autofill::FormStructure& form,
-                          const autofill::AutofillField& field,
+  void OnFormEligibilityAvailable(FormGlobalId form_id, bool is_eligible);
+  void OnFormHasDataToFill(FormGlobalId form_id);
+  void OnSuggestionsShown(const FormStructure& form,
+                          const AutofillField& field,
                           ukm::SourceId ukm_source_id);
-  void OnDidFillSuggestion(const autofill::FormStructure& form,
-                           const autofill::AutofillField& field,
+  void OnDidFillSuggestion(const FormStructure& form,
+                           const AutofillField& field,
                            ukm::SourceId ukm_source_id);
-  void OnEditedAutofilledField(const autofill::FormStructure& form,
-                               const autofill::AutofillField& field,
+  void OnEditedAutofilledField(const FormStructure& form,
+                               const AutofillField& field,
                                ukm::SourceId ukm_source_id);
-  void OnDidFillField(const autofill::FormStructure& form,
-                      const autofill::AutofillField& field,
+  void OnDidFillField(const FormStructure& form,
+                      const AutofillField& field,
                       ukm::SourceId ukm_source_id);
 
   // Function that records the contents of `form_states` for `form` into
   // appropriate metrics. `submission_state` denotes whether the form was
   // submitted or abandoned. Also logs form-related UKM metrics.
-  void RecordFormMetrics(const autofill::FormStructure& form,
+  void RecordFormMetrics(const FormStructure& form,
                          ukm::SourceId ukm_source_id,
                          bool submission_state,
                          bool opt_in_status);
@@ -72,11 +71,11 @@ class AutofillAiLogger {
   };
   // Records the funnel state of each form. See the documentation of
   // `FunnelState` for more information about what is recorded.
-  std::map<autofill::FormGlobalId, FunnelState> form_states_;
+  std::map<FormGlobalId, FunnelState> form_states_;
 
   AutofillAiUkmLogger ukm_logger_;
 };
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_METRICS_AUTOFILL_AI_LOGGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_LOGGER_H_

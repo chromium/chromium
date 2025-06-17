@@ -7,14 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 if (is_win || is_mac || is_linux || is_chromeos) {
   static_library("browser") {
     sources = [
-      "autofill_ai_manager.cc",
-      "autofill_ai_manager.h",
       "autofill_ai_metrics.cc",
       "autofill_ai_metrics.h",
-      "metrics/autofill_ai_logger.cc",
-      "metrics/autofill_ai_logger.h",
-      "metrics/autofill_ai_ukm_logger.cc",
-      "metrics/autofill_ai_ukm_logger.h",
     ]
 
     deps = [
@@ -29,43 +23,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
       "//ui/native_theme:native_theme",
-    ]
-  }
-
-  static_library("test_support") {
-    testonly = true
-    sources = [
-      "autofill_ai_manager_test_api.cc",
-      "autofill_ai_manager_test_api.h",
-    ]
-    deps = [
-      ":browser",
-      "//base",
-      "//components/autofill/core/browser:test_support",
-      "//components/autofill/core/common",
-      "//components/optimization_guide/core:test_support",
-      "//testing/gmock",
-    ]
-  }
-
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
-      "autofill_ai_manager_unittest.cc",
-      "metrics/autofill_ai_logger_unittest.cc",
-    ]
-    deps = [
-      ":browser",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//components/autofill/core/browser:test_support",
-      "//components/autofill/core/common",
-      "//components/optimization_guide/core:test_support",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//components/prefs:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
     ]
   }
 }

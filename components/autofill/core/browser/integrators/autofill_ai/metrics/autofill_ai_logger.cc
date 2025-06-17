@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/metrics/autofill_ai_logger.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_ai/core/browser/metrics/autofill_ai_ukm_logger.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
 
@@ -32,54 +32,52 @@ void LogFunnelMetric(std::string_view funnel_metric_name,
 
 }  // namespace
 
-AutofillAiLogger::AutofillAiLogger(autofill::AutofillClient* client)
+AutofillAiLogger::AutofillAiLogger(AutofillClient* client)
     : ukm_logger_(client) {}
 AutofillAiLogger::~AutofillAiLogger() = default;
 
-void AutofillAiLogger::OnFormEligibilityAvailable(
-    autofill::FormGlobalId form_id,
-    bool is_eligible) {
+void AutofillAiLogger::OnFormEligibilityAvailable(FormGlobalId form_id,
+                                                  bool is_eligible) {
   form_states_[form_id].is_eligible = is_eligible;
 }
 
-void AutofillAiLogger::OnFormHasDataToFill(autofill::FormGlobalId form_id) {
+void AutofillAiLogger::OnFormHasDataToFill(FormGlobalId form_id) {
   form_states_[form_id].has_data_to_fill = true;
 }
 
-void AutofillAiLogger::OnSuggestionsShown(const autofill::FormStructure& form,
-                                          const autofill::AutofillField& field,
+void AutofillAiLogger::OnSuggestionsShown(const FormStructure& form,
+                                          const AutofillField& field,
                                           ukm::SourceId ukm_source_id) {
   form_states_[form.global_id()].suggestions_shown = true;
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
                             AutofillAiUkmLogger::EventType::kSuggestionShown);
 }
 
-void AutofillAiLogger::OnDidFillSuggestion(const autofill::FormStructure& form,
-                                           const autofill::AutofillField& field,
+void AutofillAiLogger::OnDidFillSuggestion(const FormStructure& form,
+                                           const AutofillField& field,
                                            ukm::SourceId ukm_source_id) {
   form_states_[form.global_id()].did_fill_suggestions = true;
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
                             AutofillAiUkmLogger::EventType::kSuggestionFilled);
 }
 
-void AutofillAiLogger::OnEditedAutofilledField(
-    const autofill::FormStructure& form,
-    const autofill::AutofillField& field,
-    ukm::SourceId ukm_source_id) {
+void AutofillAiLogger::OnEditedAutofilledField(const FormStructure& form,
+                                               const AutofillField& field,
+                                               ukm::SourceId ukm_source_id) {
   form_states_[form.global_id()].edited_autofilled_field = true;
   ukm_logger_.LogFieldEvent(
       ukm_source_id, form, field,
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue);
 }
 
-void AutofillAiLogger::OnDidFillField(const autofill::FormStructure& form,
-                                      const autofill::AutofillField& field,
+void AutofillAiLogger::OnDidFillField(const FormStructure& form,
+                                      const AutofillField& field,
                                       ukm::SourceId ukm_source_id) {
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
                             AutofillAiUkmLogger::EventType::kFieldFilled);
 }
 
-void AutofillAiLogger::RecordFormMetrics(const autofill::FormStructure& form,
+void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
                                          ukm::SourceId ukm_source_id,
                                          bool submission_state,
                                          bool opt_in_status) {
@@ -112,4 +110,4 @@ void AutofillAiLogger::RecordFormMetrics(const autofill::FormStructure& form,
                   state.edited_autofilled_field);
 }
 
-}  // namespace autofill_ai
+}  // namespace autofill

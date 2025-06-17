@@ -32,7 +32,7 @@
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
-#include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
@@ -168,7 +168,7 @@ class TestAutofillClientTemplate : public T {
     mock_autofill_optimization_guide_.reset();
   }
 
-  MockAutofillAiDelegate* GetAutofillAiDelegate() override {
+  MockAutofillAiManager* GetAutofillAiManager() override {
     return mock_autofill_ai_delegate_.get();
   }
 
@@ -628,9 +628,11 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
       mock_autofill_optimization_guide_ =
           std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
-  std::unique_ptr<::testing::NiceMock<MockAutofillAiDelegate>>
+  std::unique_ptr<::testing::NiceMock<MockAutofillAiManager>>
       mock_autofill_ai_delegate_ =
-          std::make_unique<testing::NiceMock<MockAutofillAiDelegate>>();
+          std::make_unique<testing::NiceMock<MockAutofillAiManager>>(
+              this,
+              /*strike_database=*/nullptr);
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
   ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;

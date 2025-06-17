@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_METRICS_AUTOFILL_AI_UKM_LOGGER_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_METRICS_AUTOFILL_AI_UKM_LOGGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_UKM_LOGGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_UKM_LOGGER_H_
 
 #include <cstddef>
 
@@ -14,19 +14,18 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill {
+
 class AutofillClient;
-}
-namespace autofill_ai {
 
 // Utility to log URL keyed form interaction events for Autofill AI.
 // Owned by AutofillAiLogger.
 class AutofillAiUkmLogger {
  public:
-  explicit AutofillAiUkmLogger(autofill::AutofillClient* client);
+  explicit AutofillAiUkmLogger(AutofillClient* client);
   ~AutofillAiUkmLogger();
 
   void LogKeyMetrics(ukm::SourceId ukm_source_id,
-                     const autofill::FormStructure& form,
+                     const FormStructure& form,
                      bool data_to_fill_available,
                      bool suggestions_shown,
                      bool suggestion_filled,
@@ -46,21 +45,21 @@ class AutofillAiUkmLogger {
     kMaxValue = kFieldFilled
   };
   void LogFieldEvent(ukm::SourceId ukm_source_id,
-                     const autofill::FormStructure& form,
-                     const autofill::AutofillField& field,
+                     const FormStructure& form,
+                     const AutofillField& field,
                      EventType event_type);
 
  private:
   bool CanLogUkm(ukm::SourceId ukm_source_id) const;
 
   // Stores the number of FieldEvent's that were logged for each processed form.
-  std::map<autofill::FormGlobalId, size_t> field_event_count_per_form_;
+  std::map<FormGlobalId, size_t> field_event_count_per_form_;
 
   // The top owning client. Note that the client owns the AutofillAiManager that
   // owns the AutofillAiLogger that owns this object.
-  const raw_ref<autofill::AutofillClient> client_;
+  const raw_ref<AutofillClient> client_;
 };
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_METRICS_AUTOFILL_AI_UKM_LOGGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_UKM_LOGGER_H_

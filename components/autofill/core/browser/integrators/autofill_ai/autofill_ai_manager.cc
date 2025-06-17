@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/autofill_ai_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 
 #include <algorithm>
 #include <memory>
@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_suggestions.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_utils.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
@@ -64,28 +65,12 @@
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_ai/core/browser/metrics/autofill_ai_logger.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
-
-using autofill::AttributeInstance;
-using autofill::AttributeType;
-using autofill::AutofillAiSaveStrikeDatabaseByHost;
-using autofill::AutofillClient;
-using autofill::AutofillField;
-using autofill::DenseSet;
-using autofill::EntityInstance;
-using autofill::EntityType;
-using autofill::FieldType;
-using autofill::FormStructure;
-using autofill::LogBuffer;
-using autofill::LoggingScope;
-using autofill::LogMessage;
-using autofill::SuggestionType;
 
 // Returns true if `entity` cannot be merged in any of the `current_entities`
 // nor is a subset of any of them. This means that a save prompt should be
@@ -134,10 +119,9 @@ std::optional<std::pair<EntityInstance, EntityInstance>> MaybeUpdateEntity(
 
     // Merges attributes into `existing_entity` and returns an updated entity
     // that contains both existing and new attributes.
-    std::vector<autofill::AttributeInstance> new_attributes =
+    std::vector<AttributeInstance> new_attributes =
         base::ToVector(mergeability.mergeable_attributes);
-    for (autofill::AttributeInstance curr_attribute :
-         existing_entity.attributes()) {
+    for (AttributeInstance curr_attribute : existing_entity.attributes()) {
       new_attributes.emplace_back(std::move(curr_attribute));
     }
     return std::make_pair(
@@ -182,7 +166,7 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
     // Hash the result to avoid storing potentially sensitive data unencrypted
     // on the disk.
     return base::NumberToString(
-        autofill::StrToHash64Bit(base::JoinString(string_pieces, ";")));
+        StrToHash64Bit(base::JoinString(string_pieces, ";")));
   };
 
   return base::ToVector(entity.type().strike_keys(), value_for_strike_key);
@@ -190,25 +174,24 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
 
 }  // namespace
 
-AutofillAiManager::AutofillAiManager(autofill::AutofillClient* client,
-                                     autofill::StrikeDatabase* strike_database)
+AutofillAiManager::AutofillAiManager(AutofillClient* client,
+                                     StrikeDatabase* strike_database)
     : client_(CHECK_DEREF(client)) {
   if (strike_database) {
     save_strike_db_by_attribute_ =
-        std::make_unique<autofill::AutofillAiSaveStrikeDatabaseByAttribute>(
+        std::make_unique<AutofillAiSaveStrikeDatabaseByAttribute>(
             strike_database);
     save_strike_db_by_host_ =
         std::make_unique<AutofillAiSaveStrikeDatabaseByHost>(strike_database);
     update_strike_db_ =
-        std::make_unique<autofill::AutofillAiUpdateStrikeDatabase>(
-            strike_database);
+        std::make_unique<AutofillAiUpdateStrikeDatabase>(strike_database);
   }
 }
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-void AutofillAiManager::OnSuggestionsShown(const autofill::FormStructure& form,
-                                           const autofill::AutofillField& field,
+void AutofillAiManager::OnSuggestionsShown(const FormStructure& form,
+                                           const AutofillField& field,
                                            ukm::SourceId ukm_source_id) {
   logger_.OnSuggestionsShown(form, field, ukm_source_id);
 }
@@ -220,7 +203,7 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
     return;
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
@@ -235,25 +218,24 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
 
 void AutofillAiManager::OnDidFillSuggestion(
     const base::Uuid& guid,
-    const autofill::FormStructure& form,
-    const autofill::AutofillField& trigger_field,
-    base::span<const autofill::AutofillField* const> filled_fields,
+    const FormStructure& form,
+    const AutofillField& trigger_field,
+    base::span<const AutofillField* const> filled_fields,
     ukm::SourceId ukm_source_id) {
   logger_.OnDidFillSuggestion(form, trigger_field, ukm_source_id);
-  for (const autofill::AutofillField* const field : filled_fields) {
+  for (const AutofillField* const field : filled_fields) {
     logger_.OnDidFillField(form, CHECK_DEREF(field), ukm_source_id);
   }
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
   entity_manager->RecordEntityUsed(guid, base::Time::Now());
 }
 
-void AutofillAiManager::OnEditedAutofilledField(
-    const autofill::FormStructure& form,
-    const autofill::AutofillField& field,
-    ukm::SourceId ukm_source_id) {
+void AutofillAiManager::OnEditedAutofilledField(const FormStructure& form,
+                                                const AutofillField& field,
+                                                ukm::SourceId ukm_source_id) {
   logger_.OnEditedAutofilledField(form, field, ukm_source_id);
 }
 
@@ -264,18 +246,17 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
             return field->GetAutofillAiServerTypePredictions() != std::nullopt;
           })) {
     logger_.RecordFormMetrics(form, ukm_source_id, /*submission_state=*/true,
-                              autofill::GetAutofillAiOptInStatus(*client_));
+                              GetAutofillAiOptInStatus(*client_));
   }
   return MaybeImportForm(form);
 }
 
 bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
-  if (!autofill::MayPerformAutofillAiAction(
-          *client_, autofill::AutofillAiAction::kImport)) {
+  if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kImport)) {
     return false;
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     LOG_AF(GetCurrentLogManager())
         << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
@@ -326,8 +307,8 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
 
 void AutofillAiManager::HandleSavePromptResult(
     const GURL& form_url,
-    const autofill::EntityInstance& entity,
-    autofill::AutofillClient::EntitySaveOrUpdatePromptResult result) {
+    const EntityInstance& entity,
+    AutofillClient::EntitySaveOrUpdatePromptResult result) {
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForSaveAttempt(form_url, entity);
@@ -335,7 +316,7 @@ void AutofillAiManager::HandleSavePromptResult(
     return;
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
@@ -346,7 +327,7 @@ void AutofillAiManager::HandleSavePromptResult(
 
 void AutofillAiManager::HandleUpdatePromptResult(
     const base::Uuid& entity_uuid,
-    autofill::AutofillClient::EntitySaveOrUpdatePromptResult result) {
+    AutofillClient::EntitySaveOrUpdatePromptResult result) {
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForUpdateAttempt(entity_uuid);
@@ -354,7 +335,7 @@ void AutofillAiManager::HandleUpdatePromptResult(
     return;
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
@@ -363,15 +344,14 @@ void AutofillAiManager::HandleUpdatePromptResult(
   entity_manager->AddOrUpdateEntityInstance(*std::move(result.entity));
 }
 
-std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
+std::vector<Suggestion> AutofillAiManager::GetSuggestions(
     const FormStructure& form,
-    const autofill::FormFieldData& trigger_field) {
-  if (!autofill::MayPerformAutofillAiAction(
-          *client_, autofill::AutofillAiAction::kFilling)) {
+    const FormFieldData& trigger_field) {
+  if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kFilling)) {
     return {};
   }
 
-  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return {};
   }
@@ -389,22 +369,21 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
     return {};
   }
 
-  return autofill::CreateFillingSuggestions(form, trigger_field, entities,
-                                            client_->GetAppLocale());
+  return CreateFillingSuggestions(form, trigger_field, entities,
+                                  client_->GetAppLocale());
 }
 
-bool AutofillAiManager::ShouldDisplayIph(const autofill::FormStructure& form,
-                                         autofill::FieldGlobalId field) const {
-  if (!autofill::MayPerformAutofillAiAction(
-          *client_, autofill::AutofillAiAction::kIphForOptIn)) {
+bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
+                                         FieldGlobalId field) const {
+  if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kIphForOptIn)) {
     return false;
   }
 
   // The user must have at least one address or payments instrument to indicate
   // that they are an active Autofill user.
-  const autofill::AddressDataManager& adm =
+  const AddressDataManager& adm =
       client_->GetPersonalDataManager().address_data_manager();
-  const autofill::PaymentsDataManager& paydm =
+  const PaymentsDataManager& paydm =
       client_->GetPersonalDataManager().payments_data_manager();
   if (adm.GetProfiles().empty() && paydm.GetCreditCards().empty() &&
       paydm.GetIbans().empty() && !paydm.HasEwalletAccounts() &&
@@ -451,7 +430,7 @@ bool AutofillAiManager::ShouldDisplayIph(const autofill::FormStructure& form,
   return false;
 }
 
-autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {
+LogManager* AutofillAiManager::GetCurrentLogManager() {
   return client_->GetCurrentLogManager();
 }
 
@@ -477,9 +456,8 @@ void AutofillAiManager::AddStrikeForUpdateAttempt(
   }
 }
 
-void AutofillAiManager::ClearStrikesForSave(
-    const GURL& url,
-    const autofill::EntityInstance& entity) {
+void AutofillAiManager::ClearStrikesForSave(const GURL& url,
+                                            const EntityInstance& entity) {
   if (save_strike_db_by_host_ && url.is_valid() && url.has_host()) {
     save_strike_db_by_host_->ClearStrikes(
         AutofillAiSaveStrikeDatabaseByHost::GetId(
@@ -531,4 +509,4 @@ base::WeakPtr<AutofillAiManager> AutofillAiManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-}  // namespace autofill_ai
+}  // namespace autofill

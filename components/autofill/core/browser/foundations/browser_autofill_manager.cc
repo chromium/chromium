@@ -859,8 +859,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   LogSubmissionMetrics(submitted_form.get(), form_submitted_timestamp);
 
   bool autofill_ai_shows_bubble = false;
-  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
-    autofill_ai_shows_bubble = delegate->OnFormSubmitted(
+  if (AutofillAiManager* ai_manager = client().GetAutofillAiManager()) {
+    autofill_ai_shows_bubble = ai_manager->OnFormSubmitted(
         *submitted_form, driver().GetPageUkmSourceId());
   }
 
@@ -995,11 +995,11 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
     if (logger) {
       logger->OnEditedAutofilledField(field_id);
     }
-    if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-        delegate &&
+    if (AutofillAiManager* ai_manager = client().GetAutofillAiManager();
+        ai_manager &&
         autofill_field->filling_product() == FillingProduct::kAutofillAi) {
-      delegate->OnEditedAutofilledField(*form_structure, *autofill_field,
-                                        driver().GetPageUkmSourceId());
+      ai_manager->OnEditedAutofilledField(*form_structure, *autofill_field,
+                                          driver().GetPageUkmSourceId());
     }
   } else {
     if (logger) {
@@ -1317,18 +1317,18 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     }
     return;
   }
-  AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
+  AutofillAiManager* ai_manager = client().GetAutofillAiManager();
   if (form_structure && autofill_field &&
       !context.do_not_generate_autofill_suggestions &&
       GetFieldsFillableByAutofillAi(*form_structure, client())
           .contains(field.global_id())) {
     std::move(callback).Run(
         /*show_suggestions=*/true,
-        delegate->GetSuggestions(*form_structure, field),
+        ai_manager->GetSuggestions(*form_structure, field),
         /*ranking_context=*/std::nullopt);
     return;
-  } else if (suggestions.empty() && delegate && form_structure &&
-             delegate->ShouldDisplayIph(*form_structure, field.global_id()) &&
+  } else if (suggestions.empty() && ai_manager && form_structure &&
+             ai_manager->ShouldDisplayIph(*form_structure, field.global_id()) &&
              client().ShowAutofillFieldIphForFeature(
                  field, AutofillClient::IphFeature::kAutofillAi)) {
     return;
@@ -2017,11 +2017,11 @@ void BrowserAutofillManager::OnSelectControlSelectionChangedImpl(
     if (logger) {
       logger->OnEditedAutofilledField(autofill_field->global_id());
     }
-    if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-        delegate &&
+    if (AutofillAiManager* ai_manager = client().GetAutofillAiManager();
+        ai_manager &&
         autofill_field->filling_product() == FillingProduct::kAutofillAi) {
-      delegate->OnEditedAutofilledField(*form_structure, *autofill_field,
-                                        driver().GetPageUkmSourceId());
+      ai_manager->OnEditedAutofilledField(*form_structure, *autofill_field,
+                                          driver().GetPageUkmSourceId());
     }
   }
   // Note that compared to `BAM::OnTextFieldValueChangedImpl()` this function
@@ -2122,17 +2122,16 @@ void BrowserAutofillManager::DidShowSuggestions(
   const bool has_cached_form_and_field = GetCachedFormAndField(
       form.global_id(), field_id, &form_structure, &autofill_field);
 
-  if (AutofillAiDelegate* autofill_ai_delegate =
-          client().GetAutofillAiDelegate();
-      autofill_ai_delegate && has_cached_form_and_field &&
+  if (AutofillAiManager* ai_manager = client().GetAutofillAiManager();
+      ai_manager && has_cached_form_and_field &&
       std::ranges::any_of(shown_suggestion_types,
                           [](const SuggestionType& type) {
                             return GetFillingProductFromSuggestionType(type) ==
                                    FillingProduct::kAutofillAi;
                           })) {
-    autofill_ai_delegate->OnSuggestionsShown(CHECK_DEREF(form_structure),
-                                             CHECK_DEREF(autofill_field),
-                                             driver().GetPageUkmSourceId());
+    ai_manager->OnSuggestionsShown(CHECK_DEREF(form_structure),
+                                   CHECK_DEREF(autofill_field),
+                                   driver().GetPageUkmSourceId());
   }
 
   // Notify the BNPL manager about suggestion shown if the current shown
@@ -2579,9 +2578,9 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                                        refill_trigger_reason.has_value());
           },
           [&](const EntityInstance* entity) {
-            if (AutofillAiDelegate* delegate =
-                    client().GetAutofillAiDelegate()) {
-              delegate->OnDidFillSuggestion(
+            if (AutofillAiManager* ai_manager =
+                    client().GetAutofillAiManager()) {
+              ai_manager->OnDidFillSuggestion(
                   entity->guid(), form_structure, trigger_autofill_field,
                   safe_filled_autofill_fields, driver().GetPageUkmSourceId());
             }
@@ -3018,8 +3017,8 @@ void BrowserAutofillManager::OnFormProcessed(
         client().GetPersonalDataManager().payments_data_manager());
   }
 
-  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
-    delegate->OnFormSeen(form_structure);
+  if (AutofillAiManager* ai_manager = client().GetAutofillAiManager()) {
+    ai_manager->OnFormSeen(form_structure);
   }
 
   // If a form with the same FormGlobalId was previously filled, the structure

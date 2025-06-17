@@ -742,10 +742,6 @@ test("components_unittests") {
     deps += [ "//components/guest_view/browser:unit_tests" ]
   }
 
-  if (!is_android && !is_ios && !is_fuchsia) {
-    deps += [ "//components/autofill_ai/core/browser:unit_tests" ]
-  }
-
   if (!is_android) {
     deps += [ "//components/feedback:unit_tests" ]
     deps += [ "//components/feedback/redaction_tool:unit_tests" ]

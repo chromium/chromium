@@ -93,7 +93,7 @@ class AutofillSnackbarControllerImpl;
 #endif  // BUILDFLAG(IS_ANDROID)
 class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
-class AutofillAiDelegate;
+class AutofillAiManager;
 class AutofillAiModelCache;
 class AutofillAiModelExecutor;
 class AutofillProfile;
@@ -329,10 +329,10 @@ class AutofillClient {
       std::optional<optimization_guide::proto::AnnotatedPageContent>)>;
   virtual void GetAiPageContent(GetAiPageContentCallback callback);
 
-  // Returns the `AutofillAiDelegate` instance for the tab of this client.
+  // Returns the `AutofillAiManager` instance for the tab of this client.
   // Returns `nullptr` if, at the time of the AutofillClient's construction, the
   // Autofill AI feature is unsupported.
-  virtual AutofillAiDelegate* GetAutofillAiDelegate();
+  virtual AutofillAiManager* GetAutofillAiManager();
 
   // Returns the per-profile `AutofillAiModelCache`. Returns `nullptr` if the
   // `kAutofillAiServerModel` is not enabled.

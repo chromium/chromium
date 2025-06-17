@@ -72,7 +72,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/compose/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
@@ -7170,7 +7170,7 @@ class BrowserAutofillManagerTest_AutofillAi
 TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowAutofillAiSuggestions) {
   SeeForm(/*may_run_model=*/false);
 
-  MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
+  MockAutofillAiManager& delegate = *client().GetAutofillAiManager();
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kFillAutofillAi)};
   EXPECT_CALL(delegate, GetSuggestions).WillOnce(Return(suggestions));
@@ -7190,7 +7190,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
   GenerateNewPassportForm(/*autocomplete_unrecognized=*/true);
   SeeForm(/*may_run_model=*/false);
 
-  EXPECT_CALL(*client().GetAutofillAiDelegate(), GetSuggestions).Times(0);
+  EXPECT_CALL(*client().GetAutofillAiManager(), GetSuggestions).Times(0);
   OnAskForValuesToFill(passport_form(), passport_form().fields().front(),
                        AutofillSuggestionTriggerSource::kAutofillAi);
 }
@@ -7205,7 +7205,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowNoSuggestionsIfCollision) {
   SeeForm(/*may_run_model=*/false);
 
-  EXPECT_CALL(*client().GetAutofillAiDelegate(), GetSuggestions)
+  EXPECT_CALL(*client().GetAutofillAiManager(), GetSuggestions)
       .WillOnce(Return(std::vector<Suggestion>{}));
 
   OnAskForValuesToFill(passport_form(), passport_form().fields().front(),
@@ -7218,7 +7218,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowNoSuggestionsIfCollision) {
 TEST_F(BrowserAutofillManagerTest_AutofillAi, AutofillAiIph) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
-  ON_CALL(*client().GetAutofillAiDelegate(), ShouldDisplayIph)
+  ON_CALL(*client().GetAutofillAiManager(), ShouldDisplayIph)
       .WillByDefault(Return(true));
   personal_data().test_address_data_manager().ClearProfiles();
 
@@ -7234,7 +7234,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
        NoAutofillAiIphWhenThereAreAutofillSuggestions) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
-  ON_CALL(*client().GetAutofillAiDelegate(), ShouldDisplayIph)
+  ON_CALL(*client().GetAutofillAiManager(), ShouldDisplayIph)
       .WillByDefault(Return(false));
   ASSERT_THAT(personal_data().test_address_data_manager().GetProfiles(),
               Not(IsEmpty()));
@@ -7266,7 +7266,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
   // prediction improvements.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(*client().GetAutofillAiDelegate(), OnFormSubmitted)
+  EXPECT_CALL(*client().GetAutofillAiManager(), OnFormSubmitted)
       .WillOnce(Return(true));
   FormSubmitted(response_data);
   EXPECT_TRUE(adm.GetProfiles().empty());
@@ -7291,7 +7291,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
   // that the profile is imported again.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(*client().GetAutofillAiDelegate(), OnFormSubmitted)
+  EXPECT_CALL(*client().GetAutofillAiManager(), OnFormSubmitted)
       .WillOnce(Return(false));
   FormSubmitted(response_data);
   EXPECT_FALSE(adm.GetProfiles().empty());

@@ -171,8 +171,8 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_delegate.h"
-#include "components/autofill_ai/core/browser/autofill_ai_manager.h"  // nogncheck
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -512,7 +512,7 @@ void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
       }).Then(std::move(callback)));
 }
 
-AutofillAiDelegate* ChromeAutofillClient::GetAutofillAiDelegate() {
+AutofillAiManager* ChromeAutofillClient::GetAutofillAiManager() {
 #if !BUILDFLAG(IS_ANDROID)
   return &autofill_ai_manager_;
 #else

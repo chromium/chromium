@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
@@ -36,7 +37,6 @@
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
@@ -57,7 +57,6 @@ class SaveUpdateAddressProfileFlowManager;
 #endif
 
 class AutofillOptimizationGuide;
-class AutofillAiDelegate;
 class FormFieldData;
 class LogRouter;
 enum class SuggestionType;
@@ -124,7 +123,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   PasswordManagerDelegate* GetPasswordManagerDelegate(
       const FieldGlobalId& field_id) final;
   void GetAiPageContent(GetAiPageContentCallback callback) final;
-  AutofillAiDelegate* GetAutofillAiDelegate() final;
+  AutofillAiManager* GetAutofillAiManager() final;
   AutofillAiModelCache* GetAutofillAiModelCache() final;
   AutofillAiModelExecutor* GetAutofillAiModelExecutor() final;
   IdentityCredentialDelegate* GetIdentityCredentialDelegate() final;
@@ -277,7 +276,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       this};
 
 #if !BUILDFLAG(IS_ANDROID)
-  autofill_ai::AutofillAiManager autofill_ai_manager_;
+  AutofillAiManager autofill_ai_manager_;
 #endif
 
   // These members are initialized lazily in their respective getters.

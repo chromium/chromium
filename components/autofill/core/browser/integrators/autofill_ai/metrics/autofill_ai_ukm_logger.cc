@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/metrics/autofill_ai_ukm_logger.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 
 #include <cstdint>
 #include <type_traits>
@@ -24,55 +24,55 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
 
 optimization_guide::proto::FormatStringSource GetFormatStringSource(
-    autofill::AutofillField::FormatStringSource format_string_source) {
+    AutofillField::FormatStringSource format_string_source) {
   switch (format_string_source) {
-    case autofill::AutofillField::FormatStringSource::kUnset:
+    case AutofillField::FormatStringSource::kUnset:
       return optimization_guide::proto::FORMAT_STRING_SOURCE_UNSET;
-    case autofill::AutofillField::FormatStringSource::kHeuristics:
+    case AutofillField::FormatStringSource::kHeuristics:
       return optimization_guide::proto::FORMAT_STRING_SOURCE_HEURISTICS;
-    case autofill::AutofillField::FormatStringSource::kModelResult:
+    case AutofillField::FormatStringSource::kModelResult:
       return optimization_guide::proto::FORMAT_STRING_SOURCE_ML_MODEL;
-    case autofill::AutofillField::FormatStringSource::kServer:
+    case AutofillField::FormatStringSource::kServer:
       return optimization_guide::proto::FORMAT_STRING_SOURCE_SERVER;
   }
   NOTREACHED();
 }
 
 optimization_guide::proto::FormControlType GetFormControlType(
-    autofill::FormControlType form_control_type) {
+    FormControlType form_control_type) {
   switch (form_control_type) {
-    case autofill::mojom::FormControlType::kContentEditable:
+    case mojom::FormControlType::kContentEditable:
       return optimization_guide::proto::FORM_CONTROL_TYPE_CONTENT_EDITABLE;
-    case autofill::mojom::FormControlType::kInputCheckbox:
+    case mojom::FormControlType::kInputCheckbox:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX;
-    case autofill::mojom::FormControlType::kInputEmail:
+    case mojom::FormControlType::kInputEmail:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_EMAIL;
-    case autofill::mojom::FormControlType::kInputMonth:
+    case mojom::FormControlType::kInputMonth:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_MONTH;
-    case autofill::mojom::FormControlType::kInputNumber:
+    case mojom::FormControlType::kInputNumber:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_NUMBER;
-    case autofill::mojom::FormControlType::kInputPassword:
+    case mojom::FormControlType::kInputPassword:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_PASSWORD;
-    case autofill::mojom::FormControlType::kInputRadio:
+    case mojom::FormControlType::kInputRadio:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_RADIO;
-    case autofill::mojom::FormControlType::kInputSearch:
+    case mojom::FormControlType::kInputSearch:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_SEARCH;
-    case autofill::mojom::FormControlType::kInputTelephone:
+    case mojom::FormControlType::kInputTelephone:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TELEPHONE;
-    case autofill::mojom::FormControlType::kInputText:
+    case mojom::FormControlType::kInputText:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT;
-    case autofill::mojom::FormControlType::kInputUrl:
+    case mojom::FormControlType::kInputUrl:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_URL;
-    case autofill::mojom::FormControlType::kSelectOne:
+    case mojom::FormControlType::kSelectOne:
       return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE;
-    case autofill::mojom::FormControlType::kTextArea:
+    case mojom::FormControlType::kTextArea:
       return optimization_guide::proto::FORM_CONTROL_TYPE_TEXT_AREA;
-    case autofill::mojom::FormControlType::kInputDate:
+    case mojom::FormControlType::kInputDate:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_DATE;
   }
   NOTREACHED();
@@ -99,13 +99,13 @@ optimization_guide::proto::AutofillAiFieldEventType GetFieldEventType(
 
 }  // namespace
 
-AutofillAiUkmLogger::AutofillAiUkmLogger(autofill::AutofillClient* client)
+AutofillAiUkmLogger::AutofillAiUkmLogger(AutofillClient* client)
     : client_(CHECK_DEREF(client)) {}
 
 AutofillAiUkmLogger::~AutofillAiUkmLogger() = default;
 
 void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
-                                        const autofill::FormStructure& form,
+                                        const FormStructure& form,
                                         bool data_to_fill_available,
                                         bool suggestions_shown,
                                         bool suggestion_filled,
@@ -113,8 +113,8 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
                                         bool opt_in_status) {
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           client_->GetMqlsUploadService();
-      uploader_ && autofill::MayPerformAutofillAiAction(
-                       *client_, autofill::AutofillAiAction::kLogToMqls)) {
+      uploader_ &&
+      MayPerformAutofillAiAction(*client_, AutofillAiAction::kLogToMqls)) {
     // Note that the actual logging of the metric happens when `log_entry` goes
     // out of scope and is destroyed.
     optimization_guide::ModelQualityLogEntry log_entry(uploader_->GetWeakPtr());
@@ -131,7 +131,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
             net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES));
     mqls_key_metrics->set_form_signature(form.form_signature().value());
     mqls_key_metrics->set_form_session_identifier(
-        autofill::autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()));
+        autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()));
     mqls_key_metrics->set_filling_readiness(data_to_fill_available);
     mqls_key_metrics->set_filling_assistance(suggestion_filled);
     if (suggestions_shown) {
@@ -149,7 +149,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
   ukm::builders::AutofillAi_KeyMetrics builder(ukm_source_id);
   builder.SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFormSessionIdentifier(
-          autofill::autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()))
+          autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()))
       .SetFillingReadiness(data_to_fill_available)
       .SetFillingAssistance(suggestion_filled)
       .SetOptInStatus(opt_in_status);
@@ -163,24 +163,23 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
 }
 
 void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
-                                        const autofill::FormStructure& form,
-                                        const autofill::AutofillField& field,
+                                        const FormStructure& form,
+                                        const AutofillField& field,
                                         EventType event_type) {
-  const autofill::FormSignature form_signature = form.form_signature();
+  const FormSignature form_signature = form.form_signature();
   const uint64_t form_session_identifier =
-      autofill::autofill_metrics::FormGlobalIdToHash64Bit(form.global_id());
+      autofill_metrics::FormGlobalIdToHash64Bit(form.global_id());
   const int form_event_order = field_event_count_per_form_[form.global_id()]++;
   const uint64_t field_session_identifier =
-      autofill::autofill_metrics::FieldGlobalIdToHash64Bit(field.global_id());
+      autofill_metrics::FieldGlobalIdToHash64Bit(field.global_id());
   const auto field_type = base::to_underlying(field.Type().GetStorableType());
-  const auto ai_field_type =
-      base::to_underlying(field.GetAutofillAiServerTypePredictions().value_or(
-          autofill::UNKNOWN_TYPE));
+  const auto ai_field_type = base::to_underlying(
+      field.GetAutofillAiServerTypePredictions().value_or(UNKNOWN_TYPE));
 
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           client_->GetMqlsUploadService();
-      uploader_ && autofill::MayPerformAutofillAiAction(
-                       *client_, autofill::AutofillAiAction::kLogToMqls)) {
+      uploader_ &&
+      MayPerformAutofillAiAction(*client_, AutofillAiAction::kLogToMqls)) {
     // Note that the actual logging of the metric happens when `log_entry` goes
     // out of scope and is destroyed. Also note that in this case it is not
     // necessary to check if the user is opted in because it is assumed that all
@@ -237,4 +236,4 @@ bool AutofillAiUkmLogger::CanLogUkm(ukm::SourceId ukm_source_id) const {
          ukm_source_id != ukm::kInvalidSourceId;
 }
 
-}  // namespace autofill_ai
+}  // namespace autofill
