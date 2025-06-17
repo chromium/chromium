@@ -59,8 +59,7 @@ auto ArbitraryValueString() {
       [](const base::Value& value) {
         return Wrap<std::string>(value.GetIfString());
       },
-      // TODO: Strings should not be constrained to ASCII.
-      fuzztest::AsciiString());
+      fuzztest::Utf8String());
 }
 
 auto ArbitraryValueBlob() {
@@ -109,8 +108,7 @@ auto ArbitraryValueDict(fuzztest::Domain<base::Value> value_domain) {
                    : std::nullopt;
       },
       fuzztest::ContainerOf<std::vector<std::pair<std::string, base::Value>>>(
-          // TODO: Keys should not be constrained to ASCII.
-          fuzztest::PairOf(fuzztest::AsciiString(), value_domain)));
+          fuzztest::PairOf(fuzztest::Utf8String(), value_domain)));
 }
 
 fuzztest::Domain<base::Value> ArbitraryValue() {
