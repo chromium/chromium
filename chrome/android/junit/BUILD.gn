@@ -806,13 +806,18 @@ if (is_android) {
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.ntp") {
+    resources_package = "org.chromium.chrome.browser.ntp"
     sources = [
       "src/org/chromium/chrome/browser/ntp/IncognitoNewTabPageUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/NewTabPageUtilUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/RecentTabsPageUnitTest.java",
+      "src/org/chromium/chrome/browser/ntp/search/SearchBoxViewBinderUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//third_party/android_deps:com_airbnb_android_lottie_java",
+    ]
   }
 
   robolectric_library(

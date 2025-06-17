@@ -745,6 +745,7 @@ if (_is_default_toolchain) {
       "//services/shape_detection/public/mojom:mojom_java",
       "//skia/public/mojom:mojom_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
+      "//third_party/android_deps:com_airbnb_android_lottie_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:guava_android_java",
       "//third_party/android_deps:material_design_java",

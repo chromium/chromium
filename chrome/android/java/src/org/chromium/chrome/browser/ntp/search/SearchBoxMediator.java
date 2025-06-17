@@ -134,6 +134,10 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
                 });
     }
 
+    void setComposeplateButtonIconRawResId(int iconRawResId) {
+        mModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_ICON_RAW_RES_ID, iconRawResId);
+    }
+
     /**
      * Launch the Lens app.
      *

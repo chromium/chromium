@@ -53,13 +53,14 @@ found in the LICENSE file.
             android:singleLine="true"
             android:hint="@string/omnibox_empty_hint" />
     </RelativeLayout>
-    <org.chromium.ui.widget.ChromeImageView
+    <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/composeplate_button"
         style="@style/LocationBarActionButtonForFakeSearchBox"
-        android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
-        android:src="@drawable/search_spark_black_24dp"
         android:foreground="@drawable/oval_ripple"
-        android:background="@drawable/search_spark_rainbow_background"
+        android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
+        app:lottie_rawRes="@raw/composeplate_loop_light"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
         android:visibility="gone"/>
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/voice_search_button"

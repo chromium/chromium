@@ -67,6 +67,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.EmptyTextWatcher;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 /**
@@ -387,6 +388,11 @@ public class NewTabPageLayout extends LinearLayout
                 };
         mSearchBoxCoordinator.setComposeplateButtonClickListener(
                 createEnhancedClickListener(composeplateButtonClickListener));
+        int iconRawResId =
+                ColorUtils.inNightMode(mContext)
+                        ? R.raw.composeplate_loop_dark
+                        : R.raw.composeplate_loop_light;
+        mSearchBoxCoordinator.setComposeplateButtonIconRawResId(iconRawResId);
 
         ViewGroup composeplateView =
                 (ViewGroup) ((ViewStub) findViewById(R.id.composeplate_view_stub)).inflate();
