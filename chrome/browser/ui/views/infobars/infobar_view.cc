@@ -215,7 +215,7 @@ void InfoBarView::OnThemeChanged() {
         icon_disabled_color);
   }
 
-  for (views::View* child : children()) {
+  for (views::View* child : content_container_->children()) {
     auto* label = views::AsViewClass<views::Label>(child);
     if (label) {
       label->SetBackgroundColor(background_color);

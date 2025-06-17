@@ -57,8 +57,12 @@ class InfoBarManager {
   // without being added, or is added as replacement for the matching infobar.
   //
   // Returns the infobar if it was successfully added.
-  InfoBar* AddInfoBar(std::unique_ptr<InfoBar> infobar,
-                      bool replace_existing = false);
+  template <typename T>
+    requires std::derived_from<T, InfoBar>
+  T* AddInfoBar(std::unique_ptr<T> infobar, bool replace_existing = false) {
+    return static_cast<T*>(
+        AddInfoBarInternal(std::move(infobar), replace_existing));
+  }
 
   // Removes the specified |infobar|.  This in turn may close immediately or
   // animate closed; at the end the infobar will delete itself.
@@ -113,6 +117,9 @@ class InfoBarManager {
 
  private:
   friend class ::TestInfoBar;
+
+  InfoBar* AddInfoBarInternal(std::unique_ptr<InfoBar> infobar,
+                              bool replace_existing = false);
 
   // InfoBars associated with this InfoBarManager. We own these pointers.
   // However, this is not a vector of unique_ptr, because we don't delete the

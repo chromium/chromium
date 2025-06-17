@@ -48,8 +48,9 @@ void InfoBarManager::Observer::OnManagerShuttingDown(InfoBarManager* manager) {}
 
 // InfoBarManager --------------------------------------------------------------
 
-InfoBar* InfoBarManager::AddInfoBar(std::unique_ptr<InfoBar> new_infobar,
-                                    bool replace_existing) {
+InfoBar* InfoBarManager::AddInfoBarInternal(
+    std::unique_ptr<InfoBar> new_infobar,
+    bool replace_existing) {
   DCHECK(new_infobar);
 
   for (infobars::InfoBar* infobar : infobars_) {
