@@ -111,6 +111,13 @@ class DatabaseConnection {
       int64_t object_store_id,
       blink::IndexedDBKeyRange key_range);
 
+  StatusOr<std::unique_ptr<BackingStore::Cursor>> OpenObjectStoreCursor(
+      base::PassKey<BackingStoreTransactionImpl>,
+      int64_t object_store_id,
+      const blink::IndexedDBKeyRange& key_range,
+      blink::mojom::IDBCursorDirection direction,
+      bool key_only);
+
  private:
   DatabaseConnection(std::unique_ptr<sql::Database> db,
                      std::unique_ptr<sql::MetaTable> meta_table,

@@ -6493,6 +6493,7 @@ crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.
 
 # Virtual suite mostly fails while feature is in development.
 crbug.com/40253999 virtual/indexeddb_sqlite/* [ Skip Timeout ]
+
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/abort-in-initial-upgradeneeded.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/abort-in-initial-upgradeneeded.any.serviceworker.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/abort-in-initial-upgradeneeded.any.sharedworker.html [ Pass ]
@@ -6501,6 +6502,23 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstor
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_count.any.serviceworker.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_count.any.sharedworker.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_count.any.worker.html [ Pass ]
+
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore-keyrange.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_advance_objectstore.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_continue_objectstore.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_update_objectstore.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_openCursor.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_openKeyCursor.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-large.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-small.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/parallel-cursors-upgrade.any.html [ Pass ]
+
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore-getAll-enforcerange.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore-getAllKeys-enforcerange.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_getAll.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_getAllKeys.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_getAllRecords.tentative.any.html [ Pass ]
 
 # Sheriff 2022-08-06
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]

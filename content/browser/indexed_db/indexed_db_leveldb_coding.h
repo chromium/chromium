@@ -73,8 +73,8 @@ CONTENT_EXPORT void EncodeIDBKey(const blink::IndexedDBKey& value,
 // collation operation. Unlike `EncodeIDBKey`, which makes use of length bytes,
 // this operation re-encodes variable-length values in a way that supports
 // sentinels.
-CONTENT_EXPORT void EncodeSortableIDBKey(const blink::IndexedDBKey& value,
-                                         std::string* into);
+CONTENT_EXPORT std::string EncodeSortableIDBKey(
+    const blink::IndexedDBKey& value);
 CONTENT_EXPORT void EncodeIDBKeyPath(const blink::IndexedDBKeyPath& value,
                                      std::string* into);
 CONTENT_EXPORT void EncodeBlobJournal(const BlobJournalType& journal,

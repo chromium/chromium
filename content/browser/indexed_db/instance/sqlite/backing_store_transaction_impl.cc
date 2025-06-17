@@ -188,18 +188,18 @@ StatusOr<std::unique_ptr<BackingStore::Cursor>>
 BackingStoreTransactionImpl::OpenObjectStoreKeyCursor(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection) {
-  NOTIMPLEMENTED();
-  return base::unexpected(Status::InvalidArgument("Not implemented"));
+    blink::mojom::IDBCursorDirection direction) {
+  return db_->OpenObjectStoreCursor(PassKey(), object_store_id, key_range,
+                                    direction, /*key_only=*/true);
 }
 
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStoreTransactionImpl::OpenObjectStoreCursor(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection) {
-  NOTIMPLEMENTED();
-  return base::unexpected(Status::InvalidArgument("Not implemented"));
+    blink::mojom::IDBCursorDirection direction) {
+  return db_->OpenObjectStoreCursor(PassKey(), object_store_id, key_range,
+                                    direction, /*key_only=*/false);
 }
 
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>

@@ -214,13 +214,12 @@ class BackingStore {
     // keys are valid, advances the cursor to the row for `key` or `key` and
     // `primary_key`. Returns true on success, or false if no eligible row was
     // found. Returns an error if there was a DB error.
+    virtual StatusOr<bool> Continue() = 0;
     virtual StatusOr<bool> Continue(const blink::IndexedDBKey& key,
                                     const blink::IndexedDBKey& primary_key) = 0;
     virtual StatusOr<bool> Advance(uint32_t count) = 0;
     // Clone may return a nullptr if cloning fails for any reason.
     virtual std::unique_ptr<Cursor> Clone() const = 0;
-
-    StatusOr<bool> Continue() { return Continue({}, {}); }
   };
 
   virtual ~BackingStore() = default;
