@@ -633,6 +633,8 @@ viz_source_set("unit_tests") {
     "hit_test/hit_test_aggregator_unittest.cc",
     "input/mock_input_manager.cc",
     "input/mock_input_manager.h",
+    "layers/layer_context_impl_base_unittest.cc",
+    "layers/layer_context_impl_base_unittest.h",
     "layers/layer_context_impl_unittest.cc",
     "main/viz_main_impl_unittest.cc",
     "performance_hint/boost_manager_unittest.cc",

@@ -28,6 +28,7 @@
 #include "cc/trees/property_tree.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/layers/layer_context_impl_base_unittest.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
@@ -37,506 +38,6 @@
 
 namespace viz {
 namespace {
-
-// Default layer tree property values
-const float kDefaultPageScaleFactor = 1.0f;
-const float kDefaultMinPageScaleFactor = 0.5f;
-const float kDefaultMaxPageScaleFactor = 2.0f;
-const gfx::Rect kDefaultDeviceViewportRect(100, 100);
-const SkColor4f kDefaultBackgroundColor = SkColors::kTransparent;
-const float kDefaultExternalPageScaleFactor = 1.0f;
-const float kDefaultDeviceScaleFactor = 1.0f;
-const float kDefaultPaintedDeviceScaleFactor = 1.0f;
-const FrameSinkId kDefaultFrameSinkId = FrameSinkId(1, 1);
-const LocalSurfaceId kDefaultLocalSurfaceId(
-    1,
-    base::UnguessableToken::CreateForTesting(2u, 3u));
-const SurfaceId kDefaultSurfaceId(kDefaultFrameSinkId, kDefaultLocalSurfaceId);
-const SurfaceRange kDefaultSurfaceRange(std::nullopt, kDefaultSurfaceId);
-
-// Default Layer property values
-const gfx::Size kDefaultLayerBounds(10, 10);
-
-// Default TextureLayer property values
-const bool kDefaultBlendBackgroundColor = false;
-const bool kDefaultForceTextureToOpaque = false;
-const gfx::PointF kDefaultUVTopLeft = gfx::PointF();
-const gfx::PointF kDefaultUVBottomRight = gfx::PointF(1.f, 1.f);
-
-// Default SurfaceLayer property values
-const uint32_t kDefaultDeadlineInFrames = 0u;
-const bool kDefaultStretchContentToFillBounds = false;
-const bool kDefaultSurfaceHitTestable = false;
-const bool kDefaultHasPointerEventsNone = false;
-const bool kDefaultIsReflection = false;
-const bool kDefaultWillDrawNeedsReset = false;
-const bool kDefaultOverrideChildPaintFlags = false;
-
-// Default ScrollbarLayerBaseExtra property values
-const cc::ElementId kDefaultScrollElementId = cc::ElementId();
-const bool kDefaultIsOverlayScrollbar = false;
-const bool kDefaultIsWebTest = false;
-const float kDefaultThumbThicknessScaleFactor = 0.f;
-const float kDefaultCurrentPos = 0.f;
-const float kDefaultClipLayerLength = 0.f;
-const float kDefaultScrollLayerLength = 0.f;
-const float kDefaultVerticalAdjust = 0.f;
-const bool kDefaultHasFindInPageTickmarks = false;
-const bool kDefaultIsHorizontalOrientation = false;
-const bool kDefaultIsLeftSideVerticalScrollbar = false;
-
-// Default SolidColorScrollbarLayer property values
-const SkColor4f kDefaultSolidColorScrollbarColor = SkColors::kTransparent;
-const int kDefaultSolidColorScrollbarThumbThickness = 0;
-const int kDefaultSolidColorScrollbarTrackStart = 0;
-
-// Default NinePatchThumbScrollbarLayer property values
-const int kDefaultNinePatchThumbScrollbarThumbThickness = 0;
-const int kDefaultNinePatchThumbScrollbarThumbLength = 0;
-const int kDefaultNinePatchThumbScrollbarTrackStart = 0;
-const int kDefaultNinePatchThumbScrollbarTrackLength = 0;
-const gfx::Size kDefaultNinePatchThumbScrollbarImageBounds = gfx::Size();
-const gfx::Rect kDefaultNinePatchThumbScrollbarAperture = gfx::Rect();
-const cc::UIResourceId kDefaultNinePatchThumbScrollbarThumbUIResourceId = 0;
-const cc::UIResourceId
-    kDefaultNinePatchThumbScrollbarTrackAndButtonsUIResourceId = 0;
-
-// Default PaintedScrollbarLayer property values
-const float kDefaultPaintedScrollbarInternalContentsScale = 0.f;
-const gfx::Size kDefaultPaintedScrollbarInternalContentBounds = gfx::Size();
-const bool kDefaultPaintedScrollbarJumpOnTrackClick = false;
-const bool kDefaultPaintedScrollbarSupportsDragSnapBack = false;
-const int kDefaultPaintedScrollbarThumbThickness = 0;
-const int kDefaultPaintedScrollbarThumbLength = 0;
-const gfx::Rect kDefaultPaintedScrollbarBackButtonRect = gfx::Rect();
-const gfx::Rect kDefaultPaintedScrollbarForwardButtonRect = gfx::Rect();
-const gfx::Rect kDefaultPaintedScrollbarTrackRect = gfx::Rect();
-const cc::UIResourceId kDefaultPaintedScrollbarTrackAndButtonsUIResourceId = 0;
-const cc::UIResourceId kDefaultPaintedScrollbarThumbUIResourceId = 0;
-const bool kDefaultPaintedScrollbarUsesNinePatchTrackAndButtons = false;
-const float kDefaultPaintedScrollbarPaintedOpacity = 1.f;
-const std::optional<SkColor4f> kDefaultPaintedScrollbarThumbColor =
-    std::nullopt;
-const gfx::Size kDefaultPaintedScrollbarTrackAndButtonsImageBounds =
-    gfx::Size();
-const gfx::Rect kDefaultPaintedScrollbarTrackAndButtonsAperture = gfx::Rect();
-
-// Default MirrorLayer property values
-const int kDefaultMirrorLayerMirroredLayerId = 0;
-
-// Default ViewTransitionContentLayer property values
-const ViewTransitionElementResourceId
-    kDefaultViewTransitionContentLayerResourceId =
-        ViewTransitionElementResourceId(blink::ViewTransitionToken(), 1, false);
-const bool kDefaultViewTransitionContentLayerIsLiveContentLayer = false;
-const gfx::RectF kDefaultViewTransitionContentLayerMaxExtentsRect;
-
-// Default TileDisplayLayer property values
-const std::optional<SkColor4f> kDefaultTileDisplaySolidColor = std::nullopt;
-const bool kDefaultTileDisplayIsBackdropFilterMask = false;
-
-// Default UIResourceLayer property values
-const cc::UIResourceId kDefaultUIResourceId = 12;
-const gfx::Size kDefaultUIResourceImageBounds = gfx::Size();
-const gfx::PointF kDefaultUIResourceUVTopLeft = gfx::PointF(0.0f, 0.0f);
-const gfx::PointF kDefaultUIResourceUVBottomRight = gfx::PointF(1.0f, 1.0f);
-
-// Default NinePatchLayer property values
-const gfx::Rect kDefaultNinePatchAperture = gfx::Rect();
-const gfx::Rect kDefaultNinePatchBorder = gfx::Rect();
-const gfx::Rect kDefaultNinePatchLayerOcclusion = gfx::Rect();
-const bool kDefaultNinePatchFillCenter = false;
-const cc::UIResourceId kDefaultNinePatchUIResourceId = 23;
-const gfx::Size kDefaultNinePatchImageBounds = gfx::Size();
-const gfx::PointF kDefaultNinePatchUVTopLeft = gfx::PointF(0.0f, 0.0f);
-const gfx::PointF kDefaultNinePatchUVBottomRight = gfx::PointF(1.0f, 1.0f);
-
-class LayerContextImplTest : public testing::Test {
- public:
-  LayerContextImplTest()
-      : frame_sink_manager_(FrameSinkManagerImpl::InitParams()) {}
-
-  void SetUp() override {
-    compositor_frame_sink_support_ =
-        std::make_unique<CompositorFrameSinkSupport>(
-            &dummy_client_, &frame_sink_manager_, kDefaultFrameSinkId,
-            /*is_root=*/true);
-    layer_context_impl_ = LayerContextImpl::CreateForTesting(
-        compositor_frame_sink_support_.get(), /*draw_mode_is_gpu=*/true);
-  }
-
-  void ResetTestState() {
-    // Property tree node IDs and layers are reinitialized in
-    // CreateDefaultUpdate if first_update_ is true.
-    first_update_ = true;
-  }
-
-  mojom::LayerTreeUpdatePtr CreateDefaultUpdate() {
-    auto update = mojom::LayerTreeUpdate::New();
-
-    if (first_update_) {
-      AddFirstTimeDefaultProperties(update.get());
-      first_update_ = false;
-    }
-    AddDefaultPropertyUpdates(update.get());
-
-    return update;
-  }
-
-  void AddDefaultPropertyUpdates(mojom::LayerTreeUpdate* update) {
-    update->source_frame_number = 1;
-    update->trace_id = 1;
-    update->primary_main_frame_item_sequence_number = 1;
-    update->device_viewport = kDefaultDeviceViewportRect;
-    update->background_color = kDefaultBackgroundColor;
-
-    // Valid scale factors by default
-    update->page_scale_factor = kDefaultPageScaleFactor;
-    update->min_page_scale_factor = kDefaultMinPageScaleFactor;
-    update->max_page_scale_factor = kDefaultMaxPageScaleFactor;
-    update->external_page_scale_factor = kDefaultExternalPageScaleFactor;
-    update->device_scale_factor = kDefaultDeviceScaleFactor;
-    update->painted_device_scale_factor = kDefaultPaintedDeviceScaleFactor;
-
-    update->num_transform_nodes = next_transform_id_;
-    update->num_clip_nodes = next_clip_id_;
-    update->num_effect_nodes = next_effect_id_;
-    update->num_scroll_nodes = next_scroll_id_;
-
-    // Viewport property IDs
-    update->overscroll_elasticity_transform =
-        viewport_property_ids.overscroll_elasticity_transform;
-    update->page_scale_transform = viewport_property_ids.page_scale_transform;
-    update->inner_scroll = viewport_property_ids.inner_scroll;
-    update->outer_clip = viewport_property_ids.outer_clip;
-    update->outer_scroll = viewport_property_ids.outer_scroll;
-
-    // Other defaults
-    update->display_color_spaces = gfx::DisplayColorSpaces();
-    update->local_surface_id_from_parent = kDefaultLocalSurfaceId;
-
-    base::TimeTicks now = base::TimeTicks::Now();
-    base::TimeDelta interval = base::Milliseconds(16);
-    update->begin_frame_args = BeginFrameArgs::Create(
-        BEGINFRAME_FROM_HERE, BeginFrameArgs::kStartingSourceId,
-        BeginFrameArgs::kStartingFrameNumber, now, now + interval, interval,
-        BeginFrameArgs::NORMAL);
-  }
-
-  void AddFirstTimeDefaultProperties(mojom::LayerTreeUpdate* update) {
-    // Set internal state to defaults.
-    next_layer_id_ = 1;
-    next_transform_id_ = 0;
-    next_clip_id_ = 0;
-    next_effect_id_ = 0;
-    next_scroll_id_ = 0;
-    layer_order_.clear();
-
-    // Root & Secondary transform nodes are always expected 1st
-    AddTransformNode(update, cc::kInvalidPropertyNodeId);
-    AddTransformNode(update, cc::kRootPropertyNodeId);
-
-    // Updating the page scale requires that a page_scale_transform node is
-    // set up.
-    viewport_property_ids.overscroll_elasticity_transform =
-        AddTransformNode(update, cc::kSecondaryRootPropertyNodeId);
-    viewport_property_ids.page_scale_transform = AddTransformNode(
-        update, viewport_property_ids.overscroll_elasticity_transform);
-    update->transform_nodes.back()->in_subtree_of_page_scale_layer = true;
-
-    // Root & Secondary clip nodes are always expected
-    AddClipNode(update, cc::kInvalidPropertyNodeId);
-    AddClipNode(update, cc::kRootPropertyNodeId);
-
-    // Root & Secondary effect nodes are always expected
-    AddEffectNode(update, cc::kInvalidPropertyNodeId);
-    AddEffectNode(update, cc::kRootPropertyNodeId);
-    update->effect_nodes.back()->render_surface_reason =
-        cc::RenderSurfaceReason::kRoot;
-    update->effect_nodes.back()->element_id = cc::ElementId(1ULL);
-
-    // Root & Secondary scroll nodes are always expected
-    AddScrollNode(update, cc::kInvalidPropertyNodeId);
-    AddScrollNode(update, cc::kRootPropertyNodeId);
-
-    // Root layer
-    AddDefaultLayerToUpdate(update);
-  }
-
-  int AddTransformNode(mojom::LayerTreeUpdate* update, int parent) {
-    auto node = mojom::TransformNode::New();
-    int id = next_transform_id_++;
-    node->id = id;
-    node->parent_id = parent;
-    update->transform_nodes.push_back(std::move(node));
-    update->num_transform_nodes = next_transform_id_;
-    return id;
-  }
-
-  int AddClipNode(mojom::LayerTreeUpdate* update, int parent) {
-    auto node = mojom::ClipNode::New();
-    int id = next_clip_id_++;
-    node->id = id;
-    node->parent_id = parent;
-    node->transform_id = viewport_property_ids.page_scale_transform;
-    update->clip_nodes.push_back(std::move(node));
-    update->num_clip_nodes = next_clip_id_;
-    return id;
-  }
-
-  int AddEffectNode(mojom::LayerTreeUpdate* update, int parent) {
-    auto node = mojom::EffectNode::New();
-    int id = next_effect_id_++;
-    node->id = id;
-    node->parent_id = parent;
-    node->transform_id = viewport_property_ids.page_scale_transform;
-    node->clip_id = cc::kRootPropertyNodeId;
-    node->target_id = cc::kRootPropertyNodeId;
-    update->effect_nodes.push_back(std::move(node));
-    update->num_effect_nodes = next_effect_id_;
-    return id;
-  }
-
-  int AddScrollNode(mojom::LayerTreeUpdate* update, int parent) {
-    auto node = mojom::ScrollNode::New();
-    int id = next_scroll_id_++;
-    node->id = id;
-    node->parent_id = parent;
-    node->transform_id = viewport_property_ids.page_scale_transform;
-    update->scroll_nodes.push_back(std::move(node));
-    update->num_scroll_nodes = next_scroll_id_;
-    return id;
-  }
-
-  mojom::ScrollbarLayerBaseExtraPtr CreateDefaultScrollbarBaseExtra() {
-    auto base_extra = mojom::ScrollbarLayerBaseExtra::New();
-    base_extra->scroll_element_id = kDefaultScrollElementId;
-    base_extra->is_overlay_scrollbar = kDefaultIsOverlayScrollbar;
-    base_extra->is_web_test = kDefaultIsWebTest;
-    base_extra->thumb_thickness_scale_factor =
-        kDefaultThumbThicknessScaleFactor;
-    base_extra->current_pos = kDefaultCurrentPos;
-    base_extra->clip_layer_length = kDefaultClipLayerLength;
-    base_extra->scroll_layer_length = kDefaultScrollLayerLength;
-    base_extra->vertical_adjust = kDefaultVerticalAdjust;
-    base_extra->has_find_in_page_tickmarks = kDefaultHasFindInPageTickmarks;
-    base_extra->is_horizontal_orientation = kDefaultIsHorizontalOrientation;
-    base_extra->is_left_side_vertical_scrollbar =
-        kDefaultIsLeftSideVerticalScrollbar;
-    return base_extra;
-  }
-
-  mojom::LayerExtraPtr CreateDefaultLayerExtra(cc::mojom::LayerType type) {
-    switch (type) {
-      case cc::mojom::LayerType::kTexture: {
-        auto extra = mojom::TextureLayerExtra::New();
-        extra->blend_background_color = kDefaultBlendBackgroundColor;
-        extra->force_texture_to_opaque = kDefaultForceTextureToOpaque;
-        extra->uv_top_left = kDefaultUVTopLeft;
-        extra->uv_bottom_right = kDefaultUVBottomRight;
-        return mojom::LayerExtra::NewTextureLayerExtra(std::move(extra));
-      }
-      case cc::mojom::LayerType::kSurface: {
-        auto extra = mojom::SurfaceLayerExtra::New();
-        extra->surface_range = kDefaultSurfaceRange;
-        extra->deadline_in_frames = kDefaultDeadlineInFrames;
-        extra->stretch_content_to_fill_bounds =
-            kDefaultStretchContentToFillBounds;
-        extra->surface_hit_testable = kDefaultSurfaceHitTestable;
-        extra->has_pointer_events_none = kDefaultHasPointerEventsNone;
-        extra->is_reflection = kDefaultIsReflection;
-        extra->will_draw_needs_reset = kDefaultWillDrawNeedsReset;
-        extra->override_child_paint_flags = kDefaultOverrideChildPaintFlags;
-        return mojom::LayerExtra::NewSurfaceLayerExtra(std::move(extra));
-      }
-      case cc::mojom::LayerType::kSolidColorScrollbar: {
-        auto extra = mojom::SolidColorScrollbarLayerExtra::New();
-        extra->scrollbar_base_extra = CreateDefaultScrollbarBaseExtra();
-        extra->color = kDefaultSolidColorScrollbarColor;
-        extra->thumb_thickness = kDefaultSolidColorScrollbarThumbThickness;
-        extra->track_start = kDefaultSolidColorScrollbarTrackStart;
-        return mojom::LayerExtra::NewSolidColorScrollbarLayerExtra(
-            std::move(extra));
-      }
-      case cc::mojom::LayerType::kNinePatchThumbScrollbar: {
-        auto extra = mojom::NinePatchThumbScrollbarLayerExtra::New();
-        extra->scrollbar_base_extra = CreateDefaultScrollbarBaseExtra();
-        extra->thumb_thickness = kDefaultNinePatchThumbScrollbarThumbThickness;
-        extra->thumb_length = kDefaultNinePatchThumbScrollbarThumbLength;
-        extra->track_start = kDefaultNinePatchThumbScrollbarTrackStart;
-        extra->track_length = kDefaultNinePatchThumbScrollbarTrackLength;
-        extra->image_bounds = kDefaultNinePatchThumbScrollbarImageBounds;
-        extra->aperture = kDefaultNinePatchThumbScrollbarAperture;
-        extra->thumb_ui_resource_id =
-            kDefaultNinePatchThumbScrollbarThumbUIResourceId;
-        extra->track_and_buttons_ui_resource_id =
-            kDefaultNinePatchThumbScrollbarTrackAndButtonsUIResourceId;
-        return mojom::LayerExtra::NewNinePatchThumbScrollbarLayerExtra(
-            std::move(extra));
-      }
-      case cc::mojom::LayerType::kMirror: {
-        auto extra = mojom::MirrorLayerExtra::New();
-        extra->mirrored_layer_id = kDefaultMirrorLayerMirroredLayerId;
-        return mojom::LayerExtra::NewMirrorLayerExtra(std::move(extra));
-      }
-      case cc::mojom::LayerType::kNinePatch: {
-        auto extra = mojom::NinePatchLayerExtra::New();
-        extra->image_aperture = kDefaultNinePatchAperture;
-        extra->border = kDefaultNinePatchBorder;
-        extra->layer_occlusion = kDefaultNinePatchLayerOcclusion;
-        extra->fill_center = kDefaultNinePatchFillCenter;
-        extra->ui_resource_id = kDefaultNinePatchUIResourceId;
-        extra->image_bounds = kDefaultNinePatchImageBounds;
-        extra->uv_top_left = kDefaultNinePatchUVTopLeft;
-        extra->uv_bottom_right = kDefaultNinePatchUVBottomRight;
-        return mojom::LayerExtra::NewNinePatchLayerExtra(std::move(extra));
-      }
-      case cc::mojom::LayerType::kPaintedScrollbar: {
-        auto extra = mojom::PaintedScrollbarLayerExtra::New();
-        extra->scrollbar_base_extra = CreateDefaultScrollbarBaseExtra();
-        extra->internal_contents_scale =
-            kDefaultPaintedScrollbarInternalContentsScale;
-        extra->internal_content_bounds =
-            kDefaultPaintedScrollbarInternalContentBounds;
-        extra->jump_on_track_click = kDefaultPaintedScrollbarJumpOnTrackClick;
-        extra->supports_drag_snap_back =
-            kDefaultPaintedScrollbarSupportsDragSnapBack;
-        extra->thumb_thickness = kDefaultPaintedScrollbarThumbThickness;
-        extra->thumb_length = kDefaultPaintedScrollbarThumbLength;
-        extra->back_button_rect = kDefaultPaintedScrollbarBackButtonRect;
-        extra->forward_button_rect = kDefaultPaintedScrollbarForwardButtonRect;
-        extra->track_rect = kDefaultPaintedScrollbarTrackRect;
-        extra->track_and_buttons_ui_resource_id =
-            kDefaultPaintedScrollbarTrackAndButtonsUIResourceId;
-        extra->thumb_ui_resource_id = kDefaultPaintedScrollbarThumbUIResourceId;
-        extra->uses_nine_patch_track_and_buttons =
-            kDefaultPaintedScrollbarUsesNinePatchTrackAndButtons;
-        extra->painted_opacity = kDefaultPaintedScrollbarPaintedOpacity;
-        extra->thumb_color = kDefaultPaintedScrollbarThumbColor;
-        extra->track_and_buttons_image_bounds =
-            kDefaultPaintedScrollbarTrackAndButtonsImageBounds;
-        extra->track_and_buttons_aperture =
-            kDefaultPaintedScrollbarTrackAndButtonsAperture;
-        return mojom::LayerExtra::NewPaintedScrollbarLayerExtra(
-            std::move(extra));
-      }
-      case cc::mojom::LayerType::kViewTransitionContent: {
-        auto extra = mojom::ViewTransitionContentLayerExtra::New();
-        extra->resource_id = kDefaultViewTransitionContentLayerResourceId;
-        extra->is_live_content_layer =
-            kDefaultViewTransitionContentLayerIsLiveContentLayer;
-        extra->max_extents_rect =
-            kDefaultViewTransitionContentLayerMaxExtentsRect;
-        return mojom::LayerExtra::NewViewTransitionContentLayerExtra(
-            std::move(extra));
-      }
-      case cc::mojom::LayerType::kTileDisplay: {
-        auto extra = mojom::TileDisplayLayerExtra::New();
-        extra->solid_color = kDefaultTileDisplaySolidColor;
-        extra->is_backdrop_filter_mask =
-            kDefaultTileDisplayIsBackdropFilterMask;
-        return mojom::LayerExtra::NewTileDisplayLayerExtra(std::move(extra));
-      }
-      case cc::mojom::LayerType::kUIResource: {
-        auto extra = mojom::UIResourceLayerExtra::New();
-        extra->ui_resource_id = kDefaultUIResourceId;
-        extra->image_bounds = kDefaultUIResourceImageBounds;
-        extra->uv_top_left = kDefaultUIResourceUVTopLeft;
-        extra->uv_bottom_right = kDefaultUIResourceUVBottomRight;
-        return mojom::LayerExtra::NewUiResourceLayerExtra(std::move(extra));
-      }
-
-      default:
-        // TODO(vmiura): Add each layer type's initialization.
-        return nullptr;
-    }
-  }
-
-  // Helper to add a default layer to the update.
-  // Returns the ID of the added layer.
-  int AddDefaultLayerToUpdate(
-      mojom::LayerTreeUpdate* update,
-      cc::mojom::LayerType type = cc::mojom::LayerType::kLayer,
-      int id = -1) {
-    auto layer = mojom::Layer::New();
-    if (id == -1) {
-      id = next_layer_id_++;
-    }
-    layer->id = id;
-    layer->type = type;
-    layer->transform_tree_index = cc::kSecondaryRootPropertyNodeId;
-    layer->clip_tree_index = cc::kRootPropertyNodeId;
-    layer->effect_tree_index = cc::kSecondaryRootPropertyNodeId;
-    layer->bounds = kDefaultLayerBounds;
-    layer->layer_extra = CreateDefaultLayerExtra(type);
-
-    update->layers.push_back(std::move(layer));
-
-    // Update the local layer order, and in the LayerTreeUpdate.
-    layer_order_.push_back(id);
-    update->layer_order = layer_order_;
-    return id;
-  }
-
-  void RemoveLayerInUpdate(mojom::LayerTreeUpdate* update, int id) {
-    // Remove the ID from the local list of layers if it exists.
-    auto it = std::find(layer_order_.begin(), layer_order_.end(), id);
-    if (it != layer_order_.end()) {
-      layer_order_.erase(it);
-    }
-
-    // Update the layer order in the LayerTreeUpdate.
-    update->layer_order = layer_order_;
-  }
-
- protected:
-  FakeCompositorFrameSinkClient dummy_client_;
-  FrameSinkManagerImpl frame_sink_manager_;
-
-  std::unique_ptr<CompositorFrameSinkSupport> compositor_frame_sink_support_;
-  std::unique_ptr<LayerContextImpl> layer_context_impl_;
-  bool first_update_ = true;
-  // Layer IDs start at 1, as 0 is reserved for cc::kInvalidLayerId.
-  int next_layer_id_ = 1;
-  // Property tree IDs start at 0.
-  int next_transform_id_ = 0;
-  int next_clip_id_ = 0;
-  int next_effect_id_ = 0;
-  int next_scroll_id_ = 0;
-  cc::ViewportPropertyIds viewport_property_ids;
-  std::vector<int> layer_order_;
-};
-
-namespace {
-
-TransferableResource MakeFakeResource(gfx::Size size) {
-  auto sync_token =
-      gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
-                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456);
-  auto shared_image = gpu::ClientSharedImage::CreateForTesting(
-      {SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
-       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ},
-      GL_TEXTURE_2D);
-
-  return TransferableResource::Make(
-      shared_image, TransferableResource::ResourceSource::kTest, sync_token);
-}
-
-mojom::TransferableUIResourceRequestPtr CreateUIResourceRequest(
-    int uid,
-    mojom::TransferableUIResourceRequest::Type type) {
-  auto request = mojom::TransferableUIResourceRequest::New();
-  request->uid = uid;
-  request->type = type;
-  if (type == mojom::TransferableUIResourceRequest::Type::kCreate) {
-    // Add a minimal valid resource.
-    request->transferable_resource = MakeFakeResource(gfx::Size(1, 1));
-  }
-  return request;
-}
-
-}  // namespace
 
 class LayerContextImplUpdateDisplayTreeTransformNodeTest
     : public LayerContextImplTest {
@@ -1454,13 +955,15 @@ INSTANTIATE_TEST_SUITE_P(
     LayerContextImplUpdateDisplayTreeMinPageScaleFactorTest,
     ::testing::Values(
         // Test value below max_page_scale_factor.
-        std::make_tuple(kDefaultMaxPageScaleFactor - 0.1f, true),
+        std::make_tuple(LayerContextImplTest::kDefaultMaxPageScaleFactor - 0.1f,
+                        true),
 
         // Test value equal to max_page_scale_factor.
-        std::make_tuple(kDefaultMaxPageScaleFactor, true),
+        std::make_tuple(LayerContextImplTest::kDefaultMaxPageScaleFactor, true),
 
         // Test value greater than max_page_scale_factor.
-        std::make_tuple(kDefaultMaxPageScaleFactor + 0.1f, false),
+        std::make_tuple(LayerContextImplTest::kDefaultMaxPageScaleFactor + 0.1f,
+                        false),
 
         // Test invalid values.
         std::make_tuple(0.0f, false),
@@ -1506,13 +1009,24 @@ INSTANTIATE_TEST_SUITE_P(
     LayerContextImplUpdateDisplayTreeMaxPageScaleFactorTest,
     ::testing::Values(
         // Test value equal to min_page_scale_factor.
-        std::make_tuple(kDefaultMinPageScaleFactor, true),
+        std::make_tuple(
+            LayerContextImplUpdateDisplayTreeMaxPageScaleFactorTest::
+                kDefaultMinPageScaleFactor,
+            true),
 
         // Test value above min_page_scale_factor.
-        std::make_tuple(kDefaultMinPageScaleFactor + 0.1f, true),
+        std::make_tuple(
+            LayerContextImplUpdateDisplayTreeMaxPageScaleFactorTest::
+                    kDefaultMinPageScaleFactor +
+                0.1f,
+            true),
 
         // Test value below min_page_scale_factor.
-        std::make_tuple(kDefaultMinPageScaleFactor - 0.1f, false),
+        std::make_tuple(
+            LayerContextImplUpdateDisplayTreeMaxPageScaleFactorTest::
+                    kDefaultMinPageScaleFactor -
+                0.1f,
+            false),
 
         // Test invalid values.
         std::make_tuple(0.0f, false),
@@ -1722,8 +1236,6 @@ INSTANTIATE_TEST_SUITE_P(
            << info.index;
       return name.str();
     });
-
-}  // namespace
 
 TEST_F(LayerContextImplTest, TransferableUIResourceLifecycleAndEdgeCases) {
   cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
@@ -2572,6 +2084,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, RemoveLayers) {
   int layer_id1 = AddDefaultLayerToUpdate(update.get());
   int layer_id2 = AddDefaultLayerToUpdate(update.get());
   int layer_id3 = AddDefaultLayerToUpdate(update.get());
+
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
   VerifyLayerOrder({1, layer_id1, layer_id2, layer_id3});
@@ -5461,4 +4974,5 @@ TEST_F(LayerContextImplUpdateDisplayTreeViewTransitionContentLayerTest,
             kDefaultViewTransitionContentLayerMaxExtentsRect);
 }
 
+}  // namespace
 }  // namespace viz
