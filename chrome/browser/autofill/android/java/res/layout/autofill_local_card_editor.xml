@@ -24,13 +24,24 @@ found in the LICENSE file.
         app:iconGravity="textStart"
         android:visibility="gone"/>
 
+    <!-- Required fields indicator -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/pref_autofill_field_large_top_margin"
+        android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin"
+        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:text="@string/payments_required_field_message"/>
+
     <!-- Credit card number -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/credit_card_number_label"
         android:labelFor="@+id/credit_card_number_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/pref_autofill_field_large_top_margin"
+        android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
         android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin"
         app:errorTextAppearance="@style/TextAppearance.ErrorCaption">
 
