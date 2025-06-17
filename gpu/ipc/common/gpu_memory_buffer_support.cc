@@ -22,12 +22,9 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
-
-#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -47,7 +44,7 @@ gfx::GpuMemoryBufferType GetNativeGpuMemoryBufferType() {
   return gfx::IO_SURFACE_BUFFER;
 #elif BUILDFLAG(IS_ANDROID)
   return gfx::ANDROID_HARDWARE_BUFFER;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
+#elif BUILDFLAG(IS_OZONE)
   return gfx::NATIVE_PIXMAP;
 #elif BUILDFLAG(IS_WIN)
   return gfx::DXGI_SHARED_HANDLE;
