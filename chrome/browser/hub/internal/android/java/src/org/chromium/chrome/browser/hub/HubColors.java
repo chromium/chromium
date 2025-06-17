@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.core.content.ContextCompat;
 
@@ -219,9 +220,22 @@ public final class HubColors {
         }
     }
 
-    public static ColorStateList getActionButtonColor(Context context, @ColorInt int color) {
+    public static ColorStateList getActionButtonColor(
+            Context context, @ColorInt int enabledColor, boolean isGtsUpdateEnabled) {
+        if (isGtsUpdateEnabled) {
+            @ColorRes int disabledColorRes = R.color.hub_action_button_disabled_icon_color;
+            @ColorInt int disabledColor = ContextCompat.getColor(context, disabledColorRes);
+            return generateDisabledAndNormalStatesColorStateList(enabledColor, disabledColor);
+        }
+
         @DimenRes int disabledAlpha = R.dimen.default_disabled_alpha;
-        return generateDisabledAndNormalStatesColorStateList(context, color, disabledAlpha);
+        return generateDisabledAndNormalStatesColorStateList(context, enabledColor, disabledAlpha);
+    }
+
+    public static ColorStateList getActionButtonBgColor(Context context, @ColorInt int color) {
+        @ColorRes int disabledColorRes = R.color.hub_action_button_disabled_background_color;
+        @ColorInt int disabledColor = ContextCompat.getColor(context, disabledColorRes);
+        return generateDisabledAndNormalStatesColorStateList(color, disabledColor);
     }
 
     /**
@@ -237,6 +251,12 @@ public final class HubColors {
     private static ColorStateList generateDisabledAndNormalStatesColorStateList(
             Context context, int color, int disabledAlpha) {
         int[] colors = new int[] {getColorWithAlphaApplied(context, color, disabledAlpha), color};
+        return new ColorStateList(DISABLED_AND_NORMAL_STATES, colors);
+    }
+
+    private static ColorStateList generateDisabledAndNormalStatesColorStateList(
+            int color, int disabledColor) {
+        int[] colors = new int[] {disabledColor, color};
         return new ColorStateList(DISABLED_AND_NORMAL_STATES, colors);
     }
 

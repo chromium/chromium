@@ -259,7 +259,7 @@ public class HubToolbarView extends LinearLayout {
                             colorScheme ->
                                     HubColors.getToolbarActionButtonBackgroundColor(
                                             context, colorScheme),
-                            this::updateActionButtonColorInternal));
+                            color -> updateActionButtonColorInternal(context, color)));
         }
 
         mixer.registerBlend(
@@ -379,12 +379,14 @@ public class HubToolbarView extends LinearLayout {
     }
 
     private void updateActionButtonIconColorInternal(Context context, @ColorInt int color) {
-        ColorStateList actionButtonColor = HubColors.getActionButtonColor(context, color);
+        ColorStateList actionButtonColor =
+                HubColors.getActionButtonColor(context, color, HubUtils.isGtsUpdateEnabled());
         TextViewCompat.setCompoundDrawableTintList(mActionButton, actionButtonColor);
     }
 
-    private void updateActionButtonColorInternal(@ColorInt int color) {
-        mActionButton.setBackgroundTintList(ColorStateList.valueOf(color));
+    private void updateActionButtonColorInternal(Context context, @ColorInt int color) {
+        ColorStateList actionButtonBgColor = HubColors.getActionButtonBgColor(context, color);
+        mActionButton.setBackgroundTintList(actionButtonBgColor);
     }
 
     private void updateSearchLoupeColor(@ColorInt int color) {
