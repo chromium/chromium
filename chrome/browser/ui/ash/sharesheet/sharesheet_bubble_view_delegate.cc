@@ -77,14 +77,14 @@ void SharesheetBubbleViewDelegate::ShowNearbyShareBubbleForArc(
 }
 
 void SharesheetBubbleViewDelegate::OnActionLaunched(bool has_action_view) {
-  CHECK(sharesheet_bubble_view_);
+  DCHECK(sharesheet_bubble_view_);
   if (has_action_view) {
     sharesheet_bubble_view_->ShowActionView();
   }
 }
 
 void SharesheetBubbleViewDelegate::SetBubbleSize(int width, int height) {
-  CHECK(sharesheet_bubble_view_);
+  DCHECK(sharesheet_bubble_view_);
   DCHECK_GT(width, 0);
   DCHECK_GT(height, 0);
   sharesheet_bubble_view_->ResizeBubble(width, height);
@@ -101,7 +101,7 @@ void SharesheetBubbleViewDelegate::CloseBubble(
     reason = views::Widget::ClosedReason::kCancelButtonClicked;
   }
 
-  CHECK(sharesheet_bubble_view_);
+  DCHECK(sharesheet_bubble_view_);
   sharesheet_bubble_view_->CloseBubble(reason);
 }
 
