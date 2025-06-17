@@ -134,7 +134,9 @@ void CloseWatcher::WatcherStack::EscapeKeyHandler(KeyboardEvent* event) {
 void CloseWatcher::WatcherStack::Signal() {
   if (!watcher_groups_.empty()) {
     auto& group = watcher_groups_.back();
-    for (auto& watcher : base::Reversed(group)) {
+
+    HeapVector<Member<CloseWatcher>> group_copy(group);
+    for (auto& watcher : base::Reversed(group_copy)) {
       if (!watcher->requestClose()) {
         break;
       }
