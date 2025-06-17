@@ -23,6 +23,7 @@ specific_include_rules = {
         "+base/pending_task.h",
         "+base/strings",
         "+components/viz",
+        "+cc/layers/texture_layer.h",
         "+cc/test/paint_op_matchers.h",
         "+gpu/GLES2/gl2extchromium.h",
         "+gpu/command_buffer/client/test_shared_image_interface.h",

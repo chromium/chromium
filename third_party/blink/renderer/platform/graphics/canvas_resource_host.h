@@ -7,14 +7,11 @@
 
 #include <memory>
 
-#include "cc/layers/texture_layer.h"
-#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
-#include "third_party/blink/renderer/platform/graphics/opacity_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/hdr_metadata.h"
 
 namespace cc {
+class Layer;
 class PaintCanvas;
 }  // namespace cc
 

@@ -58,6 +58,10 @@
 
 #define CanvasDefaultInterpolationQuality kInterpolationLow
 
+namespace cc {
+class TextureLayer;
+}
+
 namespace blink {
 
 class CanvasHibernationHandler;
