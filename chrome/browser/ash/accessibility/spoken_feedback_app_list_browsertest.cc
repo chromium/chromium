@@ -199,8 +199,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
 
     scoped_feature_list_.InitWithFeatures(
-        {features::kProductivityLauncherImageSearch,
-         features::kLauncherSearchControl,
+        {features::kLauncherSearchControl,
          features::kFeatureManagementLocalImageSearch},
         {features::kScannerDogfood, features::kSunfishFeature,
          ash::assistant::features::kEnableNewEntryPoint});

@@ -7641,12 +7641,6 @@ const char kPrintPreviewCrosAppName[] = "Enable ChromeOS print preview";
 const char kPrintPreviewCrosAppDescription[] =
     "Enables ChromeOS print preview app.";
 
-const char kProductivityLauncherImageSearchName[] =
-    "Productivity Launcher experiment: Launcher Image Search";
-const char kProductivityLauncherImageSearchDescription[] =
-    "To evaluate the viability of image search as part of Productivity "
-    "Launcher Search.";
-
 const char kProjectorAppDebugName[] = "Enable Projector app debug";
 const char kProjectorAppDebugDescription[] =
     "Adds more informative error messages to the Projector app for debugging";

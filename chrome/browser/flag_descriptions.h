@@ -4480,9 +4480,6 @@ extern const char kPrintingPpdChannelDescription[];
 extern const char kPrintPreviewCrosAppName[];
 extern const char kPrintPreviewCrosAppDescription[];
 
-extern const char kProductivityLauncherImageSearchName[];
-extern const char kProductivityLauncherImageSearchDescription[];
-
 extern const char kProjectorAppDebugName[];
 extern const char kProjectorAppDebugDescription[];
 

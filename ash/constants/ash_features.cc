@@ -1523,11 +1523,6 @@ BASE_FEATURE(kHelpAppWelcomeTips,
 // Enable ChromeOS hibernation features.
 BASE_FEATURE(kHibernate, "Hibernate", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables image search for productivity launcher.
-BASE_FEATURE(kProductivityLauncherImageSearch,
-             "ProductivityLauncherImageSearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a warning about connecting to hidden WiFi networks.
 // https://crbug.com/903908
 BASE_FEATURE(kHiddenNetworkWarning,
@@ -4158,8 +4153,7 @@ bool IsLockScreenNotificationsEnabled() {
 }
 
 bool IsProductivityLauncherImageSearchEnabled() {
-  return base::FeatureList::IsEnabled(kProductivityLauncherImageSearch) &&
-         base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch);
+  return base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch);
 }
 
 bool IsMacAddressRandomizationEnabled() {
