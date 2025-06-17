@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_
 
+#import <Foundation/Foundation.h>
+
 #import <string>
 #import <vector>
 
@@ -13,9 +15,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 
-@class SnapshotStorageWrapper;
+@class SnapshotIDWrapper;
+@protocol SnapshotStorage;
 
 // Associates a SnapshotStorage to a Browser.
 class SnapshotBrowserAgent : public BrowserUserData<SnapshotBrowserAgent>,
@@ -38,7 +40,7 @@ class SnapshotBrowserAgent : public BrowserUserData<SnapshotBrowserAgent>,
   // Permanently removes all snapshots.
   void RemoveAllSnapshots();
 
-  SnapshotStorageWrapper* snapshot_storage() { return snapshot_storage_; }
+  id<SnapshotStorage> snapshot_storage() { return snapshot_storage_; }
 
  private:
   friend class BrowserUserData<SnapshotBrowserAgent>;
@@ -71,9 +73,9 @@ class SnapshotBrowserAgent : public BrowserUserData<SnapshotBrowserAgent>,
   void PurgeUnusedSnapshots();
 
   // Returns the snapshot IDs of all the WebStates in the Browser.
-  std::vector<SnapshotID> GetSnapshotIDs();
+  NSArray<SnapshotIDWrapper*>* GetSnapshotIDs();
 
-  __strong SnapshotStorageWrapper* snapshot_storage_;
+  __strong id<SnapshotStorage> snapshot_storage_;
 
   // Scoped observation of the WebStateList.
   base::ScopedObservation<WebStateList, WebStateListObserver>

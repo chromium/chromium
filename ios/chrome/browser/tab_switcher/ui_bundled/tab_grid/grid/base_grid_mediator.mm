@@ -67,7 +67,6 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_consumer.h"
@@ -1514,12 +1513,12 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 
 #pragma mark - Private
 
-// Returns a SnapshotStorageWrapper for the current browser.
-- (SnapshotStorageWrapper*)snapshotStorage {
-  if (!self.browser) {
-    return nil;
-  }
-  return SnapshotBrowserAgent::FromBrowser(self.browser)->snapshot_storage();
+// Returns a id<SnapshotStorage> for the current browser.
+- (id<SnapshotStorage>)snapshotStorage {
+  Browser* browser = self.browser;
+  return browser
+             ? SnapshotBrowserAgent::FromBrowser(browser)->snapshot_storage()
+             : nil;
 }
 
 - (void)addItemsWithIDsToReadingList:(const std::set<web::WebStateID>&)itemIDs {

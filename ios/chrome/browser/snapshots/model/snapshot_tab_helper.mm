@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/web/public/web_state.h"
 
@@ -50,23 +49,13 @@ void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
   }
 }
 
-void SnapshotTabHelper::SetSnapshotStorage(SnapshotStorageWrapper* wrapper) {
+void SnapshotTabHelper::SetSnapshotStorage(id<SnapshotStorage> storage) {
   if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
     CHECK(snapshot_manager_);
-    id<SnapshotStorage> storage = nil;
-    // `wrapper` is nil when a WebState is detached.
-    if (wrapper) {
-      storage = wrapper.snapshotStorage;
-      CHECK(storage);
-    }
-    // Note that `snapshot_manager_.snapshotStorage` is SnapshotStorage. On the
-    // other hand, `legacy_snapshot_manager_.snapshotStorage` is
-    // SnapshotStorageWrapper. The type is different to avoid a dependency
-    // cycle.
     snapshot_manager_.snapshotStorage = storage;
   } else {
     CHECK(legacy_snapshot_manager_);
-    legacy_snapshot_manager_.snapshotStorage = wrapper;
+    legacy_snapshot_manager_.snapshotStorage = storage;
   }
 }
 

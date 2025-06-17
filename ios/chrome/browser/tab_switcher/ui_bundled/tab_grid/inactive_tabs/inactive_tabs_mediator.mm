@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
@@ -98,7 +97,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   // The list of inactive tabs.
   raw_ptr<WebStateList> _webStateList;
   // The snapshot storage of _webStateList.
-  __weak SnapshotStorageWrapper* _snapshotStorage;
+  __weak id<SnapshotStorage> _snapshotStorage;
   // The observers of _webStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<ScopedWebStateListObservation> _scopedWebStateListObservation;
@@ -122,7 +121,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                   profilePrefService:(PrefService*)prefService
-                     snapshotStorage:(SnapshotStorageWrapper*)snapshotStorage
+                     snapshotStorage:(id<SnapshotStorage>)snapshotStorage
                           tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser {
   CHECK(webStateList);
   CHECK(prefService);

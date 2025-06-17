@@ -16,9 +16,10 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_kind.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -34,6 +35,11 @@ namespace {
 // Name of the directory where snapshots are saved.
 const char kIdentifier0[] = "Identifier0";
 const char kIdentifier1[] = "Identifier1";
+
+// Converts `snapshot_id` to a SnapshotIDWrapper.
+SnapshotIDWrapper* ToWrapper(SnapshotID snapshot_id) {
+  return [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshot_id];
+}
 
 }  // namespace
 
@@ -94,18 +100,19 @@ class BrowserUtilTest : public PlatformTest {
 
   // Returns the cached snapshot for the given snapshot ID in the given snapshot
   // cache.
-  UIImage* GetSnapshot(SnapshotStorageWrapper* snapshot_storage,
+  UIImage* GetSnapshot(id<SnapshotStorage> snapshot_storage,
                        SnapshotID snapshot_id) {
     CHECK(snapshot_storage);
     base::RunLoop run_loop;
     base::RunLoop* run_loop_ptr = &run_loop;
 
     __block UIImage* snapshot = nil;
-    [snapshot_storage retrieveImageForSnapshotID:snapshot_id
-                                        callback:^(UIImage* cached_snapshot) {
-                                          snapshot = cached_snapshot;
-                                          run_loop_ptr->Quit();
-                                        }];
+    [snapshot_storage retrieveImageWithSnapshotID:ToWrapper(snapshot_id)
+                                     snapshotKind:SnapshotKindColor
+                                       completion:^(UIImage* cached_snapshot) {
+                                         snapshot = cached_snapshot;
+                                         run_loop_ptr->Quit();
+                                       }];
     run_loop.Run();
     return snapshot;
   }
@@ -207,12 +214,12 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   SnapshotBrowserAgent* agent =
       SnapshotBrowserAgent::FromBrowser(browser_.get());
   agent->SetSessionID(kIdentifier0);
-  SnapshotStorageWrapper* snapshot_storage = agent->snapshot_storage();
+  id<SnapshotStorage> snapshot_storage = agent->snapshot_storage();
   ASSERT_NE(nil, snapshot_storage);
   UIImage* snapshot = UIImageWithSizeAndSolidColor({10, 20}, UIColor.redColor);
   ASSERT_NE(nil, snapshot);
   const SnapshotID snapshot_id(web_state->GetUniqueIdentifier());
-  [snapshot_storage setImage:snapshot withSnapshotID:snapshot_id];
+  [snapshot_storage setImage:snapshot withSnapshotID:ToWrapper(snapshot_id)];
   ASSERT_TRUE(
       UIImagesAreEqual(snapshot, GetSnapshot(snapshot_storage, snapshot_id)));
   // Check that the other browser doesn’t have a snapshot for that identifier.
@@ -220,8 +227,7 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   SnapshotBrowserAgent* other_agent =
       SnapshotBrowserAgent::FromBrowser(other_browser_.get());
   other_agent->SetSessionID(kIdentifier1);
-  SnapshotStorageWrapper* other_snapshot_storage =
-      other_agent->snapshot_storage();
+  id<SnapshotStorage> other_snapshot_storage = other_agent->snapshot_storage();
   ASSERT_NE(nil, other_snapshot_storage);
   ASSERT_EQ(nil, GetSnapshot(other_snapshot_storage, snapshot_id));
 

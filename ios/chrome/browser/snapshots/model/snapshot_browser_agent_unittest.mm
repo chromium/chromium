@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -25,6 +25,11 @@ namespace {
 
 // Name of the directory where snapshots are saved.
 const char kIdentifier[] = "Identifier";
+
+// Converts `snapshot_id` to a SnapshotIDWrapper.
+SnapshotIDWrapper* ToWrapper(SnapshotID snapshot_id) {
+  return [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshot_id];
+}
 
 // Returns a callback that capture its argument and store it to `output`.
 template <typename T>
@@ -78,10 +83,11 @@ class SnapshotBrowserAgentTest : public PlatformTest {
 
     UIImage* result = nil;
     base::RunLoop run_loop;
-    [storage retrieveImageForSnapshotID:snapshot_id
-                               callback:base::CallbackToBlock(
-                                            CaptureArg(result).Then(
-                                                run_loop.QuitClosure()))];
+    [storage retrieveImageWithSnapshotID:ToWrapper(snapshot_id)
+                            snapshotKind:SnapshotKindColor
+                              completion:base::CallbackToBlock(
+                                             CaptureArg(result).Then(
+                                                 run_loop.QuitClosure()))];
 
     run_loop.Run();
     return result;

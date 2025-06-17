@@ -14,12 +14,17 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
+
+// Converts `snapshot_id` to a SnapshotIDWrapper.
+SnapshotIDWrapper* ToWrapper(SnapshotID snapshot_id) {
+  return [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshot_id];
+}
 
 // Moves snapshot associated with `snapshot_id` from `source_browser` to
 // `destination_browser`'s snapshot storage.
@@ -27,13 +32,13 @@ void MoveSnapshot(SnapshotID snapshot_id,
                   Browser* source_browser,
                   Browser* destination_browser) {
   DCHECK(snapshot_id.valid());
-  SnapshotStorageWrapper* source_storage =
+  id<SnapshotStorage> source_storage =
       SnapshotBrowserAgent::FromBrowser(source_browser)->snapshot_storage();
-  SnapshotStorageWrapper* destination_storage =
+  id<SnapshotStorage> destination_storage =
       SnapshotBrowserAgent::FromBrowser(destination_browser)
           ->snapshot_storage();
-  [source_storage migrateImageWithSnapshotID:snapshot_id
-                           toSnapshotStorage:destination_storage];
+  [source_storage migrateImageWithSnapshotID:ToWrapper(snapshot_id)
+                          destinationStorage:destination_storage];
 }
 
 }  // namespace

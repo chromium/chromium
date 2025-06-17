@@ -11,7 +11,7 @@ source_set("model") {
     "legacy_snapshot_lru_cache.h",
     "legacy_snapshot_storage.h",
     "snapshot_browser_agent.h",
-    "snapshot_storage_wrapper.h",
+    "snapshot_storage_util.h",
     "snapshot_tab_helper.h",
   ]
   sources = [
@@ -22,7 +22,7 @@ source_set("model") {
     "legacy_snapshot_manager.mm",
     "legacy_snapshot_storage.mm",
     "snapshot_browser_agent.mm",
-    "snapshot_storage_wrapper.mm",
+    "snapshot_storage_util.mm",
     "snapshot_tab_helper.mm",
   ]
   deps = [

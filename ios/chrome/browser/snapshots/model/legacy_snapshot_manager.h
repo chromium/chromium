@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class SnapshotID;
-@class SnapshotStorageWrapper;
+@protocol SnapshotStorage;
 @class LegacySnapshotGenerator;
 @protocol SnapshotGeneratorDelegate;
 
@@ -19,10 +19,7 @@ class SnapshotID;
 @interface LegacySnapshotManager : NSObject
 
 // The snapshot storage which is used to store and retrieve snapshots.
-@property(nonatomic) SnapshotStorageWrapper* snapshotStorage;
-
-// The snapshot ID.
-@property(nonatomic, readonly) SnapshotID snapshotID;
+@property(nonatomic) id<SnapshotStorage> snapshotStorage;
 
 // Designated initializer.
 - (instancetype)initWithGenerator:(LegacySnapshotGenerator*)generator

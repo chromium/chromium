@@ -58,6 +58,7 @@ source_set("utils") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_common",
+    "//ios/chrome/browser/snapshots/model:model_swift",
     "//ios/web/public",
   ]
 }
@@ -102,6 +103,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_common",
+    "//ios/chrome/browser/snapshots/model:model_swift",
     "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/test",

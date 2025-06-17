@@ -15,7 +15,7 @@
 
 @class LegacySnapshotManager;
 @class SnapshotManager;
-@class SnapshotStorageWrapper;
+@protocol SnapshotStorage;
 @protocol SnapshotGeneratorDelegate;
 
 namespace web {
@@ -37,7 +37,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
 
   // Sets the snapshot storage to be used to store and retrieve snapshots. This
   // is not owned by the tab helper.
-  void SetSnapshotStorage(SnapshotStorageWrapper* wrapper);
+  void SetSnapshotStorage(id<SnapshotStorage> storage);
 
   // Retrieves a color snapshot for the current page, invoking `callback` with
   // the image. The callback may be called synchronously if there is a cached

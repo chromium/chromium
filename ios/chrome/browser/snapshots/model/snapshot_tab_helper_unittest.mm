@@ -9,8 +9,10 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_kind.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -74,6 +76,11 @@ bool IsDominantColorForImage(UIImage* image, UIColor* color) {
   return [color isEqual:dominant_color];
 }
 
+// Converts `snapshot_id` to a SnapshotIDWrapper.
+SnapshotIDWrapper* ToWrapper(SnapshotID snapshot_id) {
+  return [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshot_id];
+}
+
 // Dimension of the WebState's view (if defined).
 constexpr CGSize kWebStateViewSize = {300, 400};
 
@@ -96,8 +103,7 @@ class SnapshotTabHelperTest : public PlatformTest {
     // Set custom snapshot storage.
     EXPECT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
     base::FilePath directory_name = scoped_temp_directory_.GetPath();
-    snapshot_storage_ =
-        [[SnapshotStorageWrapper alloc] initWithStoragePath:directory_name];
+    snapshot_storage_ = CreateSnapshotStorage(directory_name, base::FilePath());
     SnapshotTabHelper::FromWebState(&web_state_)
         ->SetSnapshotStorage(snapshot_storage_);
 
@@ -116,7 +122,7 @@ class SnapshotTabHelperTest : public PlatformTest {
 
   void SetCachedSnapshot(UIImage* image) {
     const SnapshotID snapshot_id(web_state_.GetUniqueIdentifier());
-    [snapshot_storage_ setImage:image withSnapshotID:snapshot_id];
+    [snapshot_storage_ setImage:image withSnapshotID:ToWrapper(snapshot_id)];
   }
 
   UIImage* GetCachedSnapshot() {
@@ -125,11 +131,12 @@ class SnapshotTabHelperTest : public PlatformTest {
 
     __block UIImage* snapshot = nil;
     const SnapshotID snapshot_id(web_state_.GetUniqueIdentifier());
-    [snapshot_storage_ retrieveImageForSnapshotID:snapshot_id
-                                         callback:^(UIImage* cached_snapshot) {
-                                           snapshot = cached_snapshot;
-                                           run_loop_ptr->Quit();
-                                         }];
+    [snapshot_storage_ retrieveImageWithSnapshotID:ToWrapper(snapshot_id)
+                                      snapshotKind:SnapshotKindColor
+                                        completion:^(UIImage* cached_snapshot) {
+                                          snapshot = cached_snapshot;
+                                          run_loop_ptr->Quit();
+                                        }];
 
     run_loop.Run();
     return snapshot;
@@ -139,7 +146,7 @@ class SnapshotTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_directory_;
   TabHelperSnapshotGeneratorDelegate* delegate_ = nil;
-  SnapshotStorageWrapper* snapshot_storage_ = nil;
+  id<SnapshotStorage> snapshot_storage_ = nil;
   web::FakeWebState web_state_;
 };
 
