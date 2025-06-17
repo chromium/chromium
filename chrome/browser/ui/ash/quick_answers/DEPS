@@ -4,6 +4,7 @@ include_rules = [
   "+ash",
   "+content/browser/speech",
   "+chrome/browser/profiles",
+  "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ui/ash/read_write_cards",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h",

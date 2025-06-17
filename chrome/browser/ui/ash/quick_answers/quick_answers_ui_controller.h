@@ -162,6 +162,7 @@ class QuickAnswersUiController {
   void OpenWebUrl(const GURL& url);
   void OnUserConsentNoThanksPressed();
   void OnUserConsentAllowPressed();
+  void OnMagicBoostUserConsentIntentButtonPressed();
 
   void CreateQuickAnswersViewInternal(
       Profile* profile,

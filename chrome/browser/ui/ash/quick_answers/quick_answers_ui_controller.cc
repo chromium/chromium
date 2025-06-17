@@ -293,8 +293,15 @@ void QuickAnswersUiController::CreateUserConsentViewInternal(
             views::Builder<quick_answers::MagicBoostUserConsentView>(
                 std::make_unique<quick_answers::MagicBoostUserConsentView>(
                     intent_type, intent_text, GetReadWriteCardsUiController()))
+                // It is safe to do `base::Unretained(this)`. UIs are destructed
+                // before a UI controller gets destructed. See
+                // `~QuickAnswersUiController`.
                 .SetSettingsButtonPressed(base::BindRepeating(
                     &QuickAnswersUiController::OnSettingsButtonPressed,
+                    base::Unretained(this)))
+                .SetIntentButtonPressedCallback(base::BindRepeating(
+                    &QuickAnswersUiController::
+                        OnMagicBoostUserConsentIntentButtonPressed,
                     base::Unretained(this)))
                 .Build()));
   } else {
@@ -422,6 +429,10 @@ void QuickAnswersUiController::OnUserConsentResult(bool consented) {
   if (consented && IsShowingQuickAnswersView()) {
     quick_answers_view()->RequestFocus();
   }
+}
+
+void QuickAnswersUiController::OnMagicBoostUserConsentIntentButtonPressed() {
+  controller_->ShowMagicBoostDisclaimerView();
 }
 
 bool QuickAnswersUiController::IsShowingUserConsentView() const {

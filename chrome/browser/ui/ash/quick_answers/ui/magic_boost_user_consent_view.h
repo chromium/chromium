@@ -55,6 +55,7 @@ class MagicBoostUserConsentView : public chromeos::ReadWriteCardsView {
   void UpdateBoundsForQuickAnswers() override;
 
   void SetSettingsButtonPressed(views::Button::PressedCallback callback);
+  void SetIntentButtonPressedCallback(views::Button::PressedCallback callback);
 
   std::u16string chip_label_for_testing();
   views::ImageButton* settings_button_for_testing() { return settings_button_; }
@@ -72,6 +73,8 @@ BEGIN_VIEW_BUILDER(/* no export */,
                    MagicBoostUserConsentView,
                    chromeos::ReadWriteCardsView)
 VIEW_BUILDER_PROPERTY(views::Button::PressedCallback, SettingsButtonPressed)
+VIEW_BUILDER_PROPERTY(views::Button::PressedCallback,
+                      IntentButtonPressedCallback)
 END_VIEW_BUILDER
 
 }  // namespace quick_answers

@@ -86,6 +86,8 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   void OverrideTimeTickNowForTesting(
       TimeTickNowFunction time_tick_now_function);
 
+  void ShowMagicBoostDisclaimerView();
+
   QuickAnswersUiController* quick_answers_ui_controller() {
     return quick_answers_ui_controller_.get();
   }

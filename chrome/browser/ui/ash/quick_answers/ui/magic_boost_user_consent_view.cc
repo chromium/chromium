@@ -217,6 +217,11 @@ void MagicBoostUserConsentView::SetSettingsButtonPressed(
   settings_button_->SetCallback(std::move(callback));
 }
 
+void MagicBoostUserConsentView::SetIntentButtonPressedCallback(
+    views::Button::PressedCallback callback) {
+  intent_chip_->SetCallback(std::move(callback));
+}
+
 BEGIN_METADATA(MagicBoostUserConsentView)
 END_METADATA
 
