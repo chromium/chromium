@@ -296,6 +296,14 @@ void ServiceWorkerGlobalScopeProxy::ResumeEvaluation() {
   WorkerGlobalScope()->ResumeEvaluation();
 }
 
+void ServiceWorkerGlobalScopeProxy::DeferPrepareForEvaluation() {
+  WorkerGlobalScope()->DeferPrepareForEvaluation();
+}
+
+void ServiceWorkerGlobalScopeProxy::RunDeferredPrepareForEvaluation() {
+  WorkerGlobalScope()->RunDeferredPrepareForEvaluation();
+}
+
 mojom::blink::ServiceWorkerFetchHandlerType
 ServiceWorkerGlobalScopeProxy::FetchHandlerType() {
   return WorkerGlobalScope()->FetchHandlerType();

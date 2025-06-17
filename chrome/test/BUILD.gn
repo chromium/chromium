@@ -4635,6 +4635,7 @@ if (!is_android) {
 
         sources += [
           "../browser/extensions/api/identity/launch_web_auth_flow_delegate_ash_browsertest.cc",
+          "../browser/extensions/component_extension_browsertest.cc",
           "../browser/ui/views/extensions/web_file_handlers/web_file_handlers_file_launch_browsertest.cc",
         ]
       }

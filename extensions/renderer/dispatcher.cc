@@ -584,6 +584,9 @@ void Dispatcher::DidInitializeServiceWorkerContextOnWorkerThread(
   if (!script_url.SchemeIs(kExtensionScheme))
     return;
 
+  // Defer `PrepareForEvaluation` until `ModuleSystem` is created.
+  context_proxy->DeferPrepareForEvaluation();
+
   {
     base::AutoLock lock(service_workers_paused_for_on_loaded_message_lock_);
     ExtensionId extension_id =
@@ -624,6 +627,13 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
         ServiceWorkerContextState::kScriptUrlIsNotExtensionScheme;
     return;
   }
+
+  // Runs the deferred `PrepareForEvaluation` before this returns.
+  base::ScopedClosureRunner run_at_return(base::BindOnce(
+      [](blink::WebServiceWorkerContextProxy* context_proxy) {
+        context_proxy->RunDeferredPrepareForEvaluation();
+      },
+      context_proxy));
 
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(script_url);

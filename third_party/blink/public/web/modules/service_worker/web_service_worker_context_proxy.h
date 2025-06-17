@@ -75,6 +75,8 @@ class WebServiceWorkerContextProxy {
   virtual bool IsWindowInteractionAllowed() = 0;
   virtual void PauseEvaluation() = 0;
   virtual void ResumeEvaluation() = 0;
+  virtual void DeferPrepareForEvaluation() = 0;
+  virtual void RunDeferredPrepareForEvaluation() = 0;
   virtual mojom::ServiceWorkerFetchHandlerType FetchHandlerType() = 0;
   virtual bool HasHidEventHandlers() = 0;
   virtual bool HasUsbEventHandlers() = 0;

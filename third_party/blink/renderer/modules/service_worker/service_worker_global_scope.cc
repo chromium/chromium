@@ -516,7 +516,9 @@ void ServiceWorkerGlobalScope::Initialize(
 
   // This should be called after OriginTrialContext::AddTokens() to install
   // origin trial features in JavaScript's global object.
-  ScriptController()->PrepareForEvaluation();
+  if (!defer_prepare_for_evaluation_) {
+    ScriptController()->PrepareForEvaluation();
+  }
 }
 
 void ServiceWorkerGlobalScope::LoadAndRunInstalledClassicScript(
@@ -1732,6 +1734,21 @@ void ServiceWorkerGlobalScope::ResumeEvaluation() {
   pause_evaluation_ = false;
   if (global_scope_initialized_)
     ReadyToRunWorkerScript();
+}
+
+void ServiceWorkerGlobalScope::DeferPrepareForEvaluation() {
+  DCHECK(IsContextThread());
+  CHECK(!defer_prepare_for_evaluation_);
+
+  defer_prepare_for_evaluation_ = true;
+}
+
+void ServiceWorkerGlobalScope::RunDeferredPrepareForEvaluation() {
+  DCHECK(IsContextThread());
+  CHECK(defer_prepare_for_evaluation_);
+
+  defer_prepare_for_evaluation_ = false;
+  ScriptController()->PrepareForEvaluation();
 }
 
 void ServiceWorkerGlobalScope::DispatchInstallEvent(
