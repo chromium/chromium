@@ -11,7 +11,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/trace_event/trace_event.h"
 #include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
