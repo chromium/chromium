@@ -67,7 +67,18 @@ float GetDprForSizeAdjustment(const Element& owner_element) {
 #ifndef OS_ANDROID
   LocalFrame* frame = owner_element.GetDocument().GetFrame();
   const Page* page = frame ? frame->GetPage() : nullptr;
-  dpr = page->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
+  // DevTools devicePixelRatio emulation only applies to the outermost
+  // main frame and local frames within it. If the current frame is
+  // cross-origin in relation to the outmost frame, we need to use the original
+  // device scale factor instead of the value emulated for the outermost main
+  // frame to correctly place the select menu.
+  if (frame->IsCrossOriginToOutermostMainFrame()) {
+    dpr = page->GetChromeClient()
+              .GetOriginalScreenInfo(*frame)
+              .device_scale_factor;
+  } else {
+    dpr = page->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
+  }
 #endif
   return dpr;
 }

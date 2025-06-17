@@ -644,6 +644,11 @@ const display::ScreenInfos& ChromeClientImpl::GetScreenInfos(
   return frame.GetWidgetForLocalRoot()->GetScreenInfos();
 }
 
+const display::ScreenInfo& ChromeClientImpl::GetOriginalScreenInfo(
+    LocalFrame& frame) const {
+  return frame.GetWidgetForLocalRoot()->GetOriginalScreenInfo();
+}
+
 float ChromeClientImpl::InputEventsScaleForEmulation() const {
   DCHECK(web_view_);
   return web_view_->GetDevToolsEmulator()->InputEventsScaleForEmulation();

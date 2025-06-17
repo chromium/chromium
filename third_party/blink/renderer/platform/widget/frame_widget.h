@@ -229,6 +229,10 @@ class PLATFORM_EXPORT FrameWidget {
   // Returns information about available screens and the current screen.
   virtual const display::ScreenInfos& GetScreenInfos() = 0;
 
+  // Returns information about the screen that would be showing the widget
+  // without DevTools emulation applied.
+  virtual const display::ScreenInfo& GetOriginalScreenInfo() = 0;
+
   // Called to get the position of the widget's window in screen
   // coordinates. Note, the window includes any decorations such as borders,
   // scrollbars, URL bar, tab strip, etc. if they exist.
