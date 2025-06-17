@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/common/command_buffer.h"
+#include "gpu/gpu_export.h"
 
 namespace gpu {
 class MemoryTracker;

@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "gpu/config/gpu_control_list.h"
+#include "gpu/gpu_export.h"
 
 namespace gpu {
 

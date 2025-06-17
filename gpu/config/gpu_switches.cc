@@ -54,11 +54,10 @@ const char kEnableWebGPUDeveloperFeatures[] =
 const char kEnableDawnBackendValidation[] = "enable-dawn-backend-validation";
 
 // The adapter to use for WebGPU content.
-GPU_EXPORT extern const char kUseWebGPUAdapter[] = "use-webgpu-adapter";
+extern const char kUseWebGPUAdapter[] = "use-webgpu-adapter";
 
 // The adapter selecting strategy related to GPUPowerPreference.
-GPU_EXPORT extern const char kUseWebGPUPowerPreference[] =
-    "use-webgpu-power-preference";
+extern const char kUseWebGPUPowerPreference[] = "use-webgpu-power-preference";
 
 // Force all WebGPU content to run in WebGPU Compatibility mode.
 const char kForceWebGPUCompat[] = "force-webgpu-compat";

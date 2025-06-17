@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "gpu/command_buffer/common/command_buffer_shared.h"
 #include "gpu/command_buffer/service/async_api_interface.h"
+#include "gpu/gpu_export.h"
 
 namespace gpu {
 

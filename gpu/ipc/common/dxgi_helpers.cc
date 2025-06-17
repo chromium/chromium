@@ -203,9 +203,9 @@ bool CopyD3D11TexToMem(
              dest_stride, texture_desc.Width, texture_desc.Height) == 0;
 }
 
-GPU_EXPORT bool CopyShMemToDXGIBuffer(base::span<uint8_t> shared_memory,
-                                      HANDLE dxgi_handle,
-                                      ID3D11Device* d3d11_device) {
+bool CopyShMemToDXGIBuffer(base::span<uint8_t> shared_memory,
+                           HANDLE dxgi_handle,
+                           ID3D11Device* d3d11_device) {
   CHECK(d3d11_device);
 
   uint8_t* src_buffer = shared_memory.data();
@@ -231,10 +231,10 @@ GPU_EXPORT bool CopyShMemToDXGIBuffer(base::span<uint8_t> shared_memory,
                            d3d11_device);
 }
 
-GPU_EXPORT bool CopyMemToD3D11Tex(uint8_t* src_buffer,
-                                  size_t buffer_size,
-                                  ID3D11Texture2D* output_texture,
-                                  ID3D11Device* d3d11_device) {
+bool CopyMemToD3D11Tex(uint8_t* src_buffer,
+                       size_t buffer_size,
+                       ID3D11Texture2D* output_texture,
+                       ID3D11Device* d3d11_device) {
   CHECK(d3d11_device);
   CHECK(src_buffer);
   CHECK(output_texture);
