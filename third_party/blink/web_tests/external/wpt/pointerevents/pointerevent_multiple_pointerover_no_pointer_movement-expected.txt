@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Pointer boundary events should be fired per pointer
+  assert_equals: expected "pointerover@div#target, pointerover@div#target, pointerover@div#container, pointerover@div#container" but got "pointerover@div#target, pointerover@div#container"
+Harness: the test ran to completion.
+
