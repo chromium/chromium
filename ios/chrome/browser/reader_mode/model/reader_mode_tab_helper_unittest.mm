@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -52,16 +53,14 @@ class ReaderModeTabHelperTest : public ReaderModeTest {
     web_state_ = CreateWebState();
 
     // Configure the web state resources.
-    CreateTabHelperForWebState(web_state());
+    SnapshotTabHelper::CreateForWebState(web_state());
+    ReaderModeTabHelper::CreateForWebState(
+        web_state(), DistillerServiceFactory::GetForProfile(profile()));
+
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
 
   void TearDown() override { test_ukm_recorder_.Purge(); }
-
-  void CreateTabHelperForWebState(web::WebState* web_state) {
-    ReaderModeTabHelper::CreateForWebState(
-        web_state, DistillerServiceFactory::GetForProfile(profile()));
-  }
 
   ReaderModeTabHelper* reader_mode_tab_helper() {
     return ReaderModeTabHelper::FromWebState(web_state());

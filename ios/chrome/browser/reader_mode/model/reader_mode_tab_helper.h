@@ -106,6 +106,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // ReaderModeContentDelegate overrides:
+  void ReaderModeContentDidLoadData(
+      ReaderModeContentTabHelper* reader_mode_content_tab_helper) override;
   void ReaderModeContentDidCancelRequest(
       ReaderModeContentTabHelper* reader_mode_content_tab_helper,
       NSURLRequest* request,

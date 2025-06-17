@@ -8,6 +8,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/apple/url_conversions.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -18,7 +19,11 @@ class TestReaderModeContentDelegate : public ReaderModeContentDelegate {
  public:
   ~TestReaderModeContentDelegate() override = default;
 
-  // ReaderModeContentDelegate implementation:
+  MOCK_METHOD(void,
+              ReaderModeContentDidLoadData,
+              (ReaderModeContentTabHelper * tab_helper),
+              (override));
+
   void ReaderModeContentDidCancelRequest(
       ReaderModeContentTabHelper* reader_mode_content_tab_helper,
       NSURLRequest* request,
@@ -118,7 +123,9 @@ TEST_F(ReaderModeContentTabHelperTest, AllowsContentURLRequestOnce) {
   delegate_->Reset();
 
   // Load the content.
+  EXPECT_CALL(*delegate_, ReaderModeContentDidLoadData(tab_helper()));
   tab_helper()->LoadContent(net::GURLWithNSURL(content_url), data);
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
 
   // Request for content URL is allowed only once after `LoadContent` is called.
   policy_decision =

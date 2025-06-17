@@ -16,6 +16,10 @@ class ReaderModeContentDelegate {
  public:
   virtual ~ReaderModeContentDelegate() = default;
 
+  // Called when the content completed loading Reader Mode data.
+  virtual void ReaderModeContentDidLoadData(
+      ReaderModeContentTabHelper* reader_mode_content_tab_helper) = 0;
+
   // Called when the content just denied a request to navigate away from the
   // current page.
   virtual void ReaderModeContentDidCancelRequest(

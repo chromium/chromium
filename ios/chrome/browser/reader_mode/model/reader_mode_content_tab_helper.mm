@@ -36,6 +36,9 @@ void ReaderModeContentTabHelper::LoadContent(GURL content_url,
     navigation_manager->Restore(0, std::move(navigation_items));
   }
   web_state()->LoadData(content_data, @"text/html", std::move(content_url));
+  if (delegate_) {
+    delegate_->ReaderModeContentDidLoadData(this);
+  }
 }
 
 #pragma mark - WebStatePolicyDecider
