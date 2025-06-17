@@ -295,13 +295,6 @@ BASE_FEATURE(kOmniboxAnswerActions, "OmniboxAnswerActions", DISABLED);
 // `omnibox::TYPE_CATEGORICAL_QUERY` to the server.
 BASE_FEATURE(kCategoricalSuggestions, "CategoricalSuggestions", ENABLED);
 
-// If enabled, merges the suggestion subtypes for the remote suggestions and the
-// local verbatim and history suggestion duplicates at the provider level. This
-// is needed for omnibox::kCategoricalSuggestions to function correctly but is
-// being controlled by a separate feature in case there are unintended side
-// effects beyond the categorical suggestions.
-BASE_FEATURE(kMergeSubtypes, "MergeSubtypes", ENABLED);
-
 // If enabled, sends a signal when a user touches down on a search suggestion to
 // |SearchPrefetchService|. |SearchPrefetchService| will then prefetch
 // suggestion iff the SearchNavigationPrefetch feature and "touch_down" param

@@ -296,10 +296,9 @@ TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
 }
 
 TEST_F(BaseSearchProviderTest, PreserveSubtypesWhenDeduplicating) {
-  // Ensure categorical suggestions and merging subtypes are enabled.
+  // Ensure categorical suggestions are enabled.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {omnibox::kCategoricalSuggestions, omnibox::kMergeSubtypes}, {});
+  scoped_feature_list.InitWithFeatures({omnibox::kCategoricalSuggestions}, {});
 
   TemplateURLData data;
   data.SetURL("http://foo.com/url?bar={searchTerms}");

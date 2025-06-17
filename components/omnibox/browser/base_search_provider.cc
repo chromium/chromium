@@ -730,8 +730,7 @@ void BaseSearchProvider::AddMatchToMap(
     // identify what the user selected so they can be suggested the next time,
     // i.e., if the user selects a decorated suggestion - which is accompanied
     // by specific subtypes - we want to show a decorated suggestion next time.
-    if (base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions) &&
-        base::FeatureList::IsEnabled(omnibox::kMergeSubtypes)) {
+    if (base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
       existing_match.subtypes.insert(
           less_relevant_duplicate_match.subtypes.begin(),
           less_relevant_duplicate_match.subtypes.end());
