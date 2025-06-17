@@ -199,6 +199,9 @@ tweak_info_plist("info_plist") {
   if (ios_enable_background_mode) {
     info_plists += [ "resources/Background+Info.plist" ]
   }
+  if (!ios_enable_liquid_glass) {
+    info_plists += [ "resources/DisableLiquidGlassCompatibility+Info.plist" ]
+  }
   if (target_environment == "catalyst") {
     info_plists += [ "resources/Environment+Catalyst.plist" ]
   } else {
