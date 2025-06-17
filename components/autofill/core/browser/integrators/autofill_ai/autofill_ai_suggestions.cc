@@ -146,27 +146,12 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
     std::vector<SuggestionWithMetadata> suggestions_with_metadata,
     base::span<const EntityInstance*> other_entities_that_can_fill_section,
     const std::string& app_locale) {
-  // Step #1
-  const size_t num_suggestions = suggestions_with_metadata.size();
-  // Initialize the output using `suggestions_with_metadata`.
-  std::vector<Suggestion> suggestions_with_labels;
-  suggestions_with_labels.reserve(num_suggestions);
-  for (SuggestionWithMetadata& s : suggestions_with_metadata) {
-    suggestions_with_labels.push_back(std::move(s.suggestion));
-  }
-
-  // Step #2
-  // Get the list of disambiguating labels. The list is created for the entities
-  // used to build the suggestions, but it also uses other entities that can
-  // fill a field in the form.
   std::vector<EntityLabel> labels =
       GetLabelsForSuggestions(suggestions_with_metadata,
                               other_entities_that_can_fill_section, app_locale);
 
   for (auto [suggestion_with_metadata, label] :
        base::zip(suggestions_with_metadata, labels)) {
-    // Do not assign labels that are identical or derived from the triggering
-    // field, as they are redundant.
     const EntityInstance& entity = *suggestion_with_metadata.entity;
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(trigger_attribute);
@@ -174,15 +159,17 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
     // triggering field.
     CHECK(attribute);
 
+    // The value of the trigger field is redundant: the user sees the preview.
     std::erase(label, attribute->GetCompleteInfo(app_locale));
 
     label.insert(label.begin(), std::u16string(entity.type().GetNameForI18n()));
   }
 
-  // Step #3:
-  // Assign the labels.
-  return AssignLabelsToSuggestions(std::move(labels),
-                                   std::move(suggestions_with_labels));
+  return AssignLabelsToSuggestions(
+      std::move(labels), base::ToVector(std::move(suggestions_with_metadata),
+                                        [](SuggestionWithMetadata& s) {
+                                          return std::move(s).suggestion;
+                                        }));
 }
 
 // Returns a suggestion to manage AutofillAi data.
