@@ -1131,8 +1131,10 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/mas
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/order/masonry-order-001.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/column-explicit-placement-001.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-explicit-placement-002.html [ Failure ]
-# Masonry sizing crashing tests
+crbug.com/1076027 wpt_internal/css/css-masonry/row-explicit-placement-006.html [ Failure ]
+# Masonry sizing test failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/* [ Crash Failure Skip ]
+crbug.com/1076027 wpt_internal/css/css-masonry/column-explicit-placement-002.html [ Failure ]
 # Masonry named line failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/masonry-grid-placement-named-lines-001.html [ Crash Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/masonry-grid-placement-named-lines-002.html [ Crash Failure ]

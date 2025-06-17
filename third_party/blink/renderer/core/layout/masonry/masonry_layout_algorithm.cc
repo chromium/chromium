@@ -269,26 +269,28 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
       const GridItemData& item_data = *group_item;
       const BlockNode& item_node = item_data.node;
       const auto space = CreateConstraintSpaceForMeasure(item_data);
+      const ComputedStyle& item_style = item_node.Style();
+
+      bool is_parallel = IsParallelWritingMode(
+          item_style.GetWritingMode(), GetConstraintSpace().GetWritingMode());
+      bool use_item_inline_contribution =
+          is_for_columns ? is_parallel : !is_parallel;
 
       // TODO(almaher): Subgrids have extra margin to handle unique gap sizes.
       // This requires access to the subgrid track collection, where that extra
       // margin is accumulated.
       const BoxStrut margins =
-          ComputeMarginsFor(space, item_node.Style(), GetConstraintSpace());
-      const LayoutUnit margin_sum =
-          (is_for_columns ? margins.InlineSum() : margins.BlockSum());
+          ComputeMarginsFor(space, item_style, GetConstraintSpace());
 
-      // TODO(almaher): Update to whether this is parallel, instead of
-      // `is_for_columns`, and add tests for orthogonal items.
-      if (is_for_columns) {
+      if (use_item_inline_contribution) {
         virtual_item->EncompassContributionSize(
             ComputeMinAndMaxContentContributionForSelf(item_node, space).sizes,
-            margin_sum);
+            margins.InlineSum());
       } else {
         virtual_item->EncompassContributionSize(
             ComputeMasonryItemBlockContribution(
                 grid_axis_direction, sizing_constraint, space, &item_data) +
-            margin_sum);
+            margins.BlockSum());
       }
     }
 
@@ -524,6 +526,8 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
 
+  // Check against columns, as opposed to whether the item is parallel, because
+  // the ConstraintSpaceBuilder takes care of handling orthogonal items.
   if (grid_axis_direction == kForColumns) {
     containing_size.inline_size = kIndefiniteSize;
   } else {
