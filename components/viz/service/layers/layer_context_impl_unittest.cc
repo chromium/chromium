@@ -83,6 +83,43 @@ INSTANTIATE_TEST_SUITE_P(
       return name.str();
     });
 
+TEST_F(LayerContextImplUpdateDisplayTreeUIResourceRequestTest,
+       CreateWithNullTransferableResourceFails) {
+  auto update = CreateDefaultUpdate();
+  auto request = mojom::TransferableUIResourceRequest::New();
+  request->type = mojom::TransferableUIResourceRequest::Type::kCreate;
+  request->uid = 42;
+  request->transferable_resource = std::nullopt;  // Explicitly null
+  update->ui_resource_requests.push_back(std::move(request));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid transferable resource in UI resource creation");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeUIResourceRequestTest,
+       CreateWithEmptyTransferableResourceFails) {
+  auto update = CreateDefaultUpdate();
+  auto request = mojom::TransferableUIResourceRequest::New();
+  request->type = mojom::TransferableUIResourceRequest::Type::kCreate;
+  request->uid = 43;
+
+  // A default-constructed TransferableResource has id = kInvalidResourceId,
+  // making it empty.
+  request->transferable_resource = TransferableResource();
+  ASSERT_TRUE(request->transferable_resource->is_empty());
+
+  update->ui_resource_requests.push_back(std::move(request));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid transferable resource in UI resource creation");
+}
+
 class LayerContextImplUpdateDisplayTreeTilingTest
     : public LayerContextImplTest,
       public ::testing::WithParamInterface<std::tuple<gfx::Size, bool>> {};
