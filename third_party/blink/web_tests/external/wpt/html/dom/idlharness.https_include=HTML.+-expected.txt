@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] HTMLElement interface: attribute accessKeyLabel
   assert_true: The prototype object must have a property "accessKeyLabel" expected true got false
 [FAIL] HTMLElement interface: attribute autocorrect
@@ -134,6 +134,10 @@ Found 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "alpha" not found in prototype chain
 [FAIL] HTMLInputElement interface: createInput("button") must inherit property "colorSpace" with the proper type
   assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLTemplateElement interface: attribute shadowRootCustomElementRegistry
+  assert_true: The prototype object must have a property "shadowRootCustomElementRegistry" expected true got false
+[FAIL] HTMLTemplateElement interface: document.createElement("template") must inherit property "shadowRootCustomElementRegistry" with the proper type
+  assert_inherits: property "shadowRootCustomElementRegistry" not found in prototype chain
 [FAIL] HTMLFrameSetElement interface: attribute onpagereveal
   assert_true: The prototype object must have a property "onpagereveal" expected true got false
 [FAIL] HTMLFrameSetElement interface: attribute onpageswap

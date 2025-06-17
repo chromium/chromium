@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
-Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] TextTrack interface: attribute inBandMetadataTrackDispatchType
   assert_true: The prototype object must have a property "inBandMetadataTrackDispatchType" expected true got false
 [FAIL] TextTrack interface: document.createElement("track").track must inherit property "inBandMetadataTrackDispatchType" with the proper type
   assert_inherits: property "inBandMetadataTrackDispatchType" not found in prototype chain
-[FAIL] ImageData interface: new ImageData(10, 10) must inherit property "data" with the proper type
-  assert_inherits: property "data" found on object expected in prototype chain
+[FAIL] CustomElementRegistry interface: operation initialize(Node)
+  assert_own_property: interface prototype object missing non-static operation expected property "initialize" missing
 [FAIL] ElementInternals interface: operation setValidity(optional ValidityStateFlags, optional DOMString, optional HTMLElement)
   assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] VisibilityStateEntry interface: attribute name
@@ -26,6 +26,8 @@ Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "taintEnabled" not found in prototype chain
 [FAIL] Navigator interface: window.navigator must inherit property "oscpu" with the proper type
   assert_inherits: property "oscpu" not found in prototype chain
+[FAIL] ImageData interface: new ImageData(10, 10) must inherit property "data" with the proper type
+  assert_inherits: property "data" found on object expected in prototype chain
 [FAIL] Worker interface: attribute onmessageerror
   assert_true: The prototype object must have a property "onmessageerror" expected true got false
 [FAIL] SVGSVGElement interface: attribute onafterprint
