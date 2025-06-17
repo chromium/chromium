@@ -196,6 +196,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // the NTP.
 @property(nonatomic, strong) UIView* fakeToolbar;
 
+// Whether to use MIA inline with other action buttons.
+@property(nonatomic, readonly) BOOL useInlineMIA;
+// Whether to only display the MIA button.
+@property(nonatomic, readonly) BOOL useSingleButtonMIA;
+// Whether the MIA entry point is being shown.
+@property(nonatomic, readonly) BOOL shouldShowMIAEntrypoint;
+
 @end
 
 @implementation NewTabPageHeaderView {
@@ -369,27 +376,29 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
   ]];
 
-  const BOOL useInlineMIA =
-      self.isGoogleDefaultSearchEngine &&
-      GetNTPMIAEntrypointVariation() ==
-          NTPMIAEntrypointVariation::kOmniboxContainedInline;
-  if (useInlineMIA) {
+  if (self.shouldShowMIAEntrypoint) {
     self.miaButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     [_buttonStack addArrangedSubview:self.miaButton];
-    [self addMIAAndVoiceDivider];
+    if (self.useInlineMIA) {
+      [self addMIAAndVoiceDivider];
+    }
   }
 
-  // Voice search.
-  self.voiceSearchButton =
-      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  [_buttonStack addArrangedSubview:self.voiceSearchButton];
+  BOOL displayOtherActions = !self.useSingleButtonMIA;
+
+  if (displayOtherActions) {
+    // Voice search.
+    self.voiceSearchButton =
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    [_buttonStack addArrangedSubview:self.voiceSearchButton];
+  }
 
   // Lens.
   const BOOL useLens =
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
           LensEntrypoint::NewTabPage, self.isGoogleDefaultSearchEngine);
-  if (useLens) {
+  if (useLens && displayOtherActions) {
     [self addVoiceAndLensDivider];
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
@@ -424,20 +433,23 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.fakeLocationBarHeightConstraint,
   ]];
 
-  // The voice search button is always on the leading side, even if the Lens
-  // button is visible.
+  UIButton* referenceButton = self.voiceSearchButton ?: self.miaButton;
   self.hintLabelTrailingConstraint = [self.searchHintLabel.trailingAnchor
-      constraintLessThanOrEqualToAnchor:self.voiceSearchButton.leadingAnchor];
+      constraintLessThanOrEqualToAnchor:referenceButton.leadingAnchor];
   self.hintLabelTrailingConstraint.priority = UILayoutPriorityDefaultHigh;
   [NSLayoutConstraint activateConstraints:@[
-    [self.voiceSearchButton.centerYAnchor
+    [referenceButton.centerYAnchor
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
     self.hintLabelTrailingConstraint,
   ]];
 }
 
 - (void)updateButtonsForUserInterfaceStyle:(UIUserInterfaceStyle)style {
-  const BOOL useColorIcon = (style != UIUserInterfaceStyleDark);
+  // Variations containing MIA entry point force disable colors in the icons.
+  const BOOL forceDisableColors = self.shouldShowMIAEntrypoint;
+  const BOOL darkUIStyle = style == UIUserInterfaceStyleDark;
+  const BOOL useColorIcon = !darkUIStyle && !forceDisableColors;
+
   content_suggestions::ConfigureVoiceSearchButton(self.voiceSearchButton,
                                                   useColorIcon);
   if (self.lensButton) {
@@ -966,6 +978,23 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
               self.traitCollection.userInterfaceStyle);
     }
   }
+}
+
+#pragma mark - MIA
+
+- (BOOL)useInlineMIA {
+  return self.isGoogleDefaultSearchEngine &&
+         GetNTPMIAEntrypointVariation() ==
+             NTPMIAEntrypointVariation::kOmniboxContainedInline;
+}
+
+- (BOOL)useSingleButtonMIA {
+  return self.isGoogleDefaultSearchEngine &&
+         ShowOnlyMIAEntrypointInNTPFakebox();
+}
+
+- (BOOL)shouldShowMIAEntrypoint {
+  return self.useInlineMIA || self.useSingleButtonMIA;
 }
 
 @end

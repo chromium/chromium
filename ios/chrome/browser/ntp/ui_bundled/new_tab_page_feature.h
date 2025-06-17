@@ -155,6 +155,9 @@ FeedSwipeIPHVariation GetFeedSwipeIPHVariation();
 // Returns the enabled variation of feature kNTPMIAEntrypoint;
 NTPMIAEntrypointVariation GetNTPMIAEntrypointVariation();
 
+// Whether to show only the MIA button in the fakebox.
+bool ShowOnlyMIAEntrypointInNTPFakebox();
+
 // YES if the feed visibility is handled by the eligibility service instead of
 // the new tab page mediator.
 bool UseFeedEligibilityService();

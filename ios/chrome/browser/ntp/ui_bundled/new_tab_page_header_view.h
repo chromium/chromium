@@ -31,7 +31,8 @@
 // The entrypoint for the Home customization menu.
 @property(nonatomic, strong) UIButton* customizationMenuButton;
 
-// Voice search button.
+// Voice search button. May be nil for some variations where MIA button takes
+// the entire available space.
 @property(nonatomic, strong, readonly) UIButton* voiceSearchButton;
 
 // The button that opens Lens. May be nil if Lens is not enabled.

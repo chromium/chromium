@@ -196,3 +196,11 @@ NTPMIAEntrypointVariation GetNTPMIAEntrypointVariation() {
     return NTPMIAEntrypointVariation::kDisabled;
   }
 }
+
+bool ShowOnlyMIAEntrypointInNTPFakebox() {
+  NTPMIAEntrypointVariation variation = GetNTPMIAEntrypointVariation();
+  return variation ==
+             NTPMIAEntrypointVariation::kOmniboxContainedSingleButton ||
+         variation ==
+             NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox;
+}
