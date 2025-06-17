@@ -207,8 +207,11 @@ void Shell::Shutdown() {
   if (quit_loop)
     std::move(quit_loop).Run();
 
-  // Pump the message loop to allow window teardown tasks to run.
+  // Pump the message loop to allow window teardown tasks to run. On iOS the
+  // run loop is controlled differently and cannot be pumped.
+#if !BUILDFLAG(IS_IOS)
   base::RunLoop().RunUntilIdle();
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 gfx::Size Shell::AdjustWindowSize(const gfx::Size& initial_size) {
