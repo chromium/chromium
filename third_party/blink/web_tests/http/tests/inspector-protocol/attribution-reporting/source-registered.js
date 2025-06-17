@@ -13,7 +13,10 @@
     document.body.innerHTML = '<img attributionsrc="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-source-filter-data-and-agg-keys.php">'
   `);
 
-  const {params} = await dp.Storage.onceAttributionReportingSourceRegistered();
+  let {params} = await dp.Storage.onceAttributionReportingSourceRegistered();
   testRunner.log(params, '', ['sourceOrigin', 'time']);
+  ({params} =
+       await dp.Storage.onceAttributionReportingVerboseDebugReportSent());
+  testRunner.log(params, '', ['source_site', 'url']);
   testRunner.completeTest();
 })

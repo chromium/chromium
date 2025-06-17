@@ -11541,6 +11541,14 @@ experimental domain Storage
       optional string netErrorName
       optional integer httpStatusCode
 
+  experimental event attributionReportingVerboseDebugReportSent
+    parameters
+      string url
+      optional array of object body
+      optional integer netError
+      optional string netErrorName
+      optional integer httpStatusCode
+
   # A single Related Website Set object.
   experimental type RelatedWebsiteSet extends object
     properties

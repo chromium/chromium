@@ -221,6 +221,9 @@ class StorageHandler
   void OnReportSent(const AttributionReport&,
                     bool is_debug_report,
                     const SendResult&) override;
+  void OnDebugReportSent(const AttributionDebugReport&,
+                         int status,
+                         base::Time) override;
 
   // content::SharedStorageRuntimeManager::SharedStorageObserverInterface
   GlobalRenderFrameHostId AssociatedFrameHostId() const override;

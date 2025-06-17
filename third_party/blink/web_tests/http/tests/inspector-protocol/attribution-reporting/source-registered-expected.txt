@@ -21,7 +21,7 @@ Test that the Storage.attributionReportingSourceRegistered event is fired.
                 value : 0xef
             }
         ]
-        debugReporting : false
+        debugReporting : true
         destinationLimitPriority : 0
         destinationSites : [
             [0] : https://a.example
@@ -70,5 +70,19 @@ Test that the Storage.attributionReportingSourceRegistered event is fired.
         type : event
     }
     result : success
+}
+{
+    body : [
+        [0] : {
+            body : {
+                attribution_destination : https://a.example
+                source_event_id : 123
+                source_site : <string>
+            }
+            type : source-success
+        }
+    ]
+    httpStatusCode : 404
+    url : <string>
 }
 
