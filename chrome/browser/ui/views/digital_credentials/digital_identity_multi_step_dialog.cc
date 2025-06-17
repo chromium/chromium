@@ -267,8 +267,12 @@ void DigitalIdentityMultiStepDialog::TryShow(
                   new_dialog_delegate.release(), web_contents_.get())
                   ->GetWeakPtr();
   }
-  delegate->GetBubbleFrameView()->SetContentMargins(
-      gfx::Insets::TLBR(kContentMarginTop, 0, 0, 0));
+  if (dialog_title.empty()) {
+    // Adding a top margin is necessary only when there is no title in which
+    // case the content is very close to the dialog top.
+    delegate->GetBubbleFrameView()->SetContentMargins(
+        gfx::Insets::TLBR(kContentMarginTop, 0, 0, 0));
+  }
   delegate->GetBubbleFrameView()->SetProgress(
       show_progress_bar ? std::optional<double>(-1) : std::nullopt);
 }
