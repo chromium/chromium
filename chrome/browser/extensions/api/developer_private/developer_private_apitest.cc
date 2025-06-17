@@ -14,11 +14,9 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -26,8 +24,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/api_test_utils.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/offscreen_document_host.h"
@@ -40,8 +36,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace extensions {
 
@@ -68,6 +75,7 @@ class DeveloperPrivateApiTest : public ExtensionApiTest {
   }
 };
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 // Tests opening the developer tools for an app window.
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   base::FilePath dir;
@@ -111,7 +119,10 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(
       (*app_windows.begin())->web_contents()));
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   base::FilePath dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &dir);
@@ -152,6 +163,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   ASSERT_TRUE(wc);
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(wc));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/40273479): Test is flaky on MSan builders.
 // TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
@@ -278,6 +290,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/40882269): The test is flaky on MSAN and Linux. Re-enable it.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InspectSplitModeServiceWorkerBackgrounds \
@@ -391,6 +405,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   ASSERT_TRUE(incognito_devtools_window);
   ASSERT_NE(main_devtools_window, incognito_devtools_window);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that offscreen documents show up in the list of inspectable views and
 // can be inspected.
@@ -468,6 +483,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
   // Load first extension.
   static constexpr char kManifest_0[] =
@@ -522,6 +539,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
   EXPECT_FALSE(extension_registry()->GetExtensionById(
       extension_1_id, ExtensionRegistry::EVERYTHING));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class DeveloperPrivateApiWithMV2DeprecationApiTest
     : public DeveloperPrivateApiTest,
@@ -570,6 +588,8 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
   MV2ExperimentStage experiment_stage_;
 };
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 INSTANTIATE_TEST_SUITE_P(
     ,
     DeveloperPrivateApiWithMV2DeprecationApiTest,
@@ -676,5 +696,6 @@ IN_PROC_BROWSER_TEST_P(DeveloperPrivateApiWithMV2DeprecationApiTest,
     }
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions
