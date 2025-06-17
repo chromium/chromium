@@ -1563,6 +1563,11 @@ const FeatureEntry::FeatureParam
         {"AblateSearchOnly", "true"},
 };
 
+const FeatureEntry::FeatureParam
+    kContextualSuggestionsAblateOthersWhenPresentAblateUrlOnly[] = {
+        {"AblateUrlOnly", "true"},
+};
+
 const FeatureEntry::FeatureVariation
     kContextualSuggestionsAblateOthersWhenPresentVariations[] = {
         {"- Ablate all", kContextualSuggestionsAblateOthersWhenPresentAblateAll,
@@ -1572,6 +1577,10 @@ const FeatureEntry::FeatureVariation
          kContextualSuggestionsAblateOthersWhenPresentAblateSearchOnly,
          std::size(
              kContextualSuggestionsAblateOthersWhenPresentAblateSearchOnly),
+         nullptr},
+        {"- Ablate URL only",
+         kContextualSuggestionsAblateOthersWhenPresentAblateUrlOnly,
+         std::size(kContextualSuggestionsAblateOthersWhenPresentAblateUrlOnly),
          nullptr},
 };
 

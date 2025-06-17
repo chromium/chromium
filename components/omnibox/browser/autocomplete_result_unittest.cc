@@ -3515,3 +3515,207 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
 }
 
 #endif
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteResultTest, ContextualSearchAblateOthers) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_scoped_config;
+  contextual_scoped_config.Get().contextual_zps_limit = 3U;
+  contextual_scoped_config.Get().show_open_lens_action = true;
+  contextual_scoped_config.Get()
+      .contextual_suggestions_ablate_others_when_present = true;
+
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
+      zps_scoped_config;
+  zps_scoped_config.Get().enabled = true;
+  zps_scoped_config.Get().max_search_suggestions = 4U;
+  zps_scoped_config.Get().max_url_suggestions = 4U;
+  zps_scoped_config.Get().max_suggestions = 8U;
+
+  const auto group1 = omnibox::GROUP_MOST_VISITED;
+  const auto group2 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
+  const auto group3 = omnibox::GROUP_CONTEXTUAL_SEARCH;
+
+  TestData data[] = {
+      {0, 1, 1000, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {1, 1, 900, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {2, 2, 800, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {3, 2, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {4, 2, 600, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+      {5, 2, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+  };
+
+  // Suggestion groups have the omnibox::SECTION_DEFAULT by default.
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group1];
+  suggestion_groups_map[group2];
+  suggestion_groups_map[group3];
+
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, std::size(data), &matches);
+  for (AutocompleteMatch& m : matches) {
+    if (m.suggestion_group_id && m.suggestion_group_id.value() == group3) {
+      m.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+    }
+  }
+
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  AutocompleteResultForTesting result;
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
+  result.AppendMatches(matches);
+
+  result.SortAndCull(input, &template_url_service(),
+                     triggered_feature_service(), /*is_lens_active=*/false,
+                     /*can_show_contextual_suggestions=*/true,
+                     /*mia_enabled=*/false);
+
+  // Non-contextual search & URL suggestions should have been ablated.
+  const std::array<TestData, 2> expected_data{{
+      {4, 2, 600, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+      {5, 2, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+  }};
+  AssertResultMatches(result, expected_data);
+}
+
+TEST_F(AutocompleteResultTest, ContextualSearchAblateOthers_AblateSearchOnly) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_scoped_config;
+  contextual_scoped_config.Get().contextual_zps_limit = 3U;
+  contextual_scoped_config.Get().show_open_lens_action = true;
+  contextual_scoped_config.Get()
+      .contextual_suggestions_ablate_others_when_present = true;
+  contextual_scoped_config.Get().contextual_suggestions_ablate_search_only =
+      true;
+
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
+      zps_scoped_config;
+  zps_scoped_config.Get().enabled = true;
+  zps_scoped_config.Get().max_search_suggestions = 4U;
+  zps_scoped_config.Get().max_url_suggestions = 4U;
+  zps_scoped_config.Get().max_suggestions = 8U;
+
+  const auto group1 = omnibox::GROUP_MOST_VISITED;
+  const auto group2 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
+  const auto group3 = omnibox::GROUP_CONTEXTUAL_SEARCH;
+
+  TestData data[] = {
+      {0, 1, 1000, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {1, 1, 900, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {2, 2, 800, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {3, 2, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {4, 2, 600, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+      {5, 2, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+  };
+
+  // Suggestion groups have the omnibox::SECTION_DEFAULT by default.
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group1];
+  suggestion_groups_map[group2];
+  suggestion_groups_map[group3];
+
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, std::size(data), &matches);
+  for (AutocompleteMatch& m : matches) {
+    if (m.suggestion_group_id && m.suggestion_group_id.value() == group3) {
+      m.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+    }
+  }
+
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  AutocompleteResultForTesting result;
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
+  result.AppendMatches(matches);
+
+  result.SortAndCull(input, &template_url_service(),
+                     triggered_feature_service(), /*is_lens_active=*/false,
+                     /*can_show_contextual_suggestions=*/true,
+                     /*mia_enabled=*/false);
+
+  // Only non-contextual search suggestions should have been ablated.
+  const std::array<TestData, 4> expected_data{{
+      {0, 1, 1000, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {1, 1, 900, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {4, 2, 600, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+      {5, 2, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+  }};
+  AssertResultMatches(result, expected_data);
+}
+
+TEST_F(AutocompleteResultTest, ContextualSearchAblateOthers_AblateUrlOnly) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_scoped_config;
+  contextual_scoped_config.Get().contextual_zps_limit = 3U;
+  contextual_scoped_config.Get().show_open_lens_action = true;
+  contextual_scoped_config.Get()
+      .contextual_suggestions_ablate_others_when_present = true;
+  contextual_scoped_config.Get().contextual_suggestions_ablate_url_only = true;
+
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
+      zps_scoped_config;
+  zps_scoped_config.Get().enabled = true;
+  zps_scoped_config.Get().max_search_suggestions = 4U;
+  zps_scoped_config.Get().max_url_suggestions = 4U;
+  zps_scoped_config.Get().max_suggestions = 8U;
+
+  const auto group1 = omnibox::GROUP_MOST_VISITED;
+  const auto group2 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
+  const auto group3 = omnibox::GROUP_CONTEXTUAL_SEARCH;
+
+  TestData data[] = {
+      {0, 1, 1000, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {1, 1, 900, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {2, 2, 800, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {3, 2, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {4, 2, 600, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+      {5, 2, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+  };
+
+  // Suggestion groups have the omnibox::SECTION_DEFAULT by default.
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group1];
+  suggestion_groups_map[group2];
+  suggestion_groups_map[group3];
+
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, std::size(data), &matches);
+  for (AutocompleteMatch& m : matches) {
+    if (m.suggestion_group_id && m.suggestion_group_id.value() == group3) {
+      m.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+    }
+  }
+
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  AutocompleteResultForTesting result;
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
+  result.AppendMatches(matches);
+
+  result.SortAndCull(input, &template_url_service(),
+                     triggered_feature_service(), /*is_lens_active=*/false,
+                     /*can_show_contextual_suggestions=*/true,
+                     /*mia_enabled=*/false);
+
+  // Only URL suggestions should have been ablated.
+  const std::array<TestData, 4> expected_data{{
+      {2, 2, 800, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {3, 2, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {4, 2, 600, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+      {5, 2, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
+  }};
+  AssertResultMatches(result, expected_data);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
