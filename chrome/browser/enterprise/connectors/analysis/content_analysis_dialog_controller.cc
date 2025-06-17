@@ -278,7 +278,7 @@ views::View* ContentAnalysisDialogController::GetContentsView() {
     message_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
     if (!is_pending()) {
-      UpdateDialog();
+      UpdateDialogAppearance();
     }
   }
 
