@@ -608,9 +608,6 @@ void SessionStorageImpl::OnCommitResult(leveldb::Status status) {
     return;
 
   DCHECK_EQ(connection_state_, CONNECTION_FINISHED);
-  UMA_HISTOGRAM_ENUMERATION("SessionStorageContext.CommitResult",
-                            leveldb_env::GetLevelDBStatusUMAValue(status),
-                            leveldb_env::LEVELDB_STATUS_MAX);
   if (status.ok()) {
     commit_error_count_ = 0;
     return;
@@ -779,19 +776,6 @@ SessionStorageImpl::KeyValuePairsAndStatus::~KeyValuePairsAndStatus() = default;
 
 void SessionStorageImpl::OnDatabaseOpened(leveldb::Status status) {
   if (!status.ok()) {
-    UMA_HISTOGRAM_ENUMERATION("SessionStorageContext.DatabaseOpenError",
-                              leveldb_env::GetLevelDBStatusUMAValue(status),
-                              leveldb_env::LEVELDB_STATUS_MAX);
-    if (in_memory_) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "SessionStorageContext.DatabaseOpenError.Memory",
-          leveldb_env::GetLevelDBStatusUMAValue(status),
-          leveldb_env::LEVELDB_STATUS_MAX);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION("SessionStorageContext.DatabaseOpenError.Disk",
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-    }
     LogDatabaseOpenResult(OpenResult::kDatabaseOpenFailed);
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
@@ -888,10 +872,6 @@ SessionStorageImpl::ParseDatabaseVersion(
   }
 
   // Other read error, Possibly database corruption
-  UMA_HISTOGRAM_ENUMERATION(
-      "SessionStorageContext.ReadVersionError",
-      leveldb_env::GetLevelDBStatusUMAValue(version.status),
-      leveldb_env::LEVELDB_STATUS_MAX);
   return {OpenResult::kVersionReadError,
           "SessionStorageContext.OpenResultAfterReadVersionError"};
 }
@@ -902,10 +882,6 @@ SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNamespaces(
   DCHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
 
   if (!namespaces.status.ok()) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SessionStorageContext.ReadNamespacesError",
-        leveldb_env::GetLevelDBStatusUMAValue(namespaces.status),
-        leveldb_env::LEVELDB_STATUS_MAX);
     return {OpenResult::kNamespacesReadError,
             "SessionStorageContext.OpenResultAfterReadNamespacesError"};
   }
@@ -914,10 +890,6 @@ SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNamespaces(
       std::move(namespaces.key_value_pairs), &migration_tasks);
 
   if (!parsing_success) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SessionStorageContext.ReadNamespacesError",
-        leveldb_env::GetLevelDBStatusUMAValue(leveldb::Status::OK()),
-        leveldb_env::LEVELDB_STATUS_MAX);
     return {OpenResult::kNamespacesReadError,
             "SessionStorageContext.OpenResultAfterReadNamespacesError"};
   }
@@ -951,10 +923,6 @@ SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNextMapId(
       return {OpenResult::kSuccess, ""};
 
     // Other read error. Possibly database corruption.
-    UMA_HISTOGRAM_ENUMERATION(
-        "SessionStorageContext.ReadNextMapIdError",
-        leveldb_env::GetLevelDBStatusUMAValue(next_map_id.status),
-        leveldb_env::LEVELDB_STATUS_MAX);
     return {OpenResult::kNamespacesReadError,
             "SessionStorageContext.OpenResultAfterReadNextMapIdError"};
   }
@@ -1042,9 +1010,6 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
 
 void SessionStorageImpl::OnDBDestroyed(bool recreate_in_memory,
                                        leveldb::Status status) {
-  UMA_HISTOGRAM_ENUMERATION("SessionStorageContext.DestroyDBResult",
-                            leveldb_env::GetLevelDBStatusUMAValue(status),
-                            leveldb_env::LEVELDB_STATUS_MAX);
   // We're essentially ignoring the status here. Even if destroying failed we
   // still want to go ahead and try to recreate.
   InitiateConnection(recreate_in_memory);
