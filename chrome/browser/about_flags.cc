@@ -7699,6 +7699,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     "PdfInk2")},
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+    {"pdf-save-to-drive", flag_descriptions::kPdfSaveToDriveName,
+     flag_descriptions::kPdfSaveToDriveDescription, kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfSaveToDrive)},
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINTING)

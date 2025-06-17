@@ -78,7 +78,14 @@ const base::FeatureParam<bool> kPdfInk2TextAnnotations{
 // Enables text highlighting with the Ink highlighter brush.
 const base::FeatureParam<bool> kPdfInk2TextHighlighting{
     &kPdfInk2, "text-highlighting", false};
-#endif
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+// Saves the PDF file to Google Drive.
+BASE_FEATURE(kPdfSaveToDrive,
+             "PdfSaveToDrive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled) {
   g_is_oopif_pdf_policy_enabled = is_oopif_pdf_policy_enabled;

@@ -7756,6 +7756,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "pdf-save-to-drive",
+    "owners": [
+      "faizur@chromium.org",
+      "//pdf/OWNERS"
+    ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "pdf-searchify",
     "owners": [
       "rhalavati@chromium.org",

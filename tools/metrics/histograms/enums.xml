@@ -12575,6 +12575,7 @@ from previous Chrome versions.
   <int value="-512354177" label="CastStreamingWinHardwareH264:disabled"/>
   <int value="-512151470" label="WebRtcPipeWireCamera:disabled"/>
   <int value="-511218457" label="NavBarColorMatchesTabBackground:enabled"/>
+  <int value="-510616909" label="PdfSaveToDrive:enabled"/>
   <int value="-510488450" label="disable-pnacl"/>
   <int value="-510428936" label="ConchGenAi:enabled"/>
   <int value="-510423102" label="ProductSpecificationsSync:enabled"/>
@@ -17100,6 +17101,7 @@ from previous Chrome versions.
   <int value="1192913630" label="OfflinePagesBackgroundLoading:disabled"/>
   <int value="1193385506" label="OmniboxLooseMaxLimitOnDedicatedRows:enabled"/>
   <int value="1193390993" label="test-third-party-cookie-phaseout"/>
+  <int value="1193872223" label="PdfSaveToDrive:disabled"/>
   <int value="1193940165" label="NotificationPermissionBottomSheet:disabled"/>
   <int value="1194345470" label="EnableExternalDisplayHDR10Mode:disabled"/>
   <int value="1194496204" label="NewWallpaperPicker:enabled"/>

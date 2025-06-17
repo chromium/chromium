@@ -4958,6 +4958,11 @@ extern const char kPdfInk2Name[];
 extern const char kPdfInk2Description[];
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+extern const char kPdfSaveToDriveName[];
+extern const char kPdfSaveToDriveDescription[];
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
 extern const char kPdfOopifName[];
 extern const char kPdfOopifDescription[];
 

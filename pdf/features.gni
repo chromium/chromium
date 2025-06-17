@@ -24,4 +24,7 @@ declare_args() {
   # Enable the next generation of ink libraries. This can co-exist with
   # `enable_ink` above.
   enable_pdf_ink2 = enable_pdf
+
+  # Enable the ability to save PDF to Google Drive.
+  enable_pdf_save_to_drive = enable_pdf && !is_chromeos
 }

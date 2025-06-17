@@ -8444,6 +8444,12 @@ const char kPdfInk2Description[] =
     "Enables the ability to annotate PDFs using a new ink library.";
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+const char kPdfSaveToDriveName[] = "Save PDF to Drive";
+const char kPdfSaveToDriveDescription[] =
+    "Enables the ability to save PDFs to Google Drive.";
+#endif  // BUILDFLAG(ENABLE_PDF_DRIVE)
+
 const char kPdfOopifName[] = "OOPIF for PDF Viewer";
 const char kPdfOopifDescription[] =
     "Use an OOPIF for the PDF Viewer, instead of a GuestView.";
