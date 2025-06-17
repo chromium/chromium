@@ -10,17 +10,19 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element, SettingsHistoryDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, SignedInState} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, SignedInState, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
 
 suite('DeleteBrowsingDataDialog', function() {
   let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
+  let testSyncBrowserProxy: TestSyncBrowserProxy;
   let dialog: SettingsClearBrowsingDataDialogV2Element;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -33,6 +35,9 @@ suite('DeleteBrowsingDataDialog', function() {
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.setInstance(
         testClearBrowsingDataBrowserProxy);
+    testSyncBrowserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
+
     setClearBrowsingDataPrefs(false);
     return createDialog();
   });
@@ -484,7 +489,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
     const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
     assertTrue(!!historyCheckbox);
-    assertEquals('history result', historyCheckbox.subLabel);
+    assertEquals('history result', historyCheckbox.subLabelHtml);
 
     // Case 2, Counter updates a checkbox in the more options list.
     // Simulate a browsing data counter result for Site settings. The Site
@@ -499,7 +504,7 @@ suite('DeleteBrowsingDataDialog', function() {
     const siteSettingsCheckbox =
         getCheckboxForDataType(BrowsingDataType.SITE_SETTINGS);
     assertTrue(!!siteSettingsCheckbox);
-    assertEquals('site settings result', siteSettingsCheckbox.subLabel);
+    assertEquals('site settings result', siteSettingsCheckbox.subLabelHtml);
   });
 
   test('ClearBrowsingData', async function() {
@@ -761,4 +766,23 @@ suite('DeleteBrowsingDataDialog', function() {
         deletionEvent2.detail.deletionConfirmationText,
         loadTimeData.getString('deletionConfirmationAllTimeToast'));
   });
+
+  // <if expr="not is_chromeos">
+  test('SignOutLink', async function() {
+    // Pass a dummy string with an anchor element and id=signOutLink since the
+    // actual signOut string is passed from the C++ side.
+    webUIListenerCallback(
+        'browsing-data-counter-text-update', 'browser.clear_data.cookies',
+        `<a href="#" id="signOutLink"></a>`);
+    await flushTasks();
+
+    const cookiesCheckbox = getCheckboxForDataType(BrowsingDataType.SITE_DATA);
+    assertTrue(!!cookiesCheckbox);
+
+    const signOutLink = cookiesCheckbox.$.subLabel.querySelector('a');
+    assertTrue(!!signOutLink);
+    signOutLink.click();
+    await testSyncBrowserProxy.whenCalled('signOut');
+  });
+  // </if>
 });

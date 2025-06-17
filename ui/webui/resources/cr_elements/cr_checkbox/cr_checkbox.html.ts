@@ -25,8 +25,8 @@ export function getHtml(this: CrCheckboxElement) {
   </svg>
   <div id="hover-layer"></div>
 </div>
-<div id="labelContainer" aria-hidden="true"
-    aria-label="${this.ariaLabelOverride || nothing}" part="label-container">
+<div id="labelContainer" aria-label="${this.ariaLabelOverride || nothing}"
+    part="label-container">
   <slot></slot>
 </div>
 <div id="ariaDescription" aria-hidden="true">${this.ariaDescription}</div>`;
