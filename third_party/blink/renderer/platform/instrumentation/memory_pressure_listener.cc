@@ -23,10 +23,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/sys_utils.h"
-#endif
-
 namespace blink {
 
 // Function defined in third_party/blink/public/web/blink.h.
@@ -57,15 +53,6 @@ bool MemoryPressureListenerRegistry::
              blink::features::kPartialLowEndModeExcludeCanvasFontCache);
 #else
   return IsLowEndDeviceOrPartialLowEndModeEnabled();
-#endif
-}
-
-// static
-bool MemoryPressureListenerRegistry::IsCurrentlyLowMemory() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::android::SysUtils::IsCurrentlyLowMemory();
-#else
-  return false;
 #endif
 }
 

@@ -50,10 +50,6 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   static bool
   IsLowEndDeviceOrPartialLowEndModeEnabledIncludingCanvasFontCache();
 
-  // Returns true when available memory is low.
-  // This is not cheap and should not be called repeatedly.
-  static bool IsCurrentlyLowMemory();
-
   // Caches whether this device is a low-end device and the device physical
   // memory in static members. instance() is not used as it's a heap allocated
   // object - meaning it's not thread-safe as well as might break tests counting

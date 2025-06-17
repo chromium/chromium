@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.StrictMode;
 
-import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -109,7 +108,6 @@ public class SysUtils {
     /**
      * @return Whether or not the system has low available memory.
      */
-    @CalledByNative
     public static boolean isCurrentlyLowMemory() {
         ActivityManager am =
                 (ActivityManager)

@@ -13307,24 +13307,6 @@
             ]
         }
     ],
-    "IsCurrentlyLowMemoryJavaless": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "IsCurrentlyLowMemoryOption": "JavalessApproximation"
-                    },
-                    "enable_features": [
-                        "IsCurrentlyLowMemoryJavaless"
-                    ]
-                }
-            ]
-        }
-    ],
     "IsolatedWebApps": [
         {
             "platforms": [

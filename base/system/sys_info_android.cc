@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <sys/system_properties.h>
 
-#include "base/android/sys_utils.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
