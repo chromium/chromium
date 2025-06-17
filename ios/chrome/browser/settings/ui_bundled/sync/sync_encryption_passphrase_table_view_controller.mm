@@ -299,10 +299,12 @@ const CGFloat kSpinnerButtonPadding = 18;
   return YES;
 }
 
-- (void)signInPressed {
+- (void)enterPressed {
   DCHECK(!_settingsAreDismissed);
   DCHECK([_passphrase text].length);
   ProfileIOS* profile = self.browser->GetProfile();
+  base::RecordAction(
+      base::UserMetricsAction("MobileSyncPassphraseSettingsEnter"));
 
   if (!_syncObserver.get()) {
     _syncObserver.reset(new SyncObserverBridge(
@@ -347,6 +349,8 @@ const CGFloat kSpinnerButtonPadding = 18;
 
 - (void)cancelPressed {
   CHECK(self.presentModally);
+  base::RecordAction(
+      base::UserMetricsAction("MobileSyncPassphraseSettingsCancel"));
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -361,7 +365,7 @@ const CGFloat kSpinnerButtonPadding = 18;
         initWithTitle:l10n_util::GetNSString(IDS_IOS_SYNC_DECRYPT_BUTTON)
                 style:UIBarButtonItemStylePlain
                target:self
-               action:@selector(signInPressed)];
+               action:@selector(enterPressed)];
   }
   submitButtonItem.enabled = [self areAllFieldsFilled];
 
@@ -496,7 +500,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 - (void)textFieldDidEndEditing:(id)sender {
   if (sender == self.passphrase) {
     if ([self areAllFieldsFilled]) {
-      [self signInPressed];
+      [self enterPressed];
     } else {
       [self clearFieldsOnError:l10n_util::GetNSString(
                                    IDS_SYNC_EMPTY_PASSPHRASE_ERROR)];

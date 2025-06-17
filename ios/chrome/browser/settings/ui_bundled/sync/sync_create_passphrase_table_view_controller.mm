@@ -115,7 +115,7 @@ using sync_encryption_passphrase::SectionIdentifierPassphrase;
   return NO;
 }
 
-- (void)signInPressed {
+- (void)enterPressed {
   NSString* passphraseText = [self.passphrase text];
   NSString* confirmPassphraseText = [_confirmPassphrase text];
   if (![self areAllFieldsFilled]) {
@@ -130,7 +130,7 @@ using sync_encryption_passphrase::SectionIdentifierPassphrase;
     return;
   }
 
-  [super signInPressed];
+  [super enterPressed];
 }
 
 - (BOOL)areAllFieldsFilled {
@@ -152,7 +152,7 @@ using sync_encryption_passphrase::SectionIdentifierPassphrase;
       // The right nav bar button is disabled when either of the text fields is
       // empty.  Hitting return when a text field is empty should not cause the
       // password to be applied.
-      [self signInPressed];
+      [self enterPressed];
     } else {
       [self clearFieldsOnError:l10n_util::GetNSString(
                                    IDS_SYNC_EMPTY_PASSPHRASE_ERROR)];

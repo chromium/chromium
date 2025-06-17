@@ -26651,11 +26651,29 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileSyncPassphraseSettingsCancel">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    The user tapped on Cancel in the Sync Encryption or Sync Passphrase Settings
+    UI. iOS only.
+  </description>
+</action>
+
 <action name="MobileSyncPassphraseSettingsClose">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@google.com</owner>
   <description>
     Sync Passphrase Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobileSyncPassphraseSettingsEnter">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    The user entered a passphrase and tapped or pressed &quot;Enter&quot; in the
+    Sync Encryption or Sync Passphrase Settings UI. iOS only.
   </description>
 </action>
 

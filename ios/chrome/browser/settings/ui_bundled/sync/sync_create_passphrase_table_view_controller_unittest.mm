@@ -99,7 +99,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestCredentialsOkPressed) {
               SetEncryptionPassphrase(_))
       .Times(0);
   EXPECT_FALSE([[sync_controller navigationItem].rightBarButtonItem isEnabled]);
-  [sync_controller signInPressed];
+  [sync_controller enterPressed];
 }
 
 TEST_F(SyncCreatePassphraseTableViewControllerTest, TestNextTextField) {
@@ -144,7 +144,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestTextFieldsDoNotMatch) {
   [[sync_controller passphrase] setText:@"decodeme"];
   [[sync_controller confirmPassphrase] setText:@"donothing"];
   [sync_controller textFieldDidChange:[sync_controller passphrase]];
-  [sync_controller signInPressed];
+  [sync_controller enterPressed];
 
   // Check the error cell.
   NSInteger const kSection = 0;
@@ -174,7 +174,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestTextFieldsMatch) {
   [[sync_controller passphrase] setText:@"decodeme"];
   [[sync_controller confirmPassphrase] setText:@"decodeme"];
   [sync_controller textFieldDidChange:[sync_controller passphrase]];
-  [sync_controller signInPressed];
+  [sync_controller enterPressed];
 }
 
 TEST_F(SyncCreatePassphraseTableViewControllerTest, TestOnStateChanged) {
@@ -239,7 +239,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest,
   [[sync_controller passphrase] setText:@"decodeme"];
   [[sync_controller confirmPassphrase] setText:@"decodeme"];
   [sync_controller textFieldDidChange:[sync_controller passphrase]];
-  [sync_controller signInPressed];
+  [sync_controller enterPressed];
 }
 
 // Verify that the passphrase is not set when decryption passphrase is required.
@@ -255,7 +255,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest,
   [[sync_controller passphrase] setText:@"decodeme"];
   [[sync_controller confirmPassphrase] setText:@"decodeme"];
   [sync_controller textFieldDidChange:[sync_controller passphrase]];
-  [sync_controller signInPressed];
+  [sync_controller enterPressed];
 }
 
 }  // namespace

@@ -53,8 +53,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // passphrase.
 - (BOOL)forDecryption;
 
-// User has pressed the Sign In button.
-- (void)signInPressed;
+// User has pressed the Enter button or key.
+- (void)enterPressed;
 
 // Clears all fields after displaying an error.
 - (void)clearFieldsOnError:(NSString*)errorMessage;

@@ -136,7 +136,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
   // Set the return value for setting the passphrase to failure.
   ON_CALL(*fake_sync_service_->GetMockUserSettings(), SetDecryptionPassphrase)
       .WillByDefault(Return(false));
-  [sync_controller signInPressed];
+  [sync_controller enterPressed];
 }
 
 TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
@@ -151,7 +151,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
   // Set the return value for setting the passphrase to success.
   ON_CALL(*fake_sync_service_->GetMockUserSettings(), SetDecryptionPassphrase)
       .WillByDefault(Return(true));
-  [sync_controller signInPressed];
+  [sync_controller enterPressed];
 }
 
 TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
