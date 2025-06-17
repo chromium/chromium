@@ -217,6 +217,7 @@ ci.builder(
         configs = [
             "release_builder",
             "remoteexec",
+            "dcheck_always_on",
             "linux",
             "x64",
         ],
