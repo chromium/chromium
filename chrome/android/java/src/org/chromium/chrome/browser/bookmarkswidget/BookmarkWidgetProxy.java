@@ -12,12 +12,14 @@ import android.os.Bundle;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.components.webapps.ShortcutSource;
 
 /** Proxy that responds to tapping on the Bookmarks widget. */
+@NullMarked
 public class BookmarkWidgetProxy extends Activity {
     private static final String TAG = "BookmarkWidgetProxy";
 

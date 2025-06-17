@@ -17,9 +17,11 @@ import com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidge
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 
 /** Widget that shows a preview of the user's bookmarks. */
+@NullMarked
 public class BookmarkWidgetProvider extends AppWidgetProvider {
     private static final String ACTION_BOOKMARK_APPWIDGET_UPDATE_SUFFIX =
             ".BOOKMARK_APPWIDGET_UPDATE";

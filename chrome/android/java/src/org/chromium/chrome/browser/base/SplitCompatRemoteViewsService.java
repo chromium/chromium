@@ -35,7 +35,7 @@ public class SplitCompatRemoteViewsService extends RemoteViewsService {
     }
 
     @Override
-    public RemoteViewsFactory onGetViewFactory(Intent intent) {
+    public @Nullable RemoteViewsFactory onGetViewFactory(Intent intent) {
         return mImpl.onGetViewFactory(intent);
     }
 
@@ -54,6 +54,6 @@ public class SplitCompatRemoteViewsService extends RemoteViewsService {
             return mService;
         }
 
-        public abstract RemoteViewsFactory onGetViewFactory(Intent intent);
+        public abstract @Nullable RemoteViewsFactory onGetViewFactory(Intent intent);
     }
 }

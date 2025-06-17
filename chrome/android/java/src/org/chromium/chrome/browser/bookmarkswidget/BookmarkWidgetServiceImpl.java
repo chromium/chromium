@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.bookmarkswidget;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,10 +18,9 @@ import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.RemoteViewsService;
+import android.widget.RemoteViewsService.RemoteViewsFactory;
 
 import androidx.annotation.BinderThread;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
 import com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider;
@@ -29,6 +31,9 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -56,14 +61,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Service to support the bookmarks widget.
  *
- * This provides the list of bookmarks to show in the widget via a RemoteViewsFactory (the
+ * <p>This provides the list of bookmarks to show in the widget via a RemoteViewsFactory (the
  * RemoteViews equivalent of an Adapter), and updates the widget when the bookmark model changes.
  *
- * Threading note: Be careful! Android calls some methods in this class on the UI thread and others
- * on (multiple) binder threads. Additionally, all interaction with the BookmarkModel must happen on
- * the UI thread. To keep the situation clear, every non-static method is annotated with either
- * {@link UiThread} or {@link BinderThread}.
+ * <p>Threading note: Be careful! Android calls some methods in this class on the UI thread and
+ * others on (multiple) binder threads. Additionally, all interaction with the BookmarkModel must
+ * happen on the UI thread. To keep the situation clear, every non-static method is annotated with
+ * either {@link UiThread} or {@link BinderThread}.
  */
+@NullMarked
 public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
     private static final String TAG = "BookmarkWidget";
     private static final String ACTION_CHANGE_FOLDER_SUFFIX = ".CHANGE_FOLDER";
@@ -72,13 +78,13 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
     @UiThread
     @Override
-    public RemoteViewsService.RemoteViewsFactory onGetViewFactory(Intent intent) {
+    public @Nullable RemoteViewsFactory onGetViewFactory(Intent intent) {
         int widgetId = IntentUtils.safeGetIntExtra(intent, AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
         if (widgetId < 0) {
             Log.w(TAG, "Missing EXTRA_APPWIDGET_ID!");
             return null;
         }
-        return new BookmarkAdapter(getService(), widgetId);
+        return new BookmarkAdapter(assumeNonNull(getService()), widgetId);
     }
 
     static String getChangeFolderAction() {
@@ -118,23 +124,23 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
     /** Holds data describing a bookmark or bookmark folder. */
     private static class Bookmark {
-        public String title;
-        public GURL url;
-        public BookmarkId id;
-        public BookmarkId parentId;
-        public boolean isFolder;
-        public Bitmap favicon;
+        public final String title;
+        public final GURL url;
+        public final BookmarkId id;
+        public final BookmarkId parentId;
+        public final boolean isFolder;
+        public @Nullable Bitmap favicon;
 
-        public static Bookmark fromBookmarkItem(BookmarkItem item) {
-            if (item == null) return null;
+        public static @Nullable Bookmark fromBookmarkItem(@Nullable BookmarkItem item) {
+            return item == null ? null : new Bookmark(item);
+        }
 
-            Bookmark bookmark = new Bookmark();
-            bookmark.title = item.getTitle();
-            bookmark.url = item.getUrl();
-            bookmark.id = item.getId();
-            bookmark.parentId = item.getParentId();
-            bookmark.isFolder = item.isFolder();
-            return bookmark;
+        private Bookmark(BookmarkItem item) {
+            title = item.getTitle();
+            url = item.getUrl();
+            id = item.getId();
+            parentId = item.getParentId();
+            isFolder = item.isFolder();
         }
     }
 
@@ -143,9 +149,14 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
      * its parent folder, if any.
      */
     private static class BookmarkFolder {
-        public Bookmark folder;
-        @Nullable public Bookmark parent;
+        public final Bookmark folder;
+        public final @Nullable Bookmark parent;
         public final List<Bookmark> children = new ArrayList<>();
+
+        public BookmarkFolder(Bookmark folder, @Nullable Bookmark parent) {
+            this.folder = folder;
+            this.parent = parent;
+        }
     }
 
     /** Called when the BookmarkLoader has finished loading the bookmark folder. */
@@ -157,11 +168,11 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
     /**
      * Loads a BookmarkFolder asynchronously, and returns the result via BookmarkLoaderCallback.
      *
-     * This class must be used only on the UI thread.
+     * <p>This class must be used only on the UI thread.
      */
     private static class BookmarkLoader {
         private BookmarkLoaderCallback mCallback;
-        private BookmarkFolder mFolder;
+        private @Nullable BookmarkFolder mFolder;
         private BookmarkModel mBookmarkModel;
         private LargeIconBridge mLargeIconBridge;
         private RoundedIconGenerator mIconGenerator;
@@ -170,6 +181,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         private int mRemainingTaskCount;
 
         @UiThread
+        @Initializer
         public void initialize(
                 Context context, final BookmarkId folderId, BookmarkLoaderCallback callback) {
             mCallback = callback;
@@ -194,22 +206,22 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
         @UiThread
         private void loadBookmarks(BookmarkId folderId) {
-            mFolder = new BookmarkFolder();
+            Bookmark folderTemp = null;
 
             // Load the requested folder if it exists. Otherwise, fall back to the default folder.
             if (folderId != null) {
-                mFolder.folder =
-                        Bookmark.fromBookmarkItem(mBookmarkModel.getBookmarkById(folderId));
+                folderTemp = Bookmark.fromBookmarkItem(mBookmarkModel.getBookmarkById(folderId));
             }
-            if (mFolder.folder == null) {
+            if (folderTemp == null) {
                 folderId = mBookmarkModel.getDefaultBookmarkFolder();
-                mFolder.folder =
-                        Bookmark.fromBookmarkItem(mBookmarkModel.getBookmarkById(folderId));
+                folderTemp = Bookmark.fromBookmarkItem(mBookmarkModel.getBookmarkById(folderId));
             }
+            assertNonNull(folderId);
+            assumeNonNull(folderTemp);
 
-            mFolder.parent =
-                    Bookmark.fromBookmarkItem(
-                            mBookmarkModel.getBookmarkById(mFolder.folder.parentId));
+            Bookmark parent =
+                    Bookmark.fromBookmarkItem(mBookmarkModel.getBookmarkById(folderTemp.parentId));
+            mFolder = new BookmarkFolder(folderTemp, parent);
 
             List<BookmarkItem> items = mBookmarkModel.getBookmarksForFolder(folderId);
 
@@ -233,15 +245,15 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         }
 
         @UiThread
-        private void loadFavicon(final Bookmark bookmark) {
-            if (bookmark.isFolder) return;
+        private void loadFavicon(@Nullable Bookmark bookmark) {
+            if (bookmark == null || bookmark.isFolder) return;
 
             mRemainingTaskCount++;
             LargeIconCallback callback =
                     new LargeIconCallback() {
                         @Override
                         public void onLargeIconAvailable(
-                                Bitmap icon,
+                                @Nullable Bitmap icon,
                                 int fallbackColor,
                                 boolean isFallbackColorDefault,
                                 @IconType int iconType) {
@@ -264,7 +276,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         private void taskFinished() {
             mRemainingTaskCount--;
             if (mRemainingTaskCount == 0) {
-                mCallback.onBookmarksLoaded(mFolder);
+                mCallback.onBookmarksLoaded(assertNonNull(mFolder));
                 destroy();
             }
         }
@@ -277,7 +289,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
     /** Provides the RemoteViews, one per bookmark, to be shown in the widget. */
     private static class BookmarkAdapter
-            implements RemoteViewsService.RemoteViewsFactory, SystemNightModeMonitor.Observer {
+            implements RemoteViewsFactory, SystemNightModeMonitor.Observer {
         // Can be accessed on any thread
         private final Context mContext;
         private final int mWidgetId;
@@ -289,7 +301,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         private BookmarkModel mBookmarkModel;
 
         // Accessed only on binder threads.
-        private BookmarkFolder mCurrentFolder;
+        private @Nullable BookmarkFolder mCurrentFolder;
 
         @UiThread
         public BookmarkAdapter(Context context, int widgetId) {
@@ -307,6 +319,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
         @UiThread
         @Override
+        @Initializer
         public void onCreate() {
             // Required to be applied here redundantly to prevent crashes in the cases where the
             // package data is deleted or the Chrome application forced to stop.
@@ -389,10 +402,12 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             // Update empty message visibility right after mCurrentFolder is updated.
             updateFolderEmptyMessageVisibility();
 
-            mPreferences
-                    .edit()
-                    .putString(PREF_CURRENT_FOLDER, mCurrentFolder.folder.id.toString())
-                    .apply();
+            if (mCurrentFolder != null) {
+                mPreferences
+                        .edit()
+                        .putString(PREF_CURRENT_FOLDER, mCurrentFolder.folder.id.toString())
+                        .apply();
+            }
         }
 
         @BinderThread
@@ -417,7 +432,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         }
 
         @BinderThread
-        private BookmarkFolder loadBookmarks(final BookmarkId folderId) {
+        private @Nullable BookmarkFolder loadBookmarks(final BookmarkId folderId) {
             final LinkedBlockingQueue<BookmarkFolder> resultQueue = new LinkedBlockingQueue<>(1);
             // A reference of BookmarkLoader is needed in binder thread to
             // prevent it from being garbage collected.
@@ -443,7 +458,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         }
 
         @BinderThread
-        private Bookmark getBookmarkForPosition(int position) {
+        private @Nullable Bookmark getBookmarkForPosition(int position) {
             if (mCurrentFolder == null) return null;
 
             // The position 0 is saved for an entry of the current folder used to go up.
@@ -510,7 +525,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
         @BinderThread
         @Override
-        public RemoteViews getViewAt(int position) {
+        public @Nullable RemoteViews getViewAt(int position) {
             if (mCurrentFolder == null) {
                 Log.w(TAG, "No current folder data available.");
                 return null;
@@ -525,7 +540,9 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             String title = bookmark.title;
             String url = bookmark.url.getSpec();
             BookmarkId id =
-                    (bookmark == mCurrentFolder.folder) ? mCurrentFolder.parent.id : bookmark.id;
+                    (bookmark == mCurrentFolder.folder)
+                            ? assumeNonNull(mCurrentFolder.parent).id
+                            : bookmark.id;
 
             RemoteViews views =
                     new RemoteViews(mContext.getPackageName(), R.layout.bookmark_widget_item);
