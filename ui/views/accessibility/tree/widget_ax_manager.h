@@ -5,8 +5,13 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_H_
 #define UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_H_
 
+#include <memory>
+#include <unordered_set>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/views/views_export.h"
 
@@ -36,11 +41,31 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver {
   void OnAXModeAdded(ui::AXMode mode) override;
 
  private:
+  friend class WidgetAXManagerTestApi;
+
+  void SchedulePendingUpdate();
+  void SendPendingUpdate();
+
   // The widget this manager is owned by.
   raw_ptr<Widget> widget_;
 
   // Indicates whether we're actively serializing widget accessibility data.
   bool is_enabled_ = false;
+
+  // Indicates whether we have already posted an event or data changed task to
+  // SendPendingUpdate().
+  bool processing_update_posted_ = false;
+
+  struct Event {
+    int id;
+    ax::mojom::Event event_type;
+    // TODO(accessibility): Implement action request tracking.
+  };
+  std::vector<Event> pending_events_;
+  std::unordered_set<ui::AXNodeID> pending_data_updates_;
+
+  // Ensure posted tasks don’t run after we’re destroyed.
+  base::WeakPtrFactory<WidgetAXManager> weak_factory_{this};
 };
 
 }  // namespace views

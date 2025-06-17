@@ -4,8 +4,10 @@
 
 #include "ui/views/accessibility/tree/widget_ax_manager.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace views {
 
@@ -31,17 +33,52 @@ void WidgetAXManager::Enable() {
 
 void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
                               ax::mojom::Event event_type) {
-  // TODO(accessibility): Implement data change handling.
+  if (!is_enabled_) {
+    return;
+  }
+
+  pending_events_.push_back({view_ax.GetUniqueId(), event_type});
+  pending_data_updates_.insert(view_ax.GetUniqueId());
+
+  SchedulePendingUpdate();
 }
 
 void WidgetAXManager::OnDataChanged(ViewAccessibility& view_ax) {
-  // TODO(accessibility): Implement data change handling.
+  if (!is_enabled_) {
+    return;
+  }
+
+  pending_data_updates_.insert(view_ax.GetUniqueId());
+
+  SchedulePendingUpdate();
 }
 
 void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {
   if (mode.has_mode(ui::AXMode::kNativeAPIs)) {
     Enable();
   }
+}
+
+void WidgetAXManager::SchedulePendingUpdate() {
+  if (processing_update_posted_ || !is_enabled_) {
+    return;
+  }
+
+  processing_update_posted_ = true;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&WidgetAXManager::SendPendingUpdate,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void WidgetAXManager::SendPendingUpdate() {
+  processing_update_posted_ = false;
+  if (!is_enabled_) {
+    return;
+  }
+
+  // TODO(accessibility): Implement the serialization.
+  pending_events_.clear();
+  pending_data_updates_.clear();
 }
 
 }  // namespace views

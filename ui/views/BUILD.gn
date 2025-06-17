@@ -998,6 +998,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
 source_set("test_support") {
   testonly = true
   sources = [
+    "accessibility/tree/widget_ax_manager_test_api.h",
     "animation/test/flood_fill_ink_drop_ripple_test_api.cc",
     "animation/test/flood_fill_ink_drop_ripple_test_api.h",
     "animation/test/ink_drop_highlight_test_api.cc",
