@@ -7,6 +7,7 @@ package org.chromium.content_browsertests_apk;
 import android.os.Bundle;
 
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_shell.browsertests.ContentShellBrowserTestActivity;
 
 import java.io.File;
@@ -16,7 +17,7 @@ public class ContentBrowserTestsActivity extends ContentShellBrowserTestActivity
     private static final String TAG = "native_test";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         appendCommandLineFlags(
                 "--remote-debugging-socket-name content_browsertests_devtools_remote");

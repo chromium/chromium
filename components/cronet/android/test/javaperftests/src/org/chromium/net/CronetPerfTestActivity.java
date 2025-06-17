@@ -16,6 +16,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.impl.CronetLibraryLoader;
 
 import java.io.File;
@@ -575,7 +576,7 @@ public class CronetPerfTestActivity extends Activity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initializing application context here due to lack of custom CronetPerfTestApplication.
         ContextUtils.initApplicationContext(getApplicationContext());

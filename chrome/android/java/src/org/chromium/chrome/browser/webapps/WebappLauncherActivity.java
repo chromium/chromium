@@ -136,7 +136,7 @@ public class WebappLauncherActivity extends Activity {
 
     @Override
     @SuppressWarnings("UnsafeIntentLaunch")
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Triggers UnsafeIntentLaunch lint warning. https://crbug.com/1412281

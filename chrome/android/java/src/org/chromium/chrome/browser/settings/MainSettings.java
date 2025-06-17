@@ -150,7 +150,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPageTitle.set(getString(R.string.settings));
         mPasswordCheck = PasswordCheckFactory.getOrCreate();

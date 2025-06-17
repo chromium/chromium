@@ -14,6 +14,7 @@ import android.webkit.MimeTypeMap;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 
 import java.util.Locale;
@@ -26,7 +27,7 @@ public class MediaLauncherActivity extends Activity {
     private static final String TAG = "MediaLauncher";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Intent input = IntentUtils.sanitizeIntent(getIntent());

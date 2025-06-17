@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.build.annotations.Nullable;
+
 import java.io.File;
 
 /** An {@link android.app.Activity} for running native browser tests. */
@@ -18,7 +20,7 @@ public abstract class NativeBrowserTestActivity extends FragmentActivity {
     private boolean mStarted;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         mTest.preCreate(this);
         super.onCreate(savedInstanceState);
         mTest.postCreate(this);

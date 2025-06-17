@@ -7,12 +7,14 @@ package org.chromium.native_test;
 import android.app.NativeActivity;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.Nullable;
+
 /** A {@link android.app.NativeActivity} for running native unit tests. (i.e., not browser tests) */
 public class NativeUnitTestNativeActivity extends NativeActivity {
     private final NativeUnitTest mTest = new NativeUnitTest();
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         mTest.preCreate(this);
         super.onCreate(savedInstanceState);
         mTest.postCreate(this);

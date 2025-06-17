@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.google.android.material.color.DynamicColors;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 
 /**
@@ -18,7 +19,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
  */
 public class ChromeLauncherActivity extends Activity {
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         // Third-party code adds disk access to Activity.onCreate. http://crbug.com/619824
         TraceEvent.begin("ChromeLauncherActivity.onCreate");
         super.onCreate(savedInstanceState);

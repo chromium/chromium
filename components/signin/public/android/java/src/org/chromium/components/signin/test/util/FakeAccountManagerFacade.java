@@ -14,13 +14,13 @@ import android.widget.Button;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IdRes;
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -70,7 +70,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         public static final @IdRes int CANCEL_BUTTON_ID = R.id.cancel_button;
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
             setContentView(R.layout.test_add_account_layout);
