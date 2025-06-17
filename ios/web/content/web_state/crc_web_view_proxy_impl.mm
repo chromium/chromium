@@ -22,6 +22,7 @@
   CRWWebViewScrollViewProxy* _contentViewScrollViewProxy;
 }
 @synthesize contentView = _contentView;
+@synthesize allowsLinkPreview = _allowsLinkPreview;
 @dynamic keyboardVisible;
 
 - (instancetype)init {
