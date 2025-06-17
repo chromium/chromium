@@ -828,10 +828,9 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                   stringByAppendingString:personalIdentity.userEmail])]
       performAction:grey_tap()];
   // Tap on `personalIdentity` confirm remove button.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_REMOVE_ACCOUNT_LABEL)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
 
   // Verify the current profile is still the personal profile, but account got
   // signed out.
@@ -903,10 +902,9 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                   stringByAppendingString:managedIdentity.userEmail])]
       performAction:grey_tap()];
   // Tap on `managedIdentity` confirm remove button.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_REMOVE_ACCOUNT_LABEL)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
 
   // Wait for the profile switch to complete.
   // TODO(crbug.com/399033938): Find a better way to wait for this.

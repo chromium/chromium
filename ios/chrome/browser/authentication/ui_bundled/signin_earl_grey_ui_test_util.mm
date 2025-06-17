@@ -274,23 +274,19 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
                                               fakeIdentity.userEmail),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                   l10n_util::GetNSString(
-                                       IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE))]
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE)]
       performAction:grey_tap()];
 }
 
 + (void)tapRemoveAccountFromDeviceWithFakeIdentity:
     (FakeSystemIdentity*)fakeIdentity {
   [self openRemoveAccountConfirmationDialogWithFakeIdentity:fakeIdentity];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   ButtonWithAccessibilityLabel(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_REMOVE_ACCOUNT_LABEL)),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
   // Wait until the account is removed.
   [ChromeEarlGreyUI waitForAppToIdle];
 }
