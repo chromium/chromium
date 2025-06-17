@@ -68,9 +68,15 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   bool ShouldShowGeminiIPHMatch() const;
   void AddGeminiIPHMatch();
 
-  // Whether to show the Enterprise Featured keyword promo row in zero-state.
-  bool ShouldShowEnterpriseFeaturedSearchIPHMatch() const;
-  void AddFeaturedEnterpriseSearchIPHMatch();
+  // Whether to show the Enterprise Search Aggregator keyword promo row
+  // in zero-state.
+  bool ShouldShowEnterpriseSearchAggregatorIPHMatch() const;
+  void AddEnterpriseSearchAggregatorIPHMatch();
+
+  // Whether to show the Featured Enterprise Site Search keyword promo row in
+  // zero-state.
+  bool ShouldShowFeaturedEnterpriseSiteSearchIPHMatch() const;
+  void AddFeaturedEnterpriseSiteSearchIPHMatch();
 
   // Whether to show the History Embeddings promo row in @history scope.
   bool ShouldShowHistoryEmbeddingsSettingsPromoIphMatch() const;

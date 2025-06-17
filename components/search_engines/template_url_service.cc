@@ -967,10 +967,11 @@ TemplateURLService::GetChoiceScreenData() {
 }
 
 TemplateURLService::TemplateURLVector
-TemplateURLService::GetFeaturedEnterpriseSearchEngines() const {
+TemplateURLService::GetFeaturedEnterpriseSiteSearchEngines() const {
   TemplateURLVector result;
   for (const auto& turl : template_urls_) {
     if (turl->CreatedByNonDefaultSearchProviderPolicy() &&
+        !turl->CreatedByEnterpriseSearchAggregatorPolicy() &&
         turl->featured_by_policy()) {
       result.push_back(turl.get());
     }

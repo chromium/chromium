@@ -132,8 +132,8 @@ enum class IphType {
   kNone,
   // '@gemini' promo; shown in zero state.
   kGemini,
-  // Featured search promo; shown in zero state.
-  kFeaturedEnterpriseSearch,
+  // Featured enterprise site search promo; shown in zero state.
+  kFeaturedEnterpriseSiteSearch,
   // Embeddings' setting promo when embeddings are disabled; shown in '@history'
   // scope.
   kHistoryEmbeddingsSettingsPromo,
@@ -143,6 +143,8 @@ enum class IphType {
   kHistoryScopePromo,
   // '@history' promo when embeddings are enabled; shown in zero state.
   kHistoryEmbeddingsScopePromo,
+  // Enterprise search aggregator promo; shown in zero state.
+  kEnterpriseSearchAggregator,
 };
 
 enum class FeedbackType {

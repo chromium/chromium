@@ -2972,7 +2972,7 @@ TEST_F(AutocompleteResultTest, Desktop_ZpsGroupingIPH) {
        AutocompleteMatchType::NULL_RESULT_MESSAGE,
        group2,
        "",
-       IphType::kFeaturedEnterpriseSearch},
+       IphType::kFeaturedEnterpriseSiteSearch},
   };
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);

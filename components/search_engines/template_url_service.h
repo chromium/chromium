@@ -311,7 +311,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // `search_engines::ChoiceScreenData` for more details.
   std::unique_ptr<search_engines::ChoiceScreenData> GetChoiceScreenData();
 
-  TemplateURLService::TemplateURLVector GetFeaturedEnterpriseSearchEngines()
+  TemplateURLService::TemplateURLVector GetFeaturedEnterpriseSiteSearchEngines()
       const;
 
   // Returns the TemplateURL created by the EnterpriseSearchAggregatorSettings

@@ -609,7 +609,8 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
           return gfx::VectorIcon::EmptyIcon();
         case IphType::kGemini:
           return omnibox::kSparkIcon;
-        case IphType::kFeaturedEnterpriseSearch:
+        case IphType::kFeaturedEnterpriseSiteSearch:
+        case IphType::kEnterpriseSearchAggregator:
           return omnibox::kEnterpriseIcon;
         case IphType::kHistoryEmbeddingsSettingsPromo:
           return omnibox::kSparkIcon;

@@ -505,8 +505,12 @@
     Type @gemini to Chat with Gemini
   </message>
 
-  <message name="IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the featured Enterprise search.">
-    Type @ to search <ph name="FEATURED_SEARCH_LIST">$1<ex>jira.atlassian.com, office.com, salesforce.com</ex></ph>
+  <message name="IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the one or more featured Enterprise search engines.">
+    Type @ to search across <ph name="FEATURED_SEARCH_LIST">$1<ex>jira.atlassian.com, office.com, salesforce.com</ex></ph>
+  </message>
+
+  <message name="IDS_OMNIBOX_FEATURED_ENTERPRISE_SEARCH_AGGREGATOR_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the Enteprrise Search Aggregator search engine.">
+    Type <ph name="SEARCH_AGGREGATOR_KEYWORD">$1<ex>@work</ex></ph> to search or ask <ph name="SEARCH_AGGREGATOR_SHORT_NAME">$2<ex>Work</ex></ph>
   </message>
 
   <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH directing users to the chrome://settings/ai page to enable the history embeddings setting.">

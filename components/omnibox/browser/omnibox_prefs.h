@@ -73,6 +73,8 @@ inline constexpr char kDismissedHistoryScopePromo[] =
     "omnibox.dismissed_history_scope_promo";
 inline constexpr char kDismissedHistoryEmbeddingsScopePromo[] =
     "omnibox.dismissed_history_embeddings_scope_promo";
+inline constexpr char kDismissedEnterpriseSearchAggregatorIphPrefName[] =
+    "omnibox.dismissed_enterprise_search_aggregator_iph";
 
 // How many times the various IPH suggestions were shown.
 inline constexpr char kShownCountGeminiIph[] = "omnibox.shown_count_gemini_iph";
@@ -84,6 +86,8 @@ inline constexpr char kShownCountHistoryScopePromo[] =
     "omnibox.shown_count_history_scope_promo";
 inline constexpr char kShownCountHistoryEmbeddingsScopePromo[] =
     "omnibox.shown_count_history_embeddings_scope_promo";
+inline constexpr char kShownCountEnterpriseSearchAggregatorIph[] =
+    "omnibox.shown_count_enterprise_search_aggregator_iph";
 inline constexpr char kFocusedSrpWebCount[] = "omnibox.focused_srp_web_count";
 inline constexpr char kAIModeSettings[] = "omnibox.ai_mode_settings";
 

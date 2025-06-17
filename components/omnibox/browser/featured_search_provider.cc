@@ -77,7 +77,7 @@ std::string GetIphDismissedPrefNameFor(IphType iph_type) {
       NOTREACHED();
     case IphType::kGemini:
       return omnibox::kDismissedGeminiIph;
-    case IphType::kFeaturedEnterpriseSearch:
+    case IphType::kFeaturedEnterpriseSiteSearch:
       return omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName;
     case IphType::kHistoryEmbeddingsSettingsPromo:
       return omnibox::kDismissedHistoryEmbeddingsSettingsPromo;
@@ -87,6 +87,8 @@ std::string GetIphDismissedPrefNameFor(IphType iph_type) {
       return omnibox::kDismissedHistoryScopePromo;
     case IphType::kHistoryEmbeddingsScopePromo:
       return omnibox::kDismissedHistoryEmbeddingsScopePromo;
+    case IphType::kEnterpriseSearchAggregator:
+      return omnibox::kDismissedEnterpriseSearchAggregatorIphPrefName;
   }
 }
 
@@ -96,7 +98,7 @@ std::string GetIphShownCountPrefNameFor(IphType iph_type) {
       NOTREACHED();
     case IphType::kGemini:
       return omnibox::kShownCountGeminiIph;
-    case IphType::kFeaturedEnterpriseSearch:
+    case IphType::kFeaturedEnterpriseSiteSearch:
       return omnibox::kShownCountFeaturedEnterpriseSiteSearchIph;
     case IphType::kHistoryEmbeddingsSettingsPromo:
       return omnibox::kShownCountHistoryEmbeddingsSettingsPromo;
@@ -106,6 +108,8 @@ std::string GetIphShownCountPrefNameFor(IphType iph_type) {
       return omnibox::kShownCountHistoryScopePromo;
     case IphType::kHistoryEmbeddingsScopePromo:
       return omnibox::kShownCountHistoryEmbeddingsScopePromo;
+    case IphType::kEnterpriseSearchAggregator:
+      return omnibox::kShownCountEnterpriseSearchAggregatorIph;
   }
 }
 
@@ -115,7 +119,7 @@ std::string IphTypeDebugString(IphType iph_type) {
       NOTREACHED();
     case IphType::kGemini:
       return "gemini";
-    case IphType::kFeaturedEnterpriseSearch:
+    case IphType::kFeaturedEnterpriseSiteSearch:
       return "featured enterprise search";
     case IphType::kHistoryEmbeddingsSettingsPromo:
       return "history embeddings settings promo";
@@ -125,11 +129,13 @@ std::string IphTypeDebugString(IphType iph_type) {
       return "history scope promo";
     case IphType::kHistoryEmbeddingsScopePromo:
       return "history embeddings scope promo";
+    case IphType::kEnterpriseSearchAggregator:
+      return "enterprise search aggregator";
   }
 }
 
-bool IsEnterpriseSearchTemplateURLEnabled(const TemplateURL& turl,
-                                          bool is_incognito) {
+bool IsEnterpriseSearchAggregatorTemplateURLEnabled(const TemplateURL& turl,
+                                                    bool is_incognito) {
   return !(is_incognito && turl.CreatedByEnterpriseSearchAggregatorPolicy());
 }
 
@@ -166,8 +172,10 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
   }
 
   if (input.IsZeroSuggest()) {
-    if (ShouldShowEnterpriseFeaturedSearchIPHMatch()) {
-      AddFeaturedEnterpriseSearchIPHMatch();
+    if (ShouldShowEnterpriseSearchAggregatorIPHMatch()) {
+      AddEnterpriseSearchAggregatorIPHMatch();
+    } else if (ShouldShowFeaturedEnterpriseSiteSearchIPHMatch()) {
+      AddFeaturedEnterpriseSiteSearchIPHMatch();
     } else if (ShouldShowGeminiIPHMatch()) {
       AddGeminiIPHMatch();
     } else if (ShouldShowHistoryScopePromoIphMatch()) {
@@ -243,7 +251,7 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
         AddStarterPackMatch(*turl, input);
         // Don't add enterprise search aggregator engines in incognito mode.
       } else if (turl->featured_by_policy() &&
-                 IsEnterpriseSearchTemplateURLEnabled(
+                 IsEnterpriseSearchAggregatorTemplateURLEnabled(
                      *turl, client_->IsOffTheRecord()) &&
                  enterprise_count < kMaxEnterpriseSuggestions) {
         AddFeaturedEnterpriseSearchMatch(*turl, input);
@@ -375,8 +383,8 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
       metrics::OmniboxEventProto::NTP_REALBOX) {
     return;
   }
-  if (!IsEnterpriseSearchTemplateURLEnabled(template_url,
-                                            client_->IsOffTheRecord())) {
+  if (!IsEnterpriseSearchAggregatorTemplateURLEnabled(
+          template_url, client_->IsOffTheRecord())) {
     return;
   }
 
@@ -456,42 +464,68 @@ void FeaturedSearchProvider::AddGeminiIPHMatch() {
       /*deletable=*/true);
 }
 
-bool FeaturedSearchProvider::ShouldShowEnterpriseFeaturedSearchIPHMatch()
+bool FeaturedSearchProvider::ShouldShowEnterpriseSearchAggregatorIPHMatch()
+    const {
+  // Conditions to show the IPH for Enterprise Search Aggregator:
+  // - A featured search engine is created by enterprise search aggregator
+  // policy.
+  // - The user is not in incognito mode.
+  // - The user has not deleted the IPH suggestion and we have not shown it more
+  //   than the accepted limit during this session.
+  // - The user has not successfully used the featured engine.
+  TemplateURLService::TemplateURLVector featured_engines;
+  TemplateURL* turl =
+      template_url_service_->GetEnterpriseSearchAggregatorEngine();
+  if (!turl || !IsEnterpriseSearchAggregatorTemplateURLEnabled(
+                   *turl, client_->IsOffTheRecord())) {
+    return false;
+  }
+  return ShouldShowIPH(IphType::kEnterpriseSearchAggregator) &&
+         turl->usage_count() == 0;
+}
+
+void FeaturedSearchProvider::AddEnterpriseSearchAggregatorIPHMatch() {
+  TemplateURL* turl =
+      template_url_service_->GetEnterpriseSearchAggregatorEngine();
+  AddIPHMatch(IphType::kEnterpriseSearchAggregator,
+              /*iph_contents=*/
+              l10n_util::GetStringFUTF16(
+                  IDS_OMNIBOX_FEATURED_ENTERPRISE_SEARCH_AGGREGATOR_IPH,
+                  turl->keyword(), turl->short_name()),
+              /*matched_term=*/turl->keyword(),
+              /*iph_link_text=*/u"",
+              /*iph_link_url=*/{},
+              /*relevance=*/omnibox::kIPHZeroSuggestRelevance,
+              /*deletable=*/true);
+}
+
+bool FeaturedSearchProvider::ShouldShowFeaturedEnterpriseSiteSearchIPHMatch()
     const {
   // Conditions to show the IPH for featured Enterprise search:
-  // - The feature is enabled.
-  // - There is at least one featured search engine set by policy, excluding
-  //   featured search engines created by enterprise search aggregator policy
-  //   when in incognito mode.
+  // - There is at least one featured site search engine set by policy.
   // - The user has not deleted the IPH suggestion and we have not shown it more
   //   than the accepted limit during this session.
   // - The user has not successfully used at least one featured engine.
   TemplateURLService::TemplateURLVector featured_engines;
   for (TemplateURL* turl :
-       template_url_service_->GetFeaturedEnterpriseSearchEngines()) {
-    if (IsEnterpriseSearchTemplateURLEnabled(*turl,
-                                             client_->IsOffTheRecord())) {
-      featured_engines.push_back(turl);
-    }
+       template_url_service_->GetFeaturedEnterpriseSiteSearchEngines()) {
+    featured_engines.push_back(turl);
   }
   return !featured_engines.empty() &&
-         ShouldShowIPH(IphType::kFeaturedEnterpriseSearch) &&
+         ShouldShowIPH(IphType::kFeaturedEnterpriseSiteSearch) &&
          std::ranges::all_of(featured_engines, [](auto turl) {
            return turl->usage_count() == 0;
          });
 }
 
-void FeaturedSearchProvider::AddFeaturedEnterpriseSearchIPHMatch() {
+void FeaturedSearchProvider::AddFeaturedEnterpriseSiteSearchIPHMatch() {
   std::vector<std::string> sites;
   for (const TemplateURL* turl :
-       template_url_service_->GetFeaturedEnterpriseSearchEngines()) {
-    if (IsEnterpriseSearchTemplateURLEnabled(*turl,
-                                             client_->IsOffTheRecord())) {
-      sites.push_back(url_formatter::StripWWW(GURL(turl->url()).host()));
-    }
+       template_url_service_->GetFeaturedEnterpriseSiteSearchEngines()) {
+    sites.push_back(url_formatter::StripWWW(GURL(turl->url()).host()));
   }
   std::ranges::sort(sites);
-  AddIPHMatch(IphType::kFeaturedEnterpriseSearch,
+  AddIPHMatch(IphType::kFeaturedEnterpriseSiteSearch,
               /*iph_contents=*/
               l10n_util::GetStringFUTF16(
                   IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH,
