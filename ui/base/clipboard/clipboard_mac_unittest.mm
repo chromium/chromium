@@ -18,6 +18,8 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/platform_test.h"
@@ -27,6 +29,7 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
 
@@ -251,6 +254,56 @@ TEST_F(ClipboardMacTest, SourceTracking) {
 
   Clear(clipboard_mac, pasteboard->get());
   ASSERT_FALSE(GetSource(clipboard_mac, pasteboard->get()));
+}
+
+TEST_F(ClipboardMacTest, ClipboardChangeAPI_BrowserTriggered) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(features::kClipboardChangeEvent);
+
+  TestClipboardObserver observer;
+
+  // Note that general pasteboard is used since the clipboard monitoring
+  // is performed on the general pasteboard in ClipboardMac.
+  NSPasteboard* nspasteboard = NSPasteboard.generalPasteboard;
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  ASSERT_EQ(observer.data_changed_count(), 0);
+
+  GURL google_url = GURL("https://www.google.com");
+  WritePortableAndPlatformRepresentations(
+      clipboard_mac, std::make_unique<DataTransferEndpoint>(google_url),
+      nspasteboard);
+
+  ASSERT_TRUE(base::test::RunUntil([&observer]() {
+    return observer.data_changed_count() == 1;
+  })) << "Timeout waiting for the clipboardMonitor to be notified";
+
+  Clear(clipboard_mac, nspasteboard);
+}
+
+TEST_F(ClipboardMacTest, ClipboardChangeAPI_ExternallyTriggered) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(features::kClipboardChangeEvent);
+
+  TestClipboardObserver observer;
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  ASSERT_EQ(observer.data_changed_count(), 0);
+
+  NSPasteboard* nspasteboard = NSPasteboard.generalPasteboard;
+  NSString* text = @"Hello, Clipboard!";
+  [nspasteboard clearContents];
+  [nspasteboard setString:text forType:NSPasteboardTypeString];
+
+  ASSERT_TRUE(base::test::RunUntil([&observer]() {
+    return observer.data_changed_count() == 1;
+  })) << "Timeout waiting for the clipboardMonitor to be notified";
+
+  Clear(clipboard_mac, nspasteboard);
 }
 
 }  // namespace ui

@@ -43,12 +43,18 @@
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 #include "url/gurl.h"
+
+namespace {
+// Clipboard polling interval in milliseconds.
+const int64_t kClipboardPollingIntervalMs = 500;
+}  // namespace
 
 namespace ui {
 
@@ -115,10 +121,46 @@ Clipboard* Clipboard::Create() {
 // ClipboardMac implementation.
 ClipboardMac::ClipboardMac() {
   DCHECK(CalledOnValidThread());
+  if (base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+    ClipboardMonitor::GetInstance()->SetNotifier(this);
+  }
 }
 
 ClipboardMac::~ClipboardMac() {
   DCHECK(CalledOnValidThread());
+  if (ClipboardMonitor::GetInstance()->GetNotifier() == this) {
+    ClipboardMonitor::GetInstance()->SetNotifier(nullptr);
+  }
+  if (monitoring_clipboard_changes_) {
+    StopNotifying();
+  }
+}
+
+void ClipboardMac::StartNotifying() {
+  if (!monitoring_clipboard_changes_) {
+    DCHECK(!clipboard_polling_timer_);
+    // Initialize `last_known_sequence_number_` to the current pasteboard state
+    // to prevent `CheckClipboardForChanges` from firing a notification if the
+    // clipboard hasn't changed since monitoring started.
+    last_known_sequence_number_ = [GetPasteboard() changeCount];
+    // Update `clipboard_sequence_` to the current state.
+    GetSequenceNumber(ClipboardBuffer::kCopyPaste);
+
+    // macOS doesn't provide a clipboard-changed notification. The only way to
+    // detect clipboard changes is by polling.
+    clipboard_polling_timer_ = std::make_unique<base::RepeatingTimer>();
+    clipboard_polling_timer_->Start(
+        FROM_HERE, base::Milliseconds(kClipboardPollingIntervalMs), this,
+        &ClipboardMac::CheckClipboardForChanges);
+    monitoring_clipboard_changes_ = true;
+  }
+}
+
+void ClipboardMac::StopNotifying() {
+  if (monitoring_clipboard_changes_) {
+    clipboard_polling_timer_.reset();
+    monitoring_clipboard_changes_ = false;
+  }
 }
 
 void ClipboardMac::OnPreShutdown() {}
@@ -481,7 +523,15 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
   if (privacy_types & Clipboard::PrivacyTypes::kNoDisplay) {
     WriteConfidentialDataForPassword();
   }
-  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  // If not actively monitoring, notify immediately. Otherwise, when monitoring,
+  // the change to the pasteboard's `changeCount` will be detected by
+  // `CheckClipboardForChanges` (called by `clipboard_polling_timer_`),
+  // which will then update `last_known_sequence_number_` and
+  // `clipboard_sequence_`, and subsequently call
+  // `NotifyClipboardDataChanged`. This avoids redundant notifications.
+  if (!monitoring_clipboard_changes_) {
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  }
 }
 
 void ClipboardMac::WriteText(std::string_view text) {
@@ -615,6 +665,19 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
   [image addRepresentation:image_rep];
   [image setSize:NSMakeSize(bitmap.width(), bitmap.height())];
   [pasteboard writeObjects:@[ image ]];
+}
+
+void ClipboardMac::CheckClipboardForChanges() {
+  NSInteger current_sequence_number = [GetPasteboard() changeCount];
+  if (current_sequence_number != last_known_sequence_number_) {
+    last_known_sequence_number_ = current_sequence_number;
+    // Update clipboard_sequence_ to reflect the new number and generate a new
+    // token, so subsequent calls to GetSequenceNumber() return the latest
+    // state.
+    clipboard_sequence_ = {current_sequence_number,
+                           ClipboardSequenceNumberToken()};
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  }
 }
 
 }  // namespace ui
