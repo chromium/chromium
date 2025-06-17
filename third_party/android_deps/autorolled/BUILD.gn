@@ -114,7 +114,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     android_aar_prebuilt("com_airbnb_android_lottie_java") {
       aar_path =
-          "autorolled/cipd/libs/com_airbnb_android_lottie/lottie-6.6.6.aar"
+          "autorolled/cipd/libs/com_airbnb_android_lottie/lottie-6.6.7.aar"
       info_path = "autorolled/committed/libs/com_airbnb_android_lottie/com_airbnb_android_lottie.info"
       enable_bytecode_checks = false
       deps = [
