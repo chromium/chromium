@@ -54,6 +54,10 @@ typedef void (^BlockWithViewController)(UIViewController*);
   return _controller;
 }
 
+- (BOOL)canHandleURL:(NSURL*)url {
+  return YES;
+}
+
 @end
 
 // Tests the MiniMapCoordinator logic and its links to the MiniMapController.

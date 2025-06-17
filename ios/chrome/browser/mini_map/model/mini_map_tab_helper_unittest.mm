@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/providers/mini_map/test_mini_map.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -38,7 +39,28 @@ NSString* kGoogleSRPPage = @"https://www.google.com/search?q=foo";
 
 // A UL to Maps.
 NSString* kMapsLink = @"https://maps.google.com/maps/foo";
+
+// A valid query parameter to mark URL valid for
+// MiniMapTabHelperTestMiniMapControllerFactory.
+NSString* kValidQuery = @"valid=true";
 }  // namespace
+
+// A Mini map factory that filters out some handled URLs based on their queries.
+@interface MiniMapTabHelperTestMiniMapControllerFactory
+    : NSObject <MiniMapControllerFactory>
+@end
+
+@implementation MiniMapTabHelperTestMiniMapControllerFactory
+
+- (id<MiniMapController>)createMiniMapController {
+  return nil;
+}
+
+- (BOOL)canHandleURL:(NSURL*)url {
+  return [url.query isEqualToString:kValidQuery];
+}
+
+@end
 
 class MiniMapTabHelperTest : public PlatformTest {
  public:
@@ -47,6 +69,9 @@ class MiniMapTabHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     feature_list_.InitAndEnableFeature(kIOSMiniMapUniversalLink);
+
+    factory_ = [[MiniMapTabHelperTestMiniMapControllerFactory alloc] init];
+    ios::provider::test::SetMiniMapControllerFactory(factory_);
 
     TestProfileIOS::Builder test_profile_builder;
 
@@ -86,6 +111,7 @@ class MiniMapTabHelperTest : public PlatformTest {
 
   void TearDown() override {
     [application_ stopMocking];
+    ios::provider::test::SetMiniMapControllerFactory(nil);
     PlatformTest::TearDown();
   }
 
@@ -141,6 +167,7 @@ class MiniMapTabHelperTest : public PlatformTest {
 
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
+  MiniMapTabHelperTestMiniMapControllerFactory* factory_;
   std::unique_ptr<TestProfileIOS> profile_;
   id application_;
   web::FakeWebState web_state_;
@@ -160,7 +187,8 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
   const int google_maps_not_installed_index = 1 << 4;
   const int user_initiated_index = 1 << 5;
   const int transition_type_index = 1 << 6;
-  const int total = 1 << 7;
+  const int handled_url_index = 1 << 7;
+  const int total = 1 << 8;
 
   for (int scenario = 0; scenario < total; scenario++) {
     NSString* web_state_url =
@@ -171,6 +199,9 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
     bool dse_is_google = scenario & is_dse_google_index;
     bool google_maps_not_installed = scenario & google_maps_not_installed_index;
     bool user_initiated = scenario & user_initiated_index;
+    if (scenario & handled_url_index) {
+      url = [url stringByAppendingFormat:@"?%@", kValidQuery];
+    }
     ui::PageTransition transition_type =
         (scenario & transition_type_index)
             ? ui::PageTransition::PAGE_TRANSITION_LINK

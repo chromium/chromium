@@ -14,5 +14,9 @@ id<MiniMapController> CreateMiniMapController() {
   return nil;
 }
 
+BOOL MiniMapCanHandleURL(NSURL* url) {
+  return NO;
+}
+
 }  // namespace provider
 }  // namespace ios

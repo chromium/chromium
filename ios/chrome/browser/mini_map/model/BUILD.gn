@@ -20,6 +20,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/public/provider/chrome/browser/mini_map:mini_map_api",
   ]
   public_deps = [
     "//components/prefs",
@@ -44,6 +45,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/providers/mini_map",
     "//ios/web/public/test",
     "//third_party/ocmock",
   ]

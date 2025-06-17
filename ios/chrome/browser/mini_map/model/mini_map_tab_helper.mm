@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/mini_map/model/mini_map_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
+#import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 #import "net/base/apple/url_conversions.h"
 
 MiniMapTabHelper::MiniMapTabHelper(web::WebState* web_state)
@@ -104,7 +105,9 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
     return false;
   }
 
-  // TODO(crbug.com/414785597): forward to library for final check of the URL.
+  if (!ios::provider::MiniMapCanHandleURL(url)) {
+    return false;
+  }
 
   [mini_map_handler_ presentMiniMapForURL:url];
   return true;

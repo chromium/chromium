@@ -77,6 +77,9 @@ namespace provider {
 // a new tab.
 id<MiniMapController> CreateMiniMapController();
 
+// Checks whether MiniMap can handle `url`.
+BOOL MiniMapCanHandleURL(NSURL* url);
+
 }  // namespace provider
 }  // namespace ios
 

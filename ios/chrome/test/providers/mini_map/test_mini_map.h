@@ -12,6 +12,8 @@
 
 - (id<MiniMapController>)createMiniMapController;
 
+- (BOOL)canHandleURL:(NSURL*)url;
+
 @end
 
 namespace ios {

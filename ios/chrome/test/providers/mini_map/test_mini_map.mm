@@ -20,6 +20,10 @@ id<MiniMapController> CreateMiniMapController() {
   return [g_mini_map_controller_factory createMiniMapController];
 }
 
+BOOL MiniMapCanHandleURL(NSURL* url) {
+  return [g_mini_map_controller_factory canHandleURL:url];
+}
+
 namespace test {
 
 void SetMiniMapControllerFactory(id<MiniMapControllerFactory> factory) {
