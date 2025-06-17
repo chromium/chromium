@@ -29,6 +29,15 @@ crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.serviceworker.html [ Timeout ]
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.sharedworker.html [ Timeout ]
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.worker.html [ Timeout ]
+crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-small.any.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-small.any.serviceworker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-small.any.sharedworker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-small.any.worker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-large.any.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-large.any.serviceworker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-large.any.sharedworker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-large.any.worker.html [ Skip Timeout ]
+
 # Times out on MSAN
 crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Timeout ]
 crbug.com/40255790 [ Linux ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Pass Timeout ]
