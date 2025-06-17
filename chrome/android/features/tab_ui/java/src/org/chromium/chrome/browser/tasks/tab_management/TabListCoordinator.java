@@ -230,7 +230,10 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         mAllowDragAndDrop = allowDragAndDrop;
         mTabSwitcherDragHandler = tabSwitcherDragHandler;
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
-        mAllowDetachingTabsToCreateNewWindows = MultiWindowUtils.isMultiInstanceApi31Enabled();
+        mAllowDetachingTabsToCreateNewWindows =
+                MultiWindowUtils.isMultiInstanceApi31Enabled()
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.TAB_SWITCHER_DRAG_DROP_ANDROID);
 
         if (mAllowDetachingTabsToCreateNewWindows && mTabSwitcherDragHandler != null) {
             TabSwitcherDragHandler.DragHandlerDelegate dragHandlerDelegate =
