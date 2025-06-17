@@ -302,8 +302,146 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
   // num_transform_nodes remains the same as default.
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), "Invalid property tree node ID");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       InvalidParentFrameId) {
+  // Apply a default valid update first to set up the tree.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;  // Update existing node
+  node_update->parent_id = cc::kRootPropertyNodeId;    // Valid tree parent
+  // transform_tree by default has 2 nodes (0, 1).
+  // next_available_id() will be 2, which is an invalid parent_frame_id.
+  node_update->parent_frame_id = layer_context_impl_->host_impl()
+                                     ->active_tree()
+                                     ->property_trees()
+                                     ->transform_tree()
+                                     .next_available_id();
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid parent_frame_id");
+
+  // Test with another invalid ID like -2 (kInvalidPropertyNodeId is -1).
+  auto update3 = CreateDefaultUpdate();
+  auto node_update3 = mojom::TransformNode::New();
+  node_update3->id = cc::kSecondaryRootPropertyNodeId;
+  node_update3->parent_id = cc::kRootPropertyNodeId;
+  node_update3->parent_frame_id = -2;
+  update3->transform_nodes.push_back(std::move(node_update3));
+  result = layer_context_impl_->DoUpdateDisplayTree(std::move(update3));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid parent_frame_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       InvalidStickyPositionConstraintId_EmptyData) {
+  // Apply a default valid update. sticky_position_data will be empty by
+  // default.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  ASSERT_TRUE(layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->transform_tree()
+                  .sticky_position_data()
+                  .empty());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->sticky_position_constraint_id = 0;  // Invalid, data size is 0.
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid sticky_position_constraint_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       InvalidStickyPositionConstraintId_NonEmptyData) {
+  auto update1 = CreateDefaultUpdate();
+  auto tree_props = mojom::TransformTreeUpdate::New();
+  auto sticky_data = mojom::StickyPositionNodeData::New();
+  // AddScrollNode to update1 to make scroll_ancestor valid for
+  // DeserializeStickyPositionData.
+  int scroll_node_id = AddScrollNode(update1.get(), cc::kRootPropertyNodeId);
+  sticky_data->scroll_ancestor = scroll_node_id;
+  tree_props->sticky_position_data.push_back(std::move(sticky_data));
+  update1->transform_tree_update = std::move(tree_props);
+
+  // The node update is part of the same LayerTreeUpdate.
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  // sticky_position_data has size 1, so ID 1 is out of bounds.
+  node_update->sticky_position_constraint_id = 1;
+  update1->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update1));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid sticky_position_constraint_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       InvalidAnchorPositionScrollDataId_EmptyData) {
+  // Apply a default valid update. anchor_position_scroll_data will be empty by
+  // default.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  ASSERT_TRUE(layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->transform_tree()
+                  .anchor_position_scroll_data()
+                  .empty());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  // anchor_position_scroll_data is empty, so ID 0 is out of bounds.
+  node_update->anchor_position_scroll_data_id = 0;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid anchor_position_scroll_data_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       InvalidAnchorPositionScrollDataId_NonEmptyData) {
+  auto update1 = CreateDefaultUpdate();
+  auto tree_props = mojom::TransformTreeUpdate::New();
+  auto anchor_data = mojom::AnchorPositionScrollData::New();
+  // anchor_data can be default-constructed for
+  // DeserializeAnchorPositionScrollData.
+  tree_props->anchor_position_scroll_data.push_back(std::move(anchor_data));
+  update1->transform_tree_update = std::move(tree_props);
+
+  // The node update is part of the same LayerTreeUpdate.
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  // anchor_position_scroll_data has size 1, so ID 1 is out of bounds.
+  node_update->anchor_position_scroll_data_id = 1;
+  update1->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update1));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid anchor_position_scroll_data_id");
 }
 
 class LayerContextImplUpdateDisplayTreeClipNodeTest

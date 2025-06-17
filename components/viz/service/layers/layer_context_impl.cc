@@ -253,6 +253,9 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.SetTransformChanged(cc::DamageReason::kUntracked);
   if (!node.SetDamageReasonsForDeserialization(
           cc::DamageReasonSet::FromEnumBitmask(wire.damage_reasons_bit_mask))) {
+    // This error case shouldn't be reachable, since
+    // DamageReasonSet::FromEnumBitmask should already ignore any bits outside
+    // of the set's range.
     return base::unexpected("Invalid damage_reasons_bit_mask");
   }
   node.moved_by_safe_area_bottom = wire.moved_by_safe_area_bottom;
