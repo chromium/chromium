@@ -4,3 +4,8 @@
 # are skipped or marked as flaky by the defaut TestExpectations.
 # When Optimization Guide Bots run AI related API tests, the default
 # TestExpectations file is ignored and this file is referred.
+
+# Temporarily disable flaky Language Detector tests to unblock model validation testing.
+# Disables tests on all platforms, since disabling these tests on Mac only is not supported.
+crbug.com/414403946 external/wpt/ai/language_detection/detector-iframe.https.html [ Skip ]
+crbug.com/414403946 external/wpt/ai/language_detection/detector-locale.https.window.html [ Skip ]
