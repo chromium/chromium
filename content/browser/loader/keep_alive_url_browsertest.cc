@@ -1101,16 +1101,19 @@ class KeepAliveFetchRetryBrowserTest
   }
 
   void TriggerFetchKeepaliveWithRetry(const GURL& fetch_url) {
-    ASSERT_TRUE(ExecJs(web_contents(),
-                       JsReplace(R"(
+    ASSERT_TRUE(ExecJs(
+        web_contents(),
+        JsReplace(R"(
                         window.fetchPromise = fetch($1, {
                           keepalive: true,
+                          method: $2,
                           retryOptions: {
-                            maxAttempts: $2,
-                            retryAfterUnload: true
+                            maxAttempts: $3,
+                            retryAfterUnload: true,
+                            retryNonIdempotent: true
                           }});)",
-                                 fetch_url, kMaxRetryCountPerLoaderForTesting),
-                       content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+                  fetch_url, GetParam(), kMaxRetryCountPerLoaderForTesting),
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   }
 
   void ExpectFetchResolvedInJavaScript(bool result_is_ok) {
@@ -1129,8 +1132,8 @@ class KeepAliveFetchRetryBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     KeepAliveFetchRetryBrowserTest,
-    // TODO(crbug.com/417930271): Test with POST as well.
-    ::testing::Values(net::HttpRequestHeaders::kGetMethod),
+    ::testing::Values(net::HttpRequestHeaders::kGetMethod,
+                      net::HttpRequestHeaders::kPostMethod),
     [](const testing::TestParamInfo<KeepAliveFetchRetryBrowserTest::ParamType>&
            info) { return info.param; });
 

@@ -923,10 +923,10 @@ bool KeepAliveURLLoader::IsEligibleForRetry(
     return false;
   }
 
-  if (!net::HttpUtil::IsMethodIdempotent(resource_request_.method)) {
+  if (!retry_options->retry_non_idempotent &&
+      !net::HttpUtil::IsMethodIdempotent(resource_request_.method)) {
     // Don't retry non-idempotent method unless the fetch explicitly opted-in to
     // do so.
-    // TODO(crbug.com/417930271): Actually check for the opt-in.
     return false;
   }
 
