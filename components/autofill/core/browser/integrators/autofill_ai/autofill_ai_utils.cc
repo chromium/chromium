@@ -21,11 +21,6 @@ namespace autofill {
 
 namespace {
 
-// For a list of entities, this defines all attributes for each entity, together
-// with their value.
-using AttributesAndValues =
-    std::vector<std::vector<std::pair<AttributeType, std::u16string>>>;
-
 // Arbitrary delimiter to user when concatenating labels to decide whether
 // a series of labels for different entities are unique.
 constexpr char16_t kLabelsDelimiter[] = u" - - ";
@@ -64,24 +59,6 @@ EntitiesLabels GetLabelsForEntities(base::span<const EntityInstance*> entities,
   if (entities.empty()) {
     return EntitiesLabels(std::vector<std::vector<std::u16string>>());
   }
-  // Step 1#
-  // Retrieve entities attributes types and values, skipping those in
-  // `attribute_types_to_exclude`.
-  AttributesAndValues entities_attributes_and_values;
-  for (const EntityInstance* entity : entities) {
-    // Retrieve all entity values, this will be used to generate labels.
-    std::vector<std::pair<AttributeType, std::u16string>>&
-        attribute_types_and_values =
-            entities_attributes_and_values.emplace_back();
-    for (const AttributeInstance& attribute : entity->attributes()) {
-      if (allow_only_disambiguating_types &&
-          !attribute.type().is_disambiguation_type()) {
-        continue;
-      }
-      attribute_types_and_values.emplace_back(
-          attribute.type(), attribute.GetCompleteInfo(app_locale));
-    }
-  }
 
   // The `i`th element holds the attributes and values of the `i`th element of
   // `entities`.
@@ -97,13 +74,19 @@ EntitiesLabels GetLabelsForEntities(base::span<const EntityInstance*> entities,
       attribute_type_and_value_occurrences;
 
   // Go over each entity and its attributes and values.
-  for (std::vector<std::pair<AttributeType, std::u16string>>& attributes :
-       std::move(entities_attributes_and_values)) {
-    for (const auto& [attribute_type, entity_value] : attributes) {
-      ++attribute_type_and_value_occurrences[{attribute_type, entity_value}];
-    }
+  for (const EntityInstance* entity : entities) {
+    attributes_of_all_entities.emplace_back();
+    for (const AttributeInstance& attribute : entity->attributes()) {
+      if (allow_only_disambiguating_types &&
+          !attribute.type().is_disambiguation_type()) {
+        continue;
+      }
 
-    attributes_of_all_entities.push_back(std::move(attributes));
+      std::u16string value = attribute.GetCompleteInfo(app_locale);
+      ++attribute_type_and_value_occurrences[{attribute.type(), value}];
+      attributes_of_all_entities.back().emplace_back(attribute.type(),
+                                                     std::move(value));
+    }
   }
 
   std::vector<AttributeType> disambiguating_attribute_types;
