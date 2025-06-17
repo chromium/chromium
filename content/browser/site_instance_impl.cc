@@ -71,7 +71,7 @@ SiteInstanceId::Generator g_site_instance_id_generator;
 // unnecessarily creating a process.
 BASE_FEATURE(kTraceSiteInstanceGetProcessCreation,
              "TraceSiteInstanceGetProcessCreation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to crash if GetProcess is called on a SiteInstance without a process.
 const base::FeatureParam<bool> kCrashOnGetProcessCreation{
