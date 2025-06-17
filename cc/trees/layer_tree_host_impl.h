@@ -269,6 +269,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return viewport_damage_rect_;
   }
 
+  void ResetViewportDamageRectForTesting() {
+    viewport_damage_rect_ = gfx::Rect();
+  }
+
   virtual void WillSendBeginMainFrame() {}
   virtual void BeginMainFrameAborted(
       CommitEarlyOutReason reason,
