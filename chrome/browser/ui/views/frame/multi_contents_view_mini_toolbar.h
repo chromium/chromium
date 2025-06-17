@@ -56,6 +56,11 @@ class MultiContentsViewMiniToolbar : public views::View,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
+  // Returns the bounding path for the MultiContentsViewMiniToolbar. If
+  // |border_stroke_only| then only the part of the path for the border stroke
+  // will be returned. Otherwise, the entire bounding path will be returned.
+  SkPath GetPath(bool border_stroke_only) const;
+
   void RegisterTabAlertSubscription();
   void OnAlertStatusIndicatorChanged(std::optional<tabs::TabAlert> new_alert);
 
