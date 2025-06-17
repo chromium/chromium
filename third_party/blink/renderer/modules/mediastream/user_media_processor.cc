@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/modules/mediastream/local_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/local_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processing_layout.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processor.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_audio.h"
@@ -1825,36 +1826,47 @@ UserMediaProcessor::CreateAudioSource(
   DCHECK(current_request_info_);
 
   StreamControls* stream_controls = current_request_info_->stream_controls();
-  // If the audio device is a loopback device (for screen capture), or if the
-  // constraints/effects parameters indicate no audio processing is needed,
-  // create an efficient, direct-path MediaStreamAudioSource instance.
-  blink::AudioProcessingProperties audio_processing_properties =
-      current_request_info_->audio_capture_settings()
-          .audio_processing_properties();
-  if (blink::IsScreenCaptureMediaType(device.type) ||
-      !blink::MediaStreamAudioProcessor::WouldModifyAudio(
-          audio_processing_properties)) {
+
+  // If the constraints/effects parameters indicate no audio processing is
+  // needed, create an efficient, direct-path MediaStreamAudioSource instance.
+  std::optional<MediaStreamAudioProcessingLayout> processing_layout =
+      device.type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE
+          ? std::make_optional(MediaStreamAudioProcessingLayout(
+                current_request_info_->audio_capture_settings()
+                    .audio_processing_properties(),
+                device.input.effects(),
+                current_request_info_->audio_capture_settings().num_channels()))
+      : device.type == mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE
+          ?
+          // TODO(crbug.com://40247860, crbug.com://415952276): retire this
+          // logic when restrictOwnAudio is launched.
+          MediaStreamAudioProcessingLayout::MakeForDisplayCapture(
+              current_request_info_->audio_capture_settings()
+                  .audio_processing_properties(),
+              current_request_info_->audio_capture_settings().num_channels())
+          : std::nullopt;
+
+  if (processing_layout && processing_layout->NeedWebrtcAudioProcessing()) {
+    // The audio device is not associated with screen capture and also requires
+    // processing.
     SendLogMessage(
-        base::StringPrintf("%s => (no audiprocessing is used)", __func__));
-    return std::make_unique<blink::LocalMediaStreamAudioSource>(
-        frame_, device,
-        base::OptionalToPtr(current_request_info_->audio_capture_settings()
-                                .requested_buffer_size()),
-        stream_controls->disable_local_echo,
-        audio_processing_properties.echo_cancellation_type ==
-            EchoCancellationType::kEchoCancellationSystem,
-        std::move(source_ready), task_runner_);
+        base::StringPrintf("%s => (audiprocessing is required)", __func__));
+    return std::make_unique<blink::ProcessedLocalAudioSource>(
+        *frame_, device, stream_controls->disable_local_echo,
+        *processing_layout, std::move(source_ready), task_runner_);
   }
 
-  // The audio device is not associated with screen capture and also requires
-  // processing.
+  bool system_aec = processing_layout &&
+                    processing_layout->properties().echo_cancellation_type ==
+                        EchoCancellationType::kEchoCancellationSystem;
   SendLogMessage(
-      base::StringPrintf("%s => (audiprocessing is required)", __func__));
-  return std::make_unique<blink::ProcessedLocalAudioSource>(
-      *frame_, device, stream_controls->disable_local_echo,
-      audio_processing_properties,
-      current_request_info_->audio_capture_settings().num_channels(),
-      std::move(source_ready), task_runner_);
+      base::StringPrintf("%s => (no audiprocessing is used)", __func__));
+  return std::make_unique<blink::LocalMediaStreamAudioSource>(
+      frame_, device,
+      base::OptionalToPtr(current_request_info_->audio_capture_settings()
+                              .requested_buffer_size()),
+      stream_controls->disable_local_echo, system_aec, std::move(source_ready),
+      task_runner_);
 }
 
 std::unique_ptr<blink::MediaStreamVideoSource>

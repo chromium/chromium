@@ -113,33 +113,6 @@ void MediaStreamAudioProcessor::OnStopDump() {
   audio_processor_->OnStopDump();
 }
 
-// static
-// TODO(https://crbug.com/1269364): This logic should be moved to
-// ProcessedLocalAudioSource and verified/fixed; The decision should be
-// "hardware effects are required or software audio mofidications are needed
-// (AudioProcessingSettings.NeedAudioModification())".
-bool MediaStreamAudioProcessor::WouldModifyAudio(
-    const AudioProcessingProperties& properties) {
-  if (properties
-          .ToAudioProcessingSettings(
-              /*multi_channel_capture_processing - does not matter here*/ false)
-          .NeedWebrtcAudioProcessing()) {
-    return true;
-  }
-
-#if !BUILDFLAG(IS_IOS)
-  if (properties.auto_gain_control) {
-    return true;
-  }
-#endif
-
-  if (properties.noise_suppression) {
-    return true;
-  }
-
-  return false;
-}
-
 void MediaStreamAudioProcessor::OnPlayoutData(media::AudioBus* audio_bus,
                                               int sample_rate,
                                               base::TimeDelta audio_delay) {

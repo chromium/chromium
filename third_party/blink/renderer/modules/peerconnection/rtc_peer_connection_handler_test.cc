@@ -36,6 +36,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processing_layout.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
@@ -298,8 +299,11 @@ class RTCPeerConnectionHandlerTest : public SimTest {
                           media::AudioParameters::kAudioCDSampleRate,
                           media::ChannelLayoutConfig::Stereo(),
                           media::AudioParameters::kAudioCDSampleRate / 100),
-        false /* disable_local_echo */, blink::AudioProcessingProperties(),
-        1 /* num_requested_channels */, base::DoNothing(),
+        false /* disable_local_echo */,
+        MediaStreamAudioProcessingLayout(AudioProcessingProperties(),
+                                         /*available_platform_effects=*/0,
+                                         /*multichannel_processing=*/false),
+        base::DoNothing(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     auto* processed_audio_source_ptr = processed_audio_source.get();
     processed_audio_source->SetAllowInvalidRenderFrameIdForTesting(true);

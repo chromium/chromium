@@ -95,12 +95,6 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   void OnStartDump(base::File dump_file) override;
   void OnStopDump() override;
 
-  // Returns true if MediaStreamAudioProcessor would modify the audio signal,
-  // based on |properties|. If the audio signal would not be modified, there is
-  // no need to instantiate a MediaStreamAudioProcessor and feed audio through
-  // it. Doing so would waste a non-trivial amount of memory and CPU resources.
-  static bool WouldModifyAudio(const AudioProcessingProperties& properties);
-
  protected:
   ~MediaStreamAudioProcessor() override;
 
