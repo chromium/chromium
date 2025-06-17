@@ -39,6 +39,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -540,8 +541,10 @@ void Database::CloseInternal(bool forced) {
     db_ = nullptr;
     auto sqlite_result_code = ToSqliteResultCode(sqlite3_close(raw_db));
 
-    DCHECK_NE(sqlite_result_code, SqliteResultCode::kBusy)
-        << "sqlite3_close() called while prepared statements are still alive";
+    CHECK_NE(sqlite_result_code, SqliteResultCode::kBusy,
+             base::NotFatalUntil::M141)
+        << "sqlite3_close() called while resources (statements, blobs, etc) "
+           "are still alive";
     DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
         << "sqlite3_close() failed in an unexpected way: "
         << sqlite3_errmsg(raw_db);
