@@ -25,7 +25,7 @@ class EvictionOrderComparator {
 
     const TilePriority& a_priority = a_tile.priority();
     const TilePriority& b_priority = b_tile.priority();
-    bool prioritize_low_res = tree_priority_ == SMOOTHNESS_TAKES_PRIORITY;
+    bool prioritize_smoothness = tree_priority_ == SMOOTHNESS_TAKES_PRIORITY;
 
     // If the priority bin is the same but one of the tiles is from a
     // non-drawing layer, then the drawing layer has a higher priority.
@@ -51,8 +51,12 @@ class EvictionOrderComparator {
       if (b_priority.resolution == NON_IDEAL_RESOLUTION)
         return true;
 
-      if (prioritize_low_res)
-        return a_priority.resolution == LOW_RESOLUTION;
+      if (prioritize_smoothness) {
+        // TODO(crbug.com/418234930): This line is not actually reachable; clean
+        // it up.
+        return false;
+      }
+
       return a_priority.resolution == HIGH_RESOLUTION;
     }
 

@@ -1482,10 +1482,7 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
     DCHECK(resource);
   }
 
-  // For LOW_RESOLUTION tiles, we don't draw or predecode images.
   RasterSource::PlaybackSettings playback_settings;
-  const bool skip_images =
-      prioritized_tile.priority().resolution == LOW_RESOLUTION;
   playback_settings.use_lcd_text = tile->can_use_lcd_text();
   playback_settings.msaa_sample_count = msaa_sample_count;
   playback_settings.visible =
@@ -1503,12 +1500,10 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   sync_decoded_images.clear();
   std::vector<PaintImage> checkered_images;
   base::flat_map<PaintImage::Id, size_t> image_id_to_current_frame_index;
-  if (!skip_images) {
-    PartitionImagesForCheckering(
-        prioritized_tile, target_color_params, &sync_decoded_images,
-        &checkered_images, partial_tile_decode ? &invalidated_rect : nullptr,
-        &image_id_to_current_frame_index);
-  }
+  PartitionImagesForCheckering(
+      prioritized_tile, target_color_params, &sync_decoded_images,
+      &checkered_images, partial_tile_decode ? &invalidated_rect : nullptr,
+      &image_id_to_current_frame_index);
 
   // Get the tasks for the required images.
   ImageDecodeCache::TracingInfo tracing_info(
@@ -1565,14 +1560,12 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
           has_hardware_accelerated_webp_candidates);
 
   std::optional<PlaybackImageProvider::Settings> settings;
-  if (!skip_images) {
-    settings.emplace();
-    settings->images_to_skip = std::move(images_to_skip);
-    settings->image_to_current_frame_index =
-        std::move(image_id_to_current_frame_index);
-    if (use_gpu_rasterization_) {
-      settings->raster_mode = PlaybackImageProvider::RasterMode::kOop;
-    }
+  settings.emplace();
+  settings->images_to_skip = std::move(images_to_skip);
+  settings->image_to_current_frame_index =
+      std::move(image_id_to_current_frame_index);
+  if (use_gpu_rasterization_) {
+    settings->raster_mode = PlaybackImageProvider::RasterMode::kOop;
   }
 
   PlaybackImageProvider image_provider(

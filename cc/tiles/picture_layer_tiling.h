@@ -121,7 +121,6 @@ class CC_EXPORT PictureLayerTiling {
 
   void set_resolution(TileResolution resolution) {
     resolution_ = resolution;
-    may_contain_low_resolution_tiles_ |= resolution == LOW_RESOLUTION;
   }
   TileResolution resolution() const { return resolution_; }
   bool may_contain_low_resolution_tiles() const {

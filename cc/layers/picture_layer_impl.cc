@@ -342,9 +342,6 @@ void PictureLayerImpl::AppendQuads(const AppendQuadsContext& context,
         } else if (iter.resolution() == HIGH_RESOLUTION) {
           color = DebugColors::HighResTileBorderColor();
           width = DebugColors::HighResTileBorderWidth(device_scale_factor);
-        } else if (iter.resolution() == LOW_RESOLUTION) {
-          color = DebugColors::LowResTileBorderColor();
-          width = DebugColors::LowResTileBorderWidth(device_scale_factor);
         } else if (iter->contents_scale_key() > max_contents_scale) {
           color = DebugColors::ExtraHighResTileBorderColor();
           width = DebugColors::ExtraHighResTileBorderWidth(device_scale_factor);
@@ -559,8 +556,7 @@ void PictureLayerImpl::AppendQuads(const AppendQuadsContext& context,
 
     // If we have a draw quad, but it's not low resolution, then
     // mark that we've used something other than low res to draw.
-    if (iter.resolution() != LOW_RESOLUTION)
-      only_used_low_res_last_append_quads_ = false;
+    only_used_low_res_last_append_quads_ = false;
 
     if (last_append_quads_tilings_.empty() ||
         last_append_quads_tilings_.back() != iter.CurrentTiling()) {

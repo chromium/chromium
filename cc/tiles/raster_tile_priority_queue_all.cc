@@ -27,7 +27,7 @@ class RasterOrderComparator {
       const std::unique_ptr<TilingSetRasterQueueAll>& b_queue) const {
     const TilePriority& a_priority = a_queue->Top().priority();
     const TilePriority& b_priority = b_queue->Top().priority();
-    bool prioritize_low_res = tree_priority_ == SMOOTHNESS_TAKES_PRIORITY;
+    bool prioritize_smoothness = tree_priority_ == SMOOTHNESS_TAKES_PRIORITY;
 
     // If the priority bin is the same but one of the tiles is from a
     // non-drawing layer, then the drawing layer has a higher priority.
@@ -49,8 +49,11 @@ class RasterOrderComparator {
       if (b_priority.resolution == NON_IDEAL_RESOLUTION)
         return false;
 
-      if (prioritize_low_res)
-        return b_priority.resolution == LOW_RESOLUTION;
+      if (prioritize_smoothness) {
+        // TODO(crbug.com/418234930): This line is not actually reachable; clean
+        // it up.
+        return false;
+      }
       return b_priority.resolution == HIGH_RESOLUTION;
     }
 

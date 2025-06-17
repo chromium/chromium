@@ -149,9 +149,9 @@ size_t FakePictureLayerImpl::CountTilesRequired(
 
   for (size_t i = 0; i < tilings_->num_tilings(); ++i) {
     PictureLayerTiling* tiling = tilings_->tiling_at(i);
-    if (tiling->resolution() != HIGH_RESOLUTION &&
-        tiling->resolution() != LOW_RESOLUTION)
+    if (tiling->resolution() != HIGH_RESOLUTION) {
       continue;
+    }
 
     for (PictureLayerTiling::CoverageIterator iter(tiling, 1.f, rect); iter;
          ++iter) {

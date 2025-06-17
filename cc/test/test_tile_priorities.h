@@ -24,11 +24,6 @@ class TilePriorityForNowBin : public TilePriority {
   TilePriorityForNowBin();
 };
 
-class TilePriorityLowRes : public TilePriority {
- public:
-  TilePriorityLowRes();
-};
-
 }  // namespace cc
 
 #endif  // CC_TEST_TEST_TILE_PRIORITIES_H_

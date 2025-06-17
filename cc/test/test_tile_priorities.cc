@@ -15,7 +15,4 @@ TilePriorityForEventualBin::TilePriorityForEventualBin()
 TilePriorityForNowBin::TilePriorityForNowBin()
     : TilePriority(HIGH_RESOLUTION, NOW, 0) {}
 
-TilePriorityLowRes::TilePriorityLowRes()
-    : TilePriority(LOW_RESOLUTION, NOW, 0) {}
-
 }  // namespace cc
