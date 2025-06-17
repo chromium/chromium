@@ -7836,7 +7836,16 @@ void NavigationRequest::Resume(NavigationThrottle* resuming_throttle) {
   if (response_body_watcher_) {
     CHECK(response_body_callback_);
     response_body_watcher_.reset();
+    base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
     std::move(response_body_callback_).Run(std::string());
+    if (this_ptr.WasInvalidated()) {
+      // TODO(https://crbug.com/411238078): Replace the debug code with a
+      // comment once we ensure that this is the root cause.
+      SCOPED_CRASH_KEY_STRING32("Bug411238078", "throttle",
+                                resuming_throttle->GetNameForLogging());
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
   }
 
   is_resuming_ = false;
