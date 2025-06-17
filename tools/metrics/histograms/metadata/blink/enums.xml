@@ -6217,6 +6217,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5592" label="LocalNetworkAccessPrivateAliasUse"/>
   <int value="5593" label="V8URLPattern_Generate_Method"/>
   <int value="5594" label="SelectMultipleSizeOne"/>
+  <int value="5595" label="WebGPUFeatureLevelCompatibility"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

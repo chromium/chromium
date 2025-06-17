@@ -409,6 +409,11 @@ void GPU::RequestAdapterImpl(
       WTF::BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
                     WrapPersistent(script_state), WrapPersistent(options))));
 
+  if (dawn_options.featureLevel == wgpu::FeatureLevel::Compatibility) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kWebGPUFeatureLevelCompatibility);
+  }
+
   dawn_control_client_->GetWGPUInstance().RequestAdapter(
       &dawn_options, wgpu::CallbackMode::AllowSpontaneous,
       callback->UnboundCallback(), callback->AsUserdata());
