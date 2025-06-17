@@ -116,9 +116,9 @@ std::vector<EntityLabel> GetLabelsForSuggestions(
 
   // Note that `all_entities_labels` are for all entities, including
   // those that were not used in suggestion generation.
-  std::vector<EntityLabel> all_entities_labels =
-      GetLabelsForEntities(entities, /*allow_only_disambiguating_types=*/true,
-                           /*return_at_least_one_label=*/false, app_locale);
+  std::vector<EntityLabel> all_entities_labels = GetLabelsForEntities(
+      entities, /*allow_only_disambiguating_types=*/true,
+      /*allow_only_disambiguating_values=*/true, app_locale);
   if (all_entities_labels.size() > suggestions_with_metadata.size()) {
     all_entities_labels.resize(suggestions_with_metadata.size());
   }

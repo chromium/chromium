@@ -45,13 +45,13 @@ bool IsFormEligibleForFilling(const FormStructure& form);
 // considered. For example, for a passport, the name and country are considered,
 // but the number is not.
 //
-// If `return_at_least_one_label` is true and the attributes agree on all
-// (potentially disambiguating) attribute values, then we fall back to some of
-// those values they agree on.
+// If `allow_only_disambiguating_values` is false and the attributes agree on
+// all values of the (potentially disambiguating) attribute types, then we fall
+// back to some of those values they agree on.
 std::vector<EntityLabel> GetLabelsForEntities(
     base::span<const EntityInstance*> entities,
     bool allow_only_disambiguating_types,
-    bool return_at_least_one_label,
+    bool allow_only_disambiguating_values,
     const std::string& app_locale);
 
 }  // namespace autofill

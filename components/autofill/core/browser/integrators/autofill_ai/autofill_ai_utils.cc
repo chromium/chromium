@@ -29,12 +29,13 @@ namespace {
 // The returned types are sorted so that the attributes with the highest
 // priority in the disambiguation order come first.
 //
-// If `return_at_least_one_label` is true and the entities do not differ in any
-// type, then we fall back to types for which they define a non-empty value.
+// If `allow_only_disambiguating_values` is true and the entities do not differ
+// in any type, then we fall back to types for which they define a non-empty
+// value.
 std::vector<AttributeType> GetDisambiguatingTypes(
     base::span<const EntityInstance*> entities,
     bool allow_only_disambiguating_types,
-    bool return_at_least_one_label,
+    bool allow_only_disambiguating_values,
     const std::string& app_locale) {
   // Only relevant AttributeTypes are considered for disambiguation.
   auto is_relevant = [&](AttributeType type) {
@@ -79,7 +80,7 @@ std::vector<AttributeType> GetDisambiguatingTypes(
     }
   }
 
-  if (return_at_least_one_label) {
+  if (!allow_only_disambiguating_values) {
     // We fill up `types` with types so that every EntityInstance defines a
     // value for at least one AttributeType.
     DenseSet<EntityType> unsatisfied_entity_types = DenseSet<EntityType>(
@@ -131,7 +132,7 @@ bool IsFormEligibleForFilling(const FormStructure& form) {
 std::vector<EntityLabel> GetLabelsForEntities(
     base::span<const EntityInstance*> entities,
     bool allow_only_disambiguating_types,
-    bool return_at_least_one_label,
+    bool allow_only_disambiguating_values,
     const std::string& app_locale) {
   std::vector<EntityLabel> labels;
   labels.resize(entities.size());
@@ -140,7 +141,7 @@ std::vector<EntityLabel> GetLabelsForEntities(
       std::min(kMaxNumberOfLabels, labels.size());
   for (AttributeType type :
        GetDisambiguatingTypes(entities, allow_only_disambiguating_types,
-                              return_at_least_one_label, app_locale)) {
+                              allow_only_disambiguating_values, app_locale)) {
     // Potentially add `entity`'s value for `type` to the label.
     for (auto [entity, label] : base::zip(entities, labels)) {
       if (label.size() == max_number_of_labels) {
