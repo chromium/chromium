@@ -2123,7 +2123,9 @@ class PdfViewWebPluginSaveTest : public PdfViewWebPluginTest {
 };
 
 #if BUILDFLAG(ENABLE_INK)
-TEST_F(PdfViewWebPluginSaveTest, AnnotationInNonEditMode) {
+// TODO(crbug.com/425604529): This behavior is exclusive to Ink1. Remove this
+// test when Ink2 launches.
+TEST_F(PdfViewWebPluginSaveTest, DISABLED_AnnotationInNonEditMode) {
   base::Value expected_response = base::test::ParseJson(R"({
     "type": "saveData",
     "token": "annotation-in-non-edit-mode",
@@ -2223,7 +2225,9 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInEditMode) {
 }
 
 #if BUILDFLAG(ENABLE_INK)
-TEST_F(PdfViewWebPluginSaveTest, EditedInNonEditMode) {
+// TODO(crbug.com/425604529): This behavior is exclusive to Ink1. Remove this
+// test when Ink2 launches.
+TEST_F(PdfViewWebPluginSaveTest, DISABLED_EditedInNonEditMode) {
   base::Value expected_response = base::test::ParseJson(R"({
     "type": "saveData",
     "token": "edited-in-non-edit-mode",
