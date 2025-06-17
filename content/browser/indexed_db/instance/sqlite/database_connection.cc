@@ -342,50 +342,65 @@ DatabaseConnection::CreateTransaction(
     base::PassKey<BackingStoreDatabaseImpl>,
     blink::mojom::IDBTransactionDurability durability,
     blink::mojom::IDBTransactionMode mode) {
-  // TODO(crbug.com/40253999): Ensure that `DatabaseConnection` outlives active
-  // instances of `BackingStoreTransactionImpl`.
-  auto transaction = std::make_unique<sql::Transaction>(db_.get());
-
-  // TODO(crbug.com/40253999): Assert preconditions for `mode`.
-  return std::make_unique<BackingStoreTransactionImpl>(
-      GetWeakPtr(), std::move(transaction), durability, mode);
+  return std::make_unique<BackingStoreTransactionImpl>(GetWeakPtr(), durability,
+                                                       mode);
 }
 
-void DatabaseConnection::OnTransactionBegin(
+void DatabaseConnection::BeginTransaction(
     base::PassKey<BackingStoreTransactionImpl>,
     const BackingStoreTransactionImpl& transaction) {
   // No other transaction can begin while a version change transaction is
   // active.
   CHECK(!HasActiveVersionChangeTransaction());
+  if (transaction.mode() == blink::mojom::IDBTransactionMode::ReadOnly) {
+    // Nothing to do.
+    return;
+  }
+  CHECK(!active_rw_transaction_);
+  active_rw_transaction_ = std::make_unique<sql::Transaction>(db_.get());
+  // TODO(crbug.com/40253999): Set the appropriate value for `PRAGMA
+  // synchronous` based on `transaction.durability()`.
+  // TODO(crbug.com/40253999): How do we surface the error if this call fails?
+  TRANSIENT_CHECK(active_rw_transaction_->Begin());
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     metadata_snapshot_.emplace(metadata_);
   }
 }
 
-void DatabaseConnection::OnBeforeTransactionCommit(
+Status DatabaseConnection::CommitTransactionPhaseOne(
     base::PassKey<BackingStoreTransactionImpl>,
-    const BackingStoreTransactionImpl& transaction) {
-  if (transaction.durability() ==
-          blink::mojom::IDBTransactionDurability::Strict &&
-      transaction.mode() != blink::mojom::IDBTransactionMode::ReadOnly) {
-    // TODO(crbug.com/40253999): Execute `PRAGMA synchronous=FULL`
-  }
+    const BackingStoreTransactionImpl& transaction,
+    BlobWriteCallback callback) {
+  return std::move(callback).Run(
+      BlobWriteResult::kRunPhaseTwoAndReturnResult,
+      storage::mojom::WriteBlobToFileResult::kSuccess);
 }
 
-void DatabaseConnection::OnTransactionCommit(
+Status DatabaseConnection::CommitTransactionPhaseTwo(
     base::PassKey<BackingStoreTransactionImpl>,
     const BackingStoreTransactionImpl& transaction) {
-  // TODO(crbug.com/40253999): Reset the `synchronous` setting.
+  if (transaction.mode() == blink::mojom::IDBTransactionMode::ReadOnly) {
+    // Nothing to do.
+    return Status::OK();
+  }
+  TRANSIENT_CHECK(active_rw_transaction_->Commit());
+  active_rw_transaction_.reset();
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     CHECK(metadata_snapshot_.has_value());
     metadata_snapshot_.reset();
   }
+  return Status::OK();
 }
 
-void DatabaseConnection::OnTransactionRollback(
+void DatabaseConnection::RollBackTransaction(
     base::PassKey<BackingStoreTransactionImpl>,
     const BackingStoreTransactionImpl& transaction) {
-  // TODO(crbug.com/40253999): Reset the `synchronous` setting.
+  if (transaction.mode() == blink::mojom::IDBTransactionMode::ReadOnly) {
+    // Nothing to do.
+    return;
+  }
+  active_rw_transaction_->Rollback();
+  active_rw_transaction_.reset();
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     CHECK(metadata_snapshot_.has_value());
     metadata_ = std::move(*metadata_snapshot_);

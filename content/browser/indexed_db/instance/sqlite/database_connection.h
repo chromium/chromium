@@ -27,6 +27,7 @@ class IndexedDBKey;
 namespace sql {
 class Database;
 class MetaTable;
+class Transaction;
 }  // namespace sql
 
 namespace content::indexed_db {
@@ -62,16 +63,17 @@ class DatabaseConnection {
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode);
 
-  // Hooks called by `BackingStoreTransactionImpl`.
-  void OnTransactionBegin(base::PassKey<BackingStoreTransactionImpl>,
-                          const BackingStoreTransactionImpl& transaction);
-  void OnBeforeTransactionCommit(
+  void BeginTransaction(base::PassKey<BackingStoreTransactionImpl>,
+                        const BackingStoreTransactionImpl& transaction);
+  Status CommitTransactionPhaseOne(
+      base::PassKey<BackingStoreTransactionImpl>,
+      const BackingStoreTransactionImpl& transaction,
+      BlobWriteCallback callback);
+  Status CommitTransactionPhaseTwo(
       base::PassKey<BackingStoreTransactionImpl>,
       const BackingStoreTransactionImpl& transaction);
-  void OnTransactionCommit(base::PassKey<BackingStoreTransactionImpl>,
+  void RollBackTransaction(base::PassKey<BackingStoreTransactionImpl>,
                            const BackingStoreTransactionImpl& transaction);
-  void OnTransactionRollback(base::PassKey<BackingStoreTransactionImpl>,
-                             const BackingStoreTransactionImpl& transaction);
 
   Status SetDatabaseVersion(base::PassKey<BackingStoreTransactionImpl>,
                             int64_t version);
@@ -130,6 +132,18 @@ class DatabaseConnection {
   std::unique_ptr<sql::Database> db_;
   std::unique_ptr<sql::MetaTable> meta_table_;
   blink::IndexedDBDatabaseMetadata metadata_;
+
+  // A `sql::Transaction` is created only for version change and readwrite
+  // IndexedDB transactions, only one of which is allowed to run concurrently,
+  // irrespective of the scope* (this is enforced by `PartitionedLockManager`).
+  // Readonly IndexedDB transactions that don't overlap with the current
+  // readwrite transaction run concurrently, executing their statements in the
+  // context of the active `sql::Transaction` if it exists, else as standalone
+  // statements with no explicit `sql::Transaction`.
+  //
+  // *This is because SQLite allows only one active (readwrite) transaction on a
+  // database at a time.
+  std::unique_ptr<sql::Transaction> active_rw_transaction_;
 
   // Only set while a version change transaction is active.
   std::optional<blink::IndexedDBDatabaseMetadata> metadata_snapshot_;

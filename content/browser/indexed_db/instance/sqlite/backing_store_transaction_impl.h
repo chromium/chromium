@@ -10,10 +10,6 @@
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
-namespace sql {
-class Transaction;
-}
-
 namespace content::indexed_db::sqlite {
 
 class DatabaseConnection;
@@ -23,7 +19,6 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
   using PassKey = base::PassKey<BackingStoreTransactionImpl>;
 
   BackingStoreTransactionImpl(base::WeakPtr<DatabaseConnection> db,
-                              std::unique_ptr<sql::Transaction> transaction,
                               blink::mojom::IDBTransactionDurability durability,
                               blink::mojom::IDBTransactionMode mode);
   BackingStoreTransactionImpl(const BackingStoreTransactionImpl&) = delete;
@@ -116,7 +111,6 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
   base::WeakPtr<DatabaseConnection> db_;
 
  private:
-  std::unique_ptr<sql::Transaction> transaction_;
   blink::mojom::IDBTransactionDurability durability_;
   blink::mojom::IDBTransactionMode mode_;
 };

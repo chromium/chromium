@@ -10,44 +10,31 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/status.h"
-#include "sql/transaction.h"
 
 namespace content::indexed_db::sqlite {
 
 BackingStoreTransactionImpl::BackingStoreTransactionImpl(
     base::WeakPtr<DatabaseConnection> db,
-    std::unique_ptr<sql::Transaction> transaction,
     blink::mojom::IDBTransactionDurability durability,
     blink::mojom::IDBTransactionMode mode)
-    : db_(std::move(db)),
-      transaction_(std::move(transaction)),
-      durability_(durability),
-      mode_(mode) {}
+    : db_(std::move(db)), durability_(durability), mode_(mode) {}
 
 BackingStoreTransactionImpl::~BackingStoreTransactionImpl() = default;
 
 void BackingStoreTransactionImpl::Begin(std::vector<PartitionedLock> locks) {
-  // TODO(crbug.com/40253999): How do we surface the error if this call fails?
-  CHECK(transaction_->Begin());
-  db_->OnTransactionBegin(PassKey(), *this);
+  db_->BeginTransaction(PassKey(), *this);
 }
 
 Status BackingStoreTransactionImpl::CommitPhaseOne(BlobWriteCallback callback) {
-  return std::move(callback).Run(
-      BlobWriteResult::kRunPhaseTwoAndReturnResult,
-      storage::mojom::WriteBlobToFileResult::kSuccess);
+  return db_->CommitTransactionPhaseOne(PassKey(), *this, std::move(callback));
 }
 
 Status BackingStoreTransactionImpl::CommitPhaseTwo() {
-  db_->OnBeforeTransactionCommit(PassKey(), *this);
-  transaction_->Commit();
-  db_->OnTransactionCommit(PassKey(), *this);
-  return Status::OK();
+  return db_->CommitTransactionPhaseTwo(PassKey(), *this);
 }
 
 void BackingStoreTransactionImpl::Rollback() {
-  transaction_->Rollback();
-  db_->OnTransactionRollback(PassKey(), *this);
+  return db_->RollBackTransaction(PassKey(), *this);
 }
 
 Status BackingStoreTransactionImpl::SetDatabaseVersion(int64_t version) {
