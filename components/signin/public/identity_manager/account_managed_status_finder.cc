@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -545,7 +546,7 @@ void AccountManagedStatusFinder::OnExtendedAccountInfoUpdated(
   }
 
   // Keep waiting if `info` isn't complete yet.
-  if (info.hosted_domain.empty()) {
+  if (info.IsManaged() == signin::Tribool::kUnknown) {
     return;
   }
 
@@ -558,8 +559,9 @@ void AccountManagedStatusFinder::OnExtendedAccountInfoUpdated(
   // types that can be known synchronously, otherwise it would have been
   // determined already, either in the constructor or in
   // `OnRefreshTokensLoaded()`.
-  OutcomeDeterminedAsync(info.IsManaged() ? Outcome::kEnterprise
-                                          : Outcome::kConsumerNotWellKnown);
+  OutcomeDeterminedAsync(signin::TriboolToBoolOrDie(info.IsManaged())
+                             ? Outcome::kEnterprise
+                             : Outcome::kConsumerNotWellKnown);
 }
 
 void AccountManagedStatusFinder::OnRefreshTokenRemovedForAccount(
@@ -657,9 +659,10 @@ AccountManagedStatusFinder::DetermineOutcome() const {
   // The easy cases didn't apply, so actually get the canonical info from
   // IdentityManager. This may or may not be available immediately.
   AccountInfo info = identity_manager_->FindExtendedAccountInfo(account_);
-  if (!info.hosted_domain.empty()) {
-    return info.IsManaged() ? Outcome::kEnterprise
-                            : Outcome::kConsumerNotWellKnown;
+  if (info.IsManaged() != signin::Tribool::kUnknown) {
+    return signin::TriboolToBoolOrDie(info.IsManaged())
+               ? Outcome::kEnterprise
+               : Outcome::kConsumerNotWellKnown;
   }
 
   GoogleServiceAuthError auth_error =

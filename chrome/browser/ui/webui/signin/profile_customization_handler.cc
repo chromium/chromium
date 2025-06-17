@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "signin_url_utils.h"
@@ -205,7 +206,8 @@ base::Value::Dict ProfileCustomizationHandler::GetProfileInfoValue() {
       profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size),
                                    avatar_icon_size, avatar_icon_size);
   dict.Set("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
-  dict.Set("isManaged", AccountInfo::IsManaged(entry->GetHostedDomain()));
+  dict.Set("isManaged", AccountInfo::IsManaged(entry->GetHostedDomain()) ==
+                            signin::Tribool::kTrue);
   dict.Set("hasEnterpriseLabel", !entry->GetEnterpriseProfileLabel().empty());
   std::u16string gaia_name = entry->GetGAIANameToDisplay();
   if (gaia_name.empty()) {

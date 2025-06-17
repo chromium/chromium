@@ -54,6 +54,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/url_data_source.h"
@@ -165,7 +166,8 @@ base::Value::Dict CreateProfileEntry(const ProfileAttributesEntry* entry,
   const auto local_profile_name = entry->GetLocalProfileName();
   std::u16string profileCardButtonLabel = l10n_util::GetStringFUTF16(
       IDS_PROFILE_PICKER_PROFILE_CARD_LABEL, local_profile_name);
-  if (AccountInfo::IsManaged(entry->GetHostedDomain())) {
+  if (AccountInfo::IsManaged(entry->GetHostedDomain()) ==
+      signin::Tribool::kTrue) {
     profile_entry.Set("avatarBadge", "cr:domain");
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else if (base::FeatureList::IsEnabled(

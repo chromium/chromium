@@ -26,6 +26,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -147,7 +148,7 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
           form_structure->fields().size()))
       .SetFieldCountRendererForm(ukm::GetExponentialBucketMinForCounts1000(
           field_count_in_renderer_form))
-      .SetManagedProfile(account_info.IsManaged())
+      .SetManagedProfile(account_info.IsManaged() == signin::Tribool::kTrue)
       // NewlyCreatedPlusAddress may be reset during submission if no plus
       // address was submitted.
       .SetNewlyCreatedPlusAddress(
@@ -227,24 +228,25 @@ void PlusAddressSubmissionLogger::OnFormSubmitted(
       record.ukm_builder.SetSubmittedPlusAddress(plus_address_submitted);
       record.ukm_builder.Record(manager.client().GetUkmRecorder());
       has_recorded_submission = true;
+      const bool account_is_managed =
+          account_info.IsManaged() == signin::Tribool::kTrue;
 
       // Record a subset of the data also in form of UMAs.
       base::UmaHistogramBoolean(kUmaSubmissionPrefix, plus_address_submitted);
       base::UmaHistogramBoolean(
           base::StrCat({kUmaSubmissionPrefix, ".FirstTimeUser",
-                        account_info.IsManaged() ? ".Yes" : ".No"}),
+                        account_is_managed ? ".Yes" : ".No"}),
           plus_address_submitted);
       base::UmaHistogramBoolean(
           base::StrCat({kUmaSubmissionPrefix, ".ManagedUser",
-                        account_info.IsManaged() ? ".Yes" : ".No"}),
+                        account_is_managed ? ".Yes" : ".No"}),
           plus_address_submitted);
       if (record.is_single_field_in_renderer_form) {
         base::UmaHistogramBoolean(
             base::StrCat({kUmaSubmissionPrefix, ".SingleFieldRendererForm"}),
             plus_address_submitted);
       }
-      if (record.is_single_field_in_renderer_form &&
-          !account_info.IsManaged()) {
+      if (record.is_single_field_in_renderer_form && !account_is_managed) {
         base::UmaHistogramBoolean(
             base::StrCat({kUmaSubmissionPrefix,
                           ".SingleFieldRendererForm.ManagedUser.No"}),

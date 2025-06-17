@@ -2036,12 +2036,8 @@ void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     AccountInfo extended_info =
         identity_manager->FindExtendedAccountInfo(account_info);
-    signin::Tribool is_managed =
-        extended_info.hosted_domain.empty()
-            ? signin::Tribool::kUnknown
-            : signin::TriboolFromBool(extended_info.IsManaged());
     active_primary_accounts_metrics_recorder->MarkAccountAsActiveNow(
-        account_info.gaia, is_managed);
+        account_info.gaia, extended_info.IsManaged());
   }
 
   // Don't remember ephemeral profiles as last because they are not going to

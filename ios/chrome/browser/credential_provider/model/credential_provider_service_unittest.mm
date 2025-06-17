@@ -27,6 +27,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
@@ -279,7 +280,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
   account.gaia = core_account.gaia;
   account.email = core_account.email;
   account.hosted_domain = "managed.com";
-  ASSERT_TRUE(account.IsManaged());
+  ASSERT_EQ(account.IsManaged(), signin::Tribool::kTrue);
   identity_test_environment_.UpdateAccountInfoForAccount(account);
   identity_test_environment_.SetPrimaryAccount("foo@gmail.com",
                                                signin::ConsentLevel::kSignin);

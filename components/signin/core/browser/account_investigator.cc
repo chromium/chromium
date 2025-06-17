@@ -15,6 +15,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -242,7 +243,8 @@ void AccountInvestigator::DoPeriodicReport(
         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
     AccountInfo info = GetExtendedAccountInfo(identity_manager_);
     signin_metrics::LogSignedInCookiesCountsPerPrimaryAccountType(
-        signed_in_accounts.size(), is_syncing, info.IsManaged());
+        signed_in_accounts.size(), is_syncing,
+        info.IsManaged() == signin::Tribool::kTrue);
   }
 
   periodic_pending_ = false;

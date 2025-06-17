@@ -152,23 +152,25 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
 }
 
 // static
-bool AccountInfo::IsManaged(const std::string& hosted_domain) {
-  return !hosted_domain.empty() && hosted_domain != kNoHostedDomainFound;
+signin::Tribool AccountInfo::IsManaged(const std::string& hosted_domain) {
+  return hosted_domain.empty()
+             ? signin::Tribool::kUnknown
+             : signin::TriboolFromBool(hosted_domain != kNoHostedDomainFound);
 }
 
 bool AccountInfo::IsMemberOfFlexOrg() const {
   return capabilities.is_subject_to_enterprise_policies() ==
              signin::Tribool::kTrue &&
-         !IsManaged(hosted_domain);
+         IsManaged(hosted_domain) != signin::Tribool::kTrue;
 }
 
-bool AccountInfo::IsManaged() const {
+signin::Tribool AccountInfo::IsManaged() const {
   return IsManaged(hosted_domain);
 }
 
 bool AccountInfo::IsEduAccount() const {
   return capabilities.can_use_edu_features() == signin::Tribool::kTrue &&
-         IsManaged();
+         IsManaged(hosted_domain) == signin::Tribool::kTrue;
 }
 
 bool AccountInfo::CanHaveEmailAddressDisplayed() const {

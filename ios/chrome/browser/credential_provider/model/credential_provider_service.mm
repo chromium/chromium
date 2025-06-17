@@ -26,6 +26,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -549,7 +550,8 @@ void CredentialProviderService::UpdateAccountId() {
   BOOL is_valid_account = !account.IsEmpty();
   BOOL is_managed_account =
       is_valid_account &&
-      identity_manager_->FindExtendedAccountInfo(account).IsManaged();
+      identity_manager_->FindExtendedAccountInfo(account).IsManaged() ==
+          signin::Tribool::kTrue;
   [app_group::GetGroupUserDefaults()
       setObject:is_managed_account ? account_id : nil
          forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];

@@ -53,6 +53,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -595,11 +596,10 @@ void TurnSyncOnHelper::ShowSyncConfirmationUI() {
     signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
   }
   // Use the email-based heuristic if `account_info_` isn't fully initialized.
-  const bool is_managed_account =
-      account_info_.IsValid()
-          ? account_info_.IsManaged()
-          : signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
-                account_info_.email);
+  const bool is_managed_account = signin::TriboolToBoolOr(
+      account_info_.IsManaged(),
+      signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          account_info_.email));
   delegate_->ShowSyncDisabledConfirmation(
       is_managed_account,
       base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,

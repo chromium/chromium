@@ -28,6 +28,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -318,7 +319,9 @@ bool IsChromeAppKioskSession() {
 #if !BUILDFLAG(IS_CHROMEOS)
 std::u16string GetDefaultNameForNewEnterpriseProfile(
     const std::string& hosted_domain) {
-  if (AccountInfo::IsManaged(hosted_domain)) {
+  // TODO(crbug.com/425456152): Handle the flex org case when there is no
+  // hosted domain for managed accounts.
+  if (AccountInfo::IsManaged(hosted_domain) == signin::Tribool::kTrue) {
     std::u16string hosted_domain_name = base::UTF8ToUTF16(hosted_domain);
     CHECK(!hosted_domain_name.empty());
     return hosted_domain_name;
@@ -332,11 +335,13 @@ std::u16string GetDefaultNameForNewEnterpriseProfile(
 std::u16string GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info) {
   DCHECK(account_info.IsValid());
-  if (!account_info.IsManaged()) {
+  if (account_info.IsManaged() != signin::Tribool::kTrue) {
     std::u16string given_name = base::UTF8ToUTF16(account_info.given_name);
     CHECK(!given_name.empty());
     return given_name;
   }
+  // TODO(crbug.com/425456152): Handle the flex org case when there is no
+  // hosted domain for managed accounts.
   std::u16string default_name =
       GetDefaultNameForNewEnterpriseProfile(account_info.hosted_domain);
   CHECK(!default_name.empty());

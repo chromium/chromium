@@ -7,6 +7,7 @@
 #import "base/time/time.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -47,11 +48,8 @@
         identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     AccountInfo extendedInfo =
         identityManager->FindExtendedAccountInfo(accountInfo);
-    signin::Tribool isManaged =
-        extendedInfo.hosted_domain.empty()
-            ? signin::Tribool::kUnknown
-            : signin::TriboolFromBool(extendedInfo.IsManaged());
-    activeAccountsTracker->MarkAccountAsActiveNow(accountInfo.gaia, isManaged);
+    activeAccountsTracker->MarkAccountAsActiveNow(accountInfo.gaia,
+                                                  extendedInfo.IsManaged());
   }
 }
 

@@ -201,7 +201,8 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
     const std::optional<bool> show_enterprise_badge =
         dict.FindBool("showEnterpriseBadge");
     EXPECT_TRUE(show_enterprise_badge.has_value());
-    EXPECT_EQ(primary_account.IsManaged(), show_enterprise_badge.value());
+    EXPECT_EQ(primary_account.IsManaged() == signin::Tribool::kTrue,
+              show_enterprise_badge.value());
   }
 
   SyncConfirmationScreenMode GetScreenMode(

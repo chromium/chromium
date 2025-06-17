@@ -27,6 +27,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -353,11 +354,13 @@ void DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
   // For Enterprise, slice per enterprise status for each account.
   if (bubble_parameters.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kEnterprise) {
-    if (bubble_parameters.intercepted_account.IsManaged()) {
+    if (bubble_parameters.intercepted_account.IsManaged() ==
+        signin::Tribool::kTrue) {
       base::UmaHistogramEnumeration(
           base::StrCat({histogram_base_name, ".NewIsEnterprise"}), result);
     }
-    if (bubble_parameters.primary_account.IsManaged()) {
+    if (bubble_parameters.primary_account.IsManaged() ==
+        signin::Tribool::kTrue) {
       base::UmaHistogramEnumeration(
           base::StrCat({histogram_base_name, ".PrimaryIsEnterprise"}), result);
     }

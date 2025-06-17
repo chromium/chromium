@@ -277,7 +277,7 @@ void SyncConfirmationHandler::OnAvatarChanged(const AccountInfo& info) {
 
   base::Value::Dict value;
   value.Set("src", picture_gurl_with_options.spec());
-  value.Set("showEnterpriseBadge", info.IsManaged());
+  value.Set("showEnterpriseBadge", info.IsManaged() == signin::Tribool::kTrue);
   FireWebUIListener("account-info-changed", value);
 }
 

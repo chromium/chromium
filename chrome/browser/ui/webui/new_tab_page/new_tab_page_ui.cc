@@ -663,8 +663,8 @@ bool NewTabPageUI::IsManagedProfile(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   return /* Can be null if Chrome signin is disabled. */ identity_manager &&
          identity_manager
-             ->FindExtendedPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-             .IsManaged();
+                 ->FindExtendedPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                 .IsManaged() == signin::Tribool::kTrue;
 }
 
 void NewTabPageUI::BindInterface(

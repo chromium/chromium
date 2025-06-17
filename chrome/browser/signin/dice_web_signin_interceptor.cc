@@ -281,7 +281,8 @@ ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
 // this information we will cancel the interception completely.
 // Returns false otherwise.
 bool IsRequiredExtendedAccountInfoAvailable(const AccountInfo& account_info) {
-  return account_info.IsValid();
+  return account_info.IsValid() &&
+         account_info.IsManaged() != signin::Tribool::kUnknown;
 }
 
 // Returns true if enterprise separation is required.
@@ -325,7 +326,7 @@ std::optional<bool> EnterpriseSeparationMaybeRequired(
     return std::nullopt;
   }
   // If the intercepted account is not managed, no interception required.
-  if (!intercepted_account_info.IsManaged()) {
+  if (!signin::TriboolToBoolOrDie(intercepted_account_info.IsManaged())) {
     return false;
   }
   // If `profile` requires enterprise profile separation, return true.
@@ -750,9 +751,12 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
   DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
   CoreAccountInfo primary_account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  bool intercepted_account_managed =
+      signin::TriboolToBoolOrDie(intercepted_account_info.IsManaged());
+
   // In case of re-auth of a managed primary account, do not show the enterprise
   // separation dialog if the user already consented to enterprise management.
-  if (intercepted_account_info.IsManaged() &&
+  if (intercepted_account_managed &&
       IsReauthPrimaryAccount(state_->new_account_interception_,
                              intercepted_account_info.account_id,
                              identity_manager_) &&
@@ -774,7 +778,7 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
     return false;
   }
 
-  return intercepted_account_info.IsManaged();
+  return intercepted_account_managed;
 }
 
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
@@ -786,7 +790,7 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     return false;
   }
 
-  if (!intercepted_account_info.IsManaged()) {
+  if (intercepted_account_info.IsManaged() != signin::Tribool::kTrue) {
     return false;
   }
 
@@ -829,7 +833,8 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
     return false;
   }
 
-  return intercepted_account_info.IsManaged() || primary_acccount.IsManaged();
+  return signin::TriboolToBoolOrDie(intercepted_account_info.IsManaged()) ||
+         primary_acccount.IsManaged() == signin::Tribool::kTrue;
 }
 
 bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
@@ -1052,7 +1057,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   bool show_managed_disclaimer =
       *interception_type !=
           WebSigninInterceptor::SigninInterceptionType::kProfileSwitch &&
-      (info.IsManaged() ||
+      (info.IsManaged() == signin::Tribool::kTrue ||
        policy::ManagementServiceFactory::GetForPlatform()->IsManaged());
 
   MaybeRecordSupervisedUserStateMetrics(info, interception_type.value());

@@ -35,6 +35,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -284,7 +285,7 @@ void ManagedUserProfileNoticeUI::Initialize(
                 profile_management::features::kOidcAuthProfileManagement));
 #endif
   }
-  if (create_param->account_info.IsManaged()) {
+  if (create_param->account_info.IsManaged() == signin::Tribool::kTrue) {
     update_data.Set(
         "profileDisclosureSubtitle",
         l10n_util::GetStringFUTF16(
@@ -293,7 +294,7 @@ void ManagedUserProfileNoticeUI::Initialize(
                 create_param->account_info.email))));
   }
 
-  if (!create_param->account_info.IsManaged()) {
+  if (create_param->account_info.IsManaged() != signin::Tribool::kTrue) {
     update_data.Set("valuePropSubtitle",
                     l10n_util::GetStringUTF16(
                         IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE));

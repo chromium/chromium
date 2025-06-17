@@ -494,7 +494,7 @@ TEST_F(DiceWebSigninInterceptorTest,
   // Primary account is set.
   ASSERT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
-  ASSERT_TRUE(primary_account_info.IsManaged());
+  ASSERT_EQ(primary_account_info.IsManaged(), signin::Tribool::kTrue);
   EXPECT_TRUE(interceptor()->ShouldEnforceEnterpriseProfileSeparation(
       primary_account_info));
 

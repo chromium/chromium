@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -52,11 +53,6 @@ BASE_FEATURE(kSigninInterceptSimpleButtons,
 constexpr char kEnterprizeBadgeSource[] = "cr:domain";
 constexpr char kSupervisedBadgeSource[] = "cr:kite";
 
-// Returns true if the account is managed (aka Enterprise, or Dasher).
-bool IsManaged(const AccountInfo& info) {
-  return info.hosted_domain != kNoHostedDomainFound;
-}
-
 // Returns true if the account capabilities are marked as supervised.
 bool IsSupervisedUser(const AccountCapabilities& capabilities) {
   return capabilities.is_subject_to_parental_controls() ==
@@ -77,7 +73,7 @@ base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
   base::Value::Dict account_info_value;
   std::string_view avatar_badge = "";
   std::string avatar_badge_alt_text = "";
-  if (IsManaged(info)) {
+  if (info.IsManaged() == signin::Tribool::kTrue) {
     avatar_badge = kEnterprizeBadgeSource;
   } else if (IsSupervisedUser(info.capabilities) &&
              base::FeatureList::IsEnabled(
@@ -473,9 +469,12 @@ std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
         base::ASCIIToUTF16(learn_more_url));
   }
 
-  std::string manager_domain = intercepted_account().IsManaged()
-                                   ? intercepted_account().hosted_domain
-                                   : std::string();
+  // TODO(crbug.com/425456152): Handle the flex org case when there is no
+  // hosted domain for managed accounts.
+  std::string manager_domain =
+      intercepted_account().IsManaged() == signin::Tribool::kTrue
+          ? intercepted_account().hosted_domain
+          : std::string();
   if (manager_domain.empty()) {
     manager_domain = GetDeviceManagerIdentity().value_or(std::string());
   }

@@ -23,6 +23,7 @@
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -281,13 +282,9 @@ void SigninMetricsService::OnPrimaryAccountChanged(
             event_details.GetCurrentState().primary_account;
         const AccountInfo& extended_info =
             identity_manager_->FindExtendedAccountInfo(account);
-        signin::Tribool is_managed =
-            extended_info.hosted_domain.empty()
-                ? signin::Tribool::kUnknown
-                : signin::TriboolFromBool(extended_info.IsManaged());
 
         active_primary_accounts_metrics_recorder_->MarkAccountAsActiveNow(
-            account.gaia, is_managed);
+            account.gaia, extended_info.IsManaged());
       }
 
       break;
@@ -434,9 +431,9 @@ void SigninMetricsService::OnExtendedAccountInfoUpdated(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   if (active_primary_accounts_metrics_recorder_ &&
-      !info.hosted_domain.empty()) {
+      info.IsManaged() != signin::Tribool::kUnknown) {
     active_primary_accounts_metrics_recorder_->MarkAccountAsManaged(
-        info.gaia, info.IsManaged());
+        info.gaia, signin::TriboolToBoolOrDie(info.IsManaged()));
   }
 }
 
@@ -526,9 +523,10 @@ void SigninMetricsService::UpdateIsManagedForAllAccounts() {
   std::vector<AccountInfo> accounts =
       identity_manager_->GetExtendedAccountInfoForAccountsWithRefreshToken();
   for (const AccountInfo& extended_info : accounts) {
-    if (!extended_info.hosted_domain.empty()) {
+    if (extended_info.IsManaged() != signin::Tribool::kUnknown) {
       active_primary_accounts_metrics_recorder_->MarkAccountAsManaged(
-          extended_info.gaia, extended_info.IsManaged());
+          extended_info.gaia,
+          signin::TriboolToBoolOrDie(extended_info.IsManaged()));
     }
   }
 }
