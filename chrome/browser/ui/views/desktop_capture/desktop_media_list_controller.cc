@@ -320,9 +320,17 @@ bool DesktopMediaListController::ShouldAutoAccept(
     return true;
   }
 
-  return (!auto_select_source_.empty() &&
-          source.name.find(base::ASCIIToUTF16(auto_select_source_)) !=
-              std::u16string::npos);
+  if (auto_select_source_.empty()) {
+    return false;
+  }
+
+  // TODO(crbug.com/41493366): In a follow-up CL, allow using
+  // auto_select_source_ only if it's a TYPE_SCREEN capture.
+  std::u16string lower_case_source_name = base::ToLowerASCII(source.name);
+  std::string lower_case_auto_select_source =
+      base::ToLowerASCII(auto_select_source_);
+  return lower_case_source_name.find(base::ASCIIToUTF16(
+             lower_case_auto_select_source)) != std::u16string::npos;
 }
 
 bool DesktopMediaListController::ShouldAutoReject(
