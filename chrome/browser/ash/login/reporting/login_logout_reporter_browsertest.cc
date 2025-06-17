@@ -173,6 +173,7 @@ class LoginLogoutReporterBrowserTest
  protected:
   LoginLogoutReporterBrowserTest() {
     login_manager_.set_session_restore_enabled();
+    SetAllowFeaturesSwitches(/*allow=*/true);
   }
 
   ~LoginLogoutReporterBrowserTest() override = default;

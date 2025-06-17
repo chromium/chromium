@@ -129,6 +129,7 @@ class UserAddedRemovedReporterBrowserTest
     // Add unaffiliated user for testing purposes.
     login_manager_mixin_.AppendRegularUsers(1);
     login_manager_mixin_.set_session_restore_enabled();
+    SetAllowFeaturesSwitches(/*allow=*/true);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
