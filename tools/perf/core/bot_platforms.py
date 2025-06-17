@@ -364,21 +364,21 @@ def _views_perftests(estimated_runtime=7):
 
 
 # Speedometer:
-def _speedometer2_0_crossbench(estimated_runtime=60, arguments=None):
+def _speedometer2_0_crossbench(estimated_runtime=60, arguments=()):
   return CrossbenchConfig('speedometer2.0.crossbench',
                           'speedometer_2.0',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
-def _speedometer2_1_crossbench(estimated_runtime=60, arguments=None):
+def _speedometer2_1_crossbench(estimated_runtime=60, arguments=()):
   return CrossbenchConfig('speedometer2.1.crossbench',
                           'speedometer_2.1',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
-def _speedometer2_crossbench(estimated_runtime=60, arguments=None):
+def _speedometer2_crossbench(estimated_runtime=60, arguments=()):
   """Alias for the latest Speedometer 2.X version."""
   return CrossbenchConfig('speedometer2.crossbench',
                           'speedometer_2',
@@ -386,21 +386,21 @@ def _speedometer2_crossbench(estimated_runtime=60, arguments=None):
                           arguments=arguments)
 
 
-def _speedometer3_0_crossbench(estimated_runtime=60, arguments=None):
+def _speedometer3_0_crossbench(estimated_runtime=60, arguments=()):
   return CrossbenchConfig('speedometer3.0.crossbench',
                           'speedometer_3.0',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
-def _speedometer3_1_crossbench(estimated_runtime=60, arguments=None):
+def _speedometer3_1_crossbench(estimated_runtime=60, arguments=()):
   return CrossbenchConfig('speedometer3.1.crossbench',
                           'speedometer_3.1',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
-def _speedometer3_crossbench(estimated_runtime=60, arguments=None):
+def _speedometer3_crossbench(estimated_runtime=60, arguments=()):
   """Alias for the latest Speedometer 3.X version."""
   return CrossbenchConfig('speedometer3.crossbench',
                           'speedometer_3',
@@ -408,7 +408,8 @@ def _speedometer3_crossbench(estimated_runtime=60, arguments=None):
                           arguments=arguments)
 
 
-def _speedometer_main_crossbench(estimated_runtime=60, arguments=None):
+def _speedometer_main_crossbench(estimated_runtime=60, arguments=()):
+  arguments += ("--detailed-metrics")
   return CrossbenchConfig('speedometer_main.crossbench',
                           'speedometer_main',
                           estimated_runtime=estimated_runtime,
@@ -416,25 +417,28 @@ def _speedometer_main_crossbench(estimated_runtime=60, arguments=None):
 
 
 # MotionMark:
-def _motionmark1_2_crossbench(estimated_runtime=360):
+def _motionmark1_2_crossbench(estimated_runtime=360, arguments=()):
   return CrossbenchConfig('motionmark1.2.crossbench',
                           'motionmark_1.2',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
-def _motionmark1_3_0_crossbench(estimated_runtime=360):
+def _motionmark1_3_0_crossbench(estimated_runtime=360, arguments=()):
   return CrossbenchConfig('motionmark1.3.0.crossbench',
                           'motionmark_1.3.0',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
-def _motionmark1_3_1_crossbench(estimated_runtime=360):
+def _motionmark1_3_1_crossbench(estimated_runtime=360, arguments=()):
   return CrossbenchConfig('motionmark1.3.1.crossbench',
                           'motionmark_1.3.1',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
-def _motionmark1_3_crossbench(estimated_runtime=360, arguments=None):
+def _motionmark1_3_crossbench(estimated_runtime=360, arguments=()):
   """Alias for the latest MotionMark 1.3.X version."""
   return CrossbenchConfig('motionmark1.3.crossbench',
                           'motionmark_1.3',
@@ -442,32 +446,36 @@ def _motionmark1_3_crossbench(estimated_runtime=360, arguments=None):
                           arguments=arguments)
 
 
-def _motionmark_main_crossbench(estimated_runtime=360):
+def _motionmark_main_crossbench(estimated_runtime=360, arguments=()):
   return CrossbenchConfig('motionmark_main.crossbench',
                           'motionmark_main',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
 # JetStream:
-def _jetstream2_0_crossbench(estimated_runtime=180):
+def _jetstream2_0_crossbench(estimated_runtime=180, arguments=()):
   return CrossbenchConfig('jetstream2.0.crossbench',
                           'jetstream_2.0',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
-def _jetstream2_1_crossbench(estimated_runtime=180):
+def _jetstream2_1_crossbench(estimated_runtime=180, arguments=()):
   return CrossbenchConfig('jetstream2.1.crossbench',
                           'jetstream_2.1',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
-def _jetstream2_2_crossbench(estimated_runtime=180):
+def _jetstream2_2_crossbench(estimated_runtime=180, arguments=()):
   return CrossbenchConfig('jetstream2.2.crossbench',
                           'jetstream_2.2',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
-def _jetstream2_crossbench(estimated_runtime=180, arguments=None):
+def _jetstream2_crossbench(estimated_runtime=180, arguments=()):
   """Alias of the latest JetStream 2.X version."""
   return CrossbenchConfig('jetstream2.crossbench',
                           'jetstream_2',
@@ -475,21 +483,22 @@ def _jetstream2_crossbench(estimated_runtime=180, arguments=None):
                           arguments=arguments)
 
 
-def _jetstream_main_crossbench(estimated_runtime=180):
+def _jetstream_main_crossbench(estimated_runtime=180, arguments=()):
   return CrossbenchConfig('jetstream_main.crossbench',
                           'jetstream_main',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
 # LoadLine:
-def _loadline_phone_crossbench(estimated_runtime=7000, arguments=None):
+def _loadline_phone_crossbench(estimated_runtime=7000, arguments=()):
   return CrossbenchConfig('loadline_phone.crossbench',
                           'loadline-phone-fast',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
-def _loadline_tablet_crossbench(estimated_runtime=3600, arguments=None):
+def _loadline_tablet_crossbench(estimated_runtime=3600, arguments=()):
   return CrossbenchConfig('loadline_tablet.crossbench',
                           'loadline-tablet-fast',
                           estimated_runtime=estimated_runtime,
