@@ -453,10 +453,14 @@ void ReadAnythingUntrustedPageHandler::DidUpdateAudioMutingState(bool muted) {
 
 bool ReadAnythingUntrustedPageHandler::AreInnerContentsPdfContent(
     std::vector<content::WebContents*> inner_contents) {
+#if BUILDFLAG(ENABLE_PDF)
   return inner_contents.size() == 1 &&
          IsPdfExtensionOrigin(inner_contents[0]
                                   ->GetPrimaryMainFrame()
                                   ->GetLastCommittedOrigin());
+#else
+  return false;
+#endif
 }
 
 void ReadAnythingUntrustedPageHandler::WebContentsDestroyed() {

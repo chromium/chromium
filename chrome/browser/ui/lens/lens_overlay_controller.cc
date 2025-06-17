@@ -1733,6 +1733,7 @@ void LensOverlayController::InitializeOverlay(
         initialization_data_->last_retrieved_most_visible_page_,
         GetUiScaleFactor(), invocation_time_);
 
+#if BUILDFLAG(ENABLE_PDF)
     // TODO(crbug.com/418825720): When StorePageContentAndContinueInitialization
     // is called, the contextualization controller does not update its own
     // contextualization. In this case, the partial PDF text should be sent here
@@ -1745,6 +1746,7 @@ void LensOverlayController::InitializeOverlay(
                   &LensOverlayController::OnPdfPartialPageTextRetrieved,
                   weak_factory_.GetWeakPtr()));
     }
+#endif
   }
 
   // If there is a pending contextual search request, issue it now that the

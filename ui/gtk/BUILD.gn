@@ -92,10 +92,6 @@ component("gtk") {
     "native_theme_gtk.h",
     "nav_button_provider_gtk.cc",
     "nav_button_provider_gtk.h",
-    "printing/print_dialog_gtk.cc",
-    "printing/print_dialog_gtk.h",
-    "printing/printing_gtk_util.cc",
-    "printing/printing_gtk_util.h",
     "select_file_dialog_linux_gtk.cc",
     "select_file_dialog_linux_gtk.h",
     "settings_provider.h",
@@ -104,6 +100,16 @@ component("gtk") {
     "window_frame_provider_gtk.cc",
     "window_frame_provider_gtk.h",
   ]
+
+  if (enable_printing) {
+    sources += [
+      "printing/print_dialog_gtk.cc",
+      "printing/print_dialog_gtk.h",
+      "printing/printing_gtk_util.cc",
+      "printing/printing_gtk_util.h",
+    ]
+  }
+
   defines = [ "IS_GTK_IMPL" ]
   configs += [
     "//build/config/linux/pangocairo",

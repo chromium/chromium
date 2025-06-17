@@ -24,6 +24,7 @@ class LensSearchController;
 
 namespace content {
 class RenderFrameHost;
+class RenderWidgetHostView;
 }  // namespace content
 
 namespace content_extraction {

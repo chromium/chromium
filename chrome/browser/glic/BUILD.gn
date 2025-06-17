@@ -173,7 +173,6 @@ source_set("impl") {
     "//components/language/core/common",
     "//components/metrics",
     "//components/metrics_services_manager:metrics_services_manager",
-    "//components/pdf/browser:browser",
     "//components/pdf/common:constants",
     "//components/pref_registry",
     "//components/prefs",
@@ -184,6 +183,10 @@ source_set("impl") {
     "//ui/webui",
     "//url",
   ]
+
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser:browser" ]
+  }
 
   if (is_mac) {
     deps += [ "//ui/accelerated_widget_mac" ]
