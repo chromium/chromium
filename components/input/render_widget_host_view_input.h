@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "components/input/event_with_latency_info.h"
-#include "components/input/input_router_impl.h"
 #include "components/input/render_input_router.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/hit_test/hit_test_data_provider.h"

@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/input/event_with_latency_info.h"
-#include "components/input/input_router_impl.h"
 #include "components/input/render_input_router.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
