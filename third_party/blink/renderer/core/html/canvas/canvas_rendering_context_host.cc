@@ -190,7 +190,8 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
   auto* provider = GetResourceProviderForWebGPU();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
-      provider = CreateCanvasResourceProviderWebGPU();
+      CreateCanvasResourceProviderWebGPU();
+      provider = GetResourceProviderForWebGPU();
     }
     if (!provider) {
       did_fail_to_create_resource_provider_ = true;
@@ -204,17 +205,15 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
   return provider;
 }
 
-CanvasResourceProvider*
-CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
-  std::unique_ptr<CanvasResourceProvider> provider;
+void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
+  CHECK(!GetResourceProviderForWebGPU());
+
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-        Size(), GetRenderingContextFormat(), GetRenderingContextAlphaType(),
-        GetRenderingContextColorSpace(), gpu::SharedImageUsageSet(), this);
+    SetResourceProviderWithoutContextCheck(
+        CanvasResourceProvider::CreateWebGPUImageProvider(
+            Size(), GetRenderingContextFormat(), GetRenderingContextAlphaType(),
+            GetRenderingContextColorSpace(), gpu::SharedImageUsageSet(), this));
   }
-  auto* raw_provider = provider.get();
-  ReplaceResourceProvider(std::move(provider));
-  return raw_provider;
 }
 
 void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
