@@ -106,18 +106,4 @@ IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, AddObserver) {
   media_ui_ash()->RemoveObserver(&observer);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, KeepMediaTrayPinned) {
-  ash::MediaTray::SetPinnedToShelf(true);
-  ASSERT_TRUE(ash::MediaTray::IsPinnedToShelf());
-  media_ui_ash()->ShowDevicePicker("placeholder_item_id");
-  EXPECT_TRUE(ash::MediaTray::IsPinnedToShelf());
-}
-
-IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, KeepMediaTrayUnpinned) {
-  ash::MediaTray::SetPinnedToShelf(false);
-  ASSERT_FALSE(ash::MediaTray::IsPinnedToShelf());
-  media_ui_ash()->ShowDevicePicker("placeholder_item_id");
-  EXPECT_FALSE(ash::MediaTray::IsPinnedToShelf());
-}
-
 }  // namespace crosapi

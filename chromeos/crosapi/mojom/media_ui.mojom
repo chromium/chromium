@@ -20,10 +20,5 @@ interface MediaUI {
       mojo_base.mojom.UnguessableToken id,
       pending_remote<global_media_controls.mojom.DeviceService> service_remote);
 
-  // Requests Ash to show a media playback device picker for the media item
-  // represented by `item_id`.
-  // `item_id` may come from media_session.mojom.AudioFocusRequestState for
-  // local media, or media_router.mojom.MediaRoute for Cast media.
-  [MinVersion=1]
-  ShowDevicePicker@1(string item_id);
+  // ShowDevicePicker@1 was removed.
 };

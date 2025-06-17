@@ -45,6 +45,13 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/system/media/media_tray.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
@@ -228,8 +235,28 @@ void MediaNotificationService::ShowDialogAsh(
     item_id = content::MediaSession::GetRequestIdFromWebContents(web_contents)
                   .ToString();
   }
-  if (GetMediaUI()) {
-    GetMediaUI()->ShowDevicePicker(item_id);
+
+  // Keep Media Tray pinned to use a separate widget in kiosk sessions because
+  // the Unified System Tray bubble is not available.
+  if (ash::Shell::Get()->session_controller()->IsRunningInAppMode()) {
+    ash::MediaTray::SetPinnedToShelf(true);
+  }
+
+  if (ash::MediaTray::IsPinnedToShelf()) {
+    ash::StatusAreaWidget::ForWindow(ash::Shell::Get()->GetPrimaryRootWindow())
+        ->media_tray()
+        ->ShowBubbleWithItem(item_id);
+  } else {
+    ash::UnifiedSystemTray* tray =
+        ash::StatusAreaWidget::ForWindow(
+            ash::Shell::Get()->GetPrimaryRootWindow())
+            ->unified_system_tray();
+    tray->ShowBubble();
+    tray->bubble()
+        ->unified_system_tray_controller()
+        ->ShowMediaControlsDetailedView(
+            global_media_controls::GlobalMediaControlsEntryPoint::kPresentation,
+            item_id);
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
