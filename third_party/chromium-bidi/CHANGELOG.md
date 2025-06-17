@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.3.1...chromium-bidi-v6.0.0) (2025-06-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 139.0.7215.0 ([#3450](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3450))
+
+### Features
+
+* **chrome:** update the pinned browser version to 139.0.7215.0 ([#3450](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3450)) ([4c53302](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4c5330210d3c737ab81bf57a93109bef83f04f5a))
+* Support GATT descriptor event ([#3443](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3443)) ([41eddf8](https://github.com/GoogleChromeLabs/chromium-bidi/commit/41eddf84d7d3b38ec4d971bf94a5e8572e13b148))
+
 ## [5.3.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.3.0...chromium-bidi-v5.3.1) (2025-05-23)
 
 
