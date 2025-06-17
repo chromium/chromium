@@ -154,19 +154,13 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
     suggestions_with_labels.push_back(std::move(s.suggestion));
   }
 
-  // The final list of labels to be used by each suggestion. Note that they
-  // always contain at least the entity name.
-  std::vector<EntityLabel> suggestions_labels;
-
   // Step #2
   // Get the list of disambiguating labels. The list is created for the entities
   // used to build the suggestions, but it also uses other entities that can
   // fill a field in the form.
-  std::vector<EntityLabel>
-      disambiguating_labels_for_all_entities_that_fill_section =
-          GetLabelsForSuggestions(suggestions_with_metadata,
-                                  other_entities_that_can_fill_section,
-                                  app_locale);
+  std::vector<EntityLabel> suggestions_labels =
+      GetLabelsForSuggestions(suggestions_with_metadata,
+                              other_entities_that_can_fill_section, app_locale);
 
   for (size_t i = 0; i < num_suggestions; i++) {
     // Do not assign labels that are identical or derived from the triggering
@@ -178,15 +172,14 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
     // triggering field.
     CHECK(attribute);
 
-    EntityLabel disambiguating_labels =
-        std::move(disambiguating_labels_for_all_entities_that_fill_section[i]);
+    EntityLabel& disambiguating_labels = suggestions_labels[i];
     std::erase_if(disambiguating_labels, [&](const std::u16string& label) {
       return label == attribute->GetCompleteInfo(app_locale);
     });
 
-    EntityLabel& suggestion_labels = suggestions_labels.emplace_back();
-    suggestion_labels.push_back(std::u16string(entity.type().GetNameForI18n()));
-    base::Extend(suggestion_labels, std::move(disambiguating_labels));
+    disambiguating_labels.insert(
+        disambiguating_labels.begin(),
+        std::u16string(entity.type().GetNameForI18n()));
   }
 
   // Step #3:
