@@ -27,6 +27,17 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "10_fleet",
+    generate_pyl_entry = False,
+    swarming = targets.swarming(
+        dimensions = {
+            "device_os": "QQ1A.191205.008",
+            "device_os_flavor": "google",
+        },
+    ),
+)
+
+targets.mixin(
     name = "11-x86-emulator",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",

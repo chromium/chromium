@@ -110,7 +110,6 @@ reviver/runner
 reviver/win-launcher
 try/3pp-linux-amd64-packager
 try/3pp-mac-amd64-packager
-try/android-10-arm64-rel
 try/android-11-x86-rel
 try/android-12-x64-dbg
 try/android-12l-x64-dbg

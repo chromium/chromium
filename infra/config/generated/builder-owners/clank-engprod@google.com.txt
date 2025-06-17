@@ -47,6 +47,7 @@ ci/android-pie-arm64-dbg
 ci/android-pie-x86-rel
 ci/android-x86-code-coverage
 try/3pp-mac-arm64-packager
+try/android-10-arm64-rel
 try/android-10-x86-fyi-rel
 try/android-10-x86-rel
 try/android-12-x64-rel

@@ -44,6 +44,7 @@ consoles.list_view(
 
 try_.builder(
     name = "android-10-arm64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-10-arm64-rel",
     ],
@@ -53,6 +54,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    contact_team_email = "clank-engprod@google.com",
 )
 
 try_.builder(

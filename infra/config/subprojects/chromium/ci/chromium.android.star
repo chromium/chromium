@@ -904,6 +904,8 @@ ci.thin_tester(
 
 ci.builder(
     name = "android-10-arm64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run chromium and XR tests on Android 10 devices.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -949,16 +951,9 @@ ci.builder(
             "check_chrome_static_initializers",
         ],
         mixins = [
-            targets.mixin(
-                swarming = targets.swarming(
-                    dimensions = {
-                        "device_os": "QQ1A.191205.008",
-                        "device_os_flavor": "google",
-                    },
-                ),
-            ),
             "has_native_resultdb_integration",
             "walleye",
+            "10_fleet",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
