@@ -37,6 +37,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -53,6 +54,7 @@ public class ContextMenuHeaderMediatorTest {
 
     @Mock LargeIconBridge.Natives mMockLargeIconBridgeJni;
     @Mock ContextMenuNativeDelegate mNativeDelegate;
+    @Mock private MenuModelBridge mMenuModelBridge;
 
     private Activity mActivity;
     private final Profile mProfile = Mockito.mock(Profile.class);
@@ -76,6 +78,7 @@ public class ContextMenuHeaderMediatorTest {
         final ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         url,
                         GURL.emptyGURL(),
@@ -124,6 +127,7 @@ public class ContextMenuHeaderMediatorTest {
         final ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
@@ -165,6 +169,7 @@ public class ContextMenuHeaderMediatorTest {
         final ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.FILE,
                         GURL.emptyGURL(),
                         linkUrl,

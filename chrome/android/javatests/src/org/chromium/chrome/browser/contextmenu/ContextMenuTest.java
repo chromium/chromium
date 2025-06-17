@@ -104,6 +104,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.UiAndroidFeatures;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.url.GURL;
 
@@ -127,6 +128,7 @@ public class ContextMenuTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private PrintingController mPrintingController;
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
+    @Mock private MenuModelBridge mMenuModelBridge;
 
     @ClassRule
     public static DownloadTestRule sDownloadTestRule =
@@ -1115,6 +1117,7 @@ public class ContextMenuTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL("http://example.com/"),
                         GURL.emptyGURL(),

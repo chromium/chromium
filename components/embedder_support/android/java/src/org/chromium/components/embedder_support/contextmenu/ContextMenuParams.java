@@ -15,6 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.url.GURL;
 
 /**
@@ -193,6 +194,7 @@ public class ContextMenuParams {
     @VisibleForTesting
     public ContextMenuParams(
             long nativePtr,
+            MenuModelBridge menuModelBridge,
             @ContextMenuDataMediaType int mediaType,
             GURL pageUrl,
             GURL linkUrl,
@@ -241,6 +243,7 @@ public class ContextMenuParams {
     @CalledByNative
     private static ContextMenuParams create(
             long nativePtr,
+            MenuModelBridge menuModelBridge,
             @ContextMenuDataMediaType int mediaType,
             GURL pageUrl,
             GURL linkUrl,
@@ -265,6 +268,7 @@ public class ContextMenuParams {
                         : new Referrer(sanitizedReferrer.getSpec(), referrerPolicy);
         return new ContextMenuParams(
                 nativePtr,
+                menuModelBridge,
                 mediaType,
                 pageUrl,
                 linkUrl,

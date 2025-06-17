@@ -51,6 +51,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
   return base::android::ScopedJavaGlobalRef<jobject>(
       Java_ContextMenuParams_create(
           env, reinterpret_cast<intptr_t>(&params),
+          nullptr,  // TODO(crbug.com/410563157): Replace this with
+                    // menu_model_bridge->GetJavaObj()
           static_cast<int>(params.media_type),
           url::GURLAndroid::FromNativeGURL(env, params.page_url),
           url::GURLAndroid::FromNativeGURL(env, params.link_url),

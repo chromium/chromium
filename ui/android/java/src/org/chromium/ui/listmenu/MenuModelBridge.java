@@ -35,7 +35,7 @@ public class MenuModelBridge {
     }
 
     /** {@return A {@link MenuModelBridge} instance.} */
-    private MenuModelBridge() {}
+    public MenuModelBridge() {}
 
     /** {@return The list of {@link ListItem} held by this {@link MenuModelBridge}.} */
     public List<ListItem> getListItems() {

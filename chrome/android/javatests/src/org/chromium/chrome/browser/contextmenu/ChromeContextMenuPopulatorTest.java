@@ -59,6 +59,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.MenuSourceType;
@@ -95,6 +96,7 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private WebContents mWebContents;
     @Mock private Profile mProfile;
     @Mock private Profile.Natives mProfileNatives;
+    @Mock private MenuModelBridge mMenuModelBridge;
 
     private ChromeContextMenuPopulator mPopulator;
 
@@ -239,6 +241,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -346,6 +349,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -418,6 +422,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -493,6 +498,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(DATA_URL),
@@ -563,6 +569,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         mailto,
@@ -642,6 +649,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         tel,
@@ -726,6 +734,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         new GURL(PAGE_URL),
                         url,
@@ -835,6 +844,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         new GURL(PAGE_URL),
                         url,
@@ -921,6 +931,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         new GURL(PAGE_URL),
                         GURL.emptyGURL(),
@@ -1008,6 +1019,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -1115,6 +1127,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         new GURL(PAGE_URL),
                         GURL.emptyGURL(),
@@ -1181,6 +1194,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -1252,6 +1266,7 @@ public class ChromeContextMenuPopulatorTest {
         params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL("about://blank"), // have an accepted scheme but not HTTP
@@ -1290,6 +1305,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -1339,6 +1355,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -1392,6 +1409,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -1435,6 +1453,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -1488,6 +1507,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         /* nativePtr= */ 0,
+                        /* menuModelBridge */ mMenuModelBridge,
                         /* mediaType= */ 0,
                         /* pageUrl= */ GURL.emptyGURL(),
                         /* linkUrl= */ GURL.emptyGURL(),
@@ -1535,6 +1555,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams linkParams =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         0,
                         new GURL(PAGE_URL),
                         new GURL(LINK_URL),
@@ -1575,6 +1596,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams imageParams =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         new GURL(PAGE_URL),
                         GURL.emptyGURL(),
@@ -1617,6 +1639,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         new GURL(PAGE_URL),
                         GURL.emptyGURL(),
@@ -1659,6 +1682,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         new GURL(PAGE_URL),
                         GURL.emptyGURL(),
@@ -1703,6 +1727,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         new GURL(PAGE_URL),
                         GURL.emptyGURL(),
@@ -1747,6 +1772,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         new GURL(PAGE_URL),
                         GURL.emptyGURL(),

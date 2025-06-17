@@ -15,14 +15,19 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link ContextMenuUtils}. */
@@ -32,6 +37,10 @@ public class ContextMenuUtilsUnitTest {
     private static final String sTitleText = "titleText";
     private static final String sLinkText = "linkText";
     private static final String sSrcUrl = "https://www.google.com/";
+
+    @Mock private MenuModelBridge mMenuModelBridge;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Before
     public void setup() {
@@ -49,6 +58,7 @@ public class ContextMenuUtilsUnitTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
@@ -75,6 +85,7 @@ public class ContextMenuUtilsUnitTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
@@ -101,6 +112,7 @@ public class ContextMenuUtilsUnitTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
@@ -127,6 +139,7 @@ public class ContextMenuUtilsUnitTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
+                        mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
