@@ -8267,7 +8267,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         इससे जुड़ी सेटिंग को, कार्ड मेन्यू में जाकर मैनेज किया जा सकता है. इसके अलावा, 'Chrome को पसंद के मुताबिक बनाएं' सेक्शन में मौजूद ज़्यादा विकल्प देखे जा सकते हैं.</translation>
-<translation id="6831043979455480757">Translate</translation>
+<translation id="6831043979455480757">अनुवाद करें</translation>
 <translation id="6832218595502288407">बाईं ओर अलाइन करें</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{क्या टैब को हटाकर ग्रुप मिटाना है?}=1{क्या टैब को हटाकर ग्रुप मिटाना है?}one{क्या टैब को हटाकर ग्रुप मिटाना है?}other{क्या टैब हटाकर ग्रुप मिटाने हैं?}}</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ग्रुप में मौजूद टैब हटाया गया - <ph name="GROUP_CONTENTS" /></translation>
