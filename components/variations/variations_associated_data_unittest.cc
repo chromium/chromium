@@ -12,8 +12,11 @@ namespace variations {
 
 namespace {
 
-const VariationID TEST_VALUE_A = 3300200;
-const VariationID TEST_VALUE_B = 3300201;
+constexpr VariationID TEST_VALUE_A = 3300200;
+constexpr VariationID TEST_VALUE_B = 3300201;
+constexpr IDCollectionKey APP = GOOGLE_APP;
+constexpr std::string_view TRIAL = "trial";
+constexpr std::string_view GROUP = "group";
 
 // Convenience helper to retrieve the variations::VariationID for a FieldTrial.
 // Note that this will do the group assignment in |trial| if not already done.
@@ -113,15 +116,46 @@ TEST_F(VariationsAssociatedDataTest, NoAssociation) {
 
 // Ensure that the AssociateGoogleVariationIDForce works as expected.
 TEST_F(VariationsAssociatedDataTest, ForceAssociation) {
-  EXPECT_EQ(EMPTY_ID, GetGoogleVariationID(GOOGLE_APP, "trial", "group"));
+  EXPECT_EQ(EMPTY_ID, GetGoogleVariationID(APP, TRIAL, GROUP));
 
-  AssociateGoogleVariationID(GOOGLE_APP, "trial", "group", TEST_VALUE_A);
-  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(GOOGLE_APP, "trial", "group"));
-  AssociateGoogleVariationID(GOOGLE_APP, "trial", "group", TEST_VALUE_B);
-  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(GOOGLE_APP, "trial", "group"));
+  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A);
+  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(APP, TRIAL, GROUP));
+  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_B);
+  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(APP, TRIAL, GROUP));
 
-  AssociateGoogleVariationIDForce(GOOGLE_APP, "trial", "group", TEST_VALUE_B);
-  EXPECT_EQ(TEST_VALUE_B, GetGoogleVariationID(GOOGLE_APP, "trial", "group"));
+  AssociateGoogleVariationIDForce(APP, TRIAL, GROUP, TEST_VALUE_B);
+  EXPECT_EQ(TEST_VALUE_B, GetGoogleVariationID(APP, TRIAL, GROUP));
+}
+
+// Ensure that timeboxing works as expected.
+TEST_F(VariationsAssociatedDataTest, Timeboxing) {
+  // Associate a variation id that becomes visible in 7 days, for 7 days.
+  const base::Time timestamp = base::Time::Now();
+  const base::Time start = timestamp + base::Days(7);
+  const base::Time end = timestamp + base::Days(14);
+  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A, {start, end});
+
+  // The associated variation id is not visible before the time window starts.
+  EXPECT_EQ(EMPTY_ID,
+            GetGoogleVariationID(APP, TRIAL, GROUP, start - base::Days(3)));
+  EXPECT_EQ(EMPTY_ID,
+            GetGoogleVariationID(APP, TRIAL, GROUP, start - base::Seconds(1)));
+
+  // The associated variation id is visible between 7 days and 14 days.
+  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(APP, TRIAL, GROUP, start));
+  EXPECT_EQ(TEST_VALUE_A,
+            GetGoogleVariationID(APP, TRIAL, GROUP, start + base::Seconds(1)));
+  EXPECT_EQ(TEST_VALUE_A,
+            GetGoogleVariationID(APP, TRIAL, GROUP, start + base::Days(2)));
+  EXPECT_EQ(TEST_VALUE_A,
+            GetGoogleVariationID(APP, TRIAL, GROUP, end - base::Seconds(1)));
+  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(APP, TRIAL, GROUP, end));
+
+  // The associated variation id is not visible after 14 days.
+  EXPECT_EQ(EMPTY_ID,
+            GetGoogleVariationID(APP, TRIAL, GROUP, end + base::Seconds(1)));
+  EXPECT_EQ(EMPTY_ID,
+            GetGoogleVariationID(APP, TRIAL, GROUP, end + base::Days(15)));
 }
 
 }  // namespace variations

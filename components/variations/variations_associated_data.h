@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
-#include <string>
+#include <optional>
+#include <string_view>
 
 #include "base/metrics/field_trial.h"
+#include "base/time/time.h"
 #include "components/variations/active_field_trials.h"
 
 // This file provides various helpers that extend the functionality around
@@ -45,6 +47,31 @@
 namespace variations {
 
 typedef int VariationID;
+
+// A time window is used to timebox a VariationID. Each VariationID will be
+// transmitted via the X-Client-Data header only when the current time is
+// between the (inclusive) start and end timestamps of the TimeWindow for that
+// VariationID. These times are network times. The client should makes its best
+// effort to use a network synchronized time source when comparing the
+// `current_time` to the start and end timestamps of a TimeWindow.
+class COMPONENT_EXPORT(VARIATIONS) TimeWindow {
+ public:
+  TimeWindow() = default;
+  TimeWindow(base::Time start, base::Time end);
+
+  // Copyable and moveable.
+  TimeWindow(const TimeWindow& other) = default;
+  TimeWindow(TimeWindow&& other) = default;
+  TimeWindow& operator=(const TimeWindow& other) = default;
+  TimeWindow& operator=(TimeWindow&& other) = default;
+
+  base::Time start() const { return start_; }
+  base::Time end() const { return end_; }
+
+ private:
+  base::Time start_ = base::Time::Min();
+  base::Time end_ = base::Time::Max();
+};
 
 const VariationID EMPTY_ID = 0;
 
@@ -82,43 +109,56 @@ enum IDCollectionKey {
 // |group_name|, this does nothing. The group is denoted by |trial_name| and
 // |group_name|. This must be called whenever a FieldTrial is prepared (create
 // the trial and append groups) and needs to have a variations::VariationID
-// associated with it so Google servers can recognize the FieldTrial.
+// associated with it so Google servers can recognize the FieldTrial. The
+// transmission of the VariationID will be limited to the |time_window|.
 // Thread safe.
 COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationID(IDCollectionKey key,
-                                const std::string& trial_name,
-                                const std::string& group_name,
-                                VariationID id);
+                                std::string_view trial_name,
+                                std::string_view group_name,
+                                VariationID id,
+                                TimeWindow time_window = TimeWindow());
 
 // As above, but overwrites any previously set id. Thread safe.
 COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationIDForce(IDCollectionKey key,
-                                     const std::string& trial_name,
-                                     const std::string& group_name,
-                                     VariationID id);
+                                     std::string_view trial_name,
+                                     std::string_view group_name,
+                                     VariationID id,
+                                     TimeWindow time_window = TimeWindow());
 
 // As above, but takes an ActiveGroupId hash pair, rather than the string names.
 COMPONENT_EXPORT(VARIATIONS)
-void AssociateGoogleVariationIDForceHashes(IDCollectionKey key,
-                                           const ActiveGroupId& active_group,
-                                           VariationID id);
+void AssociateGoogleVariationIDForceHashes(
+    IDCollectionKey key,
+    ActiveGroupId active_group,
+    VariationID id,
+    TimeWindow time_window = TimeWindow());
 
 // Retrieve the variations::VariationID associated with a FieldTrial group for
 // collection |key|. The group is denoted by |trial_name| and |group_name|.
 // This will return variations::EMPTY_ID if there is currently no associated ID
 // for the named group. This API can be nicely combined with
 // FieldTrial::GetActiveFieldTrialGroups() to enumerate the variation IDs for
-// all active FieldTrial groups. Thread safe.
+// all active FieldTrial groups. If a |current_time| is provided, the
+// VariationID will be returned only if the current time is between the
+// (inclusive) start and end timestamps of the TimeWindow for that VariationID.
+// Thread safe.
 COMPONENT_EXPORT(VARIATIONS)
-VariationID GetGoogleVariationID(IDCollectionKey key,
-                                 const std::string& trial_name,
-                                 const std::string& group_name);
+VariationID GetGoogleVariationID(
+    IDCollectionKey key,
+    std::string_view trial_name,
+    std::string_view group_name,
+    std::optional<base::Time> current_time = std::nullopt);
 
 // Same as GetGoogleVariationID(), but takes in a hashed |active_group| rather
 // than the string trial and group name.
 COMPONENT_EXPORT(VARIATIONS)
-VariationID GetGoogleVariationIDFromHashes(IDCollectionKey key,
-                                           const ActiveGroupId& active_group);
+VariationID GetGoogleVariationIDFromHashes(
+    IDCollectionKey key,
+    ActiveGroupId active_group,
+    std::optional<base::Time> current_time = std::nullopt);
+
 
 // Expose some functions for testing.
 namespace testing {
