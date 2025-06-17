@@ -101,136 +101,121 @@ uint32_t GetGbmUsage(gfx::BufferUsage usage) {
   }
 }
 
-class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
- public:
-  GpuMemoryBufferImplGbm() = delete;
+}  // namespace
 
-  GpuMemoryBufferImplGbm(gfx::BufferFormat format, gbm_bo* buffer_object)
-      : format_(format), buffer_object_(buffer_object), mapped_(false) {
-    gfx::NativePixmapHandle native_pixmap_handle;
-    for (size_t i = 0;
-         i < static_cast<size_t>(gbm_bo_get_plane_count(buffer_object)); ++i) {
-      native_pixmap_handle.planes.push_back(gfx::NativePixmapPlane(
-          gbm_bo_get_stride_for_plane(buffer_object, i),
-          gbm_bo_get_offset(buffer_object, i),
-          gbm_bo_get_plane_size(buffer_object, i),
-          base::ScopedFD(gbm_bo_get_plane_fd(buffer_object, i))));
-    }
-    handle_ = gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
-    // Set a dummy id since this is for testing only.
-    handle_.id = gfx::GpuMemoryBufferId(0);
+GpuMemoryBufferImplGbm::GpuMemoryBufferImplGbm(gfx::BufferFormat format,
+                                               gbm_bo* buffer_object)
+    : format_(format), buffer_object_(buffer_object), mapped_(false) {
+  gfx::NativePixmapHandle native_pixmap_handle;
+  for (size_t i = 0;
+       i < static_cast<size_t>(gbm_bo_get_plane_count(buffer_object)); ++i) {
+    native_pixmap_handle.planes.push_back(gfx::NativePixmapPlane(
+        gbm_bo_get_stride_for_plane(buffer_object, i),
+        gbm_bo_get_offset(buffer_object, i),
+        gbm_bo_get_plane_size(buffer_object, i),
+        base::ScopedFD(gbm_bo_get_plane_fd(buffer_object, i))));
+  }
+  handle_ = gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
+  // Set a dummy id since this is for testing only.
+  handle_.id = gfx::GpuMemoryBufferId(0);
+}
+
+GpuMemoryBufferImplGbm::~GpuMemoryBufferImplGbm() {
+  if (mapped_) {
+    Unmap();
   }
 
-  GpuMemoryBufferImplGbm(const GpuMemoryBufferImplGbm&) = delete;
-  GpuMemoryBufferImplGbm& operator=(const GpuMemoryBufferImplGbm&) = delete;
+  gbm_bo_destroy(buffer_object_.ExtractAsDangling());
+}
 
-  ~GpuMemoryBufferImplGbm() override {
-    if (mapped_) {
-      Unmap();
-    }
-
-    gbm_bo_destroy(buffer_object_.ExtractAsDangling());
-  }
-
-  bool Map() override {
-    if (mapped_) {
-      return true;
-    }
-    size_t num_planes = gbm_bo_get_plane_count(buffer_object_);
-    uint32_t stride;
-    mapped_planes_.resize(num_planes);
-    for (size_t i = 0; i < num_planes; ++i) {
-      void* mapped_data;
-      void* addr =
-          gbm_bo_map2(buffer_object_, 0, 0, gbm_bo_get_width(buffer_object_),
-                      gbm_bo_get_height(buffer_object_),
-                      GBM_BO_TRANSFER_READ_WRITE, &stride, &mapped_data, i);
-      if (addr == MAP_FAILED) {
-        LOG(ERROR) << "Failed to map GpuMemoryBufferImplGbm plane " << i;
-        Unmap();
-        return false;
-      }
-      mapped_planes_[i].addr = addr;
-      mapped_planes_[i].mapped_data = mapped_data;
-    }
-    mapped_ = true;
+bool GpuMemoryBufferImplGbm::Map() {
+  if (mapped_) {
     return true;
   }
-
-  void* memory(size_t plane) override {
-    if (!mapped_) {
-      LOG(ERROR) << "Buffer is not mapped";
-      return nullptr;
+  size_t num_planes = gbm_bo_get_plane_count(buffer_object_);
+  uint32_t stride;
+  mapped_planes_.resize(num_planes);
+  for (size_t i = 0; i < num_planes; ++i) {
+    void* mapped_data;
+    void* addr =
+        gbm_bo_map2(buffer_object_, 0, 0, gbm_bo_get_width(buffer_object_),
+                    gbm_bo_get_height(buffer_object_),
+                    GBM_BO_TRANSFER_READ_WRITE, &stride, &mapped_data, i);
+    if (addr == MAP_FAILED) {
+      LOG(ERROR) << "Failed to map GpuMemoryBufferImplGbm plane " << i;
+      Unmap();
+      return false;
     }
-    if (plane > mapped_planes_.size()) {
-      LOG(ERROR) << "Invalid plane: " << plane;
-      return nullptr;
+    mapped_planes_[i].addr = addr;
+    mapped_planes_[i].mapped_data = mapped_data;
+  }
+  mapped_ = true;
+  return true;
+}
+
+void* GpuMemoryBufferImplGbm::memory(size_t plane) {
+  if (!mapped_) {
+    LOG(ERROR) << "Buffer is not mapped";
+    return nullptr;
+  }
+  if (plane > mapped_planes_.size()) {
+    LOG(ERROR) << "Invalid plane: " << plane;
+    return nullptr;
+  }
+  return mapped_planes_[plane].addr;
+}
+
+void GpuMemoryBufferImplGbm::Unmap() {
+  for (size_t i = 0; i < mapped_planes_.size(); ++i) {
+    if (mapped_planes_[i].addr) {
+      gbm_bo_unmap(buffer_object_, mapped_planes_[i].mapped_data);
+      mapped_planes_[i].addr = nullptr;
+      mapped_planes_[i].mapped_data = nullptr;
     }
-    return mapped_planes_[plane].addr;
   }
+  mapped_planes_.clear();
+  mapped_ = false;
+}
 
-  void Unmap() override {
-    for (size_t i = 0; i < mapped_planes_.size(); ++i) {
-      if (mapped_planes_[i].addr) {
-        gbm_bo_unmap(buffer_object_, mapped_planes_[i].mapped_data);
-        mapped_planes_[i].addr = nullptr;
-        mapped_planes_[i].mapped_data = nullptr;
-      }
-    }
-    mapped_planes_.clear();
-    mapped_ = false;
-  }
+gfx::Size GpuMemoryBufferImplGbm::GetSize() const {
+  return gfx::Size(gbm_bo_get_width(buffer_object_),
+                   gbm_bo_get_height(buffer_object_));
+}
 
-  gfx::Size GetSize() const override {
-    return gfx::Size(gbm_bo_get_width(buffer_object_),
-                     gbm_bo_get_height(buffer_object_));
-  }
+gfx::BufferFormat GpuMemoryBufferImplGbm::GetFormat() const {
+  return format_;
+}
 
-  gfx::BufferFormat GetFormat() const override { return format_; }
+int GpuMemoryBufferImplGbm::stride(size_t plane) const {
+  return gbm_bo_get_stride_for_plane(buffer_object_, plane);
+}
 
-  int stride(size_t plane) const override {
-    return gbm_bo_get_stride_for_plane(buffer_object_, plane);
-  }
+gfx::GpuMemoryBufferId GpuMemoryBufferImplGbm::GetId() const {
+  return handle_.id;
+}
 
-  gfx::GpuMemoryBufferId GetId() const override { return handle_.id; }
+gfx::GpuMemoryBufferType GpuMemoryBufferImplGbm::GetType() const {
+  return gfx::NATIVE_PIXMAP;
+}
 
-  gfx::GpuMemoryBufferType GetType() const override {
-    return gfx::NATIVE_PIXMAP;
-  }
+gfx::GpuMemoryBufferHandle GpuMemoryBufferImplGbm::CloneHandle() const {
+  DCHECK_EQ(handle_.type, gfx::NATIVE_PIXMAP);
+  gfx::GpuMemoryBufferHandle handle(
+      gfx::CloneHandleForIPC(handle_.native_pixmap_handle()));
+  handle.id = handle_.id;
+  return handle;
+}
 
-  gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    DCHECK_EQ(handle_.type, gfx::NATIVE_PIXMAP);
-    gfx::GpuMemoryBufferHandle handle(
-        gfx::CloneHandleForIPC(handle_.native_pixmap_handle()));
-    handle.id = handle_.id;
-    return handle;
-  }
-
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {
-    auto shared_buffer_guid = gfx::GetGenericSharedGpuMemoryGUIDForTracing(
-        tracing_process_id, GetId());
-    pmd->CreateSharedGlobalAllocatorDump(shared_buffer_guid);
-    pmd->AddOwnershipEdge(buffer_dump_guid, shared_buffer_guid, importance);
-  }
-
- private:
-  struct MappedPlane {
-    raw_ptr<void> addr;
-    raw_ptr<void> mapped_data;
-  };
-
-  gfx::BufferFormat format_;
-  raw_ptr<gbm_bo> buffer_object_;
-  gfx::GpuMemoryBufferHandle handle_;
-  bool mapped_;
-  std::vector<MappedPlane> mapped_planes_;
-};
-
-}  // namespace
+void GpuMemoryBufferImplGbm::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd,
+    const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+    uint64_t tracing_process_id,
+    int importance) const {
+  auto shared_buffer_guid =
+      gfx::GetGenericSharedGpuMemoryGUIDForTracing(tracing_process_id, GetId());
+  pmd->CreateSharedGlobalAllocatorDump(shared_buffer_guid);
+  pmd->AddOwnershipEdge(buffer_dump_guid, shared_buffer_guid, importance);
+}
 
 LocalGpuMemoryBufferManager::LocalGpuMemoryBufferManager()
     : gbm_device_(CreateGbmDevice()) {}

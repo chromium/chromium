@@ -62,6 +62,46 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
   ui::ScopedGbmDevice gbm_device_;
 };
 
+class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
+ public:
+  GpuMemoryBufferImplGbm() = delete;
+
+  GpuMemoryBufferImplGbm(gfx::BufferFormat format, gbm_bo* buffer_object);
+
+  GpuMemoryBufferImplGbm(const GpuMemoryBufferImplGbm&) = delete;
+  GpuMemoryBufferImplGbm& operator=(const GpuMemoryBufferImplGbm&) = delete;
+
+  ~GpuMemoryBufferImplGbm() override;
+
+  // gfx::GpuMemoryBuffer:
+  bool Map() override;
+  void* memory(size_t plane) override;
+  void Unmap() override;
+  gfx::Size GetSize() const override;
+  gfx::BufferFormat GetFormat() const override;
+  int stride(size_t plane) const override;
+  gfx::GpuMemoryBufferId GetId() const override;
+  gfx::GpuMemoryBufferType GetType() const override;
+  gfx::GpuMemoryBufferHandle CloneHandle() const override;
+  void OnMemoryDump(
+      base::trace_event::ProcessMemoryDump* pmd,
+      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+      uint64_t tracing_process_id,
+      int importance) const override;
+
+ private:
+  struct MappedPlane {
+    raw_ptr<void> addr;
+    raw_ptr<void> mapped_data;
+  };
+
+  gfx::BufferFormat format_;
+  raw_ptr<gbm_bo> buffer_object_;
+  gfx::GpuMemoryBufferHandle handle_;
+  bool mapped_;
+  std::vector<MappedPlane> mapped_planes_;
+};
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_TEST_LOCAL_GPU_MEMORY_BUFFER_MANAGER_H_
