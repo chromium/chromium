@@ -74,8 +74,8 @@ class ChromeMetricsServicesManagerClient
 #endif
 
   // metrics_services_manager::MetricsServicesManagerClient:
-  std::unique_ptr<variations::VariationsService> CreateVariationsService(
-      variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
+  std::unique_ptr<variations::VariationsService> CreateVariationsService()
+      override;
   std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient(
       variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
   metrics::MetricsStateManager* GetMetricsStateManager() override;

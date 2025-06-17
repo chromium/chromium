@@ -53,8 +53,7 @@ IOSChromeMetricsServicesManagerClient::
     ~IOSChromeMetricsServicesManagerClient() = default;
 
 std::unique_ptr<variations::VariationsService>
-IOSChromeMetricsServicesManagerClient::CreateVariationsService(
-    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
+IOSChromeMetricsServicesManagerClient::CreateVariationsService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // NOTE: On iOS, disabling background networking is not supported, so pass in
@@ -65,8 +64,7 @@ IOSChromeMetricsServicesManagerClient::CreateVariationsService(
       GetMetricsStateManager(), "dummy-disable-background-switch",
       ::CreateUIStringOverrider(),
       base::BindOnce(&ApplicationContext::GetNetworkConnectionTracker,
-                     base::Unretained(GetApplicationContext())),
-      synthetic_trial_registry);
+                     base::Unretained(GetApplicationContext())));
 }
 
 std::unique_ptr<metrics::MetricsServiceClient>

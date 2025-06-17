@@ -16,7 +16,6 @@
 #import "components/variations/seed_response.h"
 #import "components/variations/service/ui_string_overrider.h"
 #import "components/variations/service/variations_service.h"
-#import "components/variations/synthetic_trial_registry.h"
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_test_utils.h"
 #import "ios/chrome/browser/flags/ios_chrome_field_trials.h"
@@ -104,15 +103,11 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
     if (variations_service_) {
       return;
     }
-    CHECK(!synthetic_trial_registry_);
-    synthetic_trial_registry_ =
-        std::make_unique<variations::SyntheticTrialRegistry>();
     variations_service_ = variations::VariationsService::Create(
         std::make_unique<IOSChromeVariationsServiceClient>(), GetLocalState(),
         GetMetricsStateManager(), "dummy-disable-background-switch",
         variations::UIStringOverrider(),
-        network::TestNetworkConnectionTracker::CreateGetter(),
-        synthetic_trial_registry_.get());
+        network::TestNetworkConnectionTracker::CreateGetter());
   }
 
   // Sets up field trials. If the test seed is simulate-fetched, this step
@@ -145,7 +140,6 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   // Variations service.
   std::unique_ptr<variations::VariationsService> variations_service_;
-  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
   IOSChromeFieldTrials ios_field_trials_;
 };
 

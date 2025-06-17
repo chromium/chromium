@@ -48,7 +48,6 @@ class MetricsStateManager;
 
 namespace variations {
 
-class SyntheticTrialRegistry;
 class EntropyProviders;
 
 // Just maps one set of enum values to another. Nothing to see here.
@@ -151,8 +150,6 @@ class VariationsFieldTrialCreatorBase {
   // Must not be null.
   // |metrics_state_manager| facilitates signaling that Chrome has not yet
   // exited cleanly. Must not be null.
-  // |synthetic_trial_registry| provides an interface to register synthetic
-  // trials. Must not be null.
   // |platform_field_trials| provides the
   // platform-specific field trial setup for Chrome. Must not be null.
   // |safe_seed_manager| should be notified of the combined server and client
@@ -167,8 +164,6 @@ class VariationsFieldTrialCreatorBase {
   // explicit --disable-features and --enable-features from the command line
   // take precedence over |extra_overrides|, which takes precedence over the
   // field trials.
-  //
-  // TODO(crbug.com/40948861): Clean up |synthetic_trial_registry|.
   bool SetUpFieldTrials(
       const std::vector<std::string>& variation_ids,
       const std::string& command_line_variation_ids,
@@ -176,7 +171,6 @@ class VariationsFieldTrialCreatorBase {
           extra_overrides,
       std::unique_ptr<base::FeatureList> feature_list,
       metrics::MetricsStateManager* metrics_state_manager,
-      SyntheticTrialRegistry* synthetic_trial_registry,
       PlatformFieldTrials* platform_field_trials,
       SafeSeedManagerBase* safe_seed_manager,
       bool add_entropy_source_to_variations_ids,
@@ -284,7 +278,6 @@ class VariationsFieldTrialCreatorBase {
   bool CreateTrialsFromSeed(const EntropyProviders& entropy_providers,
                             base::FeatureList* feature_list,
                             SafeSeedManagerBase* safe_seed_manager,
-                            SyntheticTrialRegistry* synthetic_trial_registry,
                             std::unique_ptr<ClientFilterableState> state);
 
   // Reads a seed's data and signature from the file at |json_seed_path| and

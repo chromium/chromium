@@ -288,15 +288,13 @@ void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
 #endif
 
 std::unique_ptr<variations::VariationsService>
-ChromeMetricsServicesManagerClient::CreateVariationsService(
-    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
+ChromeMetricsServicesManagerClient::CreateVariationsService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return variations::VariationsService::Create(
       std::make_unique<ChromeVariationsServiceClient>(), local_state_,
       GetMetricsStateManager(), switches::kDisableBackgroundNetworking,
       chrome_variations::CreateUIStringOverrider(),
-      base::BindOnce(&content::GetNetworkConnectionTracker),
-      synthetic_trial_registry);
+      base::BindOnce(&content::GetNetworkConnectionTracker));
 }
 
 std::unique_ptr<metrics::MetricsServiceClient>

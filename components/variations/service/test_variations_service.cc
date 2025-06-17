@@ -59,8 +59,7 @@ TestVariationsService::TestVariationsService(
               network::TestNetworkConnectionTracker::GetInstance()),
           prefs,
           state_manager,
-          variations::UIStringOverrider(),
-          /*synthetic_trial_registry=*/nullptr) {}
+          variations::UIStringOverrider()) {}
 
 TestVariationsService::~TestVariationsService() = default;
 

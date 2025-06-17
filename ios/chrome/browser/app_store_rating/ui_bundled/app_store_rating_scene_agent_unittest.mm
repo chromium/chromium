@@ -12,7 +12,6 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_client.h"
-#import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -81,8 +80,6 @@ class ScopedVariationsService {
   ScopedVariationsService() {
     EXPECT_EQ(nullptr,
               TestingApplicationContext::GetGlobal()->GetVariationsService());
-    synthetic_trial_registry_ =
-        std::make_unique<variations::SyntheticTrialRegistry>();
     enabled_state_provider_ =
         std::make_unique<metrics::TestEnabledStateProvider>(false, false);
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
@@ -98,8 +95,8 @@ class ScopedVariationsService {
         metrics_state_manager_.get(),
         /*disable_network_switch=*/"dummy-disable-background-switch",
         variations::UIStringOverrider(),
-        network::TestNetworkConnectionTracker::CreateGetter(),
-        synthetic_trial_registry_.get());
+        network::TestNetworkConnectionTracker::CreateGetter());
+
     TestingApplicationContext::GetGlobal()->SetVariationsService(
         variations_service_.get());
   }
@@ -126,7 +123,6 @@ class ScopedVariationsService {
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
   std::unique_ptr<variations::VariationsService> variations_service_;
-  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 };
 
 }  // namespace

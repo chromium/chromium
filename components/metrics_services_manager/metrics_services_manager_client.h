@@ -34,8 +34,7 @@ class MetricsServicesManagerClient {
 
   // Methods that create the various services in the context of the embedder.
   virtual std::unique_ptr<variations::VariationsService>
-  CreateVariationsService(
-      variations::SyntheticTrialRegistry* synthetic_trial_registry) = 0;
+  CreateVariationsService() = 0;
   virtual std::unique_ptr<metrics::MetricsServiceClient>
   CreateMetricsServiceClient(
       variations::SyntheticTrialRegistry* synthetic_trial_registry) = 0;

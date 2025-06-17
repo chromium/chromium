@@ -42,7 +42,6 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_response.h"
-#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_switches.h"
@@ -344,11 +343,9 @@ VariationsService::VariationsService(
     std::unique_ptr<web_resource::ResourceRequestAllowedNotifier> notifier,
     PrefService* local_state,
     metrics::MetricsStateManager* state_manager,
-    const UIStringOverrider& ui_string_overrider,
-    SyntheticTrialRegistry* synthetic_trial_registry)
+    const UIStringOverrider& ui_string_overrider)
     : client_(std::move(client)),
       local_state_(local_state),
-      synthetic_trial_registry_(synthetic_trial_registry),
       state_manager_(state_manager),
       policy_pref_service_(local_state),
       resource_request_allowed_notifier_(std::move(notifier)),
@@ -599,15 +596,13 @@ std::unique_ptr<VariationsService> VariationsService::Create(
     const char* disable_network_switch,
     const UIStringOverrider& ui_string_overrider,
     web_resource::ResourceRequestAllowedNotifier::NetworkConnectionTrackerGetter
-        network_connection_tracker_getter,
-    SyntheticTrialRegistry* synthetic_trial_registry) {
+        network_connection_tracker_getter) {
   return base::WrapUnique(new VariationsService(
       std::move(client),
       std::make_unique<web_resource::ResourceRequestAllowedNotifier>(
           local_state, disable_network_switch,
           std::move(network_connection_tracker_getter)),
-      local_state, state_manager, ui_string_overrider,
-      synthetic_trial_registry));
+      local_state, state_manager, ui_string_overrider));
 }
 
 // static
@@ -1004,8 +999,8 @@ bool VariationsService::SetUpFieldTrials(
 
   return field_trial_creator_.SetUpFieldTrials(
       variation_ids, command_line_variation_ids, extra_overrides,
-      std::move(feature_list), state_manager_, synthetic_trial_registry_,
-      platform_field_trials, &safe_seed_manager_,
+      std::move(feature_list), state_manager_, platform_field_trials,
+      &safe_seed_manager_,
       /*add_entropy_source_to_variations_ids=*/true, *entropy_providers_);
 }
 

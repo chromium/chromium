@@ -54,7 +54,6 @@
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/service/variations_service_utils.h"
-#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
@@ -228,7 +227,6 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<base::FeatureList> feature_list,
     metrics::MetricsStateManager* metrics_state_manager,
-    SyntheticTrialRegistry* synthetic_trial_registry,
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManagerBase* safe_seed_manager,
     bool add_entropy_source_to_variations_ids,
@@ -319,9 +317,9 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
 
   bool used_seed = false;
   if (!used_testing_config && client_filterable_state) {
-    used_seed = CreateTrialsFromSeed(
-        entropy_providers, feature_list.get(), safe_seed_manager,
-        synthetic_trial_registry, std::move(client_filterable_state));
+    used_seed = CreateTrialsFromSeed(entropy_providers, feature_list.get(),
+                                     safe_seed_manager,
+                                     std::move(client_filterable_state));
   }
 
   platform_field_trials->SetUpClientSideFieldTrials(
@@ -619,7 +617,6 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
     const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list,
     SafeSeedManagerBase* safe_seed_manager,
-    SyntheticTrialRegistry* synthetic_trial_registry,
     std::unique_ptr<ClientFilterableState> client_state) {
   // This histogram name uses "VariationsFieldTrialCreator" rather than
   // "VariationsFieldTrialCreatorBase" for consistency with historical data
