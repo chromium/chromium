@@ -81,6 +81,9 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     protected EditText mNicknameText;
     private TextInputLayout mNumberLabel;
     protected EditText mNumberText;
+    private View mRequiredFieldsIndicatorLabel;
+    private TextView mExpirationLabelWhenCvcStorageEnabled;
+    private TextView mExpirationLabelWhenCvcStorageDisabled;
     protected @MonotonicNonNull Spinner mExpirationMonth;
     protected @MonotonicNonNull Spinner mExpirationYear;
     // Since the nickname field is optional, an empty nickname is a valid nickname.
@@ -119,6 +122,14 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         mNicknameText = v.findViewById(R.id.credit_card_nickname_edit);
         mNumberLabel = v.findViewById(R.id.credit_card_number_label);
         mNumberText = v.findViewById(R.id.credit_card_number_edit);
+        mRequiredFieldsIndicatorLabel = v.findViewById(R.id.required_fields_indicator_label);
+        mExpirationLabelWhenCvcStorageEnabled =
+                v.findViewById(R.id.credit_card_expiration_month_and_year_label);
+        mExpirationLabelWhenCvcStorageDisabled = v.findViewById(R.id.credit_card_expiration_label);
+
+        if (isTalkBackEnabled()) {
+            updateLabelsForTalkBackAccesibility();
+        }
 
         mNameText.addTextChangedListener(
                 new EmptyTextWatcher() {
@@ -146,9 +157,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         if (mIsCvcStorageEnabled) {
             LinearLayout creditCardExpirationSpinnerContainer =
                     v.findViewById(R.id.credit_card_expiration_spinner_container);
-            TextView creditCardExpirationLabel = v.findViewById(R.id.credit_card_expiration_label);
             creditCardExpirationSpinnerContainer.setVisibility(View.GONE);
-            creditCardExpirationLabel.setVisibility(View.GONE);
+            mExpirationLabelWhenCvcStorageDisabled.setVisibility(View.GONE);
 
             mExpirationDate = v.findViewById(R.id.expiration_month_and_year);
             mExpirationDate.addTextChangedListener(expirationDateTextWatcher());
@@ -198,6 +208,18 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             sObserverForTest.onResult(this);
         }
         return v;
+    }
+
+    private void updateLabelsForTalkBackAccesibility() {
+        mRequiredFieldsIndicatorLabel.setVisibility(View.GONE);
+        mNumberLabel.setHint(
+                mContext.getString(
+                        R.string.autofill_credit_card_editor_number_content_description));
+        String expirationLabelText =
+                mContext.getString(
+                        R.string.autofill_credit_card_editor_expiration_date_content_description);
+        mExpirationLabelWhenCvcStorageEnabled.setText(expirationLabelText);
+        mExpirationLabelWhenCvcStorageDisabled.setText(expirationLabelText);
     }
 
     @Override
@@ -278,8 +300,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             // If TalkBack is enabled, we want to keep the focus at the top
             // because the user would not learn about the elements that are
             // above the focused field.
-            if (AccessibilityState.isTouchExplorationEnabled()
-                    || AccessibilityState.isPerformGesturesEnabled()) {
+            if (isTalkBackEnabled()) {
                 return;
             }
             mNumberLabel.requestFocus();
@@ -341,6 +362,11 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         if (!mCard.getNickname().isEmpty()) {
             mNicknameText.setText(mCard.getNickname());
         }
+    }
+
+    private static boolean isTalkBackEnabled() {
+        return AccessibilityState.isTouchExplorationEnabled()
+                || AccessibilityState.isPerformGesturesEnabled();
     }
 
     @Override

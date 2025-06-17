@@ -26,6 +26,7 @@ found in the LICENSE file.
 
     <!-- Required fields indicator -->
     <TextView
+        android:id="@+id/required_fields_indicator_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pref_autofill_field_large_top_margin"
