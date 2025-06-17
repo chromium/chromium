@@ -20,7 +20,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="Toast.FrequencyPrefChanged" enum="ToastAlertLevel"
-    expires_after="2025-07-27">
+    expires_after="2025-11-30">
   <owner>agale@chromium.org</owner>
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
