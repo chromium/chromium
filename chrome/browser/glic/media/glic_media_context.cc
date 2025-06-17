@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/media/glic_media_context.h"
 
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
@@ -52,10 +54,14 @@ GlicMediaContext* GlicMediaContext::GetIfExistsFor(
       page.GetUserData(kGlicMediaContextName));
 }
 
-void GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
+bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
+  if (IsExcludedFromTranscript()) {
+    return false;
+  }
+
   if (!result.is_final) {
     most_recent_nonfinal_ = result.transcription;
-    return;
+    return true;
   }
   text_context_ += result.transcription;
   most_recent_nonfinal_.clear();
@@ -68,10 +74,30 @@ void GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
       text_context_ = text_context_.substr(text_context_size - max_size);
     }
   }
+
+  return true;
 }
 
 std::string GlicMediaContext::GetContext() const {
+  if (IsExcludedFromTranscript()) {
+    return "";
+  }
   return text_context_ + most_recent_nonfinal_;
+}
+
+bool GlicMediaContext::IsExcludedFromTranscript() const {
+  if (is_excluded_from_transcript_) {
+    // Skip checking if it's already excluded.
+    return true;
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page_->GetMainDocument());
+  is_excluded_from_transcript_ |= MediaCaptureDevicesDispatcher::GetInstance()
+                                      ->GetMediaStreamCaptureIndicator()
+                                      ->IsCapturingUserMedia(web_contents);
+
+  return is_excluded_from_transcript_;
 }
 
 }  // namespace glic

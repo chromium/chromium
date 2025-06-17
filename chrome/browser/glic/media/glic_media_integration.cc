@@ -52,14 +52,15 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
   bool OnTranscription(content::WebContents* web_contents,
                        captions::CaptionBubbleContext*,
                        const media::SpeechRecognitionResult& result) override {
+    bool continue_transcribing = false;
     if (auto* context = glic::GlicMediaContext::GetOrCreateFor(web_contents)) {
-      context->OnResult(result);
+      continue_transcribing = context->OnResult(result);
       static_cast<GlicMediaIntegrationImpl*>(
           glic::GlicMediaIntegration::GetFor(web_contents))
           ->OnContextUpdated(context);
     }
 
-    return true;
+    return continue_transcribing;
   }
 
   void OnAudioStreamEnd(content::WebContents*,

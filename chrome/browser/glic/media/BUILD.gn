@@ -18,6 +18,7 @@ source_set("media") {
   deps = [
     "//base",
     "//chrome/browser/glic:glic",
+    "//chrome/browser/media/webrtc:webrtc",
     "//chrome/browser/profiles:profile",
     "//components/live_caption:utils",
     "//content/public/browser",
