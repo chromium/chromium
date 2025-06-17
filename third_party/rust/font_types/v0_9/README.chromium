@@ -1,0 +1,10 @@
+Name: font-types
+URL: https://crates.io/crates/font-types
+Version: 0.9.0
+Revision: 16a34a1ef640260202e270d0b1e052df1bd210ac
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/font-types-v0_9/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Scalar types used in fonts.

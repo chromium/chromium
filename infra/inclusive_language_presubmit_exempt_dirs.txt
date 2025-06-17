@@ -688,7 +688,7 @@ third_party/rust/chromium_crates_io/vendor/prost-v0_13
 third_party/rust/chromium_crates_io/vendor/qr_code-v2
 third_party/rust/chromium_crates_io/vendor/quote-v1
 third_party/rust/chromium_crates_io/vendor/quote-v1/.github/workflows
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_27/src/tables
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_29/src/tables
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/util
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/dfa

@@ -44,9 +44,9 @@ if (is_android) {
       "//content/test:*",
     ]
     deps = [
-      "//third_party/rust/font_types/v0_8:lib",
-      "//third_party/rust/read_fonts/v0_27:lib",
-      "//third_party/rust/skrifa/v0_29:lib",
+      "//third_party/rust/font_types/v0_9:lib",
+      "//third_party/rust/read_fonts/v0_29:lib",
+      "//third_party/rust/skrifa/v0_31:lib",
     ]
   }
 }
