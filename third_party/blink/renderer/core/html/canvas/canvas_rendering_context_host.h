@@ -173,7 +173,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   bool did_fail_to_create_resource_provider_ = false;
 
  private:
-  CanvasResourceProvider* CreateCanvasResourceProvider2D();
+  void CreateCanvasResourceProvider2D();
   void CreateCanvasResourceProviderWebGL();
   void CreateCanvasResourceProviderWebGPU();
 

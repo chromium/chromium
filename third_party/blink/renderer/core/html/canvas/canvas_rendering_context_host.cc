@@ -149,7 +149,8 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForCanvas2D() {
   auto* provider = GetResourceProviderForCanvas2D();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
-      provider = CreateCanvasResourceProvider2D();
+      CreateCanvasResourceProvider2D();
+      provider = GetResourceProviderForCanvas2D();
     }
     if (!provider) {
       did_fail_to_create_resource_provider_ = true;
@@ -300,9 +301,9 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   SetResourceProviderWithoutContextCheck(std::move(provider));
 }
 
-CanvasResourceProvider*
-CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
-  DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext());
+void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
+  CHECK(!GetResourceProviderForCanvas2D());
+
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =
       GetOrCreateResourceDispatcher()
           ? GetOrCreateResourceDispatcher()->GetWeakPtr()
@@ -400,10 +401,7 @@ CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
     provider->SetResourceRecyclingEnabled(true);
   }
 
-  auto* raw_provider = provider.get();
-  ReplaceResourceProvider(std::move(provider));
-
-  return raw_provider;
+  SetResourceProviderWithoutContextCheck(std::move(provider));
 }
 
 SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
