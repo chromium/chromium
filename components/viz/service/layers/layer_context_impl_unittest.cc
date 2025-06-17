@@ -1758,10 +1758,12 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   auto result =
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_update_tiling));
   EXPECT_TRUE(result.has_value()) << result.error();
-  ASSERT_NE(nullptr, tiling_impl1);  // Should still be the same tiling object
+  ASSERT_EQ(tiling_impl1,
+            tile_display_layer_impl->GetTilingForTesting(
+                kScaleKey1));  // Should still be the same tiling object
   EXPECT_EQ(tiling_impl1->tile_size(), kTileSize2);  // Updated
-  // Previous tile should be gone due to tile_size change
-  EXPECT_EQ(nullptr, tiling_impl1->TileAt(kTileIndex1));
+  // Previous tiles should still exist after a tile_size change
+  EXPECT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
   ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex2));
   EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex2)->resource().has_value());
 

@@ -87,7 +87,6 @@ void TileDisplayLayerImpl::Tiling::SetTileSize(const gfx::Size& size) {
   }
 
   tiling_data_.SetMaxTextureSize(size);
-  tiles_.clear();
 }
 
 void TileDisplayLayerImpl::Tiling::SetTilingRect(const gfx::Rect& rect) {
@@ -96,7 +95,6 @@ void TileDisplayLayerImpl::Tiling::SetTilingRect(const gfx::Rect& rect) {
   }
 
   tiling_data_.SetTilingRect(rect);
-  tiles_.clear();
 }
 
 void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,

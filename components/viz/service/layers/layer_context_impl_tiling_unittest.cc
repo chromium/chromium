@@ -81,6 +81,8 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   const gfx::Rect kTilingRect(0, 0, 200, 200);
   const cc::TileIndex kTileIndex1(0, 0);
   const cc::TileIndex kTileIndex2(1, 1);
+  const cc::TileIndex kTileIndex3(0, 1);
+  const gfx::Size kNewTileSize(32, 32);
   const ResourceId kResourceId1(23);
 
   // Initial update: Create TileDisplayLayer.
@@ -197,6 +199,54 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
                                           /*update_damage=*/true)
                   .has_value());
   EXPECT_EQ(nullptr, layer_impl->GetTilingForTesting(kScaleKey2));
+
+  // Test Case 6: Changing tile_size does not remove existing tiles.
+  // Recreate tiling1 with a solid color tile.
+  auto tiling1_recreate_for_size_change =
+      CreateTiling(kLayerId, kScaleKey1, kTileSize, kTilingRect);
+  tiling1_recreate_for_size_change->tiles.push_back(
+      CreateSolidColorTile(kTileIndex1, SkColors::kRed));
+  EXPECT_TRUE(
+      layer_context_impl_
+          ->DoUpdateDisplayTiling(std::move(tiling1_recreate_for_size_change),
+                                  /*update_damage=*/true)
+          .has_value());
+  tiling_impl1 = layer_impl->GetTilingForTesting(kScaleKey1);
+  ASSERT_NE(nullptr, tiling_impl1);
+  ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
+
+  // Update tile_size.
+  auto tiling1_size_update =
+      CreateTiling(kLayerId, kScaleKey1, kNewTileSize, kTilingRect);
+  // Add a new tile to ensure the update is processed, but don't re-add
+  // kTileIndex1.
+  tiling1_size_update->tiles.push_back(
+      CreateSolidColorTile(kTileIndex3, SkColors::kGreen));
+  EXPECT_TRUE(layer_context_impl_
+                  ->DoUpdateDisplayTiling(std::move(tiling1_size_update),
+                                          /*update_damage=*/true)
+                  .has_value());
+  EXPECT_EQ(tiling_impl1, layer_impl->GetTilingForTesting(
+                              kScaleKey1));  // Tiling should be the same
+  EXPECT_EQ(tiling_impl1->tile_size(), kNewTileSize);
+  EXPECT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));  // Should still exist
+  EXPECT_NE(nullptr, tiling_impl1->TileAt(kTileIndex3));  // Should still exist
+
+  // Test Case 7: Changing tiling_rect does not remove existing tiles.
+  // kTileIndex1 and kTileIndex3 should still exist from the previous step.
+  const gfx::Rect kNewTilingRect(50, 50, 100, 100);
+  auto tiling1_rect_update =
+      CreateTiling(kLayerId, kScaleKey1, kNewTileSize, kNewTilingRect);
+  // No new tiles added in this update, just changing the rect.
+  EXPECT_TRUE(layer_context_impl_
+                  ->DoUpdateDisplayTiling(std::move(tiling1_rect_update),
+                                          /*update_damage=*/true)
+                  .has_value());
+  EXPECT_EQ(tiling_impl1, layer_impl->GetTilingForTesting(
+                              kScaleKey1));  // Tiling should be the same
+  EXPECT_EQ(tiling_impl1->tiling_rect(), kNewTilingRect);
+  EXPECT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));  // Should still exist
+  EXPECT_NE(nullptr, tiling_impl1->TileAt(kTileIndex3));  // Should still exist
 }
 
 TEST_F(LayerContextImplUpdateDisplayTilingTest, InvalidTilingUpdate) {
