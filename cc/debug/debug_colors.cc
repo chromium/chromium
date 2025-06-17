@@ -73,14 +73,6 @@ int DebugColors::HighResTileBorderWidth(float device_scale_factor) {
   return Scale(1, device_scale_factor);
 }
 
-// Low-res tile borders are purple.
-SkColor4f DebugColors::LowResTileBorderColor() {
-  return {212.0f / 255.0f, 83.0f / 255.0f, 0.75f, 100.0f / 255.0f};
-}
-int DebugColors::LowResTileBorderWidth(float device_scale_factor) {
-  return Scale(2, device_scale_factor);
-}
-
 // Other high-resolution tile borders are yellow.
 SkColor4f DebugColors::ExtraHighResTileBorderColor() {
   return {239.0f / 255.0f, 231.0f / 255.0f, 20.0f / 255.0f, 100.0f / 255.0f};

@@ -37,9 +37,6 @@ class CC_DEBUG_EXPORT DebugColors {
   static SkColor4f HighResTileBorderColor();
   static int HighResTileBorderWidth(float device_scale_factor);
 
-  static SkColor4f LowResTileBorderColor();
-  static int LowResTileBorderWidth(float device_scale_factor);
-
   static SkColor4f ExtraHighResTileBorderColor();
   static int ExtraHighResTileBorderWidth(float device_scale_factor);
 
