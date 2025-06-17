@@ -147,12 +147,8 @@ public class CustomTabActivityNavigationController
 
                 @Override
                 public void onAllTabsClosed() {
-                    boolean shouldInterceptBackPress = shouldInterceptBackPress();
-                    mBackPressStateSupplier.set(shouldInterceptBackPress);
-
-                    if (shouldInterceptBackPress) {
-                        finish(mIsHandlingUserNavigation ? USER_NAVIGATION : OTHER);
-                    }
+                    mBackPressStateSupplier.set(shouldInterceptBackPress());
+                    finish(mIsHandlingUserNavigation ? USER_NAVIGATION : OTHER);
                 }
 
                 private boolean shouldInterceptBackPress() {
