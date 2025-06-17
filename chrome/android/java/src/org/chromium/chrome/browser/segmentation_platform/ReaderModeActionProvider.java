@@ -13,6 +13,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.url.GURL;
 
@@ -61,6 +63,15 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
             mSignalAccumulator = signalAccumulator;
 
             mTab.addObserver(this);
+            if (DomDistillerFeatures.shouldUseReadabilityTriggeringHeuristic()) {
+                useReadabilityHeuristic();
+            } else {
+                useDistillabilityProvider();
+            }
+        }
+
+        /** Uses the DistillabilityProvider to determine distillability. */
+        private void useDistillabilityProvider() {
             // If distillability is already determined, then call the obs method directly. Otherwise
             // register the observer and wait.
             if (mDistillabilityProvider.isDistillabilityDetermined()) {
@@ -75,6 +86,19 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
             } else {
                 mDistillabilityProvider.addObserver(this);
             }
+        }
+
+        /** Uses the readability heurisitic to determine distillability. */
+        private void useReadabilityHeuristic() {
+            DomDistillerTabUtils.runReadabilityHeuristicsOnWebContents(
+                    mTab.getWebContents(),
+                    (readerable) -> {
+                        onIsPageDistillableResult(
+                                mTab,
+                                readerable,
+                                /* isLast= */ true,
+                                /* isMobileOptimized= */ false);
+                    });
         }
 
         public void destroy() {

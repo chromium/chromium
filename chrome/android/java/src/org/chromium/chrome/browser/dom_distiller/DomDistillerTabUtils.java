@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -151,8 +152,20 @@ public class DomDistillerTabUtils {
         DomDistillerTabUtilsJni.get().setInterceptNavigationDelegate(delegate, webContents);
     }
 
+    /**
+     * Runs distillability heuristics on the page to determine if it's suitable for reader mode.
+     *
+     * @param webContents The web contents to run the heuristic against.
+     * @param callback The callback which informs the caller whether the given web contents are
+     *     suitable for reader mode.
+     */
+    public static void runReadabilityHeuristicsOnWebContents(
+            WebContents webContents, Callback<Boolean> callback) {
+        DomDistillerTabUtilsJni.get().runReadabilityHeuristicsOnWebContents(webContents, callback);
+    }
+
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void distillCurrentPageAndView(WebContents webContents);
 
         void distillCurrentPage(WebContents webContents);
@@ -166,5 +179,8 @@ public class DomDistillerTabUtils {
 
         void setInterceptNavigationDelegate(
                 InterceptNavigationDelegate delegate, WebContents webContents);
+
+        void runReadabilityHeuristicsOnWebContents(
+                WebContents webContents, Callback<Boolean> callback);
     }
 }

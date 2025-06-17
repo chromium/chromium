@@ -10,4 +10,5 @@
   <include name="IDR_DISTILLABLE_PAGE_SERIALIZED_MODEL_NEW" file="../dom_distiller/core/data/distillable_page_model_new.bin" type="BINDATA" compress="gzip" />
   <include name="IDR_LONG_PAGE_SERIALIZED_MODEL" file="../dom_distiller/core/data/long_page_model.bin" type="BINDATA" compress="gzip" />
   <include name="IDR_READABILITY_DISTILLER_JS" file="../dom_distiller/core/javascript/readability_distiller.js" flattenhtml="true" type="BINDATA" />
+  <include name="IDR_READABILITY_TRIGGERING_JS" file="../dom_distiller/core/javascript/readability_triggering.js" flattenhtml="true" type="BINDATA" />
 </grit-part>

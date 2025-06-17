@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/dom_distiller/tab_utils.h"
+
 #include <string>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/dom_distiller/tab_utils.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/dom_distiller/core/experiments.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
@@ -82,6 +87,18 @@ void JNI_DomDistillerTabUtils_SetInterceptNavigationDelegate(
       web_contents,
       std::make_unique<navigation_interception::InterceptNavigationDelegate>(
           env, delegate));
+}
+
+void JNI_DomDistillerTabUtils_RunReadabilityHeuristicsOnWebContents(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_web_contents,
+    const JavaParamRef<jobject>& j_callback) {
+  base::OnceCallback<void(bool)> callback =
+      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                     base::android::ScopedJavaGlobalRef<jobject>(j_callback));
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  ::RunReadabilityHeuristicsOnWebContents(web_contents, std::move(callback));
 }
 
 }  // namespace android

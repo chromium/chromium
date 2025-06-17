@@ -16,9 +16,12 @@ namespace dom_distiller {
 std::string GetDistillerScriptWithOptions(
     const dom_distiller::proto::DomDistillerOptions& options);
 
+// Returns the Readability JavaScript web page distillation script.
+std::string GetReadabilityDistillerScript();
+
 // Returns the Javascript heuristic to determine if web pages are suitable for
 // reader mode.
-std::string GetReadabilityDistillerScript();
+std::string GetReadabilityTriggeringScript();
 
 }  // namespace dom_distiller
 

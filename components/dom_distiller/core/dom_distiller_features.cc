@@ -43,15 +43,6 @@ bool ShouldUseReadabilityDistiller() {
          kReaderModeUseReadabilityUseDisiller.Get();
 }
 
-constexpr base::FeatureParam<bool> kReaderModeUseReadabilityUseHeuristic{
-    &kReaderModeUseReadability, /*name=*/"use_heuristic",
-    /*default_value=*/false};
-
-bool ShouldReadabilityHeuristic() {
-  return base::FeatureList::IsEnabled(kReaderModeUseReadability) &&
-         kReaderModeUseReadabilityUseHeuristic.Get();
-}
-
 #if BUILDFLAG(IS_ANDROID)
 // Feature declarations below -- alphabetical order.
 BASE_FEATURE(kReaderModeAutoDistill,
