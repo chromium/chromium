@@ -1601,7 +1601,7 @@
 <translation id="3740447166056383374">複製檔案前請務必確認</translation>
 <translation id="374325029554577103">健身科技產品</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
-<translation id="3744212718085287312">下次要使用更加安全的虛擬卡片嗎？</translation>
+<translation id="3744212718085287312">下次要使用更安全的虛擬卡片嗎？</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> 傳送的憑證受到干擾，造成 Chromium 無法處理，因此你目前無法造訪該網站。網路錯誤和攻擊通常是暫時性狀態，因此這個網頁可能稍後就會恢復正常運作。</translation>
 <translation id="3745599309295009257">你在頁面上的文字和該頁內容與網址都會傳送給 Google，並由人工進行審查，用來改善這項功能。因此，請勿輸入醫療或財務資料等個人資訊，也不要在含有私密資訊的網站上使用這項工具。</translation>
 <translation id="3748009735914587286">金屬 (高光面)</translation>
@@ -1795,7 +1795,7 @@
 <translation id="4089152113577680600">紙匣 14</translation>
 <translation id="4092349052316400070">填入地址</translation>
 <translation id="4096237801206588987">11 x 15 吋</translation>
-<translation id="4098306082496067348">結帳時輕觸虛擬卡片資料即可使用。</translation>
+<translation id="4098306082496067348">輕觸虛擬卡片資料即可用於結帳。</translation>
 <translation id="4099048595830172239">根據管理員政策，當畫面上有機密內容時，不建議你與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面：</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可自訂 Chrome 中的字型大小和字體</translation>
 <translation id="4101413244023615925">文字和圖片</translation>
@@ -3304,7 +3304,7 @@
 <translation id="6698769547327354196">如要在 Chrome 中關閉 Pix，請前往<ph name="BEGIN_LINK1" />付款設定<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">時間進度控制鈕</translation>
 <translation id="6702851555558236418">音訊與音樂軟體</translation>
-<translation id="6702919718839027939">簡報</translation>
+<translation id="6702919718839027939">簡報模式</translation>
 <translation id="6704458454638854812">屬性已設為「custom_size」，請將名稱設為「自訂」。</translation>
 <translation id="6706005862292023715">窗簾與窗飾</translation>
 <translation id="6706210727756204531">範圍</translation>
