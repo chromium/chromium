@@ -752,6 +752,15 @@ crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/function
 crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 
+crbug.com/425369464 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas/tex-2d-rgb8ui-rgb_integer-unsigned_byte.html [ Failure ]
+crbug.com/425369464 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas/tex-3d-rgb9_e5-rgb-half_float.html [ Failure ]
+crbug.com/425369464 [ mac intel-0x3e9b angle-metal ] conformance2/textures/image_bitmap_from_canvas/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ Failure ]
+crbug.com/425369464 [ mac intel-0x3e9b angle-metal ] conformance2/textures/image_bitmap_from_video/tex-2d-rgb16f-rgb-half_float.html [ Failure ]
+crbug.com/425369464 [ mac intel-0x3e9b angle-metal ] conformance2/textures/image_bitmap_from_video/tex-3d-rg16f-rg-half_float.html [ Failure ]
+crbug.com/425369464 [ mac intel-0x3e9b angle-metal ] conformance2/textures/video/tex-2d-r11f_g11f_b10f-rgb-float.html [ Failure ]
+crbug.com/425369464 [ mac intel-0x3e9b angle-metal ] conformance2/textures/video/tex-3d-rgba16f-rgba-float.html [ Failure ]
+crbug.com/425369464 [ mac intel-0x3e9b angle-metal ] conformance2/textures/webgl_canvas/tex-3d-rgba16f-rgba-float.html [ Failure ]
+
 ## Mac / Apple Silicon ##
 
 crbug.com/413035866 [ sequoia apple angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
