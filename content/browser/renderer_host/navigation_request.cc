@@ -6385,7 +6385,9 @@ void NavigationRequest::CommitNavigation() {
   }
 
   url::Origin origin_to_commit = GetOriginToCommit().value();
-  ValidateCommitOrigin(origin_to_commit);
+  if (base::FeatureList::IsEnabled(features::kValidateCommitOriginAtCommit)) {
+    ValidateCommitOrigin(origin_to_commit);
+  }
   isolation_info_for_subresources_ =
       GetRenderFrameHost()->ComputeIsolationInfoForSubresourcesForPendingCommit(
           origin_to_commit, is_credentialless(), ComputeFencedFrameNonce());

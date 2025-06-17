@@ -1209,6 +1209,19 @@ BASE_FEATURE(kVerifyDidCommitParams,
              "VerifyDidCommitParams",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables a CHECK in NavigationRequest::ValidateCommitOrigin() to verify
+// that the origin used at commit time matches the expected origin stored
+// in the FrameNavigationEntry, whenever PageState is non-empty.
+//
+// This helps catch session history corruption or stale origin-related state
+// being sent to the renderer, which could violate origin isolation and lead
+// to security issues (see crbug.com/41492620).
+//
+// This feature is disabled by default while we diagnose on Canary only.
+BASE_FEATURE(kValidateCommitOriginAtCommit,
+             "ValidateCommitOriginAtCommit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables future V8 VM features
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
 
