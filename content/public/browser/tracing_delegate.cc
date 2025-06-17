@@ -14,7 +14,8 @@
 
 namespace content {
 
-bool TracingDelegate::IsRecordingAllowed(bool requires_anonymized_data) const {
+bool TracingDelegate::IsRecordingAllowed(bool requires_anonymized_data,
+                                         base::TimeTicks session_start) const {
   return true;
 }
 

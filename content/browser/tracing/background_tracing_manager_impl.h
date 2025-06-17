@@ -262,6 +262,7 @@ class BackgroundTracingManagerImpl
       preset_scenarios_;
   std::vector<raw_ptr<TracingScenario>> enabled_scenarios_;
   raw_ptr<TracingScenario> active_scenario_{nullptr};
+  base::TimeTicks scenario_start_time_;
   std::vector<std::unique_ptr<BackgroundTracingRule>> trigger_rules_;
   ReceiveCallback receive_callback_;
 

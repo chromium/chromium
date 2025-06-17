@@ -54,7 +54,8 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   ~ChromeTracingDelegate() override;
 
   // content::TracingDelegate implementation:
-  bool IsRecordingAllowed(bool requires_anonymized_data) const override;
+  bool IsRecordingAllowed(bool requires_anonymized_data,
+                          base::TimeTicks session_start) const override;
   bool ShouldSaveUnuploadedTrace() const override;
   std::unique_ptr<tracing::BackgroundTracingStateManager> CreateStateManager()
       override;
@@ -80,9 +81,13 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 #else
   // BrowserListObserver implementation.
   void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
 #endif
 
-  bool incognito_launched_ = false;
+  // Track the most recent OffTheRecord browser creation time. It's ok to update
+  // to a newer timestamp when there are multiple OffTheRecord browsers, since
+  // the newer timestamp is stricter.
+  base::TimeTicks latest_incognito_launched_;
 };
 
 #endif  // CHROME_BROWSER_TRACING_CHROME_TRACING_DELEGATE_H_

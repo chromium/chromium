@@ -44,7 +44,7 @@ class AwTracingDelegateTest : public testing::Test {
 
 TEST_F(AwTracingDelegateTest, IsRecordingAllowed) {
   EXPECT_TRUE(delegate_->IsRecordingAllowed(
-      /*requires_anonymized_data=*/false));
+      /*requires_anonymized_data=*/false, base::TimeTicks::Now()));
 }
 
 }  // namespace android_webview

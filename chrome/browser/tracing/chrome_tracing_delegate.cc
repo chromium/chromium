@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -86,30 +87,45 @@ ChromeTracingDelegate::~ChromeTracingDelegate() {
 void ChromeTracingDelegate::OnTabModelAdded(TabModel* tab_model) {
   for (const TabModel* model : TabModelList::models()) {
     if (model->GetProfile()->IsOffTheRecord())
-      incognito_launched_ = true;
+      latest_incognito_launched_ = base::TimeTicks::Now();
+    base::trace_event::EmitNamedTrigger("incognito-start");
   }
 }
 
-void ChromeTracingDelegate::OnTabModelRemoved(TabModel* tab_model) {}
+void ChromeTracingDelegate::OnTabModelRemoved(TabModel* tab_model) {
+  if (!IsOffTheRecordSessionActive()) {
+    base::trace_event::EmitNamedTrigger("incognito-end");
+  }
+}
 
 #else
 
 void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
-  if (browser->profile()->IsOffTheRecord())
-    incognito_launched_ = true;
+  if (browser->profile()->IsOffTheRecord()) {
+    latest_incognito_launched_ = base::TimeTicks::Now();
+    base::trace_event::EmitNamedTrigger("incognito-start");
+  }
 }
+
+void ChromeTracingDelegate::OnBrowserRemoved(Browser* browser) {
+  if (!IsOffTheRecordSessionActive()) {
+    base::trace_event::EmitNamedTrigger("incognito-end");
+  }
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool ChromeTracingDelegate::IsRecordingAllowed(
-    bool requires_anonymized_data) const {
+    bool requires_anonymized_data,
+    base::TimeTicks session_start) const {
   // If the background tracing is specified on the command-line, we allow
   // any scenario to be traced and uploaded.
-  if (tracing::IsBackgroundTracingEnabledFromCommandLine()) {
+  if (!requires_anonymized_data) {
     return true;
   }
 
-  if (requires_anonymized_data &&
-      (incognito_launched_ || IsOffTheRecordSessionActive())) {
+  if (IsOffTheRecordSessionActive() ||
+      session_start <= latest_incognito_launched_) {
     UMA_HISTOGRAM_ENUMERATION(
         "Tracing.Background.FinalizationDisallowedReason",
         TracingFinalizationDisallowedReason::kIncognitoLaunched);

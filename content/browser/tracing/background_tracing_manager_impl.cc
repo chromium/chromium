@@ -697,10 +697,12 @@ bool BackgroundTracingManagerImpl::OnScenarioActive(
       kMaxTracesPerScenario) {
     return false;
   }
-  if (!delegate_->IsRecordingAllowed(
-          active_scenario->privacy_filter_enabled())) {
+  auto now = base::TimeTicks::Now();
+  if (!delegate_->IsRecordingAllowed(active_scenario->privacy_filter_enabled(),
+                                     now)) {
     return false;
   }
+  scenario_start_time_ = now;
   active_scenario_ = active_scenario;
   base::UmaHistogramSparse(
       "Tracing.Background.Scenario.Active",
@@ -730,7 +732,8 @@ bool BackgroundTracingManagerImpl::OnScenarioIdle(
   for (auto& scenario : enabled_scenarios_) {
     scenario->Enable();
   }
-  return delegate_->IsRecordingAllowed(idle_scenario->privacy_filter_enabled());
+  return delegate_->IsRecordingAllowed(idle_scenario->privacy_filter_enabled(),
+                                       scenario_start_time_);
 }
 
 void BackgroundTracingManagerImpl::OnScenarioError(
@@ -748,7 +751,7 @@ bool BackgroundTracingManagerImpl::OnScenarioCloned(
       "Tracing.Background.Scenario.Clone",
       variations::HashName(cloned_scenario->scenario_name()));
   return delegate_->IsRecordingAllowed(
-      cloned_scenario->privacy_filter_enabled());
+      cloned_scenario->privacy_filter_enabled(), scenario_start_time_);
 }
 
 void BackgroundTracingManagerImpl::OnScenarioRecording(

@@ -364,15 +364,12 @@ void TracingScenario::OnNestedScenarioStart(
     NestedTracingScenario* active_scenario) {
   CHECK_EQ(active_scenario_, nullptr);
   active_scenario_ = active_scenario;
-  // Other nested scenarios are disabled and stop rules are uninstalled.
+  // Other nested scenarios are disabled.
   for (auto& scenario : nested_scenarios_) {
     if (scenario.get() == active_scenario_) {
       continue;
     }
     scenario->Disable();
-  }
-  for (auto& rule : stop_rules_) {
-    rule->Uninstall();
   }
   // If in `kSetup`, the tracing session is started.
   if (current_state() == State::kSetup) {
@@ -383,10 +380,6 @@ void TracingScenario::OnNestedScenarioStart(
 void TracingScenario::OnNestedScenarioStop(
     NestedTracingScenario* nested_scenario) {
   CHECK_EQ(active_scenario_, nested_scenario);
-  for (auto& rule : stop_rules_) {
-    rule->Install(base::BindRepeating(&TracingScenario::OnStopTrigger,
-                                      base::Unretained(this)));
-  }
   // Stop the scenario asynchronously in case an upload trigger is triggered in
   // the same task.
   on_nested_stopped_.Reset(base::BindOnce(
@@ -416,12 +409,6 @@ void TracingScenario::OnNestedScenarioUpload(
         current_state_ == State::kRecording)
       << static_cast<int>(current_state_);
 
-  if (on_nested_stopped_.IsCancelled()) {
-    for (auto& rule : stop_rules_) {
-      rule->Install(base::BindRepeating(&TracingScenario::OnStopTrigger,
-                                        base::Unretained(this)));
-    }
-  }
   on_nested_stopped_.Cancel();
   active_scenario_ = nullptr;
   SetState(State::kCloning);

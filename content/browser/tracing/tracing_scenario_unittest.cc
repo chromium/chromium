@@ -401,8 +401,31 @@ TEST_F(TracingScenarioTest, NestedStartStop) {
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
 
-  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("stop_trigger"));
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_stop_trigger"));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
+      .WillOnce([&run_loop]() {
+        run_loop.Quit();
+        return true;
+      });
+
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
+  run_loop.Run();
+  EXPECT_EQ(TracingScenario::State::kDisabled,
+            tracing_scenario.current_state());
+}
+
+TEST_F(TracingScenarioTest, UnnestedStop) {
+  TracingScenarioForTesting tracing_scenario(
+      ParseScenarioConfigFromText(kDefaultConfig), &delegate);
+
+  tracing_scenario.Enable();
+  EXPECT_EQ(TracingScenario::State::kEnabled, tracing_scenario.current_state());
+  EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
 
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
@@ -573,7 +596,6 @@ TEST_F(TracingScenarioTest, SetupNestedStartStop) {
             tracing_scenario.current_state());
   EXPECT_FALSE(
       base::trace_event::EmitNamedTrigger("other_nested_start_trigger"));
-  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("stop_trigger"));
 
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_stop_trigger"));
 

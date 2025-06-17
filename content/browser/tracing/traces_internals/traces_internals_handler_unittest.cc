@@ -82,7 +82,10 @@ class MockTracePage : public traces_internals::mojom::Page {
 
 class MockTracingDelegate : public TracingDelegate {
  public:
-  MOCK_METHOD(bool, IsRecordingAllowed, (bool), (const, override));
+  MOCK_METHOD(bool,
+              IsRecordingAllowed,
+              (bool, base::TimeTicks),
+              (const, override));
   MOCK_METHOD(bool, ShouldSaveUnuploadedTrace, (), (const, override));
 #if BUILDFLAG(IS_WIN)
   MOCK_METHOD(void,

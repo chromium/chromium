@@ -24,7 +24,8 @@ class AwTracingDelegate : public content::TracingDelegate {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // content::TracingDelegate implementation:
-  bool IsRecordingAllowed(bool requires_anonymized_data) const override;
+  bool IsRecordingAllowed(bool requires_anonymized_data,
+                          base::TimeTicks session_start) const override;
   std::unique_ptr<tracing::BackgroundTracingStateManager> CreateStateManager()
       override;
   std::string RecordSerializedSystemProfileMetrics() const override;
