@@ -30,6 +30,10 @@ TabDataObserver::TabDataObserver(
     if (favicon_driver) {
       favicon_driver->AddObserver(this);
     }
+    tab_detach_subscription_ =
+        tabs::TabInterface::GetFromContents(web_contents)
+            ->RegisterWillDetach(base::BindRepeating(
+                &TabDataObserver::OnTabWillDetach, base::Unretained(this)));
   }
 }
 
@@ -51,6 +55,7 @@ void TabDataObserver::ClearObservation() {
     }
   }
   Observe(nullptr);
+  tab_detach_subscription_ = {};
 }
 
 void TabDataObserver::PrimaryPageChanged(content::Page& page) {
@@ -73,6 +78,13 @@ void TabDataObserver::OnFaviconUpdated(
     bool icon_url_changed,
     const gfx::Image& image) {
   SendUpdate();
+}
+
+void TabDataObserver::OnTabWillDetach(tabs::TabInterface* tab,
+                                      tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    ClearObservation();
+  }
 }
 
 int GetTabId(content::WebContents* web_contents) {

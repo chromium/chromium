@@ -62,7 +62,14 @@ class TabDataObserver : public content::WebContentsObserver,
   void SendUpdate();
   void ClearObservation();
 
+  // Handler for TabInterface callback subscription.
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+
   base::RepeatingCallback<void(glic::mojom::TabDataPtr)> tab_data_changed_;
+
+  // Subscription to TabInterface detach callback.
+  base::CallbackListSubscription tab_detach_subscription_;
 };
 
 // Either a focused tab, or an error string.
