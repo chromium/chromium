@@ -1,0 +1,26 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++button name='offscreen' nameFrom=contents
+++++++++staticText name='offscreen' nameFrom=contents
+++++++++++inlineTextBox name='offscreen' nameFrom=contents
+++++++button name='disabled' nameFrom=contents restriction=disabled
+++++++++staticText name='disabled' nameFrom=contents
+++++++++++inlineTextBox name='disabled' nameFrom=contents
+++++++link name='link1' nameFrom=attribute
+++++++++staticText name='link1' nameFrom=contents
+++++++++++inlineTextBox name='link1' nameFrom=contents
+++++++textField name='input1' nameFrom=attribute
+++++++++genericContainer
+++++++staticText name='input1 ' nameFrom=contents
+++++++++inlineTextBox name='input1 ' nameFrom=contents
+++++++button name='button3' nameFrom=contents
+++++++++staticText name='button3' nameFrom=contents
+++++++++++inlineTextBox name='button3' nameFrom=contents
+++++++slider horizontal name='slider' nameFrom=attribute valueForRange=5.00 minValueForRange=0.00 maxValueForRange=10.00
+++++++list
+++++++++listItem role='listitem'
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='p1' nameFrom=contents
+++++++++++++inlineTextBox name='p1' nameFrom=contents

@@ -6776,11 +6776,31 @@ bool AXObjectCacheImpl::MarkOnScreenNodes(
   const bool was_on_screen = obj->WasEverOnScreen();
   const bool can_flip = obj->CanFlipFromOffScreenToOnScreen();
 
+  Node* node_to_use = nullptr;
+  if (!was_on_screen && obj->ChildCountIncludingIgnored() == 0) {
+    AXObject* obj_to_use = obj;
+    while (obj_to_use && !obj_to_use->IsRoot()) {
+      // For leaf nodes, if their bounding box size is zero, this means that
+      // this can't be the target of a hit test (the logic we use to identify if
+      // a node was in the rect representing what is on-screen). They, however,
+      // still can be interesting for accessibility purposes when they have some
+      // a11y-only label, action, etc.
+      ui::AXRelativeBounds location;
+      bool clips_children;
+      obj_to_use->PopulateAXRelativeBounds(location, &clips_children);
+      if (!location.bounds.IsEmpty()) {
+        node_to_use = obj_to_use->GetClosestNode();
+        break;
+      }
+      obj_to_use = obj_to_use->ParentObject();
+    }
+  } else {
+    node_to_use = obj->GetClosestNode();
+  }
   // We can skip the check in the set to improve performance a bit here. If a
   // node was ever on screen, it will always be.
   const bool should_be_considered_on_screen =
-      was_on_screen || (obj->GetClosestNode() &&
-                        on_screen_nodes->Contains(obj->GetClosestNode()));
+      was_on_screen || (node_to_use && on_screen_nodes->Contains(node_to_use));
   if (obj->ChildCountIncludingIgnored() == 0) {  // This is a leaf node.
     // If this node was ever on-screen, keep serializing it or at least allow
     // serializations to happen.

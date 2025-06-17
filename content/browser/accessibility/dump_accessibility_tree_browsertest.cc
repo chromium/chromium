@@ -2133,6 +2133,12 @@ IN_PROC_BROWSER_TEST_P(OnScreenModeDumpAccessibilityTreeTest,
       "content-with-3-view-port-scrolls-for-on-screen-mode.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(OnScreenModeDumpAccessibilityTreeTest,
+                       ActionableElementsInTree) {
+  RunOnScreenTest(
+      FILE_PATH_LITERAL("actionable-elements-in-tree-for-on-screen-mode.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityBlockquoteLevels) {
   RunHtmlTest(FILE_PATH_LITERAL("blockquote-levels.html"));

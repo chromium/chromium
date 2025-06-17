@@ -3129,6 +3129,8 @@ data/accessibility/html/action-verbs-expected-mac.txt
 data/accessibility/html/action-verbs-expected-uia-win.txt
 data/accessibility/html/action-verbs-expected-win.txt
 data/accessibility/html/action-verbs.html
+data/accessibility/html/actionable-elements-in-tree-for-on-screen-mode-expected-blink.txt
+data/accessibility/html/actionable-elements-in-tree-for-on-screen-mode.html
 data/accessibility/html/actions-expected-android-assist-data.txt
 data/accessibility/html/actions-expected-android-external.txt
 data/accessibility/html/actions-expected-android.txt
