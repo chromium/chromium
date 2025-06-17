@@ -15,9 +15,11 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/resized_avatar_cache.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 
 #if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
 #import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
@@ -34,12 +36,24 @@ void ReloadAllTimelines() {
   }
 }
 
+UIImage* ResizedAvatar(UIImage* image) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  // Resize the avatar image.
+  CGSize new_size = CGSizeMake(32.0, 32.0);
+  if (!CGSizeEqualToSize(image.size, new_size)) {
+    image = ResizeImage(image, new_size, ProjectionMode::kAspectFit);
+  }
+  return image;
+}
+
 // Save avatar info to disk.
 void StoreAvatarToDisk(NSURL* identity_file, UIImage* avatar) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   CHECK(avatar, base::NotFatalUntil::M141);
-  NSData* png_data = UIImagePNGRepresentation(avatar);
+  UIImage* resized_avatar = ResizedAvatar(avatar);
+  NSData* png_data = UIImagePNGRepresentation(resized_avatar);
   if (png_data) {
     [png_data writeToURL:identity_file atomically:YES];
   }
@@ -81,13 +95,11 @@ void RemoveSingleAvatarFromDisk(NSURL* url) {
 // Save avatars info to disk.
 void UpdateAvatars(NSDictionary* avatars) {
   for (NSString* gaia in avatars) {
-    @autoreleasepool {
-      NSString* file_name = [NSString stringWithFormat:@"%@.png", gaia];
-      NSURL* identity_file = [app_group::WidgetsAvatarFolder()
-          URLByAppendingPathComponent:file_name];
-      UIImage* avatar = avatars[gaia];
-      StoreAvatarToDisk(identity_file, avatar);
-    }
+    NSString* file_name = [NSString stringWithFormat:@"%@.png", gaia];
+    NSURL* identity_file = [app_group::WidgetsAvatarFolder()
+        URLByAppendingPathComponent:file_name];
+    UIImage* avatar = avatars[gaia];
+    StoreAvatarToDisk(identity_file, avatar);
   }
   // Check if disk cleanup in WidgetsAvatarFolder folder is needed.
   RemoveAvatarDataFromDisk(avatars);
