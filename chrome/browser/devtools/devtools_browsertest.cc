@@ -179,7 +179,6 @@ namespace {
 const char kDebuggerTestPage[] = "/devtools/debugger_test_page.html";
 const char kPauseWhenLoadingDevTools[] =
     "/devtools/pause_when_loading_devtools.html";
-const char kLatencyInfoTestPage[] = "/devtools/latency_info.html";
 const char kChunkedTestPage[] = "/chunked";
 const char kPushTestPage[] = "/devtools/push_test_page.html";
 // The resource is not really pushed, but mock url request job pretends it is.
@@ -190,8 +189,8 @@ const char kSlowTestPage[] =
 const char kEmptyTestPage[] = "/devtools/empty.html";
 // Arbitrary page that returns a 200 response, for tests that don't care about
 // more than that.
-const char kArbitraryPage[] = "/title1.html";
 #if !BUILDFLAG(IS_ANDROID)
+const char kArbitraryPage[] = "/title1.html";
 const char kDispatchKeyEventShowsAutoFill[] =
     "/devtools/dispatch_key_event_shows_auto_fill.html";
 const char kEmulateNetworkConditionsPage[] =
@@ -347,11 +346,6 @@ class DevToolsTest : public PlatformBrowserTest {
   template <typename... T>
   void DispatchAndWait(const char* method, T... args) {
     DispatchOnTestSuiteSkipCheck(window_, "waitForAsync", method, args...);
-  }
-
-  template <typename... T>
-  void DispatchInPageAndWait(const char* method, T... args) {
-    DispatchAndWait("invokePageFunctionAsync", method, args...);
   }
 
   void LoadTestPage(const std::string& test_page) {
@@ -3011,49 +3005,6 @@ class DevToolsPixelOutputTests : public DevToolsTest {
     command_line->AppendSwitch(switches::kUseGpuInTests);
   }
 };
-
-// This test enables switches::kUseGpuInTests which causes false positives
-// with MemorySanitizer. This is also flakey on many configurations.
-// See https://crbug.com/510291
-IN_PROC_BROWSER_TEST_F(DevToolsPixelOutputTests,
-                       DISABLED_TestScreenshotRecording) {
-  RunTest("testScreenshotRecording", kArbitraryPage);
-}
-
-// This test enables switches::kUseGpuInTests which causes false positives
-// with MemorySanitizer.
-// Flaky on multiple platforms https://crbug.com/624215
-IN_PROC_BROWSER_TEST_F(DevToolsPixelOutputTests,
-                       DISABLED_TestLatencyInfoInstrumentation) {
-  WebContents* web_contents = GetInspectedTab();
-  OpenDevToolsWindow(kLatencyInfoTestPage, false);
-  DispatchAndWait("startTimeline");
-
-  for (int i = 0; i < 3; ++i) {
-    SimulateMouseEvent(web_contents, blink::WebInputEvent::Type::kMouseMove,
-                       gfx::Point(30, 60));
-    DispatchInPageAndWait("waitForEvent", "mousemove");
-  }
-
-  SimulateMouseClickAt(web_contents, 0,
-                       blink::WebPointerProperties::Button::kLeft,
-                       gfx::Point(30, 60));
-  DispatchInPageAndWait("waitForEvent", "click");
-
-  SimulateMouseWheelEvent(web_contents, gfx::Point(300, 100),
-                          gfx::Vector2d(0, 120),
-                          blink::WebMouseWheelEvent::kPhaseBegan);
-  DispatchInPageAndWait("waitForEvent", "wheel");
-
-  SimulateTapAt(web_contents, gfx::Point(30, 60));
-  DispatchInPageAndWait("waitForEvent", "gesturetap");
-
-  DispatchAndWait("stopTimeline");
-  RunTestMethod("checkInputEventsPresent", "MouseMove", "MouseDown",
-                "MouseWheel", "GestureTap");
-
-  CloseDevToolsWindow();
-}
 
 #if !BUILDFLAG(IS_ANDROID)
 class DevToolsNetInfoTest : public DevToolsTest {
