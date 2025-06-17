@@ -20,6 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -45,7 +46,7 @@ public class IncognitoNotificationServiceImpl extends IncognitoNotificationServi
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(@Nullable Intent intent) {
         PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT, IncognitoTabHostUtils::closeAllIncognitoTabs);
 
