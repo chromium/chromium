@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/strings/to_string.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"

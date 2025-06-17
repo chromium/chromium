@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
 #include "base/types/optional_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/resource_request.h"

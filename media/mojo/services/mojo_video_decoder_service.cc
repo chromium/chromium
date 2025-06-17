@@ -9,6 +9,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "extensions/common/api/messaging/port_context.h"
+
+#include "base/debug/crash_logging.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
