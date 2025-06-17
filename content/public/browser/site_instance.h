@@ -10,11 +10,13 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/types/id_type.h"
+#include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/site_instance_process_assignment.h"
+#include "content/public/browser/site_instance_process_creation_client.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "url/gurl.h"
 
@@ -125,6 +127,14 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // GetOrCreateProcess() function in the content-internal class
   // SiteInstanceImpl shall be used.
   virtual RenderProcessHost* GetProcess() = 0;
+
+  // Returns the current RenderProcessHost being used to render pages for this
+  // SiteInstance. This method will create a renderer process if there is not
+  // one. The function is exported only for the renderer prelauncher in cast.
+  // TODO(crbug.com/424051832): Remove the function after migrating
+  // RendererPrelauncher to use the spare renderer.
+  virtual RenderProcessHost* GetOrCreateProcess(
+      base::PassKey<SiteInstanceProcessCreationClient>) = 0;
 
   // Test-only function that returns the current RenderProcessHost for this
   // SiteInstance and creates one if there is no RenderProcessHost.

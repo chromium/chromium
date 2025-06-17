@@ -10,6 +10,7 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/site_instance_process_creation_client.h"
 #include "ipc/ipc_message.h"
 
 namespace chromecast {
@@ -31,7 +32,10 @@ RendererPrelauncher::~RendererPrelauncher() {
 void RendererPrelauncher::Prelaunch() {
   DLOG(INFO) << "Prelaunching for: " << gurl_;
   site_instance_ = content::SiteInstance::CreateForURL(browser_context_, gurl_);
-  content::RenderProcessHost* rph = site_instance_->GetProcess();
+  // TODO(crbug.com/424051832): Migrate to spare renderer and remove the
+  // GetOrCreateProcess() function call with a Passkey.
+  content::RenderProcessHost* rph = site_instance_->GetOrCreateProcess(
+      content::SiteInstanceProcessCreationClient::GetPassKey());
   rph_routing_id_ = rph->GetNextRoutingID();
   rph->AddRoute(rph_routing_id_, this);
   rph->Init();

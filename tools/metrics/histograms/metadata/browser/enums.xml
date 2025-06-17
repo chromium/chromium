@@ -418,6 +418,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="SharedWorker"/>
   <int value="8" label="NoProcessCreationExpected"/>
   <int value="9" label="Test"/>
+  <int value="10" label="Embedder"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/process_allocation_context.h:ProcessAllocationSource) -->

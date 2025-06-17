@@ -31,7 +31,8 @@ enum class ProcessAllocationSource : uint8_t {
   // process.
   kNoProcessCreationExpected = 8,
   kTest = 9,
-  kMaxValue = kTest,
+  kEmbedder = 10,
+  kMaxValue = kEmbedder,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:ProcessAllocationSource)
 

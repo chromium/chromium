@@ -33,6 +33,7 @@ bool ProcessAllocationContext::IsForNavigation() const {
     case ProcessAllocationSource::kSharedWorker:
     case ProcessAllocationSource::kNoProcessCreationExpected:
     case ProcessAllocationSource::kTest:
+    case ProcessAllocationSource::kEmbedder:
       return false;
   }
 }
