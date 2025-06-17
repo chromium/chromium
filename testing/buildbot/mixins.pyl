@@ -708,9 +708,9 @@
       '--buildbucket-id=${buildbucket_build_id}',
     ],
   },
-  'skylab-20-tests-per-shard': {
+  'skylab-50-tests-per-shard': {
     'skylab': {
-      'cros_test_max_in_shard': 20
+      'cros_test_max_in_shard': 50
     },
   },
   'skylab-shards-20': {
